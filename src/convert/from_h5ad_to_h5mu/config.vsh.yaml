@@ -1,56 +1,54 @@
-name: from_h5ad_to_h5mu
-namespace: "convert"
-description: |
-  Converts a single layer h5ad file into a single MuData object
-authors:
-  - __merge__: /src/authors/dries_de_maeyer.yaml
-    roles: [ maintainer ]
-arguments:
-  - name: "--input"
-    alternatives: ["-i"]
-    type: file
-    description: Input h5ad files
-    default: input.h5ad
-    direction: input
-    required: true
-    multiple: true
-  - name: "--modality"
-    type: string
-    default: "rna"
-    required: false
-    multiple: true
-  - name: "--output"
-    alternatives: ["-o"]
-    type: file
-    description: Output MuData file.
-    default: output.h5mu
-    direction: output
-  - name: "--output_compression"
-    type: string
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
-resources:
-  - type: python_script
-    path: script.py
-  - path: /src/utils/setup_logger.py
-test_resources:
-  - type: python_script
-    path: test.py
-  - path: /resources_test/pbmc_1k_protein_v3
-
-engines:
-- type: docker
-  image: python:3.9-slim
-  setup:
-    - type: apt
-      packages: 
-        - procps
-    - type: python
-      __merge__: /src/base/requirements/anndata_mudata.yaml
-  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
-runners:
-- type: executable
-- type: nextflow
-  directives:
-    label: [lowmem, singlecpu]
+functionality:
+  name: from_h5ad_to_h5mu
+  namespace: "convert"
+  description: |
+    Converts a single layer h5ad file into a single MuData object
+  authors:
+    - __merge__: /src/authors/dries_de_maeyer.yaml
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input h5ad files
+      default: input.h5ad
+      direction: input
+      required: true
+      multiple: true
+    - name: "--modality"
+      type: string
+      default: "rna"
+      required: false
+      multiple: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output MuData file.
+      default: output.h5mu
+      direction: output
+    - name: "--output_compression"
+      type: string
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
+  resources:
+    - type: python_script
+      path: script.py
+    - path: /src/utils/setup_logger.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.9-slim
+    setup:
+      - type: apt
+        packages: 
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+  - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]

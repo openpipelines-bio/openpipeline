@@ -1,6 +1,6 @@
 # Arguments
 input: # please fill in - example: "path/to/file"
-# output: "$id.$key.output"
+# output: "$id.$key.output.output"
 # output_format: "foo"
 width: 800
 height: 600

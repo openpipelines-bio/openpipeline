@@ -5,7 +5,7 @@ import pytest
 
 ## VIASH START
 meta = {
-    'executable': './target/executable/filter/filter_with_counts/filter_with_counts',
+    'executable': './target/docker/filter/filter_with_counts/filter_with_counts',
     'resources_dir': 'resources_test/',
     'config': "/home/di/code/openpipeline/src/filter/filter_with_counts/config.vsh.yaml"
 }

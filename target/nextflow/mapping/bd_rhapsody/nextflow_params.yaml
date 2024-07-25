@@ -8,7 +8,7 @@ reference: # please fill in - example: ["reference_genome.tar.gz|reference.fasta
 sample_prefix: "sample"
 
 # Outputs
-# output: "$id.$key.output"
+# output: "$id.$key.output.output"
 
 # Putative cell calling settings
 # putative_cell_call: "mRNA"
@@ -34,5 +34,3 @@ dryrun: false
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-
-# Arguments

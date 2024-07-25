@@ -1,58 +1,56 @@
-name: build_bdrhap_reference
-namespace: reference
-description: Compile a reference into a STAR index compatible with the BD Rhapsody pipeline.
-authors:
-  - __merge__: /src/authors/angela_pisco.yaml
-    roles: [ author ]
-  - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
-arguments:
-  # inputs
-  - type: file
-    name: --genome_fasta
-    required: true
-    description: Reference genome fasta.
-    example: genome_sequence.fa.gz
-  - type: file
-    name: --transcriptome_gtf
-    required: true
-    description: Reference transcriptome annotation.
-    example: transcriptome_annotation.gtf.gz
-  - type: file
-    name: --output
-    direction: output
-    required: true
-    description: Star index
-    example: star_index.tar.gz
-resources:
-  - type: bash_script
-    path: script.sh
-test_resources:
-  - type: bash_script
-    path: run_test.sh
-  - path: /resources_test/reference_gencodev41_chr1
+functionality:
+  name: build_bdrhap_reference
+  namespace: reference
+  description: Compile a reference into a STAR index compatible with the BD Rhapsody pipeline.
+  authors:
+    - __merge__: /src/authors/angela_pisco.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ author, maintainer ]
+  arguments:
+    # inputs
+    - type: file
+      name: --genome_fasta
+      required: true
+      description: Reference genome fasta.
+      example: genome_sequence.fa.gz
+    - type: file
+      name: --transcriptome_gtf
+      required: true
+      description: Reference transcriptome annotation.
+      example: transcriptome_annotation.gtf.gz
+    - type: file
+      name: --output
+      direction: output
+      required: true
+      description: Star index
+      example: star_index.tar.gz
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    - type: bash_script
+      path: run_test.sh
+    - path: /resources_test/reference_gencodev41_chr1
+platforms:
+  - type: docker
+    image: bdgenomics/rhapsody:1.10.1
+    setup:
+      - type: apt
+        packages: [ pigz ]
+    test_setup:
+      - type: apt
+        packages: [ git, wget ]
+      - type: docker
+        run: |
+          TARGETARCH="${TARGETARCH:-$(dpkg --print-architecture)}" && \
+          TARGETOS="${TARGETOS:-linux}" && \
+          PATH="${PATH}:/usr/local/go/bin" && \
+          wget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
+          rm go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
+          git clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \
+          cd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit && rm -r /usr/local/go
 
-engines:
-- type: docker
-  image: bdgenomics/rhapsody:1.10.1
-  setup:
-    - type: apt
-      packages: [ pigz ]
-  test_setup:
-    - type: apt
-      packages: [ git, wget ]
-    - type: docker
-      run: |
-        TARGETARCH="${TARGETARCH:-$(dpkg --print-architecture)}" && \
-        TARGETOS="${TARGETOS:-linux}" && \
-        PATH="${PATH}:/usr/local/go/bin" && \
-        wget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
-        rm go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
-        git clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \
-        cd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit && rm -r /usr/local/go
-
-runners:
-- type: executable
-- type: nextflow
-  directives:
-    label: [ highmem, highcpu ]
+  - type: nextflow
+    directives:
+      label: [ highmem, highcpu ]

@@ -6,7 +6,7 @@ from mudata import read_h5mu
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/executable/transform/scale/scale',
+    'functionality_name': './target/native/transform/scale/scale',
     'resources_dir': './resources_test/pbmc_1k_protein_v3/'
 }
 ## VIASH END

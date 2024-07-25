@@ -4,6 +4,9 @@ input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # layer: "raw_counts"
 
+# Outputs
+# output: "$id.$key.output.h5mu"
+
 # Mitochondrial Gene Detection
 # var_name_mitochondrial_genes: "foo"
 # obs_name_mitochondrial_fraction: "foo"
@@ -20,11 +23,6 @@ output_var_total_counts_obs: "total_counts"
 output_var_obs_mean: "obs_mean"
 output_var_pct_dropout: "pct_dropout"
 
-# Outputs
-# output: "$id.$key.output.h5mu"
-
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-
-# Arguments

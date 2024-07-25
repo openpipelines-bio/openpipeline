@@ -1,0 +1,857 @@
+functionality:
+  name: "freebayes"
+  namespace: "genetic_demux"
+  version: "integration_build"
+  authors:
+  - name: "Xichen Wu"
+    roles:
+    - "author"
+    info:
+      role: "Contributor"
+      links:
+        github: "wxicu"
+        linkedin: "xichen-wu"
+        orcid: "0009-0008-2168-4508"
+      organizations:
+      - name: "Helmholtz Munich"
+        href: "https://www.helmholtz-munich.de"
+        role: "Student Assistant"
+  argument_groups:
+  - name: "Input"
+    arguments:
+    - type: "file"
+      name: "--bam"
+      description: "Add FILE to the set of BAM files to be analyzed."
+      info: null
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--bam_list"
+      description: "A file containing a list of BAM files to be analyzed."
+      info: null
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--stdin"
+      description: "Read BAM input on stdin."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "file"
+      name: "--fasta_reference"
+      description: "Use FILE as the reference sequence for analysis. An index file\
+        \ (FILE.fai) will be created if none exists. If neither --targets nor --region\
+        \ are specified, FreeBayes will analyze every position in this reference."
+      info: null
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--fasta_reference_index"
+      description: "Use FILE.fai as the index of reference sequence for analysis."
+      info: null
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--targets"
+      description: "Limit analysis to targets listed in the BED-format FILE."
+      info: null
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--region"
+      description: "Limit analysis to the specified region, 0-base coordinates, end_position\
+        \ not included (same as BED format)."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--samples"
+      description: "Limit analysis to samples listed (one per line) in the FILE. By\
+        \ default FreeBayes will analyze all samples in its input BAM files."
+      info: null
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--populations"
+      description: "Each line of FILE should list a sample and a population which\
+        \ it is part of. The population-based bayesian inference model will then be\
+        \ partitioned on the basis of the populations."
+      info: null
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--cnv_map"
+      description: "Read a copy number map from the BED file FILE, which has either\
+        \ a sample-level ploidy or a region-specific format."
+      info: null
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--gvcf"
+      description: "Write gVCF output, which indicates coverage in uncalled regions."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "integer"
+      name: "--gvcf_chunk"
+      description: "When writing gVCF output emit a record for every NUM bases."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--variant_input"
+      description: "Use variants reported in VCF file as input to the algorithm. Variants\
+        \ in this file will included in the output even if there is not enough support\
+        \ in the data to pass input filters."
+      info: null
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--only_use_input_alleles"
+      description: "Only provide variant calls and genotype likelihoods for sites\
+        \ and alleles which are provided in the VCF input, and provide output in the\
+        \ VCF for all input alleles, not just those which have support in the data."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "file"
+      name: "--haplotype_basis_alleles"
+      description: "When specified, only variant alleles provided in this input VCF\
+        \ will be used for the construction of complex or haplotype alleles."
+      info: null
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--report_all_haplotype_alleles"
+      description: "At sites where genotypes are made over haplotype alleles, provide\
+        \ information about all alleles in output, not only those which are called."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--report_monomorphic"
+      description: "Report even loci which appear to be monomorphic, and report all\
+        \ considered alleles, even those which are not in called genotypes."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "double"
+      name: "--pvar"
+      description: "Report sites if the probability that there is a polymorphism at\
+        \ the site is greater than N. Note that post-filtering is generally recommended\
+        \ over the use of this parameter."
+      info: null
+      default:
+      - 0.0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--strict_vcf"
+      description: "Generate strict VCF format (FORMAT/GQ will be an int)."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "double"
+      name: "--theta"
+      description: "The expected mutation rate or pairwise nucleotide diversity among\
+        \ the population under analysis. This serves as the single parameter to the\
+        \ Ewens Sampling Formula prior model."
+      info: null
+      default:
+      - 0.001
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--ploidy"
+      description: "Sets the default ploidy for the analysis to N."
+      info: null
+      default:
+      - 2
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--pooled_discrete"
+      description: "Assume that samples result from pooled sequencing. Model pooled\
+        \ samples using discrete genotypes across pools."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--pooled_continuous"
+      description: "Output all alleles which pass input filters, regardles of genotyping\
+        \ outcome or model."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--use_reference_allele"
+      description: "This flag includes the reference allele in the analysis as if\
+        \ it is another sample from the same population."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "string"
+      name: "--reference_quality"
+      description: "Assign mapping quality of MQ to the reference allele at each site\
+        \ and base quality of BQ."
+      info: null
+      default:
+      - "100,60"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--throw_away_snp_obs"
+      description: "Ignore SNP alleles."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_false"
+      name: "--throw_away_mnps_obs"
+      description: "Ignore multi-nuceotide polymorphisms, MNPs. MNPs are excluded\
+        \ as default."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_false"
+      name: "--throw_away_indel_obs"
+      description: "Ignore insertion and deletion alleles. Indels are excluded as\
+        \ default."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_false"
+      name: "--throw_away_complex_obs"
+      description: "Ignore complex events (composites of other classes). Complex are\
+        \ excluded as default"
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "integer"
+      name: "--use_best_n_alleles"
+      description: "Evaluate only the best N SNP alleles, ranked by sum of supporting\
+        \ quality scores."
+      info: null
+      default:
+      - 0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--max_complex_gap"
+      description: "Allow haplotype calls with contiguous embedded matches of up to\
+        \ this length."
+      info: null
+      default:
+      - 3
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_repeat_size"
+      description: "When assembling observations across repeats, require the total\
+        \ repeat length at least this many bp."
+      info: null
+      default:
+      - 5
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_repeat_entropy"
+      description: "To detect interrupted repeats, build across sequence until it\
+        \ has entropy > N bits per bp. Set to 0 to turn off."
+      info: null
+      default:
+      - 1
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--no_partial_observations"
+      description: "Exclude observations which do not fully span the dynamically-determined\
+        \ detection window.  (default, use all observations, dividing partial support\
+        \ across matching haplotypes when generating haplotypes.)"
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--dont_left_align_indels"
+      description: "Turn off left-alignment of indels, which is enabled by default."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--use_duplicate_reads"
+      description: "Include duplicate-marked alignments in the analysis. default:\
+        \ exclude duplicates marked as such in alignments"
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "integer"
+      name: "--min_mapping_quality"
+      description: "Exclude alignments from analysis if they have a mapping quality\
+        \ less than Q."
+      info: null
+      default:
+      - 1
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_base_quality"
+      description: "Exclude alleles from analysis if their supporting base quality\
+        \ is less than Q. Default value is changed according to the instruction of\
+        \ scSplit."
+      info: null
+      default:
+      - 1
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_supporting_allele_qsum"
+      description: "Consider any allele in which the sum of qualities of supporting\
+        \ observations is at least Q."
+      info: null
+      default:
+      - 0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_supporting_mapping_qsum"
+      description: "Consider any allele in which and the sum of mapping qualities\
+        \ of supporting reads is at least."
+      info: null
+      default:
+      - 0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--mismatch_base_quality_threshold"
+      description: "Count mismatches toward --read-mismatch-limit if the base quality\
+        \ of the mismatch is >= Q."
+      info: null
+      default:
+      - 10
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--read_max_mismatch_fraction"
+      description: "Exclude reads with more than N mismatches where each mismatch\
+        \ has base quality >= mismatch-base-quality-threshold."
+      info: null
+      default:
+      - 1.0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--read_mismatch_limit"
+      description: "Exclude reads with more than N [0,1] fraction of mismatches where\
+        \ each mismatch has base quality >= mismatch-base-quality-threshold."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--read_snp_limit"
+      description: "Exclude reads with more than N base mismatches, ignoring gaps\
+        \ with quality >= mismatch-base-quality-threshold."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--read_indel_limit"
+      description: "Exclude reads with more than N separate gaps."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--standard_filters"
+      description: "Use stringent input base and mapping quality filters, equivalent\
+        \ to -m 30 -q 20 -R 0 -S 0"
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "double"
+      name: "--min_alternate_fraction"
+      description: "Require at least this fraction of observations supporting an alternate\
+        \ allele within a single individual in order to evaluate the position."
+      info: null
+      default:
+      - 0.05
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_alternate_count"
+      description: "Require at least this count of observations supporting an alternate\
+        \ allele within a single individual in order to evaluate the position."
+      info: null
+      default:
+      - 2
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_alternate_qsum"
+      description: "Require at least this sum of quality of observations supporting\
+        \ an alternate allele within a single individual in order to evaluate the\
+        \ position."
+      info: null
+      default:
+      - 0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_alternate_total"
+      description: "Require at least this count of observations supporting an alternate\
+        \ allele within the total population in order to use the allele in analysis."
+      info: null
+      default:
+      - 1
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_coverage"
+      description: "Require at least this coverage to process a site."
+      info: null
+      default:
+      - 0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--max_coverage"
+      description: "Do not process sites with greater than this coverage."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--no_population_priors"
+      description: "Equivalent to --pooled-discrete --hwe-priors-off and removal of\
+        \ Ewens Sampling Formula component of priors."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--hwe_priors_off"
+      description: "Disable estimation of the probability of the combination arising\
+        \ under HWE given the allele frequency as estimated by observation frequency."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--binomial_obs_priors_off"
+      description: "Disable incorporation of prior expectations about observations.\
+        \ Uses read placement probability, strand balance probability, and read position\
+        \ probability."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--allele_balance_priors_off"
+      description: "Disable use of aggregate probability of observation balance between\
+        \ alleles as a component of the priors."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "file"
+      name: "--observation_bias"
+      description: "Read length-dependent allele observation biases from FILE. The\
+        \ format is [length] [alignment efficiency relative to reference] where the\
+        \ efficiency is 1 if there is no relative observation bias."
+      info: null
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--base_quality_cap"
+      description: "Limit estimated observation quality by capping base quality at\
+        \ Q."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--prob_contamination"
+      description: "An estimate of contamination to use for all samples."
+      info: null
+      default:
+      - 1.0E-8
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--legacy_gls"
+      description: "Use legacy (polybayes equivalent) genotype likelihood calculations"
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "file"
+      name: "--contamination_estimates"
+      description: "A file containing per-sample estimates of contamination, such\
+        \ as those generated by VerifyBamID."
+      info: null
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--report_genotype_likelihood_max"
+      description: "Report genotypes using the maximum-likelihood estimate provided\
+        \ from genotype likelihoods."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "integer"
+      name: "--genotyping_max_iterations"
+      description: "Iterate no more than N times during genotyping step."
+      info: null
+      default:
+      - 1000
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--genotyping_max_banddepth"
+      description: "Integrate no deeper than the Nth best genotype by likelihood when\
+        \ genotyping."
+      info: null
+      default:
+      - 6
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--posterior_integration_limits"
+      description: "Integrate all genotype combinations in our posterior space which\
+        \ include no more than N samples with their Mth best data likelihood."
+      info: null
+      default:
+      - "1,3"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--exclude_unobserved_genotypes"
+      description: "Skip sample genotypings for which the sample has no supporting\
+        \ reads."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "integer"
+      name: "--genotype_variant_threshold"
+      description: "Limit posterior integration to samples where the second-best genotype\
+        \ likelihood is no more than log(N) from the highest genotype likelihood for\
+        \ the sample."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--use_mapping_quality"
+      description: "Use mapping quality of alleles when calculating data likelihoods."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--harmonic_indel_quality"
+      description: "Use a weighted sum of base qualities around an indel, scaled by\
+        \ the distance from the indel. By default use a minimum BQ in flanking sequence."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "double"
+      name: "--read_dependence_factor"
+      description: "Incorporate non-independence of reads by scaling successive observations\
+        \ by this factor during data likelihood calculations."
+      info: null
+      default:
+      - 0.9
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--genotype_qualities"
+      description: "Calculate the marginal probability of genotypes and report as\
+        \ GQ in each sample field in the VCF output."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--debug"
+      description: "Print debugging output."
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--dd"
+      description: "Print more verbose debugging output"
+      info: null
+      direction: "input"
+      dest: "par"
+  - name: "Output"
+    arguments:
+    - type: "file"
+      name: "--output"
+      alternatives:
+      - "-o"
+      description: "Output directory"
+      info: null
+      example:
+      - "freebayes_out"
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--vcf"
+      description: "Output VCF-format results to FILE."
+      info: null
+      example:
+      - "snp.vcf"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  resources:
+  - type: "bash_script"
+    path: "script.sh"
+    is_executable: true
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Freebayes is a Bayesian genetic variant detector designed to\nfind\
+    \ small polymorphisms, specifically SNPs.\n"
+  test_resources:
+  - type: "bash_script"
+    path: "test.sh"
+    is_executable: true
+  - type: "file"
+    path: "../../../resources_test/demuxafy_test_data"
+  - type: "file"
+    path: "../../../resources_test/cellranger_tiny_fastq"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "ubuntu:22.04"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  target_tag: "integration_build"
+  namespace_separator: "/"
+  resolve_volume: "Automatic"
+  chown: true
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "apt"
+    packages:
+    - "freebayes"
+    interactive: false
+  entrypoint: []
+  cmd: null
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "highmem"
+    - "highcpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/genetic_demux/freebayes/config.vsh.yaml"
+  platform: "docker"
+  output: "/home/runner/work/openpipeline/openpipeline/target/docker/genetic_demux/freebayes"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/docker/genetic_demux/freebayes/freebayes"
+  viash_version: "0.8.6"
+  git_commit: "fc322f5ade6f2b0cff684e0ef3acae51836839b2"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"

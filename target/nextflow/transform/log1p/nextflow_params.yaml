@@ -3,7 +3,7 @@ input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # input_layer: "foo"
 # output_layer: "foo"
-# output: "output.h5mu"
+# output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
 # base: 2.0
 

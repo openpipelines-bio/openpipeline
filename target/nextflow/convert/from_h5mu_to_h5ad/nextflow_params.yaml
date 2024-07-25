@@ -1,7 +1,7 @@
 # Arguments
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-# output: "output.h5ad"
+# output: "$id.$key.output.h5ad"
 output_compression: "gzip"
 
 # Nextflow input-output arguments

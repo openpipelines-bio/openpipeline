@@ -1,7 +1,7 @@
 # Arguments
 input: # please fill in - example: "input.h5mu"
 modality: "prot"
-# output: "output.h5mu"
+# output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
 # input_layer: "foo"
 # output_layer: "foo"

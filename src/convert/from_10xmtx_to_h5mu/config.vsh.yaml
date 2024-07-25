@@ -1,51 +1,47 @@
-name: "from_10xmtx_to_h5mu"
-namespace: "convert"
-description: |
-  Converts a 10x mtx into an h5mu file.
-authors:
-  - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer ]
-arguments:
-  - name: "--input"
-    alternatives: ["-i"]
-    type: file
-    description: Input mtx folder
-    example: input_dir_containing_gz_files
-    direction: input
-    required: true
-  - name: "--output"
-    alternatives: ["-o"]
-    type: file
-    description: Output h5mu file.
-    example: output.h5mu
-    direction: output
-  - name: "--output_compression"
-    type: string
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
-resources:
-  - type: python_script
-    path: script.py
-  - path: /src/utils/setup_logger.py
-test_resources:
-  - type: python_script
-    path: run_test.py
-  - path: /resources_test/pbmc_1k_protein_v3
-
-engines:
-- type: docker
-  image: python:3.9-slim
-  setup:
-    - type: apt
-      packages: 
-        - procps
-    - type: python
-      __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
-  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
-
-runners:
-- type: executable
-- type: nextflow
-  directives:
-    label: [lowmem, singlecpu]
+functionality:
+  name: "from_10xmtx_to_h5mu"
+  namespace: "convert"
+  description: |
+    Converts a 10x mtx into an h5mu file.
+  authors:
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input mtx folder
+      example: input_dir_containing_gz_files
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file.
+      example: output.h5mu
+      direction: output
+    - name: "--output_compression"
+      type: string
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
+  resources:
+    - type: python_script
+      path: script.py
+    - path: /src/utils/setup_logger.py
+  test_resources:
+    - type: python_script
+      path: run_test.py
+    - path: /resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.8-slim
+    setup:
+      - type: apt
+        packages: 
+          - procps
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+  - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]

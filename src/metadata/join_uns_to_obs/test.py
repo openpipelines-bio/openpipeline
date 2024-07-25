@@ -7,7 +7,7 @@ from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
-    'executable': './target/executable/metadata/join_uns_to_obs/join_uns_to_obs',
+    'executable': './target/docker/metadata/join_uns_to_obs/join_uns_to_obs',
     'config': './src/metadata/join_uns_to_obs/config.vsh.yml'
 }
 ## VIASH END

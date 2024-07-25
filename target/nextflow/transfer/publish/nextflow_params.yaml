@@ -1,6 +1,6 @@
 # Arguments
 input: # please fill in - example: "path/to/file"
-# output: "$id.$key.output"
+# output: "$id.$key.output.output"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

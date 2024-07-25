@@ -1,96 +1,94 @@
-name: grep_annotation_column
-namespace: "metadata"
-description: |
-  Perform a regex lookup on a column from the annotation matrices .obs or .var.
-  The annotation matrix can originate from either a modality, or all modalities (global .var or .obs).
-authors:
-  - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
-argument_groups:
-  - name: Inputs
-    description: Arguments related to the input dataset.
-    arguments:
-      - name: "--input"
-        alternatives: ["-i"]
-        type: file
-        description: Path to the input .h5mu.
-        required: true
-        example: sample_path
-      - name: "--input_column"
-        type: string
-        required: false
-        description: "Column to query. If not specified, use .var_names or .obs_names, depending on the value of --matrix"
-      - name: "--input_layer"
-        type: string
-        required: false
-        description: |
-          Input data to use when calculating fraction of observations that match with the query. 
-          Only used when --output_fraction_column is provided. If not specified, .X is used.
-      - name: "--modality"
-        description: |
-          Which modality to get the annotation matrix from.
-        type: string
-        required: true
-        example: "rna"
-      - name: "--matrix"
-        type: string
-        description: "Matrix to fetch the column from that will be searched."
-        choices: ["var", "obs"]
-        example: "var"
-  - name: Outputs
-    description: Arguments related to how the output will be written.
-    arguments:
-      - name: "--output"
-        alternatives: ["-o"]
-        type: file
-        direction: output
-        example: "output.h5mu"
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
-      - name: "--output_match_column"
-        type: string
-        required: true
-        description: "Name of the column to write the result to."
-      - name: "--output_fraction_column"
-        type: string
-        required: false
-        description: | 
-          For the opposite axis, name of the column to write the fraction of 
-          observations that matches to the pattern.
-  - name: Query options
-    description: Options related to the query
-    arguments:
-      - name: "--regex_pattern"
-        description: "Regex to use to match with the input column."
-        type: string
-        example: "^[mM][tT]-"
-        required: true
-
-resources:
-  - type: python_script
-    path: script.py
-test_resources:
-  - type: python_script
-    path: test.py
-  - path: /resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
-
-engines:
-- type: docker
-  image: python:3.11-slim
-  setup:
-    - type: apt
-      packages: 
-        - procps
-    - type: python
-      __merge__: /src/base/requirements/anndata_mudata.yaml
-  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
-
-runners:  
-- type: executable
-- type: nextflow
-  directives:
-    label: [ singlecpu, lowmem ]
+functionality:
+  name: grep_annotation_column
+  namespace: "metadata"
+  description: |
+    Perform a regex lookup on a column from the annotation matrices .obs or .var.
+    The annotation matrix can originate from either a modality, or all modalities (global .var or .obs).
+  authors:
+    - __merge__: /src/authors/dries_schaumont.yaml
+      roles: [ maintainer ]
+  argument_groups:
+    - name: Inputs
+      description: Arguments related to the input dataset.
+      arguments:
+        - name: "--input"
+          alternatives: ["-i"]
+          type: file
+          description: Path to the input .h5mu.
+          required: true
+          example: sample_path
+        - name: "--input_column"
+          type: string
+          required: false
+          description: "Column to query. If not specified, use .var_names or .obs_names, depending on the value of --matrix"
+        - name: "--input_layer"
+          type: string
+          required: false
+          description: |
+            Input data to use when calculating fraction of observations that match with the query. 
+            Only used when --output_fraction_column is provided. If not specified, .X is used.
+        - name: "--modality"
+          description: |
+            Which modality to get the annotation matrix from.
+          type: string
+          required: true
+          example: "rna"
+        - name: "--matrix"
+          type: string
+          description: "Matrix to fetch the column from that will be searched."
+          choices: ["var", "obs"]
+          example: "var"
+    - name: Outputs
+      description: Arguments related to how the output will be written.
+      arguments:
+        - name: "--output"
+          alternatives: ["-o"]
+          type: file
+          direction: output
+          example: "output.h5mu"
+        - name: "--output_compression"
+          type: string
+          description: The compression format to be used on the output h5mu object.
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
+        - name: "--output_match_column"
+          type: string
+          required: true
+          description: "Name of the column to write the result to."
+        - name: "--output_fraction_column"
+          type: string
+          required: false
+          description: | 
+            For the opposite axis, name of the column to write the fraction of 
+            observations that matches to the pattern.
+    - name: Query options
+      description: Options related to the query
+      arguments:
+        - name: "--regex_pattern"
+          description: "Regex to use to match with the input column."
+          type: string
+          example: "^[mM][tT]-"
+          required: true
+ 
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
+platforms:
+  - type: docker
+    image: python:3.11-slim
+    setup:
+      - type: apt
+        packages: 
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+  - type: native
+  - type: nextflow
+    directives:
+      label: [ singlecpu, lowmem ]

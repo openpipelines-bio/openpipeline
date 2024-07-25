@@ -1,49 +1,46 @@
-name: "from_bd_to_10x_molecular_barcode_tags"
-namespace: "convert"
-description: |
-  Convert the molecular barcode sequence SAM tag from BD format (MA) to 10X format (UB).
-authors:
-  - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
-arguments:
-  - name: "--input"
-    alternatives: ["-i"]
-    type: file
-    must_exist: true
-    description: Input SAM or BAM file.
-    example: input.bam
-    direction: input
-    required: true
-  - name: "--output"
-    alternatives: ["-o"]
-    type: file
-    description: Output alignment file.
-    example: output.sam
-    direction: output
-  - name: "--bam"
-    type: boolean_true
-    description: Output a BAM file.
-  - name: "--threads"
-    alternatives: ["-t"]
-    type: integer
-    description: Number of threads
-resources:
-  - type: bash_script
-    path: script.sh
-test_resources:
-  - type: bash_script
-    path: run_test.sh
-  - path: /resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw
-
-engines:
-- type: docker
-  image: ubuntu:latest
-  setup:
-    - type: apt
-      packages: [ samtools ]
-
-runners:
-  - type: executable
+functionality:
+  name: "from_bd_to_10x_molecular_barcode_tags"
+  namespace: "convert"
+  description: |
+    Convert the molecular barcode sequence SAM tag from BD format (MA) to 10X format (UB).
+  authors:
+    - __merge__: /src/authors/dries_schaumont.yaml
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      must_exist: true
+      description: Input SAM or BAM file.
+      example: input.bam
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output alignment file.
+      example: output.sam
+      direction: output
+    - name: "--bam"
+      type: boolean_true
+      description: Output a BAM file.
+    - name: "--threads"
+      alternatives: ["-t"]
+      type: integer
+      description: Number of threads
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    - type: bash_script
+      path: run_test.sh
+    - path: /resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw
+platforms:
+  - type: docker
+    image: ubuntu:latest
+    setup:
+      - type: apt
+        packages: [ samtools ]
   - type: nextflow
     directives:
       label: [lowmem, singlecpu]

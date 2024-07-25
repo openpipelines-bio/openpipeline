@@ -1,66 +1,63 @@
-name: cellranger_count_split
-namespace: mapping
-description: Split 10x Cell Ranger output directory into separate output fields.
-authors:
-  - __merge__: /src/authors/angela_pisco.yaml
-    roles: [ author ]
-  - __merge__: /src/authors/samuel_d_souza.yaml
-    roles: [ author ]
-  - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
-arguments:
-  - name: --input
-    type: file
-    required: true
-    example: input_dir
-    description: Output directory from a Cell Ranger count run.
-  - name: --filtered_h5
-    type: file
-    direction: output
-    required: false
-    # description: Counts in AnnData format.
-    example: filtered_feature_bc_matrix.h5
-  - name: --metrics_summary
-    type: file
-    direction: output
-    required: false
-    # description: Counts in AnnData format.
-    example: metrics_summary.csv
-  - name: --molecule_info
-    type: file
-    direction: output
-    required: false
-    # description: Counts in AnnData format.
-    example: molecule_info.h5
-  - name: --bam
-    type: file
-    direction: output
-    required: false
-    # description: Counts in AnnData format.
-    example: possorted_genome_bam.bam
-  - name: --bai
-    type: file
-    direction: output
-    required: false
-    # description: Counts in AnnData format.
-    example: possorted_genome_bam.bam.bai
-  - name: --raw_h5
-    type: file
-    direction: output
-    required: false
-    # description: Counts in AnnData format.
-    example: raw_feature_bc_matrix.h5
-resources:
-  - type: bash_script
-    path: script.sh
-
-engines:
-- type: docker
-  image: "ubuntu:jammy"
-  setup:
-    - type: docker
-      run: apt update && apt upgrade -y
-
-runners:
-- type: executable
-- type: nextflow
+functionality:
+  name: cellranger_count_split
+  namespace: mapping
+  description: Split 10x Cell Ranger output directory into separate output fields.
+  authors:
+    - __merge__: /src/authors/angela_pisco.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/samuel_d_souza.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ author, maintainer ]
+  arguments:
+    - name: --input
+      type: file
+      required: true
+      example: input_dir
+      description: Output directory from a Cell Ranger count run.
+    - name: --filtered_h5
+      type: file
+      direction: output
+      required: false
+      # description: Counts in AnnData format.
+      example: filtered_feature_bc_matrix.h5
+    - name: --metrics_summary
+      type: file
+      direction: output
+      required: false
+      # description: Counts in AnnData format.
+      example: metrics_summary.csv
+    - name: --molecule_info
+      type: file
+      direction: output
+      required: false
+      # description: Counts in AnnData format.
+      example: molecule_info.h5
+    - name: --bam
+      type: file
+      direction: output
+      required: false
+      # description: Counts in AnnData format.
+      example: possorted_genome_bam.bam
+    - name: --bai
+      type: file
+      direction: output
+      required: false
+      # description: Counts in AnnData format.
+      example: possorted_genome_bam.bam.bai
+    - name: --raw_h5
+      type: file
+      direction: output
+      required: false
+      # description: Counts in AnnData format.
+      example: raw_feature_bc_matrix.h5
+  resources:
+    - type: bash_script
+      path: script.sh
+platforms:
+  - type: docker
+    image: "ubuntu:jammy"
+    setup:
+      - type: docker
+        run: apt update && apt upgrade -y
+  - type: nextflow

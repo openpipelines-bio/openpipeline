@@ -1,65 +1,62 @@
-name: make_reference
-namespace: reference
-description: |
-  Preprocess and build a transcriptome reference.
+functionality:
+  name: make_reference
+  namespace: reference
+  description: |
+    Preprocess and build a transcriptome reference.
 
-  Example input files are:
-    - `genome_fasta`: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz
-    - `transcriptome_gtf`: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz
-    - `ercc`: https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip
-authors:
-  - __merge__: /src/authors/angela_pisco.yaml
-    roles: [ author ]
-  - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
-arguments:
-  # inputs
-  - type: file
-    name: --genome_fasta
-    required: true
-    description: "Reference genome fasta. Example: "
-    example: genome_fasta.fa.gz
-  - type: file
-    name: --transcriptome_gtf
-    required: true
-    description: Reference transcriptome annotation.
-    example: transcriptome.gtf.gz
-  - type: file
-    name: --ercc
-    description: ERCC sequence and annotation file.
-    example: ercc.zip
-  - type: string
-    name: --subset_regex
-    description: Will subset the reference chromosomes using the given regex.
-    example: (ERCC-00002|chr1)
-  - type: file
-    name: --output_fasta
-    direction: output
-    required: true
-    description: Output genome sequence fasta.
-    example: genome_sequence.fa.gz
-  - type: file
-    name: --output_gtf
-    direction: output
-    required: true
-    description: Output transcriptome annotation gtf.
-    example: transcriptome_annotation.gtf.gz
-resources:
-  - type: bash_script
-    path: script.sh
-test_resources:
-  - type: bash_script
-    path: run_test.sh
-
-engines:
-- type: docker
-  image: ubuntu:22.04
-  setup:
-    - type: apt
-      packages: [ pigz, seqkit, curl, wget, unzip ]
-
-runners:
-- type: executable
-- type: nextflow
-  directives:
-    label: [ highmem, highcpu ]
+    Example input files are:
+      - `genome_fasta`: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz
+      - `transcriptome_gtf`: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz
+      - `ercc`: https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip
+  authors:
+    - __merge__: /src/authors/angela_pisco.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ author, maintainer ]
+  arguments:
+    # inputs
+    - type: file
+      name: --genome_fasta
+      required: true
+      description: "Reference genome fasta. Example: "
+      example: genome_fasta.fa.gz
+    - type: file
+      name: --transcriptome_gtf
+      required: true
+      description: Reference transcriptome annotation.
+      example: transcriptome.gtf.gz
+    - type: file
+      name: --ercc
+      description: ERCC sequence and annotation file.
+      example: ercc.zip
+    - type: string
+      name: --subset_regex
+      description: Will subset the reference chromosomes using the given regex.
+      example: (ERCC-00002|chr1)
+    - type: file
+      name: --output_fasta
+      direction: output
+      required: true
+      description: Output genome sequence fasta.
+      example: genome_sequence.fa.gz
+    - type: file
+      name: --output_gtf
+      direction: output
+      required: true
+      description: Output transcriptome annotation gtf.
+      example: transcriptome_annotation.gtf.gz
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    - type: bash_script
+      path: run_test.sh
+platforms:
+  - type: docker
+    image: ubuntu:22.04
+    setup:
+      - type: apt
+        packages: [ pigz, seqkit, curl, wget, unzip ]
+  - type: nextflow
+    directives:
+      label: [ highmem, highcpu ]

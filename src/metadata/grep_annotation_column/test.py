@@ -17,7 +17,7 @@ from itertools import permutations, islice
 
 ## VIASH START
 meta = {
-    'executable': './target/executable/metadata/grep_annotation_column/grep_annotation_column',
+    'executable': './target/docker/metadata/grep_annotation_column/grep_annotation_column',
     'resources_dir': './resources_test/concat_test_data/',
     'cpus': 2,
     'config': './src/metadata/grep_annotation_column/config.vsh.yaml'

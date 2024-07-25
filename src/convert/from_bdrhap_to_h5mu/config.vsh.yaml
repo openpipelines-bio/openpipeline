@@ -1,59 +1,56 @@
-name: "from_bdrhap_to_h5mu"
-namespace: "convert"
-description: |
-  Convert the output of a BD Rhapsody WTA pipeline to a MuData h5 file.
-authors:
-  - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer ]
-argument_groups:
-  - name: Inputs
-    arguments:
-      - name: "--id"
-        type: string
-        description: "A sample ID."
-        example: my_id
-        required: true
-      - name: "--input"
-        alternatives: [-i]
-        type: file
-        description: The output of a BD Rhapsody workflow.
-        required: true
-        example: input_dir/
-  - name: Outputs
-    arguments:
-      - name: "--output"
-        alternatives: [-o]
-        direction: output
-        type: file
-        description: "Output h5mu file."
-        required: true
-        example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
-resources:
-  - type: r_script
-    path: script.R
-test_resources:
-  - type: python_script
-    path: run_test.py
-  - path: /resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw
-
-engines:
-- type: docker
-  image: ghcr.io/data-intuitive/randpy:r4.2_py3.9
-  setup:
-    - type: docker
-      run: apt update && apt upgrade -y
-    - type: python
-      __merge__: /src/base/requirements/anndata_mudata.yaml
-    - type: r
-      cran: anndata
-  __merge__: [ /src/base/requirements/python_test_setup.yaml ]
-runners:
-- type: executable
-- type: nextflow
-  directives:
-    label: [lowmem, singlecpu]
+functionality:
+  name: "from_bdrhap_to_h5mu"
+  namespace: "convert"
+  description: |
+    Convert the output of a BD Rhapsody WTA pipeline to a MuData h5 file.
+  authors:
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ maintainer ]
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--id"
+          type: string
+          description: "A sample ID."
+          example: my_id
+          required: true
+        - name: "--input"
+          alternatives: [-i]
+          type: file
+          description: The output of a BD Rhapsody workflow.
+          required: true
+          example: input_dir/
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          alternatives: [-o]
+          direction: output
+          type: file
+          description: "Output h5mu file."
+          required: true
+          example: output.h5mu
+        - name: "--output_compression"
+          type: string
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
+  resources:
+    - type: r_script
+      path: script.R
+  test_resources:
+    - type: python_script
+      path: run_test.py
+    - path: /resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw
+platforms:
+  - type: docker
+    image: ghcr.io/data-intuitive/randpy:r4.2_py3.9
+    setup:
+      - type: docker
+        run: apt update && apt upgrade -y
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+      - type: r
+        cran: anndata
+  - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]

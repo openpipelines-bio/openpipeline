@@ -1,83 +1,80 @@
-name: join_csv
-namespace: "metadata"
-description: "Join a csv containing metadata to the .obs or .var field of a mudata file."
-authors:
-  - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ author ]
-argument_groups:
-  - name: "MuData Input"
-    arguments:
-      - name: "--input"
-        alternatives: ["-i"]
-        type: file
-        description: Input h5mu file
-        direction: input
-        required: true
-        example: input.h5mu
-      - name: "--modality"
-        type: string
-        default: "rna"
-        required: false
-      - name: "--obs_key"
-        type: string
-        description: |
-          Obs column name where the sample id can be found for each observation to join on.
-          Useful when adding metadata to concatenated samples.
-          Mutually exclusive with `--var_key`."
-      - name: "--var_key"
-        type: string
-        description: |
-          Var column name where the sample id can be found for each variable to join on.
-          Mutually exclusive with `--obs_key`."
-  - name: "MuData Output"
-    arguments:
-      - name: "--output"
-        alternatives: ["-o"]
-        type: file
-        description: Output h5mu file.
-        direction: output
-        required: true
-        example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
-  - name: "Metadata Input"
-    arguments:
-      - name: "--input_csv"
-        type: file
-        required: true
-        direction: input
-        description: ".csv file containing metadata"
-        example: metadata.csv
-      - name: "--csv_key"
-        type: string
-        required: false
-        default: "id"
-        description: "column of the the csv that corresponds to the sample id."
-resources:
-  - type:  python_script
-    path: script.py
-  - path: /src/utils/setup_logger.py
-test_resources:
-  - type: python_script
-    path: test.py
-
-engines:
-- type: docker
-  image: python:3.10-slim
-  setup:
-    - type: apt
-      packages: 
-        - procps
-    - type: python
-      __merge__: /src/base/requirements/anndata_mudata.yaml
-  __merge__: [/src/base/requirements/python_test_setup.yaml, .]
-
-runners:
-- type: executable 
-- type: nextflow
-  directives:
-    label: [ singlecpu, lowmem ]
+functionality:
+  name: join_csv
+  namespace: "metadata"
+  description: "Join a csv containing metadata to the .obs or .var field of a mudata file."
+  authors:
+    - __merge__: /src/authors/dries_schaumont.yaml
+      roles: [ author ]
+  argument_groups:
+    - name: "MuData Input"
+      arguments:
+        - name: "--input"
+          alternatives: ["-i"]
+          type: file
+          description: Input h5mu file
+          direction: input
+          required: true
+          example: input.h5mu
+        - name: "--modality"
+          type: string
+          default: "rna"
+          required: false
+        - name: "--obs_key"
+          type: string
+          description: |
+            Obs column name where the sample id can be found for each observation to join on.
+            Useful when adding metadata to concatenated samples.
+            Mutually exclusive with `--var_key`."
+        - name: "--var_key"
+          type: string
+          description: |
+            Var column name where the sample id can be found for each variable to join on.
+            Mutually exclusive with `--obs_key`."
+    - name: "MuData Output"
+      arguments:
+        - name: "--output"
+          alternatives: ["-o"]
+          type: file
+          description: Output h5mu file.
+          direction: output
+          required: true
+          example: output.h5mu
+        - name: "--output_compression"
+          type: string
+          description: The compression format to be used on the output h5mu object.
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
+    - name: "Metadata Input"
+      arguments:
+        - name: "--input_csv"
+          type: file
+          required: true
+          direction: input
+          description: ".csv file containing metadata"
+          example: metadata.csv
+        - name: "--csv_key"
+          type: string
+          required: false
+          default: "id"
+          description: "column of the the csv that corresponds to the sample id."
+  resources:
+    - type:  python_script
+      path: script.py
+    - path: /src/utils/setup_logger.py
+  test_resources:
+    - type: python_script
+      path: test.py
+platforms:
+  - type: docker
+    image: python:3.10-slim
+    setup:
+      - type: apt
+        packages: 
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+    __merge__: [/src/base/requirements/python_test_setup.yaml, .]
+  - type: nextflow
+    directives:
+      label: [ singlecpu, lowmem ]

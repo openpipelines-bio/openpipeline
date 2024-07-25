@@ -1,8 +1,7 @@
-name: "fastqc"
-namespace: "qc"
-version: "integration_build"
-argument_groups:
-- name: "Arguments"
+functionality:
+  name: "fastqc"
+  namespace: "qc"
+  version: "integration_build"
   arguments:
   - type: "string"
     name: "--mode"
@@ -18,7 +17,8 @@ argument_groups:
     - "dir"
     direction: "input"
     multiple: false
-    multiple_sep: ";"
+    multiple_sep: ":"
+    dest: "par"
   - type: "file"
     name: "--input"
     alternatives:
@@ -32,7 +32,8 @@ argument_groups:
     required: true
     direction: "input"
     multiple: false
-    multiple_sep: ";"
+    multiple_sep: ":"
+    dest: "par"
   - type: "file"
     name: "--output"
     alternatives:
@@ -46,7 +47,8 @@ argument_groups:
     required: true
     direction: "output"
     multiple: false
-    multiple_sep: ";"
+    multiple_sep: ":"
+    dest: "par"
   - type: "integer"
     name: "--threads"
     alternatives:
@@ -57,35 +59,52 @@ argument_groups:
     required: false
     direction: "input"
     multiple: false
-    multiple_sep: ";"
-resources:
-- type: "bash_script"
-  path: "script.sh"
-  is_executable: true
-- type: "file"
-  path: "nextflow_labels.config"
-  dest: "nextflow_labels.config"
-description: "Fastqc component, please see https://www.bioinformatics.babraham.ac.uk/projects/fastqc/.\
-  \ This component can take one or more files (by means of shell globbing) or a complete\
-  \ directory.\n"
-test_resources:
-- type: "bash_script"
-  path: "test.sh"
-  is_executable: true
-- type: "file"
-  path: "cellranger_tiny_fastq"
-- type: "file"
-  path: "openpipelinetestutils"
-  dest: "openpipelinetestutils"
-info: null
-status: "enabled"
-links:
-  repository: "https://github.com/openpipelines-bio/openpipeline"
-  docker_registry: "ghcr.io"
-runners:
-- type: "executable"
-  id: "executable"
-  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+    multiple_sep: ":"
+    dest: "par"
+  resources:
+  - type: "bash_script"
+    path: "script.sh"
+    is_executable: true
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Fastqc component, please see https://www.bioinformatics.babraham.ac.uk/projects/fastqc/.\
+    \ This component can take one or more files (by means of shell globbing) or a\
+    \ complete directory.\n"
+  test_resources:
+  - type: "bash_script"
+    path: "test.sh"
+    is_executable: true
+  - type: "file"
+    path: "resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "ubuntu:22.04"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  target_tag: "integration_build"
+  namespace_separator: "/"
+  resolve_volume: "Automatic"
+  chown: true
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "apt"
+    packages:
+    - "fastqc"
+    interactive: false
+  entrypoint: []
+  cmd: null
 - type: "nextflow"
   id: "nextflow"
   directives:
@@ -100,44 +119,26 @@ runners:
     publish: false
   config:
     labels:
-      mem1gb: "memory = 1000000000.B"
-      mem2gb: "memory = 2000000000.B"
-      mem5gb: "memory = 5000000000.B"
-      mem10gb: "memory = 10000000000.B"
-      mem20gb: "memory = 20000000000.B"
-      mem50gb: "memory = 50000000000.B"
-      mem100gb: "memory = 100000000000.B"
-      mem200gb: "memory = 200000000000.B"
-      mem500gb: "memory = 500000000000.B"
-      mem1tb: "memory = 1000000000000.B"
-      mem2tb: "memory = 2000000000000.B"
-      mem5tb: "memory = 5000000000000.B"
-      mem10tb: "memory = 10000000000000.B"
-      mem20tb: "memory = 20000000000000.B"
-      mem50tb: "memory = 50000000000000.B"
-      mem100tb: "memory = 100000000000000.B"
-      mem200tb: "memory = 200000000000000.B"
-      mem500tb: "memory = 500000000000000.B"
-      mem1gib: "memory = 1073741824.B"
-      mem2gib: "memory = 2147483648.B"
-      mem4gib: "memory = 4294967296.B"
-      mem8gib: "memory = 8589934592.B"
-      mem16gib: "memory = 17179869184.B"
-      mem32gib: "memory = 34359738368.B"
-      mem64gib: "memory = 68719476736.B"
-      mem128gib: "memory = 137438953472.B"
-      mem256gib: "memory = 274877906944.B"
-      mem512gib: "memory = 549755813888.B"
-      mem1tib: "memory = 1099511627776.B"
-      mem2tib: "memory = 2199023255552.B"
-      mem4tib: "memory = 4398046511104.B"
-      mem8tib: "memory = 8796093022208.B"
-      mem16tib: "memory = 17592186044416.B"
-      mem32tib: "memory = 35184372088832.B"
-      mem64tib: "memory = 70368744177664.B"
-      mem128tib: "memory = 140737488355328.B"
-      mem256tib: "memory = 281474976710656.B"
-      mem512tib: "memory = 562949953421312.B"
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
       cpu1: "cpus = 1"
       cpu2: "cpus = 2"
       cpu5: "cpus = 5"
@@ -152,45 +153,11 @@ runners:
     - "includeConfig(\"nextflow_labels.config\")"
   debug: false
   container: "docker"
-engines:
-- type: "docker"
-  id: "docker"
-  image: "ubuntu:22.04"
-  target_tag: "integration_build"
-  namespace_separator: "/"
-  setup:
-  - type: "apt"
-    packages:
-    - "fastqc"
-    interactive: false
-  entrypoint: []
-  cmd: null
-build_info:
-  config: "src/qc/fastqc/config.vsh.yaml"
-  runner: "nextflow"
-  engine: "docker"
-  output: "target/nextflow/qc/fastqc"
-  executable: "target/nextflow/qc/fastqc/main.nf"
-  viash_version: "0.9.0-RC6"
-  git_commit: "00bf5236d2a5816bae5b57647ef123107a42a16b"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/qc/fastqc/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/fastqc"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/fastqc/fastqc"
+  viash_version: "0.8.6"
+  git_commit: "fc322f5ade6f2b0cff684e0ef3acae51836839b2"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-package_config:
-  version: "dev"
-  info: null
-  viash_version: "0.9.0-RC6"
-  source: "src"
-  target: "target"
-  config_mods:
-  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
-    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
-    .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
-    \ := 'includeConfig(\"nextflow_labels.config\")'"
-  - ".version := \"integration_build\""
-  - ".engines[.type == 'docker'].target_tag := 'integration_build'"
-  organization: "openpipelines-bio"
-  links:
-    repository: "https://github.com/openpipelines-bio/openpipeline"
-    docker_registry: "ghcr.io"
-    homepage: "https://openpipelines.bio"
-    documentation: "https://openpipelines.bio/fundamentals"
-    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

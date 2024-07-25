@@ -4,7 +4,7 @@ from mudata import read_h5mu
 
 ## VIASH START
 meta = {
-    'executable': './target/executable/convert/from_cellranger_multi_to_h5mu/from_cellranger_multi_to_h5mu',
+    'executable': './target/docker/convert/from_cellranger_multi_to_h5mu/from_cellranger_multi_to_h5mu',
     'resources_dir': 'resources_test/',
     'config': 'src/convert/from_cellranger_multi_to_h5mu/config.vsh.yaml'
 }

@@ -1,53 +1,52 @@
-name: filter_10xh5
-namespace: "process_10xh5"
-description: |
-  Filter a 10x h5 dataset.
-usage: | 
-  filter_10xh5 \
-    --input pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \
-    --output pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5 \
-    --min_library_size 1000 --min_cells_per_gene 300
-authors:
-  - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer ]
-arguments:
-  - name: "--input"
-    type: file
-    description: "An h5 file from the 10x genomics website."
-    required: true
-    example: "pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
-  - name: "--output"
-    type: file
-    example: pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5
-    required: true
-    direction: output
-    description: Output h5 file.
-  - name: "--min_library_size"
-    type: integer
-    default: 0
-    description: Minimum library size.
-  - name: "--min_cells_per_gene"
-    type: integer
-    default: 0
-    description: Minimum number of cells per gene.
-  - name: "--keep_feature_types"
-    type: string
-    multiple: true
-    description: Specify which feature types will never be filtered out
-    example: "Antibody Capture"
-  - name: "--verbose"
-    type: boolean_true
-    description: Increase verbosity
-resources:
-  - type: r_script
-    path: script.R
-test_resources:
-  - type: r_script
-    path: run_test.R
-  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5
-
-
-engines:
+functionality:
+  name: filter_10xh5
+  namespace: "process_10xh5"
+  description: |
+    Filter a 10x h5 dataset.
+  usage: | 
+    filter_10xh5 \
+      --input pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \
+      --output pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5 \
+      --min_library_size 1000 --min_cells_per_gene 300
+  authors:
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      type: file
+      description: "An h5 file from the 10x genomics website."
+      required: true
+      example: "pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+    - name: "--output"
+      type: file
+      example: pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5
+      required: true
+      direction: output
+      description: Output h5 file.
+    - name: "--min_library_size"
+      type: integer
+      default: 0
+      description: Minimum library size.
+    - name: "--min_cells_per_gene"
+      type: integer
+      default: 0
+      description: Minimum number of cells per gene.
+    - name: "--keep_feature_types"
+      type: string
+      multiple: true
+      description: Specify which feature types will never be filtered out
+      example: "Antibody Capture"
+    - name: "--verbose"
+      type: boolean_true
+      description: Increase verbosity
+  resources:
+    - type: r_script
+      path: script.R
+  test_resources:
+    - type: r_script
+      path: run_test.R
+    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5
+platforms:
   - type: docker
     image: eddelbuettel/r2u:22.04
     setup:
@@ -57,9 +56,6 @@ engines:
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       - type: r
         cran: [ testthat, anndata, hdf5r ]
-
-runners:
-  - type: executable
   - type: nextflow
     directives:
       label: [singlecpu, lowmem]
