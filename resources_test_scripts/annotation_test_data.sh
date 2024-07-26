@@ -21,7 +21,7 @@ wget "https://zenodo.org/record/7587774/files/TS_Blood_filtered.h5ad?download=1"
 # Download Tabula Sapiens Blood pretrained model from https://doi.org/10.5281/zenodo.7580707
 wget "https://zenodo.org/record/7580707/files/pretrained_models_Blood_ts.tar.gz?download=1" -O "${OUT}/tmp_pretrained_models_Blood_ts.tar.gz"
 
-# # Download PopV specific CL ontology files
+# # Download PopV specific CL ontology files - now needed for OnClass
 # OUT_ONTOLOGY="${OUT}/ontology"
 # [ -d "$OUT_ONTOLOGY" ] || mkdir -p "$OUT_ONTOLOGY"
 # wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.obo \
@@ -46,3 +46,11 @@ sub_ref_adata_final.write("${OUT}/TS_Blood_filtered.h5ad", compression='gzip')
 HEREDOC
 
 rm "${OUT}/tmp_blood_test_reference.h5ad"
+
+echo "Fetching OnClass data"
+OUT_ONTOLOGY="${OUT}/ontology"
+[ -d "$OUT_ONTOLOGY" ] || mkdir -p "$OUT_ONTOLOGY"
+wget https://figshare.com/ndownloader/files/28394466 -O "${OUT_ONTOLOGY}/OnClass_data_public_minimal.tar.gz"
+tar -xzvf "${OUT_ONTOLOGY}/OnClass_data_public_minimal.tar.gz" -C "${OUT_ONTOLOGY}" --strip-components=2
+rm "${OUT_ONTOLOGY}/allen.ontology"
+rm "${OUT_ONTOLOGY}/OnClass_data_public_minimal.tar.gz"
