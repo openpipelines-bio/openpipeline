@@ -21,6 +21,8 @@ par = {
     "max_iter": 100,
     "output_obs_predictions": None,
     "output_obs_probability": None,
+    "cl_nlp_emb_file": "cl.ontology.nlp.emb",
+    "cl_ontology_file": "cl.ontology",
     "output_compression": "gzip"
 }
 meta = {}
@@ -76,8 +78,8 @@ def main():
         
     if par["reference"]:
         
-        model = OnClassModel(cell_type_nlp_emb_file=os.path.join(meta["resources_dir"], "cl.ontology.nlp.emb"),
-                            cell_type_network_file=os.path.join(meta["resources_dir"], "cl.ontology"))
+        model = OnClassModel(cell_type_nlp_emb_file=par["cl_nlp_emb_file"],
+                            cell_type_network_file=par["cl_ontology_file"])
         _ = model.EmbedCellTypes()
         
         reference_mudata = mu.read_h5mu(par["reference"])
