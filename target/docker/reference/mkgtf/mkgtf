@@ -420,9 +420,9 @@ apt upgrade -y && apt install -y pigz procps && rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component reference mkgtf"
-LABEL org.opencontainers.image.created="2024-07-27T02:41:53Z"
+LABEL org.opencontainers.image.created="2024-07-28T02:44:03Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ab6e8abe9f283d3a5d49cffd29090e688d13f7ce"
+LABEL org.opencontainers.image.revision="19db4446625f4efe597b0e7585b1b3a8918e4502"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
