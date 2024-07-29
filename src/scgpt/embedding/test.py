@@ -1,5 +1,6 @@
 import pytest
 import subprocess
+import torch
 import re
 import sys
 import mudata as mu
@@ -20,9 +21,22 @@ meta = {
 
 input = f"{meta['resources_dir']}/Kim2020_Lung_subset.h5mu"
 model_file = f"{meta['resources_dir']}/source/best_model.pt"
+ft_model = f'{meta["resources_dir"]}/ft_best_model.pt'
 vocab_file = f"{meta['resources_dir']}/source/vocab.json"
 model_config_file = f"{meta['resources_dir']}/source/args.json"
 input_file = mu.read(input)
+
+def scgpt_to_ft_scgpt(scgpt_path, ft_scgpt_path, state_dict_key, mapper_key):
+    f_model_dict = torch.load(scgpt_path, map_location="cpu")
+    model_dict = {}
+    model_dict[state_dict_key] = f_model_dict
+    model_dict[mapper_key] = {k: str(k) for k in range(15)}
+    torch.save(model_dict, ft_scgpt_path)
+
+# Convert foundation model into fine-tuned model architecture:
+# To be able to do a cell type label mapping, the model architecture needs to contain a class to label mapper dictionary
+scgpt_to_ft_scgpt(model_file, ft_model, "model_state_dict", "id_to_class")
+
 
 ## START TEMPORARY WORKAROUND DATA PREPROCESSING
 #TODO: Remove this workaround once full scGPT preprocessing workflow is implemented
@@ -256,6 +270,64 @@ def test_integration_embedding_non_existing_keys(run_component, tmp_path):
         run_component(args_3)
     assert re.search(
         r'KeyError: "The parameter \'dummy_values_tokenized\' provided for \'--obsm_tokenized_values\' could not be found in adata.obsm"',
+        err.value.stdout.decode('utf-8'))
+
+
+def test_finetuned_model(run_component, tmp_path):
+    output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
+        
+    run_component([
+        "--input", tokenized_data_path,
+        "--modality", "rna",
+        "--model", ft_model,
+        "--model_vocab", vocab_file,
+        "--model_config", model_config_file,
+        "--dsbn", "True",
+        "--obs_batch_label", "sample",
+        "--obsm_gene_tokens", "gene_id_tokens",
+        "--obsm_tokenized_values", "values_tokenized",
+        "--obsm_padding_mask", "padding_mask",
+        "--finetuned_checkpoints_key", "model_state_dict",
+        "--output", output_embedding_file
+    ])
+
+    # Read output file
+    output_mdata = mu.read(output_embedding_file)
+    output_adata = output_mdata.mod["rna"]
+
+    # check that embedding obs is present
+    assert 'X_scGPT' in output_adata.obsm.keys(), "X_scGPT is not present in anndata obsm keys"
+
+    # check embedding size
+    assert output_adata.obsm["X_scGPT"].shape[1] == 512, "Embedding size does not equal 512"
+
+    # check embedding value range
+    assert not all(np.isnan(output_adata.obsm["X_scGPT"][0])), "Embedding values are nan"
+    assert all([all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]), "Range of embedding values is outside of [-1, 1]"
+
+
+def test_finetuned_model_architecture(run_component, tmp_path):
+    output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
+
+    args = [
+        "--input", tokenized_data_path,
+        "--modality", "rna",
+        "--model", ft_model,
+        "--model_vocab", vocab_file,
+        "--model_config", model_config_file,
+        "--dsbn", "True",
+        "--obs_batch_label", "sample",
+        "--obsm_gene_tokens", "gene_id_tokens",
+        "--obsm_tokenized_values", "values_tokenized",
+        "--obsm_padding_mask", "padding_mask",
+        "--finetuned_checkpoints_key", "dummy_checkpoints_key",
+        "--output", output_embedding_file
+    ]
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args)
+    assert re.search(
+        r'KeyError: "The key \'dummy_checkpoints_key\' provided for \'--finetuned_checkpoints_key\' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper."',
         err.value.stdout.decode('utf-8'))
 
 
