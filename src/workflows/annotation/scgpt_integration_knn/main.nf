@@ -41,23 +41,23 @@ workflow run_wf {
         | rename_var.run(
             fromState: {id, state ->
                 [
-                "input": state.reference,
-                "modality": state.modality,
-                "var_key_input": state.var_gene_names_reference,
-                "var_key_output": "gene_names"
-                ]
-            },
-            toState: ["reference": "output"])
-         | rename_var.run(
-            fromState: {id, state ->
-                [
                 "input": state.input,
                 "modality": state.modality,
                 "var_key_input": state.var_gene_names_query,
                 "var_key_output": "gene_names"
                 ]
             },
-            toState: ["input": "output"])       
+            toState: ["input": "output"])
+        | rename_var.run(
+            fromState: {id, state ->
+                [
+                "input": state.reference,
+                "modality": state.modality,
+                "var_key_input": state.var_gene_names_reference,
+                "var_key_output": "gene_names"
+                ]
+            },
+            toState: ["reference": "output"])    
         // Concatenate query and reference datasets
         | concatenate_h5mu.run(
             fromState: { id, state ->

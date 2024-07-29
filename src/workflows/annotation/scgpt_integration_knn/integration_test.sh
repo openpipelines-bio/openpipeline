@@ -15,6 +15,8 @@ viash run src/metadata/add_id/config.vsh.yaml -- \
 --input_id pbmc_1k_protein_v3_mss \
 --obs_output donor_assay
 
+viash ns build -q scgpt_integration_knn
+
 nextflow \
   run . \
   -main-script src/workflows/annotation/scgpt_integration_knn/test.nf \
