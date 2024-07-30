@@ -31,11 +31,11 @@ functionality:
         - name: "--cl_nlp_emb_file"
           type: file
           description: The .nlp.emb file with the cell type embeddings.
-          required: false
+          required: true
         - name: "--cl_ontology_file"
           type: file
           description: The .ontology file with the cell type ontology.
-          required: false
+          required: true
     - name: Reference
       description: Arguments related to the reference dataset.
       arguments:
@@ -90,11 +90,19 @@ functionality:
       description: Model arguments.
       arguments:
         - name: "--model"
-          type: file
-          description: "Pretrained model in npz format. If not provided, the model will be trained on the reference data and --reference should be provided."
+          type: string
+          description: | 
+            "Pretrained model path without a file extension. If not provided, the model will be trained 
+            on the reference data and --reference should be provided. The path namespace should contain:
+              - a .npz or .pkl file
+              - a .data file
+              - a .meta file
+              - a .index file
+            e.g. /path/to/model/pretrained_model_target1 as saved by OnClass."
           required: false
           multiple: true
-          example: [pretrained_model_target1.npz; pretrained_model_target2.npz]
+          example: [pretrained_model_target1; pretrained_model_target2]
+          direction: input
         - name: "--max_iter"
           type: integer
           default: 100
@@ -104,9 +112,10 @@ functionality:
   resources:
     - type: python_script
       path: script.py
+    - path: utils.py
     - path: /src/utils/setup_logger.py
     - type: file
-      path: cl.obo
+      path: /resources_test/annotation_test_data/ontology/cl.obo
 
   test_resources:
     - type: python_script
@@ -116,15 +125,13 @@ functionality:
 
 platforms:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.8
     setup:
-      - type: apt
-        packages:
-          - libhdf5-dev
-          - procps
       - type: python
         packages:
+          - scikit-learn==0.24.0
           - OnClass==1.2
+          - tensorflow==2.13.1
           - obonet==1.1.0
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
