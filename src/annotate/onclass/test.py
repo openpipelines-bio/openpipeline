@@ -86,7 +86,7 @@ def test_multiple_targets(run_component, random_h5mu_path):
                                                          'cell_type_pred',
                                                          'cell_type_prob']
 
-    obs_keys = ['cell_ontology_class_prob', 'cell_type1_prob']
+    obs_keys = ['cell_ontology_class_prob', 'cell_type_prob']
     for key in obs_keys:
         obs_values = output_mudata.mod["rna"].obs[key]
         assert all(0 <= value <= 1 for value in obs_values), f".obs at {key} has values outside the range [0, 1]"
@@ -114,10 +114,10 @@ def test_multiple_targets_custom_obs(run_component, random_h5mu_path):
     assert_annotation_objects_equal(input_mudata.mod["prot"],
                                     output_mudata.mod["prot"])
 
-    assert list(output_mudata.mod["rna"].obs.keys()) == ['dummy_pred_1',
-                                                         'dummy_pred_2',
-                                                         'dummy_prob_1',
-                                                         'dummy_prob_2']
+    assert set(output_mudata.mod["rna"].obs.keys()) == {'dummy_pred_1',
+                                                        'dummy_pred_2',
+                                                        'dummy_prob_1',
+                                                        'dummy_prob_2'}
 
     obs_keys = ['dummy_prob_1', 'dummy_prob_2']
     for key in obs_keys:
@@ -130,7 +130,9 @@ def test_no_model_no_reference_error(run_component, random_h5mu_path):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component([
             "--input", input_file,
-            "--output", output_file
+            "--output", output_file,
+            "--cl_nlp_emb_file", cl_nlp_emb_file,
+            "--cl_ontology_file", cl_ontology_file,
         ])
     assert re.search(r"ValueError: Either reference or model must be provided",
             err.value.stdout.decode('utf-8'))

@@ -70,7 +70,6 @@ def predict_input_data(model: OnClassModel,
                        input_matrix: np.array,
                        input_modality: ad.AnnData,
                        id_to_name: dict,
-                       reference_obs_target: str,
                        obs_prediction: str,
                        obs_probability: str) -> ad.AnnData:
     """
@@ -86,8 +85,6 @@ def predict_input_data(model: OnClassModel,
         The input data Anndata object.
     id_to_name : dict
         Dictionary mapping cell ontology IDs to cell type names.
-    reference_obs_target : str
-        The reference observation target.
     obs_prediction : str
         The obs key for the predicted cell type.
     obs_probability : str
@@ -107,8 +104,8 @@ def predict_input_data(model: OnClassModel,
     pred_label = [model.i2co[ind] for ind in onclass_pred[2]]
     pred_cell_type_label = [id_to_name[id] for id in pred_label]
     
-    input_modality.obs[f"{reference_obs_target}_{obs_prediction}"] = pred_cell_type_label
-    input_modality.obs[f"{reference_obs_target}_{obs_probability}"] = np.max(onclass_pred[1], axis=1) / onclass_pred[1].sum(1)
+    input_modality.obs[obs_prediction] = pred_cell_type_label
+    input_modality.obs[obs_probability] = np.max(onclass_pred[1], axis=1) / onclass_pred[1].sum(1)
     return input_modality
 
 def main():
@@ -117,8 +114,8 @@ def main():
     input_modality = input_mudata.mod[par["modality"]].copy()
 
     id_to_name, name_to_id = map_celltype_to_ontology_id(os.path.join(meta["resources_dir"], "cl.obo"))
-    obs_predictions = par["output_obs_predictions"] if par["output_obs_predictions"] else ["pred"] * len(par["reference_obs_targets"])
-    obs_probabilities = par["output_obs_probability"] if par["output_obs_probability"] else ["prob"] * len(par["reference_obs_targets"])
+    obs_predictions = par["output_obs_predictions"] if par["output_obs_predictions"] else [f"{target}_pred" for target in par["reference_obs_targets"]]
+    obs_probabilities = par["output_obs_probability"] if par["output_obs_probability"] else [f"{target}_prob" for target in par["reference_obs_targets"]]
     
     if par["input_layer"]:
         input_matrix = input_modality.layers[par["input_layer"]].toarray()
@@ -180,7 +177,6 @@ def main():
                                                 input_matrix,
                                                 input_modality,
                                                 id_to_name,
-                                                reference_obs_target,
                                                 obs_prediction,
                                                 obs_probability)
 
@@ -198,7 +194,6 @@ def main():
                                                 input_matrix,
                                                 input_modality,
                                                 id_to_name,
-                                                reference_obs_target,
                                                 obs_prediction,
                                                 obs_probability)
             
