@@ -112,7 +112,6 @@ functionality:
   resources:
     - type: python_script
       path: script.py
-    - path: utils.py
     - path: /src/utils/setup_logger.py
     - type: file
       path: /resources_test/annotation_test_data/ontology/cl.obo
