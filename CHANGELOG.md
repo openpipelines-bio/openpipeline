@@ -41,6 +41,8 @@
 
 * `workflows/annotation/harmony_knn`: workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
 
+* `annotate/onclass`: component: Added a component to annotate cell types using OnClass (PR #844).
+
 ## MINOR CHANGES
 
 * Bump scvelo to `0.3.2` (PR #828).
