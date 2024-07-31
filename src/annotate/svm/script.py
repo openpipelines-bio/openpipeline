@@ -19,15 +19,18 @@ par = {
     "modality": "rna",
     "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "model": None,
-    "reference_obs_targets": ["cell_ontology_class"],
+    "reference_obs_target": "cell_ontology_class",
     "input_layer": None,
     "reference_layer": None,
-    "max_iter": 1000,
+    "max_iter": 5000,
     "c_reg": 1,
     "class_weight": "balanced",
-    "output_obs_predictions": None,
-    "output_obs_probability": None,
-    "output_compression": "gzip"
+    "output_compression": "gzip",
+    "var_query_gene_names": None,
+    "var_reference_gene_names": "ensemblid",
+    "reference_layer": None,
+    "output_obs_predictions": "svm_pred",
+    "output_obs_probability": "svm_probability",
 }
 meta = {"resources_dir": "src/annotate/svm"}
 ## VIASH END
@@ -52,21 +55,19 @@ def main():
     input_mudata = mu.read_h5mu(par["input"])
     input_modality = input_mudata.mod[par["modality"]].copy()
 
-    obs_predictions = par["output_obs_predictions"] if par["output_obs_predictions"] else [f"{target}_pred" for target in par["reference_obs_targets"]]
-    obs_probabilities = par["output_obs_probability"] if par["output_obs_probability"] else [f"{target}_prob" for target in par["reference_obs_targets"]]
-
     input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X 
-
-    models = {}
+    
+    if par["var_query_gene_names"]:
+        input_modality.var.index = [re.sub("\\.[0-9]+$", "", s) for s in input_modality.var[par["var_query_gene_names"]]]
 
     if par["reference"]:
         logger.info("Reading reference data")
-
+        
         reference_mudata = mu.read_h5mu(par["reference"])
         reference_modality = reference_mudata.mod[par["modality"]].copy()
-
-        reference_modality.var["gene_symbol"] = list(reference_modality.var.index)
-        reference_modality.var.index = [re.sub("\\.[0-9]+$", "", s) for s in reference_modality.var["ensemblid"]]
+        
+        if par["var_reference_gene_names"]:
+            reference_modality.var.index = [re.sub("\\.[0-9]+$", "", s) for s in reference_modality.var[par["var_reference_gene_names"]]]
 
         logger.info("Detecting common vars based on ensembl ids")
         common_ens_ids = list(set(reference_modality.var.index).intersection(set(input_modality.var.index)))
@@ -78,37 +79,29 @@ def main():
 
         reference_matrix = reference_modality.layers[par["reference_layer"]] if par["reference_layer"] else reference_modality.X
 
-        logger.info("Training models...")
-        for reference_obs_target in tqdm(par["reference_obs_targets"]):
-
-            logger.info(f"Training model for {reference_obs_target}")
-            labels = reference_modality.obs[reference_obs_target].to_numpy()
-            model = CalibratedClassifierCV(svm.LinearSVC(
-                C=par["c_reg"],
-                max_iter=par["max_iter"],
-                class_weight=par["class_weight"],
-                verbose=1
-            ))
-            model.fit(reference_matrix, labels)
-            models[reference_obs_target] = model
+        logger.info("Training a model...")
+        labels = reference_modality.obs[par["reference_obs_target"]].to_numpy()
+        model = CalibratedClassifierCV(svm.LinearSVC(
+            C=par["c_reg"],
+            max_iter=par["max_iter"],
+            class_weight=par["class_weight"],
+            dual="auto",
+        ))
+        model.fit(reference_matrix, labels)
 
     elif par["model"]:
-        logger.info("Loading pre-trained models")
-        for model_path, reference_obs_target  in zip(par["model"], par["reference_obs_targets"]):
-            logger.info(f"Loading model for {reference_obs_target}")
-            model = pickle.load(open(model_path, "rb"))
-            models[reference_obs_target] = model
+        logger.info("Loading a pre-trained model")
+        model = pickle.load(open(par["model"], "rb"))
 
     else:
         raise ValueError("Either reference or model must be provided")
     
     logger.info("Running predictions...")
-    for model, obs_prediction, obs_probability in models.values(), obs_predictions, obs_probabilities:
-        predictions = model.predict(input_matrix)
-        probabilities = np.max(model.predict_proba(input_modality), axis=1)
-        
-        input_modality.obs[obs_prediction] = predictions
-        input_modality.obs[obs_probability] = probabilities
+    predictions = model.predict(input_matrix)
+    probabilities = np.max(model.predict_proba(input_modality), axis=1)
+    
+    input_modality.obs[par["output_obs_predictions"]] = predictions
+    input_modality.obs[par["output_obs_probability"]] = probabilities
 
     logger.info("Writing output data")
     input_mudata.mod[par["modality"]] = input_modality
