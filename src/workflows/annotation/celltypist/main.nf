@@ -15,15 +15,16 @@ workflow run_wf {
       fromState: {id, state ->
       // Annotates the mudata object with highly variable genes.
         [
-          "input": state.input,
-          "layer": state.input_layer,
+          "input": state.reference,
+          "layer": state.reference_layer,
           "modality": state.modality,
           "var_name_filter": "filter_with_hvg",
+          "obs_batch_key": state.obs_reference_batch_label,
           "n_top_features": state.n_hvg,
           "flavor": "seurat_v3"
         ]
       },
-      toState: ["input": "output"]
+      toState: ["reference": "output"]
     )
     | do_filter.run(
       runIf: {id, state -> !state.model && state.n_hvg},
@@ -32,12 +33,12 @@ workflow run_wf {
         // from a modality.
         // filters the mudata object based on the HVG
         [
-          "input": state.input,
+          "input": state.reference,
           "modality": state.modality,
           "var_filter": "filter_with_hvg"
         ]
       },
-      toState: ["input": "output"]
+      toState: ["reference": "output"]
     )
       | celltypist_annotation.run(
       // Run celltypist annotation
@@ -52,7 +53,7 @@ workflow run_wf {
           "check_expression": state.check_expression,
           "var_reference_gene_names": state.var_reference_gene_names,
           "model": state.model,
-          "feature_selection": state.feature_selection,
+          "feature_selection": "false",
           "majority_voting": state.majority_voting,
           "output_obs_predictions": state.output_obs_predictions,
           "output_obs_probability": state.output_obs_probability,
