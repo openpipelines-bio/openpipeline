@@ -21,7 +21,7 @@ par = {
     "var_reference_gene_names": "ensemblid",
     "reference_layer": None,
     "output_obs_predictions": "celltypist_pred",
-    "output_obs_probabilities": "celltypist_probability",
+    "output_obs_probability": "celltypist_probability",
 }
 meta = {
 }
@@ -98,7 +98,7 @@ def main(par):
                                       model,
                                       majority_voting=par["majority_voting"])
     input_modality.obs[par["output_obs_predictions"]] = predictions.predicted_labels["predicted_labels"]
-    input_modality.obs[par["output_obs_probabilities"]] = predictions.probability_matrix.max(axis=1).values
+    input_modality.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(axis=1).values
     
     input_mudata.mod[par["modality"]] = input_modality
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
