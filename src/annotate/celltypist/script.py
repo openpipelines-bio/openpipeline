@@ -2,27 +2,31 @@ import sys
 import logging
 import celltypist
 import mudata as mu
-import anndata as ad
 import re
 import numpy as np
 
 ## VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix_log_normalized.h5mu",
     "output": "output.h5mu",
     "modality": "rna",
-    "reference": "resources_test/annotation_test_data/tmp_TS_Blood_filtered.h5ad",
+    "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "model": None,
     "reference_obs_targets": "cell_ontology_class",
     "check_expression": False,
     "feature_selection": True,
     "majority_voting": True,
-    "output_compression": "gzip"
+    "output_compression": "gzip",
+    "var_query_gene_names": None,
+    "var_reference_gene_names": "ensemblid",
+    "reference_layer": None,
+    "output_obs_predictions": "celltypist_pred",
+    "output_obs_probabilities": "celltypist_probability",
 }
-meta = {}
+meta = {
+}
 ## VIASH END
 
-sys.path.append(meta["resources_dir"])
 # START TEMPORARY WORKAROUND setup_logger
 def setup_logger():
     logger = logging.getLogger()
@@ -46,63 +50,55 @@ def main(par):
     input_mudata = mu.read_h5mu(par["input"])
     input_modality = input_mudata.mod[par["modality"]].copy()
     
-    models = []
+    if par["var_query_gene_names"]:
+        input_modality.var.index = [re.sub("\\.[0-9]+$", "", s) for s in input_modality.var[par["var_query_gene_names"]]]
 
     if par["model"]:
-        models.append(celltypist.models.Model.load(par["model"]))
-        logger.info(f"Model features: {models[0].classifier.features}")
-        logger.info(f"Input features: {input_modality.var_names}")
+        if par["refererence"]:
+            logger.warning("Both 'model' and 'reference' are provided. 'model' will be used to make cell type predictions, 'reference' will be ignored.")
+        model = celltypist.models.Model.load(par["model"])
+        logger.info(f"Model features: {model.classifier.features}")
         logger.info(input_modality.var)
     
     elif par["reference"]:
-        reference_adata = mu.read_h5mu(par["reference"]).mod[par["modality"]]
+        reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
         
-        reference_adata.var["gene_symbol"] = list(reference_adata.var.index)
-        reference_adata.var.index = [re.sub("\\.[0-9]+$", "", s) for s in reference_adata.var["ensemblid"]]
+        # TODO: move to the cross check component
+        
+        if par["var_reference_gene_names"]:
+            reference_modality.var.index = [re.sub("\\.[0-9]+$", "", s) for s in reference_modality.var[par["var_reference_gene_names"]]]
         
         logger.info("Detecting common vars based on ensembl ids")
-        common_ens_ids = list(set(reference_adata.var.index).intersection(set(input_modality.var.index)))
+        common_ens_ids = list(set(reference_modality.var.index).intersection(set(input_modality.var.index)))
         
-        logger.info("  reference n_vars: %i", reference_adata.n_vars)
+        logger.info("  reference n_vars: %i", reference_modality.n_vars)
         logger.info("  input n_vars: %i", input_modality.n_vars)
         logger.info("  intersect n_vars: %i", len(common_ens_ids))
         assert len(common_ens_ids) >= 100, "The intersection of genes is too small."
         
-        if par["input_layer"]:
-            input_matrix = input_modality.layers[par["input_layer"]]
-        else:
-            input_matrix = input_modality.X
-        if par["reference_layer"]:
-            reference_matrix = reference_adata.layers[par["reference_layer"]]
-        else:
-            reference_matrix = reference_adata.X
-        
+        input_matrix = input_modality.layers[par["reference_layer"]] if par["reference_layer"] else input_modality.X
+        reference_matrix = reference_modality.layers[par["reference_layer"]] if par["reference_layer"] else reference_modality.X
+
         if not check_celltypist_format(input_matrix):
             logger.warning("Input data is not in the reccommended format for CellTypist.")
         if not check_celltypist_format(reference_matrix):
             logger.warning("Reference data is not in the reccommended format for CellTypist.")
         
-        for label in par["reference_obs_targets"]:
-            labels = reference_adata.obs[label]
-            model = celltypist.train(reference_matrix,
-                                    labels = labels,
-                                    genes = reference_adata.var_names,
-                                    feature_selection=par["feature_selection"],
-                                    check_expression=par["check_expression"])
-            models.append(model)
+        labels = reference_modality.obs[par["reference_obs_targets"]]
+        model = celltypist.train(reference_matrix,
+                                labels=labels,
+                                genes=reference_modality.var.index,
+                                feature_selection=par["feature_selection"],
+                                check_expression=par["check_expression"])
         
     else:
         raise ValueError("Either 'model' or 'reference' has to be provided.")
     
-    obs_predictions = par["output_obs_predictions"] if par["output_obs_predictions"] else ["pred"] * len(models)
-    obs_probabilities = par["output_obs_probability"] if par["output_obs_probability"] else ["prob"] * len(models)
-    
-    for model, reference_obs_target, obs_prediction, obs_probability in zip(models, par["reference_obs_targets"], obs_predictions, obs_probabilities):
-        predictions = celltypist.annotate(input_modality,
-                                          model,
-                                          majority_voting=par["majority_voting"])
-        input_modality.obs[f"{reference_obs_target}_{obs_prediction}"] = predictions.predicted_labels["predicted_labels"]
-        input_modality.obs[f"{reference_obs_target}_{obs_probability}"] = predictions.probability_matrix.max(axis=1).values
+    predictions = celltypist.annotate(input_modality,
+                                      model,
+                                      majority_voting=par["majority_voting"])
+    input_modality.obs[par["output_obs_predictions"]] = predictions.predicted_labels["predicted_labels"]
+    input_modality.obs[par["output_obs_probabilities"]] = predictions.probability_matrix.max(axis=1).values
     
     input_mudata.mod[par["modality"]] = input_modality
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
