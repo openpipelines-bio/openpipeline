@@ -410,9 +410,9 @@ ENTRYPOINT []
 RUN :
 LABEL org.opencontainers.image.authors="Toni Verbeiren"
 LABEL org.opencontainers.image.description="Companion container for running component transfer publish"
-LABEL org.opencontainers.image.created="2024-07-31T02:35:42Z"
+LABEL org.opencontainers.image.created="2024-08-01T02:46:19Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="05362c6126388cd447496908a9152581f5a888a3"
+LABEL org.opencontainers.image.revision="5e4d8623c312a2ab54c6682a07e3c0c0ff52ce41"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
