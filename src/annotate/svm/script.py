@@ -1,11 +1,7 @@
 import sys
 import logging
 import mudata as mu
-import anndata as ad
-import re
 import numpy as np
-import os
-from tqdm import tqdm
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn import svm
 import pickle
@@ -56,27 +52,13 @@ def main():
     input_modality = input_mudata.mod[par["modality"]].copy()
 
     input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X 
-    
-    if par["var_query_gene_names"]:
-        input_modality.var.index = [re.sub("\\.[0-9]+$", "", s) for s in input_modality.var[par["var_query_gene_names"]]]
 
     if par["reference"]:
         logger.info("Reading reference data")
         
         reference_mudata = mu.read_h5mu(par["reference"])
         reference_modality = reference_mudata.mod[par["modality"]].copy()
-        
-        if par["var_reference_gene_names"]:
-            reference_modality.var.index = [re.sub("\\.[0-9]+$", "", s) for s in reference_modality.var[par["var_reference_gene_names"]]]
-
-        logger.info("Detecting common vars based on ensembl ids")
-        common_ens_ids = list(set(reference_modality.var.index).intersection(set(input_modality.var.index)))
-
-        logger.info("  reference n_vars: %i", reference_modality.n_vars)
-        logger.info("  input n_vars: %i", input_modality.n_vars)
-        logger.info("  intersect n_vars: %i", len(common_ens_ids))
-        assert len(common_ens_ids) >= 100, "The intersection of genes is too small."
-
+    
         reference_matrix = reference_modality.layers[par["reference_layer"]] if par["reference_layer"] else reference_modality.X
 
         logger.info("Training a model...")
@@ -98,7 +80,7 @@ def main():
     
     logger.info("Running predictions...")
     predictions = model.predict(input_matrix)
-    probabilities = np.max(model.predict_proba(input_modality), axis=1)
+    probabilities = np.max(model.predict_proba(input_matrix), axis=1)
     
     input_modality.obs[par["output_obs_predictions"]] = predictions
     input_modality.obs[par["output_obs_probability"]] = probabilities

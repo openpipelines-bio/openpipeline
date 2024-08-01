@@ -24,11 +24,6 @@ functionality:
         - name: "--input_layer"
           type: string
           description: The layer in the input data to be used for cell type annotation if .X is not to be used. 
-        - name: "--var_query_gene_names"
-          type: string
-          required: false
-          description: |
-            The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used.
     - name: Reference
       description: Arguments related to the reference dataset.
       arguments:
@@ -43,16 +38,10 @@ functionality:
           description: The layer in the reference data to be used for cell type annotation if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.
           required: false
           required: false
-        - name: "--reference_obs_targets"
+        - name: "--reference_obs_target"
           type: string
           description: #TODO: update for multiple: Key in obs field of reference AnnData with cell-type information.
           default: "cell_ontology_class"
-          multiple: true
-        - name: "--var_reference_gene_names"
-          type: string
-          required: false
-          description: |
-            The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
     - name: Outputs
       description: Output arguments.
       arguments:
@@ -95,7 +84,7 @@ functionality:
           description: "Maximum number of iterations for the SVM."
           default: 5000
         - name: "--c_reg"
-          type: float
+          type: double
           description: "Regularization parameter for the SVM."
           default: 1.0
         - name: "--class_weight"
