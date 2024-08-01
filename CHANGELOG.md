@@ -39,6 +39,8 @@
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
 
+* `annotate/svm` component: Added a component to annotate cell types using support vector machine (SVM) (PR #845).
+
 ## MINOR CHANGES
 
 * Bump scvelo to `0.3.2` (PR #828).
