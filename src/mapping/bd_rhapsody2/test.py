@@ -100,13 +100,12 @@ with open(sample_path, 'w') as file:
 # Generate index
 print("> Generate index", flush=True)
 cwl_file = meta["resources_dir"] / "bd_rhapsody_make_reference.cwl"
-reference_small_gtf = meta["resources_dir"] / "reference.gtf.gz"
-reference_small_fa = meta["resources_dir"] / "reference.fa.gz"
+reference_small_gtf = meta["resources_dir"] / "reference.gtf"
+reference_small_fa = meta["resources_dir"] / "reference.fa"
 bdabseq_panel_fa = meta["resources_dir"] / "BDAbSeq_ImmuneDiscoveryPanel.fasta"
 
 config_file = Path("reference_config.yml")
 reference_file = Path("Rhap_reference.tar.gz")
-
 
 
 subprocess.run([
@@ -127,8 +126,12 @@ subprocess.run([
 #########################################################################################
 # Load reference in memory
 
+subprocess.run(["gunzip", f"{reference_small_gtf}.gz"])
+subprocess.run(["gunzip", f"{reference_small_fa}.gz"])
+
 from Bio import SeqIO
 import gffutils
+
 
 # Load FASTA sequence
 with open(str(reference_small_fa), "r") as handle:
@@ -148,8 +151,8 @@ reference_gtf_db = gffutils.create_db(
   disable_infer_genes=True
 )
 
-# #############################################
-# # TODO: move helper functions to separate helper file
+#############################################
+# TODO: move helper functions to separate helper file
 
 
 def generate_bd_read_metadata(
