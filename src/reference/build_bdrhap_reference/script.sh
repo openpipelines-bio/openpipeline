@@ -10,7 +10,9 @@ meta_cpus=20
 ## VIASH END
 
 # create temporary directory
-tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_functionality_name-XXXXXXXX")
+# tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_functionality_name-XXXXXXXX")
+tmpdir="tmp_ori"
+mkdir -p "$tmpdir"
 function clean_up {
     rm -rf "$tmpdir"
 }
