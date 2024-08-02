@@ -415,7 +415,74 @@ functionality:
         required: false
         info:
           template: "sample_ATAC.bam.bai"
-      
+  - name: AbSeq Cell Calling outputs
+    description: Outputs when Cell Calling Abseq is selected
+    arguments:
+      - name: "--protein_aggregates_experimental"
+        type: file
+        direction: output
+        description: "Protein Aggregates Experimental"
+        example: Protein_Aggregates_Experimental.csv
+        required: false
+        info:
+          template: "sample_Protein_Aggregates_Experimental.csv"
+  - name: Putative Cell Calling Settings
+    arguments:
+      - name: "--cell_calling_data"
+        type: string
+        description: |
+          Specify the dataset to be used for putative cell calling: mRNA, AbSeq, ATAC, mRNA_and_ATAC
+          
+          For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.
+          
+          For putative cell calling using an ATAC dataset, please provide a WTA+ATAC-Seq Reference_Archive file above.
+          
+          The default data for putative cell calling, will be determined the following way:
+          
+          - If mRNA Reads and ATAC Reads exist: mRNA_and_ATAC
+          - If only ATAC Reads exist: ATAC
+          - Otherwise: mRNA
+        choices: [mRNA, AbSeq, ATAC, mRNA_and_ATAC]
+        example: mRNA
+        info:
+          config_key: Cell_Calling_Data
+      - name: "--cell_calling_bioproduct_algorithm"
+        type: string
+        description: |
+          Specify the bioproduct algorithm to be used for putative cell calling: Basic or Refined
+          
+          By default, the Basic algorithm will be used for putative cell calling.
+        choices: [Basic, Refined]
+        example: Basic
+        info:
+          config_key: Cell_Calling_Bioproduct_Algorithm
+      - name: "--cell_calling_atac_algorithm"
+        type: string
+        description: |
+          Specify the ATAC-seq algorithm to be used for putative cell calling: Basic or Refined
+          
+          By default, the Basic algorithm will be used for putative cell calling.
+        choices: [Basic, Refined]
+        example: Basic
+        info:
+          config_key: Cell_Calling_ATAC_Algorithm
+      - name: "--exact_cell_count"
+        type: integer
+        description: |
+          Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count
+        example: 10000
+        min: 1
+        info:
+          config_key: Exact_Cell_Count
+      - name: "--expected_cell_count"
+        type: integer
+        description: |
+          Guide the basic putative cell calling algorithm by providing an estimate of the number of cells expected.  Usually this can be the number of cells loaded into the Rhapsody cartridge.  If there are multiple inflection points on the second derivative cumulative curve, this will ensure the one selected is near the expected. 
+        example: 20000
+        min: 1
+        info:
+          config_key: Expected_Cell_Count
+  
   resources:
     - type: python_script
       path: script.py
