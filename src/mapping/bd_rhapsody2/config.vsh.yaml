@@ -229,6 +229,86 @@ functionality:
         required: false
         info:
           template: "sample_assay_cell_type_experimental.csv"
+  - name: Multiplex outputs
+    description: Outputs when multiplex option is selected
+    arguments:
+      - name: "--sample_tag_metrics"
+        type: file
+        direction: output
+        description: "Sample Tag Metrics. Metrics from the sample determination algorithm."
+        example: Sample_Tag_Metrics.csv
+        required: false
+        info:
+          template: "sample_Sample_Tag_Metrics.csv"
+      - name: "--sample_tag_calls"
+        type: file
+        direction: output
+        description: "Sample Tag Calls. Assigned Sample Tag for each putative cell"
+        example: Sample_Tag_Calls.csv
+        required: false
+        info:
+          template: "sample_Sample_Tag_Calls.csv"
+      - name: "--sample_tag_counts"
+        type: file
+        direction: output
+        description: "Sample Tag Counts. Separate data tables and metric summary for cells assigned to each sample tag. Note: For putative cells that could not be assigned a specific Sample Tag, a Multiplet_and_Undetermined.zip file is also output."
+        example: Sample_Tag1.zip
+        required: false
+        multiple: true
+        info:
+          template: "sample_Sample_Tag.zip"
+      - name: "--sample_tag_counts_unassigned"
+        type: file
+        direction: output
+        description: "Sample Tag Counts Unassigned. Data table and metric summary for cells that could not be assigned a specific Sample Tag."
+        example: Multiplet_and_Undetermined.zip
+        required: false
+        info:
+          template: "sample_Multiplet_and_Undetermined.zip"
+  - name: VDJ Outputs
+    description: Outputs when VDJ option selected
+    arguments:
+      - name: "--vdj_metrics"
+        type: file
+        direction: output
+        description: "VDJ Metrics. Overall metrics from the VDJ analysis."
+        example: VDJ_Metrics.csv
+        required: false
+        info:
+          template: "sample_VDJ_Metrics.csv"
+      - name: "--vdj_per_cell"
+        type: file
+        direction: output
+        description: "VDJ Per Cell. Cell specific read and molecule counts, VDJ gene segments, CDR3 sequences, paired chains, and cell type."
+        example: VDJ_perCell.csv
+        required: false
+        info:
+          template: "sample_VDJ_perCell.csv"
+      - name: "--vdj_per_cell_uncorrected"
+        type: file
+        direction: output
+        description: "VDJ Per Cell Uncorrected. Cell specific read and molecule counts, VDJ gene segments, CDR3 sequences, paired chains, and cell type."
+        example: VDJ_perCell_uncorrected.csv
+        required: false
+        info:
+          template: "sample_VDJ_perCell_uncorrected.csv"
+      - name: "--vdj_dominant_contigs"
+        type: file
+        direction: output
+        description: "VDJ Dominant Contigs. Dominant contig for each cell label chain type combination (putative cells only)."
+        example: VDJ_Dominant_Contigs_AIRR.csv
+        required: false
+        info:
+          template: "sample_VDJ_Dominant_Contigs_AIRR.csv"
+      - name: "--vdj_unfiltered_contigs"
+        type: file
+        direction: output
+        description: "VDJ Unfiltered Contigs. All contigs that were assembled and annotated successfully (all cells)."
+        example: VDJ_Unfiltered_Contigs_AIRR.csv
+        required: false
+        info:
+          template: "sample_VDJ_Unfiltered_Contigs_AIRR.csv"
+       
   resources:
     - type: python_script
       path: script.py
