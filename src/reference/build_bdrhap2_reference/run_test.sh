@@ -22,15 +22,15 @@ function seqkit_head {
   fi
 }
 
-seqkit_head "$meta_resources_dir/reference_gencodev41_chr1/reference.fa.gz" "$tmpdir/reference_small.fa.gz"
-zcat "$meta_resources_dir/reference_gencodev41_chr1/reference.gtf.gz" | awk '$4 < 50001 {print ;}' | gzip > "$tmpdir/reference_small.gtf.gz"
+seqkit_head "$meta_resources_dir/reference.fa.gz" "$tmpdir/reference_small.fa.gz"
+zcat "$meta_resources_dir/reference.gtf.gz" | awk '$4 < 50001 {print ;}' | gzip > "$tmpdir/reference_small.gtf.gz"
 
 
 echo "> Running $meta_functionality_name, writing to $tmpdir."
 $meta_executable \
   --genome_fasta "$tmpdir/reference_small.fa.gz" \
-  --transcriptome_gtf "$tmpdir/reference_small.gtf.gz" \
-  --output "$tmpdir/myreference.tar.gz" \
+  --gtf "$tmpdir/reference_small.gtf.gz" \
+  --reference_archive "$tmpdir/myreference.tar.gz" \
   ---cpus 2
 
 exit_code=$?

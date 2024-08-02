@@ -2,6 +2,7 @@ import os
 import re
 import subprocess
 import tempfile
+from time import sleep
 from typing import Any
 import yaml
 import shutil
@@ -112,6 +113,8 @@ def get_cwl_file(meta: dict[str, Any]) -> str:
     return cwl_file
 
 def main(par: dict[str, Any], meta: dict[str, Any]):
+    
+    sleep(10000)
     config = read_config(meta["config"])
         
     # Preprocess params

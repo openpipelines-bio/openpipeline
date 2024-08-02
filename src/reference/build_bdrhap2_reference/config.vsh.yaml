@@ -106,6 +106,11 @@ functionality:
     - type: python_script
       path: script.py
     - path: make_rhap_reference_2.2.1_nodocker.cwl
+  test_resources:
+    - type: bash_script
+      path: run_test.sh
+    - path: /resources_test/reference_gencodev41_chr1/reference.fa.gz
+    - path: /resources_test/reference_gencodev41_chr1/reference.gtf.gz
 
 platforms:
   - type: docker
