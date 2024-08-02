@@ -625,7 +625,7 @@ functionality:
         multiple: false
         info:
           config_key: Write_Filtered_Reads
-          
+
   resources:
     - type: python_script
       path: script.py
@@ -641,11 +641,12 @@ functionality:
 
 platforms:
   - type: docker
-    image: ghcr.io/data-intuitive/bd_rhapsody:1.10.1
+    image: bdgenomics/rhapsody:2.2.1
     setup:
+      - type: apt
+        packages: [procps]
       - type: python
-        packages:
-          - pandas<2
+        packages: [cwlref-runner, cwl-runner, ruamel.yaml, biopython, gffutils]
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]
