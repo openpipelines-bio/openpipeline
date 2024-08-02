@@ -22,11 +22,9 @@ par = {
     "bootstrap": True,
     "class_weight": None,
     "output_compression": "gzip",
-    "var_query_gene_names": None,
-    "var_reference_gene_names": "ensemblid",
     "reference_layer": None,
-    "output_obs_predictions": "svm_pred",
-    "output_obs_probability": "svm_probability",
+    "output_obs_predictions": "random_forest_pred",
+    "output_obs_probability": "random_forest_probability",
 }
 meta = {"resources_dir": "src/annotate/svm"}
 ## VIASH END
