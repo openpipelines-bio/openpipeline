@@ -10,11 +10,18 @@ functionality:
     ATAC-Seq
 
     The CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl' and removing all objects with class 'DockerRequirement' from the YAML.
+  info:
+    keywords: [rna-seq, single-cell, multiomic, atac-seq, targeted, abseq, tcr, bcr]
+    links:
+      repository: https://bitbucket.org/CRSwDev/cwl/src/master/v2.2.1
+      documentation: https://bd-rhapsody-bioinfo-docs.genomics.bd.com
+    license: Unknown
   authors:
-    - __merge__: /src/authors/dorien_roosen.yaml
-      roles: [ maintainer ]
     - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ maintainer ]
+      roles: [ author, maintainer ]
+    - __merge__: /src/authors/weiwei_schultz.yaml
+      roles: [ contributor ]
+
   argument_groups:
     - name: Inputs
       arguments:
