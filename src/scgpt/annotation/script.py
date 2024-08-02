@@ -16,13 +16,13 @@ from scgpt.utils import set_seed
 par = {
   'input': r'resources_test/scgpt/test_resources/Kim2020_Lung_subset_tokenized.h5mu',
   'modality': r'rna',
-  'model': r'resources_test/scgpt/soumya_atlas_80_percent-Jun11-01-04/best_model.pt',
-  'model_config': r'resources_test/scgpt/soumya_atlas_80_percent-Jun11-01-04/args.json',
-  'model_vocab': r'resources_test/scgpt/soumya_atlas_80_percent-Jun11-01-04/vocab.json',
+  'model': r'resources_test/scgpt/source/best_model.pt',
+  'model_config': r'resources_test/scgpt/source/args.json',
+  'model_vocab': r'resources_test/scgpt/source/vocab.json',
   'obs_batch_label': r'sample',
   'obsm_gene_tokens': r'gene_id_tokens',
   'obsm_tokenized_values': r'values_tokenized',
-  'output': r'Kim2020_Lung_cell_type_annotation.h5mu',
+  'output': r'output.h5mu',
   'output_compression': None,
   'obs_predicted_cell_class': r'predicted_cell_class',
   'obs_predicted_cell_label': r'predicted_cell_label',
@@ -94,7 +94,7 @@ elif par["dsbn"] and par["obs_batch_label"]:
     num_batch_types = len(set(batch_ids))
 elif not par["dsbn"]:
     # forward pass requires a tensor as input
-    batch_ids = np.array([0] * adata.shape[0])
+    batch_ids = np.zeros(adata.shape[0])
 
 # Vocabulary configuration
 logger.info("Loading model vocabulary")

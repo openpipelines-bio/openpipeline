@@ -78,7 +78,7 @@ functionality:
           required: true
           example: output.h5mu
           description: |
-            The output cross-checked mudata file.
+            The output mudata file.
         - name: "--output_compression"
           type: string
           example: "gzip"
@@ -97,7 +97,7 @@ functionality:
           default: "scgpt_probability"
           required: false
           description: |
-            The name of the adata.obs column to write predicted cell type labels to.
+            The name of the adata.obs column to write the probabilities of the predicted cell type labels to.
 
     - name: Arguments
       arguments:
