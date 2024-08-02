@@ -45,4 +45,37 @@ sub_ref_adata_final = sub_ref_adata[sub_ref_adata.obs[s>=n].groupby('cell_ontolo
 sub_ref_adata_final.write("${OUT}/TS_Blood_filtered.h5ad", compression='gzip')
 HEREDOC
 
-rm "${OUT}/tmp_blood_test_reference.h5ad"
+
+echo "> Converting to h5mu"
+viash run src/convert/from_h5ad_to_h5mu/config.vsh.yaml -p docker -- \
+    --input "${OUT}/TS_Blood_filtered.h5ad" \
+    --output "${OUT}/TS_Blood_filtered.h5mu" \
+    --modality "rna"
+
+rm "${OUT}/tmp_TS_Blood_filtered.h5ad"
+
+echo "> Downloading pretrained CellTypist model and sample test data"
+wget https://celltypist.cog.sanger.ac.uk/models/Pan_Immune_CellTypist/v2/Immune_All_Low.pkl \
+    -O "${OUT}/celltypist_model_Immune_All_Low.pkl"
+wget https://celltypist.cog.sanger.ac.uk/Notebook_demo_data/demo_2000_cells.h5ad \
+    -O "${OUT}/demo_2000_cells.h5ad"
+viash run src/convert/from_h5ad_to_h5mu/config.vsh.yaml -p docker -- \
+    --input "${OUT}/demo_2000_cells.h5ad" \
+    --output "${OUT}/demo_2000_cells.h5mu" \
+    --modality "rna"
+
+
+echo "Fetching OnClass data and models"
+OUT_ONTOLOGY="${OUT}/ontology"
+[ -d "$OUT_ONTOLOGY" ] || mkdir -p "$OUT_ONTOLOGY"
+wget https://figshare.com/ndownloader/files/28394466 -O "${OUT_ONTOLOGY}/OnClass_data_public_minimal.tar.gz"
+tar -xzvf "${OUT_ONTOLOGY}/OnClass_data_public_minimal.tar.gz" -C "${OUT_ONTOLOGY}" --strip-components=2
+rm "${OUT_ONTOLOGY}/allen.ontology"
+rm "${OUT_ONTOLOGY}/OnClass_data_public_minimal.tar.gz"
+
+wget https://figshare.com/ndownloader/files/28394541 -O "${OUT}/OnClass_models.tar.gz"
+tar -xzvf "${OUT}/OnClass_models.tar.gz" -C "${OUT}" --strip-components=1
+rm "${OUT}/OnClass_models.tar.gz"
+
+find "${OUT}/Pretrained_model" ! -name "example_file_model*" -type f -exec rm -f {} +
+mv "${OUT}/Pretrained_model" "${OUT}/onclass_model"
