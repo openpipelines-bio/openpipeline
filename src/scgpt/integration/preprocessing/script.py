@@ -11,9 +11,9 @@ par = {
     "output": "resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu",
     "modality": "rna",
     "input_layer": "X",
-    "ori_batch_layer_name": "sample",
-    "batch_id_layer": "batch_id",
-    "gene_name_layer": "gene_name",
+    "obs_ori_batch": "sample",
+    "output_obs_batch_id": "batch_id",
+    "var_gene_names": "gene_name",
     "normalized_total_layer": "X_normed",
     "binned_layer": "X_binned",
     "log1p_layer": "X_log1p",
@@ -38,10 +38,10 @@ pad_token = par["pad_token"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
 
 # Make batch a category column
-adata.obs["str_batch"] = adata.obs[par["ori_batch_layer_name"]].astype(str)
+adata.obs["str_batch"] = adata.obs[par["obs_ori_batch"]].astype(str)
 batch_id_labels = adata.obs["str_batch"].astype("category").cat.codes.values
-adata.obs[par["batch_id_layer"]] = batch_id_labels
-adata.var[par["gene_name_layer"]] = adata.var.index.tolist()
+adata.obs[par["output_obs_batch_id"]] = batch_id_labels
+adata.var[par["var_gene_names"]] = adata.var.index.tolist()
 
 # Load model vocab
 model_dir = Path(par["model_dir"])
@@ -52,22 +52,17 @@ for s in special_tokens:
         vocab.append_token(s)
 
 # Cross-check genes with pre-trained model
-genes = adata.var[par["gene_name_layer"]].tolist()
+genes = adata.var[par["var_gene_names"]].tolist()
 adata.var["id_in_vocab"] = [
-        1 if gene in vocab else -1 for gene in adata.var[par["gene_name_layer"]]
+        1 if gene in vocab else -1 for gene in adata.var[par["var_gene_names"]]
     ]
 gene_ids_in_vocab = np.array(adata.var["id_in_vocab"])
 adata = adata[:, adata.var["id_in_vocab"] >= 0]
 
 # Set pre-processing settings
-if par["filter_gene_by_counts"] == -1:
-    par["filter_gene_by_counts"] = False
-if par["filter_cell_by_counts"] == -1:
-    par["filter_cell_by_counts"] = False
-if par["normalize_total"] == -1:
-    par["normalize_total"] = False
-if par["n_hvg"] == -1:
-    par["n_hvg"] = False
+for par_name in ('filter_gene_by_counts', 'filter_cell_by_counts', 
+                 'normalize_total', 'n_hvg'):
+  par[par_name] = False if par[par_name] == -1 else par[par_name]
 
 # Preprocess data
 preprocessor = Preprocessor(

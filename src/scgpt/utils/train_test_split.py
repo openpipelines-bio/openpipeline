@@ -64,29 +64,20 @@ def split_data_train_test(
 
     data_dict = extract_data_from_anndata(adata)
   
-    (
-    train_data,
-    test_data,
-    train_celltype_labels,
-    test_celltype_labels,
-    train_batch_labels,
-    test_batch_labels
-    ) = train_test_split(
-        data_dict["all_counts"],
-        data_dict["celltypes_labels"],
-        data_dict["batch_ids"],
-        test_size=test_size,
-        shuffle=shuffle
-    )
-
-    return {
-        "train_data": train_data,
-        "test_data": test_data,
-        "train_celltype_labels": train_celltype_labels,
-        "test_celltype_labels": test_celltype_labels,
-        "train_batch_labels": train_batch_labels,
-        "test_batch_labels": test_batch_labels,
-    }
+    output_slots = (
+      "train_data",
+      "test_data",
+      "train_celltype_labels",
+      "test_celltype_labels",
+      "train_batch_labels",
+      "test_batch_labels",
+    ) 
+    return dict(zip(output_slots,
+                    train_test_split(data_dict["all_counts"],
+                                     data_dict["celltypes_labels"],
+                                     data_dict["batch_ids"],
+                                     test_size=test_size,
+                                     shuffle=shuffle)))
     
 
 def split_data_train_test_val(
@@ -110,46 +101,38 @@ def split_data_train_test_val(
     """
     data_dict = extract_data_from_anndata(adata)
   
-    (
-    train_data,
-    test_data,
-    train_celltype_labels,
-    test_celltype_labels,
-    train_batch_labels,
-    test_batch_labels
-    ) = train_test_split(
-        data_dict["all_counts"],
-        data_dict["celltypes_labels"],
-        data_dict["batch_ids"],
-        test_size=test_size,
-        shuffle=shuffle
-    )
+    output_slots_train_test = (
+      "train_data",
+      "test_data",
+      "train_celltype_labels",
+      "test_celltype_labels",
+      "train_batch_labels",
+      "test_batch_labels",
+    ) 
+    train_test = dict(zip(output_slots_train_test,
+                          train_test_split(data_dict["all_counts"],
+                                           data_dict["celltypes_labels"],
+                                           data_dict["batch_ids"],
+                                           test_size=test_size,
+                                           shuffle=shuffle)))
+    
 
-    (
-    train_data,
-    val_data,
-    train_celltype_labels,
-    val_celltype_labels,
-    train_batch_labels,
-    val_batch_labels
-    ) = train_test_split(
-        train_data,
-        train_celltype_labels,
-        train_batch_labels,
-        test_size=val_size/(1-test_size),
-        shuffle=shuffle
-    )
+    output_slots_train_val = (
+    "train_data",
+    "val_data",
+    "train_celltype_labels",
+    "val_celltype_labels",
+    "train_batch_labels",
+    "val_batch_labels"
+    ) 
+    
+    train_val = dict(zip(output_slots_train_val,
+                         train_test_split(train_test["train_data"],
+                                          train_test["train_celltype_labels"],
+                                          train_test["train_batch_labels"],
+                                          test_size=val_size/(1-test_size),
+                                          shuffle=shuffle)))
 
-    return {
-        "train_data": train_data,
-        "test_data": test_data,
-        "val_data": val_data,
-        "train_celltype_labels": train_celltype_labels,
-        "test_celltype_labels": test_celltype_labels,
-        "val_celltype_labels": val_celltype_labels,
-        "train_batch_labels": train_batch_labels,
-        "test_batch_labels": test_batch_labels,
-        "val_batch_labels": val_batch_labels,
-    }
+    return train_test | train_val
 
 

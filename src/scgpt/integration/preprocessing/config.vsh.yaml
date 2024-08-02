@@ -33,12 +33,12 @@ functionality:
           default: "X"
           description: |
             The key in the mudata layer to use as raw data.
-        - name: "--ori_batch_layer_name"
+        - name: "--obs_ori_batch"
           type: string
           default: "sample"
           description: |
             The column in the adata.obs that contains the batch information.
-        - name: "--gene_name_layer"
+        - name: "--var_gene_names"
           type: string
           default: "gene_name"
           required: false
@@ -62,24 +62,24 @@ functionality:
           choices: ["gzip", "lzf"]
           description: |
             The compression algorithm to use for the output h5mu file.
-        - name: "--batch_id_layer"
+        - name: "--output_obs_batch_id"
           type: string
           default: "batch_id"
           description: |
             The name of the adata.obs column to write categorical batch ids to.
         - name: "--normalized_total_layer"
           type: string
-          default: "X_normed"
+          default: "X_scgpt_normalized"
           description: |
             The name of the adata layer to write the normalized total counts to.
-        - name: "--binned_layer"
+        - name: "--output_binned_layer"
           type: string
-          default: "X_binned"
+          default: "X_scgpt_binned"
           description: |
             The name of the adata layer to write the binned data to.
-        - name: "--log1p_layer"
+        - name: "--outpu_log1p_layer"
           type: string
-          default: "X_log1p"
+          default: "X_scgpt_log_normalized"
           description: |
             The name of the adata layer to write the log1p transformed data to. Will only be written if 'data_is_raw' flag is set to true.
 
@@ -97,7 +97,7 @@ functionality:
           type: integer
           description: |
             Number of counts to filter genes by. Set to -1 if no gene count filtering should be performed.
-        - name: "filter_cell_by_counts"
+        - name: "--filter_cell_by_counts"
           default: -1
           min: -1
           type: integer
@@ -147,7 +147,6 @@ platforms:
         __merge__: /src/base/requirements/anndata_mudata.yaml
       - type: python
         packages:
-          - numpy==1.24.3
           - scipy==1.10.0
           - scgpt==0.2.1
           - ipython
