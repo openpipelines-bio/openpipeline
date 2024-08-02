@@ -585,7 +585,47 @@ functionality:
         example: "-k 16 -w 200 -r"
         info:
           config_key: Custom_bwa_mem2_Params
-
+  - name: CWL-runner arguments
+    arguments:
+      - name: "--parallel"
+        type: boolean
+        description: "Run jobs in parallel."
+        default: true
+      - name: "--timestamps"
+        type: boolean_true
+        description: "Add timestamps to the errors, warnings, and notifications."
+  - name: Undocumented arguments
+    arguments:
+      - name: --abseq_umi
+        type: integer
+        multiple: false
+        info:
+          config_key: AbSeq_UMI
+      - name: --target_analysis
+        type: boolean
+        multiple: false
+        info:
+          config_key: Target_analysis
+      - name: --vdj_jgene_evalue
+        type: double
+        description: |
+          e-value threshold for J gene. The e-value threshold for J gene call by IgBlast/PyIR, default is set as 0.001
+        multiple: false
+        info:
+          config_key: VDJ_JGene_Evalue
+      - name: --vdj_vgene_evalue
+        type: double
+        description: |
+          e-value threshold for V gene. The e-value threshold for V gene call by IgBlast/PyIR, default is set as 0.001
+        multiple: false
+        info:
+          config_key: VDJ_VGene_Evalue
+      - name: --write_filtered_reads
+        type: boolean
+        multiple: false
+        info:
+          config_key: Write_Filtered_Reads
+          
   resources:
     - type: python_script
       path: script.py
