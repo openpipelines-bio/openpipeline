@@ -57,7 +57,65 @@ functionality:
           - ATACLibrary_S2_L001_I2_001.fastq.gz
         info:
           config_key: Reads_ATAC
+  - name: References
+    description: |
+      Assay type will be inferred from the provided reference(s).
+      Do not provide both reference_archive and targeted_reference at the same time.
+      
+      Valid reference input combinations:
+        - reference_archive: WTA only
+        - reference_archive & abseq_reference: WTA + AbSeq
+        - reference_archive & supplemental_reference: WTA + extra transgenes
+        - reference_archive & abseq_reference & supplemental_reference: WTA + AbSeq + extra transgenes
+        - reference_archive: WTA + ATAC or ATAC only
+        - reference_archive & supplemental_reference: WTA + ATAC + extra transgenes
+        - targeted_reference: Targeted only
+        - targeted_reference & abseq_reference: Targeted + AbSeq
+        - abseq_reference: AbSeq only
 
+      The reference_archive can be generated with the bd_rhapsody_make_reference component.
+      Alternatively, BD also provides standard references which can be downloaded from these locations:
+
+        - Human: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Human_WTA_2023-02.tar.gz
+        - Mouse: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Mouse_WTA_2023-02.tar.gz
+    arguments:
+      - name: "--reference_archive"
+        type: file
+        description: |
+          Path to Rhapsody WTA Reference in the tar.gz format.
+
+          Structure of the reference archive:
+          
+          - `BD_Rhapsody_Reference_Files/`: top level folder
+            - `star_index/`: sub-folder containing STAR index, that is files created with `STAR --runMode genomeGenerate`
+            - GTF for gene-transcript-annotation e.g. "gencode.v43.primary_assembly.annotation.gtf"
+        example: "RhapRef_Human_WTA_2023-02.tar.gz"
+        required: false
+        info:
+          config_key: Reference_Archive
+      - name: "--targeted_reference"
+        type: file
+        description: |
+          Path to the targeted reference file in FASTA format.
+        example: "BD_Rhapsody_Immune_Response_Panel_Hs.fasta"
+        multiple: true
+        info:
+          config_key: Targeted_Reference
+      - name: "--abseq_reference"
+        type: file
+        description: Path to the AbSeq reference file in FASTA format.  Only needed if BD AbSeq Ab-Oligos are used.
+        example: "AbSeq_reference.fasta"
+        multiple: true
+        info:
+          config_key: AbSeq_Reference
+      - name: "--supplemental_reference"
+        type: file
+        alternatives: [-s]
+        description: Path to the supplemental reference file in FASTA format.  Only needed if there are additional transgene sequences to be aligned against in a WTA assay experiment.
+        example: "supplemental_reference.fasta"
+        multiple: true
+        info:
+          config_key: Supplemental_Reference
   resources:
     - type: python_script
       path: script.py
