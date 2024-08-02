@@ -133,7 +133,7 @@ functionality:
         example: output_seurat.rds
         required: false
         info:
-          template: "[sample_name]_Seurat.rds"
+          template: "sample_Seurat.rds"
       # - name: "--output_mudata"
       #   type: file
       #   direction: output
