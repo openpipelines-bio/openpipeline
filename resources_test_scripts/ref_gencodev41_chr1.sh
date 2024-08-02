@@ -17,7 +17,6 @@ NXF_VER=21.10.6 nextflow \
   run . \
   -main-script target/nextflow/workflows/ingestion/make_reference/main.nf \
   -profile docker \
-  -c src/workflows/utils/labels_ci.config \
   --id "$ID" \
   --genome_fasta "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz" \
   --transcriptome_gtf "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz" \
@@ -42,3 +41,13 @@ viash run src/reference/build_bdrhap2_reference/config.vsh.yaml -- \
   ---cpus 2
 
 mv Rhap_reference.tar.gz $OUT
+
+viash run src/mapping/bd_rhapsody2/config.vsh.yaml -- \       
+  --reads "resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R1_001_subset.fastq.gz" \
+  --reads "resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R2_001_subset.fastq.gz" \
+  --reference_archive "resources_test/reference_gencodev41_chr1/Rhap_reference.tar.gz" \
+  --output_dir "processed2" \
+  --cell_calling_data "mRNA" \
+  --exact_cell_count 4900
+
+mv processed2 resources_test/bdrhap_5kjrt
