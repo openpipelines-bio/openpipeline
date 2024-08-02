@@ -34,7 +34,7 @@ functionality:
           type: string
           default: model_state_dict
           description: |
-            Key in the model  file containing the pretrained checkpoints.
+            Key in the model file containing the pretrained checkpoints.
         - name: "--label_mapper_key"
           type: string
           default: id_to_class
@@ -47,7 +47,7 @@ functionality:
           type: file
           direction: input
           required: true
-          example: resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu
+          example: scgpt_preprocess_ouput.h5mu
           description: |
             The input h5mu file containing of data that have been pre-processed (normalized, binned, genes cross-checked and tokenized).
         - name: "--modality"
@@ -76,9 +76,9 @@ functionality:
           type: file
           direction: output
           required: true
-          example: Kim2020_Lung_cell_type_annotation.h5mu
+          example: output.h5mu
           description: |
-            The output cross-checked anndata file.
+            The output cross-checked mudata file.
         - name: "--output_compression"
           type: string
           example: "gzip"
