@@ -2,10 +2,10 @@ functionality:
   name: "from_bdrhap2_to_h5mu"
   namespace: "convert"
   description: |
-    Convert the output of a BD Rhapsody WTA pipeline to a MuData h5 file.
+    Convert the output of a BD Rhapsody pipeline to a MuData h5 file.
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
-      roles: [ maintainer ]
+      roles: [ author, maintainer ]
   argument_groups:
     - name: Inputs
       arguments:
@@ -35,20 +35,21 @@ functionality:
           required: false
           example: "gzip"
   resources:
-    - type: python_script
-      path: script.py
+    - type: r_script
+      path: script.R
   test_resources:
     - type: python_script
       path: test.py
 platforms:
   - type: docker
-    image: python:3.11-slim
+    image: ghcr.io/data-intuitive/randpy:r4.2_py3.9
     setup:
-      - type: apt
-        packages: 
-          - procps
+      - type: docker
+        run: apt update && apt upgrade -y
       - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml]
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+      - type: r
+        cran: anndata
   - type: nextflow
     directives:
       label: [lowmem, singlecpu]
