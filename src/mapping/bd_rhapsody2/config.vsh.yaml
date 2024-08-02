@@ -1,5 +1,5 @@
 functionality:
-  name: "bd_rhapsody"
+  name: "bd_rhapsody2"
   namespace: "mapping"
   description: |
     A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.
