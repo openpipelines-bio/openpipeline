@@ -137,7 +137,6 @@ functionality:
       - name: "--output_mudata"
         type: file
         direction: output
-        description: "Single-cell analysis tool inputs. Scanpy / Muon input file containing RSEC molecules data table and all cell annotation metadata."
         example: output_mudata.h5mu
         required: false
         info:
@@ -177,7 +176,7 @@ functionality:
       - name: "--rsec_mols_per_cell_unfiltered"
         type: file
         direction: output
-        description: "Unfiltered tables containing all cell labels with ≥10 reads."
+        description: "Unfiltered tables containing all cell labels with 10 reads."
         example: RSEC_MolsPerCell_Unfiltered_MEX.zip 
         required: false
         info:
