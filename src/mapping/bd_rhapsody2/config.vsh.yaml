@@ -129,6 +129,7 @@ functionality:
       - name: "--output_seurat"
         type: file
         direction: output
+        description: "Single-cell analysis tool inputs. Seurat (.rds) input file containing RSEC molecules data table and all cell annotation metadata."
         example: output_seurat.rds
         required: false
 
