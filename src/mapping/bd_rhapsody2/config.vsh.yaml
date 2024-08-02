@@ -469,7 +469,7 @@ functionality:
       - name: "--exact_cell_count"
         type: integer
         description: |
-          Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count
+          Set a specific number of cells as putative, based on those with the highest error-corrected read count
         example: 10000
         min: 1
         info:
@@ -482,6 +482,57 @@ functionality:
         min: 1
         info:
           config_key: Expected_Cell_Count
+  - name: Intronic Reads Settings
+    arguments:
+      - name: --exclude_intronic_reads
+        type: boolean
+        description: |
+          By default, the flag is false, and reads aligned to exons and introns are considered and represented in molecule counts. When the flag is set to true, intronic reads will be excluded.
+          The value can be true or false.
+        example: false
+        info:
+          config_key: Exclude_Intronic_Reads
+  - name: Multiplex Settings
+    arguments:
+      - name: "--sample_tags_version"
+        type: string
+        description: |
+          Specify the version of the Sample Tags used in the run:
+
+          * If Sample Tag Multiplexing was done, specify the appropriate version: human, mouse, flex, nuclei_includes_mrna, nuclei_atac_only
+          * If this is an SMK + Nuclei mRNA run or an SMK + Multiomic ATAC-Seq (WTA+ATAC-Seq) run (and not an SMK + ATAC-Seq only run), choose the "nuclei_includes_mrna" option.
+          * If this is an SMK + ATAC-Seq only run (and not SMK + Multiomic ATAC-Seq (WTA+ATAC-Seq)), choose the "nuclei_atac_only" option.
+        choices: [human, mouse, flex, nuclei_includes_mrna, nuclei_atac_only]
+        example: human
+        info:
+          config_key: Sample_Tags_Version
+      - name: "--tag_names"
+        type: string
+        description: |
+          Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv
+          Do not use the special characters.
+        multiple: true
+        example: [4-mySample, 9-myOtherSample, 6-alsoThisSample]
+        info:
+          config_key: Tag_Names
+  - name: VDJ arguments
+    arguments:
+      - name: "--vdj_version"
+        type: string
+        description: |
+          If VDJ was done, specify the appropriate option: human, mouse, humanBCR, humanTCR, mouseBCR, mouseTCR
+        choices: [human, mouse, humanBCR, humanTCR, mouseBCR, mouseTCR]
+        example: human
+        info:
+          config_key: VDJ_Version
+  - name: ATAC options
+    arguments:
+      - name: "--predefined_atac_peaks"
+        type: file
+        description: An optional BED file containing pre-established chromatin accessibility peak regions for generating the ATAC cell-by-peak matrix.
+        example: predefined_peaks.bed
+        info:
+          config_key: Predefined_ATAC_Peaks
   
   resources:
     - type: python_script
