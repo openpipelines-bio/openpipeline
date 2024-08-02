@@ -39,6 +39,8 @@
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
 
+* `annotate/random_forest` component: Added a random forest annotation component (PR #848).
+
 ## MINOR CHANGES
 
 * Bump scvelo to `0.3.2` (PR #828).
