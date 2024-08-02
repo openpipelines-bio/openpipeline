@@ -1,11 +1,11 @@
 functionality:
-  name: split_samples
+  name: split_h5mu
   namespace: "dataflow"
   description: |
     Split the samples of a single modality from a .h5mu (multimodal) sample into seperate .h5mu files based on the values of an .obs column of this modality. 
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
-      roles: [ maintainer ]
+      roles: [ author, maintainer ]
   argument_groups:
   - name: Input & specifications
     arguments:
@@ -20,7 +20,7 @@ functionality:
     - name: "--obs_feature"
       type: string
       required: true
-      description: The .obs column to split the samples on.
+      description: The .obs column to split the mudata on.
       example: "celltype"
     - name: "--drop_obs_nan"
       type: boolean_true
@@ -45,7 +45,7 @@ functionality:
       required: true
       direction: output
       example: sample_files.csv
-      description: A csv containing the base filename and modality type per output file.
+      description: A csv containing the base filename and obs feature by which it was split.
 
   resources:
     - type: python_script

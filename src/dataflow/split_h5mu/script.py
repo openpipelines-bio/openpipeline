@@ -47,8 +47,8 @@ def main():
 
     # format obs_features into file compatible names
     obs_features_s = [s.strip().replace(" ", "_") for s in obs_features]
-    obs_features_s = [re.sub(r'[-\s]', "_", s) for s in obs_features]
-    obs_features_s = [re.sub(r'[^A-Za-z0-9_]', "", s) for s in obs_features]
+    obs_features_s = [re.sub(r'[-\s]', "_", s) for s in obs_features_s]
+    obs_features_s = [re.sub(r'[^A-Za-z0-9_]', "", s) for s in obs_features_s]
 
     # ensure that names are unique, if not append number as suffix
     if not len(obs_features_s) == len(set(obs_features_s)):
@@ -65,7 +65,7 @@ def main():
     output_dir = Path(par["output"])
     if not output_dir.is_dir():
         output_dir.mkdir(parents=True)
-        
+
     # split modality of mdata file base on obs_feature
     logger.info(f"Splitting file based on {par['obs_feature']} values {obs_features}")
     obs_files = []
