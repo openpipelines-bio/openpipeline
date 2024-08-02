@@ -19,7 +19,6 @@ par = {
     "n_estimators": 100,
     "criterion": "gini",
     "max_depth": None,
-    "bootstrap": True,
     "class_weight": None,
     "output_compression": "gzip",
     "reference_layer": None,
@@ -65,7 +64,6 @@ def main():
             n_estimators=par["n_estimators"],
             criterion=par["criterion"],
             max_depth=par["max_depth"],
-            bootstrap=par["bootstrap"],
             class_weight=par["class_weight"]
         )
         model.fit(reference_matrix, labels)

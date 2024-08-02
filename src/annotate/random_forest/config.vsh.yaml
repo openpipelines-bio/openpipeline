@@ -78,6 +78,7 @@ functionality:
         - name: "--n_estimators"
           type: integer
           required: false
+          default: 100
           description: Number of trees in the random forest.
         - name: "--max_depth"
           type: integer
@@ -87,6 +88,7 @@ functionality:
           type: string
           required: false
           choices: ["gini", "entropy", "log_loss"]
+          default: "gini"
           description: The function to measure the quality of a split.
         - name: "--class_weight"
           type: string
