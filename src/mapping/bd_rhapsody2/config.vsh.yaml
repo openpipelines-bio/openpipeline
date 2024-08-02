@@ -533,7 +533,59 @@ functionality:
         example: predefined_peaks.bed
         info:
           config_key: Predefined_ATAC_Peaks
-  
+  - name: Additional options
+    arguments:
+      - name: "--run_name"
+        type: string
+        description: |
+          Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.
+        default: sample
+        info:
+          config_key: Run_Name
+      - name: "--generate_bam"
+        type: boolean
+        description: |
+          Specify whether to create the BAM file output
+        default: false
+        info:
+          config_key: Generate_Bam
+      - name: "--long_reads"
+        type: boolean
+        description: |
+          Use STARlong (default: undefined - i.e. autodetects based on read lengths) - Specify if the STARlong aligner should be used instead of STAR. Set to true if the reads are longer than 650bp.
+        info:
+          config_key: Long_Reads
+  - name: Advanced options
+    description: |
+      NOTE: Only change these if you are really sure about what you are doing
+    arguments:
+      - name: "--custom_star_params"
+        type: string
+        description: |
+          Modify STAR alignment parameters - Set this parameter to fully override default STAR mapping parameters used in the pipeline.
+          For reference this is the default that is used:
+
+            Short Reads: `--outFilterScoreMinOverLread 0 --outFilterMatchNminOverLread 0 --outFilterMultimapScoreRange 0 --clip3pAdapterSeq AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA --seedSearchStartLmax 50 --outFilterMatchNmin 25 --limitOutSJcollapsed 2000000`
+            Long Reads: Same as Short Reads + `--seedPerReadNmax 10000`
+
+          This applies to fastqs provided in the Reads user input 
+          Do NOT set any non-mapping related params like `--genomeDir`, `--outSAMtype`, `--outSAMunmapped`, `--readFilesIn`, `--runThreadN`, etc.
+          We use STAR version 2.7.10b
+        example: "--alignIntronMax 6000 --outFilterScoreMinOverLread 0.1 --limitOutSJcollapsed 2000000"
+        info:
+          config_key: Custom_STAR_Params
+      - name: "--custom_bwa_mem2_params"
+        type: string
+        description: |
+          Modify bwa-mem2 alignment parameters - Set this parameter to fully override bwa-mem2 mapping parameters used in the pipeline
+          The pipeline does not specify any custom mapping params to bwa-mem2 so program default values are used
+          This applies to fastqs provided in the Reads_ATAC user input 
+          Do NOT set any non-mapping related params like `-C`, `-t`, etc.
+          We use bwa-mem2 version 2.2.1
+        example: "-k 16 -w 200 -r"
+        info:
+          config_key: Custom_bwa_mem2_Params
+
   resources:
     - type: python_script
       path: script.py
