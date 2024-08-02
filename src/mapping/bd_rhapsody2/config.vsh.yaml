@@ -308,7 +308,114 @@ functionality:
         required: false
         info:
           template: "sample_VDJ_Unfiltered_Contigs_AIRR.csv"
-       
+  - name: "ATAC-Seq outputs"
+    description: Outputs when ATAC-Seq option selected
+    arguments:
+      - name: "--atac_metrics"
+        type: file
+        direction: output
+        description: "ATAC Metrics. Overall metrics from the ATAC-Seq analysis."
+        example: ATAC_Metrics.csv
+        required: false
+        info:
+          template: "sample_ATAC_Metrics.csv"
+      - name: "--atac_metrics_json"
+        type: file
+        direction: output
+        description: "ATAC Metrics JSON. Overall metrics from the ATAC-Seq analysis in JSON format."
+        example: ATAC_Metrics.json
+        required: false
+        info:
+          template: "sample_ATAC_Metrics.json"
+      - name: "--atac_fragments"
+        type: file
+        direction: output
+        description: "ATAC Fragments. Chromosomal location, cell index, and read support for each fragment detected"
+        example: ATAC_Fragments.bed.gz
+        required: false
+        info:
+          template: "sample_ATAC_Fragments.bed.gz"
+      - name: "--atac_fragments_index"
+        type: file
+        direction: output
+        description: "Index of ATAC Fragments."
+        example: ATAC_Fragments.bed.gz.tbi
+        required: false
+        info:
+          template: "sample_ATAC_Fragments.bed.gz.tbi"
+      - name: "--atac_transposase_sites"
+        type: file
+        direction: output
+        description: "ATAC Transposase Sites. Chromosomal location, cell index, and read support for each transposase site detected"
+        example: ATAC_Transposase_Sites.bed.gz
+        required: false
+        info:
+          template: "sample_ATAC_Transposase_Sites.bed.gz"
+      - name: "--atac_transposase_sites_index"
+        type: file
+        direction: output
+        description: "Index of ATAC Transposase Sites."
+        example: ATAC_Transposase_Sites.bed.gz.tbi
+        required: false
+        info:
+          template: "sample_ATAC_Transposase_Sites.bed.gz.tbi"
+      - name: "--atac_peaks"
+        type: file
+        direction: output
+        description: "ATAC Peaks. Peak regions of transposase activity"
+        example: ATAC_Peaks.bed.gz
+        required: false
+        info:
+          template: "sample_ATAC_Peaks.bed.gz"
+      - name: "--atac_peaks_index"
+        type: file
+        direction: output
+        description: "Index of ATAC Peaks."
+        example: ATAC_Peaks.bed.gz.tbi
+        required: false
+        info:
+          template: "sample_ATAC_Peaks.bed.gz.tbi"
+      - name: "--atac_peak_annotation"
+        type: file
+        direction: output
+        description: "ATAC Peak Annotation. Estimated annotation of peak-to-gene connections"
+        example: peak_annotation.tsv.gz
+        required: false
+        info:
+          template: "sample_peak_annotation.tsv.gz"
+      - name: "--atac_cell_by_peak"
+        type: file
+        direction: output
+        description: "ATAC Cell by Peak. Peak regions of transposase activity per cell"
+        example: ATAC_Cell_by_Peak_MEX.zip
+        required: false
+        info:
+          template: "sample_ATAC_Cell_by_Peak_MEX.zip"
+      - name: "--atac_cell_by_peak_unfiltered"
+        type: file
+        direction: output
+        description: "ATAC Cell by Peak Unfiltered. Unfiltered file containing all cell labels with >=1 transposase sites in peaks."
+        example: ATAC_Cell_by_Peak_Unfiltered_MEX.zip
+        required: false
+        info:
+          template: "sample_ATAC_Cell_by_Peak_Unfiltered_MEX.zip"
+      - name: "--atac_bam"
+        type: file
+        direction: output
+        description: "ATAC BAM. Alignment file for R1 and R2 with associated I2 annotations for ATAC-Seq. Only output if the BAM generation flag is set to true."
+        example: ATAC.bam
+        required: false
+        info:
+          template: "sample_ATAC.bam"
+      - name: "--atac_bam_index"
+        type: file
+        direction: output
+        description: "Index of ATAC BAM."
+        example: ATAC.bam.bai
+        required: false
+        info:
+          template: "sample_ATAC.bam.bai"
+      
   resources:
     - type: python_script
       path: script.py
