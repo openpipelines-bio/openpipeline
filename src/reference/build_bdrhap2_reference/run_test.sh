@@ -13,16 +13,7 @@ function clean_up {
 }
 trap clean_up EXIT
 
-function seqkit_head {
-  input="$1"
-  output="$2"
-  if [[ ! -f "$output" ]]; then
-    echo "> Processing `basename $input`"
-    seqkit subseq -r 1:50000 "$input" | gzip > "$output"
-  fi
-}
-
-seqkit_head "$meta_resources_dir/reference.fa.gz" "$tmpdir/reference_small.fa.gz"
+seqkit subseq -r 1:50000 "$meta_resources_dir/reference.fa.gz" | gzip > "$tmpdir/reference_small.fa.gz"
 zcat "$meta_resources_dir/reference.gtf.gz" | awk '$4 < 50001 {print ;}' | gzip > "$tmpdir/reference_small.gtf.gz"
 
 

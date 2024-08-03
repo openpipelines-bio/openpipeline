@@ -117,7 +117,7 @@ platforms:
     image: bdgenomics/rhapsody:2.2.1
     setup:
       - type: apt
-        packages: [procps]
+        packages: [procps, seqkit]
       - type: python
         packages: [cwlref-runner, cwl-runner]
   - type: nextflow
