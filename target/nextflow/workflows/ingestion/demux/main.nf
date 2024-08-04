@@ -3097,7 +3097,7 @@ meta = [
           "functionalityNamespace" : "demux",
           "output" : "",
           "platform" : "",
-          "git_commit" : "27f2cfc97704c137fcd7c2c8a5872c127a8e67ba",
+          "git_commit" : "a60f204e6c23f2135270ea6ae99c7ef4467a62aa",
           "executable" : "/nextflow/demux/cellranger_mkfastq/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/cellranger_mkfastq"
@@ -3118,7 +3118,7 @@ meta = [
           "functionalityNamespace" : "demux",
           "output" : "",
           "platform" : "",
-          "git_commit" : "27f2cfc97704c137fcd7c2c8a5872c127a8e67ba",
+          "git_commit" : "a60f204e6c23f2135270ea6ae99c7ef4467a62aa",
           "executable" : "/nextflow/demux/bcl_convert/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl_convert"
@@ -3139,7 +3139,7 @@ meta = [
           "functionalityNamespace" : "demux",
           "output" : "",
           "platform" : "",
-          "git_commit" : "27f2cfc97704c137fcd7c2c8a5872c127a8e67ba",
+          "git_commit" : "a60f204e6c23f2135270ea6ae99c7ef4467a62aa",
           "executable" : "/nextflow/demux/bcl2fastq/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl2fastq"
@@ -3160,7 +3160,7 @@ meta = [
           "functionalityNamespace" : "qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "27f2cfc97704c137fcd7c2c8a5872c127a8e67ba",
+          "git_commit" : "a60f204e6c23f2135270ea6ae99c7ef4467a62aa",
           "executable" : "/nextflow/qc/fastqc/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/fastqc"
@@ -3181,7 +3181,7 @@ meta = [
           "functionalityNamespace" : "qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "27f2cfc97704c137fcd7c2c8a5872c127a8e67ba",
+          "git_commit" : "a60f204e6c23f2135270ea6ae99c7ef4467a62aa",
           "executable" : "/nextflow/qc/multiqc/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/multiqc"
@@ -3248,7 +3248,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/demux",
     "viash_version" : "0.8.6",
-    "git_commit" : "27f2cfc97704c137fcd7c2c8a5872c127a8e67ba",
+    "git_commit" : "a60f204e6c23f2135270ea6ae99c7ef4467a62aa",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
