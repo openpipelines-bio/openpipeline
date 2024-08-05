@@ -2,7 +2,6 @@ import os
 import re
 import subprocess
 import tempfile
-from time import sleep
 from typing import Any
 import yaml
 import shutil
@@ -187,7 +186,6 @@ def copy_outputs(par: dict[str, Any], config: dict[str, Any]):
 def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
     config = read_config(meta["config"])
     
-    sleep(10000)
     # Preprocess params
     par = process_params(par, config, temp_dir)
 
