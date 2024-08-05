@@ -40,6 +40,8 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `resources_test_scripts/scGPT.sh`: Added script to include scGPT test resources (PR #800).
+
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
 
@@ -60,6 +62,17 @@
 * `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
 
 * Bump `viash-actions` to `v6` (PR #821).
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
+  data dtype (dtype) changed as a result of adding more observations after concatenation, causing `TypeError`.
+  One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
+  which is present in another sample; causing the values being filled with `NA` (PR #837).
+
+## DOCUMENTATION
+
+* Update authorship of components (PR #835).
 
 # openpipelines 1.0.0-rc6
 
