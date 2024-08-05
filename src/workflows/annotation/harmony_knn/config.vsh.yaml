@@ -1,0 +1,51 @@
+functionality:
+  name: "harmony_knn"
+  namespace: "workflows/annotation"
+  description: "Pipeline for cell type annotation using leiden integration of reference and query dataset followed by KNN label transfer."
+  authors:
+    - __merge__: /src/authors/dorien_roosen.yaml
+      roles: [ author, maintainer ]
+    - __merge__: /src/authors/weiwei_schultz.yaml
+      roles: [ contributor ]
+
+  __merge__: ../api/common_arguments.yaml
+  __merge__: ../api/common_arguments_integration_knn.yaml
+
+  argument_groups:
+    - name: Harmony integration options
+      arguments:
+        - name: "--theta"
+          type: double
+          description: |
+            Diversity clustering penalty parameter. Specify for each variable in group.by.vars. 
+            theta=0 does not encourage any diversity. Larger values of theta
+            result in more diverse clusters."
+          default: 2
+          multiple: true
+        - name: "--obs_covariates"
+          type: string
+          description: "The .obs field(s) that define the covariate(s) to regress out."
+          example: ["batch", "sample"]
+          required: true
+          multiple: true
+        - name: "--obsm_integrated"
+          type: string
+          default: "X_integrated_harmony"
+          required: false
+          description: "In which .obsm slot to store the resulting integrated embedding."
+  
+  dependencies:
+    - name: workflows/integration/harmony_leiden
+      alias: harmony_leiden_workflow
+    - name: labels_transfer/pynndescent_knn
+    - name: dataflow/split_samples
+    - name: dataflow/concatenate_h5mu
+    - name: metadata/add_id
+
+  resources:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: run_wf
+
+platforms:
+  - type: nextflow
