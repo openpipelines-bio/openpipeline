@@ -29,25 +29,51 @@ NXF_VER=21.10.6 nextflow \
   --publish_dir $OUT
 
 
-cwl_file="src/mapping/bd_rhapsody2/make_rhap_reference_2.2.1_nodocker.cwl"
-reference_small_gtf="$OUT/reference.gtf"
-reference_small_fa="$OUT/reference.fa"
+# create small reference by subsetting to small region
+START=30000
+END=31500
+CHR=chr1
 
+seqkit grep -r -p "^$CHR\$" "$OUT/reference.fa.gz" | \
+  seqkit subseq -r "$START:$END" | gzip > $OUT/reference_small.fa.gz
+
+zcat "$OUT/reference.gtf.gz" | \
+  awk -v FS='\t' -v OFS='\t' "
+    \$1 == \"$CHR\" && \$4 >= $START && \$5 <= $END {
+      \$4 = \$4 - $START + 1;
+      \$5 = \$5 - $START + 1;
+      print;
+    }" | gzip > $OUT/reference_small.gtf.gz
+
+# Build references for BD Rhapsody 2.x.x
 viash run src/reference/build_bdrhap2_reference/config.vsh.yaml -- \
-  --genome_fasta "resources_test/reference_gencodev41_chr1/reference.fa.gz" \
-  --gtf "resources_test/reference_gencodev41_chr1/reference.gtf.gz" \
-  --reference_archive "Rhap_reference.tar.gz" \
+  --genome_fasta "$OUT/reference.fa.gz" \
+  --gtf "$OUT/reference.gtf.gz" \
+  --reference_archive "$OUT/Rhap_reference_full.tar.gz" \
   --extra_star_params "--genomeSAindexNbases 4" \
+  ---cpus 2 
+  
+  viash run src/reference/build_bdrhap2_reference/config.vsh.yaml -- \
+  --genome_fasta "$OUT/reference_small.fa.gz" \
+  --gtf "$OUT/reference_small.gtf.gz" \
+  --reference_archive "$OUT/Rhap_reference_small.tar.gz" \
+  --extra_star_params "--genomeSAindexNbases 4" \
+  ---cpus 2 
+
+# Generate data processed by BD Rhapsody 2.x.x
+bdrhap_5kjrt_resources="resources_test/bdrhap_5kjrt"
+
+viash run src/mapping/bd_rhapsody2/config.vsh.yaml -- \
+  --reads "$bdrhap_5kjrt_resources/raw/12WTA_S1_L432_R1_001_subset.fastq.gz" \
+  --reads "$bdrhap_5kjrt_resources/raw/12WTA_S1_L432_R2_001_subset.fastq.gz" \
+  --reads "$bdrhap_5kjrt_resources/raw/12ABC_S1_L432_R1_001_subset.fastq.gz" \
+  --reads "$bdrhap_5kjrt_resources/raw/12ABC_S1_L432_R2_001_subset.fastq.gz" \
+  --reference_archive "$OUT/Rhap_reference_small.tar.gz" \
+  --abseq_reference "$bdrhap_5kjrt_resources/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta" \
+  --output_dir "$bdrhap_5kjrt_resources/processed_small" \
+  --cell_calling_data "mRNA" \
+  --exact_cell_count 4900 \
+  ---memory 10gb \
   ---cpus 2
 
-mv Rhap_reference.tar.gz $OUT
-
-viash run src/mapping/bd_rhapsody2/config.vsh.yaml -- \       
-  --reads "resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R1_001_subset.fastq.gz" \
-  --reads "resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R2_001_subset.fastq.gz" \
-  --reference_archive "resources_test/reference_gencodev41_chr1/Rhap_reference.tar.gz" \
-  --output_dir "processed2" \
-  --cell_calling_data "mRNA" \
-  --exact_cell_count 4900
-
-mv processed2 resources_test/bdrhap_5kjrt
+rm "$OUT/Rhap_reference_full.tar.gz"
