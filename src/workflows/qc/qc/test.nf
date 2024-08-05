@@ -40,8 +40,6 @@ workflow test_wf {
 
       "Output: $output"
     }
-
-    | view
     | qc_test.run(
       fromState: {id, state ->
         [
