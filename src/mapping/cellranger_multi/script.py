@@ -57,7 +57,7 @@ meta = {
   'memory_pb': None,
   'temp_dir': '/tmp',
   'config': './target/docker/mapping/cellranger_multi/.config.vsh.yaml',
-  'resources_dir': '/Users/dorienroosen/code/openpipeline'
+  'resources_dir': './resources_test'
 }
 ## VIASH END
 
@@ -93,8 +93,7 @@ fastq_regex = r'^([A-Za-z0-9\-_\.]+)_S(\d+)_(L(\d+)_)?[RI](\d+)_(\d+)\.fastq(\.g
 
 # Invert some parameters. Keep the original ones in the config for compatibility
 inverted_params = {
-    "gex_generate_no_bam": "gex_generate_bam",
-    "gex_no_secondary_analysis": "gex_secondary_analysis"
+    "gex_no_secondary_analysis": "gex_secondary_analysis",
 }
 for inverted_param, param in inverted_params.items():
     par[inverted_param] = not par[param] if par[param] is not None else None
@@ -103,28 +102,62 @@ for inverted_param, param in inverted_params.items():
 GEX_CONFIG_KEYS = {
     "gex_reference": "reference",
     "gex_expect_cells": "expect-cells",
+    "gex_force_cells": "force-cells",
     "gex_chemistry": "chemistry",
     "gex_no_secondary_analysis": "no-secondary",
-    "gex_generate_no_bam": "no-bam",
-    "gex_include_introns": "include-introns"
+    "gex_generate_bam": "create-bam",
+    "gex_include_introns": "include-introns",
+    "min_assignment_confidence": "min-assignment-confidence",
+    "check_library_compatibility": "check-library-compatibility",
+    "barcode_sample_assignment": "barcode-sample-assignment",
+    "cmo_set": "cmo-set",
+    "probe_set": "probe-set",
+    "filter_probes": "filter-probes",
+    "gex_r1_length": "r1-length",
+    "gex_r2_length": "r2-length",
 }
-FEATURE_CONFIG_KEYS = {"feature_reference": "reference"}
+
+FEATURE_CONFIG_KEYS = {
+    "feature_reference": "reference",
+    "feature_r1_length": "r1-length",
+    "feature_r2_length": "r2-length",
+    "min_crispr_umi": "min-crispr-umi",
+}
+
 VDJ_CONFIG_KEYS = {"vdj_reference": "reference",
-                   "vdj_inner_enrichment_primers": "inner-enrichment-primers"}
+                   "vdj_inner_enrichment_primers": "inner-enrichment-primers",
+                   "vdj_r1_length": "r1-length",
+                   "vdj_r2_length": "r2-length",
+                  }
+
+
+ANTIGEN_SPECIFICITY_CONFIG_KEYS = {
+    "control_id": "control_id",
+    "mhc_allele": "mhc_allele",
+}
+
 
 REFERENCE_SECTIONS = {
     "gene-expression": (GEX_CONFIG_KEYS, "index"),
     "feature": (FEATURE_CONFIG_KEYS, "index"),
-    "vdj": (VDJ_CONFIG_KEYS, "index")
+    "vdj": (VDJ_CONFIG_KEYS, "index"),
+    "antigen-specificity": (ANTIGEN_SPECIFICITY_CONFIG_KEYS, "columns"),
 }
 
 LIBRARY_CONFIG_KEYS = {'library_id': 'fastq_id',
                        'library_type': 'feature_types',
                        'library_subsample': 'subsample_rate',
-                       'library_lanes': 'lanes'}
-SAMPLE_PARAMS_CONFIG_KEYS = {'cell_multiplex_sample_id': 'sample_id',
+                       'library_lanes': 'lanes',
+                       'library_chemistry': 'chemistry',
+                       }
+
+
+SAMPLE_PARAMS_CONFIG_KEYS = {'sample_ids': 'sample_id',
                              'cell_multiplex_oligo_ids': 'cmo_ids',
-                             'cell_multiplex_description': 'description'}
+                             'sample_description': 'description',
+                             'probe_barcode_ids': 'probe_barcode_ids',
+                             'sample_expect_cells': 'expect_cells',
+                             'sample_force_cells': 'force_cells'}
 
 
 # These are derived from the dictionaries above
@@ -181,7 +214,7 @@ def transform_helper_inputs(par: dict[str, Any]) -> dict[str, Any]:
 
 def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
     return {key: len(li) for key, li in dic.items()
-            if li is not None and len(li) > 1}
+            if li is not None and isinstance(li, (list, tuple, set))}
 
 def strip_margin(text: str) -> str:
     return re.sub('(\n?)[ \t]*\|', '\\1', text)
@@ -238,6 +271,36 @@ def make_paths_absolute(par: dict[str, Any], config: Path | str):
         par[arg_name] = new_arg
     return par
 
+def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> str:
+    """
+    Allow to use `-1` to define a 'not set' value for arguments of `type: integer` with `multiple: true`.
+    """
+    with open(viash_config, 'r', encoding="utf-8") as open_viash_config:
+        config = yaml.safe_load(open_viash_config)
+
+    arguments = {
+        arg["name"].removeprefix("-").removeprefix("-"): arg
+        for group in config["functionality"]["argument_groups"]
+        for arg in group["arguments"]
+    }
+    for arg_name, arg in arguments.items():
+        if not par.get(arg_name) or arg["type"] != "integer":
+            continue
+        par_value, is_multiple = par[arg_name], arg["multiple"]
+        assert is_multiple in (True, False)
+
+        if not is_multiple:
+            continue
+
+        def replace_notset_values(integer_value: int) -> int | None:
+            return None if integer_value == -1 else integer_value
+        
+        # Use an extension array to handle "None" values, otherwise int + NA
+        # values would be converted to a "float" dtype
+        new_arg = pd.array([replace_notset_values(value) for value in par_value], dtype="Int64")
+        par[arg_name] = new_arg
+    return par
+
 def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
 
     if par["input"]:
@@ -257,13 +320,13 @@ def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
     # check lengths of libraries metadata
     library_dict = subset_dict(par, LIBRARY_PARAMS)
     check_subset_dict_equal_length("Library", library_dict)
-    # storing for later use
-    par["libraries"] = library_dict
 
-    cmo_dict = subset_dict(par, SAMPLE_PARAMS)
-    check_subset_dict_equal_length("Cell multiplexing", cmo_dict)
-    # storing for later use
-    par["cmo"] = cmo_dict
+    samples_dict = subset_dict(par, SAMPLE_PARAMS)
+    check_subset_dict_equal_length("Samples", samples_dict)
+
+    # Allow using -1 to indicate unset integers for arguments
+    # that accept multiple integers.
+    par = handle_integers_not_set(par, viash_config)
 
     # use absolute paths
     return make_paths_absolute(par, viash_config)
@@ -285,9 +348,8 @@ def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
     par["fastqs"] = fastq_dir
     libraries = dict(LIBRARY_CONFIG_KEYS, **{"fastqs": "fastqs"})
     #TODO: use the union (|) operator when python is updated to 3.9
-    all_sections = dict(REFERENCE_SECTIONS, 
-                        **{"libraries": (libraries, "columns")},
-                        **{"samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns")})
+    all_sections = REFERENCE_SECTIONS | {"libraries": (libraries, "columns"), 
+                                         "samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns")}
     for section_name, (section_params, orientation) in all_sections.items():
         reference_pars = subset_dict(par, section_params)
         content_list += generate_csv_category(section_name, reference_pars, orient=orientation)
@@ -374,21 +436,21 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             # run process
             cmd = ["cellranger", "multi"] + proc_pars
             logger.info("> " + ' '.join(cmd))
+            process_output = subprocess.run(
+                cmd,
+                cwd=temp_dir,
+                check=False,
+                capture_output=True
+            )
+
+            with (par["output"] / "cellranger_multi.log").open('w') as open_log:
+                open_log.write(process_output.stdout.decode('utf-8'))
             try:
-                process_output = subprocess.run(
-                    cmd,
-                    cwd=temp_dir,
-                    check=True,
-                    capture_output=True
-                )
+                process_output.check_returncode()
             except subprocess.CalledProcessError as e:
+                logger.error(e.output.decode('utf-8'))
                 print(e.output.decode('utf-8'), flush=True)
                 raise e
-            else:
-                # Write stdout output to output folder
-                with (par["output"] / "cellranger_multi.log").open('w') as open_log:
-                    open_log.write(process_output.stdout.decode('utf-8'))
-                print(process_output.stdout.decode('utf-8'), flush=True)
 
             # look for output dir file
             tmp_output_dir = temp_dir_path / temp_id / "outs"

@@ -5,7 +5,6 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
 
 
-export NXF_VER=23.04.2
 
 nextflow run . \
     -main-script src/workflows/multiomics/split_modalities/test.nf \

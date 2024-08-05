@@ -26,9 +26,10 @@ workflow test_wf {
   }
 
   | split_modalities_test.run(
-    fromState: {id, state ->
-      [ input: state.output_types,
-        mod_dir: state.output,
-        orig_input: state.orig_input]}
+    fromState: [ 
+      "input": "output_types",
+      "mod_dir": "output",
+      "orig_input": "orig_input",
+    ]
   )
 }

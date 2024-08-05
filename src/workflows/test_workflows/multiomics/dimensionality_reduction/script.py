@@ -2,8 +2,7 @@ import mudata as mu
 
 ##VIASH START
 par = {
-  "input": "output_test/split_modalities/foo_types.csv",
-  "mod_dir": "output_test/split_modalities/h5mu"
+  "input": "foo.final.h5mu",
 }
 
 meta = {
