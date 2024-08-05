@@ -1876,9 +1876,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping multi_star"
-LABEL org.opencontainers.image.created="2024-08-05T08:38:28Z"
+LABEL org.opencontainers.image.created="2024-08-05T11:02:26Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e79a2217131fb652895b07150603476f42eb57ed"
+LABEL org.opencontainers.image.revision="6eefca80d6bff0c32fb3cd37e3b1a981ada54dba"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
