@@ -44,14 +44,6 @@ zcat "$OUT/reference.gtf.gz" | \
       \$5 = \$5 - $START + 1;
       print;
     }" | gzip > $OUT/reference_small.gtf.gz
-
-# Build references for BD Rhapsody 2.x.x
-viash run src/reference/build_bdrhap2_reference/config.vsh.yaml -- \
-  --genome_fasta "$OUT/reference.fa.gz" \
-  --gtf "$OUT/reference.gtf.gz" \
-  --reference_archive "$OUT/Rhap_reference_full.tar.gz" \
-  --extra_star_params "--genomeSAindexNbases 4" \
-  ---cpus 2 
   
   viash run src/reference/build_bdrhap2_reference/config.vsh.yaml -- \
   --genome_fasta "$OUT/reference_small.fa.gz" \
@@ -70,10 +62,8 @@ viash run src/mapping/bd_rhapsody2/config.vsh.yaml -- \
   --reads "$bdrhap_5kjrt_resources/raw/12ABC_S1_L432_R2_001_subset.fastq.gz" \
   --reference_archive "$OUT/Rhap_reference_small.tar.gz" \
   --abseq_reference "$bdrhap_5kjrt_resources/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta" \
-  --output_dir "$bdrhap_5kjrt_resources/processed_small" \
+  --output_dir "$bdrhap_5kjrt_resources/processed2" \
   --cell_calling_data "mRNA" \
   --exact_cell_count 4900 \
   ---memory 10gb \
   ---cpus 2
-
-rm "$OUT/Rhap_reference_full.tar.gz"
