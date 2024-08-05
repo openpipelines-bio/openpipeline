@@ -11,12 +11,14 @@ import glob
 par = {
     'reads': [
         'resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R1_001_subset.fastq.gz',
-        'resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R2_001_subset.fastq.gz'
+        'resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R2_001_subset.fastq.gz',
+        'resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R1_001_subset.fastq.gz',
+        'resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R2_001_subset.fastq.gz'
     ],
     'reads_atac': None,
     'reference_archive': "reference_gencodev41_chr1.tar.gz",
     'targeted_reference': [],
-    'abseq_reference': [],
+    'abseq_reference': ["resources_test/bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"],
     'supplemental_reference': [],
     'cell_calling_data': 'mRNA',
     'cell_calling_bioproduct_algorithm': None,
@@ -29,17 +31,61 @@ par = {
     'vdj_version': None,
     'predefined_atac_peaks': None,
     'run_name': "sample",
-    'generate_bam': None,
+    'generate_bam': False,
     'alignment_star_params': None,
     'alignment_bwa_mem2_params': None,
     'parallel': True,
     'timestamps': False,
     'dryrun': False,
-    'output_dir': 'output_large_op'
+    'output_dir': 'output_large_op',
+    'output_seurat': 'seurat.rds',
+    'output_mudata': 'mudata.h5mu',
+    'metrics_summary': 'metrics_summary.csv',
+    'pipeline_report': 'pipeline_report.html',
+    'rsec_mols_per_cell': None,
+    'dbec_mols_per_cell': None,
+    'rsec_mols_per_cell_unfiltered': None,
+    'bam': None,
+    'bam_inddex': None,
+    'bioproduct_stats': None,
+    'dimred_tsne': None,
+    'dimred_umap': None,
+    'immune_cell_classification': None,
+    'sample_tag_metrics': None,
+    'sample_tag_calls': None,
+    'sample_tag_counts': None,
+    'sample_tag_counts_unassigned': None,
+    'vdj_metrics': None,
+    'vdj_per_cell': None,
+    'vdj_per_cell_uncorrected': None,
+    'vdj_dominant_contigs': None,
+    'vdj_unfiltered_contigs': None,
+    'atac_metrics': None,
+    'atac_metrics_json': None,
+    'atac_fragments': None,
+    'atac_fragments_index': None,
+    'atac_transposase_sites': None,
+    'atac_transposase_sites_index': None,
+    'atac_peaks': None,
+    'atac_peaks_index': None,
+    'atac_peak_annotation': None,
+    'atac_cell_by_peak': None,
+    'atac_cell_by_peak_unfiltered': None,
+    'atac_bam': None,
+    'atac_bam_index': None,
+    'protein_aggregates_experimental': None,
+    'long_reads': None,
+    'custom_star_params': None,
+    'custom_bwa_mem2_params': None,
+    'abseq_umi': None,
+    'target_analysis': None,
+    'vdj_jgene_evalue': None,
+    'vdj_vgene_evalue': None,
+    'write_filtered_reads': None
 }
 meta = {
-    'config': "target/nextflow/bd_rhaspody/bd_rhaspody_sequence_analysis/.config.vsh.yaml",
-    'resources_dir': os.path.abspath('src/bd_rhaspody/bd_rhaspody_sequence_analysis'),
+    'config': "target/nextflow/mapping/bd_rhapsody2/.config.vsh.yaml",
+    'resources_dir': os.path.abspath('src/mapping/bd_rhapsody2'),
     'temp_dir': os.getenv("VIASH_TEMP"),
     'memory_mb': None,
     'cpus': None
@@ -166,9 +212,9 @@ def copy_outputs(par: dict[str, Any], config: dict[str, Any]):
             template = (arg.get("info") or {}).get("template")
             if template:
                 template_glob = template\
-                    .replace("[sample_name]", par["run_name"])\
-                    .replace("(assay)", "*")\
-                    .replace("[number]", "*")
+                    .replace("sample", par["run_name"])\
+                    .replace("assay", "*")\
+                    .replace("number", "*")
                 files = glob.glob(os.path.join(par["output_dir"], template_glob))
                 if len(files) == 0 and arg["required"]:
                     raise ValueError(f"Expected output file '{template_glob}' not found.")
@@ -176,7 +222,10 @@ def copy_outputs(par: dict[str, Any], config: dict[str, Any]):
                     raise ValueError(f"Expected single output file '{template_glob}', but found multiple.")
                 
                 if not arg["multiple"]:
-                    shutil.copy(files[0], par_value)
+                    try:
+                        shutil.copy(files[0], par_value)
+                    except IndexError:
+                        raise ValueError(f"Template glob: {template_glob}. Arg: {arg}. Par: {par[arg['clean_name']]}")
                 else:
                     # replace '*' in par_value with index
                     for i, file in enumerate(files):
