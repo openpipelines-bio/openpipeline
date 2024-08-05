@@ -224,8 +224,9 @@ def copy_outputs(par: dict[str, Any], config: dict[str, Any]):
                 if not arg["multiple"]:
                     try:
                         shutil.copy(files[0], par_value)
+                        print(f"Copied {files[0]} to {par_value}")
                     except IndexError:
-                        raise ValueError(f"Template glob: {template_glob}. Arg: {arg}. Par: {par[arg['clean_name']]}")
+                        print(f"Unable to copy {template_glob} to {par_value}")
                 else:
                     # replace '*' in par_value with index
                     for i, file in enumerate(files):
@@ -278,6 +279,7 @@ def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
 
     # Copy outputs
     copy_outputs(par, config)
+
 
 if __name__ == "__main__":
     with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody-", dir=meta["temp_dir"]) as temp_dir:
