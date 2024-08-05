@@ -10,7 +10,11 @@
 
 * Removed `--disable_library_compatibility_check` in favour of `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).
 
+* `lianapy`: bumped version to `1.2.1` (PR #827).
+
 ## NEW FUNCTIONALITY
+
+* CI: added checking of mudata contents for multiple workflows (PR #783).
 
 * Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #803).
 
@@ -32,12 +36,16 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `resources_test_scripts/scGPT.sh`: Added script to include scGPT test resources (PR #800).
+
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
   
 * `dataflow/split_samples` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
 
 ## MINOR CHANGES
+
+* Bump scvelo to `0.3.2` (PR #828).
 
 * Bump viash to `0.8.6` (PR #815).
 
@@ -48,6 +56,17 @@
 * `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
 
 * Bump `viash-actions` to `v6` (PR #821).
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
+  data dtype (dtype) changed as a result of adding more observations after concatenation, causing `TypeError`.
+  One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
+  which is present in another sample; causing the values being filled with `NA` (PR #837).
+
+## DOCUMENTATION
+
+* Update authorship of components (PR #835).
 
 # openpipelines 1.0.0-rc6
 
