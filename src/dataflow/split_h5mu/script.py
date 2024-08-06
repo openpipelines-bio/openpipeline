@@ -46,8 +46,7 @@ def main():
     obs_features = adata.obs[par["obs_feature"]].unique().tolist()
 
     # format obs_features into file compatible names
-    obs_features_s = [s.strip().replace(" ", "_") for s in obs_features]
-    obs_features_s = [re.sub(r'[-\s]', "_", s) for s in obs_features_s]
+    obs_features_s = [re.sub(r'[-\s]', "_", s.strip()) for s in obs_features]
     obs_features_s = [re.sub(r'[^A-Za-z0-9_]', "", s) for s in obs_features_s]
 
     # ensure that names are unique, if not append number as suffix

@@ -41,7 +41,7 @@
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
   
-* `dataflow/split_samples` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
+* `dataflow/split_h5mu` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
 
 ## MINOR CHANGES
 
