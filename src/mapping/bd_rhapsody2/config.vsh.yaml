@@ -636,7 +636,7 @@ functionality:
     - path: rhapsody_cell_label.py
     - path: /resources_test/reference_gencodev41_chr1/reference.fa.gz
     - path: /resources_test/reference_gencodev41_chr1/reference.gtf.gz
-    - path: /resources_test/reference_gencodev41_chr1/Rhap_reference.tar.gz
+    - path: /resources_test/reference_gencodev41_chr1/reference_bd_rhapsody_v2.tar.gz
     - path: /resources_test/bdrhap_5kjrt/raw
 
 platforms:
