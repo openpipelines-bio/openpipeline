@@ -7,7 +7,7 @@ functionality:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ maintainer, author ]
     - __merge__: /src/authors/jakub_majercik.yaml
-      roles: [ contributor ]
+      roles: [ author ]
 
   argument_groups:
     - name: Model input
