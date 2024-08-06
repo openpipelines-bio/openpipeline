@@ -46,10 +46,8 @@ functionality:
           required: false
         - name: "--reference_obs_targets"
           type: string
-          description: #TODO: update for multiple: Key in obs field of reference AnnData with cell-type information.
-          example: ["cell_ontology_class", "celltype"]
+          example: "cell_ontology_class"
           default: "cell_ontology_class"
-          multiple: true
         - name: "--check_expression"
           type: boolean
           description: "Whether to check the expression of the reference dataset to the format reccomended by CellTypist."

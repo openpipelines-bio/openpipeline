@@ -54,7 +54,7 @@ def main(par):
         input_modality.var.index = [re.sub("\\.[0-9]+$", "", s) for s in input_modality.var[par["var_query_gene_names"]]]
 
     if par["model"]:
-        if par["refererence"]:
+        if par["reference"]:
             logger.warning("Both 'model' and 'reference' are provided. 'model' will be used to make cell type predictions, 'reference' will be ignored.")
         model = celltypist.models.Model.load(par["model"])
         logger.info(f"Model features: {model.classifier.features}")

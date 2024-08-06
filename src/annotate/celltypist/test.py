@@ -47,6 +47,7 @@ def test_simple_execution(run_component, random_h5mu_path, normalize_log_transfo
         "--input", input_file_transformed,
         "--reference", reference_file,
         "--reference_obs_targets", "cell_ontology_class",
+        "--var_reference_gene_names", "ensemblid",
         "--output", output_file
     ])
     
@@ -58,11 +59,11 @@ def test_simple_execution(run_component, random_h5mu_path, normalize_log_transfo
     assert_annotation_objects_equal(input_mudata.mod["prot"],
                                     output_mudata.mod["prot"])
     
-    assert list(output_mudata.mod["rna"].obs.keys()) == ['cell_ontology_class_pred',
-                                                         'cell_ontology_class_prob']
+    assert list(output_mudata.mod["rna"].obs.keys()) == ['celltypist_pred',
+                                                         'celltypist_probability']
     
-    obs_values = output_mudata.mod["rna"].obs["cell_ontology_class_prob"]
-    assert all(0 <= value <= 1 for value in obs_values), ".obs at cell_ontology_class_prob has values outside the range [0, 1]"
+    obs_values = output_mudata.mod["rna"].obs["celltypist_probability"]
+    assert all(0 <= value <= 1 for value in obs_values), ".obs at celltypist_probability has values outside the range [0, 1]"
 
 def test_with_model(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
@@ -78,10 +79,10 @@ def test_with_model(run_component, random_h5mu_path):
     
     output_mudata = mu.read_h5mu(output_file)
     
-    assert {'cell_type_pred', 'cell_type_prob'}.issubset(output_mudata.mod["rna"].obs.keys()), "Required keys not found in .obs"
+    assert {'celltypist_pred', 'celltypist_probability'}.issubset(output_mudata.mod["rna"].obs.keys()), "Required keys not found in .obs"
     
-    obs_values = output_mudata.mod["rna"].obs["cell_type_prob"]
-    assert all(0 <= value <= 1 for value in obs_values), ".obs at cell_type_prob has values outside the range [0, 1]"
+    obs_values = output_mudata.mod["rna"].obs["celltypist_probability"]
+    assert all(0 <= value <= 1 for value in obs_values), ".obs at celltypist_probability has values outside the range [0, 1]"
 
 def test_fail_check_reference_expression(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
@@ -90,6 +91,7 @@ def test_fail_check_reference_expression(run_component, random_h5mu_path):
         run_component([
             "--input", input_file,
             "--reference", reference_file,
+            "--var_reference_gene_names", "ensemblid",
             "--output", output_file,
             "--check_expression", "True"
         ])
@@ -103,6 +105,7 @@ def test_fail_invalid_input_expression(run_component, random_h5mu_path):
         run_component([
             "--input", input_file,
             "--reference", reference_file,
+            "--var_reference_gene_names", "ensemblid",
             "--output", output_file
         ])
     assert re.search(r"ValueError: 🛑 Invalid expression matrix in `.X`, expect log1p normalized expression to 10000 counts per cell",
