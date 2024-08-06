@@ -38,6 +38,8 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `scgpt/cell_type_annotation` component: Added scGPT cell type annotation component (PR #798).
+
 * `resources_test_scripts/scGPT.sh`: Added script to include scGPT test resources (PR #800).
 
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
