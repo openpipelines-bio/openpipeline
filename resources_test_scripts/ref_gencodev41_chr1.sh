@@ -29,26 +29,10 @@ NXF_VER=21.10.6 nextflow \
   --publish_dir $OUT
 
 
-# create small reference by subsetting to small region
-START=30000
-END=31500
-CHR=chr1
-
-seqkit grep -r -p "^$CHR\$" "$OUT/reference.fa.gz" | \
-  seqkit subseq -r "$START:$END" | gzip > $OUT/reference_small.fa.gz
-
-zcat "$OUT/reference.gtf.gz" | \
-  awk -v FS='\t' -v OFS='\t' "
-    \$1 == \"$CHR\" && \$4 >= $START && \$5 <= $END {
-      \$4 = \$4 - $START + 1;
-      \$5 = \$5 - $START + 1;
-      print;
-    }" | gzip > $OUT/reference_small.gtf.gz
-  
-  viash run src/reference/build_bdrhap2_reference/config.vsh.yaml -- \
-  --genome_fasta "$OUT/reference_small.fa.gz" \
-  --gtf "$OUT/reference_small.gtf.gz" \
-  --reference_archive "$OUT/Rhap_reference_small.tar.gz" \
+viash run src/reference/build_bdrhap2_reference/config.vsh.yaml -- \
+  --genome_fasta "$OUT/reference.fa.gz" \
+  --gtf "$OUT/reference.gtf.gz" \
+  --reference_archive "$OUT/Rhap_reference.tar.gz" \
   --extra_star_params "--genomeSAindexNbases 4" \
   ---cpus 2 
 
