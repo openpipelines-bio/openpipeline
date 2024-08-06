@@ -17,12 +17,13 @@ functionality:
       arguments:
         - name: "--weights"
           type: string
-          choices: ["uniform", "distance"]
+          choices: ["uniform", "distance", "affinity"]
           default: "uniform"
           description: |
             Weight function used in prediction. Possible values are:
-            `uniform` (all points in each neighborhood are weighted equally) or 
-            `distance` (weight points by the inverse of their distance)
+            - `uniform` – all points in each neighborhood are weighted equally 
+            - `distance` – weight points by the inverse of their distance
+            - `affinity` – weight points by the sum of their Gaussian kernel similarities to each sample
         - name: "--n_neighbors"
           type: integer
           min: 5
@@ -33,7 +34,7 @@ functionality:
   resources:
     - type: python_script
       path: script.py
-    - path: ../utils/helper_2.py
+    - path: ../utils/helper.py
 
   test_resources:
     - type: python_script
@@ -55,6 +56,7 @@ platforms:
       - type: python
         packages:
           - pynndescent~=0.5.10
+          - numba~=0.56.4
           - numpy<2
     test_setup:
       - type: python

@@ -1,4 +1,5 @@
 import mudata as mu
+import numba
 import numpy as np
 from scipy.sparse import issparse
 import sys
@@ -28,7 +29,7 @@ meta ={
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-from helper_2 import check_arguments, get_reference_features, get_query_features, check_sparsity
+from helper import check_arguments, get_reference_features, get_query_features, check_sparsity
 
 def setup_logger():
     import logging
@@ -43,6 +44,34 @@ def setup_logger():
 
     return logger
 # END TEMPORARY WORKAROUND setup_logger
+
+@numba.njit
+def weighted_prediction(weights, ref_cats):
+    """Get highest weight category."""
+    N = len(weights)
+    predictions = np.zeros((N,), dtype=ref_cats.dtype)
+    probabilities = np.zeros((N,))
+    for i in range(N):
+        obs_weights = weights[i]
+        obs_cats = ref_cats[i]
+        best_prob = 0
+        for c in np.unique(obs_cats):
+            cand_prob = np.sum(obs_weights[obs_cats == c])
+            if cand_prob > best_prob:
+                best_prob = cand_prob
+                predictions[i] = c
+                probabilities[i] = best_prob
+
+    return predictions, probabilities
+
+def distances_to_affinities(distances):
+    stds = np.std(distances, axis=1)
+    stds = (2.0 / stds) ** 2
+    stds = stds.reshape(-1, 1)
+    distances_tilda = np.exp(-np.true_divide(distances, stds))
+
+    return distances_tilda / np.sum(distances_tilda, axis=1, keepdims=True)
+
 logger = setup_logger()
 
 # Reading in data
@@ -66,31 +95,50 @@ inference_X = get_query_features(q_adata, par, logger)
 train_X = check_sparsity(train_X, logger)
 inference_X = check_sparsity(inference_X, logger)
 
+neighbors_transformer = PyNNDescentTransformer(
+    n_neighbors=par["n_neighbors"],
+    parallel_batch_queries=True,
+)
+neighbors_transformer.fit(train_X)
+
+# Square sparse matrix with distances to n neighbors in reference data
+reference_neighbors = neighbors_transformer.transform(inference_X)
+
 # For each target, train a classifier and predict labels
 for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"],  par["output_obs_predictions"], par["output_obs_probability"]):
     logger.info(f"Predicting labels for {obs_tar}")
-    train_Y = r_adata.obs[obs_tar].to_numpy()
 
-    # Pipeline instantiation
-    logger.info(f"Instantiate pipeline of PyNNDescentTransformer and KNeighborClassifier with {par['n_neighbors']} n_neighbors and {par['weights']} weights")
-    knn = make_pipeline(
-        PyNNDescentTransformer(
-            n_neighbors=par["n_neighbors"],
-            parallel_batch_queries=True,
-        ),
-        KNeighborsClassifier(metric="precomputed", weights=par["weights"]),
-    )
+    if par["weights"] != "gaussian":
+        train_y = r_adata.obs[obs_tar].to_numpy()
+        classifier = KNeighborsClassifier(n_neighbors=50, metric="precomputed", weights=par["weights"])
+        classifier.fit(
+            X=neighbors_transformer.transform(train_X), y=train_y
+        )
+        predicted_labels = classifier.predict(reference_neighbors)
+        probabilities = classifier.predict_proba(reference_neighbors).max(axis=1)
+        
+    elif par["weights"] == "gaussian":
+        # Convert type to category so that the code below works for any initial type
+        r_adata.obs[obs_tar] = r_adata.obs[obs_tar].astype("category")
 
-    logger.info(f"Training PyNNDescentTransformer and KNeighborClassifier based on {obs_tar} obs labels")
-    knn.fit(train_X, train_Y)
+        ref_distances = reference_neighbors.data.reshape(inference_X.shape[0], par["n_neighbors"])
+        ref_neighbors_idxs = reference_neighbors.indices.reshape(inference_X.shape[0], par["n_neighbors"])
+
+        # Get indices of each category because numba throws an error when using strings
+        ref_cats = r_adata.obs[obs_tar].cat.codes.to_numpy()[ref_neighbors_idxs]
+        affinities = distances_to_affinities(ref_distances)
+        predicted_labels, probabilities = weighted_prediction(affinities, ref_cats)
+        # Convert indices back to readable labels
+        predicted_labels = np.asarray(r_adata.obs[obs_tar].cat.categories)[predicted_labels]
+        
+    else:
+        raise ValueError("Wriong weights parameter")
 
     logger.info(f"Predicting {obs_pred} predictions and {obs_proba} probabilities")
-    knn_pred = knn.predict(inference_X)
-    knn_proba = knn.predict_proba(inference_X)
 
     # save_results
-    q_adata.obs[obs_pred] = knn_pred
-    q_adata.obs[obs_proba] = np.max(knn_proba, axis=1)
+    q_adata.obs[obs_pred] = predicted_labels
+    q_adata.obs[obs_proba] = probabilities
 
 logger.info(f"Saving output data to {par['output']}")
 q_mdata.mod[par['modality']] = q_adata
