@@ -41,6 +41,8 @@
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
 
+* `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
+
 ## MINOR CHANGES
 
 * Bump scvelo to `0.3.2` (PR #828).
