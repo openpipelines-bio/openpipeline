@@ -1,6 +1,7 @@
 nextflow.enable.dsl=2
 
 include { bd_rhapsody } from params.rootDir + "/target/nextflow/workflows/ingestion/bd_rhapsody/main.nf"
+include { bd_rhapsody_test } from params.rootDir + "/target/nextflow/test_workflows/ingestion/bd_rhapsody_test/main.nf"
 
 workflow test_wf {
   // allow changing the resources_test dir
@@ -32,9 +33,16 @@ workflow test_wf {
       assert data.output_h5mu.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
       "Output: $output"
     }
+
+    | bd_rhapsody_test.run(
+      fromState: ["input": "output_h5mu"]
+    )
+
     | toList()
     | view { output_list ->
       assert output_list.size() == 1 : "output channel should contain one event"
     }
+
+    // | view { output -> output[1]}
     // | check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }
