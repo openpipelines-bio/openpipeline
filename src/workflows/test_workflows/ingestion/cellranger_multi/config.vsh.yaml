@@ -10,6 +10,7 @@ functionality:
         - name: "--input"
           type: file
           required: true
+          multiple: true
           description: Path to h5mu output.
           example: foo.final.h5mu
   resources:

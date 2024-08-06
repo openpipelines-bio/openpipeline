@@ -35,11 +35,7 @@ workflow test_wf {
     }
 
     | bd_rhapsody_test.run(
-      fromState: { output ->
-        [
-          input: output[1].output_h5mu
-        ]
-      }
+      fromState: ["input": "output_h5mu"]
     )
 
     | toList()

@@ -32,11 +32,7 @@ workflow test_wf {
     }
 
     | cellranger_multi_test.run(
-      fromState: { output ->
-        [
-          input: output[1].output_h5mu
-        ]
-      }
+      fromState: ["input": "output_h5mu"]
     )
 
     | toSortedList()

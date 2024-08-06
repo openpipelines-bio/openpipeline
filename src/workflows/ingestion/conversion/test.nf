@@ -45,11 +45,7 @@ workflow test_wf {
     }
 
     | conversion_test.run(
-      fromState: { output ->
-        [
-          input: output[1].output
-        ]
-      }
+      fromState: ["input": "output"]
     )
 
     | toSortedList()
