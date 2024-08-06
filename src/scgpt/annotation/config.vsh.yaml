@@ -1,5 +1,5 @@
 functionality:
-  name: annotation
+  name: cell_type_annotation
   namespace: "scgpt"
   description: |
     Annotate gene expression data with cell type classes through the scGPT model.
