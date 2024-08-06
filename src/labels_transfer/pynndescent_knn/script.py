@@ -117,6 +117,7 @@ for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"],  par["outp
     logger.info(f"Predicting labels for {obs_tar}")
 
     if par["weights"] != "gaussian":
+        logger.info(f"Using KNN classifier with {par['weights']} weights")
         train_y = r_adata.obs[obs_tar].to_numpy()
         classifier = KNeighborsClassifier(n_neighbors=50, metric="precomputed", weights=par["weights"])
         classifier.fit(
@@ -126,24 +127,30 @@ for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"],  par["outp
         probabilities = classifier.predict_proba(reference_neighbors).max(axis=1)
         
     elif par["weights"] == "gaussian":
+        logger.info(f"Using Gaussian weights")
+
+        logger.debug(f"Converting {obs_tar} to category")
         # Convert type to category so that the code below works for any initial type
         r_adata.obs[obs_tar] = r_adata.obs[obs_tar].astype("category")
 
+        logger.debug(f"Getting neighbors from reference")
         ref_distances = reference_neighbors.data.reshape(inference_X.shape[0], par["n_neighbors"])
         ref_neighbors_idxs = reference_neighbors.indices.reshape(inference_X.shape[0], par["n_neighbors"])
 
         # Get indices of each category because numba throws an error when using strings
         ref_cats = r_adata.obs[obs_tar].cat.codes.to_numpy()[ref_neighbors_idxs]
         affinities = distances_to_affinities(ref_distances)
+
+        logger.info("Predicting labels and probabilities")
         predicted_labels, probabilities = weighted_prediction(affinities, ref_cats)
-        # Convert indices back to readable labels
+        
+        logger.info("Conversion labels to readable names")
         predicted_labels = np.asarray(r_adata.obs[obs_tar].cat.categories)[predicted_labels]
         
     else:
         raise ValueError("Wriong weights parameter")
 
-    logger.info(f"Predicting {obs_pred} predictions and {obs_proba} probabilities")
-
+    logger.info(f"Saving predictions to {obs_pred} and probabilities to {obs_proba} in obs")
     # save_results
     q_adata.obs[obs_pred] = predicted_labels
     q_adata.obs[obs_proba] = probabilities
