@@ -40,6 +40,17 @@ workflow run_wf {
       },
       toState: ["reference": "output"]
     )
+    | subset_h5mu.run(
+      runIf: {id, state -> !state.model && state.n_hvg},
+      fromState: {id, state ->
+        [
+          "input": state.reference,
+          "modality": state.modality,
+          "number_of_observations": state.n_obs_subset,
+        ]
+      },
+      toState: ["reference": "output"]
+    )
       | celltypist_annotation.run(
       // Run celltypist annotation
        fromState: {id, state -> [

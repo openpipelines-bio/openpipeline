@@ -88,6 +88,12 @@ argument_groups:
           required: true
           multiple: true
           description: The `.obs` key(s) of the target labels to tranfer.
+        - name: "--n_obs_subset"
+          type: integer
+          required: false
+          description: |
+            Number of observations to subset from the reference dataset. If provided, the classifier will be trained on a subset of the reference dataset.
+            If not provided, the classifier will be trained on the entire reference dataset.
     
     - name: "Outputs"
       arguments:
