@@ -55,12 +55,20 @@ def weighted_prediction(weights, ref_cats):
         obs_weights = weights[i]
         obs_cats = ref_cats[i]
         best_prob = 0
-        for c in np.unique(obs_cats):
-            cand_prob = np.sum(obs_weights[obs_cats == c])
-            if cand_prob > best_prob:
-                best_prob = cand_prob
-                predictions[i] = c
-                probabilities[i] = best_prob
+
+        neighbors_categories = np.unique(obs_cats)
+        
+        # If all neighbors have the same class, just predict it. This saves quite some time
+        if len(neighbors_categories) == 1:
+            predictions[i] = neighbors_categories[0]
+            probabilities[i] = 1
+        else:
+            for c in neighbors_categories:
+                cand_prob = np.sum(obs_weights[obs_cats == c])
+                if cand_prob > best_prob:
+                    best_prob = cand_prob
+                    predictions[i] = c
+                    probabilities[i] = best_prob
 
     return predictions, probabilities
 
