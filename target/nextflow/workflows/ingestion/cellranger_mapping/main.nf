@@ -3129,7 +3129,7 @@ meta = [
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "2886b75ff58da96884783ee8e220a6f9e861f804",
+          "git_commit" : "e776127c84f33ebe1f823ab3e98216cb78b8fa33",
           "executable" : "/nextflow/mapping/cellranger_count/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count"
@@ -3150,7 +3150,7 @@ meta = [
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "2886b75ff58da96884783ee8e220a6f9e861f804",
+          "git_commit" : "e776127c84f33ebe1f823ab3e98216cb78b8fa33",
           "executable" : "/nextflow/mapping/cellranger_count_split/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count_split"
@@ -3171,7 +3171,7 @@ meta = [
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "2886b75ff58da96884783ee8e220a6f9e861f804",
+          "git_commit" : "e776127c84f33ebe1f823ab3e98216cb78b8fa33",
           "executable" : "/nextflow/convert/from_10xh5_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xh5_to_h5mu"
@@ -3238,7 +3238,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_mapping",
     "viash_version" : "0.8.6",
-    "git_commit" : "2886b75ff58da96884783ee8e220a6f9e861f804",
+    "git_commit" : "e776127c84f33ebe1f823ab3e98216cb78b8fa33",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
