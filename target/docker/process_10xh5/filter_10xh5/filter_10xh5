@@ -446,9 +446,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component process_10xh5 filter_10xh5"
-LABEL org.opencontainers.image.created="2024-08-05T11:02:30Z"
+LABEL org.opencontainers.image.created="2024-08-06T11:26:09Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6eefca80d6bff0c32fb3cd37e3b1a981ada54dba"
+LABEL org.opencontainers.image.revision="46275d304c939d2446cd080abde8622010e8b979"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
