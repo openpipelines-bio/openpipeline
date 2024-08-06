@@ -54,7 +54,7 @@ def main(par):
         input_modality.var.index = [re.sub("\\.[0-9]+$", "", s) for s in input_modality.var[par["var_query_gene_names"]]]
 
     if par["model"]:
-        if par["refererence"]:
+        if par["reference"]:
             logger.warning("Both 'model' and 'reference' are provided. 'model' will be used to make cell type predictions, 'reference' will be ignored.")
         model = celltypist.models.Model.load(par["model"])
         logger.info(f"Model features: {model.classifier.features}")
@@ -62,9 +62,7 @@ def main(par):
     
     elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
-        
-        # TODO: move to the cross check component
-        
+                
         if par["var_reference_gene_names"]:
             reference_modality.var.index = [re.sub("\\.[0-9]+$", "", s) for s in reference_modality.var[par["var_reference_gene_names"]]]
         
@@ -98,7 +96,7 @@ def main(par):
                                       model,
                                       majority_voting=par["majority_voting"])
     input_modality.obs[par["output_obs_predictions"]] = predictions.predicted_labels["predicted_labels"]
-    input_modality.obs[par["output_obs_probabilities"]] = predictions.probability_matrix.max(axis=1).values
+    input_modality.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(axis=1).values
     
     input_mudata.mod[par["modality"]] = input_modality
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
