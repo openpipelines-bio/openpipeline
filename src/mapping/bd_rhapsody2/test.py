@@ -11,30 +11,28 @@ meta = {
   "memory_mb": 4096,
 }
 
-reference_small_gtf = "resources_test/reference_gencodev41_chr1/reference.gtf"
-reference_small_fa = "resources_test/reference_gencodev41_chr1/reference.fa"
-bdabseq_panel_fa = "resources_test/bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"
-reference_file = "resources_test/reference_gencodev41_chr1/Rhap_reference.tar.gz"
-abc_reads = "resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R1_001_subset.fastq.gz;resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R2_001_subset.fastq.gz"
-wta_reads = "resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R1_001_subset.fastq.gz;resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R2_001_subset.fastq.gz"
+# reference_small_gtf = "resources_test/reference_gencodev41_chr1/reference.gtf"
+# reference_small_fa = "resources_test/reference_gencodev41_chr1/reference.fa"
+# bdabseq_panel_fa = "resources_test/bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"
+# reference_file = "resources_test/reference_gencodev41_chr1/Rhap_reference.tar.gz"
+# abc_reads = "resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R1_001_subset.fastq.gz;resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R2_001_subset.fastq.gz"
+# wta_reads = "resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R1_001_subset.fastq.gz;resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R2_001_subset.fastq.gz"
 ## VIASH END
 
-# wta_reads = f"{meta["resources_dir"]}/12WTA_S1_L432_R1_001_subset.fastq.gz;{meta["resources_dir"]}/12WTA_S1_L432_R2_001_subset.fastq.gz"
-# abc_reads = f"{meta["resources_dir"]}/raw/12ABC_S1_L432_R1_001_subset.fastq.gz;{meta["resources_dir"]}/raw/12ABC_S1_L432_R2_001_subset.fastq.gz"
-# reference_file = f"{meta["resources_dir"]}/Rhap_reference_small.tar.gz"
-# bdabseq_panel_fa = f"{meta["resources_dir"]}/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"
+wta_reads = f"{meta['resources_dir']}/raw/12WTA_S1_L432_R1_001_subset.fastq.gz;{meta['resources_dir']}/raw/12WTA_S1_L432_R2_001_subset.fastq.gz"
+abc_reads = f"{meta['resources_dir']}/raw/12ABC_S1_L432_R1_001_subset.fastq.gz;{meta['resources_dir']}/raw/12ABC_S1_L432_R2_001_subset.fastq.gz"
+reference_file = f"{meta['resources_dir']}/Rhap_reference.tar.gz"
+bdabseq_panel_fa = f"{meta['resources_dir']}/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"
 
 # Run executable
 print(f">> Run {meta['functionality_name']}", flush=True)
 output_dir = Path("output")
 subprocess.run([
   meta['executable'],
-  "--reads=resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R1_001_subset.fastq.gz",
-  "--reads=resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R2_001_subset.fastq.gz",
-  "--reads=resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R1_001_subset.fastq.gz",
-  "--reads=resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R2_001_subset.fastq.gz",
-  f"--reference_archive=resources_test/reference_gencodev41_chr1/Rhap_reference.tar.gz",
-  f"--abseq_reference=resources_test/bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta",
+  f"--reads={wta_reads}",
+  f"--reads={abc_reads}",
+  f"--reference_archive={reference_file}",
+  f"--abseq_reference={bdabseq_panel_fa}",
   "--output_dir=output",
   "--exact_cell_count=4900",
   f"---cpus=2",

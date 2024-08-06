@@ -633,13 +633,11 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
-    # - path: make_rhap_reference_2.2.1_nodocker.cwl
-    #   dest: bd_rhapsody_make_reference.cwl
     - path: rhapsody_cell_label.py
-    - path: /resources_test/reference_gencodev41_chr1/reference_small.fa.gz
-    - path: /resources_test/reference_gencodev41_chr1/reference_small.gtf.gz
+    - path: /resources_test/reference_gencodev41_chr1/reference.fa.gz
     - path: /resources_test/reference_gencodev41_chr1/reference.gtf.gz
-    - path: /resources_test/bdrhap_5kjrt/raw/
+    - path: /resources_test/reference_gencodev41_chr1/Rhap_reference.tar.gz
+    - path: /resources_test/bdrhap_5kjrt/raw
 
 platforms:
   - type: docker
