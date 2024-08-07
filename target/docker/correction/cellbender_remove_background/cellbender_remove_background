@@ -683,12 +683,12 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y make build-essen
 && apt-get clean
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.2.1" "cellbender~=0.3.0"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.1" "lxml[html_clean]" "cellbender~=0.3.0"
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-LABEL org.opencontainers.image.created="2024-08-07T06:10:24Z"
+LABEL org.opencontainers.image.created="2024-08-07T12:38:17Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="58ae4b8d76862e926f19c41b6ab7b91fa82f2dd9"
+LABEL org.opencontainers.image.revision="7b7e67255223d0390d0a544f45411285fa805326"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

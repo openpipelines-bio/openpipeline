@@ -11,8 +11,8 @@ workflow test_wf {
   output_ch = Channel.fromList([
       [
         id: "foo",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"),
-        input_og: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5mu"),
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
+        input_og: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
         perform_correction: true,
         min_genes: 100,
         min_counts: 1000,
@@ -67,8 +67,8 @@ workflow test_wf2 {
   output_ch = Channel.fromList([
       [
         id: "zing",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"),
-        input_og: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5mu"),
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
+        input_og: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
         perform_correction: false,
         min_genes: 100,
         min_counts: 1000,
@@ -76,12 +76,6 @@ workflow test_wf2 {
       ]
     ])
     | map{ state -> [state.id, state] }
-    // first filter and convert to h5mu
-    | from_10xh5_to_h5mu.run(
-      fromState: ["input"],
-      toState: ["input": "output"]
-    )
-
     | cellranger_postprocessing.run(
       toState: {id, output, state ->
         output + [

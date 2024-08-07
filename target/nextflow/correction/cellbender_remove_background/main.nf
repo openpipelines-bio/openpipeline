@@ -3351,7 +3351,7 @@ meta = [
       },
       {
         "type" : "file",
-        "path" : "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5mu",
+        "path" : "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       },
       {
@@ -3398,6 +3398,7 @@ meta = [
           "user" : false,
           "packages" : [
             "mudata~=0.2.1",
+            "lxml[html_clean]",
             "cellbender~=0.3.0"
           ],
           "upgrade" : true
@@ -3467,7 +3468,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background",
     "viash_version" : "0.8.6",
-    "git_commit" : "58ae4b8d76862e926f19c41b6ab7b91fa82f2dd9",
+    "git_commit" : "7b7e67255223d0390d0a544f45411285fa805326",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
