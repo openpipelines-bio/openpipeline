@@ -155,7 +155,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             env=env
         )
 
-        shutil.move(os.path.join(temp_dir, "reference_bd_rhapsody_v2.tar.gz"), par["reference_archive"])
+        shutil.move(os.path.join(temp_dir, "Rhap_reference.tar.gz"), par["reference_archive"])
 
 if __name__ == "__main__":
     main(par, meta)
