@@ -12,12 +12,13 @@ workflow run_wf {
         //  - remove output_h5mu
         //  - rename output_raw to output_dir
         def data_ = state.clone()
-        data_.remove("output_h5mu")
+        data_.remove("output")
         data_.remove("output_raw")
         data_ + [ output_dir: state.output_raw ]
+        data_ + [ output_mudata: "bd_rhap_output.h5mu" ]
       },
       toState: [
-        "input": "output_dir"
+        "input": "output_mudata"
       ]
     )
     | view {"After bd_rhapsody: $it"}
@@ -28,13 +29,13 @@ workflow run_wf {
         [
           id: id,
           input: state.input,
-          output: state.output_h5mu,
+          output: state.output,
           output_compression: "gzip"
         ]
       },
       toState: { id, data, state ->
         [
-          output_raw: state.output_dir,
+          output_raw: state.output_raw,
           output: data.output
         ]
       },
