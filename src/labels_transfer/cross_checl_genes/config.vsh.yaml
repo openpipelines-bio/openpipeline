@@ -1,0 +1,62 @@
+functionality:
+  name: cross_check_genes
+  namespace: labels_transfer
+  description: 
+  authors:
+    - __merge__: /src/authors/jakub_majercik.yaml
+      roles: [ author ]
+
+  argument_groups:
+    - name: Inputs
+      description: Arguments related to the input (aka query) dataset.
+      arguments:
+        - name: "--input"
+          type: file
+          description: Input (query) h5mu file.
+          direction: input
+          required: true
+          example: input.h5mu
+        - name: "--modality"
+          description: Which modality to process.
+          type: string
+          default: "rna"
+          required: false
+        - name: "--var_query_gene_names"
+          type: string
+          required: false
+          description: |
+            The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used.
+
+    - name: Reference
+      description: Arguments related to the reference dataset.
+      arguments:
+        - name: "--reference"
+          type: file
+          description: Reference h5mu file.
+          direction: input
+          required: true
+          example: reference.h5mu
+        - name: "--var_reference_gene_names"
+          type: string
+          required: false
+          description: |
+            The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
+
+    - name: Outputs
+      description: Output arguments.
+      arguments:
+        - name: "--output_query"
+          type: file
+          description: Output h5mu file.
+          direction: output
+          example: output.h5mu
+        - name: "--output_reference"
+          type: file
+          description: Output h5mu file.
+          direction: output
+          example: output.h5mu
+        - name: "--output_compression"
+          type: string
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
