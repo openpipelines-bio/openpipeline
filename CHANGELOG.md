@@ -49,6 +49,8 @@
 
 * `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
 
+* `annotate/random_forest` component: Added a random forest annotation component (PR #848).
+
 ## MINOR CHANGES
 
 * Bump scvelo to `0.3.2` (PR #828).
