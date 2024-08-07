@@ -26,6 +26,24 @@ functionality:
           type: string
           default: "neighbors"
           description: The `.uns` neighbors slot as output by the `find_neighbors` component.
+
+        - name: "--obsm_pca"
+          type: string
+          description: |
+            The slot in `.obsm` where the PCA results are stored.
+          required: true
+
+        - name: "--obsm_knn_indices"
+          type: string
+          description: |
+            The slot in `.obsm` where the kNN indices are stored.
+          required: true
+
+        - name: "--obsm_knn_distances"
+          type: string
+          description: |
+            The slot in `.obsm` where the kNN distances are stored.
+          required: true
     
     - name: Outputs
       arguments:
@@ -150,6 +168,7 @@ functionality:
             the density correlation objective to prevent numerical instability from dividing by a 
             small number.
           default: 0.1
+
 
   resources:
     - type: python_script

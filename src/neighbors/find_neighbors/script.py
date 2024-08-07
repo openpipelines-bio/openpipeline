@@ -54,8 +54,6 @@ neighbors.compute_neighbors(
 adata.uns[par["uns_output"]] = {
     'connectivities_key': par["obsp_connectivities"],
     'distances_key': par["obsp_distances"],
-    'knn_indices_key': par["obsm_knn_indices"],
-    'knn_distances_key': par["obsm_knn_distances"],
     'params': {
         'n_neighbors': neighbors.n_neighbors,
         'method': "umap",

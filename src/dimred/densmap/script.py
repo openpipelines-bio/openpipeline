@@ -53,10 +53,6 @@ temp_uns = { neigh_key: data.uns[neigh_key] }
 if 'use_rep' not in temp_uns[neigh_key]['params']:
     raise ValueError(f"'use_rep' was not found in .mod['{par['modality']}'].uns['{neigh_key}'].params. Set the correct key or run PCA first.")
 
-pca_key = temp_uns[neigh_key]['params']['use_rep']
-knn_indices_key = temp_uns[neigh_key]['knn_indices_key']
-knn_distances_key = temp_uns[neigh_key]['knn_distances_key']
-
 
 X_densmap = UMAP(
   min_dist=par["min_dist"],
@@ -74,10 +70,10 @@ X_densmap = UMAP(
   dens_frac=par["fraction"],
   dens_var_shift=par["var_shift"],
   precomputed_knn=(
-    data.obsm[knn_indices_key],
-    data.obsm[knn_distances_key]
+    data.obsm[par["obsm_knn_indices"]],
+    data.obsm[par["obsm_knn_distances"]],
   )
-).fit_transform(data.obsm[pca_key])
+).fit_transform(data.obsm[par["obsm_pca"]])
 
 logger.info(f"Writing densMAP embeddings to .mod[{par['modality']}].obsm[{par['obsm_output']}]")
 data.obsm[par['obsm_output']] = X_densmap
@@ -98,8 +94,8 @@ data.uns['densmap'] = {
     'dens_lambda': par["lambda"],
     'dens_frac': par["fraction"],
     'dens_var_shift': par["var_shift"],
-    'knn_indices_key': knn_indices_key,
-    'knn_distances_key': knn_distances_key
+    'knn_indices_key': par["obsm_knn_indices"],
+    'knn_distances_key': par["obsm_knn_distances"],
   }
 }
 
