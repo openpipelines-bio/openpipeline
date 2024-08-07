@@ -36,7 +36,7 @@ viash run src/reference/build_bdrhap2_reference/config.vsh.yaml -- \
   --genome_fasta "$OUT/reference.fa.gz" \
   --gtf "$OUT/reference.gtf.gz" \
   --reference_archive "$OUT/reference_bd_rhapsody_v2.tar.gz" \
-  --extra_star_params "--genomeSAindexNbases 4" \
+  --extra_star_params '--genomeSAindexNbases 7 --genomeSAsparseD 2' \
   ---cpus 2 
 
 # Generate data processed by BD Rhapsody 2.x.x
