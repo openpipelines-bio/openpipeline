@@ -273,7 +273,7 @@ test_resources:
   - type: python_script
     path: test.py
   # normally cellbender should only be run on unfiltered data, but for the purposes of the unit test the filtered data will do.
-  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5mu
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
 
 engines:
 - type: docker
