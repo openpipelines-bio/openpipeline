@@ -15,8 +15,8 @@ meta = {
 }
 ## VIASH END
 
-input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
-reference_file = f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5mu"
+input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+reference_file = f"{meta['resources_dir']}/TS_Blood_filtered.h5mu"
 
 @pytest.fixture
 def subset_genes(random_h5mu_path):
