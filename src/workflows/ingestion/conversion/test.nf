@@ -1,6 +1,7 @@
 nextflow.enable.dsl=2
 
 include { conversion } from params.rootDir + "/target/nextflow/workflows/ingestion/conversion/main.nf"
+include { conversion_test } from params.rootDir + "/target/nextflow/test_workflows/ingestion/conversion_test/main.nf"
 
 workflow test_wf {
   // allow changing the resources_test dir
@@ -41,9 +42,14 @@ workflow test_wf {
         assert output.size() == 2 : "outputs should contain two elements; [id, file]"
         assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
         "Output: $output"
-      }
-      | toSortedList()
-      | map { output_list ->
-        assert output_list.size() == 4 : "output channel should contain four events"
-      }
+    }
+
+    | conversion_test.run(
+      fromState: ["input": "output"]
+    )
+
+    | toSortedList()
+    | map { output_list ->
+      assert output_list.size() == 4 : "output channel should contain four events"
+    }
 }

@@ -12,6 +12,8 @@
 
 * `lianapy`: bumped version to `1.2.1` (PR #827).
 
+* `convert/from_h5mu_to_seurat`: bump seurat to latest version (PR #850).
+
 ## NEW FUNCTIONALITY
 
 * CI: added checking of mudata contents for multiple workflows (PR #783).
@@ -36,10 +38,14 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `scgpt/cell_type_annotation` component: Added scGPT cell type annotation component (PR #798).
+
 * `resources_test_scripts/scGPT.sh`: Added script to include scGPT test resources (PR #800).
 
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
+
+* `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
 
 ## MINOR CHANGES
 
