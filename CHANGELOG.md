@@ -12,6 +12,8 @@
 
 * `lianapy`: bumped version to `1.2.1` (PR #827).
 
+* `filter/filter_with_hvg`: this component was deprecated and has now been removed. Use `feature_annotation/highly_variable_features_scanpy` instead (PR #843).
+
 * `convert/from_h5mu_to_seurat`: bump seurat to latest version (PR #850).
 
 ## NEW FUNCTIONALITY
