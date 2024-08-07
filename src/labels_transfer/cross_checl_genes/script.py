@@ -1,6 +1,5 @@
 import sys
 import mudata as mu
-import anndata as ad
 import re
 
 ## VIASH START
