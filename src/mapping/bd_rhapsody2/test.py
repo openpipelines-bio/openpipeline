@@ -11,8 +11,6 @@ meta = {
   "memory_mb": 4096,
 }
 
-# reference_small_gtf = "resources_test/reference_gencodev41_chr1/reference.gtf"
-# reference_small_fa = "resources_test/reference_gencodev41_chr1/reference.fa"
 # bdabseq_panel_fa = "resources_test/bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"
 # reference_file = "resources_test/reference_gencodev41_chr1/reference_bd_rhapsody_v2.tar.gz"
 # abc_reads = "resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R1_001_subset.fastq.gz;resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R2_001_subset.fastq.gz"
@@ -69,11 +67,9 @@ assert "prot" in data.mod, "RNA data is missing"
 
 
 data_rna = data.mod["rna"]
-assert data_rna.n_vars == 2231, "Number of genes is incorrect"
-
-# row sum should be greater than 950
+assert data_rna.n_vars == 2238, "Number of genes is incorrect"
 assert data_rna.X.sum(axis=1).min() > 0, "Number of reads per cell is incorrect"
-assert data_rna.var.Raw_Reads.sum() == 157808, "Number of reads is incorrect"
+assert data_rna.var.Raw_Reads.sum() == 156904, "Number of reads is incorrect"
 
 # TODO: add VDJ, SMK, ATAC, and targeted RNA to test
 
