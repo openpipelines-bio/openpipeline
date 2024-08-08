@@ -17,41 +17,66 @@ assert len(modalities) > 0, "No modalities found in input data"
 # Dictionary for processed modalities
 processed_modalities = {}
 
-
-def process_rna_modality(adata):
+def process_modalities(adata, modality):
     adata.obs["library_id"] = " & ".join(adata.uns["Pipeline_Inputs"]["Libraries"])
     adata.obs["cell_id"] = adata.obs.index
     adata.obs["run_id"] = par["id"]
+    
+    adata.obs.rename(
+        columns={
+            "Sample_Tag": "sample_tag",
+            "Sample_Name": "sample_name"},
+        inplace=True)
 
     adata.var["gene_ids"] = adata.var.index
     adata.var["gene_name"] = adata.var.index
-    adata.var["feature_type"] = "Gene Expression"
-    adata.var["reference_file"] = adata.uns["Pipeline_Inputs"]["Reference_Archive"]
-
+    
+    if modality == "rna":
+        adata.var["feature_type"] = "Gene Expression"
+        adata.var["reference_file"] = adata.uns["Pipeline_Inputs"]["Reference_Archive"]
+        
+    elif modality == "prot":
+        adata.var["feature_type"] = "Antibody Capture"
+        adata.var["reference_file"] = " & ".join(adata.uns["Pipeline_Inputs"]["AbSeq_Reference"])
+        
     return adata
 
+# def process_rna_modality(adata):
+#     adata.obs["library_id"] = " & ".join(adata.uns["Pipeline_Inputs"]["Libraries"])
+#     adata.obs["cell_id"] = adata.obs.index
+#     adata.obs["run_id"] = par["id"]
+    
+#     if "Sample_Tag" in adata.obs
 
-def process_prot_modality(adata):
-    adata.obs["library_id"] = " & ".join(adata.uns["Pipeline_Inputs"]["Libraries"])
-    adata.obs["cell_id"] = adata.obs.index
-    adata.obs["run_id"] = par["id"]
+#     adata.var["gene_ids"] = adata.var.index
+#     adata.var["gene_name"] = adata.var.index
+#     adata.var["feature_type"] = "Gene Expression"
+#     adata.var["reference_file"] = adata.uns["Pipeline_Inputs"]["Reference_Archive"]
 
-    adata.var["gene_ids"] = adata.var.index
-    adata.var["gene_name"] = adata.var.index
-    adata.var["feature_type"] = "Antibody Capture"
-    adata.var["reference_file"] = " & ".join(adata.uns["Pipeline_Inputs"]["AbSeq_Reference"])
+#     return adata
 
-    return adata
+
+# def process_prot_modality(adata):
+#     adata.obs["library_id"] = " & ".join(adata.uns["Pipeline_Inputs"]["Libraries"])
+#     adata.obs["cell_id"] = adata.obs.index
+#     adata.obs["run_id"] = par["id"]
+
+#     adata.var["gene_ids"] = adata.var.index
+#     adata.var["gene_name"] = adata.var.index
+#     adata.var["feature_type"] = "Antibody Capture"
+#     adata.var["reference_file"] = " & ".join(adata.uns["Pipeline_Inputs"]["AbSeq_Reference"])
+
+#     return adata
 
 ## Processing RNA modality
 if "rna" in modalities:
-    rna_adata = process_rna_modality(mdata.mod["rna"])
+    rna_adata = process_modalities(mdata.mod["rna"], "rna")
     processed_modalities["rna"] = rna_adata
 
 
 ## Processing Protein modality
 if "prot" in modalities:
-    prot_adata = process_prot_modality(mdata.mod["prot"])
+    prot_adata = process_modalities(mdata.mod["prot"], "prot")
     processed_modalities["prot"] = prot_adata
 
 ##TODO: Process other modalities
