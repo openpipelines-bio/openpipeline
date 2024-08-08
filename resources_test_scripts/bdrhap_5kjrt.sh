@@ -154,15 +154,22 @@ nextflow \
   -c src/workflows/utils/labels.config \
   -c src/workflows/utils/errorstrat_ignore.config
 
-viash run src/mapping/bd_rhapsody2/config.vsh.yaml -- \
-  --reads "$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz" \
-  --reads "$$raw_dir/12WTA_S1_L432_R2_001_subset.fastq.gz" \
-  --reads "$$raw_dir/12ABC_S1_L432_R1_001_subset.fastq.gz" \
-  --reads "$$raw_dir/12ABC_S1_L432_R2_001_subset.fastq.gz" \
+
+wta_reads= "$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz;$raw_dir/12WTA_S1_L432_R2_001_subset.fastq.gz"
+abc_reads= "$raw_dir/12ABC_S1_L432_R1_001_subset.fastq.gz;$raw_dir/12ABC_S1_L432_R2_001_subset.fastq.gz"
+smk_reads= "$raw_dir/12SMK_S1_L432_R1_001.fastq.gz;$raw_dir/12SMK_S1_L432_R2_001.fastq.gz"
+
+nextflow \
+  run . \
+  -main-script target/nextflow/workflows/ingestion/bd_rhapsody2/main.nf  \
+  -resume \
+  -profile docker,mount_temp \
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/errorstrat_ignore.config \
+  --reads "$wta_reads;$abc_reads;$smk_reads" \
   --reference_archive "$reference_dir/reference_bd_rhapsody_v2.tar.gz" \
-  --abseq_reference "$$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta" \
-  --output_dir "$OUT/processed2" \
+  --abseq_reference "$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta" \
+  --output_dir "processed2" \
   --cell_calling_data "mRNA" \
   --exact_cell_count 4900 \
-  ---memory 10gb \
-  ---cpus 2
+  --publish_dir "$OUT"
