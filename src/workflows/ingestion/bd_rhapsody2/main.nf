@@ -6,7 +6,7 @@ workflow run_wf {
   output_ch = input_ch
     // run bd rhapsody
     | bd_rhapsody2_component.run(
-      auto: [ publish: true ],
+      // auto: [ publish: true ],
       fromState: { id, state ->
         // pass all arguments except:
         //  - remove output_h5mu
@@ -18,7 +18,8 @@ workflow run_wf {
         data_ + [ output_mudata: "bd_rhap_output.h5mu" ]
       },
       toState: [
-        "input": "output_mudata"
+        "input": "output_mudata",
+        "output_raw": "output_dir"
       ]
     )
     | view {"After bd_rhapsody: $it"}
@@ -41,6 +42,7 @@ workflow run_wf {
       },
       auto: [publish: true]
     )
+    | view {"Before publish: $it"}
 
   emit:
   output_ch
