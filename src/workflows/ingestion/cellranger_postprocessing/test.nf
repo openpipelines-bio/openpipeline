@@ -67,13 +67,8 @@ workflow test_wf2 {
   output_ch = Channel.fromList([
       [
         id: "zing",
-<<<<<<< HEAD
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"),
-        input_og: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5mu"),
-=======
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
         input_og: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
->>>>>>> origin/main
         perform_correction: false,
         min_genes: 100,
         min_counts: 1000,
@@ -89,18 +84,6 @@ workflow test_wf2 {
         ]
       }
     )
-<<<<<<< HEAD
-
-    | cellranger_postprocessing.run(
-      toState: {id, output, state ->
-        output + [
-          input_og: state.input_og,
-          perform_correction: state.perform_correction
-        ]
-      }
-    )
-=======
->>>>>>> origin/main
     
     | view { output ->
       assert output.size() == 2 : "outputs should contain two elements; [id, out]"
