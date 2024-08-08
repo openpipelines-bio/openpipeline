@@ -151,5 +151,18 @@ nextflow \
   -profile docker,mount_temp \
   -with-trace work/trace.txt \
   -params-file /tmp/params.yaml \
-  -c src/orkflows/utils/labels.config \
+  -c src/workflows/utils/labels.config \
   -c src/workflows/utils/errorstrat_ignore.config
+
+viash run src/mapping/bd_rhapsody2/config.vsh.yaml -- \
+  --reads "$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz" \
+  --reads "$$raw_dir/12WTA_S1_L432_R2_001_subset.fastq.gz" \
+  --reads "$$raw_dir/12ABC_S1_L432_R1_001_subset.fastq.gz" \
+  --reads "$$raw_dir/12ABC_S1_L432_R2_001_subset.fastq.gz" \
+  --reference_archive "$reference_dir/reference_bd_rhapsody_v2.tar.gz" \
+  --abseq_reference "$$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta" \
+  --output_dir "$OUT/processed2" \
+  --cell_calling_data "mRNA" \
+  --exact_cell_count 4900 \
+  ---memory 10gb \
+  ---cpus 2

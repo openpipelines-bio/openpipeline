@@ -42,7 +42,6 @@ workflow run_wf {
       },
       auto: [publish: true]
     )
-    | view {"Before publish: $it"}
 
   emit:
   output_ch

@@ -359,13 +359,13 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: run_wf
-    # - type: file
-    #   path: /src/workflows/utils/
-  # test_resources:
-  #   - type: nextflow_script
-  #     path: test.nf
-  #     entrypoint: test_wf
-  #   - path: /resources_test/bdrhap_5kjrt
-  #   - path: /resources_test/reference_gencodev41_chr1/
+    - type: file
+      path: /src/workflows/utils/
+  test_resources:
+    - type: nextflow_script
+      path: test.nf
+      entrypoint: test_wf
+    - path: /resources_test/bdrhap_5kjrt
+    - path: /resources_test/reference_gencodev41_chr1/
 platforms:
   - type: nextflow
