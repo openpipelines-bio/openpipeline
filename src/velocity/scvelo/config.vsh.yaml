@@ -76,7 +76,7 @@ functionality:
     - path: /resources_test/rna_velocity/velocyto_processed/cellranger_tiny.loom
 platforms:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.11-slim
     setup:
       - type: apt
         packages:
@@ -84,9 +84,8 @@ platforms:
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
-          - scvelo~=0.3.1
-          - jaxlib<0.4.23
-          - jax<0.4.23
+          - scvelo[vi]~=0.3.2
+          - scipy~=1.13.1
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
