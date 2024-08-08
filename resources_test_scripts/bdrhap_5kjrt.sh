@@ -155,9 +155,9 @@ nextflow \
   -c src/workflows/utils/errorstrat_ignore.config
 
 
-wta_reads= "$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz;$raw_dir/12WTA_S1_L432_R2_001_subset.fastq.gz"
-abc_reads= "$raw_dir/12ABC_S1_L432_R1_001_subset.fastq.gz;$raw_dir/12ABC_S1_L432_R2_001_subset.fastq.gz"
-smk_reads= "$raw_dir/12SMK_S1_L432_R1_001.fastq.gz;$raw_dir/12SMK_S1_L432_R2_001.fastq.gz"
+wta_reads="$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz;$raw_dir/12WTA_S1_L432_R2_001_subset.fastq.gz"
+abc_reads="$raw_dir/12ABC_S1_L432_R1_001_subset.fastq.gz;$raw_dir/12ABC_S1_L432_R2_001_subset.fastq.gz"
+smk_reads="$raw_dir/12SMK_S1_L432_R1_001.fastq.gz;$raw_dir/12SMK_S1_L432_R2_001.fastq.gz"
 
 nextflow \
   run . \
