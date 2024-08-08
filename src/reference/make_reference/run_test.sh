@@ -1,12 +1,12 @@
 #!/bin/bash
 
-
+set -eou pipefail
 
 ## VIASH START
 meta_executable="bin/viash run src/reference/make_reference/config.vsh.yaml --"
 ## VIASH END
 
-echo "> Running $meta_functionality_name."
+echo "> Running $meta_name."
 fasta="myreference.fa.gz"
 gtf="myreference.gtf.gz"
 

@@ -1,78 +1,81 @@
-functionality:
-  name: log1p
-  namespace: "transform"
-  description: |
-    Logarithmize the data matrix. Computes X = log(X + 1), where log denotes the natural logarithm unless a different base is given.
-  authors:
-    - __merge__: /src/authors/dries_de_maeyer.yaml
-      roles: [ maintainer ]
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ contributor ]
-  arguments:
-    # input
-    - name: "--input"
-      alternatives: ["-i"]
-      type: file
-      description: Input h5mu file
-      direction: input
-      required: true
-      example: input.h5mu
+name: log1p
+namespace: "transform"
+description: |
+  Logarithmize the data matrix. Computes X = log(X + 1), where log denotes the natural logarithm unless a different base is given.
+authors:
+  - __merge__: /src/authors/dries_de_maeyer.yaml
+    roles: [ maintainer ]
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ contributor ]
+arguments:
+  # input
+  - name: "--input"
+    alternatives: ["-i"]
+    type: file
+    description: Input h5mu file
+    direction: input
+    required: true
+    example: input.h5mu
 
-    - name: "--modality"
-      type: string
-      default: "rna"
-      required: false
+  - name: "--modality"
+    type: string
+    default: "rna"
+    required: false
 
-    - name: "--input_layer"
-      type: string
-      required: false
-      description: "Input layer to use. If None, X is normalized"
+  - name: "--input_layer"
+    type: string
+    required: false
+    description: "Input layer to use. If None, X is normalized"
 
-    - name: "--output_layer"
-      type: string
-      description: Output layer to use. By default, use X.
-      required: false
+  - name: "--output_layer"
+    type: string
+    description: Output layer to use. By default, use X.
+    required: false
 
-    # output
-    - name: "--output"
-      alternatives: ["-o"]
-      type: file
-      description: Output h5mu file.
-      direction: output
-      required: true
-      default: output.h5mu
+  # output
+  - name: "--output"
+    alternatives: ["-o"]
+    type: file
+    description: Output h5mu file.
+    direction: output
+    required: true
+    default: output.h5mu
 
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
+  - name: "--output_compression"
+    type: string
+    description: The compression format to be used on the output h5mu object.
+    choices: ["gzip", "lzf"]
+    required: false
+    example: "gzip"
 
-    # arguments
-    - name: "--base"
-      type: double
-      example: 2
-  resources:
-    - type: python_script
-      path: script.py
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: run_test.py
-    - path: /resources_test/pbmc_1k_protein_v3
-platforms:
-  - type: docker
-    image: python:3.9-slim
-    setup:
-      - type: apt
-        packages: 
-          - procps
-      - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
-  - type: nextflow
-    directives:
-      label: [midmem, lowcpu]
+  # arguments
+  - name: "--base"
+    type: double
+    example: 2
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: run_test.py
+  - path: /resources_test/pbmc_1k_protein_v3
+
+engines:
+- type: docker
+  image: python:3.9-slim
+  setup:
+    - type: apt
+      packages: 
+        - procps
+    - type: python
+      __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+  test_setup:
+    - type: python
+      __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [midmem, lowcpu]

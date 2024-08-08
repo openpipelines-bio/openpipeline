@@ -1,6 +1,6 @@
 
 
-./$meta_functionality_name \
+./$meta_executable \
   --input https://raw.githubusercontent.com/scala/scala/2.13.x/NOTICE \
   --output NOTICE
 

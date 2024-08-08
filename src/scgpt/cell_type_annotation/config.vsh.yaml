@@ -148,7 +148,7 @@ functionality:
     - path: /resources_test/scgpt/source/args.json
     - path: /resources_test/scgpt/source/vocab.json
 
-platforms:
+engines:
   - type: docker
     image: nvcr.io/nvidia/pytorch:23.09-py3
     setup:
@@ -161,4 +161,6 @@ platforms:
       - type: python
         __merge__: [/src/base/requirements/scanpy.yaml]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
   - type: nextflow

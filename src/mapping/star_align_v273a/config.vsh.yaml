@@ -1,75 +1,78 @@
-functionality:
-  name: star_align_v273a
-  namespace: mapping
-  description: Align fastq files using STAR.
-  authors:
-    - __merge__: /src/authors/angela_pisco.yaml
-      roles: [ author ]
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ author, maintainer ]
-  # as long as argument_groups.yaml is the same between both versions, just use that
-  __merge__: [., ../star_align/argument_groups.yaml]
-  # __merge__: [., argument_groups.yaml]
-  # manually taking care of the main input files
-  argument_groups:
-    - name: Input/Output
-      arguments:
-        - type: file
-          name: --input
-          alternatives: --readFilesIn
-          required: true
-          description: The FASTQ files to be analyzed. Corresponds to the --readFilesIn in the STAR command.
-          example: [ mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz ]
-          multiple: true
-        - type: file
-          name: --reference
-          alternatives: --genomeDir
-          description: Path to the reference built by star_build_reference. Corresponds to the --genomeDir in the STAR command.
-          example: /path/to/reference
-          required: true
-        - type: file
-          name: --output
-          alternatives: --outFileNamePrefix
-          description: Path to output directory. Corresponds to the --outFileNamePrefix in the STAR command.
-          example: /path/to/foo
-          direction: output
-          required: true
-  resources:
-    - type: python_script
-      # as long as argument_groups.yaml is the same between both versions, just use that
-      path: ../star_align/script.py
-      # path: script.py
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/cellranger_tiny_fastq
-platforms:
-  - type: docker
-    image: python:3.10-slim
-    setup:
-      - type: apt
-        packages:
-          - procps
-      # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
-      - type: docker
-        env: 
-          - STAR_VERSION 2.7.3a
-          - PACKAGES gcc g++ make wget zlib1g-dev unzip
-      - type: docker
-        run: |
-          apt-get update && \
-            apt-get install -y --no-install-recommends ${PACKAGES} && \
-            cd /tmp && \
-            wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \
-            unzip ${STAR_VERSION}.zip && \
-            cd STAR-${STAR_VERSION}/source && \
-            make STARstatic CXXFLAGS_SIMD=-std=c++11 && \
-            cp STAR /usr/local/bin && \
-            cd / && \
-            rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \
-            apt-get --purge autoremove -y ${PACKAGES} && \
-            apt-get clean
-  - type: nextflow
-    directives:
-      label: [ highmem, highcpu ]
+name: star_align_v273a
+namespace: mapping
+description: Align fastq files using STAR.
+authors:
+  - __merge__: /src/authors/angela_pisco.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ author, maintainer ]
+# as long as argument_groups.yaml is the same between both versions, just use that
+__merge__: [., ../star_align/argument_groups.yaml]
+# __merge__: [., argument_groups.yaml]
+# manually taking care of the main input files
+argument_groups:
+  - name: Input/Output
+    arguments:
+      - type: file
+        name: --input
+        alternatives: --readFilesIn
+        required: true
+        description: The FASTQ files to be analyzed. Corresponds to the --readFilesIn in the STAR command.
+        example: [ mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz ]
+        multiple: true
+      - type: file
+        name: --reference
+        alternatives: --genomeDir
+        description: Path to the reference built by star_build_reference. Corresponds to the --genomeDir in the STAR command.
+        example: /path/to/reference
+        required: true
+      - type: file
+        name: --output
+        alternatives: --outFileNamePrefix
+        description: Path to output directory. Corresponds to the --outFileNamePrefix in the STAR command.
+        example: /path/to/foo
+        direction: output
+        required: true
+resources:
+  - type: python_script
+    # as long as argument_groups.yaml is the same between both versions, just use that
+    path: ../star_align/script.py
+    # path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/cellranger_tiny_fastq
+
+engines:
+- type: docker
+  image: python:3.10-slim
+  setup:
+    - type: apt
+      packages:
+        - procps
+    # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
+    - type: docker
+      env: 
+        - STAR_VERSION 2.7.3a
+        - PACKAGES gcc g++ make wget zlib1g-dev unzip
+    - type: docker
+      run: |
+        apt-get update && \
+          apt-get install -y --no-install-recommends ${PACKAGES} && \
+          cd /tmp && \
+          wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \
+          unzip ${STAR_VERSION}.zip && \
+          cd STAR-${STAR_VERSION}/source && \
+          make STARstatic CXXFLAGS_SIMD=-std=c++11 && \
+          cp STAR /usr/local/bin && \
+          cd / && \
+          rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \
+          apt-get --purge autoremove -y ${PACKAGES} && \
+          apt-get clean
+
+runners:
+- type: executable          
+- type: nextflow
+  directives:
+    label: [ highmem, highcpu ]

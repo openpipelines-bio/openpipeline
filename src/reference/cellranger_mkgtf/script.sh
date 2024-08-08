@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+set -eou pipefail
 
 ## VIASH START
 par_input_gtf="resources_test/reference_gencodev41_chr1/reference.gtf.gz"
@@ -11,7 +11,7 @@ par_attribute="gene_type:transcribed_unprocessed_pseudogene"
 # create temporary directory
 echo $VIASH_TEMP
 mkdir -p "$VIASH_TEMP"
-tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_functionality_name-XXXXXXXX")
+tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
 }

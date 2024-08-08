@@ -35,9 +35,9 @@ functionality:
     - type: r_script
       path: run_test.R
     - path: /resources_test/10x_5k_anticmv/
-platforms:
+engines:
   - type: docker
-    image: rocker/r2u:24.04
+    image: rocker/r2u:22.04
     setup:
       - type: apt
         packages: 
@@ -47,6 +47,8 @@ platforms:
         cran: [ anndata, hdf5r, testthat, SeuratObject, Seurat ]
       - type: r
         github: pmbio/MuDataSeurat@empty-tables-and-nullable
+runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [lowmem, singlecpu]

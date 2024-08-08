@@ -1,60 +1,61 @@
-functionality:
-  name: make_params
-  namespace: "files"
-  description: "Looks for files in a directory and turn it in a params file."
-  authors:
-    - __merge__: /src/authors/angela_pisco.yaml
-      roles: [ author ]
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ maintainer, author ]
-  arguments:
-    - name: "--base_dir"
-      type: file
-      description: Base directory to search recursively
-      direction: input
-      required: true
-      example: "/path/to/dir"
-    - name: "--pattern"
-      type: string
-      description: An optional regular expression. Only file names which match the regular expression will be matched.
-      required: true
-      example: "*.fastq.gz"
-    - name: "--n_dirname_drop"
-      type: integer
-      description: For every matched file, the parent directory will be traversed N times.
-      default: 0
-    - name: "--n_basename_id"
-      type: integer
-      description: The unique identifiers will consist of at least N dirnames.
-      default: 0
-    - name: "--id_name"
-      type: string
-      description: The name for storing the identifier field in the yaml.
-      default: "id"
-    - name: "--path_name"
-      type: string
-      description: The name for storing the path field in the yaml.
-      default: "path"
-    - name: "--group_name"
-      type: string
-      description: Top level name for the group of entries.
-      example: param_list
-    - name: "--output"
-      type: file
-      description: Output YAML file.
-      direction: output
-      required: true
-      example: "params.yaml"
-  resources:
-    - type: r_script
-      path: script.R
-  test_resources:
-    - type: bash_script
-      path: test_make_params.sh
-    - path: ../../../src
-platforms:
+name: make_params
+namespace: "files"
+description: "Looks for files in a directory and turn it in a params file."
+authors:
+  - __merge__: /src/authors/angela_pisco.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ maintainer, author ]
+arguments:
+  - name: "--base_dir"
+    type: file
+    description: Base directory to search recursively
+    direction: input
+    required: true
+    example: "/path/to/dir"
+  - name: "--pattern"
+    type: string
+    description: An optional regular expression. Only file names which match the regular expression will be matched.
+    required: true
+    example: "*.fastq.gz"
+  - name: "--n_dirname_drop"
+    type: integer
+    description: For every matched file, the parent directory will be traversed N times.
+    default: 0
+  - name: "--n_basename_id"
+    type: integer
+    description: The unique identifiers will consist of at least N dirnames.
+    default: 0
+  - name: "--id_name"
+    type: string
+    description: The name for storing the identifier field in the yaml.
+    default: "id"
+  - name: "--path_name"
+    type: string
+    description: The name for storing the path field in the yaml.
+    default: "path"
+  - name: "--group_name"
+    type: string
+    description: Top level name for the group of entries.
+    example: param_list
+  - name: "--output"
+    type: file
+    description: Output YAML file.
+    direction: output
+    required: true
+    example: "params.yaml"
+resources:
+  - type: r_script
+    path: script.R
+test_resources:
+  - type: bash_script
+    path: test_make_params.sh
+  - path: ../../../src
+engines:
   - type: docker
     image: ghcr.io/data-intuitive/randpy:r4.0
+runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [singlecpu, lowmem]

@@ -1,13 +1,13 @@
 #!/bin/bash
 
-
+set -eou pipefail
 
 ## VIASH START
 meta_executable="bin/viash run src/reference/make_reference/config.vsh.yaml --"
 ## VIASH END
 
 # create temporary directory
-tmpdir=$(mktemp -d "$meta_temp_dir/$meta_functionality_name-XXXXXXXX")
+tmpdir=$(mktemp -d "$meta_temp_dir/$meta_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
 }
@@ -25,7 +25,7 @@ function seqkit_head {
 seqkit_head "$meta_resources_dir/reference_gencodev41_chr1/reference.fa.gz" "$tmpdir/reference_small.fa.gz"
 zcat "$meta_resources_dir/reference_gencodev41_chr1/reference.gtf.gz" | awk '$4 < 50001 {print ;}' | gzip > "$tmpdir/reference_small.gtf.gz"
 
-echo "> Running $meta_functionality_name, writing to $tmpdir."
+echo "> Running $meta_name, writing to $tmpdir."
 $meta_executable \
   --genome_fasta "$tmpdir/reference_small.fa.gz" \
   --transcriptome_gtf "$tmpdir/reference_small.gtf.gz" \

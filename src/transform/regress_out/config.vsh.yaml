@@ -1,63 +1,65 @@
-functionality:
-  name: regress_out
-  namespace: "transform"
-  description: |
-    Regress out (mostly) unwanted sources of variation.
-    Uses simple linear regression. This is inspired by Seurat's regressOut function in R [Satija15]. 
-    Note that this function tends to overcorrect in certain circumstances as described in issue theislab/scanpy#526.
-    See https://github.com/theislab/scanpy/issues/526.
-  authors:
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ maintainer, contributor ]
-  arguments:
-    - name: "--input"
-      type: file
-      description: Input h5mu file
-      direction: input
-      required: true
-      example: input.h5mu
-    - name: "--output"
-      alternatives: ["-o"]
-      type: file
-      description: Output h5mu file.
-      direction: output
-      required: true
-      default: output.h5mu
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
-    - name: "--modality"
-      type: string
-      description: "Which modality (one or more) to run this component on."
-      default: "rna"
-    - name: "--obs_keys"
-      type: string
-      multiple: true
-      description: Which .obs keys to regress on.
-  resources:
-    - type: python_script
-      path: script.py
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/pbmc_1k_protein_v3
-platforms:
-  - type: docker
-    image: python:3.10-slim
-    setup:
-      - type: apt
-        packages: 
-          - procps
-      - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+name: regress_out
+namespace: "transform"
+description: |
+  Regress out (mostly) unwanted sources of variation.
+  Uses simple linear regression. This is inspired by Seurat's regressOut function in R [Satija15]. 
+  Note that this function tends to overcorrect in certain circumstances as described in issue theislab/scanpy#526.
+  See https://github.com/theislab/scanpy/issues/526.
+authors:
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ maintainer, contributor ]
+arguments:
+  - name: "--input"
+    type: file
+    description: Input h5mu file
+    direction: input
+    required: true
+    example: input.h5mu
+  - name: "--output"
+    alternatives: ["-o"]
+    type: file
+    description: Output h5mu file.
+    direction: output
+    required: true
+    default: output.h5mu
+  - name: "--output_compression"
+    type: string
+    description: The compression format to be used on the output h5mu object.
+    choices: ["gzip", "lzf"]
+    required: false
+    example: "gzip"
+  - name: "--modality"
+    type: string
+    description: "Which modality (one or more) to run this component on."
+    default: "rna"
+  - name: "--obs_keys"
+    type: string
+    multiple: true
+    description: Which .obs keys to regress on.
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3
 
-  - type: nextflow
-    directives:
-      label: [lowmem, lowcpu]
+engines:
+- type: docker
+  image: python:3.10-slim
+  setup:
+    - type: apt
+      packages: 
+        - procps
+    - type: python
+      __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+  test_setup:
+    - type: python
+      __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [lowmem, lowcpu]

@@ -5,7 +5,7 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'functionality_name': 'lognorm',
+    'name': 'lognorm',
     'resources_dir': 'resources_test/'
 }
 ## VIASH END

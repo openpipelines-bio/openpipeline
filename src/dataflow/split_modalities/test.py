@@ -9,7 +9,7 @@ from textwrap import dedent
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/native/dataflow/split_modalities/split_modalities',
+    'name': './target/native/dataflow/split_modalities/split_modalities',
     'resources_dir': './resources_test/',
     'config': './src/dataflow/split_modalities/config.vsh.yaml',
     'executable': './target/docker/dataflow/split_modalities/split_modalities'

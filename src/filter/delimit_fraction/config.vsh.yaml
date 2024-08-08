@@ -1,94 +1,97 @@
-functionality:
-  name: delimit_fraction
-  namespace: "filter"
-  description: |
-    Turns a column containing values between 0 and 1 into a boolean column based on thresholds.
-  authors:
-    - __merge__: /src/authors/dries_schaumont.yaml
-      roles: [ author, maintainer]
+name: delimit_fraction
+namespace: "filter"
+description: |
+  Turns a column containing values between 0 and 1 into a boolean column based on thresholds.
+authors:
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ author, maintainer]
 
-  argument_groups:
-    - name: Inputs
-      arguments:
-        - name: "--input"
-          type: file
-          description: Input h5mu file
-          direction: input
-          required: true
-          example: input.h5mu
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        description: Input h5mu file
+        direction: input
+        required: true
+        example: input.h5mu
 
-        - name: "--modality"
-          type: string
-          default: "rna"
-          required: false
+      - name: "--modality"
+        type: string
+        default: "rna"
+        required: false
 
-        - name: "--layer"
-          type: string
-          example: "raw_counts"
-          required: false
+      - name: "--layer"
+        type: string
+        example: "raw_counts"
+        required: false
 
-        - name: "--obs_fraction_column"
-          type: string
-          required: true
-          example: "fraction_mitochondrial"
-          description:  |
-            Name of column from .var dataframe selecting
-            a column that contains floating point values between 0 and 1.
+      - name: "--obs_fraction_column"
+        type: string
+        required: true
+        example: "fraction_mitochondrial"
+        description:  |
+          Name of column from .var dataframe selecting
+          a column that contains floating point values between 0 and 1.
 
-    - name: Outputs
-      arguments:
-        - name: "--output"
-          type: file
-          description: Output h5mu file.
-          direction: output
-          example: output.h5mu
-  
-        - name: "--output_compression"
-          type: string
-          description: The compression format to be used on the output h5mu object.
-          choices: ["gzip", "lzf"]
-          required: false
-          example: "gzip"
-        
-        - name: "--obs_name_filter"
-          type: string
-          required: true
-          description: In which .obs slot to store a boolean array corresponding to which observations should be removed.
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        type: file
+        description: Output h5mu file.
+        direction: output
+        example: output.h5mu
 
-    - name: Arguments
-      arguments:
-        - name: "--min_fraction"
-          default: 0
-          type: double
-          min: 0
-          max: 1
-          description: Min fraction for an observation to be retained (True in output).
+      - name: "--output_compression"
+        type: string
+        description: The compression format to be used on the output h5mu object.
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
+      
+      - name: "--obs_name_filter"
+        type: string
+        required: true
+        description: In which .obs slot to store a boolean array corresponding to which observations should be removed.
 
-        - name: "--max_fraction"
-          default: 1
-          type: double
-          min: 0
-          max: 1
-          description: Max fraction for an observation to be retained (True in output).
+  - name: Arguments
+    arguments:
+      - name: "--min_fraction"
+        default: 0
+        type: double
+        min: 0
+        max: 1
+        description: Min fraction for an observation to be retained (True in output).
 
-  resources:
-    - type: python_script
-      path: script.py
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/pbmc_1k_protein_v3
-platforms:
-  - type: docker
-    image: python:3.9-slim
-    setup:
-      - type: apt
-        packages: 
-          - procps
-      - type: python
-        __merge__: /src/base/requirements/anndata_mudata.yaml
-    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
-  - type: nextflow
-    directives:
-      label: [singlecpu, lowmem]
+      - name: "--max_fraction"
+        default: 1
+        type: double
+        min: 0
+        max: 1
+        description: Max fraction for an observation to be retained (True in output).
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3
+
+engines:
+- type: docker
+  image: python:3.9-slim
+  setup:
+    - type: apt
+      packages: 
+        - procps
+    - type: python
+      __merge__: /src/base/requirements/anndata_mudata.yaml
+  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [singlecpu, lowmem]

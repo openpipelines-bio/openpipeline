@@ -11,10 +11,10 @@ from operator import attrgetter
 
 ## VIASH START
 meta = {
-    'functionality_name': 'lognorm',
+    'name': 'lognorm',
     'resources_dir': 'resources_test/',
     'config': './src/transform/log1p/config.vsh.yaml',
-    'executable': "../../target/docker/transform/log1p/log1p"
+    'executable': "../../executable/docker/transform/log1p/log1p"
 }
 
 
