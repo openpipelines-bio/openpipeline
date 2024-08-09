@@ -1,3 +1,5 @@
+from scipy.sparse import issparse
+
 def check_arguments(par):
     # check output .obs predictions
     if not par["output_obs_predictions"]:
@@ -5,9 +7,9 @@ def check_arguments(par):
     assert len(par["output_obs_predictions"]) == len(par["reference_obs_targets"]), f"Number of output_obs_predictions must match number of reference_obs_targets\npar: {par}"
 
     # check output .obs uncertainty
-    if not par["output_obs_uncertainty"]:
-        par["output_obs_uncertainty"] = [ t + "_uncertainty" for t in par["reference_obs_targets"]]
-    assert len(par["output_obs_uncertainty"]) == len(par["reference_obs_targets"]), f"Number of output_obs_uncertainty must match number of reference_obs_targets\npar: {par}"
+    if not par["output_obs_probability"]:
+        par["output_obs_probability"] = [ t + "_probability" for t in par["reference_obs_targets"]]
+    assert len(par["output_obs_probability"]) == len(par["reference_obs_targets"]), f"Number of output_obs_probability must match number of reference_obs_targets\npar: {par}"
 
     return par
 
@@ -30,3 +32,10 @@ def get_query_features(adata, par, logger):
         query_data = adata.obsm[par["input_obsm_features"]]
 
     return query_data
+
+def check_sparsity(data, logger):
+    if issparse(data):
+        logger.warning("Converting sparse matrix to dense. This may consume a lot of memory.")
+        data = data.toarray()
+    
+    return data

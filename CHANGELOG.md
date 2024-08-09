@@ -47,6 +47,8 @@
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
 
+* `labels_transfer/pynndescent_knn`: component: Added a component for KNN classification based on a PyNNDescent neighborhood graph (PR #830).
+
 * `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
 
 ## MINOR CHANGES
