@@ -18,7 +18,7 @@ par = {
     "reference_archive": "output.tar.gz",
 }
 meta = {
-    "config": "target/nextflow/reference/build_bdrhap2_reference/.config.vsh.yaml",
+    "config": "target/nextflow/reference/build_bdrhap_reference/.config.vsh.yaml",
     "resources_dir": os.path.abspath("src/reference/build_bdrhap_2_reference"),
     "temp_dir": os.getenv("VIASH_TEMP"),
     "memory_mb": None,

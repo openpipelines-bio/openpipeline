@@ -4,22 +4,22 @@ import mudata as md
 
 ## VIASH START
 meta = {
-  "functionality_name": "bd_rhapsody2",
-  "executable": "target/docker/mapping/bd_rhapsody2/bd_rhapsody2",
-  "resources_dir": "src/mapping/bd_rhapsody2",
+  "functionality_name": "bd_rhapsody",
+  "executable": "target/docker/mapping/bd_rhapsody/bd_rhapsody",
+  "resources_dir": "src/mapping/bd_rhapsody",
   "cpus": 8,
   "memory_mb": 4096,
 }
 
 # bdabseq_panel_fa = "resources_test/bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"
-# reference_file = "resources_test/reference_gencodev41_chr1/reference_bd_rhapsody_v2.tar.gz"
+# reference_file = "resources_test/reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz"
 # abc_reads = "resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R1_001_subset.fastq.gz;resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R2_001_subset.fastq.gz"
 # wta_reads = "resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R1_001_subset.fastq.gz;resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R2_001_subset.fastq.gz"
 ## VIASH END
 
 wta_reads = f"{meta['resources_dir']}/raw/12WTA_S1_L432_R1_001_subset.fastq.gz;{meta['resources_dir']}/raw/12WTA_S1_L432_R2_001_subset.fastq.gz"
 abc_reads = f"{meta['resources_dir']}/raw/12ABC_S1_L432_R1_001_subset.fastq.gz;{meta['resources_dir']}/raw/12ABC_S1_L432_R2_001_subset.fastq.gz"
-reference_file = f"{meta['resources_dir']}/reference_bd_rhapsody_v2.tar.gz"
+reference_file = f"{meta['resources_dir']}/reference_bd_rhapsody.tar.gz"
 bdabseq_panel_fa = f"{meta['resources_dir']}/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"
 
 # Run executable

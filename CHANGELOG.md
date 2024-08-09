@@ -16,6 +16,12 @@
 
 * `convert/from_h5mu_to_seurat`: bump seurat to latest version (PR #850).
 
+* `workflows/ingestion/bd_rhapsody`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
+* `mapping/bd_rhapsody`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
+* `reference/make_bdrhap_reference`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
 ## NEW FUNCTIONALITY
 
 * CI: added checking of mudata contents for multiple workflows (PR #783).

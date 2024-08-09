@@ -18,15 +18,18 @@ meta = {
 
 def test_run():
     input_mudata = read_h5mu(par["input"])
-    expected_var = ['gene_name', 'feature_types', 'reference_file']
-    expected_obs = ['run_id', 'library_id', 'sample_id']
+    expected_var = ['gene_name', 'feature_type', 'reference_file', "gene_ids"]
+    expected_obs = ['run_id', 'library_id', 'cell_id']
 
-    assert list(input_mudata.mod.keys()) == ["rna"], "Input should contain rna modality."
-    assert list(input_mudata.var.columns) == expected_var, f"Input var columns should be: {expected_var}."
-    assert list(input_mudata.mod["rna"].var.columns) == expected_var, f"Input mod['rna'] var columns should be: {expected_var}."
-    assert list(input_mudata.mod["rna"].obs.columns) == expected_obs, f"Input obs columns should be: {expected_obs}."
-
-    assert np.array_equal(input_mudata.var["feature_types"].unique(), ["Gene Expression"]), "Output X should only contain Gene Expression vars."
+    assert "rna" in list(input_mudata.mod.keys()), "Input should contain rna modality."
+    assert "prot" in list(input_mudata.mod.keys()), "Input should contain rna modality."
+    # assert list(input_mudata.var.columns) == expected_var, f"Input var columns should be: {expected_var}."
+    assert all(key in list(input_mudata.mod["rna"].var.columns) for key in expected_var), f"Input mod['rna'] var columns should be: {expected_var}, found: {input_mudata.mod["rna"].var.keys()}."
+    assert all(key in list(input_mudata.mod["rna"].obs.columns) for key in expected_obs), f"Input mod['rna'] obs columns should be: {expected_obs}, found: {input_mudata.mod["rna"].obs.keys()}."
+    assert all(key in list(input_mudata.mod["prot"].var.columns) for key in expected_var), f"Input mod['prot'] var columns should be: {expected_var}, found: {input_mudata.mod["prot"].var.keys()}."
+    assert all(key in list(input_mudata.mod["prot"].obs.columns) for key in expected_obs), f"Input mod ['prot'] obs columns should be: {expected_obs}, found: {input_mudata.mod["prot"].obs.keys()}."
+    assert np.array_equal(input_mudata.mod["rna"].var["feature_type"].unique(), ["Gene Expression"]), "Output X should only contain Gene Expression vars."
+    assert np.array_equal(input_mudata.mod["prot"].var["feature_type"].unique(), ["Antibody Capture"]), "Output X should only contain Gene Expression vars."
 
 if __name__ == "__main__":
     HERE_DIR = Path(__file__).resolve().parent

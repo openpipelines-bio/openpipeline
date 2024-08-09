@@ -6,20 +6,21 @@ workflow run_wf {
   output_ch = input_ch
     // run bd rhapsody
     | bd_rhapsody_component.run(
-      auto: [ publish: true ],
+      // auto: [ publish: true ],
       fromState: { id, state ->
         // pass all arguments except:
-        //  - remove output_h5mu and output_compression
-        //  - rename output_raw to output
+        //  - remove output_h5mu
+        //  - rename output_raw to output_dir
         def data_ = state.clone()
-        data_.remove("output_h5mu")
+        data_.remove("output")
         data_.remove("output_raw")
-        data_.remove("output_compression")
-        data_ + [ output: state.output_raw ]
+        data_ + [ output_dir: state.output_raw ]
+        data_ + [ output_mudata: "bd_rhap_output.h5mu" ]
       },
-      toState: { id, data, state ->
-        state + [ output_raw: data.output ]
-      }
+      toState: [
+        "input": "output_mudata",
+        "output_raw": "output_dir"
+      ]
     )
     | view {"After bd_rhapsody: $it"}
 
@@ -28,15 +29,15 @@ workflow run_wf {
       fromState: { id, state ->
         [
           id: id,
-          input: state.output_raw,
-          output: state.output_h5mu,
+          input: state.input,
+          output: state.output,
           output_compression: "gzip"
         ]
       },
       toState: { id, data, state ->
         [
-          output_raw: state.output_h5mu,
-          output_h5mu: data.output
+          output_raw: state.output_raw,
+          output: data.output
         ]
       },
       auto: [publish: true]

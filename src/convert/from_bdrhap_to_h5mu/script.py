@@ -3,8 +3,8 @@ import mudata as mu
 ## VIASH START
 par = {
     "id": "sample",
-    "input": "resources_test/bdrhap_5kjrt/processed2/sample.h5mu",
-    "output": "bd_rhap2_to_h5mu_test.h5mu",
+    "input": "resources_test/bdrhap_5kjrt/processed_v2/sample.h5mu",
+    "output": "bd_rhap_to_h5mu_test.h5mu",
     "output_compression": None
     } 
 ## VIASH END
