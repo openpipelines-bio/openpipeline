@@ -46,6 +46,9 @@
 
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
+  
+* `annotate/celltypist` component: Added a CellTypist annotation component (PR #825).
+
 
 * `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
 
@@ -62,6 +65,8 @@
 * `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
 
 * Bump `viash-actions` to `v6` (PR #821).
+
+* `resources_test_scripts/annotation_test_data.sh` script: Train and save a custom CellTypist model (PR #825).
 
 ## BUG FIXES
 
