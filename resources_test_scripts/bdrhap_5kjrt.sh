@@ -130,11 +130,9 @@ nextflow run . \
   -profile docker,mount_temp \
   -c src/workflows/utils/labels_ci.config \
   -c src/workflows/utils/errorstrat_ignore.config \
-  --reads "$wta_r1_file;$wta_r2_file" \
+  --reads "$wta_r1_file;$wta_r2_file;$abc_r1_file;$abc_r2_file;$smk_r1_file;$smk_r2_file" \
   --reference_archive "$genome_tar" \
-  --reads "$abc_r1_file;$abc_r2_file" \
   --abseq_reference "$fasta_file" \
-  --reads "$smk_r1_file;$smk_r2_file" \
   --sample_tags_version "hs" \
   --tag_names "1-Jurkat;2-Ramos;3-THP1" \
   --output_raw "output_raw" \
