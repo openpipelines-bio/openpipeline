@@ -5,7 +5,7 @@ modality: "rna"
 # output_layer: "foo"
 # output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
-# base: 2
+# base: 2.0
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

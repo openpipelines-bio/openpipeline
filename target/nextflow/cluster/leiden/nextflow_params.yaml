@@ -5,7 +5,7 @@ obsp_connectivities: "connectivities"
 # output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
 obsm_name: "leiden"
-resolution: # please fill in - example: [1]
+resolution: # please fill in - example: [1.0]
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

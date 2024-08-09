@@ -76,8 +76,8 @@
                 "keep_feature_types": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `Antibody Capture`, multiple_sep: `\":\"`. Specify which feature types will never be filtered out",
-                "help_text": "Type: List of `string`, example: `Antibody Capture`, multiple_sep: `\":\"`. Specify which feature types will never be filtered out"
+                "description": "Type: List of `string`, example: `Antibody Capture`, multiple_sep: `\";\"`. Specify which feature types will never be filtered out",
+                "help_text": "Type: List of `string`, example: `Antibody Capture`, multiple_sep: `\";\"`. Specify which feature types will never be filtered out"
             
             }
     

@@ -127,10 +127,10 @@
                 "min_fraction": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `0`. Min fraction for an observation to be retained (True in output)",
-                "help_text": "Type: `double`, default: `0`. Min fraction for an observation to be retained (True in output)."
+                "description": "Type: `double`, default: `0.0`. Min fraction for an observation to be retained (True in output)",
+                "help_text": "Type: `double`, default: `0.0`. Min fraction for an observation to be retained (True in output)."
             ,
-                "default": "0"
+                "default": "0.0"
             }
     
 
@@ -138,10 +138,10 @@
                 "max_fraction": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `1`. Max fraction for an observation to be retained (True in output)",
-                "help_text": "Type: `double`, default: `1`. Max fraction for an observation to be retained (True in output)."
+                "description": "Type: `double`, default: `1.0`. Max fraction for an observation to be retained (True in output)",
+                "help_text": "Type: `double`, default: `1.0`. Max fraction for an observation to be retained (True in output)."
             ,
-                "default": "1"
+                "default": "1.0"
             }
     
 

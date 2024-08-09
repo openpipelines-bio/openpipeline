@@ -3018,9 +3018,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/join_uns_to_obs",
     "viash_version" : "0.8.6",
-    "git_commit" : "647b05eedc895094e2e3ea7037310a06241d4649",
+    "git_commit" : "965c0370e32d69448e6bfb478a8d4151e20e8be1",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "1.0.2-2-g647b05eedc"
+    "git_tag" : "1.0.2-3-g965c0370e3"
   }
 }'''))
 ]

@@ -40,7 +40,7 @@ early_stopping_min_delta: 0.0
 # max_epochs: 123
 reduce_lr_on_plateau: true
 lr_factor: 0.6
-lr_patience: 30
+lr_patience: 30.0
 
 # Data validition
 n_obs_min_count: 0

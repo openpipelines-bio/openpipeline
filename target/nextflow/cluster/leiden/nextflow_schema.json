@@ -99,10 +99,10 @@
                 "resolution": {
                 "type":
                 "string",
-                "description": "Type: List of `double`, required, default: `1`, multiple_sep: `\":\"`. A parameter value controlling the coarseness of the clustering",
-                "help_text": "Type: List of `double`, required, default: `1`, multiple_sep: `\":\"`. A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.\nMultiple values will result in clustering being performed multiple times.\n"
+                "description": "Type: List of `double`, required, default: `1.0`, multiple_sep: `\";\"`. A parameter value controlling the coarseness of the clustering",
+                "help_text": "Type: List of `double`, required, default: `1.0`, multiple_sep: `\";\"`. A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.\nMultiple values will result in clustering being performed multiple times.\n"
             ,
-                "default": "1"
+                "default": "1.0"
             }
     
 

@@ -66,8 +66,8 @@
                 "input_id": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, required, example: `foo`, multiple_sep: `\":\"`. The obs index for the counts",
-                "help_text": "Type: List of `string`, required, example: `foo`, multiple_sep: `\":\"`. The obs index for the counts"
+                "description": "Type: List of `string`, required, example: `foo`, multiple_sep: `\";\"`. The obs index for the counts",
+                "help_text": "Type: List of `string`, required, example: `foo`, multiple_sep: `\";\"`. The obs index for the counts"
             
             }
     
@@ -76,8 +76,8 @@
                 "input_counts": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, example: `counts.tsv`, multiple_sep: `\":\"`. The counts as a TSV file as output by HTSeq",
-                "help_text": "Type: List of `file`, required, example: `counts.tsv`, multiple_sep: `\":\"`. The counts as a TSV file as output by HTSeq."
+                "description": "Type: List of `file`, required, example: `counts.tsv`, multiple_sep: `\";\"`. The counts as a TSV file as output by HTSeq",
+                "help_text": "Type: List of `file`, required, example: `counts.tsv`, multiple_sep: `\";\"`. The counts as a TSV file as output by HTSeq."
             
             }
     

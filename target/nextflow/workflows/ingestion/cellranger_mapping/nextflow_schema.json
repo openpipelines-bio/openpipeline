@@ -73,8 +73,8 @@
                 "output_raw": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir/`. Location where the output folder from Cell Ranger will be stored",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir/`. Location where the output folder from Cell Ranger will be stored."
+                "description": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. Location where the output folder from Cell Ranger will be stored",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. Location where the output folder from Cell Ranger will be stored."
             ,
                 "default": "$id.$key.output_raw.output_raw"
             }

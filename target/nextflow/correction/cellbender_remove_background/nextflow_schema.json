@@ -282,8 +282,8 @@
                 "z_layers": {
                 "type":
                 "string",
-                "description": "Type: List of `integer`, default: `512`, multiple_sep: `\":\"`. Dimension of hidden layers in the encoder for z",
-                "help_text": "Type: List of `integer`, default: `512`, multiple_sep: `\":\"`. Dimension of hidden layers in the encoder for z.\n"
+                "description": "Type: List of `integer`, default: `512`, multiple_sep: `\";\"`. Dimension of hidden layers in the encoder for z",
+                "help_text": "Type: List of `integer`, default: `512`, multiple_sep: `\";\"`. Dimension of hidden layers in the encoder for z.\n"
             ,
                 "default": "512"
             }
@@ -315,8 +315,8 @@
                 "ignore_features": {
                 "type":
                 "string",
-                "description": "Type: List of `integer`, multiple_sep: `\":\"`. Integer indices of features to ignore entirely",
-                "help_text": "Type: List of `integer`, multiple_sep: `\":\"`. Integer indices of features to ignore entirely. In the output\ncount matrix, the counts for these features will be unchanged.\n"
+                "description": "Type: List of `integer`, multiple_sep: `\";\"`. Integer indices of features to ignore entirely",
+                "help_text": "Type: List of `integer`, multiple_sep: `\";\"`. Integer indices of features to ignore entirely. In the output\ncount matrix, the counts for these features will be unchanged.\n"
             
             }
     
@@ -325,8 +325,8 @@
                 "fpr": {
                 "type":
                 "string",
-                "description": "Type: List of `double`, default: `0.01`, multiple_sep: `\":\"`. Target \u0027delta\u0027 false positive rate in [0, 1)",
-                "help_text": "Type: List of `double`, default: `0.01`, multiple_sep: `\":\"`. Target \u0027delta\u0027 false positive rate in [0, 1). Use 0 for a cohort\nof samples which will be jointly analyzed for differential expression.\nA false positive is a true signal count that is erroneously removed.\nMore background removal is accompanied by more signal removal at\nhigh values of FPR. You can specify multiple values, which will\ncreate multiple output files.\n"
+                "description": "Type: List of `double`, default: `0.01`, multiple_sep: `\";\"`. Target \u0027delta\u0027 false positive rate in [0, 1)",
+                "help_text": "Type: List of `double`, default: `0.01`, multiple_sep: `\";\"`. Target \u0027delta\u0027 false positive rate in [0, 1). Use 0 for a cohort\nof samples which will be jointly analyzed for differential expression.\nA false positive is a true signal count that is erroneously removed.\nMore background removal is accompanied by more signal removal at\nhigh values of FPR. You can specify multiple values, which will\ncreate multiple output files.\n"
             ,
                 "default": "0.01"
             }
@@ -336,8 +336,8 @@
                 "exclude_feature_types": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, multiple_sep: `\":\"`. Feature types to ignore during the analysis",
-                "help_text": "Type: List of `string`, multiple_sep: `\":\"`. Feature types to ignore during the analysis. These features will\nbe left unchanged in the output file.\n"
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. Feature types to ignore during the analysis",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. Feature types to ignore during the analysis. These features will\nbe left unchanged in the output file.\n"
             
             }
     

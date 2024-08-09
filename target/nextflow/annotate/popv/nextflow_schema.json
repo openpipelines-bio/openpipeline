@@ -148,8 +148,8 @@
                 "methods": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, required, example: `knn_on_scvi:scanvi`, multiple_sep: `\":\"`, choices: ``celltypist`, `knn_on_bbknn`, `knn_on_scanorama`, `knn_on_scvi`, `onclass`, `rf`, `scanvi`, `svm``. Methods to call cell types",
-                "help_text": "Type: List of `string`, required, example: `knn_on_scvi:scanvi`, multiple_sep: `\":\"`, choices: ``celltypist`, `knn_on_bbknn`, `knn_on_scanorama`, `knn_on_scvi`, `onclass`, `rf`, `scanvi`, `svm``. Methods to call cell types. By default, runs to knn_on_scvi and scanvi.",
+                "description": "Type: List of `string`, required, example: `knn_on_scvi;scanvi`, multiple_sep: `\";\"`, choices: ``celltypist`, `knn_on_bbknn`, `knn_on_scanorama`, `knn_on_scvi`, `onclass`, `rf`, `scanvi`, `svm``. Methods to call cell types",
+                "help_text": "Type: List of `string`, required, example: `knn_on_scvi;scanvi`, multiple_sep: `\";\"`, choices: ``celltypist`, `knn_on_bbknn`, `knn_on_scanorama`, `knn_on_scvi`, `onclass`, `rf`, `scanvi`, `svm``. Methods to call cell types. By default, runs to knn_on_scvi and scanvi.",
                 "enum": ["celltypist", "knn_on_bbknn", "knn_on_scanorama", "knn_on_scvi", "onclass", "rf", "scanvi", "svm"]
             
             

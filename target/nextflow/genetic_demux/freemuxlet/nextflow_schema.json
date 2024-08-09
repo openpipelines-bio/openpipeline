@@ -119,10 +119,10 @@
                 "frac_init_clust": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `1`. Fraction of droplets to be clustered in the very first round of initial clustering procedure",
-                "help_text": "Type: `double`, default: `1`. Fraction of droplets to be clustered in the very first round of initial clustering procedure."
+                "description": "Type: `double`, default: `1.0`. Fraction of droplets to be clustered in the very first round of initial clustering procedure",
+                "help_text": "Type: `double`, default: `1.0`. Fraction of droplets to be clustered in the very first round of initial clustering procedure."
             ,
-                "default": "1"
+                "default": "1.0"
             }
     
 
@@ -249,8 +249,8 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.output`, example: `freemux/`. Output directory",
-                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `freemux/`. Output directory"
+                "description": "Type: `file`, default: `$id.$key.output.output`, example: `freemux`. Output directory",
+                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `freemux`. Output directory"
             ,
                 "default": "$id.$key.output.output"
             }

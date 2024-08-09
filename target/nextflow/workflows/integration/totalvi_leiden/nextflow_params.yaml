@@ -39,11 +39,11 @@ prot_obsp_neighbor_connectivities: "totalvi_integration_connectivities"
 
 # Clustering options RNA
 rna_obs_cluster: "totalvi_integration_leiden"
-rna_leiden_resolution: [1]
+rna_leiden_resolution: [1.0]
 
 # Clustering options ADT
 prot_obs_cluster: "totalvi_integration_leiden"
-prot_leiden_resolution: [1]
+prot_leiden_resolution: [1.0]
 
 # Umap options
 obsm_umap: "X_totalvi_umap"
