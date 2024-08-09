@@ -12,9 +12,8 @@
 # files.
 # 
 # Component authors:
-#  * Robrecht Cannoodt (author)
-#  * Dorien Roosen (author)
-#  * Weiwei Schultz (contributor)
+#  * Robrecht Cannoodt
+#  * Dorien Roosen
 
 set -e
 

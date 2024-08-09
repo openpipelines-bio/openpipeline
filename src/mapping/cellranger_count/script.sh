@@ -49,31 +49,40 @@ fi
 # cd into tempdir
 cd "$tmpdir"
 
-no_secondary_analysis=""
-if [ "$par_secondary_analysis" == "false" ]; then
-  no_secondary_analysis="true"
-fi
+# add additional params
+extra_params=( )
 
-IFS=","
+if [ ! -z "$meta_cpus" ]; then 
+  extra_params+=( "--localcores=$meta_cpus" )
+fi
+if [ ! -z "$meta_memory_gb" ]; then 
+  # always keep 2gb for the OS itself
+  memory_gb=`python -c "print(int('$meta_memory_gb') - 2)"`
+  extra_params+=( "--localmem=$memory_gb" )
+fi
+if [ ! -z "$par_expect_cells" ]; then 
+  extra_params+=( "--expect-cells=$par_expect_cells" )
+fi
+if [ ! -z "$par_chemistry" ]; then 
+  extra_params+=( "--chemistry=$par_chemistry" )
+fi
+if [ "$par_secondary_analysis" == "false" ]; then
+  extra_params+=( "--nosecondary" )
+fi
+if [ "$par_generate_bam" == "false" ]; then
+  extra_params+=( "--no-bam" )
+fi
+echo "Running cellranger count"
+
+
 id=myoutput
 cellranger count \
-  --id="$id" \
-  --fastqs="$fastq_dir" \
-  --transcriptome="$par_reference" \
-  --include-introns="$par_include_introns" \
-  ${meta_cpus:+--localcores=$meta_cpus} \
-  ${meta_memory_gb:+--localmem=$((meta_memory_gb-2))} \
-  ${par_expect_cells:+--expect-cells=$par_expect_cells} \
-  ${par_force_cells:+--force-cells=$par_force_cells} \
-  ${par_chemistry:+--chemistry="$par_chemistry"} \
-  ${par_generate_bam:+--create-bam=$par_generate_bam} \
-  ${no_secondary_analysis:+--nosecondary} \
-  ${par_r1_length:+--r1-length=$par_r1_length} \
-  ${par_r2_length:+--r2-length=$par_r2_length} \
-  ${par_lanes:+--lanes=${par_lanes[*]}} \
-  ${par_library_compatibility_check:+--check-library-compatibility=$par_library_compatibility_check}\
-  --disable-ui
-unset IFS
+  --id "$id" \
+  --fastqs "$fastq_dir" \
+  --transcriptome "$par_reference" \
+  --include-introns "$par_include_introns" \
+  "${extra_params[@]}" \
+  --disable-ui \
 
 echo "Copying output"
 if [ -d "$id/outs/" ]; then

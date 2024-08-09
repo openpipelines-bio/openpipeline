@@ -62,7 +62,7 @@ platforms:
           - file
       - type: python
         pip:
-          - numpy<2
+          - numpy
           - Cython
       - type: python
         pip:

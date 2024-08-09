@@ -82,47 +82,6 @@
             }
     
 
-        ,
-                "strict_mode": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean`, default: `false`. Abort if any files are missing",
-                "help_text": "Type: `boolean`, default: `false`. Abort if any files are missing."
-            ,
-                "default": "False"
-            }
-    
-
-        ,
-                "tiles": {
-                "type":
-                "string",
-                "description": "Type: `string`. Process only a subset of tiles by a regular expression",
-                "help_text": "Type: `string`. Process only a subset of tiles by a regular expression."
-            
-            }
-    
-
-        ,
-                "exclude_tiles": {
-                "type":
-                "string",
-                "description": "Type: `string`. Exclude set of tiles by a regular expression",
-                "help_text": "Type: `string`. Exclude set of tiles by a regular expression"
-            
-            }
-    
-
-        ,
-                "no_lane_splitting": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean`. Wheter to avoid splitting FASTQ file by lane",
-                "help_text": "Type: `boolean`. Wheter to avoid splitting FASTQ file by lane."
-            
-            }
-    
-
 }
 },
     

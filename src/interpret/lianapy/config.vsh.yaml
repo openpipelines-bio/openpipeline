@@ -84,7 +84,7 @@ functionality:
     - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 platforms:
   - type: docker
-    image: python:3.11-slim
+    image: python:3.10-slim
     setup:
       - type: apt
         packages: 
@@ -93,7 +93,8 @@ platforms:
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - liana~=1.2.1
+          - liana~=0.1.9
+          - numpy~=1.24.3
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]

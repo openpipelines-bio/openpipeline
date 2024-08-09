@@ -3087,7 +3087,6 @@ meta = [
             "anndata~=0.9.1",
             "mudata~=0.2.3",
             "pandas!=2.1.2",
-            "numpy<2.0.0",
             "scikit-learn~=1.2.0"
           ],
           "upgrade" : true
@@ -3095,10 +3094,31 @@ meta = [
       ],
       "test_setup" : [
         {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
-            "viashpy==0.6.0",
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy==0.6.0"
+          ],
+          "upgrade" : true
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
             "scanpy~=1.9.5",
             "statsmodels==0.14.0"
           ],
@@ -3168,7 +3188,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.8.6",
-    "git_commit" : "a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3",
+    "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3264,7 +3284,15 @@ def main():
         obs_mean, _  = mean_variance_axis(layer, axis=0)
         var_columns_to_add[par['output_var_obs_mean']] = obs_mean
     if par['output_var_total_counts_obs']:
-        total_counts_obs = np.ravel(layer.sum(axis=0))
+        # from the np.sum documentation:
+        # Especially when summing a large number of lower precision floating point numbers,
+        # such as float32, numerical errors can become significant. In such cases it can
+        # be advisable to use dtype="float64" to use a higher precision for the output.
+        layer_with_type = layer
+        if np.issubdtype(layer.dtype, np.floating) and np.can_cast(layer.dtype, np.float64, casting="safe"):
+            # 'safe' casting makes sure not to cast np.float128 or anything else to a lower precision dtype
+            layer_with_type = layer.astype(np.float64)
+        total_counts_obs = np.ravel(layer_with_type.sum(axis=0))
         var_columns_to_add[par['output_var_total_counts_obs']] = total_counts_obs
 
     num_nonzero_obs = layer.getnnz(axis=0)

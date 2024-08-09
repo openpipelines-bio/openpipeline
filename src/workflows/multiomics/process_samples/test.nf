@@ -234,37 +234,6 @@ workflow test_wf5 {
   }
 }
 
-workflow test_wf6 {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
-
-  output_ch = Channel.fromList([
-    [
-        id: "pbmc_clr_axis_0",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
-        clr_axis: 1
-    ],
-    [
-        id: "pbmc_clr_axis_1",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
-        clr_axis: 1
-    ]
-  ])
-  | map{ state -> [state.id, state] }
-  | process_samples
-  | view { output ->
-    assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-    assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1].output}"
-    "Output: $output"
-  }
-  | toSortedList()
-  | map { output_list ->
-    assert output_list.size() == 1 : "output channel should contain one event"
-    assert output_list[0][0] == "merged" : "Output ID should be 'merged'"
-  }
-  
-}
-
 
 // The following test is supposed to fail. It is used to test the error handling of the pipeline.
 // However, there is not way to catch the error originating from the workflow

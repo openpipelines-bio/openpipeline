@@ -1,7 +1,6 @@
 nextflow.enable.dsl=2
 
 include { cellranger_mapping } from params.rootDir + "/target/nextflow/workflows/ingestion/cellranger_mapping/main.nf"
-include { cellranger_mapping_test } from params.rootDir + "/target/nextflow/test_workflows/ingestion/cellranger_mapping_test/main.nf"
 
 workflow test_wf {
   // allow changing the resources_test dir
@@ -23,11 +22,6 @@ workflow test_wf {
       // todo: check whether output dir contains fastq files
       "Output: $output"
     }
-
-    | cellranger_mapping_test.run(
-      fromState: ["input": "output_h5mu"]
-    )
-
     | toSortedList()
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain one event"

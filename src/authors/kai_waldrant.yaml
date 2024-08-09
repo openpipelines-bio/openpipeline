@@ -2,14 +2,9 @@ name: Kai Waldrant
 info:
   role: Contributor
   links:
-    email: kai@data-intuitive.com
     github: KaiWaldrant
-    orcid: "0009-0003-8555-1361"
-    linkedin: kaiwaldrant
+    linkedin: kai-waldrant-b8b86160
   organizations:
-    - name: Data Intuitive
-      href: https://www.data-intuitive.com
-      role: Bioinformatician
-    - name: Open Problems
-      href: https://openproblems.bio
-      role: Contributor
+  - name: Data Intuitive
+    href: https://www.data-intuitive.com
+    role: Bioinformatics Workflow Developer

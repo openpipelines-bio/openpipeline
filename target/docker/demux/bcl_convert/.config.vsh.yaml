@@ -29,27 +29,6 @@ functionality:
       - name: "OpenAnalytics"
         href: "https://www.openanalytics.eu"
         role: "Statistical Consultant"
-  - name: "Weiwei Schultz"
-    roles:
-    - "contributor"
-    info:
-      role: "Contributor"
-      organizations:
-      - name: "Janssen R&D US"
-        role: "Associate Director Data Sciences"
-  - name: "Dorien Roosen"
-    roles:
-    - "author"
-    info:
-      role: "Contributor"
-      links:
-        email: "dorien@data-intuitive.com"
-        github: "dorien-er"
-        linkedin: "dorien-roosen"
-      organizations:
-      - name: "Data Intuitive"
-        href: "https://www.data-intuitive.com"
-        role: "Data Scientist"
   arguments:
   - type: "file"
     name: "--input"
@@ -120,44 +99,6 @@ functionality:
     multiple: false
     multiple_sep: ":"
     dest: "par"
-  - type: "boolean"
-    name: "--strict_mode"
-    description: "Abort if any files are missing."
-    info: null
-    default:
-    - false
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ":"
-    dest: "par"
-  - type: "string"
-    name: "--tiles"
-    description: "Process only a subset of tiles by a regular expression."
-    info: null
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ":"
-    dest: "par"
-  - type: "string"
-    name: "--exclude_tiles"
-    description: "Exclude set of tiles by a regular expression"
-    info: null
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ":"
-    dest: "par"
-  - type: "boolean"
-    name: "--no_lane_splitting"
-    description: "Wheter to avoid splitting FASTQ file by lane."
-    info: null
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ":"
-    dest: "par"
   resources:
   - type: "bash_script"
     path: "script.sh"
@@ -186,7 +127,7 @@ functionality:
 platforms:
 - type: "docker"
   id: "docker"
-  image: "ghcr.io/data-intuitive/bclconvert:4.2"
+  image: "ghcr.io/data-intuitive/bclconvert:3.10"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   target_tag: "integration_build"
@@ -256,5 +197,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/demux/bcl_convert"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/demux/bcl_convert/bcl_convert"
   viash_version: "0.8.6"
-  git_commit: "a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3"
+  git_commit: "06849b19f7971724e55e9490d67a56a7262807c4"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

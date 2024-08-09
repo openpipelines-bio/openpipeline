@@ -179,27 +179,6 @@
 },
     
     
-    "clr options" : {
-    "title": "CLR options",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "clr_axis": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `0`. Axis to perform the CLR transformation on",
-                "help_text": "Type: `integer`, default: `0`. Axis to perform the CLR transformation on."
-            ,
-                "default": "0"
-            }
-    
-
-}
-},
-    
-    
     "nextflow input-output arguments" : {
     "title": "Nextflow input-output arguments",
     "type": "object",
@@ -241,10 +220,6 @@
 
     {
     "$ref": "#/definitions/pca options"
-    },
-
-    {
-    "$ref": "#/definitions/clr options"
     },
 
     {

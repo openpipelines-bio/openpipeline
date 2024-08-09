@@ -503,13 +503,13 @@ ENTRYPOINT []
 
  
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "numpy<2.0.0" "scanpy~=1.9.5" "statsmodels==0.14.0" "cellxgene-census"
+  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "scanpy~=1.9.5" "statsmodels==0.14.0" "cellxgene-census"
 
 LABEL org.opencontainers.image.authors="Matthias Beyens, Dries De Maeyer, Robrecht Cannoodt, Kai Waldrant"
 LABEL org.opencontainers.image.description="Companion container for running component query cellxgene_census"
-LABEL org.opencontainers.image.created="2024-08-09T02:44:23Z"
+LABEL org.opencontainers.image.created="2024-08-09T11:26:41Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3"
+LABEL org.opencontainers.image.revision="06849b19f7971724e55e9490d67a56a7262807c4"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

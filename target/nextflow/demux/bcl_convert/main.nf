@@ -12,8 +12,6 @@
 // Component authors:
 //  * Toni Verbeiren (author, maintainer)
 //  * Marijke Van Moerbeke (author)
-//  * Weiwei Schultz (contributor)
-//  * Dorien Roosen (author)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -2831,42 +2829,6 @@ meta = [
             }
           ]
         }
-      },
-      {
-        "name" : "Weiwei Schultz",
-        "roles" : [
-          "contributor"
-        ],
-        "info" : {
-          "role" : "Contributor",
-          "organizations" : [
-            {
-              "name" : "Janssen R&D US",
-              "role" : "Associate Director Data Sciences"
-            }
-          ]
-        }
-      },
-      {
-        "name" : "Dorien Roosen",
-        "roles" : [
-          "author"
-        ],
-        "info" : {
-          "role" : "Contributor",
-          "links" : {
-            "email" : "dorien@data-intuitive.com",
-            "github" : "dorien-er",
-            "linkedin" : "dorien-roosen"
-          },
-          "organizations" : [
-            {
-              "name" : "Data Intuitive",
-              "href" : "https://www.data-intuitive.com",
-              "role" : "Data Scientist"
-            }
-          ]
-        }
       }
     ],
     "arguments" : [
@@ -2951,49 +2913,6 @@ meta = [
         "multiple" : false,
         "multiple_sep" : ":",
         "dest" : "par"
-      },
-      {
-        "type" : "boolean",
-        "name" : "--strict_mode",
-        "description" : "Abort if any files are missing.",
-        "default" : [
-          false
-        ],
-        "required" : false,
-        "direction" : "input",
-        "multiple" : false,
-        "multiple_sep" : ":",
-        "dest" : "par"
-      },
-      {
-        "type" : "string",
-        "name" : "--tiles",
-        "description" : "Process only a subset of tiles by a regular expression.",
-        "required" : false,
-        "direction" : "input",
-        "multiple" : false,
-        "multiple_sep" : ":",
-        "dest" : "par"
-      },
-      {
-        "type" : "string",
-        "name" : "--exclude_tiles",
-        "description" : "Exclude set of tiles by a regular expression",
-        "required" : false,
-        "direction" : "input",
-        "multiple" : false,
-        "multiple_sep" : ":",
-        "dest" : "par"
-      },
-      {
-        "type" : "boolean",
-        "name" : "--no_lane_splitting",
-        "description" : "Wheter to avoid splitting FASTQ file by lane.",
-        "required" : false,
-        "direction" : "input",
-        "multiple" : false,
-        "multiple_sep" : ":",
-        "dest" : "par"
       }
     ],
     "resources" : [
@@ -3040,7 +2959,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ghcr.io/data-intuitive/bclconvert:4.2",
+      "image" : "ghcr.io/data-intuitive/bclconvert:3.10",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration_build",
@@ -3121,7 +3040,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl_convert",
     "viash_version" : "0.8.6",
-    "git_commit" : "a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3",
+    "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3147,10 +3066,6 @@ $( if [ ! -z ${VIASH_PAR_SAMPLE_SHEET+x} ]; then echo "${VIASH_PAR_SAMPLE_SHEET}
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\\"'\\"'#g;s#.*#par_output='&'#" ; else echo "# par_output="; fi )
 $( if [ ! -z ${VIASH_PAR_REPORTS+x} ]; then echo "${VIASH_PAR_REPORTS}" | sed "s#'#'\\"'\\"'#g;s#.*#par_reports='&'#" ; else echo "# par_reports="; fi )
 $( if [ ! -z ${VIASH_PAR_TEST_MODE+x} ]; then echo "${VIASH_PAR_TEST_MODE}" | sed "s#'#'\\"'\\"'#g;s#.*#par_test_mode='&'#" ; else echo "# par_test_mode="; fi )
-$( if [ ! -z ${VIASH_PAR_STRICT_MODE+x} ]; then echo "${VIASH_PAR_STRICT_MODE}" | sed "s#'#'\\"'\\"'#g;s#.*#par_strict_mode='&'#" ; else echo "# par_strict_mode="; fi )
-$( if [ ! -z ${VIASH_PAR_TILES+x} ]; then echo "${VIASH_PAR_TILES}" | sed "s#'#'\\"'\\"'#g;s#.*#par_tiles='&'#" ; else echo "# par_tiles="; fi )
-$( if [ ! -z ${VIASH_PAR_EXCLUDE_TILES+x} ]; then echo "${VIASH_PAR_EXCLUDE_TILES}" | sed "s#'#'\\"'\\"'#g;s#.*#par_exclude_tiles='&'#" ; else echo "# par_exclude_tiles="; fi )
-$( if [ ! -z ${VIASH_PAR_NO_LANE_SPLITTING+x} ]; then echo "${VIASH_PAR_NO_LANE_SPLITTING}" | sed "s#'#'\\"'\\"'#g;s#.*#par_no_lane_splitting='&'#" ; else echo "# par_no_lane_splitting="; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_resources_dir='&'#" ; else echo "# meta_resources_dir="; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_executable='&'#" ; else echo "# meta_executable="; fi )
@@ -3173,12 +3088,7 @@ bcl-convert \\\\
   --bcl-input-directory "\\$par_input" \\\\
   --output-directory "\\$par_output" \\\\
   --sample-sheet "\\$par_sample_sheet" \\\\
-  --first-tile-only "\\$par_test_mode" \\\\
-  --strict-mode "\\$par_strict_mode" \\\\
-  \\${par_no_lane_splitting:+--no-lane-splitting "\\$par_no_lane_splitting"} \\\\
-  \\${par_tiles:+--tiles \\$par_tiles} \\\\
-  \\${par_exclude_tiles:+--exclude-tiles \\$par_exclude_tiles} 
-  
+  --first-tile-only \\$par_test_mode
 
 if [ ! -z "\\$par_reports" ]; then
   echo "Moving reports to its own location"

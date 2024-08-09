@@ -537,13 +537,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "HTSeq" "pyyaml" "scipy" "pandas" "numpy<2"
+  pip install --upgrade --no-cache-dir "HTSeq" "pyyaml" "scipy" "pandas~=2.0.0"
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Angela Oliveira Pisco"
 LABEL org.opencontainers.image.description="Companion container for running component mapping htseq_count"
-LABEL org.opencontainers.image.created="2024-08-09T02:44:27Z"
+LABEL org.opencontainers.image.created="2024-08-09T11:26:44Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3"
+LABEL org.opencontainers.image.revision="06849b19f7971724e55e9490d67a56a7262807c4"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

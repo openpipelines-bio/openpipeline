@@ -2927,6 +2927,9 @@ meta = [
         "type" : "integer",
         "name" : "--target_sum",
         "description" : "If None, after normalization, each observation (cell) has a total count equal to the median of total counts for observations (cells) before normalization.",
+        "default" : [
+          10000
+        ],
         "required" : false,
         "direction" : "input",
         "multiple" : false,
@@ -3015,7 +3018,6 @@ meta = [
             "anndata~=0.9.1",
             "mudata~=0.2.3",
             "pandas!=2.1.2",
-            "numpy<2.0.0",
             "scanpy~=1.9.5",
             "statsmodels==0.14.0"
           ],
@@ -3095,7 +3097,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/normalize_total",
     "viash_version" : "0.8.6",
-    "git_commit" : "a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3",
+    "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3178,7 +3180,6 @@ if par['input_layer'] and not par['input_layer'] in dat.layers.keys():
     raise ValueError(f"Input layer {par['input_layer']} not found in {mod}")
 output_data = sc.pp.normalize_total(dat,
                                     layer=par["input_layer"],
-                                    target_sum=par["target_sum"],
                                     copy=True if par["output_layer"] else False)
 
 if output_data:

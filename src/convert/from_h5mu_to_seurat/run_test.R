@@ -31,7 +31,7 @@ obj <- readRDS(file = out_rds)
 
 cat("> Checking whether Seurat object is in the right format\n")
 expect_is(obj, "Seurat")
-expect_equal(sort(names(slot(obj, "assays"))), sort(c("prot", "rna")))
+expect_equal(sort(names(slot(obj, "assays"))), sort(c("prot", "rna", "vdj_t")))
 
 obj_rna <- slot(obj, "assays")$rna
 obj_prot <- slot(obj, "assays")$prot

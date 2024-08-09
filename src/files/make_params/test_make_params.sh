@@ -34,7 +34,7 @@ fi
 
 
 # this component always be present because this test is executed.
-if ! grep -qw "id: src_files_make_params" "$tmpdir/output.yaml"; then
-    echo "Yaml key 'id: src_files_make_params" not found && exit 1
+if ! grep -qw "id: files_make_params" "$tmpdir/output.yaml"; then
+    echo "Yaml key 'id: files_make_params" not found && exit 1
 fi
 echo "> Test succeeded!"

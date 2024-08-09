@@ -3312,24 +3312,6 @@ meta = [
             "dest" : "par"
           }
         ]
-      },
-      {
-        "name" : "CLR options",
-        "arguments" : [
-          {
-            "type" : "integer",
-            "name" : "--clr_axis",
-            "description" : "Axis to perform the CLR transformation on.",
-            "default" : [
-              0
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          }
-        ]
       }
     ],
     "resources" : [
@@ -3432,7 +3414,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3",
+          "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
           "executable" : "/nextflow/metadata/add_id/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
@@ -3454,7 +3436,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3",
+          "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
           "executable" : "/nextflow/workflows/multiomics/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
@@ -3475,7 +3457,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3",
+          "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
           "executable" : "/nextflow/dataflow/merge/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
@@ -3496,7 +3478,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3",
+          "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
           "executable" : "/nextflow/dataflow/concatenate_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu"
@@ -3517,7 +3499,7 @@ meta = [
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3",
+          "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3538,7 +3520,7 @@ meta = [
           "functionalityNamespace" : "workflows/rna",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3",
+          "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
           "executable" : "/nextflow/workflows/rna/rna_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample"
@@ -3559,7 +3541,7 @@ meta = [
           "functionalityNamespace" : "workflows/prot",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3",
+          "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
           "executable" : "/nextflow/workflows/prot/prot_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_singlesample"
@@ -3580,7 +3562,7 @@ meta = [
           "functionalityNamespace" : "workflows/gdo",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3",
+          "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
           "executable" : "/nextflow/workflows/gdo/gdo_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/gdo/gdo_singlesample"
@@ -3601,7 +3583,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3",
+          "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
           "executable" : "/nextflow/workflows/multiomics/process_batches/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches"
@@ -3668,7 +3650,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.8.6",
-    "git_commit" : "a46dd4a9ff1a04e7f8a5abb4c227ee2c2a0c60c3",
+    "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3838,31 +3820,15 @@ workflow run_wf {
       | view {"After groupTuple: $it"}
       | map { modality, old_ids, states ->
         def new_id = "combined_$modality"
-        // keys in the new state that should not have a unique value across samples
-        def new_state_non_unique_values = [
+        def new_keys = [
           "input": states.collect{it.input},
           "input_id": old_ids,
           "_meta": ["join_id": old_ids[0]]
         ]
-        // Gather the keys from the different states,
-        // one state might contain more keys compared to another (so create a set)
-        def all_state_keys = states.inject([].toSet()){ current_keys, state ->
-            def new_keys = current_keys + state.keySet()
-            return new_keys
-        }.minus(["output", "input_id", "input", "_meta"])
-        // Create the new state from the keys, values should be the same across samples
-        def new_state = all_state_keys.inject([:]){ old_state, argument_name ->
-            argument_values = states.collect{it.get(argument_name)}.unique()
-            assert argument_values.size() == 1, "Arguments should be the same across samples. Argument name: $argument_name, \
-                                                 argument value: $argument_values"
-            // take the unique value from the set (there is only one)
-            def argument_value
-            argument_values.each { argument_value = it }
-            def current_state = old_state + [(argument_name): argument_value]
-            return current_state
-        }
-        def final_state = new_state_non_unique_values + new_state
-        [new_id, final_state]
+        // Just take the state of the first sample for each modality
+        // and update it to become the new state
+        def new_state = states[0] + new_keys
+        [new_id, new_state]
       }
       | concatenate_h5mu.run(
         fromState: [
@@ -3911,7 +3877,6 @@ workflow run_wf {
             "pca_overwrite": state.pca_overwrite,
             "rna_layer": state.rna_layer,
             "prot_layer": state.prot_layer,
-            "clr_axis": state.clr_axis,
           ]
         },
         toState: {id, output, state -> 

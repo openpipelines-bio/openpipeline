@@ -1,78 +1,23 @@
-# openpipelines x.x.x
+# openpipelines 1.0.3
 
-## BREAKING CHANGES
+## BUG FIXES
 
-* Added cell multiplexing support to the `from_cellranger_multi_to_h5mu` component and the `cellranger_multi` workflow. These components now output multiple .h5mu files. The `output` and `output_h5mu` arguments respectively now require a value containing a wildcard character `*`, which will be replaced by the sample ID to form the final output file names . Additionally, a `sample_csv` argument is added to the `from_cellragner_multi_to_h5mu` component which describes the sample name per output file (PR #803).
+* `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR # , backported from PR #852).
 
-* `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
-
-* `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0.1` (PR #774 and PR #811).
-
-* Removed `--disable_library_compatibility_check` in favour of `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).
-
-* `lianapy`: bumped version to `1.2.1` (PR #827).
-
-* `filter/filter_with_hvg`: this component was deprecated and has now been removed. Use `feature_annotation/highly_variable_features_scanpy` instead (PR #843).
-
-* `convert/from_h5mu_to_seurat`: bump seurat to latest version (PR #850).
-
-## NEW FUNCTIONALITY
-
-* CI: added checking of mudata contents for multiple workflows (PR #783).
-
-* Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #803).
-
-* `convert/from_cellranger_to_h5mu`: add support for antigen analysis. 
-
-* Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
-
-* Added `reference/build_cellranger_reference` component: build reference file compatible with ATAC and ATAC+GEX experiments (PR #726).
-
-* `demux/bcl_convert`: add support for no lane splitting (PR #804).
-
-* `reference/cellranger_mkgtf` component: Added cellranger mkgtf as a standalone component (PR #771).
-
-* `scgpt/cross_check_genes` component: Added a gene-model cross check component for scGPT (PR #758).
-
-* `scgpt/embedding`: component: Added scGPT embedding component (PR #761)
-
-* `scgpt/tokenize_pad`: component: Added scGPT padding and tokenization component (PR #754).
-
-* `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
-
-* `scgpt/cell_type_annotation` component: Added scGPT cell type annotation component (PR #798).
-
-* `resources_test_scripts/scGPT.sh`: Added script to include scGPT test resources (PR #800).
-
-* `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
-  on workflow level as well (PR #767).
-
-* `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
-
-## MINOR CHANGES
-
-* Bump scvelo to `0.3.2` (PR #828).
-
-* Bump viash to `0.8.6` (PR #815).
-
-* Pin numpy<2 for several components (PR #815).
-
-* Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
-
-* `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
-
-* Bump `viash-actions` to `v6` (PR #821).
+# openpipelines 1.0.2
 
 ## BUG FIXES
 
 * `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
   data dtype (dtype) changed as a result of adding more observations after concatenation, causing `TypeError`.
   One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
-  which is present in another sample; causing the values being filled with `NA` (PR #837).
+  which is present in another sample; causing the values being filled with `NA` (PR #842, backported from PR #837).
 
-## DOCUMENTATION
+# openpipelines 1.0.1
 
-* Update authorship of components (PR #835).
+## BUG FIXES
+
+* Bump viash to `0.8.6` (PR #816, backported from #815). This changes the at-runtime generated nextflow process from an in-memory to an on-disk temporary file, which should cause less issues with Nextflow Fusion.
 
 # openpipelines 1.0.0-rc6
 
@@ -80,8 +25,6 @@
 
 * `dataflow/concatenate_h5mu`: fix regression bug where observations are no longer linked to the correct metadata
 after concatenation (PR #807)
-
-* `transform/normalize_total` component: pass the `target_sum` argument to `sc.pp.normalize_total()` (PR #823).
 
 # openpipelines 1.0.0-rc5
 

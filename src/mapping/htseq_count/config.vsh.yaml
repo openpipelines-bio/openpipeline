@@ -185,8 +185,7 @@ platforms:
           - HTSeq
           - pyyaml
           - scipy
-          - pandas
-          - numpy<2
+          - pandas~=2.0.0
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]

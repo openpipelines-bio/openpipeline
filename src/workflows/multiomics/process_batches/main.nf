@@ -75,7 +75,6 @@ workflow run_wf {
       ],
       "prot": [
         "layer": "prot_layer",
-        "clr_axis": "clr_axis",
       ]
     ].asImmutable()
 
