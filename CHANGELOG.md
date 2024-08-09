@@ -60,6 +60,11 @@
 
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
+  
+* `annotate/celltypist` component: Added a CellTypist annotation component (PR #825).
+
+
+* `workflows/annotation/harmony_knn`: workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
 
 * `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
 
@@ -93,6 +98,8 @@
 ## DOCUMENTATION
 
 * Update authorship of components (PR #835).
+
+* `resources_test_scripts/annotation_test_data.sh` script: Train and save a custom CellTypist model (PR #825).
 
 # openpipelines 1.0.0-rc6
 
