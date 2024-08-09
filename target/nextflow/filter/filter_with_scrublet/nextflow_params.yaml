@@ -8,7 +8,7 @@ do_subset: false
 obs_name_doublet_score: "scrublet_doublet_score"
 min_counts: 2
 min_cells: 3
-min_gene_variablity_percent: 85
+min_gene_variablity_percent: 85.0
 num_pca_components: 30
 distance_metric: "euclidean"
 allow_automatic_threshold_detection_fail: false

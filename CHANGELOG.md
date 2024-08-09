@@ -1,3 +1,9 @@
+# openpipelines 0.12.7
+
+## BUG FIXES
+
+* `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR # , backported from PR #852).
+
 # openpipelines 0.12.6
 
 ## BUG FIXES

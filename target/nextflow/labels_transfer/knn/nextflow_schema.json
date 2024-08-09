@@ -6,6 +6,157 @@
 "definitions": {
 
     
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.output`. The query data in ",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.output`. The query data in .h5mu format with predicted labels transfered from the reference."
+            ,
+                "default": "$id.$key.output.output"
+            }
+    
+
+        ,
+                "output_obs_predictions": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, multiple_sep: `\":\"`. In which `",
+                "help_text": "Type: List of `string`, multiple_sep: `\":\"`. In which `.obs` slots to store the predicted information.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_pred\"` suffix.\n"
+            
+            }
+    
+
+        ,
+                "output_obs_uncertainty": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, multiple_sep: `\":\"`. In which `",
+                "help_text": "Type: List of `string`, multiple_sep: `\":\"`. In which `.obs` slots to store the uncertainty of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_uncertainty\"` suffix.\n"
+            
+            }
+    
+
+        ,
+                "output_uns_parameters": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `labels_transfer`. The `",
+                "help_text": "Type: `string`, default: `labels_transfer`. The `.uns` key to store additional information about the parameters used for the label transfer."
+            ,
+                "default": "labels_transfer"
+            }
+    
+
+}
+},
+    
+    
+    "input dataset (query) arguments" : {
+    "title": "Input dataset (query) arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required. The query data to transfer the labels to",
+                "help_text": "Type: `file`, required. The query data to transfer the labels to. Should be a .h5mu file."
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. Which modality to use",
+                "help_text": "Type: `string`, default: `rna`. Which modality to use."
+            ,
+                "default": "rna"
+            }
+    
+
+        ,
+                "input_obsm_features": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `X_integrated_scanvi`. The `",
+                "help_text": "Type: `string`, example: `X_integrated_scanvi`. The `.obsm` key of the embedding to use for the classifier\u0027s inference. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model or preprocessing).\n"
+            
+            }
+    
+
+}
+},
+    
+    
+    "reference dataset arguments" : {
+    "title": "Reference dataset arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "reference": {
+                "type":
+                "string",
+                "description": "Type: `file`, example: `https:/zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad`. The reference data to train classifiers on",
+                "help_text": "Type: `file`, example: `https:/zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad`. The reference data to train classifiers on."
+            
+            }
+    
+
+        ,
+                "reference_obsm_features": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, default: `X_integrated_scanvi`. The `",
+                "help_text": "Type: `string`, required, default: `X_integrated_scanvi`. The `.obsm` key of the embedding to use for the classifier\u0027s training.\nMake sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).\n"
+            ,
+                "default": "X_integrated_scanvi"
+            }
+    
+
+        ,
+                "reference_obs_targets": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, default: `ann_level_1,ann_level_2,ann_level_3,ann_level_4,ann_level_5,ann_finest_level`, multiple_sep: `\",\"`. The `",
+                "help_text": "Type: List of `string`, default: `ann_level_1,ann_level_2,ann_level_3,ann_level_4,ann_level_5,ann_finest_level`, multiple_sep: `\",\"`. The `.obs` key of the target labels to tranfer."
+            ,
+                "default": "ann_level_1,ann_level_2,ann_level_3,ann_level_4,ann_level_5,ann_finest_level"
+            }
+    
+
+}
+},
+    
     
     "learning parameters" : {
     "title": "Learning parameters",
@@ -43,21 +194,24 @@
             }
     
 
-        ,
-                "param_list": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `my_params.yaml`. Allows inputting multiple parameter sets to initialise a Nextflow channel",
-                "help_text": "Type: `string`, example: `my_params.yaml`. Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.",
-                "hidden": true
-            
-            }
-    
+        
 
 }
 }
 },
 "allOf": [
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/input dataset (query) arguments"
+    },
+
+    {
+    "$ref": "#/definitions/reference dataset arguments"
+    },
 
     {
     "$ref": "#/definitions/learning parameters"

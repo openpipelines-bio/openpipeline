@@ -8,7 +8,7 @@ obsm_input: "X_pca"
 obsm_output: "X_scanorama"
 knn: 20
 batch_size: 5000
-sigma: 15
+sigma: 15.0
 approx: true
 alpha: 0.1
 
