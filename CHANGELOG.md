@@ -12,6 +12,10 @@
 
 * `lianapy`: bumped version to `1.2.1` (PR #827).
 
+* `XGBoost`: bump version to `2.0.3` (PR #646).
+
+* Several components: update anndata to `0.10.8` and mudata to `0.2.3` (PR #645). 
+
 * `filter/filter_with_hvg`: this component was deprecated and has now been removed. Use `feature_annotation/highly_variable_features_scanpy` instead (PR #843).
 
 * `convert/from_h5mu_to_seurat`: bump seurat to latest version (PR #850).
@@ -62,6 +66,8 @@
 * `workflows/ingestion/make_reference`: Add additional arguments passed through to the STAR and BD Rhapsody reference components (PR #846).
 
 ## MINOR CHANGES
+
+* `cellbender_remove_background_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
 
 * Bump scvelo to `0.3.2` (PR #828).
 
