@@ -57,8 +57,6 @@
 
 * `cellbender_remove_background_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
 
-* `from_bdrhap_to_h5mu`: update base image to `rocker/r2u:22.04` (PR #646)
-
 * Bump scvelo to `0.3.2` (PR #828).
 
 * Bump viash to `0.8.6` (PR #815).
