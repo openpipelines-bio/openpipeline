@@ -43,22 +43,14 @@ functionality:
     - path: /resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw
 platforms:
   - type: docker
-    image: rocker/r2u:22.04
+    image: ghcr.io/data-intuitive/randpy:r4.2_py3.9
     setup:
       - type: docker
-        run:
-          - apt update && apt upgrade -y
-          # - echo RETICULATE_PYTHON=/usr/bin/python3 > /etc/bash.bashrc
-      - type: apt
-        packages: 
-          - python3
-          - python3-pip
-          - python3-dev
-          - python-is-python3
+        run: apt update && apt upgrade -y
       - type: python
-        __merge__: [/src/base/requirements/scanpy.yaml, /src/base/requirements/anndata_mudata.yaml, .]
+        __merge__: /src/base/requirements/anndata_mudata.yaml
       - type: r
-        cran: [ anndata, testthat, tidyverse ]
+        cran: anndata
   - type: nextflow
     directives:
       label: [lowmem, singlecpu]
