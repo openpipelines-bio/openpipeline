@@ -3066,12 +3066,11 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.9.1",
-            "mudata~=0.2.3",
+            "anndata~=0.10.8",
+            "mudata~=0.2.4",
             "pandas!=2.1.2",
             "numpy<2.0.0",
-            "scanpy~=1.9.5",
-            "statsmodels==0.14.0",
+            "scanpy~=1.9.6",
             "scanorama"
           ],
           "upgrade" : true
@@ -3150,7 +3149,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scanorama",
     "viash_version" : "0.8.6",
-    "git_commit" : "b78d5c369e9992105b2ea4be43a4a66f22d195d4",
+    "git_commit" : "600a1b838886851f979510d0968bd4eeaec7c192",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

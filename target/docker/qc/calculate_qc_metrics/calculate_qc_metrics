@@ -512,13 +512,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "numpy<2.0.0" "scipy"
+  pip install --upgrade --no-cache-dir "anndata~=0.10.8" "mudata~=0.2.4" "pandas!=2.1.2" "numpy<2.0.0" "scipy"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component qc calculate_qc_metrics"
-LABEL org.opencontainers.image.created="2024-08-09T15:54:55Z"
+LABEL org.opencontainers.image.created="2024-08-09T17:08:14Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b78d5c369e9992105b2ea4be43a4a66f22d195d4"
+LABEL org.opencontainers.image.revision="600a1b838886851f979510d0968bd4eeaec7c192"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

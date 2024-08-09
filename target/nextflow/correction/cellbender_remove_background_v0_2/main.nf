@@ -3168,7 +3168,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "nvcr.io/nvidia/pytorch:22.12-py3",
+      "image" : "nvcr.io/nvidia/pytorch:23.12-py3",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "main_build",
@@ -3182,12 +3182,11 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.9.1",
-            "mudata~=0.2.3",
+            "anndata~=0.10.8",
+            "mudata~=0.2.4",
             "pandas!=2.1.2",
             "numpy<2.0.0",
             "muon==0.1.5",
-            "tables==3.8.0",
             "cellbender==0.2.1"
           ],
           "upgrade" : true
@@ -3265,7 +3264,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background_v0_2",
     "viash_version" : "0.8.6",
-    "git_commit" : "b78d5c369e9992105b2ea4be43a4a66f22d195d4",
+    "git_commit" : "600a1b838886851f979510d0968bd4eeaec7c192",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

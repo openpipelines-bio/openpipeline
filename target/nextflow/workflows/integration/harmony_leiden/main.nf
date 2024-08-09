@@ -3111,7 +3111,7 @@ meta = [
           "functionalityNamespace" : "cluster",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b78d5c369e9992105b2ea4be43a4a66f22d195d4",
+          "git_commit" : "600a1b838886851f979510d0968bd4eeaec7c192",
           "executable" : "/nextflow/cluster/leiden/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden"
@@ -3132,7 +3132,7 @@ meta = [
           "functionalityNamespace" : "integrate",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b78d5c369e9992105b2ea4be43a4a66f22d195d4",
+          "git_commit" : "600a1b838886851f979510d0968bd4eeaec7c192",
           "executable" : "/nextflow/integrate/harmonypy/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/harmonypy"
@@ -3153,7 +3153,7 @@ meta = [
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b78d5c369e9992105b2ea4be43a4a66f22d195d4",
+          "git_commit" : "600a1b838886851f979510d0968bd4eeaec7c192",
           "executable" : "/nextflow/dimred/umap/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
@@ -3174,7 +3174,7 @@ meta = [
           "functionalityNamespace" : "neighbors",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b78d5c369e9992105b2ea4be43a4a66f22d195d4",
+          "git_commit" : "600a1b838886851f979510d0968bd4eeaec7c192",
           "executable" : "/nextflow/neighbors/find_neighbors/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
@@ -3195,7 +3195,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b78d5c369e9992105b2ea4be43a4a66f22d195d4",
+          "git_commit" : "600a1b838886851f979510d0968bd4eeaec7c192",
           "executable" : "/nextflow/metadata/move_obsm_to_obs/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs"
@@ -3262,7 +3262,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/harmony_leiden",
     "viash_version" : "0.8.6",
-    "git_commit" : "b78d5c369e9992105b2ea4be43a4a66f22d195d4",
+    "git_commit" : "600a1b838886851f979510d0968bd4eeaec7c192",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
