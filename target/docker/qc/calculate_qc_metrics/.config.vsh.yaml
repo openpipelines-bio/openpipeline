@@ -234,7 +234,7 @@ functionality:
 platforms:
 - type: "docker"
   id: "docker"
-  image: "python:3.9-slim"
+  image: "python:3.11-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   target_tag: "main_build"
@@ -255,15 +255,26 @@ platforms:
     - "mudata~=0.2.3"
     - "pandas!=2.1.2"
     - "numpy<2.0.0"
-    - "scikit-learn~=1.2.0"
+    - "scipy"
     upgrade: true
   test_setup:
+  - type: "docker"
+    copy:
+    - "openpipelinetestutils /opt/openpipelinetestutils"
+  - type: "python"
+    user: false
+    packages:
+    - "/opt/openpipelinetestutils"
+    upgrade: true
   - type: "python"
     user: false
     packages:
     - "viashpy==0.6.0"
-    - "scanpy~=1.9.5"
-    - "statsmodels==0.14.0"
+    upgrade: true
+  - type: "python"
+    user: false
+    packages:
+    - "scanpy"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -321,5 +332,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/calculate_qc_metrics"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/calculate_qc_metrics/calculate_qc_metrics"
   viash_version: "0.8.6"
-  git_commit: "7b7e67255223d0390d0a544f45411285fa805326"
+  git_commit: "c3010a3464aeb84b9f3b7b30ddb5b512791fa86b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

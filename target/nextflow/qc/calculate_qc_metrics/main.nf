@@ -3063,7 +3063,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.9-slim",
+      "image" : "python:3.11-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "main_build",
@@ -3088,19 +3088,39 @@ meta = [
             "mudata~=0.2.3",
             "pandas!=2.1.2",
             "numpy<2.0.0",
-            "scikit-learn~=1.2.0"
+            "scipy"
           ],
           "upgrade" : true
         }
       ],
       "test_setup" : [
         {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
-            "viashpy==0.6.0",
-            "scanpy~=1.9.5",
-            "statsmodels==0.14.0"
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy==0.6.0"
+          ],
+          "upgrade" : true
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "scanpy"
           ],
           "upgrade" : true
         }
@@ -3168,7 +3188,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.8.6",
-    "git_commit" : "7b7e67255223d0390d0a544f45411285fa805326",
+    "git_commit" : "c3010a3464aeb84b9f3b7b30ddb5b512791fa86b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3185,8 +3205,7 @@ tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import sys
 from mudata import read_h5mu
-from scipy.sparse import issparse, isspmatrix_coo, csr_matrix
-from sklearn.utils.sparsefuncs import mean_variance_axis
+from scipy.sparse import issparse, csr_array
 import numpy as np
 
 ## VIASH START
@@ -3246,6 +3265,18 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
+def count_nonzero(layer, axis):
+    """
+    This method is the functional equivalent of the old .getnnz function from scirpy,
+    but that function was deprecated. So we use the nonzero function to mimic the old
+    behavior.
+    """
+    axis ^= 1
+    nonzero_counts = dict(zip(*np.unique(layer.nonzero()[axis], return_counts=True)))
+    nonzero_per_axis_item = {row_index: nonzero_counts.get(row_index, 0)
+                             for row_index in range(layer.shape[axis])} 
+    return np.array(list(nonzero_per_axis_item.values()), dtype="int64")
+
 def main():
     input_data = read_h5mu(par["input"])
     modality_data = input_data.mod[par["modality"]]
@@ -3253,21 +3284,28 @@ def main():
     layer = modality_data.X if not par['layer'] else modality_data.layers[par['layer']]
     if not issparse(layer):
         raise NotImplementedError("Expected layer to be in sparse format.")
-    if isspmatrix_coo(layer):
-        layer = csr_matrix(layer)
+    layer = csr_array(layer)
     layer.eliminate_zeros()
 
     var_columns_to_add = {}
 
     # var statistics
     if par['output_var_obs_mean']:
-        obs_mean, _  = mean_variance_axis(layer, axis=0)
+        obs_mean = layer.mean(axis=0)
         var_columns_to_add[par['output_var_obs_mean']] = obs_mean
     if par['output_var_total_counts_obs']:
-        total_counts_obs = np.ravel(layer.sum(axis=0))
+        # from the np.sum documentation: 
+        # Especially when summing a large number of lower precision floating point numbers,
+        # such as float32, numerical errors can become significant. In such cases it can
+        # be advisable to use dtype="float64" to use a higher precision for the output.
+        layer_with_type = layer
+        if np.issubdtype(layer.dtype, np.floating) and np.can_cast(layer.dtype, np.float64, casting="safe"):
+            # 'safe' casting makes sure not to cast np.float128 or anything else to a lower precision dtype
+            layer_with_type = layer.astype(np.float64)
+        total_counts_obs = np.ravel(layer_with_type.sum(axis=0))
         var_columns_to_add[par['output_var_total_counts_obs']] = total_counts_obs
 
-    num_nonzero_obs = layer.getnnz(axis=0)
+    num_nonzero_obs = count_nonzero(layer, axis=0)
     if par['output_var_num_nonzero_obs']:
        var_columns_to_add[par['output_var_num_nonzero_obs']] = num_nonzero_obs
     if par['output_var_pct_dropout']:
@@ -3280,7 +3318,7 @@ def main():
     total_counts_var = np.ravel(layer.sum(axis=1))
 
     if par['output_obs_num_nonzero_vars']:
-       num_nonzero_vars = layer.getnnz(axis=1)
+       num_nonzero_vars = count_nonzero(layer, axis=1)
        obs_columns_to_add[par['output_obs_num_nonzero_vars']] = num_nonzero_vars
 
     if par['output_obs_total_counts_vars']:
@@ -3324,7 +3362,7 @@ def main():
 
     input_data.write(par["output"], compression=par["output_compression"])
             
-def get_top_from_csr_matrix(matrix, top_n_genes):
+def get_top_from_csr_matrix(array, top_n_genes):
     # csr matrices stores a 3D matrix in a format such that data for individual cells
     # are stored in 1 array. Another array (indptr) here stores the ranges of indices
     # to select from the data-array (.e.g. data[indptr[0]:indptr[1]] for row 0) for each row.
@@ -3332,7 +3370,7 @@ def get_top_from_csr_matrix(matrix, top_n_genes):
     # (data and indices arrays have the same length)
     top_n_genes = np.array(top_n_genes).astype(np.int64)
     assert np.all(top_n_genes[:-1] <= top_n_genes[1:]), "top_n_genes must be sorted"
-    row_indices, data = matrix.indptr, matrix.data
+    row_indices, data = array.indptr, array.data
     number_of_rows, max_genes_to_parse = row_indices.size-1, top_n_genes[-1]
     top_data = np.zeros((number_of_rows, max_genes_to_parse), 
                         dtype=data.dtype)
@@ -3358,7 +3396,7 @@ def get_top_from_csr_matrix(matrix, top_n_genes):
     top_data = np.flip(top_data, axis=1)
 
     cumulative = top_data.cumsum(axis=1, dtype=np.float64)[:,top_n_genes-1]
-    return cumulative / np.array(matrix.sum(axis=1))
+    return cumulative / np.expand_dims(array.sum(axis=1), 1)
 
 if __name__ == "__main__":
     main()
