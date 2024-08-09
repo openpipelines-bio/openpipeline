@@ -1,3 +1,19 @@
+# Outputs
+# output: "$id.$key.output.output"
+# output_obs_predictions: ["foo"]
+# output_obs_uncertainty: ["foo"]
+output_uns_parameters: "labels_transfer"
+
+# Input dataset (query) arguments
+input: # please fill in - example: "path/to/file"
+modality: "rna"
+# input_obsm_features: "X_integrated_scanvi"
+
+# Reference dataset arguments
+# reference: "https:/zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad"
+reference_obsm_features: # please fill in - example: "X_integrated_scanvi"
+reference_obs_targets: ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"]
+
 # Execution arguments
 force_retrain: false
 use_gpu: false
@@ -6,18 +22,18 @@ verbosity: 1
 
 # Learning parameters
 learning_rate: 0.3
-min_split_loss: 0
+min_split_loss: 0.0
 max_depth: 6
 min_child_weight: 1
-max_delta_step: 0
-subsample: 1
+max_delta_step: 0.0
+subsample: 1.0
 sampling_method: "uniform"
-colsample_bytree: 1
-colsample_bylevel: 1
-colsample_bynode: 1
-reg_lambda: 1
-reg_alpha: 0
-scale_pos_weight: 1
+colsample_bytree: 1.0
+colsample_bylevel: 1.0
+colsample_bynode: 1.0
+reg_lambda: 1.0
+reg_alpha: 0.0
+scale_pos_weight: 1.0
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
