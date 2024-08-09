@@ -43,8 +43,8 @@
                 "genome_fasta": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz`. Reference genome fasta",
-                "help_text": "Type: `file`, required, example: `https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz`. Reference genome fasta."
+                "description": "Type: `file`, required, example: `https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz`. Reference genome fasta",
+                "help_text": "Type: `file`, required, example: `https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz`. Reference genome fasta."
             
             }
     
@@ -53,8 +53,8 @@
                 "transcriptome_gtf": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz`. Reference transcriptome annotation",
-                "help_text": "Type: `file`, required, example: `https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz`. Reference transcriptome annotation."
+                "description": "Type: `file`, required, example: `https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz`. Reference transcriptome annotation",
+                "help_text": "Type: `file`, required, example: `https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz`. Reference transcriptome annotation."
             
             }
     
@@ -63,8 +63,8 @@
                 "ercc": {
                 "type":
                 "string",
-                "description": "Type: `file`, example: `https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip`. ERCC sequence and annotation file",
-                "help_text": "Type: `file`, example: `https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip`. ERCC sequence and annotation file."
+                "description": "Type: `file`, example: `https:/assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip`. ERCC sequence and annotation file",
+                "help_text": "Type: `file`, example: `https:/assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip`. ERCC sequence and annotation file."
             
             }
     
@@ -83,8 +83,8 @@
                 "target": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, default: `star`, multiple_sep: `\":\"`, choices: ``cellranger`, `bd_rhapsody`, `star``. Which reference indices to generate",
-                "help_text": "Type: List of `string`, default: `star`, multiple_sep: `\":\"`, choices: ``cellranger`, `bd_rhapsody`, `star``. Which reference indices to generate.",
+                "description": "Type: List of `string`, default: `star`, multiple_sep: `\";\"`, choices: ``cellranger`, `bd_rhapsody`, `star``. Which reference indices to generate",
+                "help_text": "Type: List of `string`, default: `star`, multiple_sep: `\";\"`, choices: ``cellranger`, `bd_rhapsody`, `star``. Which reference indices to generate.",
                 "enum": ["cellranger", "bd_rhapsody", "star"]
             
             ,

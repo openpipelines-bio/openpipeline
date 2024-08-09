@@ -45,8 +45,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, example: `input.fastq.gz`, multiple_sep: `\":\"`. Path to your read files in the FASTQ",
-                "help_text": "Type: List of `file`, required, example: `input.fastq.gz`, multiple_sep: `\":\"`. Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want."
+                "description": "Type: List of `file`, required, example: `input.fastq.gz`, multiple_sep: `\";\"`. Path to your read files in the FASTQ",
+                "help_text": "Type: List of `file`, required, example: `input.fastq.gz`, multiple_sep: `\";\"`. Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want."
             
             }
     
@@ -55,8 +55,8 @@
                 "reference": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, example: `reference_genome.tar.gz|reference.fasta`, multiple_sep: `\":\"`. Refence to map to",
-                "help_text": "Type: List of `file`, required, example: `reference_genome.tar.gz|reference.fasta`, multiple_sep: `\":\"`. Refence to map to. For `--mode wta`, this is the path to STAR index as a tar.gz file. For `--mode targeted`, this is the path to mRNA reference file for pre-designed, supplemental, or custom panel, in FASTA format"
+                "description": "Type: List of `file`, required, example: `reference_genome.tar.gz|reference.fasta`, multiple_sep: `\";\"`. Refence to map to",
+                "help_text": "Type: List of `file`, required, example: `reference_genome.tar.gz|reference.fasta`, multiple_sep: `\";\"`. Refence to map to. For `--mode wta`, this is the path to STAR index as a tar.gz file. For `--mode targeted`, this is the path to mRNA reference file for pre-designed, supplemental, or custom panel, in FASTA format"
             
             }
     
@@ -75,8 +75,8 @@
                 "abseq_reference": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, example: `abseq_reference.fasta`, multiple_sep: `\":\"`. Path to the AbSeq reference file in FASTA format",
-                "help_text": "Type: List of `file`, example: `abseq_reference.fasta`, multiple_sep: `\":\"`. Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used."
+                "description": "Type: List of `file`, example: `abseq_reference.fasta`, multiple_sep: `\";\"`. Path to the AbSeq reference file in FASTA format",
+                "help_text": "Type: List of `file`, example: `abseq_reference.fasta`, multiple_sep: `\";\"`. Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used."
             
             }
     
@@ -85,8 +85,8 @@
                 "supplemental_reference": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, example: `supplemental_reference.fasta`, multiple_sep: `\":\"`. Path to the supplemental reference file in FASTA format",
-                "help_text": "Type: List of `file`, example: `supplemental_reference.fasta`, multiple_sep: `\":\"`. Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment (only for `--mode wta`)."
+                "description": "Type: List of `file`, example: `supplemental_reference.fasta`, multiple_sep: `\";\"`. Path to the supplemental reference file in FASTA format",
+                "help_text": "Type: List of `file`, example: `supplemental_reference.fasta`, multiple_sep: `\";\"`. Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment (only for `--mode wta`)."
             
             }
     
@@ -116,8 +116,8 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `output_dir/`. Output folder",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `output_dir/`. Output folder. Output still needs to be processed further."
+                "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `output_dir`. Output folder",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `output_dir`. Output folder. Output still needs to be processed further."
             ,
                 "default": "$id.$key.output.output"
             }
@@ -222,8 +222,8 @@
                 "tag_names": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `4-mySample:9-myOtherSample:6-alsoThisSample`, multiple_sep: `\":\"`. Tag_Names (optional) - Specify the tag number followed by \u0027-\u0027 and the desired sample name to appear in Sample_Tag_Metrics",
-                "help_text": "Type: List of `string`, example: `4-mySample:9-myOtherSample:6-alsoThisSample`, multiple_sep: `\":\"`. Tag_Names (optional) - Specify the tag number followed by \u0027-\u0027 and the desired sample name to appear in Sample_Tag_Metrics.csv.\nDo not use the special characters: \u0026, (), [], {},  \u003c\u003e, ?, |\n"
+                "description": "Type: List of `string`, example: `4-mySample;9-myOtherSample;6-alsoThisSample`, multiple_sep: `\";\"`. Tag_Names (optional) - Specify the tag number followed by \u0027-\u0027 and the desired sample name to appear in Sample_Tag_Metrics",
+                "help_text": "Type: List of `string`, example: `4-mySample;9-myOtherSample;6-alsoThisSample`, multiple_sep: `\";\"`. Tag_Names (optional) - Specify the tag number followed by \u0027-\u0027 and the desired sample name to appear in Sample_Tag_Metrics.csv.\nDo not use the special characters: \u0026, (), [], {},  \u003c\u003e, ?, |\n"
             
             }
     

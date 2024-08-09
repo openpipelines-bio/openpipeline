@@ -43,8 +43,8 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.output`, example: `samtools_out/`. Samtools output directory",
-                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `samtools_out/`. Samtools output directory."
+                "description": "Type: `file`, default: `$id.$key.output.output`, example: `samtools_out`. Samtools output directory",
+                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `samtools_out`. Samtools output directory."
             ,
                 "default": "$id.$key.output.output"
             }

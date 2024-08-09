@@ -54,8 +54,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz:mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\":\"`. The FASTQ files to be analyzed",
-                "help_text": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz:mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\":\"`. The FASTQ files to be analyzed. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+                "description": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed",
+                "help_text": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
             
             }
     
@@ -214,8 +214,8 @@
                 "library_id": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `mysample1`, multiple_sep: `\":\"`. The Illumina sample name to analyze",
-                "help_text": "Type: List of `string`, example: `mysample1`, multiple_sep: `\":\"`. The Illumina sample name to analyze. This must exactly match the \u0027Sample Name\u0027 part of the FASTQ files specified in the `--input` argument."
+                "description": "Type: List of `string`, example: `mysample1`, multiple_sep: `\";\"`. The Illumina sample name to analyze",
+                "help_text": "Type: List of `string`, example: `mysample1`, multiple_sep: `\";\"`. The Illumina sample name to analyze. This must exactly match the \u0027Sample Name\u0027 part of the FASTQ files specified in the `--input` argument."
             
             }
     
@@ -224,8 +224,8 @@
                 "library_type": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `Gene Expression`, multiple_sep: `\":\"`. The underlying feature type of the library",
-                "help_text": "Type: List of `string`, example: `Gene Expression`, multiple_sep: `\":\"`. The underlying feature type of the library.\nPossible values: \"Gene Expression\", \"VDJ\", \"VDJ-T\", \"VDJ-B\", \"Antibody Capture\", \"CRISPR Guide Capture\", \"Multiplexing Capture\"\n"
+                "description": "Type: List of `string`, example: `Gene Expression`, multiple_sep: `\";\"`. The underlying feature type of the library",
+                "help_text": "Type: List of `string`, example: `Gene Expression`, multiple_sep: `\";\"`. The underlying feature type of the library.\nPossible values: \"Gene Expression\", \"VDJ\", \"VDJ-T\", \"VDJ-B\", \"Antibody Capture\", \"CRISPR Guide Capture\", \"Multiplexing Capture\"\n"
             
             }
     
@@ -234,8 +234,8 @@
                 "library_subsample": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `0.5`, multiple_sep: `\":\"`. Optional",
-                "help_text": "Type: List of `string`, example: `0.5`, multiple_sep: `\":\"`. Optional. The rate at which reads from the provided FASTQ files are sampled. Must be strictly greater than 0 and less than or equal to 1."
+                "description": "Type: List of `string`, example: `0.5`, multiple_sep: `\";\"`. Optional",
+                "help_text": "Type: List of `string`, example: `0.5`, multiple_sep: `\";\"`. Optional. The rate at which reads from the provided FASTQ files are sampled. Must be strictly greater than 0 and less than or equal to 1."
             
             }
     
@@ -244,8 +244,8 @@
                 "library_lanes": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `1-4`, multiple_sep: `\":\"`. Lanes associated with this sample",
-                "help_text": "Type: List of `string`, example: `1-4`, multiple_sep: `\":\"`. Lanes associated with this sample. Defaults to using all lanes."
+                "description": "Type: List of `string`, example: `1-4`, multiple_sep: `\";\"`. Lanes associated with this sample",
+                "help_text": "Type: List of `string`, example: `1-4`, multiple_sep: `\";\"`. Lanes associated with this sample. Defaults to using all lanes."
             
             }
     

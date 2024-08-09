@@ -142,10 +142,10 @@
                 "min_gene_variablity_percent": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `85`. Used for gene filtering prior to PCA",
-                "help_text": "Type: `double`, default: `85`. Used for gene filtering prior to PCA. Keep the most highly variable genes (in the top min_gene_variability_pctl percentile), as measured by the v-statistic [Klein et al., Cell 2015]."
+                "description": "Type: `double`, default: `85.0`. Used for gene filtering prior to PCA",
+                "help_text": "Type: `double`, default: `85.0`. Used for gene filtering prior to PCA. Keep the most highly variable genes (in the top min_gene_variability_pctl percentile), as measured by the v-statistic [Klein et al., Cell 2015]."
             ,
-                "default": "85"
+                "default": "85.0"
             }
     
 

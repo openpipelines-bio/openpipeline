@@ -33,8 +33,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, example: `sample_paths`, multiple_sep: `\":\"`. Paths to the different samples to be concatenated",
-                "help_text": "Type: List of `file`, required, example: `sample_paths`, multiple_sep: `\":\"`. Paths to the different samples to be concatenated."
+                "description": "Type: List of `file`, required, example: `sample_paths`, multiple_sep: `\";\"`. Paths to the different samples to be concatenated",
+                "help_text": "Type: List of `file`, required, example: `sample_paths`, multiple_sep: `\";\"`. Paths to the different samples to be concatenated."
             
             }
     
@@ -43,8 +43,8 @@
                 "input_id": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, multiple_sep: `\":\"`. Names of the different samples that have to be concatenated",
-                "help_text": "Type: List of `string`, multiple_sep: `\":\"`. Names of the different samples that have to be concatenated.  Must be specified when using \u0027--mode move\u0027.\nIn this case, the ids will be used for the columns names of the dataframes registring the conflicts.\nIf specified, must be of same length as `--input`.\n"
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. Names of the different samples that have to be concatenated",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. Names of the different samples that have to be concatenated.  Must be specified when using \u0027--mode move\u0027.\nIn this case, the ids will be used for the columns names of the dataframes registring the conflicts.\nIf specified, must be of same length as `--input`.\n"
             
             }
     

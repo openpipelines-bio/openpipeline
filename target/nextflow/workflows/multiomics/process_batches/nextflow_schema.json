@@ -43,8 +43,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, example: `input.h5mu`, multiple_sep: `\":\"`. Path to the sample",
-                "help_text": "Type: List of `file`, required, example: `input.h5mu`, multiple_sep: `\":\"`. Path to the sample."
+                "description": "Type: List of `file`, required, example: `input.h5mu`, multiple_sep: `\";\"`. Path to the sample",
+                "help_text": "Type: List of `file`, required, example: `input.h5mu`, multiple_sep: `\";\"`. Path to the sample."
             
             }
     
@@ -136,8 +136,8 @@
                 "var_qc_metrics": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, default: `filter_with_hvg`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from ",
-                "help_text": "Type: List of `string`, default: `filter_with_hvg`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes.\n"
+                "description": "Type: List of `string`, default: `filter_with_hvg`, example: `ercc,highly_variable`, multiple_sep: `\";\"`. Keys to select a boolean (containing only True or False) column from ",
+                "help_text": "Type: List of `string`, default: `filter_with_hvg`, example: `ercc,highly_variable`, multiple_sep: `\";\"`. Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes.\n"
             ,
                 "default": "filter_with_hvg"
             }
@@ -147,10 +147,10 @@
                 "top_n_vars": {
                 "type":
                 "string",
-                "description": "Type: List of `integer`, default: `50,100,200,500`, multiple_sep: `\",\"`. Number of top vars to be used to calculate cumulative proportions",
-                "help_text": "Type: List of `integer`, default: `50,100,200,500`, multiple_sep: `\",\"`. Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n"
+                "description": "Type: List of `integer`, default: `50;100;200;500`, multiple_sep: `\";\"`. Number of top vars to be used to calculate cumulative proportions",
+                "help_text": "Type: List of `integer`, default: `50;100;200;500`, multiple_sep: `\";\"`. Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n"
             ,
-                "default": "50,100,200,500"
+                "default": "50;100;200;500"
             }
     
 

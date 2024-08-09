@@ -96,8 +96,8 @@
                 "output_model": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_model.output_model`, example: `output_dir/`. Folder where the state of the trained model will be saved to",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_model.output_model`, example: `output_dir/`. Folder where the state of the trained model will be saved to."
+                "description": "Type: `file`, required, default: `$id.$key.output_model.output_model`, example: `output_dir`. Folder where the state of the trained model will be saved to",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_model.output_model`, example: `output_dir`. Folder where the state of the trained model will be saved to."
             ,
                 "default": "$id.$key.output_model.output_model"
             }
@@ -268,10 +268,10 @@
                 "lr_patience": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `30`. Number of epochs with no improvement after which learning rate will be reduced",
-                "help_text": "Type: `double`, default: `30`. Number of epochs with no improvement after which learning rate will be reduced."
+                "description": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced",
+                "help_text": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced."
             ,
-                "default": "30"
+                "default": "30.0"
             }
     
 
@@ -300,10 +300,10 @@
                 "leiden_resolution": {
                 "type":
                 "string",
-                "description": "Type: List of `double`, default: `1`, multiple_sep: `\":\"`. Control the coarseness of the clustering",
-                "help_text": "Type: List of `double`, default: `1`, multiple_sep: `\":\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
+                "description": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering",
+                "help_text": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
             ,
-                "default": "1"
+                "default": "1.0"
             }
     
 
