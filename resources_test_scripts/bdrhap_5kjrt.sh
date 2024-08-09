@@ -124,21 +124,22 @@ fi
 
 genome_tar="$reference_dir/reference_bd_rhapsody.tar.gz"
 
-nextflow \
-  run . \
+nextflow run . \
   -main-script target/nextflow/workflows/ingestion/bd_rhapsody/main.nf  \
   -resume \
   -profile docker,mount_temp \
   -c src/workflows/utils/labels_ci.config \
   -c src/workflows/utils/errorstrat_ignore.config \
   --reads "$wta_r1_file;$wta_r2_file" \
-  --reference_archive "$genome_v2_tar" \
+  --reference_archive "$genome_tar" \
   --reads "$abc_r1_file;$abc_r2_file" \
   --abseq_reference "$fasta_file" \
   --reads "$smk_r1_file;$smk_r2_file" \
   --sample_tags_version "hs" \
   --tag_names "1-Jurkat,2-Ramos,3-THP1" \
-  --output_dir "processed" \
+  --output_raw "output_raw" \
+  --output "output.h5mu" \
+  --output_state state.yaml \
   --cell_calling_data "mRNA" \
   --exact_cell_count 4000 \
-  --publish_dir "$OUT"
+  --publish_dir "$OUT/processed"

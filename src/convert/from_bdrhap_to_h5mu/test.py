@@ -6,7 +6,7 @@ import numpy as np
 ## VIASH START
 meta = {
     "executable": "target/docker/convert/from_bdrhap_to_h5mu/from_bdrhap_to_h5mu",
-    "resources_dir": "resources_test/bdrhap_5kjrt/processed2"
+    "resources_dir": "resources_test/bdrhap_5kjrt/processed/output_raw/"
 }
 ## VIASH END
 

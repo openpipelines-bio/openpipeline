@@ -3,21 +3,20 @@ import mudata as mu
 ## VIASH START
 par = {
     "id": "sample",
-    "input": "resources_test/bdrhap_5kjrt/processed_v2/sample.h5mu",
+    "input": "resources_test/bdrhap_5kjrt/processed/output_raw/sample.h5mu",
     "output": "bd_rhap_to_h5mu_test.h5mu",
     "output_compression": None
-    } 
+}
 ## VIASH END
 
-mdata = mu.read(par["input"])
-# Get modalities
+print(">> Reading input file", flush=True)
+mdata = mu.read_h5mu(par["input"])
+
+# Check if modalities are present
 modalities = list(mdata.mod.keys())
 assert len(modalities) > 0, "No modalities found in input data"
 
-# Dictionary for processed modalities
-processed_modalities = {}
-
-def process_modalities(adata, modality):
+def process_modality_inline(adata, modality):
     adata.obs["library_id"] = " & ".join(adata.uns["Pipeline_Inputs"]["Libraries"])
     adata.obs["cell_id"] = adata.obs.index
     adata.obs["run_id"] = par["id"]
@@ -25,7 +24,7 @@ def process_modalities(adata, modality):
     adata.obs.rename(
         columns={
             "Sample_Tag": "sample_tag",
-            "Sample_Name": "sample_name"},
+            "Sample_Name": "sample_id"},
         inplace=True)
 
     adata.var["gene_ids"] = adata.var.index
@@ -38,21 +37,12 @@ def process_modalities(adata, modality):
     elif modality == "prot":
         adata.var["feature_type"] = "Antibody Capture"
         adata.var["reference_file"] = " & ".join(adata.uns["Pipeline_Inputs"]["AbSeq_Reference"])
-        
-    return adata
+    
+    # TODO: add other modalities
 
-## Processing RNA modality
-if "rna" in modalities:
-    rna_adata = process_modalities(mdata.mod["rna"], "rna")
-    processed_modalities["rna"] = rna_adata
+for key, value in mdata.mod.items():
+    print(">> Processing modality:", key, flush=True)
+    process_modality_inline(value, key)
 
-
-## Processing Protein modality
-if "prot" in modalities:
-    prot_adata = process_modalities(mdata.mod["prot"], "prot")
-    processed_modalities["prot"] = prot_adata
-
-##TODO: Process other modalities
-
-output_mdata = mu.MuData(processed_modalities)
-output_mdata.write_h5mu(par["output"], compression=par["output_compression"])
+print(">> Writing output file", flush=True)
+mdata.write_h5mu(par["output"], compression=par["output_compression"])

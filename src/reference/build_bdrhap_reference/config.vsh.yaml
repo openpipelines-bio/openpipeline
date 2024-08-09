@@ -57,7 +57,7 @@ functionality:
           description: |
             A Compressed archive containing the Reference Genome Index and annotation GTF files. This archive is meant to be used as an
             input in the BD Rhapsody Sequencing Analysis Pipeline.
-          example: star_index.tar.gz
+          example: reference.tar.gz
     - name: Arguments
       arguments:
         - type: string

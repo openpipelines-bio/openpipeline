@@ -27,6 +27,7 @@ nextflow \
   --output_gtf "reference.gtf.gz" \
   --output_cellranger "reference_cellranger.tar.gz" \
   --output_bd_rhapsody "reference_bd_rhapsody.tar.gz" \
+  --output_state state.yaml \
   --bdrhap_extra_star_params '--genomeSAindexNbases 12 --genomeSAsparseD 2' \
   --subset_regex "chr1" \
   --publish_dir $OUT \

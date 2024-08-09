@@ -49,7 +49,7 @@ def process_params(par: dict[str, Any], config) -> str:
     # check input parameters
     assert par["genome_fasta"], "Pass at least one set of inputs to --genome_fasta."
     assert par["gtf"], "Pass at least one set of inputs to --gtf."
-    assert par["reference_archive"].endswith(".tar.gz"), "Output reference_archive must end with .tar.gz."
+    assert par["reference_archive"].endswith(".gz"), "Output reference_archive must end with .tar.gz."
 
     # make paths absolute
     for argument in config["functionality"]["arguments"]:
@@ -109,7 +109,7 @@ def get_cwl_file(meta: dict[str, Any]) -> str:
     # create cwl file (if need be)
     cwl_file=os.path.join(meta["resources_dir"], "make_rhap_reference_2.2.1_nodocker.cwl")
 
-    return cwl_file
+    return os.path.abspath(cwl_file)
 
 def main(par: dict[str, Any], meta: dict[str, Any]):
     
@@ -133,7 +133,6 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         config_content = generate_config(par, meta, config)
         with open(config_file, "w") as f:
             f.write(config_content)
-
 
         cmd = [
             "cwl-runner",

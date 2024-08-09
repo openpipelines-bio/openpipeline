@@ -4,6 +4,13 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
+    | map{ id, state ->
+      // remove all fields starting with 'output_'
+      def newState = state.findAll{k, v -> !k.startsWith("output_")}
+      // make sure target is present
+      newState.target = newState.target ?: []
+      [id, newState]
+    }
     | make_reference_component.run(
       fromState: [
         "input": "input",
@@ -21,7 +28,7 @@ workflow run_wf {
     )
     | build_cellranger_reference.run(
       runIf: { id, state ->
-        state.getOrDefault("target", []).contains("cellranger") && state.output_cellranger
+        state.target.contains("cellranger")
       },
       fromState: [
         genome_fasta: "output_fasta",
@@ -33,7 +40,7 @@ workflow run_wf {
     )
     | build_star_reference.run(
       runIf: { id, state ->
-        state.getOrDefault("target", []).contains("star") && state.output_star
+        state.target.contains("star")
       },
       fromState: [
         genome_fasta: "output_fasta",
@@ -46,7 +53,7 @@ workflow run_wf {
     )
     | build_bdrhap_reference.run(
       runIf: { id, state ->
-        state.getOrDefault("target", []).contains("bd_rhapsody") && state.output_bd_rhapsody
+        state.target.contains("bd_rhapsody")
       },
       fromState: [
         genome_fasta: "output_fasta",

@@ -6,7 +6,6 @@ workflow run_wf {
   output_ch = input_ch
     // run bd rhapsody
     | bd_rhapsody_component.run(
-      // auto: [ publish: true ],
       fromState: { id, state ->
         // pass all arguments except:
         //  - remove output_h5mu
@@ -14,15 +13,13 @@ workflow run_wf {
         def data_ = state.clone()
         data_.remove("output")
         data_.remove("output_raw")
-        data_ + [ output_dir: state.output_raw ]
-        data_ + [ output_mudata: "bd_rhap_output.h5mu" ]
+        data_
       },
       toState: [
         "input": "output_mudata",
         "output_raw": "output_dir"
       ]
     )
-    | view {"After bd_rhapsody: $it"}
 
     // convert to h5mu
     | from_bdrhap_to_h5mu.run(
@@ -34,14 +31,10 @@ workflow run_wf {
           output_compression: "gzip"
         ]
       },
-      toState: { id, data, state ->
-        [
-          output_raw: state.output_raw,
-          output: data.output
-        ]
-      },
-      auto: [publish: true]
+      toState: ["output": "output"]
     )
+
+    | setState(["output_raw", "output"])
 
   emit:
   output_ch
