@@ -1,6 +1,6 @@
 functionality:
-  name: star_build_reference
-  namespace: mapping
+  name: build_star_reference
+  namespace: reference
   description: Create a reference for STAR from a set of fasta files.
   authors:
     - __merge__: /src/authors/dries_schaumont.yaml
@@ -48,7 +48,7 @@ functionality:
   test_resources:
     - type: bash_script
       path: test.sh
-    - path: ../../../resources_test/cellranger_tiny_fastq
+    - path: /resources_test/cellranger_tiny_fastq
 platforms:
   - type: docker
     image: python:3.10-slim
