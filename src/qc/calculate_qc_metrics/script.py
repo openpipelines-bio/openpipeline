@@ -69,7 +69,7 @@ def main():
         # from the np.sum documentation: 
         # Especially when summing a large number of lower precision floating point numbers,
         # such as float32, numerical errors can become significant. In such cases it can
-        # be advisable to use dtype=”float64” to use a higher precision for the output.
+        # be advisable to use dtype="float64" to use a higher precision for the output.
         layer_with_type = layer
         if np.issubdtype(layer.dtype, np.floating) and np.can_cast(layer.dtype, np.float64, casting="safe"):
             # 'safe' casting makes sure not to cast np.float128 or anything else to a lower precision dtype
