@@ -78,6 +78,8 @@
   One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
   which is present in another sample; causing the values being filled with `NA` (PR #837).
 
+* `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR #852).
+
 ## DOCUMENTATION
 
 * Update authorship of components (PR #835).
