@@ -81,6 +81,8 @@
 
 * Bump `viash-actions` to `v6` (PR #821).
 
+* `reference/make_reference`: Do not try to extract genome fasta and transcriptome gtf if they are not gzipped (PR #).
+
 ## BUG FIXES
 
 * `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
