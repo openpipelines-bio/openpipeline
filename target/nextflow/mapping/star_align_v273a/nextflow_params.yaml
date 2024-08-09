@@ -1,8 +1,0 @@
-# Input/Output
-input: # please fill in - example: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
-reference: # please fill in - example: "/path/to/reference"
-# output: "$id.$key.output.output"
-
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
