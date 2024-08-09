@@ -43,6 +43,12 @@ def setup_logger():
 logger = setup_logger()
 
 def count_nonzero(layer, axis):
+    """
+    This method is the functional equivalent of the old .getnnz function from scirpy,
+    but that function was deprecated and now only the nonzero() function exists
+    (which does not have an axis argument). So we apply nonzero() for each item in
+    an axis here.
+    """
     axis ^= 1
     nonzero_counts = dict(zip(*np.unique(layer.nonzero()[axis], return_counts=True)))
     nonzero_per_axis_item = {row_index: nonzero_counts.get(row_index, 0)
