@@ -1,6 +1,6 @@
 # Inputs
 id: # please fill in - example: "my_id"
-input: # please fill in - example: "input_dir"
+input: # please fill in - example: "sample.h5mu"
 
 # Outputs
 # output: "$id.$key.output.h5mu"

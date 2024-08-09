@@ -2891,7 +2891,7 @@ meta = [
       },
       {
         "type" : "file",
-        "path" : "resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw",
+        "path" : "resources_test/bdrhap_5kjrt/processed/output_raw",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       },
       {
@@ -2993,7 +2993,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bd_to_10x_molecular_barcode_tags",
     "viash_version" : "0.8.6",
-    "git_commit" : "d23cb1a688567b8f3f91f549d3c08c2f13fad810",
+    "git_commit" : "b78d5c369e9992105b2ea4be43a4a66f22d195d4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

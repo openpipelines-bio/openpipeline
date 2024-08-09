@@ -1,6 +1,6 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
-"title": "mkgtf",
+"title": "cellranger_mkgtf",
 "description": "Make a GTF file - filter by a specific attribute.",
 "type": "object",
 "definitions": {

@@ -1,6 +1,6 @@
 functionality:
-  name: "star_build_reference"
-  namespace: "mapping"
+  name: "build_star_reference"
+  namespace: "reference"
   version: "main_build"
   authors:
   - name: "Dries Schaumont"
@@ -98,7 +98,7 @@ functionality:
     path: "test.sh"
     is_executable: true
   - type: "file"
-    path: "../../../resources_test/cellranger_tiny_fastq"
+    path: "resources_test/cellranger_tiny_fastq"
   - type: "file"
     path: "src/base/openpipelinetestutils"
     dest: "openpipelinetestutils"
@@ -188,10 +188,10 @@ platforms:
   debug: false
   container: "docker"
 info:
-  config: "/home/runner/work/openpipeline/openpipeline/src/mapping/star_build_reference/config.vsh.yml"
-  platform: "nextflow"
-  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_build_reference"
-  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_build_reference/star_build_reference"
+  config: "/home/runner/work/openpipeline/openpipeline/src/reference/build_star_reference/config.vsh.yml"
+  platform: "docker"
+  output: "/home/runner/work/openpipeline/openpipeline/target/docker/reference/build_star_reference"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/docker/reference/build_star_reference/build_star_reference"
   viash_version: "0.8.6"
-  git_commit: "d23cb1a688567b8f3f91f549d3c08c2f13fad810"
+  git_commit: "b78d5c369e9992105b2ea4be43a4a66f22d195d4"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -16,6 +16,16 @@
 
 * `convert/from_h5mu_to_seurat`: bump seurat to latest version (PR #850).
 
+* `workflows/ingestion/bd_rhapsody`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
+* `mapping/bd_rhapsody`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
+* `reference/make_bdrhap_reference`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
+* `reference/build_star_reference`: Rename `mapping/star_build_reference` to `reference/build_star_reference` (PR #846).
+
+* `reference/cellranger_mkgtf`: Rename `reference/mkgtf` to `reference/cellranger_mkgtf` (PR #846).
+
 ## NEW FUNCTIONALITY
 
 * CI: added checking of mudata contents for multiple workflows (PR #783).
@@ -48,6 +58,8 @@
   on workflow level as well (PR #767).
 
 * `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
+
+* `workflows/ingestion/make_reference`: Add additional arguments passed through to the STAR and BD Rhapsody reference components (PR #846).
 
 ## MINOR CHANGES
 

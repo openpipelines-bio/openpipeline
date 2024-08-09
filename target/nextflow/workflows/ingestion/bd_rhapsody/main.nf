@@ -11,6 +11,7 @@
 // 
 // Component authors:
 //  * Robrecht Cannoodt (maintainer)
+//  * Dorien Roosen (author)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -2813,6 +2814,27 @@ meta = [
             }
           ]
         }
+      },
+      {
+        "name" : "Dorien Roosen",
+        "roles" : [
+          "author"
+        ],
+        "info" : {
+          "role" : "Contributor",
+          "links" : {
+            "email" : "dorien@data-intuitive.com",
+            "github" : "dorien-er",
+            "linkedin" : "dorien-roosen"
+          },
+          "organizations" : [
+            {
+              "name" : "Data Intuitive",
+              "href" : "https://www.data-intuitive.com",
+              "role" : "Data Scientist"
+            }
+          ]
+        }
       }
     ],
     "argument_groups" : [
@@ -2820,48 +2842,19 @@ meta = [
         "name" : "Inputs",
         "arguments" : [
           {
-            "type" : "string",
-            "name" : "--mode",
-            "description" : "Whether to run a whole transcriptome analysis (WTA) or a targeted analysis.",
-            "example" : [
-              "wta"
-            ],
-            "required" : true,
-            "choices" : [
-              "wta",
-              "targeted"
-            ],
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--id",
-            "description" : "ID of the sample.",
-            "example" : [
-              "foo"
-            ],
-            "required" : true,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
             "type" : "file",
-            "name" : "--input",
-            "alternatives" : [
-              "-i"
-            ],
-            "description" : "Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.",
+            "name" : "--reads",
+            "description" : "Reads (optional) - Path to your FASTQ.GZ formatted read files from libraries that may include:\n\n- WTA mRNA\n- Targeted mRNA\n- AbSeq\n- Sample Multiplexing\n- VDJ\n\nYou may specify as many R1/R2 read pairs as you want.\n",
+            "info" : {
+              "config_key" : "Reads"
+            },
             "example" : [
-              "input.fastq.gz"
+              "WTALibrary_S1_L001_R1_001.fastq.gz",
+              "WTALibrary_S1_L001_R2_001.fastq.gz"
             ],
             "must_exist" : true,
             "create_parent" : true,
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : true,
             "multiple_sep" : ";",
@@ -2869,32 +2862,39 @@ meta = [
           },
           {
             "type" : "file",
-            "name" : "--reference",
-            "alternatives" : [
-              "-r",
-              "--reference_genome"
-            ],
-            "description" : "Refence to map to. For `--mode wta`, this is the path to STAR index as a tar.gz file. For `--mode targeted`, this is the path to mRNA reference file for pre-designed, supplemental, or custom panel, in FASTA format",
+            "name" : "--reads_atac",
+            "description" : "Path to your FASTQ.GZ formatted read files from ATAC-Seq libraries.\nYou may specify as many R1/R2/I2 files as you want.\n",
+            "info" : {
+              "config_key" : "Reads_ATAC"
+            },
             "example" : [
-              "reference_genome.tar.gz|reference.fasta"
+              "ATACLibrary_S2_L001_R1_001.fastq.gz",
+              "ATACLibrary_S2_L001_R2_001.fastq.gz",
+              "ATACLibrary_S2_L001_I2_001.fastq.gz"
             ],
             "must_exist" : true,
             "create_parent" : true,
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : true,
             "multiple_sep" : ";",
             "dest" : "par"
-          },
+          }
+        ]
+      },
+      {
+        "name" : "References",
+        "description" : "Assay type will be inferred from the provided reference(s).\nDo not provide both reference_archive and targeted_reference at the same time.\n\nValid reference input combinations:\n  - reference_archive: WTA only\n  - reference_archive & abseq_reference: WTA + AbSeq\n  - reference_archive & supplemental_reference: WTA + extra transgenes\n  - reference_archive & abseq_reference & supplemental_reference: WTA + AbSeq + extra transgenes\n  - reference_archive: WTA + ATAC or ATAC only\n  - reference_archive & supplemental_reference: WTA + ATAC + extra transgenes\n  - targeted_reference: Targeted only\n  - targeted_reference & abseq_reference: Targeted + AbSeq\n  - abseq_reference: AbSeq only\n\nThe reference_archive can be generated with the `reference/build_bdrhap_reference` component.\nAlternatively, BD also provides standard references which can be downloaded from these locations:\n\n  - Human: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Human_WTA_2023-02.tar.gz\n  - Mouse: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Mouse_WTA_2023-02.tar.gz\n",
+        "arguments" : [
           {
             "type" : "file",
-            "name" : "--transcriptome_annotation",
-            "alternatives" : [
-              "-t"
-            ],
-            "description" : "Path to GTF annotation file (only for `--mode wta`).",
+            "name" : "--reference_archive",
+            "description" : "Path to Rhapsody WTA Reference in the tar.gz format.\n\nStructure of the reference archive:\n\n- `BD_Rhapsody_Reference_Files/`: top level folder\n  - `star_index/`: sub-folder containing STAR index, that is files created with `STAR --runMode genomeGenerate`\n  - GTF for gene-transcript-annotation e.g. \\"gencode.v43.primary_assembly.annotation.gtf\\"\n",
+            "info" : {
+              "config_key" : "Reference_Archive"
+            },
             "example" : [
-              "transcriptome.gtf"
+              "RhapRef_Human_WTA_2023-02.tar.gz"
             ],
             "must_exist" : true,
             "create_parent" : true,
@@ -2906,13 +2906,31 @@ meta = [
           },
           {
             "type" : "file",
-            "name" : "--abseq_reference",
-            "alternatives" : [
-              "-a"
-            ],
-            "description" : "Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.",
+            "name" : "--targeted_reference",
+            "description" : "Path to the targeted reference file in FASTA format.\n",
+            "info" : {
+              "config_key" : "Targeted_Reference"
+            },
             "example" : [
-              "abseq_reference.fasta"
+              "BD_Rhapsody_Immune_Response_Panel_Hs.fasta"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--abseq_reference",
+            "description" : "Path to the AbSeq reference file in FASTA format.  Only needed if BD AbSeq Ab-Oligos are used.",
+            "info" : {
+              "config_key" : "AbSeq_Reference"
+            },
+            "example" : [
+              "AbSeq_reference.fasta"
             ],
             "must_exist" : true,
             "create_parent" : true,
@@ -2928,7 +2946,10 @@ meta = [
             "alternatives" : [
               "-s"
             ],
-            "description" : "Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment (only for `--mode wta`).",
+            "description" : "Path to the supplemental reference file in FASTA format.  Only needed if there are additional transgene sequences to be aligned against in a WTA assay experiment.",
+            "info" : {
+              "config_key" : "Supplemental_Reference"
+            },
             "example" : [
               "supplemental_reference.fasta"
             ],
@@ -2939,44 +2960,17 @@ meta = [
             "multiple" : true,
             "multiple_sep" : ";",
             "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--sample_prefix",
-            "description" : "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.",
-            "default" : [
-              "sample"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
           }
         ]
       },
       {
         "name" : "Outputs",
+        "description" : "Outputs",
         "arguments" : [
           {
             "type" : "file",
-            "name" : "--output_raw",
-            "description" : "The BD Rhapsody output folder as it comes out of the BD Rhapsody pipeline",
-            "example" : [
-              "output_dir"
-            ],
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : true,
-            "direction" : "output",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "file",
-            "name" : "--output_h5mu",
-            "description" : "The converted h5mu file.",
+            "name" : "--output",
+            "description" : "The processed output file in h5mu format.",
             "example" : [
               "output.h5mu"
             ],
@@ -2987,23 +2981,86 @@ meta = [
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--output_raw",
+            "alternatives" : [
+              "-o"
+            ],
+            "description" : "The unprocessed output directory containing all the outputs from the pipeline.",
+            "example" : [
+              "output_dir"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : true,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
           }
         ]
       },
       {
-        "name" : "Putative cell calling settings",
+        "name" : "Putative Cell Calling Settings",
         "arguments" : [
           {
             "type" : "string",
-            "name" : "--putative_cell_call",
-            "description" : "Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.",
+            "name" : "--cell_calling_data",
+            "description" : "Specify the dataset to be used for putative cell calling: mRNA, AbSeq, ATAC, mRNA_and_ATAC\n\nFor putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.\n\nFor putative cell calling using an ATAC dataset, please provide a WTA+ATAC-Seq Reference_Archive file above.\n\nThe default data for putative cell calling, will be determined the following way:\n\n- If mRNA Reads and ATAC Reads exist: mRNA_and_ATAC\n- If only ATAC Reads exist: ATAC\n- Otherwise: mRNA\n",
+            "info" : {
+              "config_key" : "Cell_Calling_Data"
+            },
             "example" : [
               "mRNA"
             ],
             "required" : false,
             "choices" : [
               "mRNA",
-              "AbSeq_Experimental"
+              "AbSeq",
+              "ATAC",
+              "mRNA_and_ATAC"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--cell_calling_bioproduct_algorithm",
+            "description" : "Specify the bioproduct algorithm to be used for putative cell calling: Basic or Refined\n\nBy default, the Basic algorithm will be used for putative cell calling.\n",
+            "info" : {
+              "config_key" : "Cell_Calling_Bioproduct_Algorithm"
+            },
+            "example" : [
+              "Basic"
+            ],
+            "required" : false,
+            "choices" : [
+              "Basic",
+              "Refined"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--cell_calling_atac_algorithm",
+            "description" : "Specify the ATAC-seq algorithm to be used for putative cell calling: Basic or Refined\n\nBy default, the Basic algorithm will be used for putative cell calling.\n",
+            "info" : {
+              "config_key" : "Cell_Calling_ATAC_Algorithm"
+            },
+            "example" : [
+              "Basic"
+            ],
+            "required" : false,
+            "choices" : [
+              "Basic",
+              "Refined"
             ],
             "direction" : "input",
             "multiple" : false,
@@ -3013,36 +3070,15 @@ meta = [
           {
             "type" : "integer",
             "name" : "--exact_cell_count",
-            "description" : "Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count",
+            "description" : "Set a specific number of cells as putative, based on those with the highest error-corrected read count\n",
+            "info" : {
+              "config_key" : "Exact_Cell_Count"
+            },
             "example" : [
               10000
             ],
             "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "boolean_true",
-            "name" : "--disable_putative_calling",
-            "description" : "Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set.",
-            "direction" : "input",
-            "dest" : "par"
-          }
-        ]
-      },
-      {
-        "name" : "Subsample arguments",
-        "arguments" : [
-          {
-            "type" : "double",
-            "name" : "--subsample",
-            "description" : "A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.",
-            "example" : [
-              0.01
-            ],
-            "required" : false,
+            "min" : 1,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -3050,10 +3086,35 @@ meta = [
           },
           {
             "type" : "integer",
-            "name" : "--subsample_seed",
-            "description" : "A seed for replicating a previous subsampled run.",
+            "name" : "--expected_cell_count",
+            "description" : "Guide the basic putative cell calling algorithm by providing an estimate of the number of cells expected.  Usually this can be the number of cells loaded into the Rhapsody cartridge.  If there are multiple inflection points on the second derivative cumulative curve, this will ensure the one selected is near the expected. \n",
+            "info" : {
+              "config_key" : "Expected_Cell_Count"
+            },
             "example" : [
-              3445
+              20000
+            ],
+            "required" : false,
+            "min" : 1,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Intronic Reads Settings",
+        "arguments" : [
+          {
+            "type" : "boolean",
+            "name" : "--exclude_intronic_reads",
+            "description" : "By default, the flag is false, and reads aligned to exons and introns are considered and represented in molecule counts. When the flag is set to true, intronic reads will be excluded.\nThe value can be true or false.\n",
+            "info" : {
+              "config_key" : "Exclude_Intronic_Reads"
+            },
+            "example" : [
+              false
             ],
             "required" : false,
             "direction" : "input",
@@ -3064,21 +3125,25 @@ meta = [
         ]
       },
       {
-        "name" : "Multiplex arguments",
+        "name" : "Multiplex Settings",
         "arguments" : [
           {
             "type" : "string",
             "name" : "--sample_tags_version",
-            "description" : "Specify if multiplexed run.",
+            "description" : "Specify the version of the Sample Tags used in the run:\n\n* If Sample Tag Multiplexing was done, specify the appropriate version: human, mouse, flex, nuclei_includes_mrna, nuclei_atac_only\n* If this is an SMK + Nuclei mRNA run or an SMK + Multiomic ATAC-Seq (WTA+ATAC-Seq) run (and not an SMK + ATAC-Seq only run), choose the \\"nuclei_includes_mrna\\" option.\n* If this is an SMK + ATAC-Seq only run (and not SMK + Multiomic ATAC-Seq (WTA+ATAC-Seq)), choose the \\"nuclei_atac_only\\" option.\n",
+            "info" : {
+              "config_key" : "Sample_Tags_Version"
+            },
             "example" : [
               "human"
             ],
             "required" : false,
             "choices" : [
               "human",
-              "hs",
               "mouse",
-              "mm"
+              "flex",
+              "nuclei_includes_mrna",
+              "nuclei_atac_only"
             ],
             "direction" : "input",
             "multiple" : false,
@@ -3088,7 +3153,10 @@ meta = [
           {
             "type" : "string",
             "name" : "--tag_names",
-            "description" : "Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv.\nDo not use the special characters: &, (), [], {},  <>, ?, |\n",
+            "description" : "Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv\nDo not use the special characters.\n",
+            "info" : {
+              "config_key" : "Tag_Names"
+            },
             "example" : [
               "4-mySample",
               "9-myOtherSample",
@@ -3108,7 +3176,10 @@ meta = [
           {
             "type" : "string",
             "name" : "--vdj_version",
-            "description" : "Specify if VDJ run.",
+            "description" : "If VDJ was done, specify the appropriate option: human, mouse, humanBCR, humanTCR, mouseBCR, mouseTCR\n",
+            "info" : {
+              "config_key" : "VDJ_Version"
+            },
             "example" : [
               "human"
             ],
@@ -3117,10 +3188,121 @@ meta = [
               "human",
               "mouse",
               "humanBCR",
-              "humanBCR",
               "humanTCR",
-              "mouseBCR"
+              "mouseBCR",
+              "mouseTCR"
             ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "ATAC options",
+        "arguments" : [
+          {
+            "type" : "file",
+            "name" : "--predefined_atac_peaks",
+            "description" : "An optional BED file containing pre-established chromatin accessibility peak regions for generating the ATAC cell-by-peak matrix.",
+            "info" : {
+              "config_key" : "Predefined_ATAC_Peaks"
+            },
+            "example" : [
+              "predefined_peaks.bed"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Additional options",
+        "arguments" : [
+          {
+            "type" : "string",
+            "name" : "--run_name",
+            "description" : "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.\n",
+            "info" : {
+              "config_key" : "Run_Name"
+            },
+            "default" : [
+              "sample"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean",
+            "name" : "--generate_bam",
+            "description" : "Specify whether to create the BAM file output\n",
+            "info" : {
+              "config_key" : "Generate_Bam"
+            },
+            "default" : [
+              false
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean",
+            "name" : "--long_reads",
+            "description" : "Use STARlong (default: undefined - i.e. autodetects based on read lengths) - Specify if the STARlong aligner should be used instead of STAR. Set to true if the reads are longer than 650bp.\n",
+            "info" : {
+              "config_key" : "Long_Reads"
+            },
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Advanced options",
+        "description" : "NOTE: Only change these if you are really sure about what you are doing\n",
+        "arguments" : [
+          {
+            "type" : "string",
+            "name" : "--custom_star_params",
+            "description" : "Modify STAR alignment parameters - Set this parameter to fully override default STAR mapping parameters used in the pipeline.\nFor reference this is the default that is used:\n\n  Short Reads: `--outFilterScoreMinOverLread 0 --outFilterMatchNminOverLread 0 --outFilterMultimapScoreRange 0 --clip3pAdapterSeq AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA --seedSearchStartLmax 50 --outFilterMatchNmin 25 --limitOutSJcollapsed 2000000`\n  Long Reads: Same as Short Reads + `--seedPerReadNmax 10000`\n\nThis applies to fastqs provided in the Reads user input \nDo NOT set any non-mapping related params like `--genomeDir`, `--outSAMtype`, `--outSAMunmapped`, `--readFilesIn`, `--runThreadN`, etc.\nWe use STAR version 2.7.10b\n",
+            "info" : {
+              "config_key" : "Custom_STAR_Params"
+            },
+            "example" : [
+              "--alignIntronMax 6000 --outFilterScoreMinOverLread 0.1 --limitOutSJcollapsed 2000000"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--custom_bwa_mem2_params",
+            "description" : "Modify bwa-mem2 alignment parameters - Set this parameter to fully override bwa-mem2 mapping parameters used in the pipeline\nThe pipeline does not specify any custom mapping params to bwa-mem2 so program default values are used\nThis applies to fastqs provided in the Reads_ATAC user input \nDo NOT set any non-mapping related params like `-C`, `-t`, etc.\nWe use bwa-mem2 version 2.2.1\n",
+            "info" : {
+              "config_key" : "Custom_bwa_mem2_Params"
+            },
+            "example" : [
+              "-k 16 -w 200 -r"
+            ],
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -3150,12 +3332,72 @@ meta = [
             "description" : "Add timestamps to the errors, warnings, and notifications.",
             "direction" : "input",
             "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Undocumented arguments",
+        "arguments" : [
+          {
+            "type" : "integer",
+            "name" : "--abseq_umi",
+            "info" : {
+              "config_key" : "AbSeq_UMI"
+            },
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
           },
           {
-            "type" : "boolean_true",
-            "name" : "--dryrun",
-            "description" : "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed.",
+            "type" : "boolean",
+            "name" : "--target_analysis",
+            "info" : {
+              "config_key" : "Target_analysis"
+            },
+            "required" : false,
             "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--vdj_jgene_evalue",
+            "description" : "e-value threshold for J gene. The e-value threshold for J gene call by IgBlast/PyIR, default is set as 0.001\n",
+            "info" : {
+              "config_key" : "VDJ_JGene_Evalue"
+            },
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--vdj_vgene_evalue",
+            "description" : "e-value threshold for V gene. The e-value threshold for V gene call by IgBlast/PyIR, default is set as 0.001\n",
+            "info" : {
+              "config_key" : "VDJ_VGene_Evalue"
+            },
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean",
+            "name" : "--write_filtered_reads",
+            "info" : {
+              "config_key" : "Write_Filtered_Reads"
+            },
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
             "dest" : "par"
           }
         ]
@@ -3180,7 +3422,7 @@ meta = [
         "dest" : "nextflow_labels.config"
       }
     ],
-    "description" : "A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.\n\nThis pipeline can be used for a targeted analysis (with `--mode targeted`) or for a whole transcriptome analysis (with `--mode wta`).\n\n* If mode is `\\"targeted\\"`, then either the `--reference` or `--abseq_reference` parameters must be defined.\n* If mode is `\\"wta\\"`, then `--reference` and `--transcriptome_annotation` must be defined, `--abseq_reference` and `--supplemental_reference` is optional.\n\nThe reference_genome and transcriptome_annotation files can be generated with the make_reference pipeline.\nAlternatively, BD also provides standard references which can be downloaded from these locations:\n\n  - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/\n  - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/\n",
+    "description" : "BD Rhapsody Sequence Analysis CWL pipeline v2.2.1\n\nThis pipeline performs analysis of single-cell multiomic sequence read (FASTQ) data. The supported\nsequencing libraries are those generated by the BD Rhapsody assay kits, including: Whole Transcriptome\nmRNA, Targeted mRNA, AbSeq Antibody-Oligonucleotides, Single-Cell Multiplexing, TCR/BCR, and\nATAC-Seq\n\nThe CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl' and removing all objects with class 'DockerRequirement' from the YAML.\n",
     "test_resources" : [
       {
         "type" : "nextflow_script",
@@ -3205,10 +3447,6 @@ meta = [
         "dest" : "openpipelinetestutils"
       }
     ],
-    "info" : {
-      "name" : "BD Rhapsody",
-      "short_description" : "A generic pipeline for running BD Rhapsody WTA or Targeted mapping, with support for AbSeq, VDJ and/or SMK."
-    },
     "status" : "enabled",
     "requirements" : {
       "commands" : [
@@ -3233,7 +3471,7 @@ meta = [
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "d23cb1a688567b8f3f91f549d3c08c2f13fad810",
+          "git_commit" : "b78d5c369e9992105b2ea4be43a4a66f22d195d4",
           "executable" : "/nextflow/mapping/bd_rhapsody/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody"
@@ -3254,7 +3492,7 @@ meta = [
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "d23cb1a688567b8f3f91f549d3c08c2f13fad810",
+          "git_commit" : "b78d5c369e9992105b2ea4be43a4a66f22d195d4",
           "executable" : "/nextflow/convert/from_bdrhap_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu"
@@ -3321,7 +3559,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/bd_rhapsody",
     "viash_version" : "0.8.6",
-    "git_commit" : "d23cb1a688567b8f3f91f549d3c08c2f13fad810",
+    "git_commit" : "b78d5c369e9992105b2ea4be43a4a66f22d195d4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3343,41 +3581,35 @@ workflow run_wf {
   output_ch = input_ch
     // run bd rhapsody
     | bd_rhapsody_component.run(
-      auto: [ publish: true ],
       fromState: { id, state ->
         // pass all arguments except:
-        //  - remove output_h5mu and output_compression
-        //  - rename output_raw to output
+        //  - remove output_h5mu
+        //  - rename output_raw to output_dir
         def data_ = state.clone()
-        data_.remove("output_h5mu")
+        data_.remove("output")
         data_.remove("output_raw")
-        data_.remove("output_compression")
-        data_ + [ output: state.output_raw ]
+        data_
       },
-      toState: { id, data, state ->
-        state + [ output_raw: data.output ]
-      }
+      toState: [
+        "input": "output_mudata",
+        "output_raw": "output_dir"
+      ]
     )
-    | view {"After bd_rhapsody: $it"}
 
     // convert to h5mu
     | from_bdrhap_to_h5mu.run(
       fromState: { id, state ->
         [
           id: id,
-          input: state.output_raw,
-          output: state.output_h5mu,
+          input: state.input,
+          output: state.output,
           output_compression: "gzip"
         ]
       },
-      toState: { id, data, state ->
-        [
-          output_raw: state.output_h5mu,
-          output_h5mu: data.output
-        ]
-      },
-      auto: [publish: true]
+      toState: ["output": "output"]
     )
+
+    | setState(["output_raw", "output"])
 
   emit:
   output_ch
