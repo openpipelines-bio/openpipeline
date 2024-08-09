@@ -69,7 +69,7 @@ def main():
 
     # var statistics
     if par['output_var_obs_mean']:
-        obs_mean  = layer.mean(axis=0)
+        obs_mean = layer.mean(axis=0)
         var_columns_to_add[par['output_var_obs_mean']] = obs_mean
     if par['output_var_total_counts_obs']:
         # from the np.sum documentation: 
