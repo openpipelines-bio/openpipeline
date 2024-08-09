@@ -131,7 +131,7 @@ functionality:
     - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
 platforms:
   - type: docker
-    image: python:3.9-slim
+    image: python:3.11-slim
     setup:
       - type: apt
         packages: 
@@ -139,7 +139,7 @@ platforms:
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - scikit-learn~=1.2.0
+          - scipy
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, /src/base/requirements/scanpy.yaml, .]
