@@ -86,15 +86,15 @@ if [[ ! -f "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" ]]; then
 fi
 
 # subsample other files
-smk_r1_file="$raw_dir/12SMK_S1_L432_R1_001.fastq.gz"
+smk_r1_file="$raw_dir/12SMK_S1_L432_R1_001_subset.fastq.gz"
 if [[ ! -f "$smk_r1_file" ]]; then
   echo "> Processing `basename $smk_r1_file`"
-  cp "$tar_dir/12SMK_S1_L432_R1_001.fastq.gz" "$smk_r1_file"
+  seqkit head -n 500000 "$tar_dir/12SMK_S1_L432_R1_001.fastq.gz" | gzip > "$smk_r1_file"
 fi
-smk_r2_file="$raw_dir/12SMK_S1_L432_R2_001.fastq.gz"
+smk_r2_file="$raw_dir/12SMK_S1_L432_R2_001_subset.fastq.gz"
 if [[ ! -f "$smk_r2_file" ]]; then
   echo "> Processing `basename $smk_r2_file`"
-  cp "$tar_dir/12SMK_S1_L432_R2_001.fastq.gz" "$smk_r2_file"
+  seqkit head -n 500000 "$tar_dir/12SMK_S1_L432_R2_001.fastq.gz" | gzip > "$smk_r2_file"
 fi
 abc_r1_file="$raw_dir/12ABC_S1_L432_R1_001_subset.fastq.gz"
 if [[ ! -f "$abc_r1_file" ]]; then
@@ -136,10 +136,11 @@ nextflow run . \
   --abseq_reference "$fasta_file" \
   --reads "$smk_r1_file;$smk_r2_file" \
   --sample_tags_version "hs" \
-  --tag_names "1-Jurkat,2-Ramos,3-THP1" \
+  --tag_names "1-Jurkat;2-Ramos;3-THP1" \
   --output_raw "output_raw" \
   --output "output.h5mu" \
   --output_state state.yaml \
   --cell_calling_data "mRNA" \
   --exact_cell_count 4000 \
+  --generate_bam true \
   --publish_dir "$OUT/processed"

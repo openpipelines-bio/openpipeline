@@ -46,7 +46,7 @@ par = {
     'dbec_mols_per_cell': None,
     'rsec_mols_per_cell_unfiltered': None,
     'bam': None,
-    'bam_inddex': None,
+    'bam_index': None,
     'bioproduct_stats': None,
     'dimred_tsne': None,
     'dimred_umap': None,
