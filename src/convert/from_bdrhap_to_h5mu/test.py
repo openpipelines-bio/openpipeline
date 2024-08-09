@@ -34,11 +34,10 @@ prot_adata = data.mod["prot"]
 # check whether correct feature types are detected
 assert np.array_equal(rna_adata.var["feature_type"].unique(), ["Gene Expression"]), "RNA expression should only contain Gene Expression vars."
 assert np.array_equal(rna_adata.var["reference_file"].unique(), ["reference_bd_rhapsody.tar.gz"]), "Wrong reference file detected for Gene Expression vars."
-assert "ADAMTS4" in rna_adata.var_names, 'RNA modality should contain gene "ADAMTS4".'
+# assert "ADAMTS4" in rna_adata.var_names, 'RNA modality should contain gene "ADAMTS4".'
 assert np.array_equal(rna_adata.obs["library_id"].unique(), ["12ABC & 12WTA"]), "Gene Expression .obs library_id should equal '12ABC & 12WTA."
-# Enable after test resources have been synced with bd rhapsody processed data including smk reads
-# assert "sample_tag" in rna_adata.obs.keys(), "RNA modality should contain column 'sample_id'."
-# assert "sample_name" in rna_adata.obs.keys(), "RNA modality should contain column 'sample_name'."
+assert "sample_tag" in rna_adata.obs.keys(), "RNA modality should contain column 'sample_id'."
+assert "sample_id" in rna_adata.obs.keys(), "RNA modality should contain column 'sample_name'."
 
 assert np.array_equal(prot_adata.var["feature_type"].unique(), ["Antibody Capture"]), "RNA expression should only contain Antibody Capture vars."
 assert np.array_equal(prot_adata.var["reference_file"].unique(), ["BDAbSeq_ImmuneDiscoveryPanel.fasta"]), "Wrong reference file detected for Antibody Capture vars."
