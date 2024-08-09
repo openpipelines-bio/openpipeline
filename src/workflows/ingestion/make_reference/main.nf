@@ -3,15 +3,7 @@ workflow run_wf {
   input_ch
 
   main:
-
-  def targetMapping = [
-    "build_cellranger_reference": "cellranger",
-    "build_bdrhap_reference": "bd_rhapsody",
-    "star_build_reference": "star" 
-  ]
-
   output_ch = input_ch
-    // split params for downstream components
     | make_reference_component.run(
       fromState: [
         "input": "input",
@@ -25,40 +17,56 @@ workflow run_wf {
       toState: [
         "output_fasta": "output_fasta",
         "output_gtf": "output_gtf"
-      ],
-      auto: [publish: true]
+      ]
     )
-    | runEach(
-      components: [ 
-        build_cellranger_reference,
-        build_bdrhap_reference,
-        star_build_reference
+    | build_cellranger_reference.run(
+      runIf: { id, state ->
+        state.getOrDefault("target", []).contains("cellranger") && state.output_cellranger
+      },
+      fromState: [
+        genome_fasta: "output_fasta",
+        transcriptome_gtf: "output_gtf"
       ],
-      filter: { id, state, component ->
-        state.target.contains(targetMapping.get(component.config.functionality.name))
-      },
-      fromState: { id, state, component ->
-        def target = targetMapping.get(component.config.functionality.name)
-        def passed_state = [
-          input: state.input,
-          output: state.get("output_" + target),
-          target: state.target,
-          genome_fasta: state.output_fasta,
-          transcriptome_gtf: state.output_gtf
-        ]
-        passed_state
-      },
-      toState: {id, output, state, component ->
-        def target = targetMapping.get(component.config.functionality.name)
-        def newState = state + ["output_$target": output.output]
-        return newState
-      },
-      auto: [ publish: true ],
+      toState: [
+        output_cellranger: "output"
+      ]
     )
-    | setState(targetMapping.values().collect{"output_$it"} + ["output_fasta", "output_gtf"])
-    | groupTuple(by: 0, sort: "hash")
-    | map {id, state_list -> [id, state_list.inject{acc, val -> acc + val}]}
-  
+    | build_star_reference.run(
+      runIf: { id, state ->
+        state.getOrDefault("target", []).contains("star") && state.output_star
+      },
+      fromState: [
+        genome_fasta: "output_fasta",
+        transcriptome_gtf: "output_gtf",
+        genomeSAindexNbases: "star_genome_sa_index_nbases"
+      ],
+      toState: [
+        output_star: "output"
+      ] 
+    )
+    | build_bdrhap_reference.run(
+      runIf: { id, state ->
+        state.getOrDefault("target", []).contains("bd_rhapsody") && state.output_bd_rhapsody
+      },
+      fromState: [
+        genome_fasta: "output_fasta",
+        gtf: "output_gtf",
+        mitochondrial_contigs: "bdrhap_mitochondrial_contigs",
+        filtering_off: "bdrhap_filtering_off",
+        wta_only_index: "bdrhap_wta_only_index",
+        rna_only_index: "bdrhap_rna_only_index"
+      ],
+      toState: [
+        output_bd_rhapsody: "reference_archive"
+      ]
+    )
+    | setState([
+      "output_fasta",
+      "output_gtf",
+      "output_cellranger",
+      "output_star",
+      "output_bd_rhapsody"
+    ])
   emit:
   output_ch
 }

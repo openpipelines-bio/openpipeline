@@ -27,14 +27,7 @@ nextflow \
   --output_gtf "reference.gtf.gz" \
   --output_cellranger "reference_cellranger.tar.gz" \
   --output_bd_rhapsody "reference_bd_rhapsody.tar.gz" \
+  --bdrhap_extra_star_params '--genomeSAindexNbases 12 --genomeSAsparseD 2' \
   --subset_regex "chr1" \
   --publish_dir $OUT \
   -resume
-
-
-viash run src/reference/build_bdrhap2_reference/config.vsh.yaml -- \
-  --genome_fasta "$OUT/reference.fa.gz" \
-  --gtf "$OUT/reference.gtf.gz" \
-  --reference_archive "$OUT/reference_bd_rhapsody_v2.tar.gz" \
-  --extra_star_params '--genomeSAindexNbases 7 --genomeSAsparseD 2' \
-  ---cpus 2 
