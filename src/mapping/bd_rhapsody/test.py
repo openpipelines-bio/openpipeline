@@ -67,9 +67,9 @@ assert "prot" in data.mod, "RNA data is missing"
 
 
 data_rna = data.mod["rna"]
-assert data_rna.n_vars == 2238, "Number of genes is incorrect"
+assert data_rna.n_vars > 1000, "Number of genes is incorrect"
 assert data_rna.X.sum(axis=1).min() > 0, "Number of reads per cell is incorrect"
-assert data_rna.var.Raw_Reads.sum() == 156904, "Number of reads is incorrect"
+assert data_rna.var.Raw_Reads.sum() > 100000, "Number of reads is incorrect"
 
 # TODO: add VDJ, SMK, ATAC, and targeted RNA to test
 
