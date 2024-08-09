@@ -81,7 +81,7 @@
 
 * Bump `viash-actions` to `v6` (PR #821).
 
-* `reference/make_reference`: Do not try to extract genome fasta and transcriptome gtf if they are not gzipped (PR #).
+* `reference/make_reference`: Do not try to extract genome fasta and transcriptome gtf if they are not gzipped (PR #856).
 
 ## BUG FIXES
 
