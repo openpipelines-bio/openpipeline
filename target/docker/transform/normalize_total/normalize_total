@@ -218,7 +218,6 @@ function ViashHelp {
   echo ""
   echo "    --target_sum"
   echo "        type: integer"
-  echo "        default: 10000"
   echo "        If None, after normalization, each observation (cell) has a total count"
   echo "        equal to the median of total counts for observations (cells) before"
   echo "        normalization."
@@ -456,13 +455,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "scanpy~=1.9.5" "statsmodels==0.14.0"
+  pip install --upgrade --no-cache-dir "anndata~=0.10.8" "mudata~=0.2.4" "pandas!=2.1.2" "numpy<2.0.0" "scanpy~=1.9.6"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component transform normalize_total"
-LABEL org.opencontainers.image.created="2024-08-09T11:26:44Z"
+LABEL org.opencontainers.image.created="2024-08-10T02:43:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="06849b19f7971724e55e9490d67a56a7262807c4"
+LABEL org.opencontainers.image.revision="a921da0ad3600e78afbcca2a18d01204d6dcba2f"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -866,9 +865,6 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
-if [ -z ${VIASH_PAR_TARGET_SUM+x} ]; then
-  VIASH_PAR_TARGET_SUM="10000"
-fi
 if [ -z ${VIASH_PAR_EXCLUDE_HIGHLY_EXPRESSED+x} ]; then
   VIASH_PAR_EXCLUDE_HIGHLY_EXPRESSED="false"
 fi
@@ -1089,6 +1085,7 @@ if par['input_layer'] and not par['input_layer'] in dat.layers.keys():
     raise ValueError(f"Input layer {par['input_layer']} not found in {mod}")
 output_data = sc.pp.normalize_total(dat,
                                     layer=par["input_layer"],
+                                    target_sum=par["target_sum"],
                                     copy=True if par["output_layer"] else False)
 
 if output_data:

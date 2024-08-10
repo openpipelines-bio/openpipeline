@@ -12,6 +12,7 @@
 // Component authors:
 //  * Angela Oliveira Pisco (author)
 //  * Robrecht Cannoodt (author, maintainer)
+//  * Weiwei Schultz (contributor)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -2841,6 +2842,21 @@ meta = [
             }
           ]
         }
+      },
+      {
+        "name" : "Weiwei Schultz",
+        "roles" : [
+          "contributor"
+        ],
+        "info" : {
+          "role" : "Contributor",
+          "organizations" : [
+            {
+              "name" : "Janssen R&D US",
+              "role" : "Associate Director Data Sciences"
+            }
+          ]
+        }
       }
     ],
     "argument_groups" : [
@@ -2899,6 +2915,72 @@ meta = [
             ],
             "must_exist" : true,
             "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "STAR Settings",
+        "arguments" : [
+          {
+            "type" : "integer",
+            "name" : "--star_genome_sa_index_nbases",
+            "description" : "Length (bases) of the SA pre-indexing string. Typically between 10 and 15.\nLonger strings will use much more memory, but allow faster searches. For small\ngenomes, the parameter {genomeSAindexNbases must be scaled down to\nmin(14, log2(GenomeLength)/2 - 1).\n",
+            "default" : [
+              14
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "BD Rhapsody Settings",
+        "arguments" : [
+          {
+            "type" : "string",
+            "name" : "--bdrhap_mitochondrial_contigs",
+            "description" : "Names of the Mitochondrial contigs in the provided Reference Genome. Fragments originating from contigs other than these are\nidentified as 'nuclear fragments' in the ATACseq analysis pipeline.\n",
+            "default" : [
+              "chrM",
+              "chrMT",
+              "M",
+              "MT"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean_true",
+            "name" : "--bdrhap_filtering_off",
+            "description" : "By default the input Transcript Annotation files are filtered based on the gene_type/gene_biotype attribute. Only features \nhaving the following attribute values are kept:\n\n  - protein_coding\n  - lncRNA \n  - IG_LV_gene\n  - IG_V_gene\n  - IG_V_pseudogene\n  - IG_D_gene\n  - IG_J_gene\n  - IG_J_pseudogene\n  - IG_C_gene\n  - IG_C_pseudogene\n  - TR_V_gene\n  - TR_V_pseudogene\n  - TR_D_gene\n  - TR_J_gene\n  - TR_J_pseudogene\n  - TR_C_gene\n\n  If you have already pre-filtered the input Annotation files and/or wish to turn-off the filtering, please set this option to True.\n",
+            "direction" : "input",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean_true",
+            "name" : "--bdrhap_wta_only_index",
+            "description" : "Build a WTA only index, otherwise builds a WTA + ATAC index.",
+            "direction" : "input",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--bdrhap_extra_star_params",
+            "description" : "Additional parameters to pass to STAR when building the genome index. Specify exactly like how you would on the command line.",
+            "example" : [
+              "--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11"
+            ],
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -3087,7 +3169,7 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
+          "git_commit" : "a921da0ad3600e78afbcca2a18d01204d6dcba2f",
           "executable" : "/nextflow/reference/make_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/make_reference"
@@ -3108,31 +3190,31 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
+          "git_commit" : "a921da0ad3600e78afbcca2a18d01204d6dcba2f",
           "executable" : "/nextflow/reference/build_bdrhap_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference"
       },
       {
-        "name" : "mapping/star_build_reference",
+        "name" : "reference/build_star_reference",
         "repository" : {
           "type" : "local",
           "localPath" : ""
         },
-        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/mapping/star_build_reference/config.vsh.yml",
+        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/reference/build_star_reference/config.vsh.yml",
         "configInfo" : {
-          "functionalityName" : "star_build_reference",
+          "functionalityName" : "build_star_reference",
           "git_tag" : "",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
-          "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/star_build_reference/config.vsh.yml",
-          "functionalityNamespace" : "mapping",
+          "config" : "/home/runner/work/openpipeline/openpipeline/src/reference/build_star_reference/config.vsh.yml",
+          "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
-          "executable" : "/nextflow/mapping/star_build_reference/main.nf"
+          "git_commit" : "a921da0ad3600e78afbcca2a18d01204d6dcba2f",
+          "executable" : "/nextflow/reference/build_star_reference/main.nf"
         },
-        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_build_reference"
+        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_star_reference"
       },
       {
         "name" : "reference/build_cellranger_reference",
@@ -3150,7 +3232,7 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
+          "git_commit" : "a921da0ad3600e78afbcca2a18d01204d6dcba2f",
           "executable" : "/nextflow/reference/build_cellranger_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_reference"
@@ -3217,7 +3299,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/make_reference",
     "viash_version" : "0.8.6",
-    "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
+    "git_commit" : "a921da0ad3600e78afbcca2a18d01204d6dcba2f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3228,7 +3310,7 @@ meta["root_dir"] = getRootDir()
 include { make_reference as make_reference_component_viashalias } from "${meta.resources_dir}/../../../../nextflow/reference/make_reference/main.nf"
 make_reference_component = make_reference_component_viashalias.run(key: "make_reference_component")
 include { build_bdrhap_reference } from "${meta.resources_dir}/../../../../nextflow/reference/build_bdrhap_reference/main.nf"
-include { star_build_reference } from "${meta.resources_dir}/../../../../nextflow/mapping/star_build_reference/main.nf"
+include { build_star_reference } from "${meta.resources_dir}/../../../../nextflow/reference/build_star_reference/main.nf"
 include { build_cellranger_reference } from "${meta.resources_dir}/../../../../nextflow/reference/build_cellranger_reference/main.nf"
 
 // inner workflow
@@ -3238,15 +3320,14 @@ workflow run_wf {
   input_ch
 
   main:
-
-  def targetMapping = [
-    "build_cellranger_reference": "cellranger",
-    "build_bdrhap_reference": "bd_rhapsody",
-    "star_build_reference": "star" 
-  ]
-
   output_ch = input_ch
-    // split params for downstream components
+    | map{ id, state ->
+      // remove all fields starting with 'output_'
+      def newState = state.findAll{k, v -> !k.startsWith("output_")}
+      // make sure target is present
+      newState.target = newState.target ?: []
+      [id, newState]
+    }
     | make_reference_component.run(
       fromState: [
         "input": "input",
@@ -3260,40 +3341,56 @@ workflow run_wf {
       toState: [
         "output_fasta": "output_fasta",
         "output_gtf": "output_gtf"
-      ],
-      auto: [publish: true]
+      ]
     )
-    | runEach(
-      components: [ 
-        build_cellranger_reference,
-        build_bdrhap_reference,
-        star_build_reference
+    | build_cellranger_reference.run(
+      runIf: { id, state ->
+        state.target.contains("cellranger")
+      },
+      fromState: [
+        genome_fasta: "output_fasta",
+        transcriptome_gtf: "output_gtf"
       ],
-      filter: { id, state, component ->
-        state.target.contains(targetMapping.get(component.config.functionality.name))
-      },
-      fromState: { id, state, component ->
-        def target = targetMapping.get(component.config.functionality.name)
-        def passed_state = [
-          input: state.input,
-          output: state.get("output_" + target),
-          target: state.target,
-          genome_fasta: state.output_fasta,
-          transcriptome_gtf: state.output_gtf
-        ]
-        passed_state
-      },
-      toState: {id, output, state, component ->
-        def target = targetMapping.get(component.config.functionality.name)
-        def newState = state + ["output_$target": output.output]
-        return newState
-      },
-      auto: [ publish: true ],
+      toState: [
+        output_cellranger: "output"
+      ]
     )
-    | setState(targetMapping.values().collect{"output_$it"} + ["output_fasta", "output_gtf"])
-    | groupTuple(by: 0, sort: "hash")
-    | map {id, state_list -> [id, state_list.inject{acc, val -> acc + val}]}
-  
+    | build_star_reference.run(
+      runIf: { id, state ->
+        state.target.contains("star")
+      },
+      fromState: [
+        genome_fasta: "output_fasta",
+        transcriptome_gtf: "output_gtf",
+        genomeSAindexNbases: "star_genome_sa_index_nbases"
+      ],
+      toState: [
+        output_star: "output"
+      ] 
+    )
+    | build_bdrhap_reference.run(
+      runIf: { id, state ->
+        state.target.contains("bd_rhapsody")
+      },
+      fromState: [
+        genome_fasta: "output_fasta",
+        gtf: "output_gtf",
+        mitochondrial_contigs: "bdrhap_mitochondrial_contigs",
+        filtering_off: "bdrhap_filtering_off",
+        wta_only_index: "bdrhap_wta_only_index",
+        rna_only_index: "bdrhap_rna_only_index"
+      ],
+      toState: [
+        output_bd_rhapsody: "reference_archive"
+      ]
+    )
+    | setState([
+      "output_fasta",
+      "output_gtf",
+      "output_cellranger",
+      "output_star",
+      "output_bd_rhapsody"
+    ])
   emit:
   output_ch
 }

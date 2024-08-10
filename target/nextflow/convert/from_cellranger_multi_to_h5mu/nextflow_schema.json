@@ -43,10 +43,21 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
-                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
+                "description": "Type: List of `file`, default: `$id.$key.output_*.h5mu`, example: `*.h5mu`, multiple_sep: `\";\"`. Locations for the output files",
+                "help_text": "Type: List of `file`, default: `$id.$key.output_*.h5mu`, example: `*.h5mu`, multiple_sep: `\";\"`. Locations for the output files. Must contain a wildcard (*) character,\nwhich will be replaced with the sample name.\n"
             ,
-                "default": "$id.$key.output.h5mu"
+                "default": "$id.$key.output_*.h5mu"
+            }
+    
+
+        ,
+                "sample_csv": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.sample_csv.csv`, example: `samples.csv`. CSV file describing the sample name per output file",
+                "help_text": "Type: `file`, default: `$id.$key.sample_csv.csv`, example: `samples.csv`. CSV file describing the sample name per output file"
+            ,
+                "default": "$id.$key.sample_csv.csv"
             }
     
 

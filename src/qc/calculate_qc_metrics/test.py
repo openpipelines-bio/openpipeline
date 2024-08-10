@@ -35,11 +35,12 @@ def input_mudata_random():
                                         dtype=np.uint32,
                                         random_state=rng)
     good_dtype=random_counts.astype(np.float32)
-    del random_countsq
-    mod1 = ad.AnnData(X=good_dtype,
+    del random_counts 
+    mod1 = ad.AnnData(X=good_dtype, 
                       obs=pd.DataFrame(index=pd.RangeIndex(50000)),
                       var=pd.DataFrame(index=pd.RangeIndex(100)))
     return md.MuData({"mod1": mod1})
+
 
 @pytest.fixture
 def input_mudata(input_path):
@@ -227,7 +228,8 @@ def test_compare_scanpy(run_component,
     for from_var, to_var in vars_to_compare.items():
         assert_series_equal(component_var[from_var],
                             scanpy_var[to_var],
-                            check_names=False)
+                            check_names=False,
+                            check_dtype=False)
 
 
     scanpy_obs =  input_mudata.mod['rna'].obs
@@ -243,11 +245,13 @@ def test_compare_scanpy(run_component,
     for from_obs, to_obs in obs_to_compare.items():
         assert_series_equal(component_obs[from_obs],
                             scanpy_obs[to_obs],
-                            check_names=False)
+                            check_names=False,
+                            check_dtype=False)
+
 
 def test_total_counts_less_precision_dtype(run_component, input_mudata_random, random_h5mu_path):
     input_path = random_h5mu_path()
-    input_mudata_random.write(input_path)
+    input_mudata_random.write(input_path) 
     output_path = random_h5mu_path()
     run_component([
         "--input", input_path,
@@ -265,6 +269,6 @@ def test_total_counts_less_precision_dtype(run_component, input_mudata_random, r
     total_sums_manual = input_df.to_numpy().sum(axis=0, dtype=np.float128)
     total_counts = output_data.mod['mod1'].var['total_counts']
     np.testing.assert_allclose(total_sums_manual, total_counts.to_numpy())
-
+ 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

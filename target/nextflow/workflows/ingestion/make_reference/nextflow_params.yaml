@@ -15,6 +15,15 @@ target: ["star"]
 # Arguments
 # subset_regex: "(ERCC-00002|chr1)"
 
+# STAR Settings
+star_genome_sa_index_nbases: 14
+
+# BD Rhapsody Settings
+bdrhap_mitochondrial_contigs: ["chrM", "chrMT", "M", "MT"]
+bdrhap_filtering_off: false
+bdrhap_wta_only_index: false
+# bdrhap_extra_star_params: "--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11"
+
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"

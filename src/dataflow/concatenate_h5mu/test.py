@@ -7,7 +7,6 @@ import numpy as np
 import pytest
 import re
 import sys
-import muon
 from openpipelinetestutils.utils import remove_annotation_column
 from operator import attrgetter
 
@@ -786,8 +785,8 @@ def test_concat_var_obs_names_order(run_component, sample_1_h5mu, sample_2_h5mu,
         for mod_name in ["mod1", "mod2"]:
             data_sample = sample_h5mu[mod_name].copy()
             processed_data_ad = md.read_h5ad(output_path, mod=mod_name)
-            muon.pp.filter_obs(processed_data_ad, 'sample_id', lambda x: x == sample_name)
-            muon.pp.filter_var(processed_data_ad, data_sample.var_names)
+            processed_data_ad = processed_data_ad[processed_data_ad.obs["sample_id"] == sample_name]
+            processed_data_ad = processed_data_ad[:, data_sample.var_names]
             processed_data = pd.DataFrame(processed_data_ad.X, index=processed_data_ad.obs_names, 
                                           columns=processed_data_ad.var_names)
             data_sample = pd.DataFrame(data_sample.X, index=data_sample.obs_names, 

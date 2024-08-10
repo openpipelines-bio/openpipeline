@@ -3,9 +3,23 @@ functionality:
   namespace: "convert"
   version: "integration_build"
   authors:
+  - name: "Dorien Roosen"
+    roles:
+    - "author"
+    - "maintainer"
+    info:
+      role: "Contributor"
+      links:
+        email: "dorien@data-intuitive.com"
+        github: "dorien-er"
+        linkedin: "dorien-roosen"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Scientist"
   - name: "Robrecht Cannoodt"
     roles:
-    - "maintainer"
+    - "author"
     info:
       role: "Core Team Member"
       links:
@@ -38,10 +52,10 @@ functionality:
       name: "--input"
       alternatives:
       - "-i"
-      description: "The output of a BD Rhapsody workflow."
+      description: "The output h5mu of a BD Rhapsody workflow."
       info: null
       example:
-      - "input_dir"
+      - "sample.h5mu"
       must_exist: true
       create_parent: true
       required: true
@@ -80,19 +94,19 @@ functionality:
       multiple_sep: ":"
       dest: "par"
   resources:
-  - type: "r_script"
-    path: "script.R"
+  - type: "python_script"
+    path: "script.py"
     is_executable: true
   - type: "file"
     path: "./src/workflows/utils/labels.config"
     dest: "nextflow_labels.config"
-  description: "Convert the output of a BD Rhapsody WTA pipeline to a MuData h5 file.\n"
+  description: "Convert the output of a BD Rhapsody pipeline v2.x to a MuData h5 file.\n"
   test_resources:
   - type: "python_script"
-    path: "run_test.py"
+    path: "test.py"
     is_executable: true
   - type: "file"
-    path: "resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw"
+    path: "resources_test/bdrhap_5kjrt/processed/output_raw/sample.h5mu"
   - type: "file"
     path: "src/base/openpipelinetestutils"
     dest: "openpipelinetestutils"
@@ -105,7 +119,7 @@ functionality:
 platforms:
 - type: "docker"
   id: "docker"
-  image: "ghcr.io/data-intuitive/randpy:r4.2_py3.9"
+  image: "python:3.11-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   target_tag: "integration_build"
@@ -115,20 +129,18 @@ platforms:
   setup_strategy: "ifneedbepullelsecachedbuild"
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
   setup:
-  - type: "docker"
-    run:
-    - "apt update && apt upgrade -y"
+  - type: "apt"
+    packages:
+    - "procps"
+    interactive: false
   - type: "python"
     user: false
     packages:
-    - "anndata~=0.9.1"
-    - "mudata~=0.2.3"
+    - "anndata~=0.10.8"
+    - "mudata~=0.2.4"
     - "pandas!=2.1.2"
+    - "numpy<2.0.0"
     upgrade: true
-  - type: "r"
-    cran:
-    - "anndata"
-    bioc_force_install: false
   entrypoint: []
   cmd: null
 - type: "nextflow"
@@ -185,5 +197,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_bdrhap_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_bdrhap_to_h5mu/from_bdrhap_to_h5mu"
   viash_version: "0.8.6"
-  git_commit: "06849b19f7971724e55e9490d67a56a7262807c4"
+  git_commit: "a921da0ad3600e78afbcca2a18d01204d6dcba2f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

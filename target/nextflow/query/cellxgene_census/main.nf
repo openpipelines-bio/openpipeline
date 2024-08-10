@@ -2869,14 +2869,21 @@ meta = [
         "info" : {
           "role" : "Contributor",
           "links" : {
+            "email" : "kai@data-intuitive.com",
             "github" : "KaiWaldrant",
-            "linkedin" : "kai-waldrant-b8b86160"
+            "orcid" : "0009-0003-8555-1361",
+            "linkedin" : "kaiwaldrant"
           },
           "organizations" : [
             {
               "name" : "Data Intuitive",
               "href" : "https://www.data-intuitive.com",
-              "role" : "Bioinformatics Workflow Developer"
+              "role" : "Bioinformatician"
+            },
+            {
+              "name" : "Open Problems",
+              "href" : "https://openproblems.bio",
+              "role" : "Contributor"
             }
           ]
         }
@@ -3337,11 +3344,11 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.9.1",
-            "mudata~=0.2.3",
+            "anndata~=0.10.8",
+            "mudata~=0.2.4",
             "pandas!=2.1.2",
-            "scanpy~=1.9.5",
-            "statsmodels==0.14.0",
+            "numpy<2.0.0",
+            "scanpy~=1.9.6",
             "cellxgene-census"
           ],
           "upgrade" : true
@@ -3420,7 +3427,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/query/cellxgene_census",
     "viash_version" : "0.8.6",
-    "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
+    "git_commit" : "a921da0ad3600e78afbcca2a18d01204d6dcba2f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

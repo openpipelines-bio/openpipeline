@@ -10,8 +10,8 @@
 // files.
 // 
 // Component authors:
-//  * Angela Oliveira Pisco (author)
 //  * Robrecht Cannoodt (author, maintainer)
+//  * Weiwei Schultz (contributor)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -2789,32 +2789,6 @@ meta = [
     "version" : "integration_build",
     "authors" : [
       {
-        "name" : "Angela Oliveira Pisco",
-        "roles" : [
-          "author"
-        ],
-        "info" : {
-          "role" : "Contributor",
-          "links" : {
-            "github" : "aopisco",
-            "orcid" : "0000-0003-0142-2355",
-            "linkedin" : "aopisco"
-          },
-          "organizations" : [
-            {
-              "name" : "Insitro",
-              "href" : "https://insitro.com",
-              "role" : "Director of Computational Biology"
-            },
-            {
-              "name" : "Open Problems",
-              "href" : "https://openproblems.bio",
-              "role" : "Core Member"
-            }
-          ]
-        }
-      },
-      {
         "name" : "Robrecht Cannoodt",
         "roles" : [
           "author",
@@ -2841,60 +2815,171 @@ meta = [
             }
           ]
         }
+      },
+      {
+        "name" : "Weiwei Schultz",
+        "roles" : [
+          "contributor"
+        ],
+        "info" : {
+          "role" : "Contributor",
+          "organizations" : [
+            {
+              "name" : "Janssen R&D US",
+              "role" : "Associate Director Data Sciences"
+            }
+          ]
+        }
       }
     ],
-    "arguments" : [
+    "argument_groups" : [
       {
-        "type" : "file",
-        "name" : "--genome_fasta",
-        "description" : "Reference genome fasta.",
-        "example" : [
-          "genome_sequence.fa.gz"
-        ],
-        "must_exist" : true,
-        "create_parent" : true,
-        "required" : true,
-        "direction" : "input",
-        "multiple" : false,
-        "multiple_sep" : ":",
-        "dest" : "par"
+        "name" : "Inputs",
+        "arguments" : [
+          {
+            "type" : "file",
+            "name" : "--genome_fasta",
+            "description" : "Reference genome file in FASTA or FASTA.GZ format. The BD Rhapsody Sequencing Analysis Pipeline uses GRCh38 for Human and GRCm39 for Mouse.",
+            "info" : {
+              "config_key" : "Genome_fasta"
+            },
+            "example" : [
+              "genome_sequence.fa.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : true,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--gtf",
+            "description" : "File path to the transcript annotation files in GTF or GTF.GZ format. The Sequence Analysis Pipeline requires the 'gene_name' or \n'gene_id' attribute to be set on each gene and exon feature. Gene and exon feature lines must have the same attribute, and exons\nmust have a corresponding gene with the same value. For TCR/BCR assays, the TCR or BCR gene segments must have the 'gene_type' or\n'gene_biotype' attribute set, and the value should begin with 'TR' or 'IG', respectively.\n",
+            "info" : {
+              "config_key" : "Gtf"
+            },
+            "example" : [
+              "transcriptome_annotation.gtf.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : true,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--extra_sequences",
+            "description" : "File path to additional sequences in FASTA format to use when building the STAR index. (e.g. transgenes or CRISPR guide barcodes).\nGTF lines for these sequences will be automatically generated and combined with the main GTF.\n",
+            "info" : {
+              "config_key" : "Extra_sequences"
+            },
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          }
+        ]
       },
       {
-        "type" : "file",
-        "name" : "--transcriptome_gtf",
-        "description" : "Reference transcriptome annotation.",
-        "example" : [
-          "transcriptome_annotation.gtf.gz"
-        ],
-        "must_exist" : true,
-        "create_parent" : true,
-        "required" : true,
-        "direction" : "input",
-        "multiple" : false,
-        "multiple_sep" : ":",
-        "dest" : "par"
+        "name" : "Outputs",
+        "arguments" : [
+          {
+            "type" : "file",
+            "name" : "--reference_archive",
+            "description" : "A Compressed archive containing the Reference Genome Index and annotation GTF files. This archive is meant to be used as an\ninput in the BD Rhapsody Sequencing Analysis Pipeline.\n",
+            "example" : [
+              "reference.tar.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : true,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
       },
       {
-        "type" : "file",
-        "name" : "--output",
-        "description" : "Star index",
-        "example" : [
-          "star_index.tar.gz"
-        ],
-        "must_exist" : true,
-        "create_parent" : true,
-        "required" : true,
-        "direction" : "output",
-        "multiple" : false,
-        "multiple_sep" : ":",
-        "dest" : "par"
+        "name" : "Arguments",
+        "arguments" : [
+          {
+            "type" : "string",
+            "name" : "--mitochondrial_contigs",
+            "description" : "Names of the Mitochondrial contigs in the provided Reference Genome. Fragments originating from contigs other than these are\nidentified as 'nuclear fragments' in the ATACseq analysis pipeline.\n",
+            "info" : {
+              "config_key" : "Mitochondrial_contigs"
+            },
+            "default" : [
+              "chrM",
+              "chrMT",
+              "M",
+              "MT"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean_true",
+            "name" : "--filtering_off",
+            "description" : "By default the input Transcript Annotation files are filtered based on the gene_type/gene_biotype attribute. Only features \nhaving the following attribute values are kept:\n\n  - protein_coding\n  - lncRNA \n  - IG_LV_gene\n  - IG_V_gene\n  - IG_V_pseudogene\n  - IG_D_gene\n  - IG_J_gene\n  - IG_J_pseudogene\n  - IG_C_gene\n  - IG_C_pseudogene\n  - TR_V_gene\n  - TR_V_pseudogene\n  - TR_D_gene\n  - TR_J_gene\n  - TR_J_pseudogene\n  - TR_C_gene\n\n  If you have already pre-filtered the input Annotation files and/or wish to turn-off the filtering, please set this option to True.\n",
+            "info" : {
+              "config_key" : "Filtering_off"
+            },
+            "direction" : "input",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean_true",
+            "name" : "--wta_only_index",
+            "description" : "Build a WTA only index, otherwise builds a WTA + ATAC index.",
+            "info" : {
+              "config_key" : "Wta_Only"
+            },
+            "direction" : "input",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--extra_star_params",
+            "description" : "Additional parameters to pass to STAR when building the genome index. Specify exactly like how you would on the command line.",
+            "info" : {
+              "config_key" : "Extra_STAR_params"
+            },
+            "example" : [
+              "--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
       }
     ],
     "resources" : [
       {
-        "type" : "bash_script",
-        "path" : "script.sh",
+        "type" : "python_script",
+        "path" : "script.py",
         "is_executable" : true,
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/reference/build_bdrhap_reference/"
+      },
+      {
+        "type" : "file",
+        "path" : "make_rhap_reference_2.2.1_nodocker.cwl",
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/reference/build_bdrhap_reference/"
       },
       {
@@ -2903,7 +2988,7 @@ meta = [
         "dest" : "nextflow_labels.config"
       }
     ],
-    "description" : "Compile a reference into a STAR index compatible with the BD Rhapsody pipeline.",
+    "description" : "The Reference Files Generator creates an archive containing Genome Index\nand Transcriptome annotation files needed for the BD Rhapsody Sequencing\nAnalysis Pipeline. The app takes as input one or more FASTA and GTF files\nand produces a compressed archive in the form of a tar.gz file. The \narchive contains:\n\n- STAR index\n- Filtered GTF file\n",
     "test_resources" : [
       {
         "type" : "bash_script",
@@ -2913,7 +2998,12 @@ meta = [
       },
       {
         "type" : "file",
-        "path" : "resources_test/reference_gencodev41_chr1",
+        "path" : "resources_test/reference_gencodev41_chr1/reference.fa.gz",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "resources_test/reference_gencodev41_chr1/reference.gtf.gz",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       },
       {
@@ -2934,7 +3024,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "bdgenomics/rhapsody:1.10.1",
+      "image" : "bdgenomics/rhapsody:2.2.1",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration_build",
@@ -2947,25 +3037,19 @@ meta = [
         {
           "type" : "apt",
           "packages" : [
-            "pigz"
-          ],
-          "interactive" : false
-        }
-      ],
-      "test_setup" : [
-        {
-          "type" : "apt",
-          "packages" : [
-            "git",
-            "wget"
+            "procps",
+            "seqkit"
           ],
           "interactive" : false
         },
         {
-          "type" : "docker",
-          "run" : [
-            "TARGETARCH=\\"${TARGETARCH:-$(dpkg --print-architecture)}\\" && \\\\\nTARGETOS=\\"${TARGETOS:-linux}\\" && \\\\\nPATH=\\"${PATH}:/usr/local/go/bin\\" && \\\\\nwget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \\\\\nrm go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \\\\\ngit clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \\\\\ncd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit && rm -r /usr/local/go\n"
-          ]
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "cwlref-runner",
+            "cwl-runner"
+          ],
+          "upgrade" : true
         }
       ]
     },
@@ -3031,7 +3115,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference",
     "viash_version" : "0.8.6",
-    "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
+    "git_commit" : "a921da0ad3600e78afbcca2a18d01204d6dcba2f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3046,65 +3130,180 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
-#!/bin/bash
-
-set -eo pipefail
+import os
+import re
+import subprocess
+import tempfile
+from typing import Any
+import yaml
+import shutil
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
-$( if [ ! -z ${VIASH_PAR_GENOME_FASTA+x} ]; then echo "${VIASH_PAR_GENOME_FASTA}" | sed "s#'#'\\"'\\"'#g;s#.*#par_genome_fasta='&'#" ; else echo "# par_genome_fasta="; fi )
-$( if [ ! -z ${VIASH_PAR_TRANSCRIPTOME_GTF+x} ]; then echo "${VIASH_PAR_TRANSCRIPTOME_GTF}" | sed "s#'#'\\"'\\"'#g;s#.*#par_transcriptome_gtf='&'#" ; else echo "# par_transcriptome_gtf="; fi )
-$( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\\"'\\"'#g;s#.*#par_output='&'#" ; else echo "# par_output="; fi )
-$( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
-$( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_resources_dir='&'#" ; else echo "# meta_resources_dir="; fi )
-$( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_executable='&'#" ; else echo "# meta_executable="; fi )
-$( if [ ! -z ${VIASH_META_CONFIG+x} ]; then echo "${VIASH_META_CONFIG}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_config='&'#" ; else echo "# meta_config="; fi )
-$( if [ ! -z ${VIASH_META_TEMP_DIR+x} ]; then echo "${VIASH_META_TEMP_DIR}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_temp_dir='&'#" ; else echo "# meta_temp_dir="; fi )
-$( if [ ! -z ${VIASH_META_CPUS+x} ]; then echo "${VIASH_META_CPUS}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_cpus='&'#" ; else echo "# meta_cpus="; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "${VIASH_META_MEMORY_B}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_memory_b='&'#" ; else echo "# meta_memory_b="; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "${VIASH_META_MEMORY_KB}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_memory_kb='&'#" ; else echo "# meta_memory_kb="; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "${VIASH_META_MEMORY_MB}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_memory_mb='&'#" ; else echo "# meta_memory_mb="; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "${VIASH_META_MEMORY_GB}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_memory_gb='&'#" ; else echo "# meta_memory_gb="; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "${VIASH_META_MEMORY_TB}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_memory_tb='&'#" ; else echo "# meta_memory_tb="; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "${VIASH_META_MEMORY_PB}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_memory_pb='&'#" ; else echo "# meta_memory_pb="; fi )
+par = {
+  'genome_fasta': $( if [ ! -z ${VIASH_PAR_GENOME_FASTA+x} ]; then echo "r'${VIASH_PAR_GENOME_FASTA//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'gtf': $( if [ ! -z ${VIASH_PAR_GTF+x} ]; then echo "r'${VIASH_PAR_GTF//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'extra_sequences': $( if [ ! -z ${VIASH_PAR_EXTRA_SEQUENCES+x} ]; then echo "r'${VIASH_PAR_EXTRA_SEQUENCES//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'reference_archive': $( if [ ! -z ${VIASH_PAR_REFERENCE_ARCHIVE+x} ]; then echo "r'${VIASH_PAR_REFERENCE_ARCHIVE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'mitochondrial_contigs': $( if [ ! -z ${VIASH_PAR_MITOCHONDRIAL_CONTIGS+x} ]; then echo "r'${VIASH_PAR_MITOCHONDRIAL_CONTIGS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'filtering_off': $( if [ ! -z ${VIASH_PAR_FILTERING_OFF+x} ]; then echo "r'${VIASH_PAR_FILTERING_OFF//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'wta_only_index': $( if [ ! -z ${VIASH_PAR_WTA_ONLY_INDEX+x} ]; then echo "r'${VIASH_PAR_WTA_ONLY_INDEX//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'extra_star_params': $( if [ ! -z ${VIASH_PAR_EXTRA_STAR_PARAMS+x} ]; then echo "r'${VIASH_PAR_EXTRA_STAR_PARAMS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+}
+meta = {
+  'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'resources_dir': $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "r'${VIASH_META_RESOURCES_DIR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'executable': $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "r'${VIASH_META_EXECUTABLE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'config': $( if [ ! -z ${VIASH_META_CONFIG+x} ]; then echo "r'${VIASH_META_CONFIG//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'temp_dir': $( if [ ! -z ${VIASH_META_TEMP_DIR+x} ]; then echo "r'${VIASH_META_TEMP_DIR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'cpus': $( if [ ! -z ${VIASH_META_CPUS+x} ]; then echo "int(r'${VIASH_META_CPUS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'memory_b': $( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "int(r'${VIASH_META_MEMORY_B//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'memory_kb': $( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "int(r'${VIASH_META_MEMORY_KB//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'memory_mb': $( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "int(r'${VIASH_META_MEMORY_MB//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'memory_gb': $( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "int(r'${VIASH_META_MEMORY_GB//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'memory_tb': $( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "int(r'${VIASH_META_MEMORY_TB//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'memory_pb': $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "int(r'${VIASH_META_MEMORY_PB//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+}
+dep = {
+  
+}
 
 ## VIASH END
 
-# create temporary directory
-tmpdir=\\$(mktemp -d "$VIASH_TEMP/\\$meta_functionality_name-XXXXXXXX")
-function clean_up {
-    rm -rf "\\$tmpdir"
-}
-trap clean_up EXIT
+def clean_arg(argument):
+    argument["clean_name"] = re.sub("^-*", "", argument["name"])
+    return argument
 
-meta_cpus="\\${meta_cpus:-1}"
+def read_config(path: str) -> dict[str, Any]:
+    with open(path, "r") as f:
+        config = yaml.safe_load(f)
+    
+    config["functionality"]["arguments"] = [
+        clean_arg(arg)
+        for grp in config["functionality"]["argument_groups"]
+        for arg in grp["arguments"]
+    ]
+    
+    return config
 
-# process params
-extra_params=( )
+def strip_margin(text: str) -> str:
+    return re.sub("(\\\\n?)[ \\\\t]*\\\\|", "\\\\\\\\1", text)
 
-if [ ! -z "\\$meta_cpus" ]; then 
-  extra_params+=( "--runThreadN \\$meta_cpus" )
-fi
+def process_params(par: dict[str, Any], config) -> str:
+    # check input parameters
+    assert par["genome_fasta"], "Pass at least one set of inputs to --genome_fasta."
+    assert par["gtf"], "Pass at least one set of inputs to --gtf."
+    assert par["reference_archive"].endswith(".gz"), "Output reference_archive must end with .tar.gz."
 
-echo "> Unzipping input files"
-unpigz -c "\\$par_genome_fasta" > "\\$tmpdir/genome.fa"
-unpigz -c "\\$par_transcriptome_gtf" > "\\$tmpdir/transcriptome.gtf"
+    # make paths absolute
+    for argument in config["functionality"]["arguments"]:
+        if par[argument["clean_name"]] and argument["type"] == "file":
+            if isinstance(par[argument["clean_name"]], list):
+                par[argument["clean_name"]] = [ os.path.abspath(f) for f in par[argument["clean_name"]] ]
+            else:
+                par[argument["clean_name"]] = os.path.abspath(par[argument["clean_name"]])
+    
+    return par
 
-echo "> Building star index"
-mkdir "\\$tmpdir/out"
-STAR \\\\
-  --runMode genomeGenerate \\\\
-  --genomeDir "\\$tmpdir/out" \\\\
-  --genomeFastaFiles "\\$tmpdir/genome.fa" \\\\
-  --sjdbGTFfile "\\$tmpdir/transcriptome.gtf" \\\\
-  --sjdbOverhang 100 \\\\
-  --genomeSAindexNbases 11 \\\\
-  "\\${extra_params[@]}"
+def generate_config(par: dict[str, Any], meta, config) -> str:
+    content_list = [strip_margin(f"""\\\\
+#!/usr/bin/env cwl-runner
 
-echo "> Creating archive"
-tar --use-compress-program="pigz -k " -cf "\\$par_output" -C "\\$tmpdir/out" .
+""")]
+        
+    config_key_value_pairs = []
+    for argument in config["functionality"]["arguments"]:
+        config_key = (argument.get("info") or {}).get("config_key")
+        arg_type = argument["type"]
+        par_value = par[argument["clean_name"]]
+        if par_value and config_key:
+            config_key_value_pairs.append((config_key, arg_type, par_value))
+
+    if meta["cpus"]:
+        config_key_value_pairs.append(("Maximum_threads", "integer", meta["cpus"]))
+
+    # print(config_key_value_pairs)
+
+    for config_key, arg_type, par_value in config_key_value_pairs:
+        if arg_type == "file":
+            str = strip_margin(f"""\\\\
+{config_key}:
+""")
+            if isinstance(par_value, list):
+                for file in par_value:
+                    str += strip_margin(f"""\\\\
+ - class: File
+   location: "{file}"
+""")
+            else:
+                str += strip_margin(f"""\\\\
+   class: File
+   location: "{par_value}"
+""")
+            content_list.append(str)
+        else:
+            content_list.append(strip_margin(f"""\\\\
+{config_key}: {par_value}
+"""))
+            
+    ## Write config to file
+    return "".join(content_list)
+
+def get_cwl_file(meta: dict[str, Any]) -> str:
+    # create cwl file (if need be)
+    cwl_file=os.path.join(meta["resources_dir"], "make_rhap_reference_2.2.1_nodocker.cwl")
+
+    return os.path.abspath(cwl_file)
+
+def main(par: dict[str, Any], meta: dict[str, Any]):
+    
+    config = read_config(meta["config"])
+        
+    # Preprocess params
+    par = process_params(par, config)
+
+    # fetch cwl file
+    cwl_file = get_cwl_file(meta)
+
+    # Create output dir if not exists
+    outdir = os.path.dirname(par["reference_archive"])
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+
+    ## Run pipeline
+    with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
+        # Create params file
+        config_file = os.path.join(temp_dir, "config.yml")
+        config_content = generate_config(par, meta, config)
+        with open(config_file, "w") as f:
+            f.write(config_content)
+
+        cmd = [
+            "cwl-runner",
+            "--no-container",
+            "--preserve-entire-environment",
+            "--outdir",
+            temp_dir,
+            cwl_file,
+            config_file
+        ]
+
+        env = dict(os.environ)
+        env["TMPDIR"] = temp_dir
+
+        print("> " + " ".join(cmd), flush=True)
+        _ = subprocess.check_call(
+            cmd,
+            cwd=os.path.dirname(config_file),
+            env=env
+        )
+
+        shutil.move(os.path.join(temp_dir, "Rhap_reference.tar.gz"), par["reference_archive"])
+
+if __name__ == "__main__":
+    main(par, meta)
 VIASHMAIN
-bash "$tempscript"
+python -B "$tempscript"
 '''
   
   return vdsl3WorkflowFactory(args, meta, rawScript)

@@ -12,8 +12,8 @@
 # files.
 # 
 # Component authors:
-#  * Angela Oliveira Pisco (author)
 #  * Robrecht Cannoodt (author, maintainer)
+#  * Weiwei Schultz (contributor)
 
 set -e
 
@@ -176,23 +176,90 @@ VIASH_META_TEMP_DIR="$VIASH_TEMP"
 function ViashHelp {
   echo "build_bdrhap_reference integration_build"
   echo ""
-  echo "Compile a reference into a STAR index compatible with the BD Rhapsody pipeline."
+  echo "The Reference Files Generator creates an archive containing Genome Index"
+  echo "and Transcriptome annotation files needed for the BD Rhapsody Sequencing"
+  echo "Analysis Pipeline. The app takes as input one or more FASTA and GTF files"
+  echo "and produces a compressed archive in the form of a tar.gz file. The"
+  echo "archive contains:"
+  echo ""
+  echo "- STAR index"
+  echo "- Filtered GTF file"
+  echo ""
+  echo "Inputs:"
+  echo "    --genome_fasta"
+  echo "        type: file, required parameter, multiple values allowed, file must exist"
+  echo "        example: genome_sequence.fa.gz"
+  echo "        Reference genome file in FASTA or FASTA.GZ format. The BD Rhapsody"
+  echo "        Sequencing Analysis Pipeline uses GRCh38 for Human and GRCm39 for Mouse."
+  echo ""
+  echo "    --gtf"
+  echo "        type: file, required parameter, multiple values allowed, file must exist"
+  echo "        example: transcriptome_annotation.gtf.gz"
+  echo "        File path to the transcript annotation files in GTF or GTF.GZ format."
+  echo "        The Sequence Analysis Pipeline requires the 'gene_name' or"
+  echo "        'gene_id' attribute to be set on each gene and exon feature. Gene and"
+  echo "        exon feature lines must have the same attribute, and exons"
+  echo "        must have a corresponding gene with the same value. For TCR/BCR assays,"
+  echo "        the TCR or BCR gene segments must have the 'gene_type' or"
+  echo "        'gene_biotype' attribute set, and the value should begin with 'TR' or"
+  echo "        'IG', respectively."
+  echo ""
+  echo "    --extra_sequences"
+  echo "        type: file, multiple values allowed, file must exist"
+  echo "        File path to additional sequences in FASTA format to use when building"
+  echo "        the STAR index. (e.g. transgenes or CRISPR guide barcodes)."
+  echo "        GTF lines for these sequences will be automatically generated and"
+  echo "        combined with the main GTF."
+  echo ""
+  echo "Outputs:"
+  echo "    --reference_archive"
+  echo "        type: file, required parameter, output, file must exist"
+  echo "        example: reference.tar.gz"
+  echo "        A Compressed archive containing the Reference Genome Index and"
+  echo "        annotation GTF files. This archive is meant to be used as an"
+  echo "        input in the BD Rhapsody Sequencing Analysis Pipeline."
   echo ""
   echo "Arguments:"
-  echo "    --genome_fasta"
-  echo "        type: file, required parameter, file must exist"
-  echo "        example: genome_sequence.fa.gz"
-  echo "        Reference genome fasta."
+  echo "    --mitochondrial_contigs"
+  echo "        type: string, multiple values allowed"
+  echo "        default: chrM;chrMT;M;MT"
+  echo "        Names of the Mitochondrial contigs in the provided Reference Genome."
+  echo "        Fragments originating from contigs other than these are"
+  echo "        identified as 'nuclear fragments' in the ATACseq analysis pipeline."
   echo ""
-  echo "    --transcriptome_gtf"
-  echo "        type: file, required parameter, file must exist"
-  echo "        example: transcriptome_annotation.gtf.gz"
-  echo "        Reference transcriptome annotation."
+  echo "    --filtering_off"
+  echo "        type: boolean_true"
+  echo "        By default the input Transcript Annotation files are filtered based on"
+  echo "        the gene_type/gene_biotype attribute. Only features"
+  echo "        having the following attribute values are kept:"
+  echo "          - protein_coding"
+  echo "          - lncRNA"
+  echo "          - IG_LV_gene"
+  echo "          - IG_V_gene"
+  echo "          - IG_V_pseudogene"
+  echo "          - IG_D_gene"
+  echo "          - IG_J_gene"
+  echo "          - IG_J_pseudogene"
+  echo "          - IG_C_gene"
+  echo "          - IG_C_pseudogene"
+  echo "          - TR_V_gene"
+  echo "          - TR_V_pseudogene"
+  echo "          - TR_D_gene"
+  echo "          - TR_J_gene"
+  echo "          - TR_J_pseudogene"
+  echo "          - TR_C_gene"
+  echo "          If you have already pre-filtered the input Annotation files and/or"
+  echo "        wish to turn-off the filtering, please set this option to True."
   echo ""
-  echo "    --output"
-  echo "        type: file, required parameter, output, file must exist"
-  echo "        example: star_index.tar.gz"
-  echo "        Star index"
+  echo "    --wta_only_index"
+  echo "        type: boolean_true"
+  echo "        Build a WTA only index, otherwise builds a WTA + ATAC index."
+  echo ""
+  echo "    --extra_star_params"
+  echo "        type: string"
+  echo "        example: --limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11"
+  echo "        Additional parameters to pass to STAR when building the genome index."
+  echo "        Specify exactly like how you would on the command line."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -410,20 +477,23 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM bdgenomics/rhapsody:1.10.1
+FROM bdgenomics/rhapsody:2.2.1
 
 ENTRYPOINT []
 
  
 RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y pigz && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y procps seqkit && \
   rm -rf /var/lib/apt/lists/*
 
-LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
+RUN pip install --upgrade pip && \
+  pip install --upgrade --no-cache-dir "cwlref-runner" "cwl-runner"
+
+LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_bdrhap_reference"
-LABEL org.opencontainers.image.created="2024-08-09T11:26:42Z"
+LABEL org.opencontainers.image.created="2024-08-10T02:43:32Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="06849b19f7971724e55e9490d67a56a7262807c4"
+LABEL org.opencontainers.image.revision="a921da0ad3600e78afbcca2a18d01204d6dcba2f"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -583,36 +653,103 @@ while [[ $# -gt 0 ]]; do
             exit
             ;;
         --genome_fasta)
-            [ -n "$VIASH_PAR_GENOME_FASTA" ] && ViashError Bad arguments for option \'--genome_fasta\': \'$VIASH_PAR_GENOME_FASTA\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_GENOME_FASTA="$2"
+            if [ -z "$VIASH_PAR_GENOME_FASTA" ]; then
+              VIASH_PAR_GENOME_FASTA="$2"
+            else
+              VIASH_PAR_GENOME_FASTA="$VIASH_PAR_GENOME_FASTA;""$2"
+            fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --genome_fasta. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --genome_fasta=*)
-            [ -n "$VIASH_PAR_GENOME_FASTA" ] && ViashError Bad arguments for option \'--genome_fasta=*\': \'$VIASH_PAR_GENOME_FASTA\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_GENOME_FASTA=$(ViashRemoveFlags "$1")
+            if [ -z "$VIASH_PAR_GENOME_FASTA" ]; then
+              VIASH_PAR_GENOME_FASTA=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_GENOME_FASTA="$VIASH_PAR_GENOME_FASTA;"$(ViashRemoveFlags "$1")
+            fi
             shift 1
             ;;
-        --transcriptome_gtf)
-            [ -n "$VIASH_PAR_TRANSCRIPTOME_GTF" ] && ViashError Bad arguments for option \'--transcriptome_gtf\': \'$VIASH_PAR_TRANSCRIPTOME_GTF\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_TRANSCRIPTOME_GTF="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --transcriptome_gtf. Use "--help" to get more information on the parameters. && exit 1
+        --gtf)
+            if [ -z "$VIASH_PAR_GTF" ]; then
+              VIASH_PAR_GTF="$2"
+            else
+              VIASH_PAR_GTF="$VIASH_PAR_GTF;""$2"
+            fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --gtf. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --transcriptome_gtf=*)
-            [ -n "$VIASH_PAR_TRANSCRIPTOME_GTF" ] && ViashError Bad arguments for option \'--transcriptome_gtf=*\': \'$VIASH_PAR_TRANSCRIPTOME_GTF\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_TRANSCRIPTOME_GTF=$(ViashRemoveFlags "$1")
+        --gtf=*)
+            if [ -z "$VIASH_PAR_GTF" ]; then
+              VIASH_PAR_GTF=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_GTF="$VIASH_PAR_GTF;"$(ViashRemoveFlags "$1")
+            fi
             shift 1
             ;;
-        --output)
-            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
+        --extra_sequences)
+            if [ -z "$VIASH_PAR_EXTRA_SEQUENCES" ]; then
+              VIASH_PAR_EXTRA_SEQUENCES="$2"
+            else
+              VIASH_PAR_EXTRA_SEQUENCES="$VIASH_PAR_EXTRA_SEQUENCES;""$2"
+            fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --extra_sequences. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output=*)
-            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output=*\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
+        --extra_sequences=*)
+            if [ -z "$VIASH_PAR_EXTRA_SEQUENCES" ]; then
+              VIASH_PAR_EXTRA_SEQUENCES=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_EXTRA_SEQUENCES="$VIASH_PAR_EXTRA_SEQUENCES;"$(ViashRemoveFlags "$1")
+            fi
+            shift 1
+            ;;
+        --reference_archive)
+            [ -n "$VIASH_PAR_REFERENCE_ARCHIVE" ] && ViashError Bad arguments for option \'--reference_archive\': \'$VIASH_PAR_REFERENCE_ARCHIVE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REFERENCE_ARCHIVE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_archive. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --reference_archive=*)
+            [ -n "$VIASH_PAR_REFERENCE_ARCHIVE" ] && ViashError Bad arguments for option \'--reference_archive=*\': \'$VIASH_PAR_REFERENCE_ARCHIVE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REFERENCE_ARCHIVE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --mitochondrial_contigs)
+            if [ -z "$VIASH_PAR_MITOCHONDRIAL_CONTIGS" ]; then
+              VIASH_PAR_MITOCHONDRIAL_CONTIGS="$2"
+            else
+              VIASH_PAR_MITOCHONDRIAL_CONTIGS="$VIASH_PAR_MITOCHONDRIAL_CONTIGS;""$2"
+            fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --mitochondrial_contigs. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --mitochondrial_contigs=*)
+            if [ -z "$VIASH_PAR_MITOCHONDRIAL_CONTIGS" ]; then
+              VIASH_PAR_MITOCHONDRIAL_CONTIGS=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_MITOCHONDRIAL_CONTIGS="$VIASH_PAR_MITOCHONDRIAL_CONTIGS;"$(ViashRemoveFlags "$1")
+            fi
+            shift 1
+            ;;
+        --filtering_off)
+            [ -n "$VIASH_PAR_FILTERING_OFF" ] && ViashError Bad arguments for option \'--filtering_off\': \'$VIASH_PAR_FILTERING_OFF\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_FILTERING_OFF=true
+            shift 1
+            ;;
+        --wta_only_index)
+            [ -n "$VIASH_PAR_WTA_ONLY_INDEX" ] && ViashError Bad arguments for option \'--wta_only_index\': \'$VIASH_PAR_WTA_ONLY_INDEX\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_WTA_ONLY_INDEX=true
+            shift 1
+            ;;
+        --extra_star_params)
+            [ -n "$VIASH_PAR_EXTRA_STAR_PARAMS" ] && ViashError Bad arguments for option \'--extra_star_params\': \'$VIASH_PAR_EXTRA_STAR_PARAMS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EXTRA_STAR_PARAMS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --extra_star_params. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --extra_star_params=*)
+            [ -n "$VIASH_PAR_EXTRA_STAR_PARAMS" ] && ViashError Bad arguments for option \'--extra_star_params=*\': \'$VIASH_PAR_EXTRA_STAR_PARAMS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EXTRA_STAR_PARAMS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---setup)
@@ -737,12 +874,12 @@ if [ -z ${VIASH_PAR_GENOME_FASTA+x} ]; then
   ViashError '--genome_fasta' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
-if [ -z ${VIASH_PAR_TRANSCRIPTOME_GTF+x} ]; then
-  ViashError '--transcriptome_gtf' is a required argument. Use "--help" to get more information on the parameters.
+if [ -z ${VIASH_PAR_GTF+x} ]; then
+  ViashError '--gtf' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
-if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
-  ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
+if [ -z ${VIASH_PAR_REFERENCE_ARCHIVE+x} ]; then
+  ViashError '--reference_archive' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
 if [ -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then
@@ -766,17 +903,68 @@ if [ -z ${VIASH_META_TEMP_DIR+x} ]; then
   exit 1
 fi
 
-# check whether required files exist
-if [ ! -z "$VIASH_PAR_GENOME_FASTA" ] && [ ! -e "$VIASH_PAR_GENOME_FASTA" ]; then
-  ViashError "Input file '$VIASH_PAR_GENOME_FASTA' does not exist."
-  exit 1
+# filling in defaults
+if [ -z ${VIASH_PAR_MITOCHONDRIAL_CONTIGS+x} ]; then
+  VIASH_PAR_MITOCHONDRIAL_CONTIGS="chrM;chrMT;M;MT"
 fi
-if [ ! -z "$VIASH_PAR_TRANSCRIPTOME_GTF" ] && [ ! -e "$VIASH_PAR_TRANSCRIPTOME_GTF" ]; then
-  ViashError "Input file '$VIASH_PAR_TRANSCRIPTOME_GTF' does not exist."
-  exit 1
+if [ -z ${VIASH_PAR_FILTERING_OFF+x} ]; then
+  VIASH_PAR_FILTERING_OFF="false"
+fi
+if [ -z ${VIASH_PAR_WTA_ONLY_INDEX+x} ]; then
+  VIASH_PAR_WTA_ONLY_INDEX="false"
+fi
+
+# check whether required files exist
+if [ ! -z "$VIASH_PAR_GENOME_FASTA" ]; then
+  IFS=';'
+  set -f
+  for file in $VIASH_PAR_GENOME_FASTA; do
+    unset IFS
+    if [ ! -e "$file" ]; then
+      ViashError "Input file '$file' does not exist."
+      exit 1
+    fi
+  done
+  set +f
+fi
+if [ ! -z "$VIASH_PAR_GTF" ]; then
+  IFS=';'
+  set -f
+  for file in $VIASH_PAR_GTF; do
+    unset IFS
+    if [ ! -e "$file" ]; then
+      ViashError "Input file '$file' does not exist."
+      exit 1
+    fi
+  done
+  set +f
+fi
+if [ ! -z "$VIASH_PAR_EXTRA_SEQUENCES" ]; then
+  IFS=';'
+  set -f
+  for file in $VIASH_PAR_EXTRA_SEQUENCES; do
+    unset IFS
+    if [ ! -e "$file" ]; then
+      ViashError "Input file '$file' does not exist."
+      exit 1
+    fi
+  done
+  set +f
 fi
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_FILTERING_OFF" ]]; then
+  if ! [[ "$VIASH_PAR_FILTERING_OFF" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--filtering_off' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_WTA_ONLY_INDEX" ]]; then
+  if ! [[ "$VIASH_PAR_WTA_ONLY_INDEX" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--wta_only_index' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_META_CPUS" ]]; then
   if ! [[ "$VIASH_META_CPUS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError 'cpus' has to be an integer. Use "--help" to get more information on the parameters.
@@ -821,24 +1009,49 @@ if [[ -n "$VIASH_META_MEMORY_PB" ]]; then
 fi
 
 # create parent directories of output files, if so desired
-if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT")" ]; then
-  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT")"
+if [ ! -z "$VIASH_PAR_REFERENCE_ARCHIVE" ] && [ ! -d "$(dirname "$VIASH_PAR_REFERENCE_ARCHIVE")" ]; then
+  mkdir -p "$(dirname "$VIASH_PAR_REFERENCE_ARCHIVE")"
 fi
 
 # detect volumes from file arguments
 VIASH_CHOWN_VARS=()
 if [ ! -z "$VIASH_PAR_GENOME_FASTA" ]; then
-  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_GENOME_FASTA")" )
-  VIASH_PAR_GENOME_FASTA=$(ViashAutodetectMount "$VIASH_PAR_GENOME_FASTA")
+  VIASH_TEST_GENOME_FASTA=()
+  IFS=';'
+  for var in $VIASH_PAR_GENOME_FASTA; do
+    unset IFS
+    VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$var")" )
+    var=$(ViashAutodetectMount "$var")
+    VIASH_TEST_GENOME_FASTA+=( "$var" )
+  done
+  VIASH_PAR_GENOME_FASTA=$(IFS=';' ; echo "${VIASH_TEST_GENOME_FASTA[*]}")
 fi
-if [ ! -z "$VIASH_PAR_TRANSCRIPTOME_GTF" ]; then
-  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_TRANSCRIPTOME_GTF")" )
-  VIASH_PAR_TRANSCRIPTOME_GTF=$(ViashAutodetectMount "$VIASH_PAR_TRANSCRIPTOME_GTF")
+if [ ! -z "$VIASH_PAR_GTF" ]; then
+  VIASH_TEST_GTF=()
+  IFS=';'
+  for var in $VIASH_PAR_GTF; do
+    unset IFS
+    VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$var")" )
+    var=$(ViashAutodetectMount "$var")
+    VIASH_TEST_GTF+=( "$var" )
+  done
+  VIASH_PAR_GTF=$(IFS=';' ; echo "${VIASH_TEST_GTF[*]}")
 fi
-if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
-  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT")" )
-  VIASH_PAR_OUTPUT=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT")
-  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT" )
+if [ ! -z "$VIASH_PAR_EXTRA_SEQUENCES" ]; then
+  VIASH_TEST_EXTRA_SEQUENCES=()
+  IFS=';'
+  for var in $VIASH_PAR_EXTRA_SEQUENCES; do
+    unset IFS
+    VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$var")" )
+    var=$(ViashAutodetectMount "$var")
+    VIASH_TEST_EXTRA_SEQUENCES+=( "$var" )
+  done
+  VIASH_PAR_EXTRA_SEQUENCES=$(IFS=';' ; echo "${VIASH_TEST_EXTRA_SEQUENCES[*]}")
+fi
+if [ ! -z "$VIASH_PAR_REFERENCE_ARCHIVE" ]; then
+  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_REFERENCE_ARCHIVE")" )
+  VIASH_PAR_REFERENCE_ARCHIVE=$(ViashAutodetectMount "$VIASH_PAR_REFERENCE_ARCHIVE")
+  VIASH_CHOWN_VARS+=( "$VIASH_PAR_REFERENCE_ARCHIVE" )
 fi
 if [ ! -z "$VIASH_META_RESOURCES_DIR" ]; then
   VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_META_RESOURCES_DIR")" )
@@ -886,7 +1099,7 @@ fi
 ViashDebug "Running command: $(echo docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/reference/build_bdrhap_reference:integration_build)"
 cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/reference/build_bdrhap_reference:integration_build
 set -e
-tempscript=\$(mktemp "$VIASH_META_TEMP_DIR/viash-run-build_bdrhap_reference-XXXXXX").sh
+tempscript=\$(mktemp "$VIASH_META_TEMP_DIR/viash-run-build_bdrhap_reference-XXXXXX").py
 function clean_up {
   rm "\$tempscript"
 }
@@ -897,65 +1110,180 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
-#!/bin/bash
-
-set -eo pipefail
+import os
+import re
+import subprocess
+import tempfile
+from typing import Any
+import yaml
+import shutil
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
-$( if [ ! -z ${VIASH_PAR_GENOME_FASTA+x} ]; then echo "${VIASH_PAR_GENOME_FASTA}" | sed "s#'#'\"'\"'#g;s#.*#par_genome_fasta='&'#" ; else echo "# par_genome_fasta="; fi )
-$( if [ ! -z ${VIASH_PAR_TRANSCRIPTOME_GTF+x} ]; then echo "${VIASH_PAR_TRANSCRIPTOME_GTF}" | sed "s#'#'\"'\"'#g;s#.*#par_transcriptome_gtf='&'#" ; else echo "# par_transcriptome_gtf="; fi )
-$( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\"'\"'#g;s#.*#par_output='&'#" ; else echo "# par_output="; fi )
-$( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\"'\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
-$( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\"'\"'#g;s#.*#meta_resources_dir='&'#" ; else echo "# meta_resources_dir="; fi )
-$( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\"'\"'#g;s#.*#meta_executable='&'#" ; else echo "# meta_executable="; fi )
-$( if [ ! -z ${VIASH_META_CONFIG+x} ]; then echo "${VIASH_META_CONFIG}" | sed "s#'#'\"'\"'#g;s#.*#meta_config='&'#" ; else echo "# meta_config="; fi )
-$( if [ ! -z ${VIASH_META_TEMP_DIR+x} ]; then echo "${VIASH_META_TEMP_DIR}" | sed "s#'#'\"'\"'#g;s#.*#meta_temp_dir='&'#" ; else echo "# meta_temp_dir="; fi )
-$( if [ ! -z ${VIASH_META_CPUS+x} ]; then echo "${VIASH_META_CPUS}" | sed "s#'#'\"'\"'#g;s#.*#meta_cpus='&'#" ; else echo "# meta_cpus="; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "${VIASH_META_MEMORY_B}" | sed "s#'#'\"'\"'#g;s#.*#meta_memory_b='&'#" ; else echo "# meta_memory_b="; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "${VIASH_META_MEMORY_KB}" | sed "s#'#'\"'\"'#g;s#.*#meta_memory_kb='&'#" ; else echo "# meta_memory_kb="; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "${VIASH_META_MEMORY_MB}" | sed "s#'#'\"'\"'#g;s#.*#meta_memory_mb='&'#" ; else echo "# meta_memory_mb="; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "${VIASH_META_MEMORY_GB}" | sed "s#'#'\"'\"'#g;s#.*#meta_memory_gb='&'#" ; else echo "# meta_memory_gb="; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "${VIASH_META_MEMORY_TB}" | sed "s#'#'\"'\"'#g;s#.*#meta_memory_tb='&'#" ; else echo "# meta_memory_tb="; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "${VIASH_META_MEMORY_PB}" | sed "s#'#'\"'\"'#g;s#.*#meta_memory_pb='&'#" ; else echo "# meta_memory_pb="; fi )
+par = {
+  'genome_fasta': $( if [ ! -z ${VIASH_PAR_GENOME_FASTA+x} ]; then echo "r'${VIASH_PAR_GENOME_FASTA//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'gtf': $( if [ ! -z ${VIASH_PAR_GTF+x} ]; then echo "r'${VIASH_PAR_GTF//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'extra_sequences': $( if [ ! -z ${VIASH_PAR_EXTRA_SEQUENCES+x} ]; then echo "r'${VIASH_PAR_EXTRA_SEQUENCES//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'reference_archive': $( if [ ! -z ${VIASH_PAR_REFERENCE_ARCHIVE+x} ]; then echo "r'${VIASH_PAR_REFERENCE_ARCHIVE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'mitochondrial_contigs': $( if [ ! -z ${VIASH_PAR_MITOCHONDRIAL_CONTIGS+x} ]; then echo "r'${VIASH_PAR_MITOCHONDRIAL_CONTIGS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'filtering_off': $( if [ ! -z ${VIASH_PAR_FILTERING_OFF+x} ]; then echo "r'${VIASH_PAR_FILTERING_OFF//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'wta_only_index': $( if [ ! -z ${VIASH_PAR_WTA_ONLY_INDEX+x} ]; then echo "r'${VIASH_PAR_WTA_ONLY_INDEX//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'extra_star_params': $( if [ ! -z ${VIASH_PAR_EXTRA_STAR_PARAMS+x} ]; then echo "r'${VIASH_PAR_EXTRA_STAR_PARAMS//\'/\'\"\'\"r\'}'"; else echo None; fi )
+}
+meta = {
+  'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'resources_dir': $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "r'${VIASH_META_RESOURCES_DIR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'executable': $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "r'${VIASH_META_EXECUTABLE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'config': $( if [ ! -z ${VIASH_META_CONFIG+x} ]; then echo "r'${VIASH_META_CONFIG//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'temp_dir': $( if [ ! -z ${VIASH_META_TEMP_DIR+x} ]; then echo "r'${VIASH_META_TEMP_DIR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'cpus': $( if [ ! -z ${VIASH_META_CPUS+x} ]; then echo "int(r'${VIASH_META_CPUS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'memory_b': $( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "int(r'${VIASH_META_MEMORY_B//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'memory_kb': $( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "int(r'${VIASH_META_MEMORY_KB//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'memory_mb': $( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "int(r'${VIASH_META_MEMORY_MB//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'memory_gb': $( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "int(r'${VIASH_META_MEMORY_GB//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'memory_tb': $( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "int(r'${VIASH_META_MEMORY_TB//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'memory_pb': $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "int(r'${VIASH_META_MEMORY_PB//\'/\'\"\'\"r\'}')"; else echo None; fi )
+}
+dep = {
+  
+}
 
 ## VIASH END
 
-# create temporary directory
-tmpdir=\$(mktemp -d "$VIASH_TEMP/\$meta_functionality_name-XXXXXXXX")
-function clean_up {
-    rm -rf "\$tmpdir"
-}
-trap clean_up EXIT
+def clean_arg(argument):
+    argument["clean_name"] = re.sub("^-*", "", argument["name"])
+    return argument
 
-meta_cpus="\${meta_cpus:-1}"
+def read_config(path: str) -> dict[str, Any]:
+    with open(path, "r") as f:
+        config = yaml.safe_load(f)
+    
+    config["functionality"]["arguments"] = [
+        clean_arg(arg)
+        for grp in config["functionality"]["argument_groups"]
+        for arg in grp["arguments"]
+    ]
+    
+    return config
 
-# process params
-extra_params=( )
+def strip_margin(text: str) -> str:
+    return re.sub("(\\n?)[ \\t]*\\|", "\\\\1", text)
 
-if [ ! -z "\$meta_cpus" ]; then 
-  extra_params+=( "--runThreadN \$meta_cpus" )
-fi
+def process_params(par: dict[str, Any], config) -> str:
+    # check input parameters
+    assert par["genome_fasta"], "Pass at least one set of inputs to --genome_fasta."
+    assert par["gtf"], "Pass at least one set of inputs to --gtf."
+    assert par["reference_archive"].endswith(".gz"), "Output reference_archive must end with .tar.gz."
 
-echo "> Unzipping input files"
-unpigz -c "\$par_genome_fasta" > "\$tmpdir/genome.fa"
-unpigz -c "\$par_transcriptome_gtf" > "\$tmpdir/transcriptome.gtf"
+    # make paths absolute
+    for argument in config["functionality"]["arguments"]:
+        if par[argument["clean_name"]] and argument["type"] == "file":
+            if isinstance(par[argument["clean_name"]], list):
+                par[argument["clean_name"]] = [ os.path.abspath(f) for f in par[argument["clean_name"]] ]
+            else:
+                par[argument["clean_name"]] = os.path.abspath(par[argument["clean_name"]])
+    
+    return par
 
-echo "> Building star index"
-mkdir "\$tmpdir/out"
-STAR \\
-  --runMode genomeGenerate \\
-  --genomeDir "\$tmpdir/out" \\
-  --genomeFastaFiles "\$tmpdir/genome.fa" \\
-  --sjdbGTFfile "\$tmpdir/transcriptome.gtf" \\
-  --sjdbOverhang 100 \\
-  --genomeSAindexNbases 11 \\
-  "\${extra_params[@]}"
+def generate_config(par: dict[str, Any], meta, config) -> str:
+    content_list = [strip_margin(f"""\\
+        |#!/usr/bin/env cwl-runner
+        |
+        |""")]
+        
+    config_key_value_pairs = []
+    for argument in config["functionality"]["arguments"]:
+        config_key = (argument.get("info") or {}).get("config_key")
+        arg_type = argument["type"]
+        par_value = par[argument["clean_name"]]
+        if par_value and config_key:
+            config_key_value_pairs.append((config_key, arg_type, par_value))
 
-echo "> Creating archive"
-tar --use-compress-program="pigz -k " -cf "\$par_output" -C "\$tmpdir/out" .
+    if meta["cpus"]:
+        config_key_value_pairs.append(("Maximum_threads", "integer", meta["cpus"]))
+
+    # print(config_key_value_pairs)
+
+    for config_key, arg_type, par_value in config_key_value_pairs:
+        if arg_type == "file":
+            str = strip_margin(f"""\\
+                |{config_key}:
+                |""")
+            if isinstance(par_value, list):
+                for file in par_value:
+                    str += strip_margin(f"""\\
+                        | - class: File
+                        |   location: "{file}"
+                        |""")
+            else:
+                str += strip_margin(f"""\\
+                    |   class: File
+                    |   location: "{par_value}"
+                    |""")
+            content_list.append(str)
+        else:
+            content_list.append(strip_margin(f"""\\
+                |{config_key}: {par_value}
+                |"""))
+            
+    ## Write config to file
+    return "".join(content_list)
+
+def get_cwl_file(meta: dict[str, Any]) -> str:
+    # create cwl file (if need be)
+    cwl_file=os.path.join(meta["resources_dir"], "make_rhap_reference_2.2.1_nodocker.cwl")
+
+    return os.path.abspath(cwl_file)
+
+def main(par: dict[str, Any], meta: dict[str, Any]):
+    
+    config = read_config(meta["config"])
+        
+    # Preprocess params
+    par = process_params(par, config)
+
+    # fetch cwl file
+    cwl_file = get_cwl_file(meta)
+
+    # Create output dir if not exists
+    outdir = os.path.dirname(par["reference_archive"])
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+
+    ## Run pipeline
+    with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
+        # Create params file
+        config_file = os.path.join(temp_dir, "config.yml")
+        config_content = generate_config(par, meta, config)
+        with open(config_file, "w") as f:
+            f.write(config_content)
+
+        cmd = [
+            "cwl-runner",
+            "--no-container",
+            "--preserve-entire-environment",
+            "--outdir",
+            temp_dir,
+            cwl_file,
+            config_file
+        ]
+
+        env = dict(os.environ)
+        env["TMPDIR"] = temp_dir
+
+        print("> " + " ".join(cmd), flush=True)
+        _ = subprocess.check_call(
+            cmd,
+            cwd=os.path.dirname(config_file),
+            env=env
+        )
+
+        shutil.move(os.path.join(temp_dir, "Rhap_reference.tar.gz"), par["reference_archive"])
+
+if __name__ == "__main__":
+    main(par, meta)
 VIASHMAIN
-bash "\$tempscript" &
+python -B "\$tempscript" &
 wait "\$!"
 
 VIASHEOF
@@ -963,13 +1291,46 @@ VIASHEOF
 
 # strip viash automount from file paths
 if [ ! -z "$VIASH_PAR_GENOME_FASTA" ]; then
-  VIASH_PAR_GENOME_FASTA=$(ViashStripAutomount "$VIASH_PAR_GENOME_FASTA")
+  unset VIASH_TEST_GENOME_FASTA
+  IFS=';'
+  for var in $VIASH_PAR_GENOME_FASTA; do
+    unset IFS
+    if [ -z "$VIASH_TEST_GENOME_FASTA" ]; then
+      VIASH_TEST_GENOME_FASTA="$(ViashStripAutomount "$var")"
+    else
+      VIASH_TEST_GENOME_FASTA="$VIASH_TEST_GENOME_FASTA;""$(ViashStripAutomount "$var")"
+    fi
+  done
+  VIASH_PAR_GENOME_FASTA="$VIASH_TEST_GENOME_FASTA"
 fi
-if [ ! -z "$VIASH_PAR_TRANSCRIPTOME_GTF" ]; then
-  VIASH_PAR_TRANSCRIPTOME_GTF=$(ViashStripAutomount "$VIASH_PAR_TRANSCRIPTOME_GTF")
+if [ ! -z "$VIASH_PAR_GTF" ]; then
+  unset VIASH_TEST_GTF
+  IFS=';'
+  for var in $VIASH_PAR_GTF; do
+    unset IFS
+    if [ -z "$VIASH_TEST_GTF" ]; then
+      VIASH_TEST_GTF="$(ViashStripAutomount "$var")"
+    else
+      VIASH_TEST_GTF="$VIASH_TEST_GTF;""$(ViashStripAutomount "$var")"
+    fi
+  done
+  VIASH_PAR_GTF="$VIASH_TEST_GTF"
 fi
-if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
-  VIASH_PAR_OUTPUT=$(ViashStripAutomount "$VIASH_PAR_OUTPUT")
+if [ ! -z "$VIASH_PAR_EXTRA_SEQUENCES" ]; then
+  unset VIASH_TEST_EXTRA_SEQUENCES
+  IFS=';'
+  for var in $VIASH_PAR_EXTRA_SEQUENCES; do
+    unset IFS
+    if [ -z "$VIASH_TEST_EXTRA_SEQUENCES" ]; then
+      VIASH_TEST_EXTRA_SEQUENCES="$(ViashStripAutomount "$var")"
+    else
+      VIASH_TEST_EXTRA_SEQUENCES="$VIASH_TEST_EXTRA_SEQUENCES;""$(ViashStripAutomount "$var")"
+    fi
+  done
+  VIASH_PAR_EXTRA_SEQUENCES="$VIASH_TEST_EXTRA_SEQUENCES"
+fi
+if [ ! -z "$VIASH_PAR_REFERENCE_ARCHIVE" ]; then
+  VIASH_PAR_REFERENCE_ARCHIVE=$(ViashStripAutomount "$VIASH_PAR_REFERENCE_ARCHIVE")
 fi
 if [ ! -z "$VIASH_META_RESOURCES_DIR" ]; then
   VIASH_META_RESOURCES_DIR=$(ViashStripAutomount "$VIASH_META_RESOURCES_DIR")
@@ -986,8 +1347,8 @@ fi
 
 
 # check whether required files exist
-if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -e "$VIASH_PAR_OUTPUT" ]; then
-  ViashError "Output file '$VIASH_PAR_OUTPUT' does not exist."
+if [ ! -z "$VIASH_PAR_REFERENCE_ARCHIVE" ] && [ ! -e "$VIASH_PAR_REFERENCE_ARCHIVE" ]; then
+  ViashError "Output file '$VIASH_PAR_REFERENCE_ARCHIVE' does not exist."
   exit 1
 fi
 

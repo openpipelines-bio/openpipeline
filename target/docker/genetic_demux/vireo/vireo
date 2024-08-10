@@ -485,9 +485,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux vireo"
-LABEL org.opencontainers.image.created="2024-08-09T11:26:42Z"
+LABEL org.opencontainers.image.created="2024-08-10T02:43:33Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="06849b19f7971724e55e9490d67a56a7262807c4"
+LABEL org.opencontainers.image.revision="a921da0ad3600e78afbcca2a18d01204d6dcba2f"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

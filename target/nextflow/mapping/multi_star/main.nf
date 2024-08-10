@@ -6288,6 +6288,7 @@ meta = [
             "multiprocess",
             "gtfparse",
             "pandas",
+            "numpy<2",
             "multiqc~=1.15.0"
           ],
           "upgrade" : true
@@ -6366,7 +6367,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star",
     "viash_version" : "0.8.6",
-    "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
+    "git_commit" : "a921da0ad3600e78afbcca2a18d01204d6dcba2f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

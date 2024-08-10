@@ -10,7 +10,8 @@
 // files.
 // 
 // Component authors:
-//  * Robrecht Cannoodt (maintainer)
+//  * Robrecht Cannoodt (author, maintainer)
+//  * Weiwei Schultz (contributor)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -2790,6 +2791,7 @@ meta = [
       {
         "name" : "Robrecht Cannoodt",
         "roles" : [
+          "author",
           "maintainer"
         ],
         "info" : {
@@ -2813,6 +2815,21 @@ meta = [
             }
           ]
         }
+      },
+      {
+        "name" : "Weiwei Schultz",
+        "roles" : [
+          "contributor"
+        ],
+        "info" : {
+          "role" : "Contributor",
+          "organizations" : [
+            {
+              "name" : "Janssen R&D US",
+              "role" : "Associate Director Data Sciences"
+            }
+          ]
+        }
       }
     ],
     "argument_groups" : [
@@ -2820,35 +2837,19 @@ meta = [
         "name" : "Inputs",
         "arguments" : [
           {
-            "type" : "string",
-            "name" : "--mode",
-            "description" : "Whether to run a whole transcriptome analysis (WTA) or a targeted analysis.",
-            "example" : [
-              "wta"
-            ],
-            "required" : true,
-            "choices" : [
-              "wta",
-              "targeted"
-            ],
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
             "type" : "file",
-            "name" : "--input",
-            "alternatives" : [
-              "-i"
-            ],
-            "description" : "Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.",
+            "name" : "--reads",
+            "description" : "Reads (optional) - Path to your FASTQ.GZ formatted read files from libraries that may include:\n\n- WTA mRNA\n- Targeted mRNA\n- AbSeq\n- Sample Multiplexing\n- VDJ\n\nYou may specify as many R1/R2 read pairs as you want.\n",
+            "info" : {
+              "config_key" : "Reads"
+            },
             "example" : [
-              "input.fastq.gz"
+              "WTALibrary_S1_L001_R1_001.fastq.gz",
+              "WTALibrary_S1_L001_R2_001.fastq.gz"
             ],
             "must_exist" : true,
             "create_parent" : true,
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : true,
             "multiple_sep" : ";",
@@ -2856,32 +2857,39 @@ meta = [
           },
           {
             "type" : "file",
-            "name" : "--reference",
-            "alternatives" : [
-              "-r",
-              "--reference_genome"
-            ],
-            "description" : "Refence to map to. For `--mode wta`, this is the path to STAR index as a tar.gz file. For `--mode targeted`, this is the path to mRNA reference file for pre-designed, supplemental, or custom panel, in FASTA format",
+            "name" : "--reads_atac",
+            "description" : "Path to your FASTQ.GZ formatted read files from ATAC-Seq libraries.\nYou may specify as many R1/R2/I2 files as you want.\n",
+            "info" : {
+              "config_key" : "Reads_ATAC"
+            },
             "example" : [
-              "reference_genome.tar.gz|reference.fasta"
+              "ATACLibrary_S2_L001_R1_001.fastq.gz",
+              "ATACLibrary_S2_L001_R2_001.fastq.gz",
+              "ATACLibrary_S2_L001_I2_001.fastq.gz"
             ],
             "must_exist" : true,
             "create_parent" : true,
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : true,
             "multiple_sep" : ";",
             "dest" : "par"
-          },
+          }
+        ]
+      },
+      {
+        "name" : "References",
+        "description" : "Assay type will be inferred from the provided reference(s).\nDo not provide both reference_archive and targeted_reference at the same time.\n\nValid reference input combinations:\n  - reference_archive: WTA only\n  - reference_archive & abseq_reference: WTA + AbSeq\n  - reference_archive & supplemental_reference: WTA + extra transgenes\n  - reference_archive & abseq_reference & supplemental_reference: WTA + AbSeq + extra transgenes\n  - reference_archive: WTA + ATAC or ATAC only\n  - reference_archive & supplemental_reference: WTA + ATAC + extra transgenes\n  - targeted_reference: Targeted only\n  - targeted_reference & abseq_reference: Targeted + AbSeq\n  - abseq_reference: AbSeq only\n\nThe reference_archive can be generated with the bd_rhapsody_make_reference component.\nAlternatively, BD also provides standard references which can be downloaded from these locations:\n\n  - Human: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Human_WTA_2023-02.tar.gz\n  - Mouse: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Mouse_WTA_2023-02.tar.gz\n",
+        "arguments" : [
           {
             "type" : "file",
-            "name" : "--transcriptome_annotation",
-            "alternatives" : [
-              "-t"
-            ],
-            "description" : "Path to GTF annotation file (only for `--mode wta`).",
+            "name" : "--reference_archive",
+            "description" : "Path to Rhapsody WTA Reference in the tar.gz format.\n\nStructure of the reference archive:\n\n- `BD_Rhapsody_Reference_Files/`: top level folder\n  - `star_index/`: sub-folder containing STAR index, that is files created with `STAR --runMode genomeGenerate`\n  - GTF for gene-transcript-annotation e.g. \\"gencode.v43.primary_assembly.annotation.gtf\\"\n",
+            "info" : {
+              "config_key" : "Reference_Archive"
+            },
             "example" : [
-              "transcriptome.gtf"
+              "RhapRef_Human_WTA_2023-02.tar.gz"
             ],
             "must_exist" : true,
             "create_parent" : true,
@@ -2893,13 +2901,31 @@ meta = [
           },
           {
             "type" : "file",
-            "name" : "--abseq_reference",
-            "alternatives" : [
-              "-a"
-            ],
-            "description" : "Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.",
+            "name" : "--targeted_reference",
+            "description" : "Path to the targeted reference file in FASTA format.\n",
+            "info" : {
+              "config_key" : "Targeted_Reference"
+            },
             "example" : [
-              "abseq_reference.fasta"
+              "BD_Rhapsody_Immune_Response_Panel_Hs.fasta"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--abseq_reference",
+            "description" : "Path to the AbSeq reference file in FASTA format.  Only needed if BD AbSeq Ab-Oligos are used.",
+            "info" : {
+              "config_key" : "AbSeq_Reference"
+            },
+            "example" : [
+              "AbSeq_reference.fasta"
             ],
             "must_exist" : true,
             "create_parent" : true,
@@ -2915,7 +2941,10 @@ meta = [
             "alternatives" : [
               "-s"
             ],
-            "description" : "Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment (only for `--mode wta`).",
+            "description" : "Path to the supplemental reference file in FASTA format.  Only needed if there are additional transgene sequences to be aligned against in a WTA assay experiment.",
+            "info" : {
+              "config_key" : "Supplemental_Reference"
+            },
             "example" : [
               "supplemental_reference.fasta"
             ],
@@ -2926,32 +2955,20 @@ meta = [
             "multiple" : true,
             "multiple_sep" : ";",
             "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--sample_prefix",
-            "description" : "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.",
-            "default" : [
-              "sample"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
           }
         ]
       },
       {
         "name" : "Outputs",
+        "description" : "Outputs for all pipeline runs",
         "arguments" : [
           {
             "type" : "file",
-            "name" : "--output",
+            "name" : "--output_dir",
             "alternatives" : [
               "-o"
             ],
-            "description" : "Output folder. Output still needs to be processed further.",
+            "description" : "The unprocessed output directory containing all the outputs from the pipeline.",
             "example" : [
               "output_dir"
             ],
@@ -2962,23 +2979,739 @@ meta = [
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--output_seurat",
+            "description" : "Single-cell analysis tool inputs. Seurat (.rds) input file containing RSEC molecules data table and all cell annotation metadata.",
+            "info" : {
+              "template" : "sample_Seurat.rds"
+            },
+            "example" : [
+              "output_seurat.rds"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--output_mudata",
+            "info" : {
+              "template" : "sample.h5mu"
+            },
+            "example" : [
+              "output_mudata.h5mu"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--metrics_summary",
+            "description" : "Metrics Summary. Report containing sequencing, molecules, and cell metrics.",
+            "info" : {
+              "template" : "sample_Metrics_Summary.csv"
+            },
+            "example" : [
+              "metrics_summary.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--pipeline_report",
+            "description" : "Pipeline Report. Summary report containing the results from the sequencing analysis pipeline run.",
+            "info" : {
+              "template" : "sample_Pipeline_Report.html"
+            },
+            "example" : [
+              "pipeline_report.html"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--rsec_mols_per_cell",
+            "description" : "Molecules per bioproduct per cell bassed on RSEC",
+            "info" : {
+              "template" : "sample_RSEC_MolsPerCell_MEX.zip"
+            },
+            "example" : [
+              "RSEC_MolsPerCell_MEX.zip"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--dbec_mols_per_cell",
+            "description" : "Molecules per bioproduct per cell bassed on DBEC. DBEC data table is only output if the experiment includes targeted mRNA or AbSeq bioproducts.",
+            "info" : {
+              "template" : "sample_DBEC_MolsPerCell_MEX.zip"
+            },
+            "example" : [
+              "DBEC_MolsPerCell_MEX.zip"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--rsec_mols_per_cell_unfiltered",
+            "description" : "Unfiltered tables containing all cell labels with 10 reads.",
+            "info" : {
+              "template" : "sample_RSEC_MolsPerCell_Unfiltered_MEX.zip"
+            },
+            "example" : [
+              "RSEC_MolsPerCell_Unfiltered_MEX.zip"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--bam",
+            "description" : "Alignment file of R2 with associated R1 annotations for Bioproduct.",
+            "info" : {
+              "template" : "sample_Bioproduct.bam"
+            },
+            "example" : [
+              "BioProduct.bam"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--bam_index",
+            "description" : "Index file for the alignment file.",
+            "info" : {
+              "template" : "sample_Bioproduct.bam.bai"
+            },
+            "example" : [
+              "BioProduct.bam.bai"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--bioproduct_stats",
+            "description" : "Bioproduct Stats. Metrics from RSEC and DBEC Unique Molecular Identifier adjustment algorithms on a per-bioproduct basis.",
+            "info" : {
+              "template" : "sample_Bioproduct_Stats.csv"
+            },
+            "example" : [
+              "Bioproduct_Stats.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--dimred_tsne",
+            "description" : "t-SNE dimensionality reduction coordinates per cell index",
+            "info" : {
+              "template" : "sample_assay_tSNE_coordinates.csv"
+            },
+            "example" : [
+              "tSNE_coordinates.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--dimred_umap",
+            "description" : "UMAP dimensionality reduction coordinates per cell index",
+            "info" : {
+              "template" : "sample_assay_UMAP_coordinates.csv"
+            },
+            "example" : [
+              "UMAP_coordinates.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--immune_cell_classification",
+            "description" : "Immune Cell Classification. Cell type classification based on the expression of immune cell markers.",
+            "info" : {
+              "template" : "sample_assay_cell_type_experimental.csv"
+            },
+            "example" : [
+              "Immune_Cell_Classification.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
           }
         ]
       },
       {
-        "name" : "Putative cell calling settings",
+        "name" : "Multiplex outputs",
+        "description" : "Outputs when multiplex option is selected",
+        "arguments" : [
+          {
+            "type" : "file",
+            "name" : "--sample_tag_metrics",
+            "description" : "Sample Tag Metrics. Metrics from the sample determination algorithm.",
+            "info" : {
+              "template" : "sample_Sample_Tag_Metrics.csv"
+            },
+            "example" : [
+              "Sample_Tag_Metrics.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--sample_tag_calls",
+            "description" : "Sample Tag Calls. Assigned Sample Tag for each putative cell",
+            "info" : {
+              "template" : "sample_Sample_Tag_Calls.csv"
+            },
+            "example" : [
+              "Sample_Tag_Calls.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--sample_tag_counts",
+            "description" : "Sample Tag Counts. Separate data tables and metric summary for cells assigned to each sample tag. Note: For putative cells that could not be assigned a specific Sample Tag, a Multiplet_and_Undetermined.zip file is also output.",
+            "info" : {
+              "template" : "sample_Sample_Tag.zip"
+            },
+            "example" : [
+              "Sample_Tag1.zip"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--sample_tag_counts_unassigned",
+            "description" : "Sample Tag Counts Unassigned. Data table and metric summary for cells that could not be assigned a specific Sample Tag.",
+            "info" : {
+              "template" : "sample_Multiplet_and_Undetermined.zip"
+            },
+            "example" : [
+              "Multiplet_and_Undetermined.zip"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "VDJ Outputs",
+        "description" : "Outputs when VDJ option selected",
+        "arguments" : [
+          {
+            "type" : "file",
+            "name" : "--vdj_metrics",
+            "description" : "VDJ Metrics. Overall metrics from the VDJ analysis.",
+            "info" : {
+              "template" : "sample_VDJ_Metrics.csv"
+            },
+            "example" : [
+              "VDJ_Metrics.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--vdj_per_cell",
+            "description" : "VDJ Per Cell. Cell specific read and molecule counts, VDJ gene segments, CDR3 sequences, paired chains, and cell type.",
+            "info" : {
+              "template" : "sample_VDJ_perCell.csv"
+            },
+            "example" : [
+              "VDJ_perCell.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--vdj_per_cell_uncorrected",
+            "description" : "VDJ Per Cell Uncorrected. Cell specific read and molecule counts, VDJ gene segments, CDR3 sequences, paired chains, and cell type.",
+            "info" : {
+              "template" : "sample_VDJ_perCell_uncorrected.csv"
+            },
+            "example" : [
+              "VDJ_perCell_uncorrected.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--vdj_dominant_contigs",
+            "description" : "VDJ Dominant Contigs. Dominant contig for each cell label chain type combination (putative cells only).",
+            "info" : {
+              "template" : "sample_VDJ_Dominant_Contigs_AIRR.csv"
+            },
+            "example" : [
+              "VDJ_Dominant_Contigs_AIRR.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--vdj_unfiltered_contigs",
+            "description" : "VDJ Unfiltered Contigs. All contigs that were assembled and annotated successfully (all cells).",
+            "info" : {
+              "template" : "sample_VDJ_Unfiltered_Contigs_AIRR.csv"
+            },
+            "example" : [
+              "VDJ_Unfiltered_Contigs_AIRR.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "ATAC-Seq outputs",
+        "description" : "Outputs when ATAC-Seq option selected",
+        "arguments" : [
+          {
+            "type" : "file",
+            "name" : "--atac_metrics",
+            "description" : "ATAC Metrics. Overall metrics from the ATAC-Seq analysis.",
+            "info" : {
+              "template" : "sample_ATAC_Metrics.csv"
+            },
+            "example" : [
+              "ATAC_Metrics.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--atac_metrics_json",
+            "description" : "ATAC Metrics JSON. Overall metrics from the ATAC-Seq analysis in JSON format.",
+            "info" : {
+              "template" : "sample_ATAC_Metrics.json"
+            },
+            "example" : [
+              "ATAC_Metrics.json"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--atac_fragments",
+            "description" : "ATAC Fragments. Chromosomal location, cell index, and read support for each fragment detected",
+            "info" : {
+              "template" : "sample_ATAC_Fragments.bed.gz"
+            },
+            "example" : [
+              "ATAC_Fragments.bed.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--atac_fragments_index",
+            "description" : "Index of ATAC Fragments.",
+            "info" : {
+              "template" : "sample_ATAC_Fragments.bed.gz.tbi"
+            },
+            "example" : [
+              "ATAC_Fragments.bed.gz.tbi"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--atac_transposase_sites",
+            "description" : "ATAC Transposase Sites. Chromosomal location, cell index, and read support for each transposase site detected",
+            "info" : {
+              "template" : "sample_ATAC_Transposase_Sites.bed.gz"
+            },
+            "example" : [
+              "ATAC_Transposase_Sites.bed.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--atac_transposase_sites_index",
+            "description" : "Index of ATAC Transposase Sites.",
+            "info" : {
+              "template" : "sample_ATAC_Transposase_Sites.bed.gz.tbi"
+            },
+            "example" : [
+              "ATAC_Transposase_Sites.bed.gz.tbi"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--atac_peaks",
+            "description" : "ATAC Peaks. Peak regions of transposase activity",
+            "info" : {
+              "template" : "sample_ATAC_Peaks.bed.gz"
+            },
+            "example" : [
+              "ATAC_Peaks.bed.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--atac_peaks_index",
+            "description" : "Index of ATAC Peaks.",
+            "info" : {
+              "template" : "sample_ATAC_Peaks.bed.gz.tbi"
+            },
+            "example" : [
+              "ATAC_Peaks.bed.gz.tbi"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--atac_peak_annotation",
+            "description" : "ATAC Peak Annotation. Estimated annotation of peak-to-gene connections",
+            "info" : {
+              "template" : "sample_peak_annotation.tsv.gz"
+            },
+            "example" : [
+              "peak_annotation.tsv.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--atac_cell_by_peak",
+            "description" : "ATAC Cell by Peak. Peak regions of transposase activity per cell",
+            "info" : {
+              "template" : "sample_ATAC_Cell_by_Peak_MEX.zip"
+            },
+            "example" : [
+              "ATAC_Cell_by_Peak_MEX.zip"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--atac_cell_by_peak_unfiltered",
+            "description" : "ATAC Cell by Peak Unfiltered. Unfiltered file containing all cell labels with >=1 transposase sites in peaks.",
+            "info" : {
+              "template" : "sample_ATAC_Cell_by_Peak_Unfiltered_MEX.zip"
+            },
+            "example" : [
+              "ATAC_Cell_by_Peak_Unfiltered_MEX.zip"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--atac_bam",
+            "description" : "ATAC BAM. Alignment file for R1 and R2 with associated I2 annotations for ATAC-Seq. Only output if the BAM generation flag is set to true.",
+            "info" : {
+              "template" : "sample_ATAC.bam"
+            },
+            "example" : [
+              "ATAC.bam"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--atac_bam_index",
+            "description" : "Index of ATAC BAM.",
+            "info" : {
+              "template" : "sample_ATAC.bam.bai"
+            },
+            "example" : [
+              "ATAC.bam.bai"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "AbSeq Cell Calling outputs",
+        "description" : "Outputs when Cell Calling Abseq is selected",
+        "arguments" : [
+          {
+            "type" : "file",
+            "name" : "--protein_aggregates_experimental",
+            "description" : "Protein Aggregates Experimental",
+            "info" : {
+              "template" : "sample_Protein_Aggregates_Experimental.csv"
+            },
+            "example" : [
+              "Protein_Aggregates_Experimental.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Putative Cell Calling Settings",
         "arguments" : [
           {
             "type" : "string",
-            "name" : "--putative_cell_call",
-            "description" : "Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.",
+            "name" : "--cell_calling_data",
+            "description" : "Specify the dataset to be used for putative cell calling: mRNA, AbSeq, ATAC, mRNA_and_ATAC\n\nFor putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.\n\nFor putative cell calling using an ATAC dataset, please provide a WTA+ATAC-Seq Reference_Archive file above.\n\nThe default data for putative cell calling, will be determined the following way:\n\n- If mRNA Reads and ATAC Reads exist: mRNA_and_ATAC\n- If only ATAC Reads exist: ATAC\n- Otherwise: mRNA\n",
+            "info" : {
+              "config_key" : "Cell_Calling_Data"
+            },
             "example" : [
               "mRNA"
             ],
             "required" : false,
             "choices" : [
               "mRNA",
-              "AbSeq_Experimental"
+              "AbSeq",
+              "ATAC",
+              "mRNA_and_ATAC"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--cell_calling_bioproduct_algorithm",
+            "description" : "Specify the bioproduct algorithm to be used for putative cell calling: Basic or Refined\n\nBy default, the Basic algorithm will be used for putative cell calling.\n",
+            "info" : {
+              "config_key" : "Cell_Calling_Bioproduct_Algorithm"
+            },
+            "example" : [
+              "Basic"
+            ],
+            "required" : false,
+            "choices" : [
+              "Basic",
+              "Refined"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--cell_calling_atac_algorithm",
+            "description" : "Specify the ATAC-seq algorithm to be used for putative cell calling: Basic or Refined\n\nBy default, the Basic algorithm will be used for putative cell calling.\n",
+            "info" : {
+              "config_key" : "Cell_Calling_ATAC_Algorithm"
+            },
+            "example" : [
+              "Basic"
+            ],
+            "required" : false,
+            "choices" : [
+              "Basic",
+              "Refined"
             ],
             "direction" : "input",
             "multiple" : false,
@@ -2988,36 +3721,15 @@ meta = [
           {
             "type" : "integer",
             "name" : "--exact_cell_count",
-            "description" : "Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count",
+            "description" : "Set a specific number of cells as putative, based on those with the highest error-corrected read count\n",
+            "info" : {
+              "config_key" : "Exact_Cell_Count"
+            },
             "example" : [
               10000
             ],
             "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "boolean_true",
-            "name" : "--disable_putative_calling",
-            "description" : "Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set.",
-            "direction" : "input",
-            "dest" : "par"
-          }
-        ]
-      },
-      {
-        "name" : "Subsample arguments",
-        "arguments" : [
-          {
-            "type" : "double",
-            "name" : "--subsample",
-            "description" : "A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.",
-            "example" : [
-              0.01
-            ],
-            "required" : false,
+            "min" : 1,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -3025,10 +3737,35 @@ meta = [
           },
           {
             "type" : "integer",
-            "name" : "--subsample_seed",
-            "description" : "A seed for replicating a previous subsampled run.",
+            "name" : "--expected_cell_count",
+            "description" : "Guide the basic putative cell calling algorithm by providing an estimate of the number of cells expected.  Usually this can be the number of cells loaded into the Rhapsody cartridge.  If there are multiple inflection points on the second derivative cumulative curve, this will ensure the one selected is near the expected. \n",
+            "info" : {
+              "config_key" : "Expected_Cell_Count"
+            },
             "example" : [
-              3445
+              20000
+            ],
+            "required" : false,
+            "min" : 1,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Intronic Reads Settings",
+        "arguments" : [
+          {
+            "type" : "boolean",
+            "name" : "--exclude_intronic_reads",
+            "description" : "By default, the flag is false, and reads aligned to exons and introns are considered and represented in molecule counts. When the flag is set to true, intronic reads will be excluded.\nThe value can be true or false.\n",
+            "info" : {
+              "config_key" : "Exclude_Intronic_Reads"
+            },
+            "example" : [
+              false
             ],
             "required" : false,
             "direction" : "input",
@@ -3039,21 +3776,25 @@ meta = [
         ]
       },
       {
-        "name" : "Multiplex arguments",
+        "name" : "Multiplex Settings",
         "arguments" : [
           {
             "type" : "string",
             "name" : "--sample_tags_version",
-            "description" : "Specify if multiplexed run.",
+            "description" : "Specify the version of the Sample Tags used in the run:\n\n* If Sample Tag Multiplexing was done, specify the appropriate version: human, mouse, flex, nuclei_includes_mrna, nuclei_atac_only\n* If this is an SMK + Nuclei mRNA run or an SMK + Multiomic ATAC-Seq (WTA+ATAC-Seq) run (and not an SMK + ATAC-Seq only run), choose the \\"nuclei_includes_mrna\\" option.\n* If this is an SMK + ATAC-Seq only run (and not SMK + Multiomic ATAC-Seq (WTA+ATAC-Seq)), choose the \\"nuclei_atac_only\\" option.\n",
+            "info" : {
+              "config_key" : "Sample_Tags_Version"
+            },
             "example" : [
               "human"
             ],
             "required" : false,
             "choices" : [
               "human",
-              "hs",
               "mouse",
-              "mm"
+              "flex",
+              "nuclei_includes_mrna",
+              "nuclei_atac_only"
             ],
             "direction" : "input",
             "multiple" : false,
@@ -3063,7 +3804,10 @@ meta = [
           {
             "type" : "string",
             "name" : "--tag_names",
-            "description" : "Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv.\nDo not use the special characters: &, (), [], {},  <>, ?, |\n",
+            "description" : "Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv\nDo not use the special characters.\n",
+            "info" : {
+              "config_key" : "Tag_Names"
+            },
             "example" : [
               "4-mySample",
               "9-myOtherSample",
@@ -3083,7 +3827,10 @@ meta = [
           {
             "type" : "string",
             "name" : "--vdj_version",
-            "description" : "Specify if VDJ run.",
+            "description" : "If VDJ was done, specify the appropriate option: human, mouse, humanBCR, humanTCR, mouseBCR, mouseTCR\n",
+            "info" : {
+              "config_key" : "VDJ_Version"
+            },
             "example" : [
               "human"
             ],
@@ -3092,10 +3839,121 @@ meta = [
               "human",
               "mouse",
               "humanBCR",
-              "humanBCR",
               "humanTCR",
-              "mouseBCR"
+              "mouseBCR",
+              "mouseTCR"
             ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "ATAC options",
+        "arguments" : [
+          {
+            "type" : "file",
+            "name" : "--predefined_atac_peaks",
+            "description" : "An optional BED file containing pre-established chromatin accessibility peak regions for generating the ATAC cell-by-peak matrix.",
+            "info" : {
+              "config_key" : "Predefined_ATAC_Peaks"
+            },
+            "example" : [
+              "predefined_peaks.bed"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Additional options",
+        "arguments" : [
+          {
+            "type" : "string",
+            "name" : "--run_name",
+            "description" : "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.\n",
+            "info" : {
+              "config_key" : "Run_Name"
+            },
+            "default" : [
+              "sample"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean",
+            "name" : "--generate_bam",
+            "description" : "Specify whether to create the BAM file output\n",
+            "info" : {
+              "config_key" : "Generate_Bam"
+            },
+            "default" : [
+              false
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean",
+            "name" : "--long_reads",
+            "description" : "Use STARlong (default: undefined - i.e. autodetects based on read lengths) - Specify if the STARlong aligner should be used instead of STAR. Set to true if the reads are longer than 650bp.\n",
+            "info" : {
+              "config_key" : "Long_Reads"
+            },
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Advanced options",
+        "description" : "NOTE: Only change these if you are really sure about what you are doing\n",
+        "arguments" : [
+          {
+            "type" : "string",
+            "name" : "--custom_star_params",
+            "description" : "Modify STAR alignment parameters - Set this parameter to fully override default STAR mapping parameters used in the pipeline.\nFor reference this is the default that is used:\n\n  Short Reads: `--outFilterScoreMinOverLread 0 --outFilterMatchNminOverLread 0 --outFilterMultimapScoreRange 0 --clip3pAdapterSeq AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA --seedSearchStartLmax 50 --outFilterMatchNmin 25 --limitOutSJcollapsed 2000000`\n  Long Reads: Same as Short Reads + `--seedPerReadNmax 10000`\n\nThis applies to fastqs provided in the Reads user input \nDo NOT set any non-mapping related params like `--genomeDir`, `--outSAMtype`, `--outSAMunmapped`, `--readFilesIn`, `--runThreadN`, etc.\nWe use STAR version 2.7.10b\n",
+            "info" : {
+              "config_key" : "Custom_STAR_Params"
+            },
+            "example" : [
+              "--alignIntronMax 6000 --outFilterScoreMinOverLread 0.1 --limitOutSJcollapsed 2000000"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--custom_bwa_mem2_params",
+            "description" : "Modify bwa-mem2 alignment parameters - Set this parameter to fully override bwa-mem2 mapping parameters used in the pipeline\nThe pipeline does not specify any custom mapping params to bwa-mem2 so program default values are used\nThis applies to fastqs provided in the Reads_ATAC user input \nDo NOT set any non-mapping related params like `-C`, `-t`, etc.\nWe use bwa-mem2 version 2.2.1\n",
+            "info" : {
+              "config_key" : "Custom_bwa_mem2_Params"
+            },
+            "example" : [
+              "-k 16 -w 200 -r"
+            ],
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -3125,12 +3983,72 @@ meta = [
             "description" : "Add timestamps to the errors, warnings, and notifications.",
             "direction" : "input",
             "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Undocumented arguments",
+        "arguments" : [
+          {
+            "type" : "integer",
+            "name" : "--abseq_umi",
+            "info" : {
+              "config_key" : "AbSeq_UMI"
+            },
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
           },
           {
-            "type" : "boolean_true",
-            "name" : "--dryrun",
-            "description" : "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed.",
+            "type" : "boolean",
+            "name" : "--target_analysis",
+            "info" : {
+              "config_key" : "Target_analysis"
+            },
+            "required" : false,
             "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--vdj_jgene_evalue",
+            "description" : "e-value threshold for J gene. The e-value threshold for J gene call by IgBlast/PyIR, default is set as 0.001\n",
+            "info" : {
+              "config_key" : "VDJ_JGene_Evalue"
+            },
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--vdj_vgene_evalue",
+            "description" : "e-value threshold for V gene. The e-value threshold for V gene call by IgBlast/PyIR, default is set as 0.001\n",
+            "info" : {
+              "config_key" : "VDJ_VGene_Evalue"
+            },
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean",
+            "name" : "--write_filtered_reads",
+            "info" : {
+              "config_key" : "Write_Filtered_Reads"
+            },
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
             "dest" : "par"
           }
         ]
@@ -3145,18 +4063,8 @@ meta = [
       },
       {
         "type" : "file",
-        "path" : "rhapsody_wta_1.10.1_nodocker.cwl",
+        "path" : "rhapsody_pipeline_2.2.1_nodocker.cwl",
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody/"
-      },
-      {
-        "type" : "file",
-        "path" : "rhapsody_targeted_1.10.1_nodocker.cwl",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody/"
-      },
-      {
-        "type" : "file",
-        "path" : "src/utils/setup_logger.py",
-        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       },
       {
         "type" : "file",
@@ -3164,39 +4072,37 @@ meta = [
         "dest" : "nextflow_labels.config"
       }
     ],
-    "description" : "A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.\n\nThe CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with class 'DockerRequirement' from the YML.\n\nThis pipeline can be used for a targeted analysis (with `--mode targeted`) or for a whole transcriptome analysis (with `--mode wta`).\n\n* If mode is `\\"targeted\\"`, then either the `--reference` or `--abseq_reference` parameters must be defined.\n* If mode is `\\"wta\\"`, then `--reference` and `--transcriptome_annotation` must be defined, `--abseq_reference` and `--supplemental_reference` is optional.\n\nThe reference_genome and transcriptome_annotation files can be generated with the make_reference pipeline.\nAlternatively, BD also provides standard references which can be downloaded from these locations:\n\n  - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/\n  - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/\n",
+    "description" : "BD Rhapsody Sequence Analysis CWL pipeline v2.2.1\n\nThis pipeline performs analysis of single-cell multiomic sequence read (FASTQ) data. The supported\nsequencing libraries are those generated by the BD Rhapsody assay kits, including: Whole Transcriptome\nmRNA, Targeted mRNA, AbSeq Antibody-Oligonucleotides, Single-Cell Multiplexing, TCR/BCR, and\nATAC-Seq\n\nThe CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl' and removing all objects with class 'DockerRequirement' from the YAML.\n",
     "test_resources" : [
       {
-        "type" : "bash_script",
-        "path" : "test_memory.sh",
-        "is_executable" : true,
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody/"
-      },
-      {
-        "type" : "bash_script",
-        "path" : "test_wta.sh",
-        "is_executable" : true,
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody/"
-      },
-      {
-        "type" : "bash_script",
-        "path" : "test_targeted.sh",
+        "type" : "python_script",
+        "path" : "test.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody/"
       },
       {
         "type" : "file",
-        "path" : "resources_test/bdrhap_vdj",
+        "path" : "rhapsody_cell_label.py",
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody/"
+      },
+      {
+        "type" : "file",
+        "path" : "resources_test/reference_gencodev41_chr1/reference.fa.gz",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       },
       {
         "type" : "file",
-        "path" : "resources_test/bdrhap_5kjrt",
+        "path" : "resources_test/reference_gencodev41_chr1/reference.gtf.gz",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       },
       {
         "type" : "file",
-        "path" : "resources_test/reference_gencodev41_chr1/",
+        "path" : "resources_test/reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "resources_test/bdrhap_5kjrt/raw",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       },
       {
@@ -3206,8 +4112,21 @@ meta = [
       }
     ],
     "info" : {
-      "name" : "BD Rhapsody",
-      "short_description" : "A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline"
+      "keywords" : [
+        "rna-seq",
+        "single-cell",
+        "multiomic",
+        "atac-seq",
+        "targeted",
+        "abseq",
+        "tcr",
+        "bcr"
+      ],
+      "links" : {
+        "repository" : "https://bitbucket.org/CRSwDev/cwl/src/master/v2.2.1",
+        "documentation" : "https://bd-rhapsody-bioinfo-docs.genomics.bd.com"
+      },
+      "license" : "Unknown"
     },
     "status" : "enabled",
     "requirements" : {
@@ -3221,7 +4140,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ghcr.io/data-intuitive/bd_rhapsody:1.10.1",
+      "image" : "bdgenomics/rhapsody:2.2.1",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration_build",
@@ -3232,10 +4151,21 @@ meta = [
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
         {
+          "type" : "apt",
+          "packages" : [
+            "procps"
+          ],
+          "interactive" : false
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
-            "pandas<2"
+            "cwlref-runner",
+            "cwl-runner",
+            "ruamel.yaml",
+            "biopython",
+            "gffutils"
           ],
           "upgrade" : true
         }
@@ -3303,7 +4233,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody",
     "viash_version" : "0.8.6",
-    "git_commit" : "06849b19f7971724e55e9490d67a56a7262807c4",
+    "git_commit" : "a921da0ad3600e78afbcca2a18d01204d6dcba2f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3322,34 +4252,79 @@ import os
 import re
 import subprocess
 import tempfile
-import sys
 from typing import Any
-import pandas as pd
-import gzip
+import yaml
 import shutil
+import glob
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
 par = {
-  'mode': $( if [ ! -z ${VIASH_PAR_MODE+x} ]; then echo "r'${VIASH_PAR_MODE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'transcriptome_annotation': $( if [ ! -z ${VIASH_PAR_TRANSCRIPTOME_ANNOTATION+x} ]; then echo "r'${VIASH_PAR_TRANSCRIPTOME_ANNOTATION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'reads': $( if [ ! -z ${VIASH_PAR_READS+x} ]; then echo "r'${VIASH_PAR_READS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'reads_atac': $( if [ ! -z ${VIASH_PAR_READS_ATAC+x} ]; then echo "r'${VIASH_PAR_READS_ATAC//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'reference_archive': $( if [ ! -z ${VIASH_PAR_REFERENCE_ARCHIVE+x} ]; then echo "r'${VIASH_PAR_REFERENCE_ARCHIVE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'targeted_reference': $( if [ ! -z ${VIASH_PAR_TARGETED_REFERENCE+x} ]; then echo "r'${VIASH_PAR_TARGETED_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'abseq_reference': $( if [ ! -z ${VIASH_PAR_ABSEQ_REFERENCE+x} ]; then echo "r'${VIASH_PAR_ABSEQ_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'supplemental_reference': $( if [ ! -z ${VIASH_PAR_SUPPLEMENTAL_REFERENCE+x} ]; then echo "r'${VIASH_PAR_SUPPLEMENTAL_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'sample_prefix': $( if [ ! -z ${VIASH_PAR_SAMPLE_PREFIX+x} ]; then echo "r'${VIASH_PAR_SAMPLE_PREFIX//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'putative_cell_call': $( if [ ! -z ${VIASH_PAR_PUTATIVE_CELL_CALL+x} ]; then echo "r'${VIASH_PAR_PUTATIVE_CELL_CALL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_dir': $( if [ ! -z ${VIASH_PAR_OUTPUT_DIR+x} ]; then echo "r'${VIASH_PAR_OUTPUT_DIR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_seurat': $( if [ ! -z ${VIASH_PAR_OUTPUT_SEURAT+x} ]; then echo "r'${VIASH_PAR_OUTPUT_SEURAT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_mudata': $( if [ ! -z ${VIASH_PAR_OUTPUT_MUDATA+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MUDATA//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'metrics_summary': $( if [ ! -z ${VIASH_PAR_METRICS_SUMMARY+x} ]; then echo "r'${VIASH_PAR_METRICS_SUMMARY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'pipeline_report': $( if [ ! -z ${VIASH_PAR_PIPELINE_REPORT+x} ]; then echo "r'${VIASH_PAR_PIPELINE_REPORT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'rsec_mols_per_cell': $( if [ ! -z ${VIASH_PAR_RSEC_MOLS_PER_CELL+x} ]; then echo "r'${VIASH_PAR_RSEC_MOLS_PER_CELL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'dbec_mols_per_cell': $( if [ ! -z ${VIASH_PAR_DBEC_MOLS_PER_CELL+x} ]; then echo "r'${VIASH_PAR_DBEC_MOLS_PER_CELL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'rsec_mols_per_cell_unfiltered': $( if [ ! -z ${VIASH_PAR_RSEC_MOLS_PER_CELL_UNFILTERED+x} ]; then echo "r'${VIASH_PAR_RSEC_MOLS_PER_CELL_UNFILTERED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'bam': $( if [ ! -z ${VIASH_PAR_BAM+x} ]; then echo "r'${VIASH_PAR_BAM//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'bam_index': $( if [ ! -z ${VIASH_PAR_BAM_INDEX+x} ]; then echo "r'${VIASH_PAR_BAM_INDEX//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'bioproduct_stats': $( if [ ! -z ${VIASH_PAR_BIOPRODUCT_STATS+x} ]; then echo "r'${VIASH_PAR_BIOPRODUCT_STATS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'dimred_tsne': $( if [ ! -z ${VIASH_PAR_DIMRED_TSNE+x} ]; then echo "r'${VIASH_PAR_DIMRED_TSNE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'dimred_umap': $( if [ ! -z ${VIASH_PAR_DIMRED_UMAP+x} ]; then echo "r'${VIASH_PAR_DIMRED_UMAP//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'immune_cell_classification': $( if [ ! -z ${VIASH_PAR_IMMUNE_CELL_CLASSIFICATION+x} ]; then echo "r'${VIASH_PAR_IMMUNE_CELL_CLASSIFICATION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'sample_tag_metrics': $( if [ ! -z ${VIASH_PAR_SAMPLE_TAG_METRICS+x} ]; then echo "r'${VIASH_PAR_SAMPLE_TAG_METRICS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'sample_tag_calls': $( if [ ! -z ${VIASH_PAR_SAMPLE_TAG_CALLS+x} ]; then echo "r'${VIASH_PAR_SAMPLE_TAG_CALLS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'sample_tag_counts': $( if [ ! -z ${VIASH_PAR_SAMPLE_TAG_COUNTS+x} ]; then echo "r'${VIASH_PAR_SAMPLE_TAG_COUNTS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'sample_tag_counts_unassigned': $( if [ ! -z ${VIASH_PAR_SAMPLE_TAG_COUNTS_UNASSIGNED+x} ]; then echo "r'${VIASH_PAR_SAMPLE_TAG_COUNTS_UNASSIGNED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'vdj_metrics': $( if [ ! -z ${VIASH_PAR_VDJ_METRICS+x} ]; then echo "r'${VIASH_PAR_VDJ_METRICS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'vdj_per_cell': $( if [ ! -z ${VIASH_PAR_VDJ_PER_CELL+x} ]; then echo "r'${VIASH_PAR_VDJ_PER_CELL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'vdj_per_cell_uncorrected': $( if [ ! -z ${VIASH_PAR_VDJ_PER_CELL_UNCORRECTED+x} ]; then echo "r'${VIASH_PAR_VDJ_PER_CELL_UNCORRECTED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'vdj_dominant_contigs': $( if [ ! -z ${VIASH_PAR_VDJ_DOMINANT_CONTIGS+x} ]; then echo "r'${VIASH_PAR_VDJ_DOMINANT_CONTIGS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'vdj_unfiltered_contigs': $( if [ ! -z ${VIASH_PAR_VDJ_UNFILTERED_CONTIGS+x} ]; then echo "r'${VIASH_PAR_VDJ_UNFILTERED_CONTIGS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'atac_metrics': $( if [ ! -z ${VIASH_PAR_ATAC_METRICS+x} ]; then echo "r'${VIASH_PAR_ATAC_METRICS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'atac_metrics_json': $( if [ ! -z ${VIASH_PAR_ATAC_METRICS_JSON+x} ]; then echo "r'${VIASH_PAR_ATAC_METRICS_JSON//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'atac_fragments': $( if [ ! -z ${VIASH_PAR_ATAC_FRAGMENTS+x} ]; then echo "r'${VIASH_PAR_ATAC_FRAGMENTS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'atac_fragments_index': $( if [ ! -z ${VIASH_PAR_ATAC_FRAGMENTS_INDEX+x} ]; then echo "r'${VIASH_PAR_ATAC_FRAGMENTS_INDEX//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'atac_transposase_sites': $( if [ ! -z ${VIASH_PAR_ATAC_TRANSPOSASE_SITES+x} ]; then echo "r'${VIASH_PAR_ATAC_TRANSPOSASE_SITES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'atac_transposase_sites_index': $( if [ ! -z ${VIASH_PAR_ATAC_TRANSPOSASE_SITES_INDEX+x} ]; then echo "r'${VIASH_PAR_ATAC_TRANSPOSASE_SITES_INDEX//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'atac_peaks': $( if [ ! -z ${VIASH_PAR_ATAC_PEAKS+x} ]; then echo "r'${VIASH_PAR_ATAC_PEAKS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'atac_peaks_index': $( if [ ! -z ${VIASH_PAR_ATAC_PEAKS_INDEX+x} ]; then echo "r'${VIASH_PAR_ATAC_PEAKS_INDEX//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'atac_peak_annotation': $( if [ ! -z ${VIASH_PAR_ATAC_PEAK_ANNOTATION+x} ]; then echo "r'${VIASH_PAR_ATAC_PEAK_ANNOTATION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'atac_cell_by_peak': $( if [ ! -z ${VIASH_PAR_ATAC_CELL_BY_PEAK+x} ]; then echo "r'${VIASH_PAR_ATAC_CELL_BY_PEAK//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'atac_cell_by_peak_unfiltered': $( if [ ! -z ${VIASH_PAR_ATAC_CELL_BY_PEAK_UNFILTERED+x} ]; then echo "r'${VIASH_PAR_ATAC_CELL_BY_PEAK_UNFILTERED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'atac_bam': $( if [ ! -z ${VIASH_PAR_ATAC_BAM+x} ]; then echo "r'${VIASH_PAR_ATAC_BAM//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'atac_bam_index': $( if [ ! -z ${VIASH_PAR_ATAC_BAM_INDEX+x} ]; then echo "r'${VIASH_PAR_ATAC_BAM_INDEX//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'protein_aggregates_experimental': $( if [ ! -z ${VIASH_PAR_PROTEIN_AGGREGATES_EXPERIMENTAL+x} ]; then echo "r'${VIASH_PAR_PROTEIN_AGGREGATES_EXPERIMENTAL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'cell_calling_data': $( if [ ! -z ${VIASH_PAR_CELL_CALLING_DATA+x} ]; then echo "r'${VIASH_PAR_CELL_CALLING_DATA//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'cell_calling_bioproduct_algorithm': $( if [ ! -z ${VIASH_PAR_CELL_CALLING_BIOPRODUCT_ALGORITHM+x} ]; then echo "r'${VIASH_PAR_CELL_CALLING_BIOPRODUCT_ALGORITHM//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'cell_calling_atac_algorithm': $( if [ ! -z ${VIASH_PAR_CELL_CALLING_ATAC_ALGORITHM+x} ]; then echo "r'${VIASH_PAR_CELL_CALLING_ATAC_ALGORITHM//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'exact_cell_count': $( if [ ! -z ${VIASH_PAR_EXACT_CELL_COUNT+x} ]; then echo "int(r'${VIASH_PAR_EXACT_CELL_COUNT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'disable_putative_calling': $( if [ ! -z ${VIASH_PAR_DISABLE_PUTATIVE_CALLING+x} ]; then echo "r'${VIASH_PAR_DISABLE_PUTATIVE_CALLING//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'subsample': $( if [ ! -z ${VIASH_PAR_SUBSAMPLE+x} ]; then echo "float(r'${VIASH_PAR_SUBSAMPLE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'subsample_seed': $( if [ ! -z ${VIASH_PAR_SUBSAMPLE_SEED+x} ]; then echo "int(r'${VIASH_PAR_SUBSAMPLE_SEED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'expected_cell_count': $( if [ ! -z ${VIASH_PAR_EXPECTED_CELL_COUNT+x} ]; then echo "int(r'${VIASH_PAR_EXPECTED_CELL_COUNT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'exclude_intronic_reads': $( if [ ! -z ${VIASH_PAR_EXCLUDE_INTRONIC_READS+x} ]; then echo "r'${VIASH_PAR_EXCLUDE_INTRONIC_READS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'sample_tags_version': $( if [ ! -z ${VIASH_PAR_SAMPLE_TAGS_VERSION+x} ]; then echo "r'${VIASH_PAR_SAMPLE_TAGS_VERSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'tag_names': $( if [ ! -z ${VIASH_PAR_TAG_NAMES+x} ]; then echo "r'${VIASH_PAR_TAG_NAMES//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'vdj_version': $( if [ ! -z ${VIASH_PAR_VDJ_VERSION+x} ]; then echo "r'${VIASH_PAR_VDJ_VERSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'predefined_atac_peaks': $( if [ ! -z ${VIASH_PAR_PREDEFINED_ATAC_PEAKS+x} ]; then echo "r'${VIASH_PAR_PREDEFINED_ATAC_PEAKS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'run_name': $( if [ ! -z ${VIASH_PAR_RUN_NAME+x} ]; then echo "r'${VIASH_PAR_RUN_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'generate_bam': $( if [ ! -z ${VIASH_PAR_GENERATE_BAM+x} ]; then echo "r'${VIASH_PAR_GENERATE_BAM//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'long_reads': $( if [ ! -z ${VIASH_PAR_LONG_READS+x} ]; then echo "r'${VIASH_PAR_LONG_READS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'custom_star_params': $( if [ ! -z ${VIASH_PAR_CUSTOM_STAR_PARAMS+x} ]; then echo "r'${VIASH_PAR_CUSTOM_STAR_PARAMS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'custom_bwa_mem2_params': $( if [ ! -z ${VIASH_PAR_CUSTOM_BWA_MEM2_PARAMS+x} ]; then echo "r'${VIASH_PAR_CUSTOM_BWA_MEM2_PARAMS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'parallel': $( if [ ! -z ${VIASH_PAR_PARALLEL+x} ]; then echo "r'${VIASH_PAR_PARALLEL//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'timestamps': $( if [ ! -z ${VIASH_PAR_TIMESTAMPS+x} ]; then echo "r'${VIASH_PAR_TIMESTAMPS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'dryrun': $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "r'${VIASH_PAR_DRYRUN//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
+  'abseq_umi': $( if [ ! -z ${VIASH_PAR_ABSEQ_UMI+x} ]; then echo "int(r'${VIASH_PAR_ABSEQ_UMI//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'target_analysis': $( if [ ! -z ${VIASH_PAR_TARGET_ANALYSIS+x} ]; then echo "r'${VIASH_PAR_TARGET_ANALYSIS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'vdj_jgene_evalue': $( if [ ! -z ${VIASH_PAR_VDJ_JGENE_EVALUE+x} ]; then echo "float(r'${VIASH_PAR_VDJ_JGENE_EVALUE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'vdj_vgene_evalue': $( if [ ! -z ${VIASH_PAR_VDJ_VGENE_EVALUE+x} ]; then echo "float(r'${VIASH_PAR_VDJ_VGENE_EVALUE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'write_filtered_reads': $( if [ ! -z ${VIASH_PAR_WRITE_FILTERED_READS+x} ]; then echo "r'${VIASH_PAR_WRITE_FILTERED_READS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3371,254 +4346,98 @@ dep = {
 
 ## VIASH END
 
-sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
+def clean_arg(argument):
+    argument["clean_name"] = re.sub("^-*", "", argument["name"])
+    return argument
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
-logger = setup_logger()
-
-def is_gz_file(filepath):
-    with open(filepath, 'rb') as test_f:
-        return test_f.read(2) == b'\\\\x1f\\\\x8b'
+def read_config(path: str) -> dict[str, Any]:
+    with open(path, 'r') as f:
+        config = yaml.safe_load(f)
+    
+    config["arguments"] = [
+        clean_arg(arg)
+        for grp in config["functionality"]["argument_groups"]
+        for arg in grp["arguments"]
+    ]
+    
+    return config
 
 def strip_margin(text: str) -> str:
     return re.sub('(\\\\n?)[ \\\\t]*\\\\|', '\\\\\\\\1', text)
 
-def process_params(par: dict[str, Any]) -> str:
+def process_params(par: dict[str, Any], config, temp_dir: str) -> str:
     # check input parameters
-    assert par["input"] is not None, "Pass at least one set of inputs to --input."
-    if par["mode"] == "wta":
-        assert len(par["reference"]) == 1, "When mode is \\\\"wta\\\\", --reference should be length 1"
-        assert par["transcriptome_annotation"] is not None, "When mode is \\\\"wta\\\\", --transcriptome_annotation should be defined"
-    elif par["mode"] == "targeted":
-        assert par["transcriptome_annotation"] is None, "When mode is \\\\"targeted\\\\", --transcriptome_annotation should be undefined"
-        assert par["supplemental_reference"] is None, "When mode is \\\\"targeted\\\\", --supplemental_reference should be undefined"
+    assert par["reads"] or par["reads_atac"], "Pass at least one set of inputs to --reads or --reads_atac."
+
+    # output to temp dir if output_dir was not passed
+    if not par["output_dir"]:
+        par["output_dir"] = os.path.join(temp_dir, "output")
 
     # checking sample prefix
-    if re.match("[^A-Za-z0-9]", par["sample_prefix"]):
-        logger.warning("--sample_prefix should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
-        par["sample_prefix"] = re.sub("[^A-Za-z0-9\\\\\\\\-]", "-", par["sample_prefix"])
+    if par["run_name"] and re.match("[^A-Za-z0-9]", par["run_name"]):
+        print("--run_name should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.", flush=True)
+        par["run_name"] = re.sub("[^A-Za-z0-9\\\\\\\\-]", "-", par["run_name"])
 
-    # if par_input is a directory, look for fastq files
-    if len(par["input"]) == 1 and os.path.isdir(par["input"][0]):
-        par["input"] = [ os.path.join(dp, f) for dp, dn, filenames in os.walk(par["input"]) for f in filenames if re.match(r'.*\\\\.fastq.gz', f) ]
-
-    # use absolute paths
-    par["input"] = [ os.path.abspath(f) for f in par["input"] ]
-    if par["reference"]:
-        par["reference"] = [ os.path.abspath(f) for f in par["reference"] ]
-    if par["transcriptome_annotation"]:
-        par["transcriptome_annotation"] = os.path.abspath(par["transcriptome_annotation"])
-    if par["abseq_reference"]:
-        par["abseq_reference"] = [ os.path.abspath(f) for f in par["abseq_reference"] ]
-    if par["supplemental_reference"]:
-        par["supplemental_reference"] = [ os.path.abspath(f) for f in par["supplemental_reference"] ]
-    par["output"] = os.path.abspath(par["output"])
+    # make paths absolute
+    for argument in config["arguments"]:
+        if par[argument["clean_name"]] and argument["type"] == "file":
+            if isinstance(par[argument["clean_name"]], list):
+                par[argument["clean_name"]] = [ os.path.abspath(f) for f in par[argument["clean_name"]] ]
+            else:
+                par[argument["clean_name"]] = os.path.abspath(par[argument["clean_name"]])
     
     return par
 
-def generate_config(par: dict[str, Any]) -> str:
+def generate_config(par: dict[str, Any], config) -> str:
     content_list = [strip_margin(f"""\\\\
 #!/usr/bin/env cwl-runner
 
 cwl:tool: rhapsody
-
-# This is a YML file used to specify the inputs for a BD Genomics {"WTA" if par["mode"] == "wta" else "Targeted" } Rhapsody Analysis pipeline run. See the
-# BD Genomics Analysis Setup User Guide (Doc ID: 47383) for more details.
-
-## Reads (required) - Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
-Reads:
 """)]
 
-    for file in par["input"]:
-        content_list.append(strip_margin(f"""\\\\
+    for argument in config["arguments"]:
+        arg_info = argument.get("info") or {}
+        config_key = arg_info.get("config_key")
+        if par[argument["clean_name"]] and config_key:
+
+            if argument["type"] == "file":
+                str = strip_margin(f"""\\\\
+{config_key}:
+""")
+                if isinstance(par[argument["clean_name"]], list):
+                    for file in par[argument["clean_name"]]:
+                        str += strip_margin(f"""\\\\
  - class: File
    location: "{file}"
-"""))
-
-    if par["reference"] and par["mode"] == "wta":
-        content_list.append(strip_margin(f"""\\\\
-
-## Reference_Genome (required) - Path to STAR index for tar.gz format. See Doc ID: 47383 for instructions to obtain pre-built STAR index file.
-Reference_Genome:
+""")
+                else:
+                    str += strip_margin(f"""\\\\
    class: File
-   location: "{par["reference"][0]}"
-"""))
-
-    if par["reference"] and par["mode"] == "targeted":
-        content_list.append(strip_margin(f"""\\\\
-
-## Reference (optional) - Path to mRNA reference file for pre-designed, supplemental, or custom panel, in FASTA format.
-Reference:
-"""))
-        for file in par["reference"]:
-            content_list.append(strip_margin(f"""\\\\
- - class: File
-   location: {file}
-"""))
-
-    if par["transcriptome_annotation"]:
-        content_list.append(strip_margin(f"""\\\\
-
-## Transcriptome_Annotation (required) - Path to GTF annotation file
-Transcriptome_Annotation:
-   class: File
-   location: "{par["transcriptome_annotation"]}"
-"""))
-
-    if par["abseq_reference"]:
-        content_list.append(strip_margin(f"""\\\\
-
-## AbSeq_Reference (optional) - Path to the AbSeq reference file in FASTA format.  Only needed if BD AbSeq Ab-Oligos are used.
-AbSeq_Reference:
-"""))
-        for file in par["abseq_reference"]:
-            content_list.append(strip_margin(f"""\\\\
- - class: File
-   location: {file}
-"""))
-
-    if par["supplemental_reference"]:
-        content_list.append(strip_margin(f"""\\\\
-
-## Supplemental_Reference (optional) - Path to the supplemental reference file in FASTA format.  Only needed if there are additional transgene sequences used in the experiment.
-Supplemental_Reference:
-"""))
-        for file in par["supplemental_reference"]:
-            content_list.append(strip_margin(f"""\\\\
- - class: File
-   location: {file}
-"""))
-
-    ## Putative Cell Calling Settings
-    content_list.append(strip_margin(f"""\\\\
-
-####################################
-## Putative Cell Calling Settings ##
-####################################
-"""))
-
-    if par["putative_cell_call"]:
-        content_list.append(strip_margin(f"""\\\\
-## Putative cell calling dataset (optional) - Specify the dataset to be used for putative cell calling: mRNA or AbSeq_Experimental.
-## For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.
-## By default, the mRNA data will be used for putative cell calling.
-Putative_Cell_Call: {par["putative_cell_call"]}
-"""))
-
-    if par["exact_cell_count"]:
-        content_list.append(strip_margin(f"""\\\\
-## Exact cell count (optional) - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count
-Exact_Cell_Count: {par["exact_cell_count"]}
-"""))
-
-    if par["disable_putative_calling"]:
-        content_list.append(strip_margin(f"""\\\\
-## Disable Refined Putative Cell Calling (optional) - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve).  The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types.  Does not apply if Exact Cell Count is set.
-## The values can be true or false. By default, the refined algorithm is used.
-Basic_Algo_Only: {str(par["disable_putative_calling"]).lower()}
-"""))
-
-    ## Subsample Settings
-    content_list.append(strip_margin(f"""\\\\
-
-########################
-## Subsample Settings ##
-########################
-"""
-    ))
-
-    if par["subsample"]:
-        content_list.append(strip_margin(f"""\\\\
-## Subsample (optional) - A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.
-Subsample: {par["subsample"]}
-"""))
-
-    if par["subsample_seed"]:
-        content_list.append(strip_margin(f"""\\\\
-## Subsample seed (optional) - A seed for replicating a previous subsampled run.
-Subsample_seed: {par["subsample_seed"]}
-"""))
-
-
-    ## Multiplex options
-    content_list.append(strip_margin(f"""\\\\
-
-#######################
-## Multiplex options ##
-#######################
-"""
-    ))
-
-    if par["sample_tags_version"]:
-        content_list.append(strip_margin(f"""\\\\
-## Sample Tags Version (optional) - Specify if multiplexed run: human, hs, mouse or mm
-Sample_Tags_Version: {par["sample_tags_version"]}
-"""))
-
-    if par["tag_names"]:
-        content_list.append(strip_margin(f"""\\\\
-## Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv
-# Do not use the special characters: &, (), [], {{}},  <>, ?, |
-Tag_Names: [{', '.join(par["tag_names"])}]
-"""))
-
-    ## VDJ options
-    content_list.append(strip_margin(f"""\\\\
-
-#################
-## VDJ options ##
-#################
-"""
-    ))
-
-    if par["vdj_version"]:
-        content_list.append(strip_margin(f"""\\\\
-## VDJ Version (optional) - Specify if VDJ run: human, mouse, humanBCR, humanTCR, mouseBCR, mouseTCR
-VDJ_Version: {par["vdj_version"]}
-"""))
-
-    ## VDJ options
-    content_list.append(strip_margin(f"""\\\\
-
-########################
-## Additional Options ##
-########################
-"""
-    ))
-
-    if par["sample_prefix"]:
-        content_list.append(strip_margin(f"""\\\\
-## Run Name (optional) -  Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.
-Run_Name: {par["sample_prefix"]}
+   location: "{par[argument["clean_name"]]}"
+""")
+                content_list.append(str)
+            else:
+                content_list.append(strip_margin(f"""\\\\
+{config_key}: {par[argument["clean_name"]]}
 """))
 
     ## Write config to file
     return ''.join(content_list)
 
-def generate_cwl_file(par: dict[str, Any], meta: dict[str, Any]) -> str:
-        # create cwl file (if need be)
-    if par["mode"] == "wta":
-        orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_wta_1.10.1_nodocker.cwl")
-    elif par["mode"] == "targeted":
-        orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_targeted_1.10.1_nodocker.cwl")
+def generate_config_file(par: dict[str, Any], config: dict[str, Any], temp_dir: str) -> str:
+    config_file = os.path.join(temp_dir, "config.yml")
+    config_content = generate_config(par, config)
+    with open(config_file, "w") as f:
+        f.write(config_content)
+    return config_file
+
+def generate_cwl_file(meta: dict[str, Any], dir: str) -> str:
+    # create cwl file (if need be)
+    orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_pipeline_2.2.1_nodocker.cwl")
 
     # Inject computational requirements into pipeline
     if meta["memory_mb"] or meta["cpus"]:
-        cwl_file = os.path.join(par["output"], "pipeline.cwl")
+        cwl_file = os.path.join(dir, "pipeline.cwl")
 
         # Read in the file
         with open(orig_cwl_file, 'r') as file :
@@ -3627,9 +4446,9 @@ def generate_cwl_file(par: dict[str, Any], meta: dict[str, Any]) -> str:
         # Inject computational requirements into pipeline
         if meta["memory_mb"]:
             memory = int(meta["memory_mb"]) - 2000 # keep 2gb for OS
-            cwl_data = re.sub('"ramMin": [^\\\\n]*,\\\\n', f'"ramMin": {memory},\\\\n', cwl_data)
+            cwl_data = re.sub('"ramMin": [^\\\\n]*[^,](,?)\\\\n', f'"ramMin": {memory}\\\\\\\\1\\\\n', cwl_data)
         if meta["cpus"]:
-            cwl_data = re.sub('"coresMin": [^\\\\n]*,\\\\n', f'"coresMin": {meta["cpus"]},\\\\n', cwl_data)
+            cwl_data = re.sub('"coresMin": [^\\\\n]*[^,](,?)\\\\n', f'"coresMin": {meta["cpus"]}\\\\\\\\1\\\\n', cwl_data)
 
         # Write the file out again
         with open(cwl_file, 'w') as file:
@@ -3639,132 +4458,86 @@ def generate_cwl_file(par: dict[str, Any], meta: dict[str, Any]) -> str:
 
     return cwl_file
 
-def process_fasta(feature_type: str, path: str) -> pd.DataFrame:
-    with open(path) as f:
-        df = pd.DataFrame(data={
-        'feature_type': feature_type,
-        'feature_id': [line[1:].strip() for line in f if line[0] == ">"],
-        'reference_file': os.path.basename(path),
-        })
-        return df
+def copy_outputs(par: dict[str, Any], config: dict[str, Any]):
+    for arg in config["arguments"]:
+        par_value = par[arg["clean_name"]]
+        if par_value and arg["type"] == "file" and arg["direction"] == "output":
+            # example template: '[sample_name]_(assay)_cell_type_experimental.csv'
+            template = (arg.get("info") or {}).get("template")
+            if template:
+                template_glob = template\\\\
+                    .replace("sample", par["run_name"])\\\\
+                    .replace("assay", "*")\\\\
+                    .replace("number", "*")
+                files = glob.glob(os.path.join(par["output_dir"], template_glob))
+                if len(files) == 0 and arg["required"]:
+                    raise ValueError(f"Expected output file '{template_glob}' not found.")
+                elif len(files) > 1 and not arg["multiple"]:
+                    raise ValueError(f"Expected single output file '{template_glob}', but found multiple.")
+                
+                if not arg["multiple"]:
+                    try:
+                        shutil.copy(files[0], par_value)
+                        print(f"Copied {files[0]} to {par_value}")
+                    except IndexError:
+                        print(f"Unable to copy {template_glob} to {par_value}")
+                else:
+                    # replace '*' in par_value with index
+                    for i, file in enumerate(files):
+                        shutil.copy(file, par_value.replace("*", str(i)))
 
-def process_gtf(feature_type: str, path: str) -> pd.DataFrame:
-    with open(path) as f:
-        data = []
-        for line in f:
-            if not line.startswith("#"):
-                attr = dict(item.strip().split(' ') for item in line.split('\\\\t')[8].strip('\\\\n').split(';') if item)
-                row = {
-                    'feature_types': feature_type,
-                    'feature_ids': attr["gene_name"].strip("\\\\""),
-                    'reference_file': os.path.basename(path),
-                }
-            data.append(row)
-    df = pd.DataFrame(data)
-    df = df.drop_duplicates()
-    return df
 
-def extract_feature_types(par: dict[str, Any]):
-    feature_types = []
-
-    if par["mode"] == "targeted":
-        for file in par["reference"]:
-            logger.info(f"Processing reference fasta {file}")
-            feature_types.append(process_fasta("Gene Expression", file))
-
-    if par["mode"] == "wta":
-        file = par["transcriptome_annotation"]
-        logger.info(f"Processing reference gtf {file}")
-        feature_types.append(process_gtf("Gene Expression", file))
-
-    if par["abseq_reference"]:
-        for file in par["abseq_reference"]:
-            logger.info(f"Processing abseq fasta {file}")
-            feature_types.append(process_fasta("Antibody Capture", file))
-
-    if par["supplemental_reference"]:
-        for file in par["supplemental_reference"]:
-            logger.info(f"Processing supp fasta {file}")
-            feature_types.append(process_fasta("Other", file))
+def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
+    config = read_config(meta["config"])
     
-    return pd.concat(feature_types)
-
-def main(par: dict[str, Any], meta: dict[str, Any]):
     # Preprocess params
-    par = process_params(par)
-
-    # Create output dir if not exists
-    if not os.path.exists(par["output"]):
-        os.makedirs(par["output"])
+    par = process_params(par, config, temp_dir)
 
     ## Process parameters
-    proc_pars = ["--no-container", "--outdir", par["output"]]
+    cmd = [
+        "cwl-runner",
+        "--no-container",
+        "--preserve-entire-environment",
+        "--outdir", par["output_dir"],
+    ]
 
     if par["parallel"]:
-        proc_pars.append("--parallel")
+        cmd.append("--parallel")
 
     if par["timestamps"]:
-        proc_pars.append("--timestamps")
+        cmd.append("--timestamps")
 
-    with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
-        # extract transcriptome gtf if need be
-        if par["transcriptome_annotation"] and is_gz_file(par["transcriptome_annotation"]):
-            with open(os.path.join(temp_dir, "transcriptome.gtf"), 'wb') as genes_uncompressed:
-                with gzip.open(par["transcriptome_annotation"], 'rb') as genes_compressed:
-                    shutil.copyfileobj(genes_compressed, genes_uncompressed)
-                    par["transcriptome_annotation"] = genes_uncompressed.name
+    # Create cwl file (if need be)
+    cwl_file = generate_cwl_file(meta, temp_dir)
+    cmd.append(cwl_file)
 
-        # Create params file
-        config_file = os.path.join(par["output"], "config.yml")
-        config_content = generate_config(par)
-        with open(config_file, "w") as f:
-            f.write(config_content)
+    # Create params file
+    config_file = generate_config_file(par, config, temp_dir)
+    cmd.append(config_file)
+    
+    # keep environment variables but set TMPDIR to temp_dir
+    env = dict(os.environ)
+    env["TMPDIR"] = temp_dir
 
-        # Create cwl file (if need be)
-        cwl_file = generate_cwl_file(par, meta)
+    # Create output dir if not exists
+    if not os.path.exists(par["output_dir"]):
+        os.makedirs(par["output_dir"])
 
-        ## Run pipeline
-        if not par["dryrun"]:
-            cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
+    # Run command
+    print("> " + ' '.join(cmd), flush=True)
+    _ = subprocess.check_call(
+        cmd,
+        cwd=os.path.dirname(config_file),
+        env=env
+    )
 
-            env = dict(os.environ)
-            env["TMPDIR"] = temp_dir
+    # Copy outputs
+    copy_outputs(par, config)
 
-            logger.info("> " + ' '.join(cmd))
-            _ = subprocess.check_call(
-                cmd,
-                cwd=os.path.dirname(config_file),
-                env=env
-            )
-
-        # extracting feature ids from references
-        # extract info from reference files (while they still exist)
-        feature_df = extract_feature_types(par)
-        feature_types_file = os.path.join(par["output"], "feature_types.tsv")
-        feature_df.to_csv(feature_types_file, sep="\\\\t", index=False)
-
-
-    if not par["dryrun"]:
-        # look for counts file
-        if not par["sample_prefix"]:
-            par["sample_prefix"] = "sample"
-        counts_filename = par["sample_prefix"] + "_RSEC_MolsPerCell.csv"
-        
-        if par["sample_tags_version"]:
-            counts_filename = "Combined_" + counts_filename
-        counts_file = os.path.join(par["output"], counts_filename)
-        
-        if not os.path.exists(counts_file):
-            raise ValueError(f"Could not find output counts file '{counts_filename}'")
-
-        # look for metrics file
-        metrics_filename = par["sample_prefix"] + "_Metrics_Summary.csv"
-        metrics_file = os.path.join(par["output"], metrics_filename)
-        if not os.path.exists(metrics_file):
-            raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
 
 if __name__ == "__main__":
-    main(par, meta)
+    with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody-", dir=meta["temp_dir"]) as temp_dir:
+        main(par, meta, temp_dir)
 VIASHMAIN
 python -B "$tempscript"
 '''
