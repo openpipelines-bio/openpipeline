@@ -3154,7 +3154,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/vireo",
     "viash_version" : "0.8.6",
-    "git_commit" : "a921da0ad3600e78afbcca2a18d01204d6dcba2f",
+    "git_commit" : "de1ebf85028bb9761f80641122afbf59153802a2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
