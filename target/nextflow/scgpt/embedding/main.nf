@@ -3255,7 +3255,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding",
     "viash_version" : "0.8.6",
-    "git_commit" : "de1ebf85028bb9761f80641122afbf59153802a2",
+    "git_commit" : "2d326207fa436d82632f9e5b368418e01e6a52e2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
