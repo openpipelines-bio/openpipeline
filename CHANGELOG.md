@@ -58,7 +58,7 @@
 
 * Bump `viash-actions` to `v6` (PR #821).
 
-* `resources_test_scripts/annotation_test_data.sh` script: Train and save a custom CellTypist model (PR #825).
+* `resources_test_scripts/annotation_test_data.sh` script: Fetch pretrained CellTypist data and model to be used for testing (PR #825).
 
 ## BUG FIXES
 

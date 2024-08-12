@@ -93,9 +93,9 @@ def test_fail_check_reference_expression(run_component, random_h5mu_path):
             "--reference", reference_file,
             "--var_reference_gene_names", "ensemblid",
             "--output", output_file,
-            "--check_expression", "True"
+            "--check_expression"
         ])
-    assert re.search(r"ValueError: 🛑 Invalid expression matrix, expect log1p normalized expression to 10000 counts per cell",
+    assert re.search(r"Invalid expression matrix, expect log1p normalized expression to 10000 counts per cell",
             err.value.stdout.decode('utf-8'))
     
 def test_fail_invalid_input_expression(run_component, random_h5mu_path):
@@ -108,7 +108,7 @@ def test_fail_invalid_input_expression(run_component, random_h5mu_path):
             "--var_reference_gene_names", "ensemblid",
             "--output", output_file
         ])
-    assert re.search(r"ValueError: 🛑 Invalid expression matrix in `.X`, expect log1p normalized expression to 10000 counts per cell",
+    assert re.search(r"Invalid expression matrix in `.X`, expect log1p normalized expression to 10000 counts per cell",
             err.value.stdout.decode('utf-8'))
 
 if __name__ == '__main__':

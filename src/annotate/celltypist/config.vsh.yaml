@@ -43,20 +43,36 @@ functionality:
           type: string
           description: The layer in the reference data to be used for cell type annotation if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.
           required: false
-          required: false
-        - name: "--reference_obs_targets"
+        - name: "--reference_obs_target"
           type: string
-          example: "cell_ontology_class"
+          description: The name of the adata obs column in the reference data containing cell type annotations.
           default: "cell_ontology_class"
         - name: "--check_expression"
-          type: boolean
-          description: "Whether to check the expression of the reference dataset to the format reccomended by CellTypist."
-          default: false
+          type: boolean_true
+          description: | 
+            Whether to check the expression of the reference dataset to the format reccomended by CellTypist.
+            CellTypist requires data to be log-normalized to 10000 counts per cell.
         - name: "--var_reference_gene_names"
           type: string
           required: false
           description: |
             The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
+    - name: Model arguments
+      description: Model arguments.
+      arguments:
+        - name: "--model"
+          type: file
+          description: "Pretrained model in pkl format. If not provided, the model will be trained on the reference data and --reference should be provided."
+          required: false
+          example: pretrained_model.pkl
+        - name: "--feature_selection"
+          type: boolean
+          description: "Whether to perform feature selection."
+          default: false
+        - name: "--majority_voting"
+          type: boolean
+          description: "Whether to refine the predicted labels by running the majority voting classifier after over-clustering."
+          default: false
     - name: Outputs
       description: Output arguments.
       arguments:
@@ -82,22 +98,6 @@ functionality:
           required: false
           description: |
             In which `.obs` slots to store the probability of the predictions.
-    - name: Model arguments
-      description: Model arguments.
-      arguments:
-        - name: "--model"
-          type: file
-          description: "Pretrained model in pkl format. If not provided, the model will be trained on the reference data and --reference should be provided."
-          required: false
-          example: pretrained_model.pkl
-        - name: "--feature_selection"
-          type: boolean
-          description: "Whether to perform feature selection."
-          default: false
-        - name: "--majority_voting"
-          type: boolean
-          description: "Whether to refine the predicted labels by running the majority voting classifier after over-clustering."
-          default: false
 
   resources:
     - type: python_script
