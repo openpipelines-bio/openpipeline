@@ -433,9 +433,9 @@ apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Samuel D'Souza, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component demux cellranger_mkfastq"
-LABEL org.opencontainers.image.created="2024-08-09T17:08:14Z"
+LABEL org.opencontainers.image.created="2024-08-12T08:29:57Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="600a1b838886851f979510d0968bd4eeaec7c192"
+LABEL org.opencontainers.image.revision="bb320cf9331bacda9e42f00c09f1340774cdc2a6"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

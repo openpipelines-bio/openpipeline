@@ -124,6 +124,26 @@
     
 
         ,
+                "pca_loadings_varm_output": {
+                "type":
+                "string",
+                "description": "Type: `string`. Name of the ",
+                "help_text": "Type: `string`. Name of the .varm key where the PCA loadings are stored.\n"
+            
+            }
+    
+
+        ,
+                "pca_variance_uns_output": {
+                "type":
+                "string",
+                "description": "Type: `string`. Name of the ",
+                "help_text": "Type: `string`. Name of the .uns key where the variance and variance ratio will be stored as a map.\nThe map will contain two keys: variance and variance_ratio respectively.\n"
+            
+            }
+    
+
+        ,
                 "pca_overwrite": {
                 "type":
                 "boolean",

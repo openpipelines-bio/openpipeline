@@ -2917,6 +2917,26 @@ meta = [
             "dest" : "par"
           },
           {
+            "type" : "string",
+            "name" : "--pca_loadings_varm_output",
+            "description" : "Name of the .varm key where the PCA loadings are stored.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--pca_variance_uns_output",
+            "description" : "Name of the .uns key where the variance and variance ratio will be stored as a map.\nThe map will contain two keys: variance and variance_ratio respectively.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
             "type" : "boolean_true",
             "name" : "--pca_overwrite",
             "description" : "Allow overwriting slots for PCA output.",
@@ -3050,7 +3070,7 @@ meta = [
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "600a1b838886851f979510d0968bd4eeaec7c192",
+          "git_commit" : "bb320cf9331bacda9e42f00c09f1340774cdc2a6",
           "executable" : "/nextflow/dimred/pca/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/pca"
@@ -3071,7 +3091,7 @@ meta = [
           "functionalityNamespace" : "neighbors",
           "output" : "",
           "platform" : "",
-          "git_commit" : "600a1b838886851f979510d0968bd4eeaec7c192",
+          "git_commit" : "bb320cf9331bacda9e42f00c09f1340774cdc2a6",
           "executable" : "/nextflow/neighbors/find_neighbors/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
@@ -3092,7 +3112,7 @@ meta = [
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "600a1b838886851f979510d0968bd4eeaec7c192",
+          "git_commit" : "bb320cf9331bacda9e42f00c09f1340774cdc2a6",
           "executable" : "/nextflow/dimred/umap/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
@@ -3159,7 +3179,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction",
     "viash_version" : "0.8.6",
-    "git_commit" : "600a1b838886851f979510d0968bd4eeaec7c192",
+    "git_commit" : "bb320cf9331bacda9e42f00c09f1340774cdc2a6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3191,6 +3211,8 @@ workflow run_wf {
         "modality": "modality",
         "overwrite": "pca_overwrite",
         "layer": "layer",
+        "varm_output": "pca_loadings_varm_output",
+        "uns_output": "pca_variance_uns_output",
       ],
       toState: ["input": "output"]
     )
