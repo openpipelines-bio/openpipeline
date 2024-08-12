@@ -21,8 +21,8 @@ trap clean_up EXIT
 echo "> Processing genome sequence"
 genome_fasta="$tmpdir/genome_sequence.fa"
 # if genome is gzipped, extract. otherwise not
-if [[ "$par_genome_fasta" == *.gz ]]; then
-  gunzip -c "$par_genome_fasta" > "$genome_fasta"
+if file --mime-type "$par_genome_fasta" | grep -q gzip$; then
+  zcat "$par_genome_fasta" > "$genome_fasta"
 else
   cp "$par_genome_fasta" "$genome_fasta"
 fi
@@ -30,8 +30,8 @@ fi
 echo "> Processing transcriptome annotation"
 transcriptome_gtf="$tmpdir/transcriptome_annotation.gtf"
 # if transcriptome is gzipped, extract. otherwise not
-if [[ "$par_transcriptome_gtf" == *.gz ]]; then
-  gunzip -c "$par_transcriptome_gtf" > "$transcriptome_gtf"
+if file --mime-type "$par_transcriptome_gtf" | grep -q gzip$; then
+  zcat "$par_transcriptome_gtf" > "$transcriptome_gtf"
 else
   cp "$par_transcriptome_gtf" "$transcriptome_gtf"
 fi
