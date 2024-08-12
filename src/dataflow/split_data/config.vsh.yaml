@@ -35,13 +35,14 @@ functionality:
           description: The output testing data in mudata format.
           direction: output
           example: output_test.h5mu
+          required: true
         - name: "--output_val"
           type: file
           description: The output validation data in mudata format.
           direction: output
           required: false
           example: output_val.h5mu
-        - name: "--output_compression"
+        - name: "--compression"
           type: string
           choices: ["gzip", "lzf"]
           required: false
@@ -53,13 +54,16 @@ functionality:
           type: double
           description: The proportion of the dataset to include in the test split.
           default: 0.2
+          min: 0.0
+          max: 1.0
         - name: "--val_size"
           type: double
           description: The proportion of the dataset to include in the validation split.
+          min: 0.0
+          max: 1.0
         - name: "--shuffle"
-          type: boolean
+          type: boolean_true
           description: Whether or not to shuffle the data before splitting.
-          default: true
         - name: "--random_state"
           type: integer
           description: The seed used by the random number generator.
