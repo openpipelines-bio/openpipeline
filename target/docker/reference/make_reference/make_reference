@@ -438,14 +438,14 @@ ENTRYPOINT []
 
  
 RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y pigz seqkit curl wget unzip && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y pigz seqkit curl wget unzip file && \
   rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component reference make_reference"
-LABEL org.opencontainers.image.created="2024-08-12T08:29:52Z"
+LABEL org.opencontainers.image.created="2024-08-13T14:38:41Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bb320cf9331bacda9e42f00c09f1340774cdc2a6"
+LABEL org.opencontainers.image.revision="9dbd8fd118a900442c685365432eadae91f10e89"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1008,13 +1008,21 @@ trap clean_up EXIT
 
 echo "> Processing genome sequence"
 genome_fasta="\$tmpdir/genome_sequence.fa"
-# curl "\$par_genome_fasta" | gunzip > "\$genome_fasta"
-gunzip -c "\$par_genome_fasta" > "\$genome_fasta"
+# if genome is gzipped, extract. otherwise not
+if file --mime-type "\$par_genome_fasta" | grep -q gzip\$; then
+  zcat "\$par_genome_fasta" > "\$genome_fasta"
+else
+  cp "\$par_genome_fasta" "\$genome_fasta"
+fi
 
 echo "> Processing transcriptome annotation"
 transcriptome_gtf="\$tmpdir/transcriptome_annotation.gtf"
-# curl "\$par_transcriptome_gtf" | gunzip > "\$transcriptome_gtf"
-gunzip -c "\$par_transcriptome_gtf"> "\$transcriptome_gtf"
+# if transcriptome is gzipped, extract. otherwise not
+if file --mime-type "\$par_transcriptome_gtf" | grep -q gzip\$; then
+  zcat "\$par_transcriptome_gtf" > "\$transcriptome_gtf"
+else
+  cp "\$par_transcriptome_gtf" "\$transcriptome_gtf"
+fi
 
 if [[ ! -z \$par_ercc ]]; then
   echo "> Processing ERCC sequences"

@@ -2989,7 +2989,8 @@ meta = [
             "seqkit",
             "curl",
             "wget",
-            "unzip"
+            "unzip",
+            "file"
           ],
           "interactive" : false
         }
@@ -3057,7 +3058,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/make_reference",
     "viash_version" : "0.8.6",
-    "git_commit" : "bb320cf9331bacda9e42f00c09f1340774cdc2a6",
+    "git_commit" : "9dbd8fd118a900442c685365432eadae91f10e89",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3108,13 +3109,21 @@ trap clean_up EXIT
 
 echo "> Processing genome sequence"
 genome_fasta="\\$tmpdir/genome_sequence.fa"
-# curl "\\$par_genome_fasta" | gunzip > "\\$genome_fasta"
-gunzip -c "\\$par_genome_fasta" > "\\$genome_fasta"
+# if genome is gzipped, extract. otherwise not
+if file --mime-type "\\$par_genome_fasta" | grep -q gzip\\$; then
+  zcat "\\$par_genome_fasta" > "\\$genome_fasta"
+else
+  cp "\\$par_genome_fasta" "\\$genome_fasta"
+fi
 
 echo "> Processing transcriptome annotation"
 transcriptome_gtf="\\$tmpdir/transcriptome_annotation.gtf"
-# curl "\\$par_transcriptome_gtf" | gunzip > "\\$transcriptome_gtf"
-gunzip -c "\\$par_transcriptome_gtf"> "\\$transcriptome_gtf"
+# if transcriptome is gzipped, extract. otherwise not
+if file --mime-type "\\$par_transcriptome_gtf" | grep -q gzip\\$; then
+  zcat "\\$par_transcriptome_gtf" > "\\$transcriptome_gtf"
+else
+  cp "\\$par_transcriptome_gtf" "\\$transcriptome_gtf"
+fi
 
 if [[ ! -z \\$par_ercc ]]; then
   echo "> Processing ERCC sequences"

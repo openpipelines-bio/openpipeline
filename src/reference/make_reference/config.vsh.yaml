@@ -56,7 +56,7 @@ platforms:
     image: ubuntu:22.04
     setup:
       - type: apt
-        packages: [ pigz, seqkit, curl, wget, unzip ]
+        packages: [ pigz, seqkit, curl, wget, unzip, file]
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]
