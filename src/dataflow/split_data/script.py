@@ -43,7 +43,10 @@ def main():
     n_obs = input_modality.n_obs
     train_idx, test_idx = train_test_split(range(n_obs), test_size=par["test_size"], random_state=par["random_state"], shuffle=par["shuffle"])
     
-    if par["val_size"] and par["output_val"]:
+    if bool(par["val_size"]) != bool(par["output_val"]):
+        raise ValueError("Both --val_size and --output_val must be set to use validation set.")
+    
+    elif par["val_size"] and par["output_val"]:
         if par["val_size"] + par["test_size"] > 1:
             raise ValueError("Sum of test_size and val_size must not exceed 1.")
         
@@ -59,9 +62,6 @@ def main():
         test_mudata = mu.MuData({par["modality"]: test_modality})
         
         val_mudata.write_h5mu(par["output_val"], compression=par["compression"])
-        
-    elif par["val_size"] is not None != par["output_val"] is not None:
-        raise ValueError("Both --val_size and --output_val must be set to use validation set.")
         
     else:
         train_modality = input_modality[train_idx].copy()

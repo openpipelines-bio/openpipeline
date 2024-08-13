@@ -97,6 +97,22 @@ def test_raise_test_val_size(run_component):
     
     assert re.search(r"Sum of test_size and val_size must not exceed 1.",
         err.value.stdout.decode('utf-8'))
+    
+    
+def test_raise_invalid_val_out(run_component, random_h5mu_path):
+    
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component([
+            "--input", input_file,
+            "--modality", "rna",
+            "--test_size", "0.2",
+            "--val_size", "0.1",
+            "--output_train", "train.h5mu",
+            "--output_test", "test.h5mu",
+        ])
+    
+    assert re.search(r"Both --val_size and --output_val must be set to use validation set.",
+        err.value.stdout.decode('utf-8'))
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
