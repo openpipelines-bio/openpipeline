@@ -20,15 +20,20 @@ functionality:
       type: string
       default: "rna"
       required: false
+    - name: "--input_layer"
+      type: "string"
+      description: "Input layer with data to scale. Uses .X by default"
+      required: false
+    - name: "--output_layer"
+      type: string
+      description: "Output layer where scaled data will be stored. If not specified, .X will be used."
     - name: "--max_value"
       required: false
       type: double
       description: Clip (truncate) to this value after scaling. Does not clip by default.
     - name: "--zero_center"
-      type: boolean
-      default: true
-      required: false
-      description: If False, omit zero-centering variables, which allows to handle sparse input efficiently.
+      type: boolean_false
+      description: If set, omit zero-centering variables, which allows to handle sparse input efficiently.
     # output
     - name: "--output"
       alternatives: ["-o"]
@@ -53,17 +58,14 @@ functionality:
     - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.10-slim-bullseye
+    image: python:3.12-slim
     setup:
       - type: apt
         packages:
-          - libhdf5-dev
           - procps
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .] 
   - type: nextflow
     directives:
       label: [lowmem, lowcpu]

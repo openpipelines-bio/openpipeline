@@ -132,10 +132,7 @@ platforms:
       - type: python
         __merge__: [/src/base/requirements/scanpy.yaml, .]
         packages:
-          - xgboost~=1.7.1
-          - scikit-learn~=1.1.1
-          - numpy~=1.23.5
-          - pandas~=1.4.4
+          - xgboost~=2.0.3
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
