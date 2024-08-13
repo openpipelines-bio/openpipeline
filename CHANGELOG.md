@@ -12,7 +12,31 @@
 
 * `lianapy`: bumped version to `1.2.1` (PR #827).
 
+* `XGBoost`: bump version to `2.0.3` (PR #646).
+
+* Several components: update anndata to `0.10.8` and mudata to `0.2.3` (PR #645). 
+
+* `filter/filter_with_hvg`: this component was deprecated and has now been removed. Use `feature_annotation/highly_variable_features_scanpy` instead (PR #843).
+
+* `convert/from_h5mu_to_seurat`: bump seurat to latest version (PR #850).
+
+* `workflows/ingestion/bd_rhapsody`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
+* `mapping/bd_rhapsody`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
+* `reference/make_bdrhap_reference`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
+* `reference/build_star_reference`: Rename `mapping/star_build_reference` to `reference/build_star_reference` (PR #846).
+
+* `reference/cellranger_mkgtf`: Rename `reference/mkgtf` to `reference/cellranger_mkgtf` (PR #846).
+
 ## NEW FUNCTIONALITY
+
+* `process_samples`, `process_batches` and `rna_multisample` workflows: added functionality to scale the log-normalized 
+  gene expression data to unit variance and zero mean. The scaled data will be output to a different layer and the
+  representation with reduced dimensions will be created and stored in addition to the non-scaled data (PR #733).
+
+* `transform/scaling`: add `--input_layer` and `--output_layer` arguments (PR #733).
 
 * CI: added checking of mudata contents for multiple workflows (PR #783).
 
@@ -36,12 +60,22 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `scgpt/cell_type_annotation` component: Added scGPT cell type annotation component (PR #798).
+
+* `resources_test_scripts/scGPT.sh`: Added script to include scGPT test resources (PR #800).
+
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
+
+* `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
+
+* `workflows/ingestion/make_reference`: Add additional arguments passed through to the STAR and BD Rhapsody reference components (PR #846).
 
 * `annotate/svm` component: Added a component to annotate cell types using support vector machine (SVM) (PR #845).
 
 ## MINOR CHANGES
+
+* `cellbender_remove_background_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
 
 * Bump scvelo to `0.3.2` (PR #828).
 
@@ -61,6 +95,8 @@
   data dtype (dtype) changed as a result of adding more observations after concatenation, causing `TypeError`.
   One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
   which is present in another sample; causing the values being filled with `NA` (PR #837).
+
+* `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR #852).
 
 ## DOCUMENTATION
 
