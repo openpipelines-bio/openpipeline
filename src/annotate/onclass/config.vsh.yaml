@@ -36,6 +36,10 @@ functionality:
           type: file
           description: The .ontology file with the cell type ontology.
           required: true
+        - name: "--cl_obo_file"
+          type: file
+          description: The .obo file with the cell type ontology.
+          required: true
     - name: Reference
       description: Arguments related to the reference dataset.
       arguments:
@@ -132,7 +136,6 @@ platforms:
           - OnClass==1.2
           - tensorflow==2.13.1
           - obonet==1.1.0
-      - type: python
-        __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
+          - mudata
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
   - type: nextflow

@@ -26,6 +26,7 @@ par = {
     "output_obs_probability": None,
     "cl_nlp_emb_file": "resources_test/annotation_test_data/ontology/cl.ontology.nlp.emb",
     "cl_ontology_file": "resources_test/annotation_test_data/ontology/cl.ontology",
+    "cl_obo_file": "resources_test/annotation_test_data/ontology/cl.obo",
     "output_compression": "gzip"
 }
 meta = {"resources_dir": "src/annotate/onclass"}
@@ -113,7 +114,7 @@ def main():
     input_mudata = mu.read_h5mu(par["input"])
     input_modality = input_mudata.mod[par["modality"]].copy()
 
-    id_to_name, name_to_id = map_celltype_to_ontology_id(os.path.join(meta["resources_dir"], "cl.obo"))
+    id_to_name, name_to_id = map_celltype_to_ontology_id(par["cl_obo_file"])
     obs_predictions = par["output_obs_predictions"] if par["output_obs_predictions"] else [f"{target}_pred" for target in par["reference_obs_targets"]]
     obs_probabilities = par["output_obs_probability"] if par["output_obs_probability"] else [f"{target}_prob" for target in par["reference_obs_targets"]]
     

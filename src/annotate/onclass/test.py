@@ -17,6 +17,7 @@ input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_fil
 reference_file = f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5mu"
 cl_nlp_emb_file = f"{meta['resources_dir']}/annotation_test_data/ontology/cl.ontology.nlp.emb"
 cl_ontology_file = f"{meta['resources_dir']}/annotation_test_data/ontology/cl.ontology"
+cl_obo_file = f"{meta['resources_dir']}/annotation_test_data/ontology/cl.obo"
 model_file = f"{meta['resources_dir']}/annotation_test_data/onclass_model/example_file_model"
 
 @pytest.fixture
@@ -42,6 +43,7 @@ def test_simple_execution(run_component, random_h5mu_path):
         "--reference_obs_targets", "cell_ontology_class",
         "--cl_nlp_emb_file", cl_nlp_emb_file,
         "--cl_ontology_file", cl_ontology_file,
+        "--cl_obo_file", cl_obo_file,
         "--max_iter", "10",
         "--output", output_file
     ])
@@ -69,6 +71,7 @@ def test_multiple_targets(run_component, random_h5mu_path):
         "--reference_obs_targets", "cell_ontology_class;cell_type",
         "--cl_nlp_emb_file", cl_nlp_emb_file,
         "--cl_ontology_file", cl_ontology_file,
+        "--cl_obo_file", cl_obo_file,
         "--max_iter", "10",
         "--output", output_file
     ])
@@ -102,6 +105,7 @@ def test_multiple_targets_custom_obs(run_component, random_h5mu_path):
         "--output_obs_probability", "dummy_prob_1;dummy_prob_2",
         "--cl_nlp_emb_file", cl_nlp_emb_file,
         "--cl_ontology_file", cl_ontology_file,
+        "--cl_obo_file", cl_obo_file,
         "--max_iter", "10",
         "--output", output_file
     ])
@@ -133,6 +137,7 @@ def test_no_model_no_reference_error(run_component, random_h5mu_path):
             "--output", output_file,
             "--cl_nlp_emb_file", cl_nlp_emb_file,
             "--cl_ontology_file", cl_ontology_file,
+            "--cl_obo_file", cl_obo_file,
         ])
     assert re.search(r"ValueError: Either reference or model must be provided",
             err.value.stdout.decode('utf-8'))
@@ -145,6 +150,7 @@ def test_pretrained_model(run_component, random_h5mu_path, swap_gene_symbol):
         "--input", swapped_input_file,
         "--cl_nlp_emb_file", cl_nlp_emb_file,
         "--cl_ontology_file", cl_ontology_file,
+        "--cl_obo_file", cl_obo_file,
         "--model", model_file,
         "--output", output_file
     ])
