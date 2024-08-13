@@ -9,7 +9,7 @@ functionality:
     - __merge__: /src/authors/vladimir_shitov.yaml
       roles: [ author ]
 
-  __merge__: ../api/common_arguments_2.yaml
+  __merge__: ../api/common_arguments.yaml
 
   argument_groups:
 
