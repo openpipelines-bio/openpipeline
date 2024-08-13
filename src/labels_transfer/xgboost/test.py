@@ -77,7 +77,7 @@ def test_label_transfer(run_component, test_args):
 
     for target in obs_targets:
         assert f"{target}_pred" in output_data.mod["rna"].obs, f"Predictions are missing from output\noutput: {output_data.mod['rna'].obs}"
-        assert f"{target}_uncertainty" in output_data.mod["rna"].obs, f"Uncertainties are missing from output\noutput: {output_data.mod['rna'].obs}"
+        assert f"{target}_probability" in output_data.mod["rna"].obs, f"Probabilities are missing from output\noutput: {output_data.mod['rna'].obs}"
         assert exp_uns in output_data.mod["rna"].uns, f"Parameters are missing from output\noutput: {output_data.mod['rna'].uns}"
         assert target in output_data.mod["rna"].uns[exp_uns], f"Parameters are missing from output\noutput: {output_data.mod['rna'].uns}"
         assert output_data.mod["rna"].uns[exp_uns][target].get("method") == "XGBClassifier", f"Wrong method in parameters\noutput: {output_data.mod['rna'].uns}"
@@ -127,7 +127,7 @@ def test_retraining(run_component, test_args, tmp_path):
 
     for target in obs_targets:
         assert f"{target}_pred" in output_data.mod["rna"].obs, f"Predictions are missing from output\noutput: {output_data.mod['rna'].obs}"
-        assert f"{target}_uncertainty" in output_data.mod["rna"].obs, f"Uncertainties are missing from output\noutput: {output_data.mod['rna'].obs}"
+        assert f"{target}_probability" in output_data.mod["rna"].obs, f"Probabilities are missing from output\noutput: {output_data.mod['rna'].obs}"
         assert output_uns_parameters in output_data.mod["rna"].uns, f"Parameters are missing from output\noutput: {output_data.mod['rna'].uns}"
         assert target in output_data.mod["rna"].uns[output_uns_parameters], f"Parameters are missing from output\noutput: {output_data.mod['rna'].uns}"
         assert output_data.mod["rna"].uns[output_uns_parameters][target].get("method") == "XGBClassifier", f"Wrong method in parameters\noutput: {output_data.mod['rna'].uns}"
