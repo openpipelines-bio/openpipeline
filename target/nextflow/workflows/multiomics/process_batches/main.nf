@@ -2991,6 +2991,101 @@ meta = [
             "dest" : "par"
           }
         ]
+      },
+      {
+        "name" : "RNA Scaling options",
+        "description" : "Options for enabling scaling of the log-normalized data to unit variance and zero mean.\nThe scaled data will be output a different layer and representation with reduced dimensions\nwill be created and stored in addition to the non-scaled data.\n",
+        "arguments" : [
+          {
+            "type" : "boolean_true",
+            "name" : "--rna_enable_scaling",
+            "description" : "Enable scaling for the RNA modality.",
+            "direction" : "input",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--rna_scaling_output_layer",
+            "description" : "Output layer where the scaled log-normalized data will be stored.",
+            "default" : [
+              "scaled"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--rna_scaling_pca_obsm_output",
+            "description" : "Name of the .obsm key where the PCA representation of the log-normalized\nand scaled data is stored.\n",
+            "default" : [
+              "scaled_pca"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--rna_scaling_pca_loadings_varm_output",
+            "description" : "Name of the .varm key where the PCA loadings of the log-normalized and scaled\ndata is stored.\n",
+            "default" : [
+              "scaled_pca_loadings"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--rna_scaling_pca_variance_uns_output",
+            "description" : "Name of the .uns key where the variance and variance ratio will be stored as a map.\nThe map will contain two keys: variance and variance_ratio respectively.\n",
+            "default" : [
+              "scaled_pca_variance"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--rna_scaling_umap_obsm_output",
+            "description" : "Name of the .obsm key where the UMAP representation of the log-normalized and scaled data is stored.",
+            "default" : [
+              "scaled_umap"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--rna_scaling_max_value",
+            "description" : "Clip (truncate) data to this value after scaling. If not specified, do not clip.",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean_false",
+            "name" : "--rna_scaling_zero_center",
+            "description" : "If set, omit zero-centering variables, which allows to handle sparse input efficiently.\\"",
+            "direction" : "input",
+            "dest" : "par"
+          }
+        ]
       }
     ],
     "resources" : [
@@ -3067,7 +3162,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "2d326207fa436d82632f9e5b368418e01e6a52e2",
+          "git_commit" : "a8b953b926e3fcfe9329bd7e9066e478dd41d6d8",
           "executable" : "/nextflow/dataflow/merge/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
@@ -3089,7 +3184,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "2d326207fa436d82632f9e5b368418e01e6a52e2",
+          "git_commit" : "a8b953b926e3fcfe9329bd7e9066e478dd41d6d8",
           "executable" : "/nextflow/workflows/multiomics/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
@@ -3110,7 +3205,7 @@ meta = [
           "functionalityNamespace" : "workflows/prot",
           "output" : "",
           "platform" : "",
-          "git_commit" : "2d326207fa436d82632f9e5b368418e01e6a52e2",
+          "git_commit" : "a8b953b926e3fcfe9329bd7e9066e478dd41d6d8",
           "executable" : "/nextflow/workflows/prot/prot_multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_multisample"
@@ -3131,7 +3226,7 @@ meta = [
           "functionalityNamespace" : "workflows/rna",
           "output" : "",
           "platform" : "",
-          "git_commit" : "2d326207fa436d82632f9e5b368418e01e6a52e2",
+          "git_commit" : "a8b953b926e3fcfe9329bd7e9066e478dd41d6d8",
           "executable" : "/nextflow/workflows/rna/rna_multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample"
@@ -3153,7 +3248,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "2d326207fa436d82632f9e5b368418e01e6a52e2",
+          "git_commit" : "a8b953b926e3fcfe9329bd7e9066e478dd41d6d8",
           "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
@@ -3175,7 +3270,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "2d326207fa436d82632f9e5b368418e01e6a52e2",
+          "git_commit" : "a8b953b926e3fcfe9329bd7e9066e478dd41d6d8",
           "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
@@ -3196,10 +3291,32 @@ meta = [
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "2d326207fa436d82632f9e5b368418e01e6a52e2",
+          "git_commit" : "a8b953b926e3fcfe9329bd7e9066e478dd41d6d8",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
+      },
+      {
+        "name" : "workflows/multiomics/dimensionality_reduction",
+        "alias" : "dimensionality_reduction_scaling_rna",
+        "repository" : {
+          "type" : "local",
+          "localPath" : ""
+        },
+        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/dimensionality_reduction/config.vsh.yaml",
+        "configInfo" : {
+          "functionalityName" : "dimensionality_reduction",
+          "git_tag" : "",
+          "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
+          "viash_version" : "0.8.6",
+          "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/dimensionality_reduction/config.vsh.yaml",
+          "functionalityNamespace" : "workflows/multiomics",
+          "output" : "",
+          "platform" : "",
+          "git_commit" : "a8b953b926e3fcfe9329bd7e9066e478dd41d6d8",
+          "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
+        },
+        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
       }
     ],
     "set_wd_to_resources_dir" : false
@@ -3263,7 +3380,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.8.6",
-    "git_commit" : "2d326207fa436d82632f9e5b368418e01e6a52e2",
+    "git_commit" : "a8b953b926e3fcfe9329bd7e9066e478dd41d6d8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3281,6 +3398,8 @@ dimensionality_reduction_rna = dimensionality_reduction_rna_viashalias.run(key: 
 include { dimensionality_reduction as dimensionality_reduction_prot_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
 dimensionality_reduction_prot = dimensionality_reduction_prot_viashalias.run(key: "dimensionality_reduction_prot")
 include { publish } from "${meta.resources_dir}/../../../../nextflow/transfer/publish/main.nf"
+include { dimensionality_reduction as dimensionality_reduction_scaling_rna_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
+dimensionality_reduction_scaling_rna = dimensionality_reduction_scaling_rna_viashalias.run(key: "dimensionality_reduction_scaling_rna")
 
 // inner workflow
 // user-provided Nextflow code
@@ -3358,6 +3477,10 @@ workflow run_wf {
         "var_qc_metrics": "var_qc_metrics",
         "top_n_vars": "top_n_vars",
         "layer": "rna_layer",
+        "enable_scaling": "rna_enable_scaling",
+        "scaling_output_layer": "rna_scaling_output_layer",
+        "scaling_max_value": "rna_scaling_max_value",
+        "scaling_zero_center": "rna_scaling_zero_center",
       ],
       "prot": [
         "layer": "prot_layer",
@@ -3392,8 +3515,9 @@ workflow run_wf {
         def keysToRemove = multisample_arguments.inject([]){currentKeys, modality, stateMapping -> 
           def newKeys = currentKeys + stateMapping.values()
           return newKeys
-        }
-        def newState = state.findAll{it.key !in keysToRemove}
+        } 
+        keysToRemove -= ["rna_enable_scaling", "rna_scaling_output_layer"]
+        def newState = state.findAll{it.key !in keysToRemove }
         [id, newState]
       }
       | view {"After multisample processing: $it"}
@@ -3439,13 +3563,13 @@ workflow run_wf {
       // Processing of multi-modal multisample MuData files.
       // Performs calculations on samples that have *not* been integrated,
       // and can be considered a "no-integration" workflow.
-
-      output_ch = [dimensionality_reduction_rna, dimensionality_reduction_prot].inject(multimodal_ch){ channel_in, component ->
+      output_ch = [dimensionality_reduction_rna, dimensionality_reduction_scaling_rna, dimensionality_reduction_prot].inject(multimodal_ch){ channel_in, component ->
         channel_out_integrated = channel_in
           | component.run(
             runIf: {id, state ->
-              def reg = ~/^dimensionality_reduction_/
-              state.modalities.contains(component.name - reg)
+              def reg = state.rna_enable_scaling ? ~/^dimensionality_reduction_(scaling_)?/ : ~/^dimensionality_reduction_/
+              def modality_to_check = component.name - reg
+              state.modalities.contains(modality_to_check)
             },
             fromState: { id, state -> 
               def stateMappings = [
@@ -3457,6 +3581,24 @@ workflow run_wf {
                     "modality": "rna",
                     "var_pca_feature_selection": state.highly_variable_features_var_output, // run PCA on highly variable genes only
                     "pca_overwrite": state.pca_overwrite,
+                  ],
+                "dimensionality_reduction_scaling_rna":
+                  [
+                    "id": id,
+                    "input": state.input,
+                    "layer": state.rna_scaling_output_layer,
+                    "modality": "rna",
+                    "var_pca_feature_selection": state.highly_variable_features_var_output, // run PCA on highly variable genes only
+                    "pca_overwrite": state.pca_overwrite,
+                    // extra scaling args
+                    "obsm_pca": state.rna_scaling_pca_obsm_output,
+                    "pca_loadings_varm_output": state.rna_scaling_pca_loadings_varm_output,
+                    "pca_variance_uns_output": state.rna_scaling_pca_variance_uns_output,
+                    "pca_overwrite": state.pca_overwrite,
+                    "obsm_umap": state.rna_scaling_umap_obsm_output,
+                    "uns_neighbors": "neighbors_scaled",
+                    "obsp_neighbor_connectivities": "connectivities_scaled",
+                    "obsp_neighbor_distances": "distances_scaled",
                   ],
                 "dimensionality_reduction_prot":
                   [
