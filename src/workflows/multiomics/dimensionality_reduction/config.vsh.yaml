@@ -45,6 +45,15 @@ argument_groups:
         type: string
         required: false
         description: Column name in .var matrix that will be used to select which genes to run the PCA on.
+      - name: "--pca_loadings_varm_output"
+        type: string
+        description: |
+          Name of the .varm key where the PCA loadings are stored.
+      - name: "--pca_variance_uns_output"
+        type: string
+        description: |
+          Name of the .uns key where the variance and variance ratio will be stored as a map.
+          The map will contain two keys: variance and variance_ratio respectively.
       - name: "--pca_overwrite"
         type: boolean_true
         description: "Allow overwriting slots for PCA output."

@@ -1,5 +1,5 @@
-name: star_build_reference
-namespace: mapping
+name: build_star_reference
+namespace: reference
 description: Create a reference for STAR from a set of fasta files.
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
@@ -47,37 +47,35 @@ resources:
 test_resources:
   - type: bash_script
     path: test.sh
-  - path: ../../../resources_test/cellranger_tiny_fastq
-
+  - path: /resources_test/cellranger_tiny_fastq
 engines:
-- type: docker
-  image: python:3.10-slim
-  setup:
-    - type: apt
-      packages: 
-        - procps
-    # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
-    - type: docker
-      env: 
-        - STAR_VERSION 2.7.10b
-        - PACKAGES gcc g++ make wget zlib1g-dev unzip
-    - type: docker
-      run: |
-        apt-get update && \
-          apt-get install -y --no-install-recommends ${PACKAGES} && \
-          cd /tmp && \
-          wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \
-          unzip ${STAR_VERSION}.zip && \
-          cd STAR-${STAR_VERSION}/source && \
-          make STARstatic CXXFLAGS_SIMD=-std=c++11 && \
-          cp STAR /usr/local/bin && \
-          cd / && \
-          rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \
-          apt-get --purge autoremove -y ${PACKAGES} && \
-          apt-get clean
-
+  - type: docker
+    image: python:3.10-slim
+    setup:
+      - type: apt
+        packages: 
+          - procps
+      # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
+      - type: docker
+        env: 
+          - STAR_VERSION 2.7.10b
+          - PACKAGES gcc g++ make wget zlib1g-dev unzip
+      - type: docker
+        run: |
+          apt-get update && \
+            apt-get install -y --no-install-recommends ${PACKAGES} && \
+            cd /tmp && \
+            wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \
+            unzip ${STAR_VERSION}.zip && \
+            cd STAR-${STAR_VERSION}/source && \
+            make STARstatic CXXFLAGS_SIMD=-std=c++11 && \
+            cp STAR /usr/local/bin && \
+            cd / && \
+            rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \
+            apt-get --purge autoremove -y ${PACKAGES} && \
+            apt-get clean
 runners:
-- type: executable          
-- type: nextflow
-  directives:
-    label: [ highmem, highcpu ]
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [ highmem, highcpu ]

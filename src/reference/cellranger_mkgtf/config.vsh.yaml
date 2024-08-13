@@ -1,4 +1,4 @@
-name: mkgtf
+name: cellranger_mkgtf
 namespace: reference
 description: Make a GTF file - filter by a specific attribute.
 authors:

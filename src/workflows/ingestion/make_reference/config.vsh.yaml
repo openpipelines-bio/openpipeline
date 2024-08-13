@@ -7,6 +7,8 @@ authors:
     roles: [ author ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
     roles: [ author, maintainer ]
+  - __merge__: /src/authors/weiwei_schultz.yaml
+    roles: [ contributor ]
 argument_groups:
   - name: Inputs
     arguments:
@@ -29,6 +31,59 @@ argument_groups:
         name: --ercc
         description: ERCC sequence and annotation file.
         example: https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip
+  - name: STAR Settings
+    arguments:
+      - type: integer
+        name: --star_genome_sa_index_nbases
+        description: |
+          Length (bases) of the SA pre-indexing string. Typically between 10 and 15.
+          Longer strings will use much more memory, but allow faster searches. For small
+          genomes, the parameter {genomeSAindexNbases must be scaled down to
+          min(14, log2(GenomeLength)/2 - 1).
+        required: false
+        default: 14
+  - name: BD Rhapsody Settings
+    arguments:
+      - type: string
+        name: --bdrhap_mitochondrial_contigs
+        description: |
+          Names of the Mitochondrial contigs in the provided Reference Genome. Fragments originating from contigs other than these are
+          identified as 'nuclear fragments' in the ATACseq analysis pipeline.
+        required: false
+        multiple: true
+        default: [chrM, chrMT, M, MT]
+      - type: boolean_true
+        name: --bdrhap_filtering_off
+        description: |
+          By default the input Transcript Annotation files are filtered based on the gene_type/gene_biotype attribute. Only features 
+          having the following attribute values are kept:
+
+            - protein_coding
+            - lncRNA 
+            - IG_LV_gene
+            - IG_V_gene
+            - IG_V_pseudogene
+            - IG_D_gene
+            - IG_J_gene
+            - IG_J_pseudogene
+            - IG_C_gene
+            - IG_C_pseudogene
+            - TR_V_gene
+            - TR_V_pseudogene
+            - TR_D_gene
+            - TR_J_gene
+            - TR_J_pseudogene
+            - TR_C_gene
+
+            If you have already pre-filtered the input Annotation files and/or wish to turn-off the filtering, please set this option to True.
+      - type: boolean_true
+        name: --bdrhap_wta_only_index
+        description: Build a WTA only index, otherwise builds a WTA + ATAC index.
+      - type: string
+        name: --bdrhap_extra_star_params
+        description: Additional parameters to pass to STAR when building the genome index. Specify exactly like how you would on the command line.
+        example: --limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11
+        required: false
   - name: Outputs
     arguments:
       - type: string
@@ -72,7 +127,7 @@ dependencies:
   - name: reference/make_reference
     alias: make_reference_component
   - name: reference/build_bdrhap_reference
-  - name: mapping/star_build_reference
+  - name: reference/build_star_reference
   - name: reference/build_cellranger_reference
 resources:
   - type: nextflow_script
