@@ -67,7 +67,6 @@ functionality:
         - name: "--random_state"
           type: integer
           description: The seed used by the random number generator.
-          default: 42
 
   resources:
     - type: python_script
