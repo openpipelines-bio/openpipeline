@@ -18,6 +18,8 @@
 
 * `filter/filter_with_hvg`: this component was deprecated and has now been removed. Use `feature_annotation/highly_variable_features_scanpy` instead (PR #843).
 
+* `dataflow/concat`: this component was deprecated and has now been removed. Use `dataflow/concatenate_h5mu` instead (PR #).
+
 * `convert/from_h5mu_to_seurat`: bump seurat to latest version (PR #850).
 
 * `workflows/ingestion/bd_rhapsody`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
