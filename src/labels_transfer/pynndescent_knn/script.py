@@ -119,7 +119,7 @@ for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"],  par["outp
     if par["weights"] != "gaussian":
         logger.info(f"Using KNN classifier with {par['weights']} weights")
         train_y = r_adata.obs[obs_tar].to_numpy()
-        classifier = KNeighborsClassifier(n_neighbors=50, metric="precomputed", weights=par["weights"])
+        classifier = KNeighborsClassifier(n_neighbors=par["n_neighbors"], metric="precomputed", weights=par["weights"])
         classifier.fit(
             X=neighbors_transformer.transform(train_X), y=train_y
         )
