@@ -342,5 +342,5 @@ test_resources:
     entrypoint: test_wf
   - path: /resources_test/bdrhap_5kjrt
   - path: /resources_test/reference_gencodev41_chr1/
-platforms:
+runners:
   - type: nextflow

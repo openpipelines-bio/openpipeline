@@ -1,43 +1,42 @@
-functionality:
-  name: "from_h5mu_to_seurat"
-  namespace: "convert"
-  description: |
-    Converts an h5mu file into a Seurat file.
+name: "from_h5mu_to_seurat"
+namespace: "convert"
+description: |
+  Converts an h5mu file into a Seurat file.
 
-    Restrictions:
-      - Only the intersection of cells is currently loaded into the Seurat object due to the object structure limitation.
-      - Multimodal embeddings (global .obsm slot) are loaded with the assay.used field set to the default assay.
-      - Embeddings names are changed in order to comply with R & Seurat requirements and conventions.
-      - Feature names with underscores ('_') are automatically replaced with dashes ('-')
-      - Seurat does not support global variables metadata /var.
-  authors:
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ author, maintainer ]
-  arguments:
-    - name: "--input"
-      alternatives: ["-i"]
-      type: file
-      description: Input h5mu file
-      direction: input
-      required: true
-      example: input.h5mu
-    - name: "--output"
-      alternatives: ["-o"]
-      type: file
-      description: Output Seurat file
-      direction: output
-      required: true
-      example: output.rds
-  resources:
-    - type: r_script
-      path: script.R
-  test_resources:
-    - type: r_script
-      path: run_test.R
-    - path: /resources_test/10x_5k_anticmv/
+  Restrictions:
+    - Only the intersection of cells is currently loaded into the Seurat object due to the object structure limitation.
+    - Multimodal embeddings (global .obsm slot) are loaded with the assay.used field set to the default assay.
+    - Embeddings names are changed in order to comply with R & Seurat requirements and conventions.
+    - Feature names with underscores ('_') are automatically replaced with dashes ('-')
+    - Seurat does not support global variables metadata /var.
+authors:
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ author, maintainer ]
+arguments:
+  - name: "--input"
+    alternatives: ["-i"]
+    type: file
+    description: Input h5mu file
+    direction: input
+    required: true
+    example: input.h5mu
+  - name: "--output"
+    alternatives: ["-o"]
+    type: file
+    description: Output Seurat file
+    direction: output
+    required: true
+    example: output.rds
+resources:
+  - type: r_script
+    path: script.R
+test_resources:
+  - type: r_script
+    path: run_test.R
+  - path: /resources_test/10x_5k_anticmv/
 engines:
   - type: docker
-    image: rocker/r2u:22.04
+    image: rocker/r2u:24.04
     setup:
       - type: apt
         packages: 
