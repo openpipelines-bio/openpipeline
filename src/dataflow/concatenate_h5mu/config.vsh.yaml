@@ -50,6 +50,19 @@ functionality:
          - first: keep the annotation from the first sample
          - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)
          - move: identical to 'same', but moving the conflicting values to .varm or .obsm
+    - name: "--uns_merge_mode"
+      description: |
+        How to handle the merging of .uns across modalities
+         - None: keep no data
+         - same: only keep elements of the matrices which are the same in each of the samples
+         - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)
+         - first: keep the annotation from the first sample
+         - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)
+         - make_unique: identical to 'unique', but keys which are not unique are made unique by prefixing them with the sample id.
+      type: string
+      choices: ["same", "unique", "first", "only", "make_unique"]
+      default: make_unique
+
   resources:
     - type: python_script
       path: script.py
