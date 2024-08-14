@@ -18,6 +18,8 @@
 
 * `filter/filter_with_hvg`: this component was deprecated and has now been removed. Use `feature_annotation/highly_variable_features_scanpy` instead (PR #843).
 
+* `dataflow/concat`: this component was deprecated and has now been removed. Use `dataflow/concatenate_h5mu` instead (PR #857).
+
 * `convert/from_h5mu_to_seurat`: bump seurat to latest version (PR #850).
 
 * `workflows/ingestion/bd_rhapsody`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
@@ -86,6 +88,8 @@
 * `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
 
 * Bump `viash-actions` to `v6` (PR #821).
+
+* `reference/make_reference`: Do not try to extract genome fasta and transcriptome gtf if they are not gzipped (PR #856).
 
 ## BUG FIXES
 

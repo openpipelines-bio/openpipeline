@@ -3306,7 +3306,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cell_type_annotation",
     "viash_version" : "0.8.6",
-    "git_commit" : "a8b953b926e3fcfe9329bd7e9066e478dd41d6d8",
+    "git_commit" : "3b88a545170242729fc18ed3adbcee105523f84d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
