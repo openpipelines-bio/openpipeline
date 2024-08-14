@@ -50,6 +50,7 @@ target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
 nextflow \
   run . \
   -main-script target/nextflow/workflows/rna/rna_singlesample/main.nf \
+  -c src/workflows/utils/labels_ci.config \
   -profile docker \
   --id pbmc_1k_protein_v3_uss \
   --input "${OUT}_filtered_feature_bc_matrix.h5mu" \
@@ -61,6 +62,7 @@ nextflow \
 nextflow \
   run . \
   -main-script target/nextflow/metadata/add_id/main.nf \
+  -c src/workflows/utils/labels_ci.config \
   -profile docker \
   --id pbmc_1k_protein_v3_uss \
   --input "${OUT}_uss.h5mu" \
@@ -74,6 +76,7 @@ nextflow \
 nextflow \
   run . \
   -main-script target/nextflow/workflows/rna/rna_multisample/main.nf \
+  -c src/workflows/utils/labels_ci.config \
   -profile docker \
   --id pbmc_1k_protein_v3_ums \
   --input "${OUT}_uss_with_id.h5mu" \
@@ -87,6 +90,7 @@ rm "${OUT}_uss_with_id.h5mu"
 nextflow \
   run . \
   -main-script target/nextflow/workflows/multiomics/dimensionality_reduction/main.nf \
+  -c src/workflows/utils/labels_ci.config \
   -profile docker \
   --id pbmc_1k_protein_v3_mms \
   --input "${OUT}_ums.h5mu" \
