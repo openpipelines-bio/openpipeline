@@ -73,7 +73,7 @@ def test_label_transfer(run_component, test_args):
 
     output_data = mudata.read_h5mu("output.h5mu")
 
-    exp_uns = "labels_transfer" if output_uns_parameters is None else output_uns_parameters
+    exp_uns = "xgboost_parameters" if output_uns_parameters is None else output_uns_parameters
 
     for target in obs_targets:
         assert f"{target}_pred" in output_data.mod["rna"].obs, f"Predictions are missing from output\noutput: {output_data.mod['rna'].obs}"
