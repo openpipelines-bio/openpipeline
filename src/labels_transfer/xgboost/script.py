@@ -345,7 +345,8 @@ def main(par):
     mdata = mudata.read(par["input"].strip())
     adata = mdata.mod[par["modality"]]
 
-    adata_reference = sc.read(par["reference"], backup_url=par["reference"])
+    mdata_reference = mudata.read(par["reference"])
+    adata_reference = mdata_reference.mod[par["modality"]]
 
     # If classifiers for targets are in the model_output directory, simply open them and run (unless `retrain` != True)
     # If some classifiers are missing, train and save them first
