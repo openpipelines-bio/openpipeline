@@ -342,8 +342,8 @@ def main(par):
     logger.info("Checking arguments")
     par = check_arguments(par)
 
-    mdata = mudata.read(par["input"].strip())
-    adata = mdata.mod[par["modality"]]
+    mdata_query = mudata.read(par["input"].strip())
+    adata_query = mdata_query.mod[par["modality"]]
 
     mdata_reference = mudata.read(par["reference"])
     adata_reference = mdata_reference.mod[par["modality"]]
@@ -364,7 +364,7 @@ def main(par):
     build_ref_classifiers(adata_reference, targets_to_train, model_path=par["model_output"], 
                           gpu=par["use_gpu"], eval_verbosity=par["verbosity"])
 
-    output_uns_parameters = adata.uns.get(par["output_uns_parameters"], {})
+    output_uns_parameters = adata_query.uns.get(par["output_uns_parameters"], {})
 
     with open(par["model_output"] + "/model_info.json", "r") as f:
         models_info = json.loads(f.read())
@@ -372,7 +372,7 @@ def main(par):
     for obs_target, obs_pred, obs_unc in zip(par["reference_obs_targets"], par["output_obs_predictions"], par["output_obs_probability"]):
         logger.info(f"Predicting {obs_target}")
 
-        adata = predict(query_dataset=adata,
+        adata_query = predict(query_dataset=adata_query,
                         cell_type_classifier_model_path=os.path.join(par["model_output"], "classifier_" + obs_target + ".xgb"),
                         annotation_column_name=obs_target, 
                         prediction_column_name=obs_pred,
@@ -387,14 +387,14 @@ def main(par):
                 **training_params
             }
 
-    adata.uns[par["output_uns_parameters"]] = output_uns_parameters
+    adata_query.uns[par["output_uns_parameters"]] = output_uns_parameters
 
     logger.info("Updating mdata")
-    mdata.mod[par['modality']] = adata
-    mdata.update()
+    mdata_query.mod[par['modality']] = adata_query
+    mdata_query.update()
 
     logger.info("Writing output")
-    mdata.write_h5mu(par['output'].strip())
+    mdata_query.write_h5mu(par['output'].strip())
 
 if __name__ == "__main__":
     main(par)
