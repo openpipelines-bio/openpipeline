@@ -29,7 +29,6 @@ platforms:
           - procps
       - type: python
         packages: /opt/openpipelinetestutils
-        pypi:
-          - mudata
-        __merge__: /src/base/requirements/viashpy.yaml
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/viashpy.yaml, .]
   - type: nextflow
