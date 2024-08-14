@@ -73,7 +73,14 @@
 
 * `workflows/ingestion/make_reference`: Add additional arguments passed through to the STAR and BD Rhapsody reference components (PR #846).
 
+* `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
+
 ## MINOR CHANGES
+
+* `neighbors/find_neighbors` component: Modified to include results of KNN in the output file (PR #748).
+  2 new optional arguments added to set .obsm slots to save KNN results into:
+  - `obsm_knn_indices`
+  - `obsm_knn_distances`
 
 * `cellbender_remove_background_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
 

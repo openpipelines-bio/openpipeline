@@ -152,6 +152,28 @@
             }
     
 
+        ,
+                "obsm_knn_indices": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `knn_indices`. In which ",
+                "help_text": "Type: `string`, default: `knn_indices`. In which .obsm slot to store the indices of the k-nearest neighbors."
+            ,
+                "default": "knn_indices"
+            }
+    
+
+        ,
+                "obsm_knn_distances": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `knn_distances`. In which ",
+                "help_text": "Type: `string`, default: `knn_distances`. In which .obsm slot to store the distances of the k-nearest neighbors."
+            ,
+                "default": "knn_distances"
+            }
+    
+
 }
 },
     

@@ -10,6 +10,8 @@ obsp_connectivities: "connectivities"
 metric: "euclidean"
 num_neighbors: 15
 seed: 0
+obsm_knn_indices: "knn_indices"
+obsm_knn_distances: "knn_distances"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
