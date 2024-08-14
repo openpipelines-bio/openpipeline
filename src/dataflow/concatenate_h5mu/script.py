@@ -98,16 +98,6 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-def indexes_unique(indices: Iterable[pd.Index]) -> bool:
-    combined_indices = indices[0].append(indices[1:])
-    return combined_indices.is_unique
-
-def check_observations_unique(samples: Iterable[anndata.AnnData]) -> None:
-    observation_ids = [sample.obs.index for sample in samples]
-    if not indexes_unique(observation_ids):
-        raise ValueError("Observations are not unique across samples.")
-
-
 def nunique(row):
     unique = pd.unique(row)
     unique_without_na = pd.core.dtypes.missing.remove_na_arraylike(unique)
