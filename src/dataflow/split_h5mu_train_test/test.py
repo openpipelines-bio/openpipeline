@@ -4,9 +4,7 @@ import pytest
 import subprocess
 import re
 import mudata as mu
-import scanpy as sc
-import anndata as ad
-from openpipelinetestutils.asserters import assert_annotation_objects_equal
+
 
 ## VIASH START
 meta = {

@@ -1,5 +1,5 @@
 functionality:
-  name: split_data
+  name: split_h5mu_train_test
   namespace: dataflow
   description: Split mudata object into training and testing (and validation) datasets based on observations into separate mudata objects.
   authors:
