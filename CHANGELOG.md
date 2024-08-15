@@ -36,7 +36,7 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
-* `workflows/integration/scgpt_leiden` workflow integrate with scGPT followed by Leiden clustering (PR #794).
+* `workflows/integration/scgpt_leiden` workflow with scGPT integration followed by Leiden clustering (PR #794).
 
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).

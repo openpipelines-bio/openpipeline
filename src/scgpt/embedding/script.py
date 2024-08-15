@@ -151,11 +151,12 @@ model_file = par["model"]
 model_dict = torch.load(model_file, map_location=device)
 
 # Ensure the provided model has the correct architecture
+finetuned_checkpoints_key = par.get("finetuned_checkpoints_key", None)
 if par["finetuned_checkpoints_key"]:
-    if par["finetuned_checkpoints_key"] not in model_dict.keys():
-        finetuned_checkpoints_key = par["finetuned_checkpoints_key"]
-        raise KeyError(f"The key '{finetuned_checkpoints_key}' provided for '--finetuned_checkpoints_key' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.")
-    model_dict = model_dict[par["finetuned_checkpoints_key"]]
+    try:
+        model_dict = model_dict[finetuned_checkpoints_key]
+    except KeyError as e:
+        raise ValueError(f"The key '{finetuned_checkpoints_key}' provided for '--finetuned_checkpoints_key' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.") from e
 
 # Load model
 load_pretrained(
