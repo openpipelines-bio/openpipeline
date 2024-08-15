@@ -81,13 +81,6 @@ functionality:
           default: "X_scgpt"
           required: false
           description: "In which .obsm slot to store the resulting integrated embedding."
-        - name: "--output_compression"
-          type: string
-          example: "gzip"
-          required: false
-          choices: ["gzip", "lzf"]
-          description: |
-            The compression algorithm to use for the output h5mu file.
 
     - name: "Padding arguments"
       arguments:
