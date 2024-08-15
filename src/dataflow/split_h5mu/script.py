@@ -11,9 +11,18 @@ par = {
   'output': 'reference_download/sample_split',
   'drop_obs_nan': "true",
   'output_compression': None,
-  'output_files': 'reference_download/sample_files.csv'
+  'output_files': 'reference_download/sample_files.csv',
+  'ensure_unique_filenames': True
 }
-
+import anndata as ad
+df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"])
+var3 = pd.DataFrame(["d", "e", "g"], index=df.columns, columns=["Feat"])
+obs3 = pd.DataFrame(["C C", "C_C"], index=df.index, columns=["Obs"])
+ad3 = ad.AnnData(df, obs=obs3, var=var3)
+mdata = mu.MuData({'rna': ad3})
+mdata.write_h5mu("test_san.h5mu")
+par["input"] = "test_san.h5mu"
+par["obs_feature"] = "Obs"
 ### VIASH END
 
 # START TEMPORARY WORKAROUND setup_logger
@@ -44,21 +53,25 @@ def main():
 
     logger.info(f"Reading unique features from {par['obs_feature']}")
     obs_features = adata.obs[par["obs_feature"]].unique().tolist()
-
-    # format obs_features into file compatible names
-    obs_features_s = [re.sub(r'[-\s]', "_", s.strip()) for s in obs_features]
+    
+    # sanitize --obs_feature values
+    obs_features_s = [str(x) for x in obs_features]
+    obs_features_s = [re.sub(r'[-\s]', "_", s.strip()) for s in obs_features_s]
     obs_features_s = [re.sub(r'[^A-Za-z0-9_]', "", s) for s in obs_features_s]
 
-    # ensure that names are unique, if not append number as suffix
+    # ensure that names are unique, if not raise or append number as suffix
     if not len(obs_features_s) == len(set(obs_features_s)):
-        logger.info("Ensuring unique names for par['obs_feature']")
-        counts = {}
-        for i, feature in enumerate(obs_features_s):
-            if feature not in counts:
-                counts[feature] = 0
-            else:
-                counts[feature] += 1
-                obs_features_s[i] += "_" + str(counts[feature])
+        if not par["ensure_unique_filenames"]:
+            raise ValueError(f"File names are not unique after sanitizing the --obs_feature {par['obs_feature']} values")
+        else:
+            logger.info("Ensuring unique names for par['obs_feature']")
+            counts = {}
+            for i, feature in enumerate(obs_features_s):
+                if feature not in counts:
+                    counts[feature] = 0
+                else:
+                    counts[feature] += 1
+                    obs_features_s[i] += "_" + str(counts[feature])
 
     # generate output dir
     output_dir = Path(par["output"])

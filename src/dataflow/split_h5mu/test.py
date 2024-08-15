@@ -5,6 +5,8 @@ import mudata as mu
 import anndata as ad
 import numpy as np
 import pandas as pd
+import subprocess
+import re
 
 
 @pytest.fixture
@@ -26,6 +28,14 @@ def input_modality_2():
 
 
 @pytest.fixture
+def input_modality_3():
+    df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"])
+    var3 = pd.DataFrame(["d", "e", "g"], index=df.columns, columns=["Feat"])
+    obs3 = pd.DataFrame(["C C", "C_C"], index=df.index, columns=["Obs"])
+    ad3 = ad.AnnData(df, obs=obs3, var=var3)
+    return ad3
+
+@pytest.fixture
 def input_h5mu(input_modality_1, input_modality_2):
     tmp_mudata = mu.MuData({'mod1': input_modality_1, 'mod2': input_modality_2})
     return tmp_mudata
@@ -34,6 +44,17 @@ def input_h5mu(input_modality_1, input_modality_2):
 @pytest.fixture
 def input_h5mu_path(write_mudata_to_file, input_h5mu):
     return write_mudata_to_file(input_h5mu)
+
+
+@pytest.fixture
+def input_h5mu_non_unique_filenames(input_modality_3):
+    tmp_mudata = mu.MuData({'mod3': input_modality_3})
+    return tmp_mudata
+
+
+@pytest.fixture
+def input_h5mu_path_non_unique_filenames(write_mudata_to_file, input_h5mu_non_unique_filenames):
+    return write_mudata_to_file(input_h5mu_non_unique_filenames)
 
 
 def test_sample_split(run_component, random_path, input_h5mu, input_h5mu_path):
@@ -132,6 +153,47 @@ def test_sample_split_dropna(run_component, random_path, input_h5mu, input_h5mu_
 
     assert len(s1.mod["mod1"].obs.keys()) == 1, "number of observation keys split file s1 modality mod1 should equal 1"
     assert len(s1.mod["mod2"].obs.keys()) == 1, "number of observation keys split file s1 modality mod2 should equal 1"
+
+def test_sanitizing(run_component, random_path, input_h5mu_path_non_unique_filenames):
+    output_dir = random_path()
+    output_files = random_path(extension="csv")
+    
+    args = [
+        "--input", input_h5mu_path_non_unique_filenames,
+        "--output", str(output_dir),
+        "--modality", "mod3",
+        "--obs_feature", "Obs",
+        "--drop_obs_nan", "true",
+        "--output_files", str(output_files)
+    ]
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args)
+    assert re.search(
+        r"ValueError: File names are not unique after sanitizing the --obs_feature Obs values",
+        err.value.stdout.decode('utf-8'))
+    
+    args_san = [
+            "--input", input_h5mu_path_non_unique_filenames,
+            "--output", str(output_dir),
+            "--modality", "mod3",
+            "--obs_feature", "Obs",
+            "--drop_obs_nan", "true",
+            "--output_files", str(output_files),
+            "--ensure_unique_filenames", "true"
+        ]
+
+    run_component(args_san)
+
+    # check output dir and file names
+    dir_content = [h5mu_file for h5mu_file in output_dir.iterdir()
+                   if h5mu_file.suffix == ".h5mu" and h5mu_file != input_h5mu_path_non_unique_filenames]
+    s1_file = output_dir / f"{input_h5mu_path_non_unique_filenames.stem}_C_C.h5mu"
+    s2_file = output_dir / f"{input_h5mu_path_non_unique_filenames.stem}_C_C_1.h5mu"
+
+    assert s1_file.is_file(), f"{s1_file} does not exist"
+    assert s2_file.is_file(), f"{s2_file} does not exist"
+    assert set(dir_content) == set([s1_file, s2_file]), "Output files do not match file names in csv"
 
 
 if __name__ == "__main__":
