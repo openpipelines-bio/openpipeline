@@ -45,16 +45,12 @@ target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
   --input "${OUT}_filtered_feature_bc_matrix.h5" \
   --input_metrics_summary "${OUT}_metrics_summary.csv" \
   --output "${OUT}_filtered_feature_bc_matrix.h5mu"
-  
-target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
-  --input "${OUT}_raw_feature_bc_matrix.h5" \
-  --input_metrics_summary "${OUT}_metrics_summary.csv" \
-  --output "${OUT}_raw_feature_bc_matrix.h5mu"
 
 # run single sample
-NXF_VER=21.10.6 nextflow \
+nextflow \
   run . \
-  -main-script src/workflows/multiomics/rna_singlesample/main.nf \
+  -main-script target/nextflow/workflows/rna/rna_singlesample/main.nf \
+  -c src/workflows/utils/labels_ci.config \
   -profile docker \
   --id pbmc_1k_protein_v3_uss \
   --input "${OUT}_filtered_feature_bc_matrix.h5mu" \
@@ -62,21 +58,39 @@ NXF_VER=21.10.6 nextflow \
   --publishDir `dirname $OUT` \
   -resume
 
-# run multisample
-NXF_VER=21.10.6 nextflow \
+# add the sample ID to the mudata object
+nextflow \
   run . \
-  -main-script src/workflows/multiomics/rna_multisample/main.nf \
+  -main-script target/nextflow/metadata/add_id/main.nf \
+  -c src/workflows/utils/labels_ci.config \
+  -profile docker \
+  --id pbmc_1k_protein_v3_uss \
+  --input "${OUT}_uss.h5mu" \
+  --input_id "pbmc_1k_protein_v3_uss" \
+  --output "`basename $OUT`_uss_with_id.h5mu" \
+  --output_compression "gzip" \
+  --publishDir `dirname $OUT` \
+  -resume
+
+# run multisample
+nextflow \
+  run . \
+  -main-script target/nextflow/workflows/rna/rna_multisample/main.nf \
+  -c src/workflows/utils/labels_ci.config \
   -profile docker \
   --id pbmc_1k_protein_v3_ums \
-  --input "${OUT}_uss.h5mu" \
+  --input "${OUT}_uss_with_id.h5mu" \
   --output "`basename $OUT`_ums.h5mu" \
   --publishDir `dirname $OUT` \
   -resume
 
-# run integration
-NXF_VER=21.10.6 nextflow \
+rm "${OUT}_uss_with_id.h5mu"
+
+# run dimred
+nextflow \
   run . \
-  -main-script src/workflows/multiomics/integration/main.nf \
+  -main-script target/nextflow/workflows/multiomics/dimensionality_reduction/main.nf \
+  -c src/workflows/utils/labels_ci.config \
   -profile docker \
   --id pbmc_1k_protein_v3_mms \
   --input "${OUT}_ums.h5mu" \
