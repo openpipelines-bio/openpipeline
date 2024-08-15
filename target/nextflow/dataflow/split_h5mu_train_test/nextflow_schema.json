@@ -1,0 +1,203 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "split_h5mu_train_test",
+"description": "Split mudata object into training and testing (and validation) datasets based on observations into separate mudata objects.",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "Input dataset in mudata format.",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `input.h5mu`. The input (query) data to be labeled",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. The input (query) data to be labeled. Should be a .h5mu file."
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. Which modality to process",
+                "help_text": "Type: `string`, default: `rna`. Which modality to process."
+            ,
+                "default": "rna"
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "Output arguments.",
+    "properties": {
+    
+        
+                "output_train": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output_train.h5mu`, example: `output_train.h5mu`. The output training data in mudata format",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_train.h5mu`, example: `output_train.h5mu`. The output training data in mudata format."
+            ,
+                "default": "$id.$key.output_train.h5mu"
+            }
+    
+
+        ,
+                "output_test": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output_test.h5mu`, example: `output_test.h5mu`. The output testing data in mudata format",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_test.h5mu`, example: `output_test.h5mu`. The output testing data in mudata format."
+            ,
+                "default": "$id.$key.output_test.h5mu"
+            }
+    
+
+        ,
+                "output_val": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output_val.h5mu`, example: `output_val.h5mu`. The output validation data in mudata format",
+                "help_text": "Type: `file`, default: `$id.$key.output_val.h5mu`, example: `output_val.h5mu`. The output validation data in mudata format."
+            ,
+                "default": "$id.$key.output_val.h5mu"
+            }
+    
+
+        ,
+                "compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+}
+},
+    
+    
+    "split arguments" : {
+    "title": "Split arguments",
+    "type": "object",
+    "description": "Model arguments.",
+    "properties": {
+    
+        
+                "test_size": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.2`. The proportion of the dataset to include in the test split",
+                "help_text": "Type: `double`, default: `0.2`. The proportion of the dataset to include in the test split."
+            ,
+                "default": "0.2"
+            }
+    
+
+        ,
+                "val_size": {
+                "type":
+                "number",
+                "description": "Type: `double`. The proportion of the dataset to include in the validation split",
+                "help_text": "Type: `double`. The proportion of the dataset to include in the validation split."
+            
+            }
+    
+
+        ,
+                "shuffle": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. Whether or not to shuffle the data before splitting",
+                "help_text": "Type: `boolean_true`, default: `false`. Whether or not to shuffle the data before splitting."
+            ,
+                "default": "False"
+            }
+    
+
+        ,
+                "random_state": {
+                "type":
+                "integer",
+                "description": "Type: `integer`. The seed used by the random number generator",
+                "help_text": "Type: `integer`. The seed used by the random number generator."
+            
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/split arguments"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}
