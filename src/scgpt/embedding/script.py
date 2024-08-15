@@ -8,7 +8,7 @@ import torch
 
 ## VIASH START
 par = {
-    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_tokenized.h5mu",
+    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_tokenized.h5mu",
     "obsm_gene_tokens": 'gene_id_tokens',
     "obsm_tokenized_values": 'values_tokenized',
     "obsm_padding_mask": 'padding_mask',
