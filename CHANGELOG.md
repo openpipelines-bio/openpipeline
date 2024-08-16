@@ -10,7 +10,7 @@
 
 * Removed `--disable_library_compatibility_check` in favour of `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).
 
-* `lianapy`: bumped version to `1.2.1` (PR #827).
+* `lianapy`: bumped version to `1.3.0` (PR #827 and PR #862). Additionally, `groupby` is now a required argument.
 
 * `concat`: this component was deprecated and has now been removed, use `concatenate_h5mu` instead (PR #796).
 
