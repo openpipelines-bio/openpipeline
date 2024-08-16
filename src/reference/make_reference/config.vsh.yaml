@@ -50,16 +50,14 @@ resources:
 test_resources:
   - type: bash_script
     path: run_test.sh
-
 engines:
-- type: docker
-  image: ubuntu:22.04
-  setup:
-    - type: apt
-      packages: [ pigz, seqkit, curl, wget, unzip ]
-
+  - type: docker
+    image: ubuntu:22.04
+    setup:
+      - type: apt
+        packages: [ pigz, seqkit, curl, wget, unzip, file]
 runners:
-- type: executable
-- type: nextflow
-  directives:
-    label: [ highmem, highcpu ]
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [ highmem, highcpu ]

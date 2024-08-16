@@ -24,6 +24,8 @@
 
 * `filter/filter_with_hvg`: this component was deprecated and has now been removed. Use `feature_annotation/highly_variable_features_scanpy` instead (PR #843).
 
+* `dataflow/concat`: this component was deprecated and has now been removed. Use `dataflow/concatenate_h5mu` instead (PR #857).
+
 * `convert/from_h5mu_to_seurat`: bump seurat to latest version (PR #850).
 
 * `workflows/ingestion/bd_rhapsody`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
@@ -77,7 +79,14 @@
 
 * `workflows/ingestion/make_reference`: Add additional arguments passed through to the STAR and BD Rhapsody reference components (PR #846).
 
+* `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
+
 ## MINOR CHANGES
+
+* `neighbors/find_neighbors` component: Modified to include results of KNN in the output file (PR #748).
+  2 new optional arguments added to set .obsm slots to save KNN results into:
+  - `obsm_knn_indices`
+  - `obsm_knn_distances`
 
 * `cellbender_remove_background_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
 
@@ -92,6 +101,8 @@
 * `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
 
 * Bump `viash-actions` to `v6` (PR #821).
+
+* `reference/make_reference`: Do not try to extract genome fasta and transcriptome gtf if they are not gzipped (PR #856).
 
 ## BUG FIXES
 
