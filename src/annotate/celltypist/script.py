@@ -61,12 +61,13 @@ def main(par):
     
     # Set var names to the desired gene name format (gene synbol, ensembl id, etc.)
     # CellTypist requires query gene names to be in the same format as the reference data.
-    if par["var_query_gene_names"]:
-        input_modality = set_var_index(input_modality, par["var_query_gene_names"])
+    input_modality = set_var_index(input_modality, par["var_query_gene_names"]) if par["var_query_gene_names"] else input_modality
 
-    model = celltypist.models.Model.load(par["model"]) if par["model"] else None
- 
-    if par["reference"]:
+    if par["model"]:
+        logger.info("Loading CellTypist model")
+        model = celltypist.models.Model.load(par["model"])
+    
+    elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
                 
         if par["var_reference_gene_names"]:
@@ -89,12 +90,18 @@ def main(par):
             logger.warning("Reference data is not in the reccommended format for CellTypist.")
         
         labels = reference_modality.obs[par["reference_obs_target"]]
+        
+        logger.info("Training CellTypist model on reference") 
         model = celltypist.train(reference_matrix,
-                                labels=labels,
-                                genes=reference_modality.var.index,
-                                feature_selection=par["feature_selection"],
-                                check_expression=par["check_expression"])
+                                 labels=labels,
+                                 genes=reference_modality.var.index,
+                                 C=par["C"],
+                                 max_iter=par["max_iter"],
+                                 use_SGD=par["use_SGD"],
+                                 feature_selection=par["feature_selection"],
+                                 check_expression=par["check_expression"])
             
+    logger.info("Predicting CellTypist annotations")
     predictions = celltypist.annotate(input_modality,
                                       model,
                                       majority_voting=par["majority_voting"])

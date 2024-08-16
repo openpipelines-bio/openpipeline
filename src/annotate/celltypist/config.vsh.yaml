@@ -5,6 +5,8 @@ functionality:
   authors:
     - __merge__: /src/authors/jakub_majercik.yaml
       roles: [ author ]
+    - __merge__: /src/authors/weiwei_schultz.yaml
+      roles: [ contributor ]
 
   argument_groups:
     - name: Inputs
@@ -73,6 +75,24 @@ functionality:
           type: boolean
           description: "Whether to refine the predicted labels by running the majority voting classifier after over-clustering."
           default: false
+        - name: "--C"
+          type: double
+          description: "Inverse of regularization strength in logistic regression."
+          default: 1.0
+        - name: "--max_iter"
+          type: integer
+          description: "Maximum number of iterations before reaching the minimum of the cost function."
+          default: 1000
+        - name: "--use_SGD"
+          type: boolean_true
+          description: "Whether to use the stochastic gradient descent algorithm."
+        - name: "--min_prop"
+          type: double
+          description: |
+            "For the dominant cell type within a subcluster, the minimum proportion of cells required to 
+            support naming of the subcluster by this cell type. Ignored if majority_voting is set to False. 
+            Subcluster that fails to pass this proportion threshold will be assigned 'Heterogeneous'."
+          default: 0
     - name: Outputs
       description: Output arguments.
       arguments:
