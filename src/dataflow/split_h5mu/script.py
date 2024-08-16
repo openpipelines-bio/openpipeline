@@ -55,23 +55,19 @@ def main():
     obs_features = adata.obs[par["obs_feature"]].unique().tolist()
     
     # sanitize --obs_feature values
-    obs_features_s = [str(x) for x in obs_features]
-    obs_features_s = [re.sub(r'[-\s]', "_", s.strip()) for s in obs_features_s]
+    obs_features_s = [re.sub(r'[-\s]', "_", str(s).strip()) for s in obs_features_s]
     obs_features_s = [re.sub(r'[^A-Za-z0-9_]', "", s) for s in obs_features_s]
 
     # ensure that names are unique, if not raise or append number as suffix
     if not len(obs_features_s) == len(set(obs_features_s)):
         if not par["ensure_unique_filenames"]:
             raise ValueError(f"File names are not unique after sanitizing the --obs_feature {par['obs_feature']} values")
-        else:
-            logger.info("Ensuring unique names for par['obs_feature']")
-            counts = {}
-            for i, feature in enumerate(obs_features_s):
-                if feature not in counts:
-                    counts[feature] = 0
-                else:
-                    counts[feature] += 1
-                    obs_features_s[i] += "_" + str(counts[feature])
+
+        logger.info("Ensuring unique names for par['obs_feature']")
+        counts = {}
+        for i, feature in enumerate(obs_features_s):
+            counts.setdefault(feature, -1) += 1
+            obs_features_s[i] += "_" + str(counts[feature])
 
     # generate output dir
     output_dir = Path(par["output"])
