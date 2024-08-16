@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eou pipefail
+set -eo pipefail
 
 ## VIASH START
 par_input='resources_test/cellranger_tiny_bcl/bcl'
