@@ -2,6 +2,7 @@ import mudata as mu
 import pandas as pd
 import re
 from pathlib import Path
+from collections import defaultdict
 
 ### VIASH START
 par = {
@@ -64,9 +65,9 @@ def main():
             raise ValueError(f"File names are not unique after sanitizing the --obs_feature {par['obs_feature']} values")
 
         logger.info("Ensuring unique names for par['obs_feature']")
-        counts = {}
+        counts = defaultdict(int)
         for i, feature in enumerate(obs_features_s):
-            counts.setdefault(feature, -1) += 1
+            counts[feature] += 1
             obs_features_s[i] += f"_{counts[feature]}"
 
     # generate output dir
