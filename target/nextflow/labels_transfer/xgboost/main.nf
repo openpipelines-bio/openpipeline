@@ -3506,7 +3506,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/xgboost",
     "viash_version" : "0.8.6",
-    "git_commit" : "8e1f510555276e3962ba94cce0c32905358e819f",
+    "git_commit" : "0a757166a9c059f99504869cd5e3f777849de68c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
