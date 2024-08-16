@@ -54,9 +54,9 @@ def main():
 
     logger.info(f"Reading unique features from {par['obs_feature']}")
     obs_features = adata.obs[par["obs_feature"]].unique().tolist()
-    
+
     # sanitize --obs_feature values
-    obs_features_s = [re.sub(r'[-\s]', "_", str(s).strip()) for s in obs_features_s]
+    obs_features_s = [re.sub(r'[-\s]', "_", str(s).strip()) for s in obs_features]
     obs_features_s = [re.sub(r'[^A-Za-z0-9_]', "", s) for s in obs_features_s]
 
     # ensure that names are unique, if not raise or append number as suffix
@@ -67,7 +67,7 @@ def main():
         logger.info("Ensuring unique names for par['obs_feature']")
         counts = defaultdict(int)
         for i, feature in enumerate(obs_features_s):
-            counts[feature] += 1
+            counts[feature] = counts.get(feature, -1) + 1
             obs_features_s[i] += f"_{counts[feature]}"
 
     # generate output dir
