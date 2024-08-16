@@ -67,7 +67,7 @@ def main():
         counts = {}
         for i, feature in enumerate(obs_features_s):
             counts.setdefault(feature, -1) += 1
-            obs_features_s[i] += "_" + str(counts[feature])
+            obs_features_s[i] += f"_{counts[feature]}"
 
     # generate output dir
     output_dir = Path(par["output"])
