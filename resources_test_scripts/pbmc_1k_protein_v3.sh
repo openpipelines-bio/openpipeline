@@ -99,6 +99,19 @@ nextflow \
   --obs_covariates sample_id \
   -resume
 
+# run integration
+nextflow \
+  run . \
+  -main-script target/nextflow/workflows/integration/harmony_leiden/main.nf \
+  -c src/workflows/utils/labels_ci.config \
+  -profile docker \
+  --id pbmc_1k_protein_v3_mms_integration \
+  --input "${OUT}_mms.h5mu" \
+  --output "`basename $OUT`_mms.h5mu" \
+  --publishDir `dirname $OUT` \
+  --obs_covariates sample_id \
+  -resume
+
 python <<HEREDOC
 import mudata as mu
 mudata = mu.read_h5mu("${DIR}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu")

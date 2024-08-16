@@ -21,7 +21,7 @@ def test_harmonypy(run_component, tmp_path):
         "--modality", "rna",
         "--obsm_input", "X_pca",
         "--obsm_output", "X_pca_int",
-        "--obs_covariates", "leiden",
+        "--obs_covariates", "harmony_integration_leiden_1.0",
         "--output", str(output_path),
         "--output_compression", "gzip"])
     assert output_path.is_file()

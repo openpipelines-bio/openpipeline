@@ -41,7 +41,7 @@ def test_simple_integration(run_component, tmp_path, sample_mudata):
     run_component([
         "--input", str(tmp_input_path),
         "--output", str(output_path),
-        "--obs_batch", "leiden",
+        "--obs_batch", "harmony_integration_leiden_1.0",
         "--obsm_input", "X_pca",
         "--output_compression", "gzip"
     ])
@@ -59,7 +59,7 @@ def test_alternative_names(run_component, tmp_path, sample_mudata):
     run_component([
         "--input", str(tmp_input_path),
         "--output", str(output_path),
-        "--obs_batch", "leiden",
+        "--obs_batch", "harmony_integration_leiden_1.0",
         "--obsm_input", "X_pca",
         "--output_compression", "gzip",
         "--uns_output", "my_neighbors",
