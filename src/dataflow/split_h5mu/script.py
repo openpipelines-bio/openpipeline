@@ -3,6 +3,7 @@ import pandas as pd
 import re
 from pathlib import Path
 from collections import defaultdict
+from operator import iadd
 
 ### VIASH START
 par = {
@@ -65,11 +66,11 @@ def main():
             raise ValueError(f"File names are not unique after sanitizing the --obs_feature {par['obs_feature']} values")
 
         logger.info("Ensuring unique names for par['obs_feature']")
-        counts = defaultdict(int)
+        counts = defaultdict(lambda: -1)
         for i, feature in enumerate(obs_features_s):
             counts[feature] += 1
-            if counts[feature] > 1:
-                obs_features_s[i] += f"_{counts[feature] - 1}"
+            if (curr_counts := counts[feature]) > 0:
+                obs_features_s[i] += f"_{curr_counts}"
 
     # generate output dir
     output_dir = Path(par["output"])
