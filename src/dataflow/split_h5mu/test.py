@@ -189,7 +189,7 @@ def test_sanitizing(run_component, random_path, input_h5mu_path_non_unique_filen
     # check output dir and file names
     dir_content = [h5mu_file for h5mu_file in output_dir.iterdir()
                    if h5mu_file.suffix == ".h5mu" and h5mu_file != input_h5mu_path_non_unique_filenames]
-    s1_file = output_dir / f"{input_h5mu_path_non_unique_filenames.stem}_C_C_0.h5mu"
+    s1_file = output_dir / f"{input_h5mu_path_non_unique_filenames.stem}_C_C.h5mu"
     s2_file = output_dir / f"{input_h5mu_path_non_unique_filenames.stem}_C_C_1.h5mu"
 
     assert s1_file.is_file(), f"{s1_file} does not exist"
