@@ -88,10 +88,9 @@
                 "groupby": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `bulk_labels`. The key of the observations grouping to consider",
-                "help_text": "Type: `string`, default: `bulk_labels`. The key of the observations grouping to consider."
-            ,
-                "default": "bulk_labels"
+                "description": "Type: `string`, required. The key of the observations grouping to consider",
+                "help_text": "Type: `string`, required. The key of the observations grouping to consider."
+            
             }
     
 

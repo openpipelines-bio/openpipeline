@@ -4,7 +4,7 @@ input: # please fill in - example: "path/to/file"
 output_compression: "gzip"
 modality: "rna"
 # layer: "foo"
-groupby: "bulk_labels"
+groupby: # please fill in - example: "foo"
 resource_name: "consensus"
 gene_symbol: "gene_symbol"
 expr_prop: 0.1

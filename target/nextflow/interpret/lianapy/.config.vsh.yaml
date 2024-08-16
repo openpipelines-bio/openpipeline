@@ -92,9 +92,7 @@ functionality:
     name: "--groupby"
     description: "The key of the observations grouping to consider."
     info: null
-    default:
-    - "bulk_labels"
-    required: false
+    required: true
     direction: "input"
     multiple: false
     multiple_sep: ":"
@@ -253,7 +251,7 @@ platforms:
     - "mudata~=0.2.4"
     - "pandas!=2.1.2"
     - "numpy<2.0.0"
-    - "liana~=1.2.1"
+    - "liana~=1.3.0"
     upgrade: true
   test_setup:
   - type: "python"
@@ -317,5 +315,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/interpret/lianapy"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/interpret/lianapy/lianapy"
   viash_version: "0.8.6"
-  git_commit: "0a757166a9c059f99504869cd5e3f777849de68c"
+  git_commit: "52bef4159331c5bfefd1d18cec10f79f87edf4ef"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
