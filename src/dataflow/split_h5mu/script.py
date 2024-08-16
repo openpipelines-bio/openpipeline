@@ -3,7 +3,6 @@ import pandas as pd
 import re
 from pathlib import Path
 from collections import defaultdict
-from operator import iadd
 
 ### VIASH START
 par = {
