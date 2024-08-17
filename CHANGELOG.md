@@ -10,7 +10,7 @@
 
 * Removed `--disable_library_compatibility_check` in favour of `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).
 
-* `lianapy`: bumped version to `1.2.1` (PR #827).
+* `lianapy`: bumped version to `1.3.0` (PR #827 and PR #862). Additionally, `groupby` is now a required argument.
 
 * `XGBoost`: bump version to `2.0.3` (PR #646).
 
@@ -68,6 +68,8 @@
 
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
+  
+* `dataflow/split_h5mu` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
 
 * `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
 
