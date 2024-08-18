@@ -3,16 +3,17 @@ import mudata
 # TODO: Remove when grouping labels exist
 # For sign/PCA/
 import numpy as np
+import pandas as pd
 
 ### VIASH START
 par = {
-    "input": "integration.pca.output.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "output": "foo.h5mu",
     "output_compression": "gzip",
     "modality": "rna",
     "layer": None,
     "gene_symbol": "gene_symbol",
-    "groupby": "bulk_labels",
+    "groupby": "harmony_integration_leiden_1.0",
     "resource_name": "consensus",
     "expr_prop": 0.1,
     "min_cells": 5,
@@ -31,8 +32,12 @@ def main():
 
     # Add dummy grouping labels when they do not exist
     if par['groupby'] not in mod.obs:
-        foo = mod.obsm.to_df().iloc[:, 0]
-        mod.obs[par['groupby']] = np.sign(foo).astype('category')
+        raise ValueError(f"Column {par['groupy']} does not exist in "
+                         f".obs for modality {par['modality']}.")
+    mod_col = mod.obs[par['groupby']]
+    original_groupby_col = mod_col.copy()
+    if not isinstance(mod_col, pd.CategoricalDtype):
+        mod.obs[par['groupby']] = mod_col.astype(str).astype('category')
 
     # Solve gene labels
     orig_gene_label = mod.var.index
@@ -56,6 +61,9 @@ def main():
 
     # Return original gene labels
     mod.var_names = orig_gene_label
+
+    # Undo modifications to groupby column
+    mod.obs[par["groupby"]] = original_groupby_col
 
     # TODO: make sure compression is needed
     mdata.write_h5mu(par['output'].strip(), compression=par['output_compression'])
