@@ -9,6 +9,10 @@ functionality:
       roles: [ author, maintainer ]
     - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ author ]
+    - __merge__: /src/authors/weiwei_schultz.yaml
+      roles: [ contributor ]
+    - __merge__: /src/authors/dorien_roosen.yaml
+      roles: [ author ]
   __merge__: /src/mapping/cellranger_multi/cellranger_multi.yaml
   argument_groups:
     - name: Outputs

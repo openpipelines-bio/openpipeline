@@ -10,7 +10,37 @@
 
 * Removed `--disable_library_compatibility_check` in favour of `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).
 
+* `lianapy`: bumped version to `1.3.0` (PR #827 and PR #862). Additionally, `groupby` is now a required argument.
+
+* `XGBoost`: bump version to `2.0.3` (PR #646).
+
+* Several components: update anndata to `0.10.8` and mudata to `0.2.3` (PR #645). 
+
+* `filter/filter_with_hvg`: this component was deprecated and has now been removed. Use `feature_annotation/highly_variable_features_scanpy` instead (PR #843).
+
+* `dataflow/concat`: this component was deprecated and has now been removed. Use `dataflow/concatenate_h5mu` instead (PR #857).
+
+* `convert/from_h5mu_to_seurat`: bump seurat to latest version (PR #850).
+
+* `workflows/ingestion/bd_rhapsody`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
+* `mapping/bd_rhapsody`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
+* `reference/make_bdrhap_reference`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
+* `reference/build_star_reference`: Rename `mapping/star_build_reference` to `reference/build_star_reference` (PR #846).
+
+* `reference/cellranger_mkgtf`: Rename `reference/mkgtf` to `reference/cellranger_mkgtf` (PR #846).
+
 ## NEW FUNCTIONALITY
+
+* `process_samples`, `process_batches` and `rna_multisample` workflows: added functionality to scale the log-normalized 
+  gene expression data to unit variance and zero mean. The scaled data will be output to a different layer and the
+  representation with reduced dimensions will be created and stored in addition to the non-scaled data (PR #733).
+
+* `transform/scaling`: add `--input_layer` and `--output_layer` arguments (PR #733).
+
+* CI: added checking of mudata contents for multiple workflows (PR #783).
 
 * Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #803).
 
@@ -32,12 +62,33 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `scgpt/cell_type_annotation` component: Added scGPT cell type annotation component (PR #798).
+
+* `resources_test_scripts/scGPT.sh`: Added script to include scGPT test resources (PR #800).
+
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
+  
+* `dataflow/split_h5mu` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
+
+* `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
+
+* `workflows/ingestion/make_reference`: Add additional arguments passed through to the STAR and BD Rhapsody reference components (PR #846).
+
+* `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
 
 * `annotete/scanvi` component: Added a component to annotate cells using scANVI (PR #833).
 
 ## MINOR CHANGES
+
+* `neighbors/find_neighbors` component: Modified to include results of KNN in the output file (PR #748).
+  2 new optional arguments added to set .obsm slots to save KNN results into:
+  - `obsm_knn_indices`
+  - `obsm_knn_distances`
+
+* `cellbender_remove_background_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
+
+* Bump scvelo to `0.3.2` (PR #828).
 
 * Bump viash to `0.8.6` (PR #815).
 
@@ -48,6 +99,21 @@
 * `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
 
 * Bump `viash-actions` to `v6` (PR #821).
+
+* `reference/make_reference`: Do not try to extract genome fasta and transcriptome gtf if they are not gzipped (PR #856).
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
+  data dtype (dtype) changed as a result of adding more observations after concatenation, causing `TypeError`.
+  One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
+  which is present in another sample; causing the values being filled with `NA` (PR #837).
+
+* `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR #852).
+
+## DOCUMENTATION
+
+* Update authorship of components (PR #835).
 
 # openpipelines 1.0.0-rc6
 
