@@ -48,14 +48,16 @@ functionality:
     - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: ghcr.io/data-intuitive/randpy:r4.0_py3.10
+    image: rocker/r2u:24.04
     setup:
       - type: apt
         packages: 
           - procps
           - libhdf5-dev
+          - python3-pip 
+          - python3-dev
       - type: r
-        github: bnprks/BPCells
+        github: bnprks/BPCells/r
         cran: 
           - harmony
           - anndata
