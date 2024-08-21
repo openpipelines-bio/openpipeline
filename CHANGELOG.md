@@ -77,6 +77,8 @@
 
 * `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
 
+* `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
+
 ## MINOR CHANGES
 
 * `neighbors/find_neighbors` component: Modified to include results of KNN in the output file (PR #748).
