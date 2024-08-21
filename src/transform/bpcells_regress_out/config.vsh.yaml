@@ -48,22 +48,27 @@ functionality:
     - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: rocker/r2u:24.04
+    image: eddelbuettel/r2u:22.04
     setup:
       - type: apt
-        packages: 
-          - procps
-          - libhdf5-dev
-          - python3-pip 
-          - python3-dev
+        packages: [ libhdf5-dev, python3-pip, python3 ]
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       - type: r
+        cran: [ anndata, reticulate ]
         github: bnprks/BPCells/r
-        cran: 
-          - harmony
-          - anndata
-          - reticulate
+      # - type: docker
+      #   image: rocker/r2u:24.04
+      #   setup:
+      # - type: apt
+      #   packages: 
+      #     - procps
+      #     - libhdf5-dev
+      #     - python3-pip 
+      #     - python3-dev
+      # - type: python
+      #   __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+
 
   - type: nextflow
     directives:
