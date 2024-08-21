@@ -51,30 +51,13 @@ platforms:
     image: eddelbuettel/r2u:22.04
     setup:
       - type: apt
-        packages: [ libhdf5-dev, python3-pip, python3-dev ]
-      - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml ]
+        packages: [ libhdf5-dev, python3-pip, python-as-python3 ]
       - type: r
         cran: [ anndata, reticulate ]
         github: bnprks/BPCells/r
-      - type: docker
-        run: alias "python = python3"
     test_setup:
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml ]
-
-      # - type: docker
-      #   image: rocker/r2u:24.04
-      #   setup:
-      # - type: apt
-      #   packages: 
-      #     - procps
-      #     - libhdf5-dev
-      #     - python3-pip 
-      #     - python3-dev
-      # - type: python
-      #   __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
-
 
   - type: nextflow
     directives:
