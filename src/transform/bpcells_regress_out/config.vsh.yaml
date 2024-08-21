@@ -57,7 +57,7 @@ platforms:
         github: bnprks/BPCells/r
     test_setup:
       - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml ]
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/viashpy.yaml ]
 
   - type: nextflow
     directives:

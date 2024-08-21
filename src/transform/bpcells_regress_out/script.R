@@ -8,11 +8,9 @@ mudata <- reticulate::import("mudata")
 
 ## VIASH START
 par <- list(
-    # input = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
-    input = "input_h5mu.h5mu",
+    input = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     output = "output.h5mu",
-    modality = "rna",
-    obs_keys = c("var")
+    modality = "rna"
 )
 ## VIASH END
 
