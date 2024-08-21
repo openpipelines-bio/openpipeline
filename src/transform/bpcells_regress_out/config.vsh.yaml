@@ -1,0 +1,69 @@
+functionality:
+  name: bpcells_regress_out
+  namespace: "transform"
+  description: |
+    Regress out the effects of confounding variables using a linear least squares regression model with BPCells.
+  authors:
+    - __merge__: /src/authors/dorien_roosen.yaml
+      roles: [ maintainer, author ]
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ contributor, author ]
+    - __merge__: /src/authors/weiwei_schultz.yaml
+      roles: [ contributor ]
+  arguments:
+    - name: "--input"
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+      example: input.h5mu
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file.
+      direction: output
+      required: true
+      default: output.h5mu
+    - name: "--output_compression"
+      type: string
+      description: The compression format to be used on the output h5mu object.
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
+    - name: "--modality"
+      type: string
+      description: "Which modality (one or more) to run this component on."
+      default: "rna"
+    - name: "--obs_keys"
+      type: string
+      multiple: true
+      description: Which .obs keys to regress on.
+  resources:
+    - type: r_script
+      path: script.R
+    - path: /src/utils/setup_logger.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: ghcr.io/data-intuitive/randpy:r4.0_py3.10
+    setup:
+      - type: apt
+        packages: 
+          - procps
+          - libhdf5-dev
+      - type: r
+        github: bnprks/BPCells
+        cran: 
+          - harmony
+          - anndata
+          - reticulate
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, /src/base/requirements/anndata_mudata.yaml, .]
+
+  - type: nextflow
+    directives:
+      label: [lowmem, lowcpu]
