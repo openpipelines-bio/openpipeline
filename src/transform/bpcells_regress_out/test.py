@@ -44,5 +44,6 @@ def test_regress_out(run_component, tmp_path):
 
     assert np.mean(rna_in.X) != np.mean(rna_out.X), "Expression should have changed"
 
+
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
