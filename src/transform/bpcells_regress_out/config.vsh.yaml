@@ -51,7 +51,7 @@ platforms:
     image: eddelbuettel/r2u:22.04
     setup:
       - type: apt
-        packages: [ libhdf5-dev, python3-pip, python-as-python3 ]
+        packages: [ libhdf5-dev, python3-pip, python-is-python3 ]
       - type: r
         cran: [ anndata, reticulate ]
         github: bnprks/BPCells/r
