@@ -2990,6 +2990,33 @@ meta = [
         ]
       },
       {
+        "name" : "Cellranger ARC options",
+        "arguments" : [
+          {
+            "type" : "file",
+            "name" : "--motifs_file",
+            "description" : "Path to file containing transcription factor motifs in JASPAR format.",
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--non_nuclear_contigs",
+            "description" : "Name(s) of contig(s) that do not have any chromatin structure, for example, \nmitochondria or plastids. These contigs are excluded from peak calling since\nthe entire contig will be \\"open\\" due to a lack of chromatin structure.\nLeave empty if there are no such contigs.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
         "name" : "Outputs",
         "arguments" : [
           {
@@ -3002,6 +3029,7 @@ meta = [
             "required" : false,
             "choices" : [
               "cellranger",
+              "cellranger_arc",
               "bd_rhapsody",
               "star"
             ],
@@ -3046,6 +3074,21 @@ meta = [
             "description" : "Output index",
             "example" : [
               "cellranger_index.tar.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--output_cellranger_arc",
+            "description" : "Output index",
+            "example" : [
+              "cellranger_index_arc.tar.gz"
             ],
             "must_exist" : true,
             "create_parent" : true,
@@ -3169,7 +3212,7 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "52bef4159331c5bfefd1d18cec10f79f87edf4ef",
+          "git_commit" : "b86e610109f7522a903c5b11de8bcd665a878f4a",
           "executable" : "/nextflow/reference/make_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/make_reference"
@@ -3190,7 +3233,7 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "52bef4159331c5bfefd1d18cec10f79f87edf4ef",
+          "git_commit" : "b86e610109f7522a903c5b11de8bcd665a878f4a",
           "executable" : "/nextflow/reference/build_bdrhap_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference"
@@ -3211,7 +3254,7 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "52bef4159331c5bfefd1d18cec10f79f87edf4ef",
+          "git_commit" : "b86e610109f7522a903c5b11de8bcd665a878f4a",
           "executable" : "/nextflow/reference/build_star_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_star_reference"
@@ -3232,10 +3275,31 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "52bef4159331c5bfefd1d18cec10f79f87edf4ef",
+          "git_commit" : "b86e610109f7522a903c5b11de8bcd665a878f4a",
           "executable" : "/nextflow/reference/build_cellranger_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_reference"
+      },
+      {
+        "name" : "reference/build_cellranger_arc_reference",
+        "repository" : {
+          "type" : "local",
+          "localPath" : ""
+        },
+        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/reference/build_cellranger_arc_reference/config.vsh.yaml",
+        "configInfo" : {
+          "functionalityName" : "build_cellranger_arc_reference",
+          "git_tag" : "",
+          "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
+          "viash_version" : "0.8.6",
+          "config" : "/home/runner/work/openpipeline/openpipeline/src/reference/build_cellranger_arc_reference/config.vsh.yaml",
+          "functionalityNamespace" : "reference",
+          "output" : "",
+          "platform" : "",
+          "git_commit" : "b86e610109f7522a903c5b11de8bcd665a878f4a",
+          "executable" : "/nextflow/reference/build_cellranger_arc_reference/main.nf"
+        },
+        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_arc_reference"
       }
     ],
     "set_wd_to_resources_dir" : false
@@ -3299,7 +3363,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/make_reference",
     "viash_version" : "0.8.6",
-    "git_commit" : "52bef4159331c5bfefd1d18cec10f79f87edf4ef",
+    "git_commit" : "b86e610109f7522a903c5b11de8bcd665a878f4a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3312,6 +3376,7 @@ make_reference_component = make_reference_component_viashalias.run(key: "make_re
 include { build_bdrhap_reference } from "${meta.resources_dir}/../../../../nextflow/reference/build_bdrhap_reference/main.nf"
 include { build_star_reference } from "${meta.resources_dir}/../../../../nextflow/reference/build_star_reference/main.nf"
 include { build_cellranger_reference } from "${meta.resources_dir}/../../../../nextflow/reference/build_cellranger_reference/main.nf"
+include { build_cellranger_arc_reference } from "${meta.resources_dir}/../../../../nextflow/reference/build_cellranger_arc_reference/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
@@ -3342,6 +3407,21 @@ workflow run_wf {
         "output_fasta": "output_fasta",
         "output_gtf": "output_gtf"
       ]
+    )
+    | build_cellranger_arc_reference.run(
+      runIf: { id, state ->
+        state.target.contains("cellranger_arc")
+      },
+      fromState: [
+        "genome_fasta": "output_fasta",
+        "annotation_gtf": "output_gtf",
+        "output": "output_cellranger_arc",
+        "motifs_file": "motifs_file",
+        "non_nuclear_contigs": "non_nuclear_contigs",
+      ],
+      toState: [
+        "output_cellranger_arc": "output"
+      ],
     )
     | build_cellranger_reference.run(
       runIf: { id, state ->
@@ -3389,7 +3469,8 @@ workflow run_wf {
       "output_gtf",
       "output_cellranger",
       "output_star",
-      "output_bd_rhapsody"
+      "output_bd_rhapsody",
+      "output_cellranger_arc",
     ])
   emit:
   output_ch

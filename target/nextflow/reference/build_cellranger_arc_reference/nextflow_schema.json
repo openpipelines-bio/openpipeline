@@ -85,9 +85,10 @@
                 "genome": {
                 "type":
                 "string",
-                "description": "Type: `string`, required, example: `GRCh38`. Name of the genome",
-                "help_text": "Type: `string`, required, example: `GRCh38`. Name of the genome. This will be the name of the intermediate output folder"
-            
+                "description": "Type: `string`, required, default: `output`, example: `GRCh38`. Name of the genome",
+                "help_text": "Type: `string`, required, default: `output`, example: `GRCh38`. Name of the genome. This will be the name of the intermediate output folder"
+            ,
+                "default": "output"
             }
     
 
@@ -95,10 +96,19 @@
                 "organism": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `Homo_sapiens`. Name of the organism",
-                "help_text": "Type: `string`, default: `Homo_sapiens`. Name of the organism. This is displayed in the web summary but is otherwise not used in the analysis."
-            ,
-                "default": "Homo_sapiens"
+                "description": "Type: `string`. Name of the organism",
+                "help_text": "Type: `string`. Name of the organism. This is displayed in the web summary but is otherwise not used in the analysis."
+            
+            }
+    
+
+        ,
+                "subset_regex": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `(ERCC-00002|chr1)`. Will subset the reference chromosomes using the given regex",
+                "help_text": "Type: `string`, example: `(ERCC-00002|chr1)`. Will subset the reference chromosomes using the given regex."
+            
             }
     
 

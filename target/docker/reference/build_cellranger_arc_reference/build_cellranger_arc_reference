@@ -212,15 +212,20 @@ function ViashHelp {
   echo ""
   echo "    --genome"
   echo "        type: string, required parameter"
+  echo "        default: output"
   echo "        example: GRCh38"
   echo "        Name of the genome. This will be the name of the intermediate output"
   echo "        folder"
   echo ""
   echo "    --organism"
   echo "        type: string"
-  echo "        default: Homo_sapiens"
   echo "        Name of the organism. This is displayed in the web summary but is"
   echo "        otherwise not used in the analysis."
+  echo ""
+  echo "    --subset_regex"
+  echo "        type: string"
+  echo "        example: (ERCC-00002|chr1)"
+  echo "        Will subset the reference chromosomes using the given regex."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -448,9 +453,9 @@ apt upgrade -y && apt install -y procps pigz && rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_cellranger_arc_reference"
-LABEL org.opencontainers.image.created="2024-08-16T14:53:39Z"
+LABEL org.opencontainers.image.created="2024-08-22T16:22:44Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="52bef4159331c5bfefd1d18cec10f79f87edf4ef"
+LABEL org.opencontainers.image.revision="b86e610109f7522a903c5b11de8bcd665a878f4a"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -692,6 +697,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_ORGANISM=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --subset_regex)
+            [ -n "$VIASH_PAR_SUBSET_REGEX" ] && ViashError Bad arguments for option \'--subset_regex\': \'$VIASH_PAR_SUBSET_REGEX\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SUBSET_REGEX="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --subset_regex. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --subset_regex=*)
+            [ -n "$VIASH_PAR_SUBSET_REGEX" ] && ViashError Bad arguments for option \'--subset_regex=*\': \'$VIASH_PAR_SUBSET_REGEX\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SUBSET_REGEX=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         ---setup)
             VIASH_MODE='docker_setup'
             VIASH_DOCKER_SETUP_STRATEGY="$2"
@@ -851,9 +867,6 @@ fi
 if [ -z ${VIASH_PAR_NON_NUCLEAR_CONTIGS+x} ]; then
   VIASH_PAR_NON_NUCLEAR_CONTIGS="chrM"
 fi
-if [ -z ${VIASH_PAR_ORGANISM+x} ]; then
-  VIASH_PAR_ORGANISM="Homo_sapiens"
-fi
 
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_GENOME_FASTA" ] && [ ! -e "$VIASH_PAR_GENOME_FASTA" ]; then
@@ -1007,6 +1020,7 @@ $( if [ ! -z ${VIASH_PAR_NON_NUCLEAR_CONTIGS+x} ]; then echo "${VIASH_PAR_NON_NU
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\"'\"'#g;s#.*#par_output='&'#" ; else echo "# par_output="; fi )
 $( if [ ! -z ${VIASH_PAR_GENOME+x} ]; then echo "${VIASH_PAR_GENOME}" | sed "s#'#'\"'\"'#g;s#.*#par_genome='&'#" ; else echo "# par_genome="; fi )
 $( if [ ! -z ${VIASH_PAR_ORGANISM+x} ]; then echo "${VIASH_PAR_ORGANISM}" | sed "s#'#'\"'\"'#g;s#.*#par_organism='&'#" ; else echo "# par_organism="; fi )
+$( if [ ! -z ${VIASH_PAR_SUBSET_REGEX+x} ]; then echo "${VIASH_PAR_SUBSET_REGEX}" | sed "s#'#'\"'\"'#g;s#.*#par_subset_regex='&'#" ; else echo "# par_subset_regex="; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\"'\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\"'\"'#g;s#.*#meta_resources_dir='&'#" ; else echo "# meta_resources_dir="; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\"'\"'#g;s#.*#meta_executable='&'#" ; else echo "# meta_executable="; fi )
@@ -1069,7 +1083,7 @@ else
 fi
 
 echo """{
-    organism: \\"\${par_organism}\\"
+    \${par_organism:+organism: \\"\$par_organism\\"}
     genome: [\\"\${par_genome}\\"]
     input_fasta: [\\""\${tmpdir}/genome.fa"\\"]
     input_gtf: [\\""\${par_annotation_gtf}\\""]

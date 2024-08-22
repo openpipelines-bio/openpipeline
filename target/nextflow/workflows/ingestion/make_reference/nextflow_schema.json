@@ -83,9 +83,9 @@
                 "target": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, default: `star`, multiple_sep: `\";\"`, choices: ``cellranger`, `bd_rhapsody`, `star``. Which reference indices to generate",
-                "help_text": "Type: List of `string`, default: `star`, multiple_sep: `\";\"`, choices: ``cellranger`, `bd_rhapsody`, `star``. Which reference indices to generate.",
-                "enum": ["cellranger", "bd_rhapsody", "star"]
+                "description": "Type: List of `string`, default: `star`, multiple_sep: `\";\"`, choices: ``cellranger`, `cellranger_arc`, `bd_rhapsody`, `star``. Which reference indices to generate",
+                "help_text": "Type: List of `string`, default: `star`, multiple_sep: `\";\"`, choices: ``cellranger`, `cellranger_arc`, `bd_rhapsody`, `star``. Which reference indices to generate.",
+                "enum": ["cellranger", "cellranger_arc", "bd_rhapsody", "star"]
             
             ,
                 "default": "star"
@@ -122,6 +122,17 @@
                 "help_text": "Type: `file`, default: `$id.$key.output_cellranger.gz`, example: `cellranger_index.tar.gz`. Output index"
             ,
                 "default": "$id.$key.output_cellranger.gz"
+            }
+    
+
+        ,
+                "output_cellranger_arc": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output_cellranger_arc.gz`, example: `cellranger_index_arc.tar.gz`. Output index",
+                "help_text": "Type: `file`, default: `$id.$key.output_cellranger_arc.gz`, example: `cellranger_index_arc.tar.gz`. Output index"
+            ,
+                "default": "$id.$key.output_cellranger_arc.gz"
             }
     
 
@@ -245,6 +256,36 @@
 },
     
     
+    "cellranger arc options" : {
+    "title": "Cellranger ARC options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "motifs_file": {
+                "type":
+                "string",
+                "description": "Type: `file`. Path to file containing transcription factor motifs in JASPAR format",
+                "help_text": "Type: `file`. Path to file containing transcription factor motifs in JASPAR format."
+            
+            }
+    
+
+        ,
+                "non_nuclear_contigs": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. Name(s) of contig(s) that do not have any chromatin structure, for example, \nmitochondria or plastids",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. Name(s) of contig(s) that do not have any chromatin structure, for example, \nmitochondria or plastids. These contigs are excluded from peak calling since\nthe entire contig will be \"open\" due to a lack of chromatin structure.\nLeave empty if there are no such contigs.\n"
+            
+            }
+    
+
+}
+},
+    
+    
     "nextflow input-output arguments" : {
     "title": "Nextflow input-output arguments",
     "type": "object",
@@ -286,6 +327,10 @@
 
     {
     "$ref": "#/definitions/bd rhapsody settings"
+    },
+
+    {
+    "$ref": "#/definitions/cellranger arc options"
     },
 
     {
