@@ -2,8 +2,7 @@ cat("Loading libraries\n")
 library(glue)
 library(BPCells)
 requireNamespace("anndata", quietly = TRUE)
-requireNamespace("reticulate")
-library(assertthat)
+requireNamespace("reticulate", quietlye = TRUE)
 mudata <- reticulate::import("mudata")
 
 ## VIASH START
@@ -32,6 +31,8 @@ if (!is.null(par$obs_keys) && length(par$obs_keys) > 0) {
   regressed_data <- regress_out(imat, latent_data, prediction_axis = "col")
   # Convert iterable matrix back to R sparse matrix
   rmat <- as(regressed_data, "dgCMatrix")
+} else {
+  glue("No obs_keys provided, skipping regression")
 }
 
 # Assign regressed out data back to AnnData object

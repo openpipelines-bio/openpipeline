@@ -42,7 +42,8 @@ def test_regress_out(run_component, tmp_path):
     assert rna_in.shape == rna_out.shape, "Should have same shape as before"
     assert prot_in.shape == prot_out.shape, "Should have same shape as before"
 
-    assert np.mean(rna_in.X) != np.mean(rna_out.X), "Expression should have changed"
+    assert np.mean(rna_in.X) != np.mean(rna_out.X), "RNA expression should have changed"
+    assert np.mean(prot_in.X) == np.mean(prot_out.X), "Protein expression should remain the same"
 
 
 if __name__ == '__main__':

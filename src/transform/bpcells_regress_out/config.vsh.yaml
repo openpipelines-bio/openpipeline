@@ -32,12 +32,12 @@ functionality:
       example: "gzip"
     - name: "--modality"
       type: string
-      description: "Which modality (one or more) to run this component on."
+      description: "The modality to run this component on."
       default: "rna"
     - name: "--obs_keys"
       type: string
       multiple: true
-      description: Which .obs keys to regress on.
+      description: The .obs keys to regress on.
   resources:
     - type: r_script
       path: script.R
@@ -55,11 +55,9 @@ platforms:
       - type: r
         cran: [ anndata, reticulate ]
         github: bnprks/BPCells/r
-      - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml ]
     test_setup:
       - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml ]
+        __merge__: [ /src/base/requirements/viashpy.yaml, /src/base/requirements/anndata_mudata.yaml ]
 
   - type: nextflow
     directives:
