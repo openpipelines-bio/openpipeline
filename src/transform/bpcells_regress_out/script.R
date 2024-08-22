@@ -37,7 +37,6 @@ if (!is.null(par$obs_keys) && length(par$obs_keys) > 0) {
 
 # Assign regressed out data back to AnnData object
 adata$X <- rmat
-mdata$mod[[par$modality]] <- adata
 
 # Write to output h5mu file
 mdata$write(par$output, compression=par$output_compression)
