@@ -37,6 +37,7 @@ functionality:
       example: cellranger_reference
     - type: string
       name: --genome
+      required: true
       default: "output"
       description: Name of the genome. This will be the name of the intermediate output folder
       example: GRCh38
