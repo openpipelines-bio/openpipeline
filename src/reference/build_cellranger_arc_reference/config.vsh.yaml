@@ -38,12 +38,17 @@ functionality:
     - type: string
       name: --genome
       required: true
+      default: "output"
       description: Name of the genome. This will be the name of the intermediate output folder
       example: GRCh38
     - type: string
       name: --organism
-      default: Homo_sapiens
+      required: false
       description: Name of the organism. This is displayed in the web summary but is otherwise not used in the analysis.
+    - type: string
+      name: --subset_regex
+      description: Will subset the reference chromosomes using the given regex.
+      example: (ERCC-00002|chr1)
   resources:
     - type: bash_script
       path: script.sh
