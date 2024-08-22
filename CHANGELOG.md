@@ -38,6 +38,8 @@
 
 * `reference/cellranger_mkgtf`: Rename `reference/mkgtf` to `reference/cellranger_mkgtf` (PR #846).
 
+* `interactive/run_cellxgene` and `interactive/run_cirrocumulus` were removed (PR #796).
+
 ## NEW FUNCTIONALITY
 
 * `process_samples`, `process_batches` and `rna_multisample` workflows: added functionality to scale the log-normalized 
