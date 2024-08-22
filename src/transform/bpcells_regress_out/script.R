@@ -2,7 +2,7 @@ cat("Loading libraries\n")
 library(glue)
 library(BPCells)
 requireNamespace("anndata", quietly = TRUE)
-requireNamespace("reticulate", quietly = TRUE)
+requireNamespace("reticulate")
 library(assertthat)
 mudata <- reticulate::import("mudata")
 
