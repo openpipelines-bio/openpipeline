@@ -58,8 +58,8 @@ else
 fi
 
 echo """{
-    organism: \"${par_organism}\"
-    genome: [\"${par_genome}\"]
+    ${par_organism:+organism: \"$par_organism\"}
+    ${par_genome:+genome: [\"$par_genome\"]}
     input_fasta: [\""${tmpdir}/genome.fa"\"]
     input_gtf: [\""${par_annotation_gtf}\""]
     ${non_nuclear_contigs:+non_nuclear_contigs: "${non_nuclear_contigs}"}
