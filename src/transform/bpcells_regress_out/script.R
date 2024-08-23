@@ -34,8 +34,6 @@ if (!is.null(par$obs_keys) && length(par$obs_keys) > 0) {
   }
 
   imat <- as(as(mat, "CsparseMatrix"), "IterableMatrix")
-
-  # ensure unique col and row names
   dimnames(imat) <- NULL
 
   # obs_keys is not NULL and not empty
