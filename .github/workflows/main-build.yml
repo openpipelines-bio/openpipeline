@@ -144,7 +144,7 @@ jobs:
           .version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
           .engines[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && (inputs.version || format('{0}_build', github.ref_name)) || inputs.target_tag }}'
         parallel: true
-        query: ^(?!workflows)|(workflows/test_workflows)
+        query: ^(?!workflows|test_workflows)
     
     - uses: viash-io/viash-actions/ns-build@v6
       with:
