@@ -1,0 +1,10 @@
+# Inputs
+input: # please fill in - example: "output_types.csv"
+mod_dir: # please fill in - example: "/path/to/h5mu_files"
+orig_input: # please fill in - example: "/path/to/original_input.h5mu"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments

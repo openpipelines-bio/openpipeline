@@ -1,0 +1,10 @@
+# Inputs
+input: # please fill in - example: "foo.final.h5mu"
+input_og: # please fill in - example: "foo.h5mu"
+is_corrected: # please fill in - example: true
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments

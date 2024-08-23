@@ -3074,7 +3074,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/regress_out",
     "viash_version" : "0.9.0-RC7",
-    "git_commit" : "a6b13ca04263d23b62a2abb7847374992d65199f",
+    "git_commit" : "b52d9931a2ddd02b7725d34f35408f75367b8c09",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
