@@ -1,24 +1,23 @@
-functionality:
-  name: "bd_rhapsody_test"
-  namespace: "test_workflows/ingestion"
-  description: "This component test the output of the integration test of the bd_rhapsody workflow."
-  authors:
-    - __merge__: /src/authors/jakub_majercik.yaml
-  argument_groups:
-    - name: Inputs
-      arguments:
-        - name: "--input"
-          type: file
-          required: true
-          description: Path to h5mu output.
-          example: foo.final.h5mu
-  resources:
-    - type: python_script
-      path: script.py
-    - path: /src/utils/setup_logger.py
-    - path: /src/base/openpipelinetestutils
-      dest: openpipelinetestutils
-platforms:
+name: "bd_rhapsody_test"
+namespace: "test_workflows/ingestion"
+description: "This component test the output of the integration test of the bd_rhapsody workflow."
+authors:
+  - __merge__: /src/authors/jakub_majercik.yaml
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        description: Path to h5mu output.
+        example: foo.final.h5mu
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/base/openpipelinetestutils
+    dest: openpipelinetestutils
+engines:
   - type: docker
     image: python:3.12-slim
     setup:
@@ -31,4 +30,5 @@ platforms:
         packages: /opt/openpipelinetestutils
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/viashpy.yaml, .]
+runners:
   - type: nextflow

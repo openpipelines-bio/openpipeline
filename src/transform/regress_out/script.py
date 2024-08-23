@@ -10,7 +10,7 @@ par = {
     "modality": "rna",
     "obs_keys": [],
 }
-meta = {"functionality_name": "lognorm"}
+meta = {"name": "lognorm"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])

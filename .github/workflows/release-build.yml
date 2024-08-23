@@ -72,7 +72,7 @@ jobs:
     - name: Remove unused test resources to save space
       shell: bash
       run: |
-        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" -c 'del(.functionality.dependencies)' | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" -c 'del(.dependencies)' | jq -r -c '(.build_info.config | capture("^(?<dir>.*\/)").dir) as $dir | .test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
         to_not_remove=()
         for resource in "${resources[@]}"; do
           if [[ $resource == *"resources_test"* ]]; then
@@ -155,7 +155,7 @@ jobs:
       run: |
         viash test \
           "${{ matrix.component.config }}" \
-          --config_mod ".platforms[.type == 'docker'].image := 'ghcr.io/openpipelines-bio/${{ matrix.component.namespace }}${{matrix.component.namespace_separator}}${{ matrix.component.name }}:${{ github.event.inputs.version_tag }}'" \
-          --config_mod ".platforms[.type == 'docker'].setup := []" \
+          --config_mod ".engines[.type == 'docker'].image := 'ghcr.io/openpipelines-bio/${{ matrix.component.namespace }}${{matrix.component.namespace_separator}}${{ matrix.component.name }}:${{ github.event.inputs.version_tag }}'" \
+          --config_mod ".engines[.type == 'docker'].setup := []" \
           --cpus 4 \
           --memory "12gb"

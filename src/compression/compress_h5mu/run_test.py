@@ -7,7 +7,7 @@ import pandas as pd
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/compression/compress_h5mu/compress_h5mu',
+    'executable': './target/executable/compression/compress_h5mu/compress_h5mu',
     'resources_dir': 'resources_test/concat_test_data/',
     'config': 'src/compression/compress_h5mu/config.vsh.yaml'
 }

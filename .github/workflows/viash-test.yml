@@ -34,7 +34,7 @@ jobs:
     - name: Check if all config can be parsed if there is no unicode support
       run: |
         LANG=C viash ns list > /dev/null
-        JAVA_TOOL_OPTIONS=-Dfile.encoding=ascii viash ns build --parallel --setup meh > /dev/null
+        JAVA_TOOL_OPTIONS=-Dfile.encoding=ascii viash ns build --parallel > /dev/null
 
     - uses: viash-io/viash-actions/project/sync-and-cache@v6
       id: cache
@@ -42,7 +42,7 @@ jobs:
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v6
       with:
-        platform: docker
+        engine: docker
         format: json
         query_namespace: ^(?!workflows|test_workflows)
 
@@ -69,7 +69,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - uses: viash-io/viash-actions/setup@v6
-
+    - uses: viash-io/viash-actions/project/update-docker-engine@v6
     # use cache
     - name: Restore test resources cache
       if: ${{ needs.list.outputs.cache_key != '' }}
@@ -83,7 +83,7 @@ jobs:
     - name: Remove unused test resources to save space (only when restoring from cache)
       shell: bash
       run: |
-        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.build_info.config | capture("^(?<dir>.*\/)").dir) as $dir | .test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
         to_not_remove=()
         for resource in "${resources[@]}"; do
           if [[ $resource == *"resources_test"* ]]; then
@@ -116,5 +116,7 @@ jobs:
         viash test \
           "${{ matrix.component.config }}" \
           --cpus 4 \
-          --memory "14gb"
+          --memory "14gb" \
+          --engine docker \
+          --runner executable
 

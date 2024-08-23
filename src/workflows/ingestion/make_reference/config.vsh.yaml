@@ -1,167 +1,166 @@
-functionality:
-  name: make_reference
-  namespace: workflows/ingestion
-  description: |
-    Build a transcriptomics reference into one of many formats.
-  authors:
-    - __merge__: /src/authors/angela_pisco.yaml
-      roles: [ author ]
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ author, maintainer ]
-    - __merge__: /src/authors/weiwei_schultz.yaml
-      roles: [ contributor ]
-  argument_groups:
-    - name: Inputs
-      arguments:
-        - name: "--id"
-          required: true
-          type: string
-          description: ID of the reference.
-          example: foo
-        - type: file
-          name: --genome_fasta
-          required: true
-          description: Reference genome fasta.
-          example: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz
-        - type: file
-          name: --transcriptome_gtf
-          required: true
-          description: Reference transcriptome annotation.
-          example: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz
-        - type: file
-          name: --ercc
-          description: ERCC sequence and annotation file.
-          example: https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip
-    - name: STAR Settings
-      arguments:
-        - type: integer
-          name: --star_genome_sa_index_nbases
-          description: |
-            Length (bases) of the SA pre-indexing string. Typically between 10 and 15.
-            Longer strings will use much more memory, but allow faster searches. For small
-            genomes, the parameter {genomeSAindexNbases must be scaled down to
-            min(14, log2(GenomeLength)/2 - 1).
-          required: false
-          default: 14
-    - name: BD Rhapsody Settings
-      arguments:
-        - type: string
-          name: --bdrhap_mitochondrial_contigs
-          description: |
-            Names of the Mitochondrial contigs in the provided Reference Genome. Fragments originating from contigs other than these are
-            identified as 'nuclear fragments' in the ATACseq analysis pipeline.
-          required: false
-          multiple: true
-          default: [chrM, chrMT, M, MT]
-        - type: boolean_true
-          name: --bdrhap_filtering_off
-          description: |
-            By default the input Transcript Annotation files are filtered based on the gene_type/gene_biotype attribute. Only features 
-            having the following attribute values are kept:
+name: make_reference
+namespace: workflows/ingestion
+description: |
+  Build a transcriptomics reference into one of many formats.
+authors:
+  - __merge__: /src/authors/angela_pisco.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ author, maintainer ]
+  - __merge__: /src/authors/weiwei_schultz.yaml
+    roles: [ contributor ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--id"
+        required: true
+        type: string
+        description: ID of the reference.
+        example: foo
+      - type: file
+        name: --genome_fasta
+        required: true
+        description: Reference genome fasta.
+        example: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz
+      - type: file
+        name: --transcriptome_gtf
+        required: true
+        description: Reference transcriptome annotation.
+        example: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz
+      - type: file
+        name: --ercc
+        description: ERCC sequence and annotation file.
+        example: https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip
+  - name: STAR Settings
+    arguments:
+      - type: integer
+        name: --star_genome_sa_index_nbases
+        description: |
+          Length (bases) of the SA pre-indexing string. Typically between 10 and 15.
+          Longer strings will use much more memory, but allow faster searches. For small
+          genomes, the parameter {genomeSAindexNbases must be scaled down to
+          min(14, log2(GenomeLength)/2 - 1).
+        required: false
+        default: 14
+  - name: BD Rhapsody Settings
+    arguments:
+      - type: string
+        name: --bdrhap_mitochondrial_contigs
+        description: |
+          Names of the Mitochondrial contigs in the provided Reference Genome. Fragments originating from contigs other than these are
+          identified as 'nuclear fragments' in the ATACseq analysis pipeline.
+        required: false
+        multiple: true
+        default: [chrM, chrMT, M, MT]
+      - type: boolean_true
+        name: --bdrhap_filtering_off
+        description: |
+          By default the input Transcript Annotation files are filtered based on the gene_type/gene_biotype attribute. Only features 
+          having the following attribute values are kept:
 
-              - protein_coding
-              - lncRNA 
-              - IG_LV_gene
-              - IG_V_gene
-              - IG_V_pseudogene
-              - IG_D_gene
-              - IG_J_gene
-              - IG_J_pseudogene
-              - IG_C_gene
-              - IG_C_pseudogene
-              - TR_V_gene
-              - TR_V_pseudogene
-              - TR_D_gene
-              - TR_J_gene
-              - TR_J_pseudogene
-              - TR_C_gene
+            - protein_coding
+            - lncRNA 
+            - IG_LV_gene
+            - IG_V_gene
+            - IG_V_pseudogene
+            - IG_D_gene
+            - IG_J_gene
+            - IG_J_pseudogene
+            - IG_C_gene
+            - IG_C_pseudogene
+            - TR_V_gene
+            - TR_V_pseudogene
+            - TR_D_gene
+            - TR_J_gene
+            - TR_J_pseudogene
+            - TR_C_gene
 
               If you have already pre-filtered the input Annotation files and/or wish to turn-off the filtering, please set this option to True.
-        - type: boolean_true
-          name: --bdrhap_wta_only_index
-          description: Build a WTA only index, otherwise builds a WTA + ATAC index.
-        - type: string
-          name: --bdrhap_extra_star_params
-          description: Additional parameters to pass to STAR when building the genome index. Specify exactly like how you would on the command line.
-          example: --limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11
-          required: false
-    - name: "Cellranger ARC options"
-      arguments:
-        - name: "--motifs_file"
-          type: file
-          direction: input
-          description: Path to file containing transcription factor motifs in JASPAR format.
-        - name: "--non_nuclear_contigs"
-          multiple: true
-          required: false
-          type: string
-          description: |
-            Name(s) of contig(s) that do not have any chromatin structure, for example, 
-            mitochondria or plastids. These contigs are excluded from peak calling since
-            the entire contig will be "open" due to a lack of chromatin structure.
-            Leave empty if there are no such contigs.
+      - type: boolean_true
+        name: --bdrhap_wta_only_index
+        description: Build a WTA only index, otherwise builds a WTA + ATAC index.
+      - type: string
+        name: --bdrhap_extra_star_params
+        description: Additional parameters to pass to STAR when building the genome index. Specify exactly like how you would on the command line.
+        example: --limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11
+        required: false
+  - name: "Cellranger ARC options"
+    arguments:
+      - name: "--motifs_file"
+        type: file
+        direction: input
+        description: Path to file containing transcription factor motifs in JASPAR format.
+      - name: "--non_nuclear_contigs"
+        multiple: true
+        required: false
+        type: string
+        description: |
+          Name(s) of contig(s) that do not have any chromatin structure, for example, 
+          mitochondria or plastids. These contigs are excluded from peak calling since
+          the entire contig will be "open" due to a lack of chromatin structure.
+          Leave empty if there are no such contigs.
 
-    - name: Outputs
-      arguments:
-        - type: string
-          name: --target
-          choices: [ cellranger, cellranger_arc, bd_rhapsody, star ]
-          description: Which reference indices to generate. 
-          multiple: true
-          default: [ star ]
-        - type: file
-          name: --output_fasta
-          direction: output
-          description: Output genome sequence fasta.
-          example: genome_sequence.fa.gz
-        - type: file
-          name: --output_gtf
-          direction: output
-          description: Output transcriptome annotation gtf.
-          example: transcriptome_annotation.gtf.gz
-        - type: file
-          name: --output_cellranger
-          direction: output
-          description: Output index
-          example: cellranger_index.tar.gz
-        - type: file
-          name: --output_cellranger_arc
-          direction: output
-          description: Output index
-          example: cellranger_index_arc.tar.gz
-        - type: file
-          name: --output_bd_rhapsody
-          direction: output
-          description: Output index
-          example: bdrhap_index.tar.gz
-        - type: file
-          name: --output_star
-          direction: output
-          description: Output index
-          example: star_index.tar.gz
-    - name: Arguments
-      arguments:
-        - type: string
-          name: --subset_regex
-          description: Will subset the reference chromosomes using the given regex.
-          example: (ERCC-00002|chr1)
-  dependencies:
-    - name: reference/make_reference
-      alias: make_reference_component
-    - name: reference/build_bdrhap_reference
-    - name: reference/build_star_reference
-    - name: reference/build_cellranger_reference
-    - name: reference/build_cellranger_arc_reference
-  resources:
-    - type: nextflow_script
-      path: main.nf
-      entrypoint: run_wf
-    - type: file
-      path: /src/workflows/utils/
-  test_resources:
-    - type: nextflow_script
-      path: test.nf
-      entrypoint: test_wf
-    - path: /resources_test/reference_gencodev41_chr1
-platforms:
+  - name: Outputs
+    arguments:
+      - type: string
+        name: --target
+        choices: [ cellranger, cellranger_arc, bd_rhapsody, star ]
+        description: Which reference indices to generate. 
+        multiple: true
+        default: [ star ]
+      - type: file
+        name: --output_fasta
+        direction: output
+        description: Output genome sequence fasta.
+        example: genome_sequence.fa.gz
+      - type: file
+        name: --output_gtf
+        direction: output
+        description: Output transcriptome annotation gtf.
+        example: transcriptome_annotation.gtf.gz
+      - type: file
+        name: --output_cellranger
+        direction: output
+        description: Output index
+        example: cellranger_index.tar.gz
+      - type: file
+        name: --output_cellranger_arc
+        direction: output
+        description: Output index
+        example: cellranger_index_arc.tar.gz
+      - type: file
+        name: --output_bd_rhapsody
+        direction: output
+        description: Output index
+        example: bdrhap_index.tar.gz
+      - type: file
+        name: --output_star
+        direction: output
+        description: Output index
+        example: star_index.tar.gz
+  - name: Arguments
+    arguments:
+      - type: string
+        name: --subset_regex
+        description: Will subset the reference chromosomes using the given regex.
+        example: (ERCC-00002|chr1)
+dependencies:
+  - name: reference/make_reference
+    alias: make_reference_component
+  - name: reference/build_bdrhap_reference
+  - name: reference/build_star_reference
+  - name: reference/build_cellranger_reference
+  - name: reference/build_cellranger_arc_reference
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+  - type: file
+    path: /src/workflows/utils/
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - path: /resources_test/reference_gencodev41_chr1
+runners:
   - type: nextflow
