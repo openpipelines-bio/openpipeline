@@ -1,17 +1,3 @@
-# Outputs
-# output: "$id.$key.output.h5mu"
-output_compression: "gzip"
-output_obs_predictions: "scgpt_pred"
-output_obs_probability: "scgpt_probability"
-
-# Arguments
-pad_token: "<pad>"
-pad_value: -2
-n_input_bins: 51
-batch_size: 64
-dsbn: true
-# seed: 123
-
 # Model input
 model: # please fill in - example: "best_model.pt"
 model_config: # please fill in - example: "args.json"
@@ -25,6 +11,20 @@ modality: "rna"
 # obs_batch_label: "foo"
 obsm_gene_tokens: "gene_id_tokens"
 obsm_tokenized_values: "values_tokenized"
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+output_compression: "gzip"
+output_obs_predictions: "scgpt_pred"
+output_obs_probability: "scgpt_probability"
+
+# Arguments
+pad_token: "<pad>"
+pad_value: -2
+n_input_bins: 51
+batch_size: 64
+dsbn: true
+# seed: 123
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

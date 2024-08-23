@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
 "title": "calculate_qc_metrics",
-"description": "Add basic quality control metrics to an .h5mu file.\n\nThe metrics are comparable to what scanpy.pp.calculate_qc_metrics output,\nalthough they have slightly different names:\n\nVar metrics (name in this component -\u003e name in scanpy):\n  - pct_dropout -\u003e pct_dropout_by_{expr_type}\n  - num_nonzero_obs -\u003e n_cells_by_{expr_type}\n  - obs_mean -\u003e mean_{expr_type}\n  - total_counts -\u003e total_{expr_type}\n\nObs metrics:\n  - num_nonzero_vars -\u003e n_genes_by_{expr_type}\n  - pct_{var_qc_metrics} -\u003e pct_{expr_type}_{qc_var}\n  - total_counts_{var_qc_metrics} -\u003e total_{expr_type}_{qc_var}\n  - pct_of_counts_in_top_{top_n_vars}_vars -\u003e pct_{expr_type}_in_top_{n}_{var_type}\n  - total_counts -\u003e total_{expr_type}\n  \n",
+"description": "Add basic quality control metrics to an .h5mu file.\n\nThe metrics are comparable to what scanpy.pp.calculate_qc_metrics output,\nalthough they have slightly different names:\n\nVar metrics (name in this component -\u003e name in scanpy):\n  - pct_dropout -\u003e pct_dropout_by_{expr_type}\n  - num_nonzero_obs -\u003e n_cells_by_{expr_type}\n  - obs_mean -\u003e mean_{expr_type}\n  - total_counts -\u003e total_{expr_type}\n\n  Obs metrics:\n    - num_nonzero_vars -\u003e n_genes_by_{expr_type}\n    - pct_{var_qc_metrics} -\u003e pct_{expr_type}_{qc_var}\n    - total_counts_{var_qc_metrics} -\u003e total_{expr_type}_{qc_var}\n    - pct_of_counts_in_top_{top_n_vars}_vars -\u003e pct_{expr_type}_in_top_{n}_{var_type}\n    - total_counts -\u003e total_{expr_type}\n    \n",
 "type": "object",
 "definitions": {
 

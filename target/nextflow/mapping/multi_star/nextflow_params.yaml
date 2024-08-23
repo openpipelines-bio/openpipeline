@@ -4,7 +4,7 @@ input_r1: # please fill in - example: ["mysample_S1_L001_R1_001.fastq.gz", "mysa
 # input_r2: ["mysample_S1_L001_R2_001.fastq.gz", "mysample_S1_L002_R2_001.fastq.gz"]
 reference_index: # please fill in - example: "/path/to/reference"
 reference_gtf: # please fill in - example: "genes.gtf"
-# output: "$id.$key.output.output"
+# output: "$id.$key.output"
 
 # Processing arguments
 run_htseq_count: true
@@ -247,3 +247,5 @@ counts_output_sparse: false
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

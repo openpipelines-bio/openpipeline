@@ -88,7 +88,7 @@
                 "type":
                 "string",
                 "description": "Type: `string`, default: `move`, choices: ``same`, `unique`, `first`, `only`, `concat`, `move``. How to handle the merging of other axis (var, obs, ",
-                "help_text": "Type: `string`, default: `move`, choices: ``same`, `unique`, `first`, `only`, `concat`, `move``. How to handle the merging of other axis (var, obs, ...).\n\n - None: keep no data\n - same: only keep elements of the matrices which are the same in each of the samples\n - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)\n - first: keep the annotation from the first sample\n - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)\n - move: identical to \u0027same\u0027, but moving the conflicting values to .varm or .obsm\n",
+                "help_text": "Type: `string`, default: `move`, choices: ``same`, `unique`, `first`, `only`, `concat`, `move``. How to handle the merging of other axis (var, obs, ...).\n\n  - None: keep no data\n  - same: only keep elements of the matrices which are the same in each of the samples\n  - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)\n  - first: keep the annotation from the first sample\n  - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)\n  - move: identical to \u0027same\u0027, but moving the conflicting values to .varm or .obsm\n",
                 "enum": ["same", "unique", "first", "only", "concat", "move"]
             
             ,

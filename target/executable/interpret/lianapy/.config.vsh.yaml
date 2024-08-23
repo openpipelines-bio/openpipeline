@@ -1,0 +1,343 @@
+name: "lianapy"
+namespace: "interpret"
+version: "integration_build"
+authors:
+- name: "Mauro Saporita"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      email: "maurosaporita@gmail.com"
+      github: "mauro-saporita"
+      linkedin: "mauro-saporita-930b06a5"
+    organizations:
+    - name: "Ardigen"
+      href: "https://ardigen.com"
+      role: "Lead Nextflow Developer"
+- name: "Povilas Gibas"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      email: "povilasgibas@gmail.com"
+      github: "PoGibas"
+      linkedin: "povilas-gibas"
+    organizations:
+    - name: "Ardigen"
+      href: "https://ardigen.com"
+      role: "Bioinformatician"
+argument_groups:
+- name: "Arguments"
+  arguments:
+  - type: "file"
+    name: "--input"
+    alternatives:
+    - "-i"
+    description: "Input h5mu file"
+    info: null
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output"
+    alternatives:
+    - "-o"
+    description: "Output h5mu file."
+    info: null
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_compression"
+    info: null
+    default:
+    - "gzip"
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--modality"
+    info: null
+    default:
+    - "rna"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--layer"
+    description: "Layer in anndata.AnnData.layers to use. If None, use mudata.mod[modality].X."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--groupby"
+    description: "The key of the observations grouping to consider."
+    info: null
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--resource_name"
+    description: "Name of the resource to be loaded and use for ligand-receptor inference."
+    info: null
+    default:
+    - "consensus"
+    required: false
+    choices:
+    - "baccin2019"
+    - "cellcall"
+    - "cellchatdb"
+    - "cellinker"
+    - "cellphonedb"
+    - "celltalkdb"
+    - "connectomedb2020"
+    - "consensus"
+    - "embrace"
+    - "guide2pharma"
+    - "hpmr"
+    - "icellnet"
+    - "italk"
+    - "kirouac2010"
+    - "lrdb"
+    - "mouseconsensus"
+    - "ramilowski2015"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--gene_symbol"
+    description: "Column name in var DataFrame in which gene symbol are stored."
+    info: null
+    default:
+    - "gene_symbol"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--expr_prop"
+    description: "Minimum expression proportion for the ligands/receptors (and their\
+      \ subunits) in the corresponding cell identities. Set to '0', to return unfiltered\
+      \ results."
+    info: null
+    default:
+    - 0.1
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--min_cells"
+    description: "Minimum cells per cell identity ('groupby') to be considered for\
+      \ downstream analysis."
+    info: null
+    default:
+    - 5
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--aggregate_method"
+    description: "Method aggregation approach, one of ['mean', 'rra'], where 'mean'\
+      \ represents the mean rank, while 'rra' is the RobustRankAggregate (Kolde et\
+      \ al., 2014) of the interactions."
+    info: null
+    default:
+    - "rra"
+    required: false
+    choices:
+    - "mean"
+    - "rra"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--return_all_lrs"
+    description: "Bool whether to return all LRs, or only those that surpass the 'expr_prop'\
+      \ threshold. Those interactions that do not pass the 'expr_prop' threshold will\
+      \ be assigned to the *worst* score of the ones that do. 'False' by default."
+    info: null
+    default:
+    - false
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--n_perms"
+    description: "Number of permutations for the permutation test. Note that this\
+      \ is relevant only for permutation-based methods - e.g. 'CellPhoneDB"
+    info: null
+    default:
+    - 100
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "python_script"
+  path: "script.py"
+  is_executable: true
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Performs LIANA integration based as described in https://github.com/saezlab/liana-py"
+test_resources:
+- type: "python_script"
+  path: "test.py"
+  is_executable: true
+- type: "file"
+  path: "pbmc_1k_protein_v3_mms.h5mu"
+- type: "file"
+  path: "openpipelinetestutils"
+  dest: "openpipelinetestutils"
+info: null
+status: "enabled"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "lowmem"
+    - "lowcpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "python:3.11-slim"
+  target_tag: "integration_build"
+  namespace_separator: "/"
+  setup:
+  - type: "apt"
+    packages:
+    - "procps"
+    - "git"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "anndata~=0.10.8"
+    - "mudata~=0.2.4"
+    - "pandas!=2.1.2"
+    - "numpy<2.0.0"
+    - "liana~=1.3.0"
+    upgrade: true
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.7.0"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/interpret/lianapy/config.vsh.yaml"
+  runner: "executable"
+  engine: "docker"
+  output: "target/executable/interpret/lianapy"
+  executable: "target/executable/interpret/lianapy/lianapy"
+  viash_version: "0.9.0-RC7"
+  git_commit: "28e716e5248d3238e5e174192681f03ec998f27b"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+package_config:
+  version: "dev"
+  info: null
+  viash_version: "0.9.0-RC7"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
+    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
+    \ := 'includeConfig(\"nextflow_labels.config\")'"
+  - ".version := \"integration_build\""
+  - ".engines[.type == 'docker'].target_tag := 'integration_build'"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

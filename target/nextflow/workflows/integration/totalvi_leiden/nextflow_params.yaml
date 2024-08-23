@@ -8,8 +8,8 @@ reference: # please fill in - example: "path/to/file"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# reference_model_path: "$id.$key.reference_model_path.reference_model_path"
-# query_model_path: "$id.$key.query_model_path.query_model_path"
+# reference_model_path: "totalvi_model_reference"
+# query_model_path: "totalvi_model_query"
 
 # General TotalVI Options
 obs_batch: "sample_id"
@@ -51,3 +51,5 @@ obsm_umap: "X_totalvi_umap"
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

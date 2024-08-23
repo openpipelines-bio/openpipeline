@@ -1,6 +1,6 @@
 # Arguments
 input: "s3://openpipelines-data"
-# output: "$id.$key.output.output"
+# output: "resources_test"
 quiet: false
 dryrun: false
 delete: false
