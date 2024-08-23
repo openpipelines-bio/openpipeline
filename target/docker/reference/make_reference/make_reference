@@ -443,9 +443,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component reference make_reference"
-LABEL org.opencontainers.image.created="2024-08-22T02:44:36Z"
+LABEL org.opencontainers.image.created="2024-08-23T02:44:18Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="72880ec6e3a06839e1395f1f72ee2e3983976575"
+LABEL org.opencontainers.image.revision="85f005c3deb60c75daad8134dd6bd50ea5529e96"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1005,6 +1005,11 @@ function clean_up {
     rm -rf "\$tmpdir"
 }
 trap clean_up EXIT
+
+echo "> Getting path of fasta file"
+par_genome_fasta=\$(realpath \$par_genome_fasta)
+echo "> Getting path of annotation file"
+par_transcriptome_gtf=\$(realpath \$par_transcriptome_gtf)
 
 echo "> Processing genome sequence"
 genome_fasta="\$tmpdir/genome_sequence.fa"

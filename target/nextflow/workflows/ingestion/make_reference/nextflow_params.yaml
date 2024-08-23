@@ -9,6 +9,7 @@ target: ["star"]
 # output_fasta: "$id.$key.output_fasta.gz"
 # output_gtf: "$id.$key.output_gtf.gz"
 # output_cellranger: "$id.$key.output_cellranger.gz"
+# output_cellranger_arc: "$id.$key.output_cellranger_arc.gz"
 # output_bd_rhapsody: "$id.$key.output_bd_rhapsody.gz"
 # output_star: "$id.$key.output_star.gz"
 
@@ -23,6 +24,10 @@ bdrhap_mitochondrial_contigs: ["chrM", "chrMT", "M", "MT"]
 bdrhap_filtering_off: false
 bdrhap_wta_only_index: false
 # bdrhap_extra_star_params: "--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11"
+
+# Cellranger ARC options
+# motifs_file: "path/to/file"
+# non_nuclear_contigs: ["foo"]
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

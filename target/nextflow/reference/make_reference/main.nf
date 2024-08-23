@@ -3058,7 +3058,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/make_reference",
     "viash_version" : "0.8.6",
-    "git_commit" : "72880ec6e3a06839e1395f1f72ee2e3983976575",
+    "git_commit" : "85f005c3deb60c75daad8134dd6bd50ea5529e96",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3106,6 +3106,11 @@ function clean_up {
     rm -rf "\\$tmpdir"
 }
 trap clean_up EXIT
+
+echo "> Getting path of fasta file"
+par_genome_fasta=\\$(realpath \\$par_genome_fasta)
+echo "> Getting path of annotation file"
+par_transcriptome_gtf=\\$(realpath \\$par_transcriptome_gtf)
 
 echo "> Processing genome sequence"
 genome_fasta="\\$tmpdir/genome_sequence.fa"

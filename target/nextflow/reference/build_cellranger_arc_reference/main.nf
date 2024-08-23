@@ -2894,6 +2894,9 @@ meta = [
         "example" : [
           "GRCh38"
         ],
+        "default" : [
+          "output"
+        ],
         "required" : true,
         "direction" : "input",
         "multiple" : false,
@@ -2904,8 +2907,18 @@ meta = [
         "type" : "string",
         "name" : "--organism",
         "description" : "Name of the organism. This is displayed in the web summary but is otherwise not used in the analysis.",
-        "default" : [
-          "Homo_sapiens"
+        "required" : false,
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
+      },
+      {
+        "type" : "string",
+        "name" : "--subset_regex",
+        "description" : "Will subset the reference chromosomes using the given regex.",
+        "example" : [
+          "(ERCC-00002|chr1)"
         ],
         "required" : false,
         "direction" : "input",
@@ -3057,7 +3070,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_arc_reference",
     "viash_version" : "0.8.6",
-    "git_commit" : "72880ec6e3a06839e1395f1f72ee2e3983976575",
+    "git_commit" : "85f005c3deb60c75daad8134dd6bd50ea5529e96",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3085,6 +3098,7 @@ $( if [ ! -z ${VIASH_PAR_NON_NUCLEAR_CONTIGS+x} ]; then echo "${VIASH_PAR_NON_NU
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\\"'\\"'#g;s#.*#par_output='&'#" ; else echo "# par_output="; fi )
 $( if [ ! -z ${VIASH_PAR_GENOME+x} ]; then echo "${VIASH_PAR_GENOME}" | sed "s#'#'\\"'\\"'#g;s#.*#par_genome='&'#" ; else echo "# par_genome="; fi )
 $( if [ ! -z ${VIASH_PAR_ORGANISM+x} ]; then echo "${VIASH_PAR_ORGANISM}" | sed "s#'#'\\"'\\"'#g;s#.*#par_organism='&'#" ; else echo "# par_organism="; fi )
+$( if [ ! -z ${VIASH_PAR_SUBSET_REGEX+x} ]; then echo "${VIASH_PAR_SUBSET_REGEX}" | sed "s#'#'\\"'\\"'#g;s#.*#par_subset_regex='&'#" ; else echo "# par_subset_regex="; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_resources_dir='&'#" ; else echo "# meta_resources_dir="; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_executable='&'#" ; else echo "# meta_executable="; fi )
@@ -3147,7 +3161,7 @@ else
 fi
 
 echo """{
-    organism: \\\\"\\${par_organism}\\\\"
+    \\${par_organism:+organism: \\\\"\\$par_organism\\\\"}
     genome: [\\\\"\\${par_genome}\\\\"]
     input_fasta: [\\\\""\\${tmpdir}/genome.fa"\\\\"]
     input_gtf: [\\\\""\\${par_annotation_gtf}\\\\""]
