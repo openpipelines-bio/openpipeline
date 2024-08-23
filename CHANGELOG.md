@@ -36,6 +36,8 @@
 
 ## NEW FUNCTIONALITY
 
+* Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
+
 * `process_samples`, `process_batches` and `rna_multisample` workflows: added functionality to scale the log-normalized 
   gene expression data to unit variance and zero mean. The scaled data will be output to a different layer and the
   representation with reduced dimensions will be created and stored in addition to the non-scaled data (PR #733).
@@ -84,6 +86,8 @@
 * Test resources (reference_gencodev41_chr1): switch reference genome for CellRanger to ARC variant (PR #864).
 
 ## MINOR CHANGES
+
+* `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
 
 * `neighbors/find_neighbors` component: Modified to include results of KNN in the output file (PR #748).
   2 new optional arguments added to set .obsm slots to save KNN results into:
