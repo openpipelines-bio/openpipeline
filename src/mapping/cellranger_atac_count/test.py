@@ -1,7 +1,7 @@
 import subprocess
 from os import path
 import sys
-from itertools import zip_longest, repeat, chain
+from itertools import zip_longest, chain
 
 ## VIASH START
 meta = {
@@ -66,7 +66,7 @@ output = "test_output2"
 
 cmd_pars = [
     meta["executable"],
-    *chain(repeat(["--input"]), input_files),
+    *chain.from_iterable([("--input", input_file) for input_file in input_files]),
     "--reference", reference,
     "--output", output
 ]
