@@ -28,14 +28,14 @@ jobs:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v2
 
-    - uses: viash-io/viash-actions/setup@v6
+    - uses: viash-io/viash-actions/setup@add-working-dir-input
 
     - name: Check if all config can be parsed if there is no unicode support
       run: |
         LANG=C viash ns list > /dev/null
         JAVA_TOOL_OPTIONS=-Dfile.encoding=ascii viash ns build --parallel --setup meh > /dev/null
 
-    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v6
+    - uses: viash-io/viash-actions/project/sync-and-cache-s3@add-working-dir-input
       id: cache
       with:
         s3_bucket: $s3_bucket
@@ -43,14 +43,14 @@ jobs:
         cache_key_prefix: resources_test__
 
     - id: ns_list
-      uses: viash-io/viash-actions/ns-list@v6
+      uses: viash-io/viash-actions/ns-list@add-working-dir-input
       with:
         platform: docker
         format: json
         query_namespace: ^(?!workflows|test_workflows)
 
     - id: ns_list_filtered
-      uses: viash-io/viash-actions/project/detect-changed-components@v6
+      uses: viash-io/viash-actions/project/detect-changed-components@add-working-dir-input
       with:
         input_file: "${{ steps.ns_list.outputs.output_file }}"
 
@@ -83,7 +83,7 @@ jobs:
 
     - uses: actions/checkout@v4
 
-    - uses: viash-io/viash-actions/setup@v6
+    - uses: viash-io/viash-actions/setup@add-working-dir-input
 
     # use cache
     - name: Cache resources data
