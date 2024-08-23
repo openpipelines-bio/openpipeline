@@ -3212,7 +3212,7 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b86e610109f7522a903c5b11de8bcd665a878f4a",
+          "git_commit" : "701a8375418dfe0819302517756d3706c4305b52",
           "executable" : "/nextflow/reference/make_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/make_reference"
@@ -3233,7 +3233,7 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b86e610109f7522a903c5b11de8bcd665a878f4a",
+          "git_commit" : "701a8375418dfe0819302517756d3706c4305b52",
           "executable" : "/nextflow/reference/build_bdrhap_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference"
@@ -3254,7 +3254,7 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b86e610109f7522a903c5b11de8bcd665a878f4a",
+          "git_commit" : "701a8375418dfe0819302517756d3706c4305b52",
           "executable" : "/nextflow/reference/build_star_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_star_reference"
@@ -3275,7 +3275,7 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b86e610109f7522a903c5b11de8bcd665a878f4a",
+          "git_commit" : "701a8375418dfe0819302517756d3706c4305b52",
           "executable" : "/nextflow/reference/build_cellranger_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_reference"
@@ -3296,7 +3296,7 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b86e610109f7522a903c5b11de8bcd665a878f4a",
+          "git_commit" : "701a8375418dfe0819302517756d3706c4305b52",
           "executable" : "/nextflow/reference/build_cellranger_arc_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_arc_reference"
@@ -3363,7 +3363,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/make_reference",
     "viash_version" : "0.8.6",
-    "git_commit" : "b86e610109f7522a903c5b11de8bcd665a878f4a",
+    "git_commit" : "701a8375418dfe0819302517756d3706c4305b52",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

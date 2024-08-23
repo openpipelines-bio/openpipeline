@@ -2950,7 +2950,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b86e610109f7522a903c5b11de8bcd665a878f4a",
+          "git_commit" : "701a8375418dfe0819302517756d3706c4305b52",
           "executable" : "/nextflow/dataflow/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_modalities"
@@ -3017,7 +3017,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities",
     "viash_version" : "0.8.6",
-    "git_commit" : "b86e610109f7522a903c5b11de8bcd665a878f4a",
+    "git_commit" : "701a8375418dfe0819302517756d3706c4305b52",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
