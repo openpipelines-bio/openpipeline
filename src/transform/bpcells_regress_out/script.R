@@ -2,24 +2,24 @@ cat("Loading libraries\n")
 library(glue)
 library(BPCells)
 requireNamespace("anndata", quietly = TRUE, convert = FALSE)
-requireNamespace("reticulate", quietlye = TRUE)
+requireNamespace("reticulate", quietly = TRUE)
 library(reticulate)
 mudata <- reticulate::import("mudata")
 
 ## VIASH START
 par <- list(
-    input = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    input = "input_h5mu.h5mu",
+    # input = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     output = "output.h5mu",
     modality = "rna",
-    obs_keys = NULL,
-    input_layer = NULL,
-    output_layer = NULL
+    obs_keys = c("var"),
+    input_layer = "input",
+    output_layer = "output"
 )
 ## VIASH END
 
 # Read the h5mu file and make var names unique
 mdata <- mudata$read_h5mu(par$input)
-mdata$var_names_make_unique()
 
 # Regress out
 if (!is.null(par$obs_keys) && length(par$obs_keys) > 0) {
@@ -31,13 +31,16 @@ if (!is.null(par$obs_keys) && length(par$obs_keys) > 0) {
   # Fetch the input layer
   if (is.null(par$input_layer)) {
     cat("Using .X as input layer")
-    mat <- py_to_r(adata$X)
+    mat <- adata$X
   } else {
     glue("Using .layers {par$input_layer} as input layer")
-    mat <- py_to_r(adata$layers[par$input_layer])
+    mat <- adata$layers[[par$input_layer]]
   }
 
   imat <- as(as(mat, "CsparseMatrix"), "IterableMatrix")
+
+  # ensure unique col and row names
+  dimnames(imat) <- NULL
 
   # obs_keys is not NULL and not empty
   latent_data <- as.data.frame(adata$obs[, par$obs_keys])
