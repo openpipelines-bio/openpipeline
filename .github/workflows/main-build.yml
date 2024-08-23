@@ -181,7 +181,7 @@ jobs:
         engine: docker
         src: src
         format: json
-        query_namespace: ^(?!workflows|test_workflows)
+        query_namespace: ^(?!workflows)|(workflows/test_workflows)
 
     - name: "List workflows"
       id: ns_list_workflows
@@ -189,7 +189,7 @@ jobs:
       with:
         src: src
         format: json
-        query_namespace: ^workflows
+        query_namespace: ^workflows/(?!test_workflows)
 
     - name: "Parse JSON output from 'viash ns list' as input for matrix."
       id: set_matrix

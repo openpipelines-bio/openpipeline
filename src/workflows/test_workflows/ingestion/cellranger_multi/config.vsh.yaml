@@ -34,4 +34,5 @@ engines:
           - mudata
         __merge__: /src/base/requirements/viashpy.yaml
 runners:
+  - type: executable
   - type: nextflow
