@@ -101,6 +101,7 @@ platforms:
           - procps
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        packages:
           - scanpy~=1.9.3
           - muon~=0.1.5
     test_setup:
