@@ -1,17 +1,5 @@
 # openpipelines x.x.x
 
-## NEW FUNCTIONALITY
-
-* Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
-
-## MINOR CHANGES
-
-* `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
-
-# openpipelines 1.0.0-rc3
-
-## BREAKING CHANGES
-
 * Added cell multiplexing support to the `from_cellranger_multi_to_h5mu` component and the `cellranger_multi` workflow. These components now output multiple .h5mu files. The `output` and `output_h5mu` arguments respectively now require a value containing a wildcard character `*`, which will be replaced by the sample ID to form the final output file names . Additionally, a `sample_csv` argument is added to the `from_cellragner_multi_to_h5mu` component which describes the sample name per output file (PR #803).
 
 * `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
@@ -45,6 +33,8 @@
 * `reference/build_cellranger_arc_reference`: a default value of "output" is now specified for the argument `--genome`, inline with `reference/build_cellranger_reference` component. Additionally, providing a value for `--organism` is no longer required and its default value of `Homo Sapiens` has been removed (PR #864).
 
 ## NEW FUNCTIONALITY
+
+* Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
 
 * `process_samples`, `process_batches` and `rna_multisample` workflows: added functionality to scale the log-normalized 
   gene expression data to unit variance and zero mean. The scaled data will be output to a different layer and the
@@ -94,6 +84,8 @@
 * Test resources (reference_gencodev41_chr1): switch reference genome for CellRanger to ARC variant (PR #864).
 
 ## MINOR CHANGES
+
+* `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
 
 * `neighbors/find_neighbors` component: Modified to include results of KNN in the output file (PR #748).
   2 new optional arguments added to set .obsm slots to save KNN results into:
