@@ -32,6 +32,8 @@
 
 * `reference/cellranger_mkgtf`: Rename `reference/mkgtf` to `reference/cellranger_mkgtf` (PR #846).
 
+* `reference/build_cellranger_arc_reference`: a default value of "output" is now specified for the argument `--genome`, inline with `reference/build_cellranger_reference` component. Additionally, providing a value for `--organism` is no longer required and its default value of `Homo Sapiens` has been removed (PR #864).
+
 ## NEW FUNCTIONALITY
 
 * `process_samples`, `process_batches` and `rna_multisample` workflows: added functionality to scale the log-normalized 
@@ -78,6 +80,10 @@
 * `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
 
 * `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
+
+* `workflows/ingestion/make_reference`: add possibility to build CellRanger ARC references. Added `--motifs_file`, `--non_nuclear_contigs` and `--output_cellranger_arc` arguments (PR #864).
+
+* Test resources (reference_gencodev41_chr1): switch reference genome for CellRanger to ARC variant (PR #864).
 
 ## MINOR CHANGES
 

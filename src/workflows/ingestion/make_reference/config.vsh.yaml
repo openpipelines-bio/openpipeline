@@ -85,11 +85,27 @@ functionality:
           description: Additional parameters to pass to STAR when building the genome index. Specify exactly like how you would on the command line.
           example: --limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11
           required: false
+    - name: "Cellranger ARC options"
+      arguments:
+        - name: "--motifs_file"
+          type: file
+          direction: input
+          description: Path to file containing transcription factor motifs in JASPAR format.
+        - name: "--non_nuclear_contigs"
+          multiple: true
+          required: false
+          type: string
+          description: |
+            Name(s) of contig(s) that do not have any chromatin structure, for example, 
+            mitochondria or plastids. These contigs are excluded from peak calling since
+            the entire contig will be "open" due to a lack of chromatin structure.
+            Leave empty if there are no such contigs.
+
     - name: Outputs
       arguments:
         - type: string
           name: --target
-          choices: [ cellranger, bd_rhapsody, star ]
+          choices: [ cellranger, cellranger_arc, bd_rhapsody, star ]
           description: Which reference indices to generate. 
           multiple: true
           default: [ star ]
@@ -108,6 +124,11 @@ functionality:
           direction: output
           description: Output index
           example: cellranger_index.tar.gz
+        - type: file
+          name: --output_cellranger_arc
+          direction: output
+          description: Output index
+          example: cellranger_index_arc.tar.gz
         - type: file
           name: --output_bd_rhapsody
           direction: output
@@ -130,6 +151,7 @@ functionality:
     - name: reference/build_bdrhap_reference
     - name: reference/build_star_reference
     - name: reference/build_cellranger_reference
+    - name: reference/build_cellranger_arc_reference
   resources:
     - type: nextflow_script
       path: main.nf

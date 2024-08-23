@@ -18,6 +18,11 @@ function clean_up {
 }
 trap clean_up EXIT
 
+echo "> Getting path of fasta file"
+par_genome_fasta=$(realpath $par_genome_fasta)
+echo "> Getting path of annotation file"
+par_transcriptome_gtf=$(realpath $par_transcriptome_gtf)
+
 echo "> Processing genome sequence"
 genome_fasta="$tmpdir/genome_sequence.fa"
 # if genome is gzipped, extract. otherwise not
