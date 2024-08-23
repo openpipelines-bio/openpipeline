@@ -71,7 +71,7 @@ engines:
           DEBIAN_FRONTEND=noninteractive apt update \
           && apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
 runners:
-  - type: engine
+  - type: executable
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]
