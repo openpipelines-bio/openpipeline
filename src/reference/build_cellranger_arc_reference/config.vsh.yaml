@@ -55,7 +55,7 @@ test_resources:
   - type: bash_script
     path: run_test.sh
   - path: /resources_test/reference_gencodev41_chr1
-egines:
+engines:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger_arc:2.0
     setup:
