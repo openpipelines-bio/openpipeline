@@ -30,7 +30,7 @@ logger = setup_logger()
 
 logger.info("> Running command with folder")
 input = meta["resources_dir"] + "/cellranger_atac_tiny_bcl/fastqs/HJN3KBCX2/test_sample/"
-reference = meta["resources_dir"] + "/reference_gencodev41_chr1/reference_cellranger_arc.tar.gz"
+reference = meta["resources_dir"] + "/reference_gencodev41_chr1/reference_cellranger.tar.gz"
 output = "test_output"
 cmd_pars = [
     meta["executable"],

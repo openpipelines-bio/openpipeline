@@ -63,24 +63,12 @@ if [ ! -d "${OUT}/fastqs" ]; then
     --output "${OUT}/fastqs"
 fi
 
-# Create reference
-if [ ! -f "${REFERENCE_DIR}/reference_cellranger_arc.tar.gz" ]; then
-  target/docker/reference/build_cellranger_arc_reference \
-    --genome_fasta "${REFERENCE_DIR}/reference.fa.gz" \
-    --annotation_gtf "${REFERENCE_DIR}/reference.gtf.gz" \
-    --motifs_file "${REFERENCE_DIR}/JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified" \
-    --non_nuclear_contigs "" \
-    --output "${REFERENCE_DIR}/reference_cellranger_arc.tar.gz" \
-    --organism "Homo_sapiens" \
-    --genome "GRCh38"
-fi
-
 # Create count matrices
 if [ ! -d "${OUT}/counts" ]; then
   mkdir -p "$OUT/counts"
   
-  target/docker/mapping/cellranger_atac_count \
+  target/docker/mapping/cellranger_atac_count/cellranger_atac_count \
     --input "${OUT}/fastqs/HJN3KBCX2/test_sample/" \
-    --reference "${REFERENCE_DIR}/reference_cellranger_arc.tar.gz" \
+    --reference "${REFERENCE_DIR}/reference_cellranger.tar.gz" \
     --output "${OUT}/counts"
 fi
