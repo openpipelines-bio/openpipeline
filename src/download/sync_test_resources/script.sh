@@ -1,10 +1,8 @@
 #!/bin/bash
 
-set -eo pipefail
-
 ## VIASH START
-par_input='s3://openpipelines-data'
-par_output='resources_test'
+par_input='_viash.yaml'
+par_output='.'
 ## VIASH END
 
 extra_params=( )
@@ -20,17 +18,35 @@ if [ "$par_delete" == "true" ]; then
 fi
 
 if [ ! -z ${par_exclude+x} ]; then
-  IFS=";"
+  IFS=":"
   for var in $par_exclude; do
     unset IFS
     extra_params+=( "--exclude" "$var" )
   done
 fi
 
+function sync_s3() {
+  local s3_path="$1"
+  local dest_path="$2"
+  AWS_EC2_METADATA_DISABLED=true \
+    aws s3 sync \
+    "$s3_path" \
+    "$dest_path" \
+    --no-sign-request \
+    "${extra_params[@]}"
+}
 
-# Disable the use of the Amazon EC2 instance metadata service (IMDS).
-# see https://florian.ec/blog/github-actions-awscli-errors/
-# or https://github.com/aws/aws-cli/issues/5234#issuecomment-705831465
-export AWS_EC2_METADATA_DISABLED=true
+yq e \
+  '.info.test_resources[] | "{type: " + (.type // "s3") + ", path: " + .path + ", dest: " + .dest + "}"' \
+  "${par_input}" | \
+  while read -r line; do
+    type=$(echo "$line" | yq e '.type')
+    path=$(echo "$line" | yq e '.path')
+    dest=$(echo "$line" | yq e '.dest')
 
-aws s3 sync "$par_input" "$par_output" --no-sign-request "${extra_params[@]}"
+    echo "Syncing '$path' to '$dest'..."
+
+    if [ "$type" == "s3" ]; then
+      sync_s3 "$path" "$par_output/$dest"
+    fi
+  done

@@ -1,50 +1,58 @@
 functionality:
   name: "sync_test_resources"
   namespace: "download"
-  description: Synchronise the test resources from s3://openpipelines-data to resources_test
+  description: Sync test resources to the local filesystem
   usage: |
     sync_test_resources
-    sync_test_resources --input s3://openpipelines-data --output resources_test
+    sync_test_resources --input _viash.yaml --output .
   authors:
     - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
-  arguments:
-    - name: "--input"
-      alternatives: ["-i"]
-      type: string
-      description: "Path to the S3 bucket to sync from."
-      default: "s3://openpipelines-data"
-    - name: "--output"
-      alternatives: ["-o"]
-      type: file
-      default: resources_test
-      direction: output
-      description: "Path to the test resource directory."
-    - name: "--quiet"
-      type: boolean_true
-      description: "Displays the operations that would be performed using the specified command without actually running them."
-    - name: "--dryrun"
-      type: boolean_true
-      description: "Does not display the operations performed from the specified command."
-    - name: "--delete"
-      type: boolean_true
-      description: "Files that exist in the destination but not in the source are deleted during sync."
-    - name: "--exclude"
-      type: "string"
-      multiple: true
-      description: Exclude all files or objects from the command that matches the specified pattern.
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--input"
+          alternatives: ["-i"]
+          type: file
+          description: "Path to the _viash.yaml project configuration file."
+          default: _viash.yaml
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          alternatives: ["-o"]
+          type: file
+          default: .
+          direction: output
+          description: "Path to the directory where the resources will be synced to."
+    - name: Arguments
+      arguments:
+        - name: "--quiet"
+          type: boolean_true
+          description: "Displays the operations that would be performed using the specified command without actually running them."
+        - name: "--dryrun"
+          type: boolean_true
+          description: "Does not display the operations performed from the specified command."
+        - name: "--delete"
+          type: boolean_true
+          description: "Files that exist in the destination but not in the source are deleted during sync."
+        - name: "--exclude"
+          type: "string"
+          multiple: true
+          description: Exclude all files or objects from the command that matches the specified pattern.
   resources:
     - type: bash_script
       path: script.sh
   test_resources:
     - type: bash_script
-      path: run_test.sh
+      path: test.sh
 platforms:
   - type: docker
-    image: "amazon/aws-cli:2.11.0"
+    image: "amazon/aws-cli:2.17.11"
     setup:
       - type: yum
-        packages:
-          - procps
-  - type: native
+        packages: [wget]
+      - type: docker
+        run : |
+          wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && \
+            chmod +x /usr/bin/yq
   - type: nextflow

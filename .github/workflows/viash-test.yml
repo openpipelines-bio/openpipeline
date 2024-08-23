@@ -17,8 +17,9 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      matrix: ${{ steps.set_matrix.outputs.matrix }}
+      matrix: ${{ steps.detect_changed_components.outputs.output_matrix }}
       cache_key: ${{ steps.cache.outputs.cache_key }}
+      dest_paths: ${{ steps.cache.outputs.dest_paths }}
 
     steps:
     - uses: actions/checkout@v4
@@ -35,12 +36,8 @@ jobs:
         LANG=C viash ns list > /dev/null
         JAVA_TOOL_OPTIONS=-Dfile.encoding=ascii viash ns build --parallel --setup meh > /dev/null
 
-    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v6
+    - uses: viash-io/viash-actions/project/sync-and-cache@v6
       id: cache
-      with:
-        s3_bucket: $s3_bucket
-        dest_path: resources_test
-        cache_key_prefix: resources_test__
 
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v6
@@ -49,22 +46,10 @@ jobs:
         format: json
         query_namespace: ^(?!workflows|test_workflows)
 
-    - id: ns_list_filtered
+    - id: detect_changed_components
       uses: viash-io/viash-actions/project/detect-changed-components@add-working-dir-input
       with:
         input_file: "${{ steps.ns_list.outputs.output_file }}"
-
-    - id: set_matrix
-      run: |
-        echo "matrix=$(jq -c '[ .[] | 
-          { 
-            "name": .functionality.name,
-            "namespace_separator": .platforms | map(select(.type == "docker"))[0].namespace_separator,
-            "namespace": .functionality.namespace,
-            "config": .info.config,
-            "dir": .info.config | capture("^(?<dir>.*\/)").dir
-          }
-        ]' ${{ steps.ns_list_filtered.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
   # phase 2
   viash_test:
@@ -86,41 +71,16 @@ jobs:
     - uses: viash-io/viash-actions/setup@v6
 
     # use cache
-    - name: Cache resources data
-      id: restore_cache
+    - name: Restore test resources cache
+      if: ${{ needs.list.outputs.cache_key != '' }}
       uses: actions/cache/restore@v4
-      env:
-        SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
+      timeout-minutes: 10
       with:
-        path: resources_test
+        path: ${{ needs.list.outputs.dest_paths }}
         key: ${{ needs.list.outputs.cache_key }}
-
-    - name: Sync if caching failed
-      shell: bash
-      if: steps.restore_cache.outputs.cache-hit != 'true'
-      run: |
-        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
-        for resource in "${resources[@]}"; do
-          if [[ $resource == *"resources_test"* ]]; then
-            relative_path=${resource#*resources_test/}
-            relative_path_trailing_slash_removed=${relative_path%/}
-            s3_path="s3://openpipelines-data/$relative_path_trailing_slash_removed"
-            s3_lookup=$(AWS_EC2_METADATA_DISABLED=true aws s3 ls --no-sign-request "$s3_path" 2>&1)
-            extra_args=()
-            if [[ $s3_lookup =~ .*/$ ]]; then
-              extra_args+=("--recursive")
-            fi
-            AWS_EC2_METADATA_DISABLED=true \
-            aws s3 cp \
-            "$s3_path" \
-            "$resource" \
-            --no-sign-request \
-            "${extra_args[@]}"
-          fi
-        done
+        fail-on-cache-miss: true
 
     - name: Remove unused test resources to save space (only when restoring from cache)
-      if: steps.restore_cache.outputs.cache-hit == 'true'
       shell: bash
       run: |
         readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')

@@ -3,6 +3,12 @@ viash_version: 0.8.6
 source: src
 target: target
 
+info:
+  test_resources:
+    - type: s3
+      path: s3://openpipelines-data
+      dest: resources_test
+
 config_mods: |
   .functionality.version := 'dev'
   .functionality.requirements.commands := ['ps']
