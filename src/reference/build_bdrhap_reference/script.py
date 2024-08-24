@@ -34,9 +34,9 @@ def read_config(path: str) -> dict[str, Any]:
     with open(path, "r") as f:
         config = yaml.safe_load(f)
     
-    config["arguments"] = [
+    config["functionality"]["arguments"] = [
         clean_arg(arg)
-        for grp in config["argument_groups"]
+        for grp in config["functionality"]["argument_groups"]
         for arg in grp["arguments"]
     ]
     
@@ -52,7 +52,7 @@ def process_params(par: dict[str, Any], config) -> str:
     assert par["reference_archive"].endswith(".gz"), "Output reference_archive must end with .tar.gz."
 
     # make paths absolute
-    for argument in config["arguments"]:
+    for argument in config["functionality"]["arguments"]:
         if par[argument["clean_name"]] and argument["type"] == "file":
             if isinstance(par[argument["clean_name"]], list):
                 par[argument["clean_name"]] = [ os.path.abspath(f) for f in par[argument["clean_name"]] ]
@@ -68,7 +68,7 @@ def generate_config(par: dict[str, Any], meta, config) -> str:
         |""")]
         
     config_key_value_pairs = []
-    for argument in config["arguments"]:
+    for argument in config["functionality"]["arguments"]:
         config_key = (argument.get("info") or {}).get("config_key")
         arg_type = argument["type"]
         par_value = par[argument["clean_name"]]

@@ -28,7 +28,7 @@ par = {
     "output": "test_output",
 }
 meta = {
-    "name": "star_and_htseq",
+    "functionality_name": "star_and_htseq",
     "cpus": 30,
     "temp_dir": "/tmp",
     "config": "src/mapping/multi_star/.config.vsh.yaml",
@@ -44,7 +44,7 @@ def fetch_arguments_info(config: Dict[str, Any]) -> Dict[str, Any]:
     """Fetch arguments from config"""
     arguments = {
         arg["name"].removeprefix("-").removeprefix("-"): arg
-        for group in config["argument_groups"]
+        for group in config["functionality"]["argument_groups"]
         for arg in group["arguments"]
     }
     return arguments
@@ -366,7 +366,7 @@ def main(par, meta):
 
     # temp_dir = "tmp/"
     with tempfile.TemporaryDirectory(
-        prefix=f"{meta['name']}-",
+        prefix=f"{meta['functionality_name']}-",
         dir=meta["temp_dir"],
         ignore_cleanup_errors=True
     ) as temp_dir:

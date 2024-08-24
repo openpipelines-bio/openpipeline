@@ -255,7 +255,7 @@ def make_paths_absolute(par: dict[str, Any], config: Path | str):
 
     arguments = {
         arg["name"].removeprefix("-").removeprefix("-"): arg
-        for group in config["argument_groups"]
+        for group in config["functionality"]["argument_groups"]
         for arg in group["arguments"]
     }
     for arg_name, arg in arguments.items():
@@ -280,7 +280,7 @@ def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> st
 
     arguments = {
         arg["name"].removeprefix("-").removeprefix("-"): arg
-        for group in config["argument_groups"]
+        for group in config["functionality"]["argument_groups"]
         for arg in group["arguments"]
     }
     for arg_name, arg in arguments.items():

@@ -24,7 +24,7 @@ par = {
     "layer": None,
 }
 meta = {
-    'name': 'scrublet',
+    'functionality_name': 'scrublet',
     'resources_dir': '.',
 }
 ### VIASH END

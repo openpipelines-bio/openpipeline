@@ -2,14 +2,8 @@
 # reads: ["WTALibrary_S1_L001_R1_001.fastq.gz", "WTALibrary_S1_L001_R2_001.fastq.gz"]
 # reads_atac: ["ATACLibrary_S2_L001_R1_001.fastq.gz", "ATACLibrary_S2_L001_R2_001.fastq.gz", "ATACLibrary_S2_L001_I2_001.fastq.gz"]
 
-# References
-# reference_archive: "RhapRef_Human_WTA_2023-02.tar.gz"
-# targeted_reference: ["BD_Rhapsody_Immune_Response_Panel_Hs.fasta"]
-# abseq_reference: ["AbSeq_reference.fasta"]
-# supplemental_reference: ["supplemental_reference.fasta"]
-
 # Outputs
-# output_dir: "$id.$key.output_dir"
+# output_dir: "$id.$key.output_dir.output_dir"
 # output_seurat: "$id.$key.output_seurat.rds"
 # output_mudata: "$id.$key.output_mudata.h5mu"
 # metrics_summary: "$id.$key.metrics_summary.csv"
@@ -23,6 +17,12 @@
 # dimred_tsne: "$id.$key.dimred_tsne.csv"
 # dimred_umap: "$id.$key.dimred_umap.csv"
 # immune_cell_classification: "$id.$key.immune_cell_classification.csv"
+
+# References
+# reference_archive: "RhapRef_Human_WTA_2023-02.tar.gz"
+# targeted_reference: ["BD_Rhapsody_Immune_Response_Panel_Hs.fasta"]
+# abseq_reference: ["AbSeq_reference.fasta"]
+# supplemental_reference: ["supplemental_reference.fasta"]
 
 # Multiplex outputs
 # sample_tag_metrics: "$id.$key.sample_tag_metrics.csv"
@@ -98,5 +98,3 @@ timestamps: false
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-
-# Arguments

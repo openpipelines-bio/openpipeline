@@ -6,7 +6,7 @@
 ## VIASH END
 
 echo ">> Run aws s3 sync"
-$meta_executable \
+./$meta_functionality_name \
   --input s3://openpipelines-data/pbmc_1k_protein_v3 \
   --output foo \
   --exclude '*.h5' \

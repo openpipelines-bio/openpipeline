@@ -1,11 +1,11 @@
-from os import path
-from mudata import read_h5mu
 import subprocess
+from os import path
+import mudata as mu
 
 ## VIASH START
 meta = {
-    'executable': 'target/executable/correction/cellbender_remove_background/cellbender_remove_background',
-    'resources_dir': 'resources_test/pbmc_1k_protein_v3'
+  'executable': 'target/docker/correction/cellbender_remove_background/cellbender_remove_background',
+  'resources_dir': 'resources_test/pbmc_1k_protein_v3'
 }
 ## VIASH END
 
@@ -26,9 +26,9 @@ cmd_pars = [
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 
 # check if file exists
-assert path.exists(file_output), "No output was created."
+assert path.exists("output.h5mu"), "No output was created."
 
-data = read_h5mu(file_output)
+data = mu.read_h5mu("output.h5mu")
 
 # check whether gex was found
 assert data.mod["rna"].var["feature_types"].unique() == [

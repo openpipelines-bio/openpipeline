@@ -7,7 +7,7 @@ from subprocess import CalledProcessError
 
 ## VIASH START
 meta = {
-    'executable': './target/executable/filter/delimit_fraction/delimit_fraction',
+    'executable': './target/docker/filter/delimit_fraction/delimit_fraction',
     'resources_dir': 'resources_test/',
     'config': "./src/filter/delimit_fraction/config.vsh.yaml"
 }

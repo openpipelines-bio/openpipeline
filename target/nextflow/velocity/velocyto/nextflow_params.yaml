@@ -3,7 +3,7 @@ input: # please fill in - example: "path/to/file"
 transcriptome: # please fill in - example: "path/to/file"
 # barcode: "path/to/file"
 without_umi: false
-# output: "$id.$key.output"
+# output: "$id.$key.output.output"
 logic: "Default"
 
 # Nextflow input-output arguments

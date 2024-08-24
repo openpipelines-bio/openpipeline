@@ -1,64 +1,58 @@
-name: mermaid
-namespace: "report"
-description: |
-  Generates a network from mermaid code.
-authors:
-  - __merge__: /src/authors/dries_de_maeyer.yaml
-    roles: [ maintainer ]
-
-arguments:
-  - name: "--input"
-    alternatives: [-i]
-    type: file
-    description: Input directory
-    direction: input
-    required: true
-  - name: "--output"
-    alternatives: ["-o"]
-    type: file
-    description: Generated network as output.
-    direction: output
-    required: true
-  - name: "--output_format"
-    type: string
-    description: |
-      Output format for the generated image. By default will be inferred from the extension 
-      of the file specified with --output.
-    choices: ["svg", "png", "pdf"]
-  - name: "--width"
-    type: integer
-    description: "Width of the page"
-    default: 800
-  - name: "--height"
-    type: integer
-    description: "Height of the page"
-    default: 600
-  - name: "--background_color"
-    type: string
-    description: "Background color for pngs/svgs (not pdfs)"
-    default: "white"
-    example: ["#F0F0F0"]
-
-resources:
-  - type: bash_script
-    path: script.sh
-  - path: ./puppeteer-config.json
-
-test_resources:
-  - type: bash_script
-    path: test.sh
-
-engines:
+functionality:
+  name: mermaid
+  namespace: "report"
+  description: |
+    Generates a network from mermaid code.
+  authors:
+    - __merge__: /src/authors/dries_de_maeyer.yaml
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      alternatives: [-i]
+      type: file
+      description: Input directory
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Generated network as output.
+      direction: output
+      required: true
+    - name: "--output_format"
+      type: string
+      description: |
+        Output format for the generated image. By default will be inferred from the extension 
+        of the file specified with --output.
+      choices: ["svg", "png", "pdf"]
+    - name: "--width"
+      type: integer
+      description: "Width of the page"
+      default: 800
+    - name: "--height"
+      type: integer
+      description: "Height of the page"
+      default: 600
+    - name: "--background_color"
+      type: string
+      description: "Background color for pngs/svgs (not pdfs)"
+      default: "white"
+      example: ["#F0F0F0"]
+  resources:
+    - type: bash_script
+      path: script.sh
+    - path: ./puppeteer-config.json
+  test_resources:
+    - type: bash_script
+      path: test.sh
+platforms:
   - type: docker
     image: "node:20-bullseye"
     setup:
       - type: javascript
         npm: 
-          - "@mermaid-js/mermaid-cli"
+         - "@mermaid-js/mermaid-cli"
       - type: apt
         packages: 
           - chromium
-
-runners:
-  - type: executable
   - type: nextflow

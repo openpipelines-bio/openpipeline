@@ -13,7 +13,7 @@ echo ">>> Creating tar.gz..."
 tar czvf ${INPUT_FILE}.tar.gz ${INPUT_FILE}
 
 echo ">>> Check whether tar.gz can be extracted"
-$meta_executable \
+./$meta_functionality_name \
    --input "${INPUT_FILE}.tar.gz" \
    --output "$OUTPUT_DIR"
 

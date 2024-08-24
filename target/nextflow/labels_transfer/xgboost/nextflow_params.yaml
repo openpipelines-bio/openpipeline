@@ -1,3 +1,9 @@
+# Outputs
+# output: "$id.$key.output.output"
+# output_obs_predictions: ["foo"]
+# output_obs_uncertainty: ["foo"]
+output_uns_parameters: "labels_transfer"
+
 # Input dataset (query) arguments
 input: # please fill in - example: "path/to/file"
 modality: "rna"
@@ -8,17 +14,11 @@ modality: "rna"
 reference_obsm_features: # please fill in - example: "X_integrated_scanvi"
 reference_obs_targets: ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"]
 
-# Outputs
-# output: "$id.$key.output"
-# output_obs_predictions: ["foo"]
-# output_obs_uncertainty: ["foo"]
-output_uns_parameters: "labels_transfer"
-
 # Execution arguments
 force_retrain: false
 use_gpu: false
 verbosity: 1
-# model_output: "model"
+# model_output: "$id.$key.model_output.model_output"
 
 # Learning parameters
 learning_rate: 0.3
@@ -38,5 +38,3 @@ scale_pos_weight: 1.0
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-
-# Arguments

@@ -1,13 +1,11 @@
 #!/bin/bash
 
-set -eou pipefail
-
 ## VIASH START
 meta_executable="bin/viash run src/reference/cellranger_mkgtf/config.vsh.yaml --"
 ## VIASH END
 
 # create temporary directory
-tmpdir=$(mktemp -d "$meta_temp_dir/$meta_name-XXXXXXXX")
+tmpdir=$(mktemp -d "$meta_temp_dir/$meta_functionality_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
 }
@@ -20,7 +18,7 @@ attribute_values=$(printf 'gene_type:%s,' "${expected_gene_types[@]}")
 attribute_values=${attribute_values%,}  # remove trailing comma
 echo $attribute_values
 
-echo "> Running $meta_name, writing to $tmpdir."
+echo "> Running $meta_functionality_name, writing to $tmpdir."
 $meta_executable \
   --input_gtf "$tmpdir/reference_small.gtf.gz" \
   --output_gtf "$tmpdir/myreference_filtered.gtf.gz" \

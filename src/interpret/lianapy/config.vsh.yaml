@@ -1,86 +1,87 @@
-name: lianapy
-namespace: "interpret"
-description: "Performs LIANA integration based as described in https://github.com/saezlab/liana-py"
-authors:
-  - __merge__: /src/authors/mauro_saporita.yaml
-    roles: [ author ]
-  - __merge__: /src/authors/povilas_gibas.yaml
-    roles: [ author ]
-arguments:
-  - name: "--input"
-    alternatives: ["-i"]
-    type: file
-    description: Input h5mu file
-    direction: input
-    required: true
-  - name: "--output"
-    alternatives: ["-o"]
-    type: file
-    description: Output h5mu file.
-    direction: output
-    required: true
-  - name: "--output_compression"
-    type: string
-    choices: ["gzip", "lzf"]
-    default: "gzip"
-    required: false
-  - name: "--modality"
-    type: string
-    default: "rna"
-    required: false
-  - name: "--layer"
-    type: string
-    required: false
-    description: "Layer in anndata.AnnData.layers to use. If None, use mudata.mod[modality].X."
-  - name: "--groupby"
-    type: string
-    required: true
-    description: "The key of the observations grouping to consider."
-  - name: "--resource_name"
-    type: string
-    choices: [ "baccin2019", "cellcall", "cellchatdb", "cellinker", "cellphonedb", "celltalkdb", "connectomedb2020", "consensus", "embrace", "guide2pharma", "hpmr", "icellnet", "italk", "kirouac2010", "lrdb", "mouseconsensus", "ramilowski2015" ]
-    default: "consensus"
-    required: false
-    description: "Name of the resource to be loaded and use for ligand-receptor inference."
-  - name: "--gene_symbol"
-    type: string
-    default: "gene_symbol"
-    required: false
-    description: "Column name in var DataFrame in which gene symbol are stored."
-  - name: "--expr_prop"
-    type: double
-    default: 0.1
-    required: false
-    description: "Minimum expression proportion for the ligands/receptors (and their subunits) in the corresponding cell identities. Set to '0', to return unfiltered results."
-  - name: "--min_cells"
-    type: integer
-    default: 5
-    required: false
-    description: "Minimum cells per cell identity ('groupby') to be considered for downstream analysis."
-  - name: "--aggregate_method"
-    type: string
-    choices: [ "mean", "rra" ]
-    default: "rra"
-    required: false
-    description: "Method aggregation approach, one of ['mean', 'rra'], where 'mean' represents the mean rank, while 'rra' is the RobustRankAggregate (Kolde et al., 2014) of the interactions."
-  - name: "--return_all_lrs"
-    type: boolean
-    default: False
-    required: false
-    description: "Bool whether to return all LRs, or only those that surpass the 'expr_prop' threshold. Those interactions that do not pass the 'expr_prop' threshold will be assigned to the *worst* score of the ones that do. 'False' by default."
-  - name: "--n_perms"
-    type: integer
-    default: 100
-    required: false
-    description: "Number of permutations for the permutation test. Note that this is relevant only for permutation-based methods - e.g. 'CellPhoneDB"
-resources:
-  - type: python_script
-    path: script.py
-test_resources:
-  - type: python_script
-    path: test.py
-  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
-engines:
+functionality:
+  name: lianapy
+  namespace: "interpret"
+  description: "Performs LIANA integration based as described in https://github.com/saezlab/liana-py"
+  authors:
+    - __merge__: /src/authors/mauro_saporita.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/povilas_gibas.yaml
+      roles: [ author ]
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file.
+      direction: output
+      required: true
+    - name: "--output_compression"
+      type: string
+      choices: ["gzip", "lzf"]
+      default: "gzip"
+      required: false
+    - name: "--modality"
+      type: string
+      default: "rna"
+      required: false
+    - name: "--layer"
+      type: string
+      required: false
+      description: "Layer in anndata.AnnData.layers to use. If None, use mudata.mod[modality].X."
+    - name: "--groupby"
+      type: string
+      required: true
+      description: "The key of the observations grouping to consider."
+    - name: "--resource_name"
+      type: string
+      choices: [ "baccin2019", "cellcall", "cellchatdb", "cellinker", "cellphonedb", "celltalkdb", "connectomedb2020", "consensus", "embrace", "guide2pharma", "hpmr", "icellnet", "italk", "kirouac2010", "lrdb", "mouseconsensus", "ramilowski2015" ]
+      default: "consensus"
+      required: false
+      description: "Name of the resource to be loaded and use for ligand-receptor inference."
+    - name: "--gene_symbol"
+      type: string
+      default: "gene_symbol"
+      required: false
+      description: "Column name in var DataFrame in which gene symbol are stored."
+    - name: "--expr_prop"
+      type: double
+      default: 0.1
+      required: false
+      description: "Minimum expression proportion for the ligands/receptors (and their subunits) in the corresponding cell identities. Set to '0', to return unfiltered results."
+    - name: "--min_cells"
+      type: integer
+      default: 5
+      required: false
+      description: "Minimum cells per cell identity ('groupby') to be considered for downstream analysis."
+    - name: "--aggregate_method"
+      type: string
+      choices: [ "mean", "rra" ]
+      default: "rra"
+      required: false
+      description: "Method aggregation approach, one of ['mean', 'rra'], where 'mean' represents the mean rank, while 'rra' is the RobustRankAggregate (Kolde et al., 2014) of the interactions."
+    - name: "--return_all_lrs"
+      type: boolean
+      default: False
+      required: false
+      description: "Bool whether to return all LRs, or only those that surpass the 'expr_prop' threshold. Those interactions that do not pass the 'expr_prop' threshold will be assigned to the *worst* score of the ones that do. 'False' by default."
+    - name: "--n_perms"
+      type: integer
+      default: 100
+      required: false
+      description: "Number of permutations for the permutation test. Note that this is relevant only for permutation-based methods - e.g. 'CellPhoneDB"
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+platforms:
   - type: docker
     image: python:3.11-slim
     setup:
@@ -96,8 +97,6 @@ engines:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
 
-runners:
-  - type: executable
   - type: nextflow
     directives:
       label: [lowmem, lowcpu]

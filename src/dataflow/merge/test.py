@@ -11,7 +11,7 @@ import os
 
 ## VIASH START
 meta = {
-    'executable': './target/executable/dataflow/merge/merge',
+    'executable': './target/docker/dataflow/merge/merge',
     'resources_dir': './resources_test/merge_test_data/',
     'config': './src/dataflow/merge/config.vsh.yml'
 }

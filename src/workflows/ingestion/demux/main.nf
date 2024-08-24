@@ -14,7 +14,7 @@ workflow run_wf {
           "bcl2fastq": "bcl2fastq",
           "mkfastq": "cellranger_mkfastq"
         ]
-        funcNameMapper[state.demultiplexer] == component.config.name
+        funcNameMapper[state.demultiplexer] == component.config.functionality.name
       },
       fromState: { id, state, component ->
         def data = [
@@ -22,7 +22,7 @@ workflow run_wf {
           sample_sheet: state.sample_sheet,
           reports: null // disable reports so they end up in the output dir
         ]
-        if (component.config.name== "bcl2fastq") {
+        if (component.config.functionality.name== "bcl2fastq") {
           data.ignore_missing = state.ignore_missing
         }
         data

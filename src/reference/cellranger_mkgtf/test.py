@@ -6,7 +6,7 @@ import re
 
 ## VIASH START
 meta = {
-    'name': 'cellrnger_mkgtf',
+    'functionality_name': 'cellrnger_mkgtf',
     'resources_dir': 'resources_test/',
     'executable': 'target/docker/reference/cellranger_mkgtf/cellranger_mkgtf',
     'config': 'src/reference/cellranger_mkgtf/config.vsh.yaml'

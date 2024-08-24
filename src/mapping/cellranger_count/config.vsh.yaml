@@ -1,127 +1,128 @@
-name: cellranger_count
-namespace: mapping
-description: Align fastq files using Cell Ranger count.
-authors:
-  - __merge__: /src/authors/angela_pisco.yaml
-    roles: [ author ]
-  - __merge__: /src/authors/samuel_d_souza.yaml
-    roles: [ author ]
-  - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
-argument_groups:
-  - name: Inputs
-    arguments:
-      - type: file
-        name: --input
-        required: true
-        multiple: true
-        example: [ "sample_S1_L001_R1_001.fastq.gz", "sample_S1_L001_R2_001.fastq.gz" ]
-        description: The fastq.gz files to align. Can also be a single directory containing fastq.gz files.
-      - type: file
-        name: --reference
-        required: true
-        description: The path to Cell Ranger reference tar.gz file. Can also be a directory.
-        example: reference.tar.gz
-  - name: Outputs
-    arguments:
-      - type: file
-        name: --output
-        direction: output
-        description: The folder to store the alignment results.
-        example: "/path/to/output"
-        required: true
-  - name: Arguments
-    arguments:
-      - type: integer
-        name: --expect_cells
-        example: 3000
-        description: "Expected number of recovered cells, used as input to cell calling algorithm."
+functionality:
+  name: cellranger_count
+  namespace: mapping
+  description: Align fastq files using Cell Ranger count.
+  authors:
+    - __merge__: /src/authors/angela_pisco.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/samuel_d_souza.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ author, maintainer ]
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - type: file
+          name: --input
+          required: true
+          multiple: true
+          example: [ "sample_S1_L001_R1_001.fastq.gz", "sample_S1_L001_R2_001.fastq.gz" ]
+          description: The fastq.gz files to align. Can also be a single directory containing fastq.gz files.
+        - type: file
+          name: --reference
+          required: true
+          description: The path to Cell Ranger reference tar.gz file. Can also be a directory.
+          example: reference.tar.gz
+    - name: Outputs
+      arguments:
+        - type: file
+          name: --output
+          direction: output
+          description: The folder to store the alignment results.
+          example: "/path/to/output"
+          required: true
+    - name: Arguments
+      arguments:
+        - type: integer
+          name: --expect_cells
+          example: 3000
+          description: "Expected number of recovered cells, used as input to cell calling algorithm."
 
-      - type: integer
-        name: "--force_cells"
-        example: 3000
-        description: "Force pipeline to use this number of cells, bypassing cell calling algorithm."
+        - type: integer
+          name: "--force_cells"
+          example: 3000
+          description: "Force pipeline to use this number of cells, bypassing cell calling algorithm."
 
-      - type: string
-        name: --chemistry
-        default: auto
-        description: |
-          Assay configuration.
-          - auto: autodetect mode
-          - threeprime: Single Cell 3'
-          - fiveprime: Single Cell 5'
-          - SC3Pv1: Single Cell 3' v1 
-            NOTE: this mode cannot be auto-detected. It must be set explicitly with this option.
-          - SC3Pv2: Single Cell 3' v2
-          - SC3Pv3: Single Cell 3' v3
-          - SC3Pv4: Single Cell 3' v4
-          - SC3Pv3LT: Single Cell 3' v3 LT
-          - SC3Pv3HT: Single Cell 3' v3 HT
-          - SC5P-PE-v3: Single Cell 5' paired-end v3 (GEM-X)
-          - SC5P-PE: Single Cell 5' paired-end
-          - SC5P-R2: Single Cell 5' R2-only
-          - SC-FB: Single Cell Antibody-only 3' v2 or 5'
-          - ARC-v1: for analyzing the Gene Expression portion of Multiome data. 
-            NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.
-          See https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.
-        choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4, SC3Pv3LT, SC3Pv3HT, SC5P-PE-v3, SC5P-PE, SC5P-R2, SC-FB, ARC-v1 ]
+        - type: string
+          name: --chemistry
+          default: auto
+          description: |
+            Assay configuration.
+            - auto: autodetect mode
+            - threeprime: Single Cell 3'
+            - fiveprime: Single Cell 5'
+            - SC3Pv1: Single Cell 3' v1 
+              NOTE: this mode cannot be auto-detected. It must be set explicitly with this option.
+            - SC3Pv2: Single Cell 3' v2
+            - SC3Pv3: Single Cell 3' v3
+            - SC3Pv4: Single Cell 3' v4
+            - SC3Pv3LT: Single Cell 3' v3 LT
+            - SC3Pv3HT: Single Cell 3' v3 HT
+            - SC5P-PE-v3: Single Cell 5' paired-end v3 (GEM-X)
+            - SC5P-PE: Single Cell 5' paired-end
+            - SC5P-R2: Single Cell 5' R2-only
+            - SC-FB: Single Cell Antibody-only 3' v2 or 5'
+            - ARC-v1: for analyzing the Gene Expression portion of Multiome data. 
+              NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.
+            See https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.
+          choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4, SC3Pv3LT, SC3Pv3HT, SC5P-PE-v3, SC5P-PE, SC5P-R2, SC-FB, ARC-v1 ]
 
-      - type: boolean
-        name: "--secondary_analysis"
-        default: false
-        description: Whether or not to run the secondary analysis e.g. clustering.
+        - type: boolean
+          name: "--secondary_analysis"
+          default: false
+          description: Whether or not to run the secondary analysis e.g. clustering.
 
-      - type: boolean
-        name: "--generate_bam"
-        default: true
-        description: Whether to generate a BAM file.
+        - type: boolean
+          name: "--generate_bam"
+          default: true
+          description: Whether to generate a BAM file.
         
-      - type: boolean
-        name: "--include_introns"
-        default: true
-        description: Include intronic reads in count.
+        - type: boolean
+          name: "--include_introns"
+          default: true
+          description: Include intronic reads in count.
 
-      - type: integer
-        name: --r1_length
-        description: "Hard trim the input Read 1 to this length before analysis"
-        required: false
+        - type: integer
+          name: --r1_length
+          description: "Hard trim the input Read 1 to this length before analysis"
+          required: false
         
-      - type: integer
-        name: "--r2_length"
-        required: false
-        description: "Hard trim the input Read 2 to this length before analysis"        
+        - type: integer
+          name: "--r2_length"
+          required: false
+          description: "Hard trim the input Read 2 to this length before analysis"        
         
-      - type: integer
-        multiple: true
-        name: --lanes
-        required: false
-        description: Only use FASTQs from selected lanes.
-        example: [1,2,3]
+        - type: integer
+          multiple: true
+          name: --lanes
+          required: false
+          description: Only use FASTQs from selected lanes.
+          example: [1,2,3]
 
-      - name: "--library_compatibility_check"
-        type: boolean
-        default: true
-        description: |
-          Whether to check for barcode compatibility between libraries.
+        - name: "--library_compatibility_check"
+          type: boolean
+          default: true
+          description: |
+            Whether to check for barcode compatibility between libraries.
 
-      - name: "--min_crispr_umi"
-        type: integer
-        min: 1
-        description: |
-          Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection.
-          If a lower or higher sensitivity is desired for detection, this value can be customized
-          according to specific experimental needs. Applicable only to datasets that include a
-          CRISPR Guide Capture library.
+        - name: "--min_crispr_umi"
+          type: integer
+          min: 1
+          description: |
+            Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection.
+            If a lower or higher sensitivity is desired for detection, this value can be customized
+            according to specific experimental needs. Applicable only to datasets that include a
+            CRISPR Guide Capture library.
 
-resources:
-  - type: bash_script
-    path: script.sh
-test_resources:
-  - type: python_script
-    path: test.py
-  - path: /resources_test/cellranger_tiny_fastq
-  - path: /src/utils/setup_logger.py
-engines:
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/cellranger_tiny_fastq
+    - path: /src/utils/setup_logger.py
+platforms:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger:8.0
     setup:
@@ -129,9 +130,7 @@ engines:
         run: |
           DEBIAN_FRONTEND=noninteractive apt update && \
           apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
-    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
-runners:
-  - type: executable
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .] 
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]

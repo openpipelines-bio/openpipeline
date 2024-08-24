@@ -7,7 +7,7 @@ import numpy as np
 ## VIASH START
 meta = {
     'resources_dir': './resources_test/',
-    'executable': './target/executable/query/cellxgene_census',
+    'executable': './target/docker/query/cellxgene_census',
     'config': '/home/di/code/openpipeline/src/query/cellxgene_census/config.vsh.yaml'
 }
 ## VIASH END

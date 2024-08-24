@@ -20,7 +20,7 @@ par = {
   'layer': None
 }
 meta = {
-    'name': 'filter_on_counts',
+    'functionality_name': 'filter_on_counts',
     'resources_dir': '.'
 }
 ### VIASH END

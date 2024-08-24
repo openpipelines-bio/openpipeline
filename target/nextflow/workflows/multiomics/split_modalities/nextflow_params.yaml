@@ -3,11 +3,9 @@ id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5mu"
 
 # Outputs
-# output: "$id.$key.output"
+# output: "$id.$key.output.output"
 # output_types: "$id.$key.output_types.csv"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-
-# Arguments

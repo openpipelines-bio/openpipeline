@@ -4,6 +4,18 @@ genome_fasta: # please fill in - example: "https:/ftp.ebi.ac.uk/pub/databases/ge
 transcriptome_gtf: # please fill in - example: "https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz"
 # ercc: "https:/assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip"
 
+# Outputs
+target: ["star"]
+# output_fasta: "$id.$key.output_fasta.gz"
+# output_gtf: "$id.$key.output_gtf.gz"
+# output_cellranger: "$id.$key.output_cellranger.gz"
+# output_cellranger_arc: "$id.$key.output_cellranger_arc.gz"
+# output_bd_rhapsody: "$id.$key.output_bd_rhapsody.gz"
+# output_star: "$id.$key.output_star.gz"
+
+# Arguments
+# subset_regex: "(ERCC-00002|chr1)"
+
 # STAR Settings
 star_genome_sa_index_nbases: 14
 
@@ -16,18 +28,6 @@ bdrhap_wta_only_index: false
 # Cellranger ARC options
 # motifs_file: "path/to/file"
 # non_nuclear_contigs: ["foo"]
-
-# Outputs
-target: ["star"]
-# output_fasta: "$id.$key.output_fasta.gz"
-# output_gtf: "$id.$key.output_gtf.gz"
-# output_cellranger: "$id.$key.output_cellranger.gz"
-# output_cellranger_arc: "$id.$key.output_cellranger_arc.gz"
-# output_bd_rhapsody: "$id.$key.output_bd_rhapsody.gz"
-# output_star: "$id.$key.output_star.gz"
-
-# Arguments
-# subset_regex: "(ERCC-00002|chr1)"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

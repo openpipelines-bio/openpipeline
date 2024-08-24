@@ -102,7 +102,7 @@ def read_config(path: str) -> dict[str, Any]:
     
     config["arguments"] = [
         clean_arg(arg)
-        for grp in config["argument_groups"]
+        for grp in config["functionality"]["argument_groups"]
         for arg in grp["arguments"]
     ]
     

@@ -2,15 +2,15 @@
 # reads: ["WTALibrary_S1_L001_R1_001.fastq.gz", "WTALibrary_S1_L001_R2_001.fastq.gz"]
 # reads_atac: ["ATACLibrary_S2_L001_R1_001.fastq.gz", "ATACLibrary_S2_L001_R2_001.fastq.gz", "ATACLibrary_S2_L001_I2_001.fastq.gz"]
 
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_raw: "$id.$key.output_raw.output_raw"
+
 # References
 # reference_archive: "RhapRef_Human_WTA_2023-02.tar.gz"
 # targeted_reference: ["BD_Rhapsody_Immune_Response_Panel_Hs.fasta"]
 # abseq_reference: ["AbSeq_reference.fasta"]
 # supplemental_reference: ["supplemental_reference.fasta"]
-
-# Outputs
-# output: "$id.$key.output.h5mu"
-# output_raw: "$id.$key.output_raw"
 
 # Putative Cell Calling Settings
 # cell_calling_data: "mRNA"
@@ -55,5 +55,3 @@ timestamps: false
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-
-# Arguments

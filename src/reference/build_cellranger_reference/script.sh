@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eou pipefail
+set -eo pipefail
 
 ## VIASH START
 par_genome_fasta="resources_test/reference_gencodev41_chr1/reference.fa.gz"
@@ -9,7 +9,7 @@ par_output="gencode_v41_annotation_cellranger.tar.gz"
 ## VIASH END
 
 # create temporary directory
-tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_name-XXXXXXXX")
+tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_functionality_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
 }

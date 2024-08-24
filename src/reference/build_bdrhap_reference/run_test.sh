@@ -7,7 +7,7 @@ meta_executable="bin/viash run src/reference/make_reference/config.vsh.yaml --"
 ## VIASH END
 
 # create temporary directory
-tmpdir=$(mktemp -d "$meta_temp_dir/$meta_name-XXXXXXXX")
+tmpdir=$(mktemp -d "$meta_temp_dir/$meta_functionality_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
 }
@@ -17,7 +17,7 @@ seqkit subseq -r 1:50000 "$meta_resources_dir/reference.fa.gz" | gzip > "$tmpdir
 zcat "$meta_resources_dir/reference.gtf.gz" | awk '$4 < 50001 {print ;}' | gzip > "$tmpdir/reference_small.gtf.gz"
 
 
-echo "> Running $meta_name, writing to $tmpdir."
+echo "> Running $meta_functionality_name, writing to $tmpdir."
 $meta_executable \
   --genome_fasta "$tmpdir/reference_small.fa.gz" \
   --gtf "$tmpdir/reference_small.gtf.gz" \

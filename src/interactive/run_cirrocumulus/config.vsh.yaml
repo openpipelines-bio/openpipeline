@@ -1,0 +1,38 @@
+functionality:
+  name: run_cirrocumulus
+  namespace: interactive
+  description: ""
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Directory to mount
+      direction: input
+      default: ./
+    - name: "--port"
+      alternatives: ["-p"]
+      type: string
+      description: Port to use
+      default: "5005"
+  resources:
+    - type: bash_script
+      path: script.sh
+  # test_resources:
+  #   - type: bash_script
+  #     path: run_test.sh
+platforms:
+  - type: docker
+    image: ubuntu:focal
+    run_args:
+      - "-p $VIASH_PAR_PORT:$VIASH_PAR_PORT"
+    setup:
+      - type: docker
+        run: apt update && apt upgrade -y
+      - type: apt
+        packages:
+          - build-essential libxml2-dev python3-dev python3-pip zlib1g-dev libhdf5-dev python-is-python3
+      - type: python
+        packages:
+            - requests
+            - aiohttp
+            - cirrocumulus

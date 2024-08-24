@@ -14,7 +14,7 @@ par = {
     "output_compression": "lzf"
 }
 meta = {
-    "name": "delete_layer",
+    "functionality_name": "delete_layer",
     "resources_dir": "resources_test"
 }
 ## VIASH END

@@ -12,12 +12,6 @@
 
 * `lianapy`: bumped version to `1.3.0` (PR #827 and PR #862). Additionally, `groupby` is now a required argument.
 
-* `concat`: this component was deprecated and has now been removed, use `concatenate_h5mu` instead (PR #796).
-
-* The `workflows` folder in the root of the project no longer contains symbolic links to the build workflows in `target`.
-  Using any workflows that was previously linked in this directory will now result in an error which will indicate
-  the location of the workflow to be used instead (PR #796).
-  
 * `XGBoost`: bump version to `2.0.3` (PR #646).
 
 * Several components: update anndata to `0.10.8` and mudata to `0.2.3` (PR #645). 
@@ -37,8 +31,6 @@
 * `reference/build_star_reference`: Rename `mapping/star_build_reference` to `reference/build_star_reference` (PR #846).
 
 * `reference/cellranger_mkgtf`: Rename `reference/mkgtf` to `reference/cellranger_mkgtf` (PR #846).
-
-* `interactive/run_cellxgene` and `interactive/run_cirrocumulus` were removed (PR #796).
 
 * `reference/build_cellranger_arc_reference`: a default value of "output" is now specified for the argument `--genome`, inline with `reference/build_cellranger_reference` component. Additionally, providing a value for `--organism` is no longer required and its default value of `Homo Sapiens` has been removed (PR #864).
 

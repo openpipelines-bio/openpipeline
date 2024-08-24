@@ -1,3 +1,8 @@
+# Outputs
+# output_raw: "$id.$key.output_raw.output_raw"
+# output_h5mu: ["$id.$key.output_h5mu_*.h5mu"]
+uns_metrics: "metrics_cellranger"
+
 # Input files
 # input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
 
@@ -66,13 +71,6 @@ gex_chemistry: "auto"
 # General arguments
 check_library_compatibility: true
 
-# Outputs
-# output_raw: "$id.$key.output_raw"
-# output_h5mu: ["$id.$key.output_h5mu_*.h5mu"]
-uns_metrics: "metrics_cellranger"
-
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-
-# Arguments

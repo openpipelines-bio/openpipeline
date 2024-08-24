@@ -6,9 +6,9 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'name': 'foo',
+    'functionality_name': 'foo',
     'resources_dir': 'resources_test/',
-    'executable': './target/executable/dimred/pca/pca',
+    'executable': './target/docker/dimred/pca/pca',
     'config': './src/dimred/pca/config.vsh.yaml'
 }
 ## VIASH END

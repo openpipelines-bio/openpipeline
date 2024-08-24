@@ -20,11 +20,9 @@ min_uniq: 0
 min_snp: 0
 
 # Output
-# output: "$id.$key.output"
+# output: "$id.$key.output.output"
 # out: "demuxlet_dsc"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-
-# Arguments

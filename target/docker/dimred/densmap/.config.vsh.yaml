@@ -1,0 +1,411 @@
+functionality:
+  name: "densmap"
+  namespace: "dimred"
+  version: "integration_build"
+  authors:
+  - name: "Jakub Majercik"
+    roles:
+    - "maintainer"
+    info:
+      role: "Contributor"
+      links:
+        email: "jakub@data-intuitive.com"
+        github: "jakubmajercik"
+        linkedin: "jakubmajercik"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Bioinformatics Engineer"
+  argument_groups:
+  - name: "Inputs"
+    arguments:
+    - type: "file"
+      name: "--input"
+      description: "Input h5mu file"
+      info: null
+      example:
+      - "input.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--modality"
+      info: null
+      default:
+      - "rna"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--uns_neighbors"
+      description: "The `.uns` neighbors slot as output by the `find_neighbors` component."
+      info: null
+      default:
+      - "neighbors"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obsm_pca"
+      description: "The slot in `.obsm` where the PCA results are stored.\n"
+      info: null
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obsm_knn_indices"
+      description: "The slot in `.obsm` where the kNN indices are stored.\n"
+      info: null
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obsm_knn_distances"
+      description: "The slot in `.obsm` where the kNN distances are stored.\n"
+      info: null
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output"
+      alternatives:
+      - "-o"
+      description: "Output h5mu file."
+      info: null
+      example:
+      - "output.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_compression"
+      description: "The compression format to be used on the output h5mu object."
+      info: null
+      example:
+      - "gzip"
+      required: false
+      choices:
+      - "gzip"
+      - "lzf"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obsm_output"
+      description: "The .obsm key to use for storing the densMAP results.."
+      info: null
+      default:
+      - "X_densmap"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Arguments UMAP"
+    arguments:
+    - type: "double"
+      name: "--min_dist"
+      description: "The effective minimum distance between embedded points. Smaller\
+        \ values will result \nin a more clustered/clumped embedding where nearby\
+        \ points on the manifold are drawn \ncloser together, while larger values\
+        \ will result on a more even dispersal of points. \nThe value should be set\
+        \ relative to the spread value, which determines the scale at \nwhich embedded\
+        \ points will be spread out. \n"
+      info: null
+      default:
+      - 0.5
+      required: false
+      min: 0.0
+      max: 10.0
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--spread"
+      description: "The effective scale of embedded points. In combination with `min_dist`\
+        \ this \ndetermines how clustered/clumped the embedded points are.\n"
+      info: null
+      default:
+      - 1.0
+      required: false
+      min: 0.0
+      max: 10.0
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--num_components"
+      description: "The number of dimensions of the embedding."
+      info: null
+      default:
+      - 2
+      required: false
+      min: 1
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--max_iter"
+      description: "The number of iterations (epochs) of the optimization. Called\
+        \ `n_epochs` \nin the original UMAP. Default is set to 500 if \nneighbors['connectivities'].shape[0]\
+        \ <= 10000, else 200.\n"
+      info: null
+      default:
+      - 0
+      required: false
+      min: 0
+      max: 1000
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--alpha"
+      description: "The initial learning rate for the embedding optimization."
+      info: null
+      default:
+      - 1.0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--gamma"
+      description: "Weighting applied to negative samples in low dimensional embedding\
+        \ optimization. \nValues higher than one will result in greater weight being\
+        \ given to negative samples.\n"
+      info: null
+      default:
+      - 1.0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--negative_sample_rate"
+      description: "The number of negative samples to select per positive sample\n\
+        in the optimization process. Increasing this value will result\nin greater\
+        \ repulsive force being applied, greater optimization\ncost, but slightly\
+        \ more accuracy.\n"
+      info: null
+      default:
+      - 5
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--init_pos"
+      description: "How to initialize the low dimensional embedding. Called `init`\
+        \ in the original UMAP. Options are:\n\n* Any key from `.obsm`\n* `'paga'`:\
+        \ positions from `paga()`\n* `'spectral'`: use a spectral embedding of the\
+        \ graph\n* `'random'`: assign initial embedding positions at random.\n"
+      info: null
+      default:
+      - "spectral"
+      required: false
+      choices:
+      - "paga"
+      - "spectral"
+      - "random"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Arguments densMAP"
+    arguments:
+    - type: "double"
+      name: "--lambda"
+      description: "Controls the regularization weight of the density correlation\
+        \ term in densMAP. \nHigher values prioritize density preservation over the\
+        \ UMAP objective, and vice versa \nfor values closer to zero. Setting this\
+        \ parameter to zero is equivalent to running \nthe original UMAP algorithm.\n"
+      info: null
+      default:
+      - 2.0
+      required: false
+      min: 0.01
+      max: 10.0
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--fraction"
+      description: "Controls the fraction of epochs (between 0 and 1) where the density-augmented\
+        \ objective \nis used in densMAP. The first (1 - dens_frac) fraction of epochs\
+        \ optimize the original \nUMAP objective before introducing the density correlation\
+        \ term.\n"
+      info: null
+      default:
+      - 0.3
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--var_shift"
+      description: "A small constant added to the variance of local radii in the embedding\
+        \ when calculating \nthe density correlation objective to prevent numerical\
+        \ instability from dividing by a \nsmall number.\n"
+      info: null
+      default:
+      - 0.1
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  resources:
+  - type: "python_script"
+    path: "script.py"
+    is_executable: true
+  - type: "file"
+    path: "src/utils/setup_logger.py"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "A modification of UMAP that adds an extra cost term in order to preserve\
+    \ information \nabout the relative local density of the data. It is performed\
+    \ on the same inputs as UMAP.\n"
+  test_resources:
+  - type: "python_script"
+    path: "test.py"
+    is_executable: true
+  - type: "file"
+    path: "resources_test/pbmc_1k_protein_v3"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "python:3.12-slim"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  target_tag: "integration_build"
+  namespace_separator: "/"
+  resolve_volume: "Automatic"
+  chown: true
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "apt"
+    packages:
+    - "procps"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "anndata~=0.10.8"
+    - "mudata~=0.2.4"
+    - "pandas!=2.1.2"
+    - "numpy<2.0.0"
+    - "umap-learn"
+    upgrade: true
+  test_setup:
+  - type: "docker"
+    copy:
+    - "openpipelinetestutils /opt/openpipelinetestutils"
+  - type: "python"
+    user: false
+    packages:
+    - "/opt/openpipelinetestutils"
+    upgrade: true
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.6.0"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "highcpu"
+    - "midmem"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/dimred/densmap/config.vsh.yaml"
+  platform: "docker"
+  output: "/home/runner/work/openpipeline/openpipeline/target/docker/dimred/densmap"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/docker/dimred/densmap/densmap"
+  viash_version: "0.8.6"
+  git_commit: "b6568eed0d7f637955bb21e177b6d4c91d0f333a"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -1,8 +1,0 @@
-# Inputs
-input: # please fill in - example: "foo.final.h5mu"
-
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments

@@ -7,11 +7,11 @@ import uuid
 
 ## VIASH START
 meta = {
-    'name': 'foo',
+    'functionality_name': 'foo',
     'resources_dir': 'resources_test/',
     'cpus': 2,
     'config': './src/cluster/leiden/config.vsh.yaml',
-    'executable': './target/executable/cluster/leiden/leiden',
+    'executable': './target/docker/cluster/leiden/leiden',
 }
 ## VIASH END
 
@@ -33,13 +33,13 @@ def mudata_custom_connectivities_key(input_data, random_h5mu_path):
     return output_path
 
 
-# @pytest.fixture
-# def random_h5mu_path(tmp_path):
-#     def wrapper():
-#         unique_filename = f"{str(uuid.uuid4())}.h5mu"
-#         temp_file = tmp_path / unique_filename
-#         return temp_file
-#     return wrapper
+@pytest.fixture
+def random_h5mu_path(tmp_path):
+    def wrapper():
+        unique_filename = f"{str(uuid.uuid4())}.h5mu"
+        temp_file = tmp_path / unique_filename
+        return temp_file
+    return wrapper
 
 @pytest.mark.parametrize("compression", ["gzip", ""])
 @pytest.mark.parametrize("output_key,expected_output_key", [("fooleiden", "fooleiden"), ("", "leiden")])

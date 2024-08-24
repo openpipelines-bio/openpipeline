@@ -4,7 +4,7 @@ import mudata as md
 
 ## VIASH START
 meta = {
-  "name": "bd_rhapsody",
+  "functionality_name": "bd_rhapsody",
   "executable": "target/docker/mapping/bd_rhapsody/bd_rhapsody",
   "resources_dir": "src/mapping/bd_rhapsody",
   "cpus": 8,
@@ -23,7 +23,7 @@ reference_file = f"{meta['resources_dir']}/reference_bd_rhapsody.tar.gz"
 bdabseq_panel_fa = f"{meta['resources_dir']}/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"
 
 # Run executable
-print(f">> Run {meta['name']}", flush=True)
+print(f">> Run {meta['functionality_name']}", flush=True)
 output_dir = Path("output")
 subprocess.run([
   meta['executable'],

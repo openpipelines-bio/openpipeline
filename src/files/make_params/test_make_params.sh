@@ -5,13 +5,13 @@ meta_executable="bin/viash run src/reference/make_reference/config.vsh.yaml --"
 ## VIASH END
 
 # create temporary directory
-tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_name-XXXXXXXX")
+tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_functionality_name-XXXXXXXX")
 # function clean_up {
 #     rm -rf "$tmpdir"
 # }
 # trap clean_up EXIT
 
-echo "> Running $meta_executable."
+echo "> Running $meta_functionality_name."
 $meta_executable \
   --base_dir "./src" \
   --pattern "*.vsh.yaml" \

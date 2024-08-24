@@ -4,7 +4,7 @@ from mudata import read_h5mu
 
 ## VIASH START
 meta = {
-    'executable': './target/executable/filter/remove_modality/remove_modality',
+    'executable': './target/docker/filter/remove_modality/remove_modality',
     'resources_dir': './resources_test/',
     'cpus': 2
 }

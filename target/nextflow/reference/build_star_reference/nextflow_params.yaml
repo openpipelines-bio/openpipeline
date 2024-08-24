@@ -1,7 +1,7 @@
 # Input/Output
 genome_fasta: # please fill in - example: ["chr1.fasta", "chr2.fasta"]
 # transcriptome_gtf: "path/to/file"
-# output: "$id.$key.output"
+# output: "$id.$key.output.output"
 
 # Genome indexing arguments
 genomeSAindexNbases: 14
@@ -9,5 +9,3 @@ genomeSAindexNbases: 14
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-
-# Arguments

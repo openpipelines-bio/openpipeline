@@ -4,7 +4,7 @@ import pytest
 
 ## VIASH START
 meta = {
-    "name": "cellranger_mkfastq",
+    "functionality_name": "cellranger_mkfastq",
     "resources_dir": "resources_test"
 }
 ## VIASH END

@@ -4,7 +4,7 @@ input: # please fill in - example: ["sample_S1_L001_R1_001.fastq.gz", "sample_S1
 reference: # please fill in - example: "reference.tar.gz"
 
 # Outputs
-# output_raw: "$id.$key.output_raw"
+# output_raw: "$id.$key.output_raw.output_raw"
 # output_h5mu: "$id.$key.output_h5mu.h5mu"
 uns_metrics: "metrics_summary"
 output_type: "raw"
@@ -19,5 +19,3 @@ include_introns: true
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-
-# Arguments
