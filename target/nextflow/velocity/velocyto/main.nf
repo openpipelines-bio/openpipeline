@@ -3085,7 +3085,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/velocyto",
     "viash_version" : "0.8.6",
-    "git_commit" : "b6568eed0d7f637955bb21e177b6d4c91d0f333a",
+    "git_commit" : "a60577615b41a326603d6b0eebd1b7a0aec39fe2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
