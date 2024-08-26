@@ -433,9 +433,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component filter subset_h5mu"
-LABEL org.opencontainers.image.created="2024-08-25T02:46:28Z"
+LABEL org.opencontainers.image.created="2024-08-26T02:44:40Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a60577615b41a326603d6b0eebd1b7a0aec39fe2"
+LABEL org.opencontainers.image.revision="115118a10d7780335c5c6915a2730adf62b62a37"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
