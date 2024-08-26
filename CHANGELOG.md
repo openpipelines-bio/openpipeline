@@ -10,7 +10,7 @@
 
 * Removed `--disable_library_compatibility_check` in favour of `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).
 
-* `lianapy`: bumped version to `1.2.1` (PR #827).
+* `lianapy`: bumped version to `1.3.0` (PR #827 and PR #862). Additionally, `groupby` is now a required argument.
 
 * `XGBoost`: bump version to `2.0.3` (PR #646).
 
@@ -32,7 +32,11 @@
 
 * `reference/cellranger_mkgtf`: Rename `reference/mkgtf` to `reference/cellranger_mkgtf` (PR #846).
 
+* `reference/build_cellranger_arc_reference`: a default value of "output" is now specified for the argument `--genome`, inline with `reference/build_cellranger_reference` component. Additionally, providing a value for `--organism` is no longer required and its default value of `Homo Sapiens` has been removed (PR #864).
+
 ## NEW FUNCTIONALITY
+
+* Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
 
 * `process_samples`, `process_batches` and `rna_multisample` workflows: added functionality to scale the log-normalized 
   gene expression data to unit variance and zero mean. The scaled data will be output to a different layer and the
@@ -68,6 +72,8 @@
 
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
+  
+* `dataflow/split_h5mu` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
 
 * `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
 
@@ -75,7 +81,20 @@
 
 * `dataflow/concatenate_h5mu`: data from `.uns`, both originating from the global and per-modality slots, is now retained in the final concatenated output object. Additionally, added the `uns_merge_mode` argument in order to tune the behavior when conflicting keys are detected across samples (PR #859).
 
+* `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
+
+* `workflows/ingestion/make_reference`: add possibility to build CellRanger ARC references. Added `--motifs_file`, `--non_nuclear_contigs` and `--output_cellranger_arc` arguments (PR #864).
+
+* Test resources (reference_gencodev41_chr1): switch reference genome for CellRanger to ARC variant (PR #864).
+
 ## MINOR CHANGES
+
+* `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
+
+* `neighbors/find_neighbors` component: Modified to include results of KNN in the output file (PR #748).
+  2 new optional arguments added to set .obsm slots to save KNN results into:
+  - `obsm_knn_indices`
+  - `obsm_knn_distances`
 
 * `cellbender_remove_background_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
 
