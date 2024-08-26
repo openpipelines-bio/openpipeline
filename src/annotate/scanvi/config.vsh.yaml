@@ -5,6 +5,8 @@ functionality:
   authors:
     - __merge__: /src/authors/jakub_majercik.yaml
       roles: [ author ]
+    - __merge__: /src/authors/weiwei_schultz.yaml
+      roles: [ contributor ]
 
   argument_groups:
     - name: Inputs
@@ -22,21 +24,16 @@ functionality:
           type: string
           default: "rna"
           required: false
-        - name: "--input_obs_label"
-          type: string
-          description: Key in obs field of input AnnData with cell-type predictions from SCANVI.
-          default: "predictions_scanvi"
-          required: false
 
     - name: Reference
       description: Arguments related to the reference dataset.
       arguments:
         - name: "--reference"
           type: file
-          description: Reference h5ad file.
+          description: Reference h5mu file.
           direction: input
           required: true
-          example: reference.h5ad
+          example: reference.h5mu
         - name: "--scvi_reference_model"
           type: file
           description: "Pretrained scvi reference model"
@@ -46,52 +43,96 @@ functionality:
         - name: "--reference_obs_label"
           type: string
           description: Key in obs field of reference AnnData with cell-type information.
-          default: "cell_ontology_class"
-          required: false
+          example: "cell_ontology_class"
+          required: true
 
-    - name: SCANVI arguments
-      description: Arguments related to the SCANVI model.
+    - name: SCANVI reference model training arguments
+      description: Arguments related to the reference SCANVI model.
       arguments:
-        - name: "--train_size"
-          type: double
-          description: Size of training set.
-          required: false
-          default: 0.9
-        - name: "--max_epochs"
-          type: integer
-          description: Maximum number of epochs.
-          required: false
-          default: 400
-        - name: "--learning_rate"
-          type: double
-          description: Learning rate.
-          required: false
-          default: 1e-3
-        - name: "--reduce_lr_on_plateau"
-          type: boolean
-          description: Reduce learning rate on plateau.
-          required: false
-          default: true
-        - name: "--lr_patience"
-          type: integer
-          description: Patience for learning rate reduction.
-          required: false
-          default: 25
-        - name: "--lr_factor"
-          type: double
-          description: Factor by which to reduce learning rate.
-          required: false
-          default: 0.5
-        - name: "--early_stopping"
-          type: boolean
-          description: Early stopping.
-          required: false
-          default: true
-        - name: "--early_stopping_patience"
-          type: integer
-          description: Patience for early stopping.
-          required: false
-          default: 50
+      - name: "--reference_train_size"
+        type: double
+        description: Size of training set.
+        required: false
+        default: 0.9
+      - name: "--reference_max_epochs"
+        type: integer
+        description: Maximum number of epochs.
+        required: false
+        default: 400
+      - name: "--reference_learning_rate"
+        type: double
+        description: Learning rate.
+        required: false
+        default: 1e-3
+      - name: "--reference_reduce_lr_on_plateau"
+        type: boolean
+        description: Reduce learning rate on plateau.
+        required: false
+        default: true
+      - name: "--reference_lr_patience"
+        type: integer
+        description: Patience for learning rate reduction.
+        required: false
+        default: 25
+      - name: "--reference_lr_factor"
+        type: double
+        description: Factor by which to reduce learning rate.
+        required: false
+        default: 0.5
+      - name: "--reference_early_stopping"
+        type: boolean
+        description: Early stopping.
+        required: false
+        default: true
+      - name: "--reference_early_stopping_patience"
+        type: integer
+        description: Patience for early stopping.
+        required: false
+        default: 50
+
+    - name: SCANVI query model training arguments
+      description: Arguments related to the query SCANVI model.
+      arguments:
+      - name: "--query_train_size"
+        type: double
+        description: Size of training set.
+        required: false
+        default: 0.9
+      - name: "--query_max_epochs"
+        type: integer
+        description: Maximum number of epochs.
+        required: false
+        default: 400
+      - name: "--query_learning_rate"
+        type: double
+        description: Learning rate.
+        required: false
+        default: 1e-3
+      - name: "--query_reduce_lr_on_plateau"
+        type: boolean
+        description: Reduce learning rate on plateau.
+        required: false
+        default: true
+      - name: "--query_lr_patience"
+        type: integer
+        description: Patience for learning rate reduction.
+        required: false
+        default: 25
+      - name: "--query_lr_factor"
+        type: double
+        description: Factor by which to reduce learning rate.
+        required: false
+        default: 0.5
+      - name: "--query_early_stopping"
+        type: boolean
+        description: Early stopping.
+        required: false
+        default: true
+      - name: "--query_early_stopping_patience"
+        type: integer
+        description: Patience for early stopping.
+        required: false
+        default: 50
 
     - name: Outputs
       description: Arguments related to the output.
@@ -113,6 +154,30 @@ functionality:
           direction: output
           required: false
           example: model_dir
+        - name: "--output_obs_predictions"
+          type: string
+          description: |
+            In which `.obs` slots to store the predicted information.
+          default: "scanvi_pred"
+          required: false
+        - name: "--output_obs_probability"
+          type: string
+          default: "scanvi_probability"
+          required: false
+          description: |
+            In which `.obs` slots to store the probability of the predictions.
+        - name: "--output_obsm_scanvi_embedding"
+          type: string
+          default: "scanvi_embedding"
+          required: false
+          description: |
+            In which `.obsm` slots to store the scvi embedding.
+        - name: "--unknown_celltype"
+          type: string
+          default: "Unknown"
+          required: false
+          description: |
+            Label for unknown cell types.
 
   resources:
     - type: python_script
@@ -127,11 +192,10 @@ functionality:
 
 platforms:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.12-slim
     setup:
       - type: apt
         packages:
-          - libhdf5-dev
           - procps
       - type: python
         __merge__: [ /src/base/requirements/scanpy.yaml, .]
