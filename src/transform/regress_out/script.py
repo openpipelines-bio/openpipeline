@@ -43,12 +43,21 @@ if (
     mod = par["modality"]
     logger.info("Regress out variables on modality %s", mod)
     data = mdata.mod[mod]
+    sc_data = data.copy()
+
+    if par["input_layer"]:
+        sc_data.X = sc_data.layers[par["input_layer"]]
 
     sc.pp.regress_out(
-        data,
+        sc_data,
         keys=par["obs_keys"],
         n_jobs=multiprocessing.cpu_count() - 1
     )
+
+    if par["output_layer"]:
+        data.layers[par["output_layer"]] = sc_data.X
+    else:
+        data.X = sc_data.X
 
 logger.info("Writing to file")
 mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
