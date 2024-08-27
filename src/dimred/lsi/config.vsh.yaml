@@ -105,6 +105,9 @@ platforms:
       - type: apt
         packages:
           - procps
+          - pkg-config  # Otherwise h5py installation fails, which is required for scanpy
+          - libhdf5-dev
+          - gcc
       - type: python
         __merge__: [../../../src/base/requirements/anndata_mudata.yaml, .]
         packages:
