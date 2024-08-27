@@ -92,6 +92,7 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
+    - path: /resources_test/cellranger_atac_tiny_bcl/counts/
 platforms:
   - type: docker
     image: python:3.9-slim
@@ -99,12 +100,16 @@ platforms:
       - type: apt
         packages: 
           - procps
+          - pkg-config  # Otherwise h5py installation fails, which is required for scanpy
+          - libhdf5-dev
+          - gcc
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - numpy~=1.23.5
           - scanpy~=1.9.3
           - muon~=0.1.5
+          - pysam~=0.22.0
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, /src/base/requirements/scanpy.yaml, .]
