@@ -1,0 +1,110 @@
+functionality:
+  name: cellsnp
+  namespace: genetic_demux
+  description: "cellSNP aims to pileup the expressed alleles in single-cell or bulk RNA-seq data. It can be directly used for donor deconvolution in multiplexed single-cell RNA-seq data, particularly with vireo."
+  authors:
+    - __merge__: /src/authors/xichen_wu.yaml
+      roles: [ author ]
+  argument_groups:
+  - name: "Input"
+    arguments:
+    - name: "--sam_file"
+      type: file
+      description: "Indexed sam/bam file(s), comma separated multiple samples. Mode 1a & 2a: one sam/bam file with single cell. Mode 1b & 2b: one or multiple bulk sam/bam files, no barcodes needed, but sample ids and regionsVCF."
+    - name: "--sam_index_file"
+      type: file
+      description: Input SAM/BAM Index file, problem with samFileList.
+    - name: "--sam_fileList"
+      type: file
+      description: A list file containing bam files, each per line, for Mode 1b & 2b.
+    - name: "--regions_vcf"
+      type: file
+      description: A vcf file listing all candidate SNPs, for fetch each variants. If None, pileup the genome. Needed for bulk samples.
+    - name: "--targets_vcf"
+      type: file
+      description: "Similar as --regions_vcf, but the next position is accessed by streaming rather than indexing/jumping (like -T in samtools/bcftools mpileup)."
+    - name: "--barcode_file"
+      type: file
+      description: A plain file listing all effective cell barcode.
+    - name: "--sample_list"
+      type: file
+      description: A list file containing sample IDs, each per line.
+    - name: "--sample_ids"
+      type: string
+      description: Comma separated sample ids.
+    - name: "--genotype"
+      type: boolean_true
+      description: If use, do genotyping in addition to counting. 
+    - name: "--gzip"
+      type: boolean_true
+      description: If use, the output files will be zipped into BGZF format.
+    - name: "--print_skip_snps"
+      type: boolean_true
+      description: If use, the SNPs skipped when loading VCF will be printed.
+    - name: "--chrom"
+      type: string
+      description: "The chromosomes to use in integer format 1-22, comma separated"
+    - name: "--cell_tag"
+      type: string
+      default: "CB"
+      description: Tag for cell barcodes, turn off with None.
+    - name: "--umi_tag"
+      type: string
+      default: "Auto"
+      description: "Tag for UMI: UR, Auto, None. For Auto mode, use UR if barcodes is inputted, otherwise use None. None mode means no UMI but read counts."
+    - name: "--min_count"
+      type: integer
+      default: 20
+      description: Minimum aggragated count.
+    - name: "--min_maf"
+      type: double
+      default: 0.00
+      description: Minimum minor allele frequency.
+    - name: "--doublet_gl"
+      type: boolean_true
+      description: If use, keep doublet GT likelihood, i.e., GT=0.5 and GT=1.5.
+    - name: "--incl_flag"
+      type: string
+      description: "Required flags: skip reads with all mask bits unset."
+    - name: "--excl_flag"
+      type: string
+      description: "Filter flags: skip reads with any mask bits set [UNMAP,SECONDARY,QCFAIL (when use UMI) or UNMAP,SECONDARY,QCFAIL,DUP (otherwise)]"
+    - name: "--count_orphan"
+      type: boolean_true
+      description: If use, do not skip anomalous read pairs.
+    - name: "--min_mapq"
+      type: integer
+      default: 20
+      description: Minimum MAPQ for read filtering.
+    - name: "--min_len"
+      type: integer
+      default: 30
+      description: Minimum mapped length for read filtering.
+  - name: "Output"
+    arguments:
+    - name: "--output"
+      alternatives: [ "--outDir" ]
+      type: file
+      direction: output
+      description:  Output directory for VCF and sparse matrices.
+      example: "cellsnp_out/"
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: ../../../resources_test/demuxafy_test_data
+platforms:
+  - type: docker
+    image: ubuntu:latest
+    setup:
+    - type: apt
+      packages: [ wget, gcc, zlib1g, make, libbz2-dev, zlib1g-dev, libncurses5-dev, liblzma-dev, autoconf, automake, perl, libcurl4-gnutls-dev, libssl-dev, git, bzip2]
+    - type: docker
+      run : wget https://github.com/samtools/htslib/releases/download/1.16/htslib-1.16.tar.bz2 -O htslib.tar.bz2 && tar -xjvf htslib.tar.bz2 && cd htslib-1.16 && make && make install
+    - type: docker
+      run : git clone https://github.com/single-cell-genetics/cellsnp-lite.git && cd cellsnp-lite && autoreconf -iv && ./configure --with-htslib=/htslib-1.16 && make && make install
+  - type: nextflow
+    directives:
+      label: [ highmem, highcpu ]

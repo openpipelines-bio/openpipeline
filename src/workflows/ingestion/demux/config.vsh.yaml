@@ -1,0 +1,82 @@
+functionality:
+  name: demux
+  namespace: workflows/ingestion
+  description: |
+    Convert `.bcl` files to `.fastq` files using bcl2fastq, bcl-convert or Cell Ranger mkfastq.
+  info:
+    name: Demux
+    short_description: A generic pipeline for running bcl2fastq, bcl-convert or Cell Ranger mkfastq.
+  authors:
+    - __merge__: /src/authors/toni_verbeiren.yaml
+      roles: [ author, maintainer ]
+    - __merge__: /src/authors/marijke_van_moerbeke.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/angela_pisco.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/samuel_d_souza.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ author ]
+  arguments:
+    - name: "--id"
+      required: true
+      type: string
+      description: ID of the sample.
+      example: foo
+    - name: "--input"
+      alternatives: [ "-i" ]
+      type: file
+      required: true
+      description: Input run directory
+      example: bcl_dir
+    - name: "--sample_sheet"
+      alternatives: [ "-s" ]
+      type: file
+      required: true
+      description: Pointer to the sample sheet
+      example: bcl_dir
+    - name: "--demultiplexer"
+      type: string
+      description: The multiplexer to use, one of bclconvert or mkfastq
+      choices: [ bclconvert, bcl2fastq, mkfastq ]
+      default: bcl2fastq
+    - name: "--ignore_missing"
+      type: boolean
+      description: Should the demultiplexer ignore missing entities (filter, ...)
+    - name: "--output_fastq"
+      type: file
+      direction: output
+      required: true
+      description: Output directory containig fastq files
+      example: fastq_dir
+    - name: "--output_fastqc"
+      type: file
+      direction: output
+      required: false
+      description: Reports directory produced by FastQC
+      example: reports_dir
+    - name: "--output_multiqc"
+      type: file
+      direction: output
+      required: false
+      description: Reports directory produced by MultiQC
+      example: reports_dir
+  resources:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: run_wf
+    - type: file
+      path: /src/workflows/utils/
+  test_resources:
+    - type: nextflow_script
+      path: test.nf
+      entrypoint: test_wf
+    - path: /resources_test/cellranger_tiny_bcl
+  dependencies:
+    - name: demux/cellranger_mkfastq
+    - name: demux/bcl_convert
+    - name: demux/bcl2fastq
+    - name: qc/fastqc
+    - name: qc/multiqc
+platforms:
+  - type: nextflow

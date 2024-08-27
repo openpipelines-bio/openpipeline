@@ -1,7 +1,5 @@
 functionality:
   name: "from_h5mu_to_seurat"
-  # MuDataSeurat is currently broken -- https://github.com/PMBio/MuDataSeurat/issues/9
-  status: disabled 
   namespace: "convert"
   description: |
     Converts an h5mu file into a Seurat file.
@@ -36,28 +34,19 @@ functionality:
   test_resources:
     - type: r_script
       path: run_test.R
-    - path: /resources_test/pbmc_1k_protein_v3
+    - path: /resources_test/10x_5k_anticmv/
 platforms:
   - type: docker
-    image: eddelbuettel/r2u:22.04
+    image: rocker/r2u:24.04
     setup:
-      - type: docker
-        run: apt update && apt upgrade -y
       - type: apt
         packages: 
           - libhdf5-dev
           - libgeos-dev
-          - python3
-          - python3-pip
-          - python-is-python3
-      - type: python
-        __merge__: [/src/base/requirements/scanpy.yaml, .]
-        packages: 
-          - anndata~=0.9.1
       - type: r
-        cran: [ anndata, hdf5r, testthat ]
+        cran: [ anndata, hdf5r, testthat, SeuratObject, Seurat ]
       - type: r
-        github: pmbio/MuDataSeurat
+        github: pmbio/MuDataSeurat@empty-tables-and-nullable
   - type: nextflow
     directives:
       label: [lowmem, singlecpu]

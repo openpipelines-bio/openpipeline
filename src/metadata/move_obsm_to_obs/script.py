@@ -4,6 +4,13 @@ from pandas.errors import MergeError
 from mudata import read_h5mu
 
 ## VIASH START
+par = {
+    "input": "input.h5mu",
+    "modality": "mod1",
+    "obsm_key": "obsm_key",
+    "output": "output.h5mu",
+    "output_compression": "gzip"
+}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -47,9 +54,11 @@ original_n_obs = len(mod_data.obs)
 try:
     logger.info(f".obs names: {mod_data.obs_names}")
     logger.info(f".obsm index: {obsm_matrix.index}")
-    mod_data.obs = mod_data.obs.merge(obsm_matrix, how="left",
-                                      validate="one_to_one",
-                                      left_index=True, right_index=True)
+    new_obs = mod_data.obs.drop(obsm_matrix.columns, axis=1, errors="ignore")
+    new_obs = new_obs.merge(obsm_matrix, how="left",
+                            validate="one_to_one",
+                            left_index=True, right_index=True)
+    mod_data.obs = new_obs
 except MergeError as e:
     raise ValueError(f"Could not join .obsm matrix at {par['obsm_key']} to .obs because there "
                      "are some observation that are not overlapping between the two matrices "
