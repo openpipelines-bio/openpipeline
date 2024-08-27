@@ -25,6 +25,8 @@ Implementing this changes involved breaking some existing functionality:
 
 * `workflows/prot_multisample`: added `--var_qc_metrics` and `--top_n_vars` arguments (PR #585).
 
+* `qc/calculate_atac_qc_metrics`: new component for calculatinf ATAC QC metrics (PR #868).
+
 ## MINOR CHANGES
 
 * Several components: bump scanpy to 1.9.5 (PR #594).
