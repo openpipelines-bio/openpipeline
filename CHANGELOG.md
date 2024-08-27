@@ -30,6 +30,12 @@
 
 * `reference/cellranger_mkgtf`: Rename `reference/mkgtf` to `reference/cellranger_mkgtf` (PR #846).
 
+* `labels_transfer/xgboost`: Align interface with new annotation workflow
+  - Store label probabilities instead of uncertainties
+  - Take `.h5mu` format as an input instead of `.h5ad`
+
+* `labels_transfer/knn`: delete outdated component due to its functionality now implemented in `labels_transfer/pynndescent_knn`
+
 ## NEW FUNCTIONALITY
 
 * `process_samples`, `process_batches` and `rna_multisample` workflows: added functionality to scale the log-normalized 
@@ -90,11 +96,6 @@
 * Bump `viash-actions` to `v6` (PR #821).
 
 * `reference/make_reference`: Do not try to extract genome fasta and transcriptome gtf if they are not gzipped (PR #856).
-
-* `labels_transfer/xgboost`: Align interface with new annotation workflow
-  - Store label probabilities instead of uncertainties
-  - Take `.h5mu` format as an input instead of `.h5ad`
-  - Delete outdated `labels_transfer/knn` component
 
 ## BUG FIXES
 
