@@ -1,14 +1,16 @@
 import sys
+from pathlib import Path
 import pytest
 
 import mudata as md
 import numpy as np
 import scanpy as sc
+import muon as mu
 
 ## VIASH START
 meta = {
     'executable': './target/docker/qc/calculate_atac_qc_metrics/calculate_atac_qc_metrics',
-    'resources_dir': "./resources_test/pbmc_1k_protein_v3/",
+    'resources_dir': "./resources_test/cellranger_atac_tiny_bcl/counts/",
     'config': './src/qc/calculate_atac_qc_metrics/config.vsh.yaml',
     'cpus': 2
 }
@@ -62,10 +64,19 @@ def neurips_mudata(tmp_path):
     return mdata_path
 
 @pytest.fixture
-def input_mudata(input_path):
-    return md.read_h5mu(input_path)
+def tiny_atac_mudata(tmp_path):
+    resources_dir = Path(meta["resources_dir"])
+    mdata = mu.read_10x_h5(resources_dir / "counts" / "filtered_peak_bc_matrix.h5")
+    mu.atac.tl.locate_fragments(mdata, fragments=str(resources_dir / "counts" / "fragments.tsv.gz"))
+    assert "files" in mdata.mod["atac"].uns.keys()
+    assert "fragments" in mdata.mod["atac"].uns["files"].keys()
 
-@pytest.mark.parametrize("mudata", ["example_mudata", "neurips_mudata"])
+    mdata_path = tmp_path / "tiny_atac.h5mu"
+    mdata.write(mdata_path)
+
+    return mdata_path
+
+@pytest.mark.parametrize("mudata", ["example_mudata", "neurips_mudata", "tiny_atac_mudata"])
 def test_qc_columns_in_tables(run_component, request, mudata, tmp_path):
     input_path = request.getfixturevalue(mudata)
     output_path = tmp_path / "foo.h5mu"
@@ -85,6 +96,10 @@ def test_qc_columns_in_tables(run_component, request, mudata, tmp_path):
         assert qc_metric in data_with_qc.mod["atac"].obs
     for qc_metric in ("n_cells_by_counts", "mean_counts", "pct_dropout_by_counts", "total_counts"):
         assert qc_metric in data_with_qc.mod["atac"].var
+
+    # Check that nucleosome signal is calculated if fragments information is present (for tiny ATAC data)
+    if "files" in data_with_qc.mod["atac"].uns and "fragments" in data_with_qc.mod["atac"].uns["files"]:
+        assert "nucleosome_signal" in data_with_qc.mod["atac"].obs
 
 
 @pytest.mark.parametrize("mudata", ["example_mudata", "example_mudata_with_layer"])
