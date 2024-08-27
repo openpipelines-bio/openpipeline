@@ -108,4 +108,3 @@ echo "> Removing unnecessary files in test resources dir"
 find "${test_resources_dir}" -type f \( ! -name "Kim2020_*" -o ! -name "*.h5mu" \) -delete
 
 echo "> scGPT test resources are ready!"
-

@@ -22,8 +22,7 @@ function clean_up {
 }
 trap clean_up EXIT
 
-viash ns build -q "download_file|cellranger_atac_mkfastq|build_cellranger_arc_reference|cellranger_atac_count" -p docker --setup cb
-
+viash ns build -q "download_file|cellranger_atac_mkfastq" -p docker --setup cb
 
 # download bcl data
 if [ ! -f "${OUT}/bcl/sample_sheet.csv" ]; then
@@ -61,14 +60,4 @@ if [ ! -d "${OUT}/fastqs" ]; then
     --input "${OUT}/bcl" \
     --csv "${OUT}/bcl/layout.csv" \
     --output "${OUT}/fastqs"
-fi
-
-# Create count matrices
-if [ ! -d "${OUT}/counts" ]; then
-  mkdir -p "$OUT/counts"
-  
-  target/docker/mapping/cellranger_atac_count/cellranger_atac_count \
-    --input "${OUT}/fastqs/HJN3KBCX2/test_sample/" \
-    --reference "${REFERENCE_DIR}/reference_cellranger.tar.gz" \
-    --output "${OUT}/counts"
 fi
