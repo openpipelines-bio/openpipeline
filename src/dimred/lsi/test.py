@@ -24,12 +24,21 @@ Tests:
 5. test overwrite 
 '''
 
+@pytest.fixture
+def atac_mudata(tmp_path):
+    
+    mdata = mu.read_h5mu(input_path)
+    mdata.mod["atac"].layers["counts"] = mdata.mod["atac"].X
+    mdata.mod["atac"].var["highly_variable"] = np.random.choice([True, False], size=mdata.mod["atac"].n_vars)
+    print(mdata)
 
+    mdata.write(tmp_path / "atac_mudata.h5mu")
+
+    return tmp_path / "atac_mudata.h5mu"
 
 # 1.general test
 def test_lsi(tmp_path):
     output_path = tmp_path / "output_lsi.h5mu"
-
     # run component
     cmd_args = [
     meta["executable"],
@@ -51,19 +60,18 @@ def test_lsi(tmp_path):
 
 
 # 2.test HVF 
-def test_select_highly_variable_column(tmp_path):
+def test_select_highly_variable_column(atac_mudata, tmp_path):
     output_path = tmp_path / "output_lsi.h5mu"
 
     # run component
     cmd_args = [
     meta["executable"],
-     "--input", str(input_path),
+     "--input", str(atac_mudata),
      "--output", str(output_path),
      "--var_input", "highly_variable"
     ]
     subprocess.run(cmd_args, check=True)
     
-
     assert output_path.is_file()
     data = mu.read_h5mu(output_path)
     assert "X_lsi" in data.mod['atac'].obsm
@@ -105,13 +113,13 @@ def test_modality_does_not_exist_raises():
 
 
 # 4.test layer 
-def test_selecting_input_layer(tmp_path):
+def test_selecting_input_layer(atac_mudata, tmp_path):
     output_path = tmp_path / "output_lsi.h5mu"
 
     # run component
     cmd_args = [
         meta["executable"],
-        "--input", str(input_path),
+        "--input", str(atac_mudata),
         "--output", str(output_path),
         "--num_components", "20",
         "--layer", "counts"
@@ -197,10 +205,6 @@ def test_output_field_already_present_overwrite(tmp_path):
     assert data.mod["atac"].obsm["X_lsi"].shape == (data.mod["atac"].n_obs, 30)
     assert "lsi" in data.mod['atac'].uns
     assert "LSI" in data.mod['atac'].varm
-
-   
-
-
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
