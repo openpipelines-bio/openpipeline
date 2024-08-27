@@ -37,6 +37,20 @@ functionality:
       type: string
       multiple: true
       description: Which .obs keys to regress on.
+    - name: "--input_layer"
+      type: string
+      required: false
+      example: X_normalized
+      description: |
+        The layer of the adata object to regress on.
+        If not provided, the X attribute of the adata object will be used.
+    - name: "--output_layer"
+      type: string
+      example: X_regressed
+      required: false
+      description: |
+        The layer of the adata object containing the regressed count data.
+        If not provided, the X attribute of the adata object will be used.
   resources:
     - type: python_script
       path: script.py
@@ -54,10 +68,8 @@ platforms:
           - procps
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
-
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+    
   - type: nextflow
     directives:
       label: [lowmem, lowcpu]
