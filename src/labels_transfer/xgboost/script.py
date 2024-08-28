@@ -25,7 +25,7 @@ par = {
     "reference_obs_targets": ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"],
     "output": "foo.h5mu",
     "output_obs_predictions": None,
-    "output_obs_uncertainty": None,
+    "output_obs_probability": None,
     "output_uns_parameters": "labels_transfer",
     "force_retrain": False,
     "use_gpu": True,
@@ -256,27 +256,27 @@ def project_labels(
     query_dataset,
     cell_type_classifier_model: xgb.XGBClassifier,
     annotation_column_name='label_pred',
-    uncertainty_column_name='label_uncertainty',
-    uncertainty_thresh=None  # Note: currently not passed to predict function
+    probability_column_name='label_probability',
+    probability_thresh=None  # Note: currently not passed to predict function
 ):
     """
-    A function that projects predicted labels onto the query dataset, along with uncertainty scores.
+    A function that projects predicted labels onto the query dataset, along with probability estimations.
     Performs in-place update of the adata object, adding columns to the `obs` DataFrame.
 
     Input:
         * `query_dataset`: The query `AnnData` object
         * `model_file`: Path to the classification model file
         * `prediction_key`: Column name in `adata.obs` where to store the predicted labels
-        * `uncertainty_key`: Column name in `adata.obs` where to store the uncertainty scores
-        * `uncertainty_thresh`: The uncertainty threshold above which we call a cell 'Unknown'
+        * `probability_key`: Column name in `adata.obs` where to store the labels probabilities
+        * `probability_thresh`: The probability threshold below which we call a cell 'Unknown'
 
     Output:
         Nothing is output, the passed anndata is modified inplace
 
     """
 
-    if (uncertainty_thresh is not None) and (uncertainty_thresh < 0 or uncertainty_thresh > 1):
-        raise ValueError(f'`uncertainty_thresh` must be `None` or between 0 and 1.')
+    if (probability_thresh is not None) and (probability_thresh < 0 or probability_thresh > 1):
+        raise ValueError(f'`probability_thresh` must be `None` or between 0 and 1.')
 
     query_data = get_query_features(query_dataset, par, logger)
 
@@ -288,14 +288,14 @@ def project_labels(
 
     # Format probabilities
     df_probs = pd.DataFrame(probs, columns=cell_type_classifier_model.classes_, index=query_dataset.obs_names)
-    query_dataset.obs[uncertainty_column_name] = 1 - df_probs.max(1)
+    query_dataset.obs[probability_column_name] = df_probs.max(1)
 
     # Note: this is here in case we want to propose a set of values for the user to accept to seed the
     #       manual curation of predicted labels
-    if uncertainty_thresh is not None:
+    if probability_thresh is not None:
         logger.info("Marking uncertain predictions")
         query_dataset.obs[annotation_column_name + "_filtered"] = [
-            val if query_dataset.obs[uncertainty_column_name][i] < uncertainty_thresh
+            val if query_dataset.obs[probability_column_name][i] >= probability_thresh
             else "Unknown" for i, val in enumerate(query_dataset.obs[annotation_column_name])]
 
     return query_dataset
@@ -306,7 +306,7 @@ def predict(
     cell_type_classifier_model_path,
     annotation_column_name: str,
     prediction_column_name: str,
-    uncertainty_column_name: str,
+    probability_column_name: str,
     models_info,
     use_gpu: bool = False
 ) -> pd.DataFrame:
@@ -328,7 +328,7 @@ def predict(
     project_labels(query_dataset, 
                    cell_type_classifier_model, 
                    annotation_column_name=prediction_column_name, 
-                   uncertainty_column_name=uncertainty_column_name)
+                   probability_column_name=probability_column_name)
 
     logger.info("Converting labels from numbers to classes")
     labels_encoder = LabelEncoder()
@@ -342,10 +342,11 @@ def main(par):
     logger.info("Checking arguments")
     par = check_arguments(par)
 
-    mdata = mudata.read(par["input"].strip())
-    adata = mdata.mod[par["modality"]]
+    mdata_query = mudata.read(par["input"].strip())
+    adata_query = mdata_query.mod[par["modality"]]
 
-    adata_reference = sc.read(par["reference"], backup_url=par["reference"])
+    mdata_reference = mudata.read(par["reference"])
+    adata_reference = mdata_reference.mod[par["modality"]]
 
     # If classifiers for targets are in the model_output directory, simply open them and run (unless `retrain` != True)
     # If some classifiers are missing, train and save them first
@@ -363,19 +364,19 @@ def main(par):
     build_ref_classifiers(adata_reference, targets_to_train, model_path=par["model_output"], 
                           gpu=par["use_gpu"], eval_verbosity=par["verbosity"])
 
-    output_uns_parameters = adata.uns.get(par["output_uns_parameters"], {})
+    output_uns_parameters = adata_query.uns.get(par["output_uns_parameters"], {})
 
     with open(par["model_output"] + "/model_info.json", "r") as f:
         models_info = json.loads(f.read())
 
-    for obs_target, obs_pred, obs_unc in zip(par["reference_obs_targets"], par["output_obs_predictions"], par["output_obs_uncertainty"]):
+    for obs_target, obs_pred, obs_unc in zip(par["reference_obs_targets"], par["output_obs_predictions"], par["output_obs_probability"]):
         logger.info(f"Predicting {obs_target}")
 
-        adata = predict(query_dataset=adata,
+        adata_query = predict(query_dataset=adata_query,
                         cell_type_classifier_model_path=os.path.join(par["model_output"], "classifier_" + obs_target + ".xgb"),
                         annotation_column_name=obs_target, 
                         prediction_column_name=obs_pred,
-                        uncertainty_column_name=obs_unc,
+                        probability_column_name=obs_unc,
                         models_info=models_info,
                         use_gpu=par["use_gpu"])
         
@@ -386,14 +387,14 @@ def main(par):
                 **training_params
             }
 
-    adata.uns[par["output_uns_parameters"]] = output_uns_parameters
+    adata_query.uns[par["output_uns_parameters"]] = output_uns_parameters
 
     logger.info("Updating mdata")
-    mdata.mod[par['modality']] = adata
-    mdata.update()
+    mdata_query.mod[par['modality']] = adata_query
+    mdata_query.update()
 
     logger.info("Writing output")
-    mdata.write_h5mu(par['output'].strip())
+    mdata_query.write_h5mu(par['output'].strip())
 
 if __name__ == "__main__":
     main(par)
