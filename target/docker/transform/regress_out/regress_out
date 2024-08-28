@@ -207,6 +207,18 @@ function ViashHelp {
   echo "    --obs_keys"
   echo "        type: string, multiple values allowed"
   echo "        Which .obs keys to regress on."
+  echo ""
+  echo "    --input_layer"
+  echo "        type: string"
+  echo "        example: X_normalized"
+  echo "        The layer of the adata object to regress on."
+  echo "        If not provided, the X attribute of the adata object will be used."
+  echo ""
+  echo "    --output_layer"
+  echo "        type: string"
+  echo "        example: X_regressed"
+  echo "        The layer of the adata object containing the regressed count data."
+  echo "        If not provided, the X attribute of the adata object will be used."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -438,9 +450,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component transform regress_out"
-LABEL org.opencontainers.image.created="2024-08-27T02:45:00Z"
+LABEL org.opencontainers.image.created="2024-08-28T02:45:47Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bf6d661d390c2438b888c765a8d8ce2e6b4adf4d"
+LABEL org.opencontainers.image.revision="03b3b11aa23ebfa3ac1a5f725dd6ab2956e79453"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -664,6 +676,28 @@ while [[ $# -gt 0 ]]; do
             else
               VIASH_PAR_OBS_KEYS="$VIASH_PAR_OBS_KEYS;"$(ViashRemoveFlags "$1")
             fi
+            shift 1
+            ;;
+        --input_layer)
+            [ -n "$VIASH_PAR_INPUT_LAYER" ] && ViashError Bad arguments for option \'--input_layer\': \'$VIASH_PAR_INPUT_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_LAYER="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_layer. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --input_layer=*)
+            [ -n "$VIASH_PAR_INPUT_LAYER" ] && ViashError Bad arguments for option \'--input_layer=*\': \'$VIASH_PAR_INPUT_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_LAYER=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_layer)
+            [ -n "$VIASH_PAR_OUTPUT_LAYER" ] && ViashError Bad arguments for option \'--output_layer\': \'$VIASH_PAR_OUTPUT_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_LAYER="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_layer. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_layer=*)
+            [ -n "$VIASH_PAR_OUTPUT_LAYER" ] && ViashError Bad arguments for option \'--output_layer=*\': \'$VIASH_PAR_OUTPUT_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_LAYER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---setup)
@@ -956,6 +990,7 @@ trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
 import scanpy as sc
 import mudata as mu
+import anndata as ad
 import multiprocessing
 import sys
 
@@ -966,7 +1001,9 @@ par = {
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'obs_keys': $( if [ ! -z ${VIASH_PAR_OBS_KEYS+x} ]; then echo "r'${VIASH_PAR_OBS_KEYS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi )
+  'obs_keys': $( if [ ! -z ${VIASH_PAR_OBS_KEYS+x} ]; then echo "r'${VIASH_PAR_OBS_KEYS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1016,14 +1053,25 @@ if (
     and len(par["obs_keys"]) > 0
 ):
     mod = par["modality"]
-    logger.info("Regress out variables on modality %s", mod)
     data = mdata.mod[mod]
 
+    # Copy required data from input data to new AnnData object to allow providing input and output layers
+    input_layer = data.X if not par["input_layer"] else data.layers[par["input_layer"]]
+    obs = data.obs.loc[:, par["obs_keys"]]
+    sc_data = ad.AnnData(X=input_layer.copy(), obs=obs)
+
+    logger.info("Regress out variables on modality %s", mod)
     sc.pp.regress_out(
-        data,
+        sc_data,
         keys=par["obs_keys"],
         n_jobs=multiprocessing.cpu_count() - 1
     )
+
+    # Copy regressed data back to original input data
+    if par["output_layer"]:
+        data.layers[par["output_layer"]] = sc_data.X
+    else:
+        data.X = sc_data.X
 
 logger.info("Writing to file")
 mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])

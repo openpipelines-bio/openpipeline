@@ -2795,7 +2795,7 @@ meta = [
           "author"
         ],
         "info" : {
-          "role" : "Contributor",
+          "role" : "Core Team Member",
           "links" : {
             "email" : "dorien@data-intuitive.com",
             "github" : "dorien-er",
@@ -3306,7 +3306,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cell_type_annotation",
     "viash_version" : "0.8.6",
-    "git_commit" : "bf6d661d390c2438b888c765a8d8ce2e6b4adf4d",
+    "git_commit" : "03b3b11aa23ebfa3ac1a5f725dd6ab2956e79453",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
