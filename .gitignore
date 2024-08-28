@@ -39,5 +39,3 @@ resources_test
 
 # vscode
 .vscode/launch.json
-
-bin/
