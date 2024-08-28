@@ -21,10 +21,10 @@ workflow test_wf {
     ])
     | map{ state -> [state.id, state] }
     // first filter and convert to h5mu
-    | from_10xh5_to_h5mu.run(
-      fromState: ["input"],
-      toState: ["input": "output"]
-    )
+    // | from_10xh5_to_h5mu.run(
+    //   fromState: ["input"],
+    //   toState: ["input": "output"]
+    // )
 
     | cellranger_postprocessing.run(
       toState: {id, output, state ->
