@@ -119,6 +119,8 @@
 
 * `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR #852).
 
+* Fix failing tests for `ingestion/cellranger_postprocessing`, `ingestion/conversion` and `multiomics/process_batches` (PR #869).
+
 ## DOCUMENTATION
 
 * Update authorship of components (PR #835).
