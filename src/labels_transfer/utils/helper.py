@@ -32,10 +32,3 @@ def get_query_features(adata, par, logger):
         query_data = adata.obsm[par["input_obsm_features"]]
 
     return query_data
-
-def check_sparsity(data, logger):
-    if issparse(data):
-        logger.warning("Converting sparse matrix to dense. This may consume a lot of memory.")
-        data = data.toarray()
-    
-    return data

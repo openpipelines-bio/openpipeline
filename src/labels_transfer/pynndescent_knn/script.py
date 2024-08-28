@@ -15,15 +15,15 @@ par = {
     "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "reference_obsm_features": None,
     "reference_obs_targets": ["cell_type"],
-    "output": "foo.h5mu",
+    "output": "foo_distance.h5mu",
     "output_obs_predictions": None,
     "output_obs_probability": None,
     "output_uns_parameters": "labels_transfer",
     "output_compression": None,
-    "weights": "uniform",
+    "weights": "distance",
     "n_neighbors": 15
 }
-meta ={
+meta = {
     "resources_dir": "src/labels_transfer/utils"
 }
 ## VIASH END
@@ -99,10 +99,6 @@ logger.info("Generating training and inference data")
 train_X = get_reference_features(r_adata, par, logger)
 inference_X = get_query_features(q_adata, par, logger)
 
-# pynndescent does not support sparse matrices
-train_X = check_sparsity(train_X, logger)
-inference_X = check_sparsity(inference_X, logger)
-
 neighbors_transformer = PyNNDescentTransformer(
     n_neighbors=par["n_neighbors"],
     parallel_batch_queries=True,
@@ -116,39 +112,21 @@ reference_neighbors = neighbors_transformer.transform(inference_X)
 for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"],  par["output_obs_predictions"], par["output_obs_probability"]):
     logger.info(f"Predicting labels for {obs_tar}")
 
-    if par["weights"] != "gaussian":
-        logger.info(f"Using KNN classifier with {par['weights']} weights")
-        train_y = r_adata.obs[obs_tar].to_numpy()
-        classifier = KNeighborsClassifier(n_neighbors=par["n_neighbors"], metric="precomputed", weights=par["weights"])
-        classifier.fit(
-            X=neighbors_transformer.transform(train_X), y=train_y
-        )
-        predicted_labels = classifier.predict(reference_neighbors)
-        probabilities = classifier.predict_proba(reference_neighbors).max(axis=1)
-        
-    elif par["weights"] == "gaussian":
-        logger.info(f"Using Gaussian weights")
+    weights_dict = {
+        "uniform": "uniform",
+        "distance": "distance",
+        "gaussian": distances_to_affinities
+    }
 
-        logger.debug(f"Converting {obs_tar} to category")
-        # Convert type to category so that the code below works for any initial type
-        r_adata.obs[obs_tar] = r_adata.obs[obs_tar].astype("category")
-
-        logger.debug(f"Getting neighbors from reference")
-        ref_distances = reference_neighbors.data.reshape(inference_X.shape[0], par["n_neighbors"])
-        ref_neighbors_idxs = reference_neighbors.indices.reshape(inference_X.shape[0], par["n_neighbors"])
-
-        # Get indices of each category because numba throws an error when using strings
-        ref_cats = r_adata.obs[obs_tar].cat.codes.to_numpy()[ref_neighbors_idxs]
-        affinities = distances_to_affinities(ref_distances)
-
-        logger.info("Predicting labels and probabilities")
-        predicted_labels, probabilities = weighted_prediction(affinities, ref_cats)
-        
-        logger.info("Conversion labels to readable names")
-        predicted_labels = np.asarray(r_adata.obs[obs_tar].cat.categories)[predicted_labels]
-        
-    else:
-        raise ValueError("Wriong weights parameter")
+    # if par["weights"] != "gaussian":
+    logger.info(f"Using KNN classifier with {par['weights']} weights")
+    train_y = r_adata.obs[obs_tar].to_numpy()
+    classifier = KNeighborsClassifier(n_neighbors=par["n_neighbors"], metric="precomputed", weights=weights_dict[par["weights"]])
+    classifier.fit(
+        X=neighbors_transformer.transform(train_X), y=train_y
+    )
+    predicted_labels = classifier.predict(reference_neighbors)
+    probabilities = classifier.predict_proba(reference_neighbors).max(axis=1)
 
     logger.info(f"Saving predictions to {obs_pred} and probabilities to {obs_proba} in obs")
     # save_results
