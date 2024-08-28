@@ -15,12 +15,12 @@ par = {
     "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "reference_obsm_features": None,
     "reference_obs_targets": ["cell_type"],
-    "output": "foo_distance.h5mu",
+    "output": "foo.h5mu",
     "output_obs_predictions": None,
     "output_obs_probability": None,
     "output_uns_parameters": "labels_transfer",
     "output_compression": None,
-    "weights": "distance",
+    "weights": "uniform",
     "n_neighbors": 15
 }
 meta = {
@@ -29,7 +29,7 @@ meta = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-from helper import check_arguments, get_reference_features, get_query_features, check_sparsity
+from helper import check_arguments, get_reference_features, get_query_features
 
 def setup_logger():
     import logging
@@ -44,33 +44,6 @@ def setup_logger():
 
     return logger
 # END TEMPORARY WORKAROUND setup_logger
-
-@numba.njit
-def weighted_prediction(weights, ref_cats):
-    """Get highest weight category."""
-    N = len(weights)
-    predictions = np.zeros((N,), dtype=ref_cats.dtype)
-    probabilities = np.zeros((N,))
-    for i in range(N):
-        obs_weights = weights[i]
-        obs_cats = ref_cats[i]
-        best_prob = 0
-
-        neighbors_categories = np.unique(obs_cats)
-        
-        # If all neighbors have the same class, just predict it. This saves quite some time
-        if len(neighbors_categories) == 1:
-            predictions[i] = neighbors_categories[0]
-            probabilities[i] = 1
-        else:
-            for c in neighbors_categories:
-                cand_prob = np.sum(obs_weights[obs_cats == c])
-                if cand_prob > best_prob:
-                    best_prob = cand_prob
-                    predictions[i] = c
-                    probabilities[i] = best_prob
-
-    return predictions, probabilities
 
 def distances_to_affinities(distances):
     stds = np.std(distances, axis=1)
@@ -118,7 +91,6 @@ for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"],  par["outp
         "gaussian": distances_to_affinities
     }
 
-    # if par["weights"] != "gaussian":
     logger.info(f"Using KNN classifier with {par['weights']} weights")
     train_y = r_adata.obs[obs_tar].to_numpy()
     classifier = KNeighborsClassifier(n_neighbors=par["n_neighbors"], metric="precomputed", weights=weights_dict[par["weights"]])
@@ -128,8 +100,8 @@ for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"],  par["outp
     predicted_labels = classifier.predict(reference_neighbors)
     probabilities = classifier.predict_proba(reference_neighbors).max(axis=1)
 
-    logger.info(f"Saving predictions to {obs_pred} and probabilities to {obs_proba} in obs")
     # save_results
+    logger.info(f"Saving predictions to {obs_pred} and probabilities to {obs_proba} in obs")
     q_adata.obs[obs_pred] = predicted_labels
     q_adata.obs[obs_proba] = probabilities
 
