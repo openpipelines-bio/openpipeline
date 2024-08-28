@@ -6,6 +6,7 @@ import mudata as md
 import numpy as np
 import scanpy as sc
 import muon as mu
+import pandas as pd
 
 ## VIASH START
 meta = {
@@ -71,6 +72,12 @@ def tiny_atac_mudata(tmp_path):
     assert "files" in mdata.mod["atac"].uns.keys()
     assert "fragments" in mdata.mod["atac"].uns["files"].keys()
 
+    # Read features annotation and save it to uns
+    peak_annotation = pd.read_csv(resources_dir / "counts" / "peak_annotation.tsv", sep="\t")
+    peak_annotation.columns = ["Chromosome", "Start", "End", "gene", "distance", "peak_type"]
+    peak_annotation["gene"] = peak_annotation["gene"].astype(str)  # Fixes saving error
+    mdata.mod["atac"].uns["peak_annotation"] = peak_annotation
+
     mdata_path = tmp_path / "tiny_atac.h5mu"
     mdata.write(mdata_path)
 
@@ -100,6 +107,8 @@ def test_qc_columns_in_tables(run_component, request, mudata, tmp_path):
     # Check that ATAC-specific metrics are calculated if fragments information is present (for tiny ATAC data)
     if "files" in data_with_qc.mod["atac"].uns and "fragments" in data_with_qc.mod["atac"].uns["files"]:
         assert "nucleosome_signal" in data_with_qc.mod["atac"].obs
+    
+    if "peak_annotation" in data_with_qc.mod["atac"].uns.keys():
         assert "tss_score" in data_with_qc.mod["atac"].obs
 
 
