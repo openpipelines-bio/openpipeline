@@ -97,9 +97,10 @@ def test_qc_columns_in_tables(run_component, request, mudata, tmp_path):
     for qc_metric in ("n_cells_by_counts", "mean_counts", "pct_dropout_by_counts", "total_counts"):
         assert qc_metric in data_with_qc.mod["atac"].var
 
-    # Check that nucleosome signal is calculated if fragments information is present (for tiny ATAC data)
+    # Check that ATAC-specific metrics are calculated if fragments information is present (for tiny ATAC data)
     if "files" in data_with_qc.mod["atac"].uns and "fragments" in data_with_qc.mod["atac"].uns["files"]:
         assert "nucleosome_signal" in data_with_qc.mod["atac"].obs
+        assert "tss_score" in data_with_qc.mod["atac"].obs
 
 
 @pytest.mark.parametrize("mudata", ["example_mudata", "example_mudata_with_layer"])
