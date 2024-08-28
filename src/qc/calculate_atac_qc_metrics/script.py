@@ -86,8 +86,8 @@ def main():
         logger.info("Skipping nucleosome signal calculation: fragments information is not found")
 
     # If interval information is available, calculate TSS enrichment
-    if "interval" in mdata.var or ("rna" in mdata.mod and "interval" in mdata.mod["rna"]):
-        tss = ac.tl.tss_enrichment(mdata, n_tss=par["n_tss"], random_state=666)
+    if "peak_annotation" in mdata.mod["atac"].uns.keys():
+        tss = ac.tl.tss_enrichment(mdata, features=mdata.mod["atac"].uns["peak_annotation"],n_tss=par["n_tss"], random_state=666)
     
         tss.obs["tss_filter"] = [
             "TSS_FAIL" if score < par["tss_threshold"] else "TSS_PASS"
