@@ -56,7 +56,6 @@ platforms:
       - type: python
         packages:
           - pynndescent~=0.5.10
-          - numba~=0.59.0
           - numpy<2
     test_setup:
       - type: python

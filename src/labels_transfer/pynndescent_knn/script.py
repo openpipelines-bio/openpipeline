@@ -1,11 +1,8 @@
 import mudata as mu
-import numba
 import numpy as np
-from scipy.sparse import issparse
 import sys
 from pynndescent import PyNNDescentTransformer
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.pipeline import make_pipeline
 
 ## VIASH START
 par = {
