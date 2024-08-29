@@ -3088,7 +3088,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.10.8",
+            "anndata==0.10.8",
             "mudata~=0.2.4",
             "pandas!=2.1.2",
             "numpy<2.0.0",
@@ -3172,7 +3172,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.8.6",
-    "git_commit" : "7216a3a111552ddfc07cb12d6225b2e59f8444fa",
+    "git_commit" : "f9d255dc2a481071d76c3021f4ae13c5d8a7a549",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

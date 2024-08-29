@@ -446,13 +446,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.10.8" "mudata~=0.2.4" "pandas!=2.1.2" "numpy<2.0.0" "scanpy~=1.9.6"
+  pip install --upgrade --no-cache-dir "anndata==0.10.8" "mudata~=0.2.4" "pandas!=2.1.2" "numpy<2.0.0" "scanpy~=1.9.6"
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component transform regress_out"
-LABEL org.opencontainers.image.created="2024-08-27T12:33:46Z"
+LABEL org.opencontainers.image.created="2024-08-29T06:47:37Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7216a3a111552ddfc07cb12d6225b2e59f8444fa"
+LABEL org.opencontainers.image.revision="f9d255dc2a481071d76c3021f4ae13c5d8a7a549"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
