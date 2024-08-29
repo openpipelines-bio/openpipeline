@@ -32,20 +32,23 @@ def _promote_dtypes(left, right):
         l_dtype = left[column].dtype
         r_dtype = right[column].dtype
         
-        # Handle nullable integer dtypes
-        if isinstance(l_dtype, pd.Int64Dtype) and isinstance(r_dtype, pd.Int64Dtype):
-            # Align to Int64Dtype if both are nullable integers
-            common_dtype = pd.Int64Dtype()
-        elif pd.api.types.is_integer_dtype(l_dtype) and pd.api.types.is_integer_dtype(r_dtype):
-            # Use numpy to promote standard integer types
-            common_dtype = np.promote_types(np.dtype(l_dtype), np.dtype(r_dtype))
-        elif pd.api.types.is_float_dtype(l_dtype) and pd.api.types.is_float_dtype(r_dtype):
-            # Use numpy to promote float types
-            common_dtype = np.promote_types(np.dtype(l_dtype), np.dtype(r_dtype))
+        if l_dtype == r_dtype:
+            # No need to modify dtypes that are already the same
+            continue
+        if not all(map(pd.api.types.is_any_real_numeric_dtype, (r_dtype, l_dtype))):
+            # Do not try casting without dtypes that do not represent real numbers
+            continue
+        is_extension = pd.api.types.is_extension_array_dtype(l_dtype)
+        if is_extension and not pd.api.types.is_extension_array_dtype(r_dtype):
+            continue
+        numpy_dtype_l = l_dtype.type if is_extension else l_dtype
+        numpy_dtype_r = r_dtype.type if is_extension else r_dtype 
+        # At this point we should have only integer or float dtypes 
+        common_dtype = np.promote_types(numpy_dtype_l, numpy_dtype_r)
+        if is_extension:
+            left_aligned[column] = pd.array(left[column], dtype=common_dtype)
+            right_aligned[column] = pd.array(right[column], dtype=common_dtype)
         else:
-            common_dtype = None  # No promotion for non-numeric types
-        
-        if common_dtype:
             left_aligned[column] = left[column].astype(common_dtype)
             right_aligned[column] = right[column].astype(common_dtype)
     
