@@ -69,6 +69,7 @@ engines:
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [lowmem, lowcpu]
