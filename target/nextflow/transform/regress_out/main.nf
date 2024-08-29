@@ -2889,6 +2889,32 @@ meta = [
         "multiple" : true,
         "multiple_sep" : ";",
         "dest" : "par"
+      },
+      {
+        "type" : "string",
+        "name" : "--input_layer",
+        "description" : "The layer of the adata object to regress on.\nIf not provided, the X attribute of the adata object will be used.\n",
+        "example" : [
+          "X_normalized"
+        ],
+        "required" : false,
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
+      },
+      {
+        "type" : "string",
+        "name" : "--output_layer",
+        "description" : "The layer of the adata object containing the regressed count data.\nIf not provided, the X attribute of the adata object will be used.\n",
+        "example" : [
+          "X_regressed"
+        ],
+        "required" : false,
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
       }
     ],
     "resources" : [
@@ -2972,6 +2998,20 @@ meta = [
       ],
       "test_setup" : [
         {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
@@ -3043,7 +3083,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/regress_out",
     "viash_version" : "0.8.6",
-    "git_commit" : "8b937c73b8ccbbc2d1721b3028612ce71a1cd332",
+    "git_commit" : "1caae6eeb8e92a9df9964eea63b37e272399689f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3060,6 +3100,7 @@ tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import scanpy as sc
 import mudata as mu
+import anndata as ad
 import multiprocessing
 import sys
 
@@ -3070,7 +3111,9 @@ par = {
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obs_keys': $( if [ ! -z ${VIASH_PAR_OBS_KEYS+x} ]; then echo "r'${VIASH_PAR_OBS_KEYS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi )
+  'obs_keys': $( if [ ! -z ${VIASH_PAR_OBS_KEYS+x} ]; then echo "r'${VIASH_PAR_OBS_KEYS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3120,14 +3163,25 @@ if (
     and len(par["obs_keys"]) > 0
 ):
     mod = par["modality"]
-    logger.info("Regress out variables on modality %s", mod)
     data = mdata.mod[mod]
 
+    # Copy required data from input data to new AnnData object to allow providing input and output layers
+    input_layer = data.X if not par["input_layer"] else data.layers[par["input_layer"]]
+    obs = data.obs.loc[:, par["obs_keys"]]
+    sc_data = ad.AnnData(X=input_layer.copy(), obs=obs)
+
+    logger.info("Regress out variables on modality %s", mod)
     sc.pp.regress_out(
-        data,
+        sc_data,
         keys=par["obs_keys"],
         n_jobs=multiprocessing.cpu_count() - 1
     )
+
+    # Copy regressed data back to original input data
+    if par["output_layer"]:
+        data.layers[par["output_layer"]] = sc_data.X
+    else:
+        data.X = sc_data.X
 
 logger.info("Writing to file")
 mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])

@@ -179,5 +179,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/genetic_demux/bcftools"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/genetic_demux/bcftools/bcftools"
   viash_version: "0.8.6"
-  git_commit: "8b937c73b8ccbbc2d1721b3028612ce71a1cd332"
+  git_commit: "1caae6eeb8e92a9df9964eea63b37e272399689f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

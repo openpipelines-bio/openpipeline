@@ -31,6 +31,5 @@ platforms:
         packages: /opt/openpipelinetestutils
         pypi:
           - mudata
-          - numpy<2.0.0
         __merge__: /src/base/requirements/viashpy.yaml
   - type: nextflow

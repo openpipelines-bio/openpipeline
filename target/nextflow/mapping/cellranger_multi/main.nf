@@ -2887,7 +2887,7 @@ meta = [
           "author"
         ],
         "info" : {
-          "role" : "Contributor",
+          "role" : "Core Team Member",
           "links" : {
             "email" : "dorien@data-intuitive.com",
             "github" : "dorien-er",
@@ -3817,7 +3817,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.8.6",
-    "git_commit" : "8b937c73b8ccbbc2d1721b3028612ce71a1cd332",
+    "git_commit" : "1caae6eeb8e92a9df9964eea63b37e272399689f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
