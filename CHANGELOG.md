@@ -89,9 +89,17 @@
 
 * `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
 
+* `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
+
+* `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
+
 * `workflows/ingestion/make_reference`: add possibility to build CellRanger ARC references. Added `--motifs_file`, `--non_nuclear_contigs` and `--output_cellranger_arc` arguments (PR #864).
 
 * Test resources (reference_gencodev41_chr1): switch reference genome for CellRanger to ARC variant (PR #864).
+
+* `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
+
+* `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
 
 ## MINOR CHANGES
 
@@ -126,6 +134,8 @@
   which is present in another sample; causing the values being filled with `NA` (PR #837).
 
 * `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR #852).
+
+* Fix failing tests for `ingestion/cellranger_postprocessing`, `ingestion/conversion` and `multiomics/process_batches` (PR #869).
 
 ## DOCUMENTATION
 
