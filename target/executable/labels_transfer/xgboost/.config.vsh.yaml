@@ -40,7 +40,7 @@ argument_groups:
               obsm:
               - type: "double"
                 name: "features"
-                example: "X_integrated_scanvi"
+                example: "X_scvi"
                 required: false
                 description: "The embedding to use for the classifier's inference.\
                   \ Override using the `--input_obsm_features` argument. If not provided,\
@@ -71,7 +71,7 @@ argument_groups:
       \ model or preprocessing).\n"
     info: null
     example:
-    - "X_integrated_scanvi"
+    - "X_scvi"
     required: false
     direction: "input"
     multiple: false
@@ -84,38 +84,43 @@ argument_groups:
     info:
       label: "Reference"
       file_format:
-        type: "h5ad"
-        X:
-          type: "double"
-          name: "features"
-          required: false
-          description: "The expression data to use for the classifier's training,\
-            \ if `--input_obsm_features` argument is not provided.\n"
-        obsm:
-        - type: "double"
-          name: "features"
-          example: "X_integrated_scanvi"
-          description: "The embedding to use for the classifier's training. Override\
-            \ using the `--reference_obsm_features` argument.\nMake sure that embedding\
-            \ was obtained in the same way as the query embedding (e.g. by the same\
-            \ model or preprocessing).\n"
-          required: true
-        obs:
-        - type: "string"
-          name: "targets"
-          multiple: true
-          example:
-          - "ann_level_1"
-          - "ann_level_2"
-          - "ann_level_3"
-          - "ann_level_4"
-          - "ann_level_5"
-          - "ann_finest_level"
-          description: "The target labels to transfer. Override using the `--reference_obs_targets`\
-            \ argument."
-          required: true
+        type: "h5mu"
+        mod:
+          rna:
+            description: "Modality in AnnData format containing RNA data."
+            required: true
+            slots:
+              X:
+                type: "double"
+                name: "features"
+                required: false
+                description: "The expression data to use for the classifier's training,\
+                  \ if `--input_obsm_features` argument is not provided.\n"
+              obsm:
+              - type: "double"
+                name: "features"
+                example: "X_scvi"
+                description: "The embedding to use for the classifier's training.\
+                  \ Override using the `--reference_obsm_features` argument.\nMake\
+                  \ sure that embedding was obtained in the same way as the query\
+                  \ embedding (e.g. by the same model or preprocessing).\n"
+                required: true
+              obs:
+              - type: "string"
+                name: "targets"
+                multiple: true
+                example:
+                - "ann_level_1"
+                - "ann_level_2"
+                - "ann_level_3"
+                - "ann_level_4"
+                - "ann_level_5"
+                - "ann_finest_level"
+                description: "The target labels to transfer. Override using the `--reference_obs_targets`\
+                  \ argument."
+                required: true
     example:
-    - "https:/zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad"
+    - "reference.h5mu"
     must_exist: true
     create_parent: true
     required: false
@@ -124,19 +129,20 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--reference_obsm_features"
-    description: "The `.obsm` key of the embedding to use for the classifier's training.\n\
-      Make sure that embedding was obtained in the same way as the query embedding\
-      \ (e.g. by the same model or preprocessing).\n"
+    description: "The `.obsm` key of the embedding to use for the classifier's training.\
+      \ If not provided, the `.X` slot will be used instead.\nMake sure that embedding\
+      \ was obtained in the same way as the query embedding (e.g. by the same model\
+      \ or preprocessing).\n"
     info: null
-    default:
-    - "X_integrated_scanvi"
-    required: true
+    example:
+    - "X_scvi"
+    required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
   - type: "string"
     name: "--reference_obs_targets"
-    description: "The `.obs` key of the target labels to tranfer."
+    description: "The `.obs` key(s) of the target labels to tranfer."
     info: null
     default:
     - "ann_level_1"
@@ -170,23 +176,16 @@ argument_groups:
                 \ argument."
               required: true
             - type: "double"
-              name: "uncertainty"
-              description: "The uncertainty of the predicted labels. Override using\
-                \ the `--output_obs_uncertainty` argument."
+              name: "probability"
+              description: "The probability of the predicted labels. Override using\
+                \ the `--output_obs_probability` argument."
               required: false
             obsm:
             - type: "double"
-              name: "X_integrated_scanvi"
+              name: "X_scvi"
               description: "The embedding used for the classifier's inference. Could\
                 \ have any name, specified by `input_obsm_features` argument.\""
               required: false
-            uns:
-            - type: "string"
-              name: "parameters"
-              example: "labels_tranfer"
-              description: "Additional information about the parameters used for the\
-                \ label transfer."
-              required: true
     must_exist: true
     create_parent: true
     required: true
@@ -204,10 +203,10 @@ argument_groups:
     multiple: true
     multiple_sep: ";"
   - type: "string"
-    name: "--output_obs_uncertainty"
-    description: "In which `.obs` slots to store the uncertainty of the predictions.\n\
+    name: "--output_obs_probability"
+    description: "In which `.obs` slots to store the probability of the predictions.\n\
       If provided, must have the same length as `--reference_obs_targets`.\nIf empty,\
-      \ will default to the `reference_obs_targets` combined with the `\"_uncertainty\"\
+      \ will default to the `reference_obs_targets` combined with the `\"_probability\"\
       ` suffix.\n"
     info: null
     required: false
@@ -215,13 +214,15 @@ argument_groups:
     multiple: true
     multiple_sep: ";"
   - type: "string"
-    name: "--output_uns_parameters"
-    description: "The `.uns` key to store additional information about the parameters\
-      \ used for the label transfer."
+    name: "--output_compression"
+    description: "The compression format to be used on the output h5mu object.\n"
     info: null
-    default:
-    - "labels_transfer"
+    example:
+    - "gzip"
     required: false
+    choices:
+    - "gzip"
+    - "lzf"
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -269,6 +270,17 @@ argument_groups:
     create_parent: true
     required: false
     direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_uns_parameters"
+    description: "The key in `uns` slot of the output AnnData object to store the\
+      \ parameters of the XGBoost classifier."
+    info: null
+    default:
+    - "xgboost_parameters"
+    required: false
+    direction: "input"
     multiple: false
     multiple_sep: ";"
 - name: "Learning parameters"
@@ -581,11 +593,16 @@ build_info:
   output: "target/executable/labels_transfer/xgboost"
   executable: "target/executable/labels_transfer/xgboost/xgboost"
   viash_version: "0.9.0-RC7"
-  git_commit: "0331d7ed173521811fbe970c3bf20e4232b00919"
+  git_commit: "04fa516eee48000a1b8cd286eb9081b99a0f199b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
+  name: "openpipeline"
   version: "dev"
-  info: null
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
   viash_version: "0.9.0-RC7"
   source: "src"
   target: "target"

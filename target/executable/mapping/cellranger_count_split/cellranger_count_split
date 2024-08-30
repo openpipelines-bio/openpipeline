@@ -489,9 +489,9 @@ ENTRYPOINT []
 RUN apt update && apt upgrade -y
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Samuel D'Souza, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count_split"
-LABEL org.opencontainers.image.created="2024-08-30T07:09:46Z"
+LABEL org.opencontainers.image.created="2024-08-30T09:41:35Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0331d7ed173521811fbe970c3bf20e4232b00919"
+LABEL org.opencontainers.image.revision="04fa516eee48000a1b8cd286eb9081b99a0f199b"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -794,7 +794,7 @@ if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
 
   # determine docker image id
   if [[ "$VIASH_ENGINE_ID" == 'docker' ]]; then
-    VIASH_DOCKER_IMAGE_ID='ghcr.io/openpipelines-bio/mapping/cellranger_count_split:main_build'
+    VIASH_DOCKER_IMAGE_ID='ghcr.io/openpipelines-bio/openpipeline/mapping/cellranger_count_split:main_build'
   fi
 
   # print dockerfile

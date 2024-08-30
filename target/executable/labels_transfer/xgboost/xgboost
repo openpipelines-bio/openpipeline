@@ -190,7 +190,7 @@ function ViashHelp {
   echo ""
   echo "    --input_obsm_features"
   echo "        type: string"
-  echo "        example: X_integrated_scanvi"
+  echo "        example: X_scvi"
   echo "        The \`.obsm\` key of the embedding to use for the classifier's inference."
   echo "        If not provided, the \`.X\` slot will be used instead."
   echo "        Make sure that embedding was obtained in the same way as the reference"
@@ -199,14 +199,14 @@ function ViashHelp {
   echo "Reference dataset arguments:"
   echo "    --reference"
   echo "        type: file, file must exist"
-  echo "        example:"
-  echo "https:/zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad"
+  echo "        example: reference.h5mu"
   echo "        The reference data to train classifiers on."
   echo ""
   echo "    --reference_obsm_features"
-  echo "        type: string, required parameter"
-  echo "        default: X_integrated_scanvi"
+  echo "        type: string"
+  echo "        example: X_scvi"
   echo "        The \`.obsm\` key of the embedding to use for the classifier's training."
+  echo "        If not provided, the \`.X\` slot will be used instead."
   echo "        Make sure that embedding was obtained in the same way as the query"
   echo "        embedding (e.g. by the same model or preprocessing)."
   echo ""
@@ -214,7 +214,7 @@ function ViashHelp {
   echo "        type: string, multiple values allowed"
   echo "        default:"
   echo "ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level"
-  echo "        The \`.obs\` key of the target labels to tranfer."
+  echo "        The \`.obs\` key(s) of the target labels to tranfer."
   echo ""
   echo "Outputs:"
   echo "    --output"
@@ -229,18 +229,18 @@ function ViashHelp {
   echo "        If empty, will default to the \`reference_obs_targets\` combined with the"
   echo "        \`\"_pred\"\` suffix."
   echo ""
-  echo "    --output_obs_uncertainty"
+  echo "    --output_obs_probability"
   echo "        type: string, multiple values allowed"
-  echo "        In which \`.obs\` slots to store the uncertainty of the predictions."
+  echo "        In which \`.obs\` slots to store the probability of the predictions."
   echo "        If provided, must have the same length as \`--reference_obs_targets\`."
   echo "        If empty, will default to the \`reference_obs_targets\` combined with the"
-  echo "        \`\"_uncertainty\"\` suffix."
+  echo "        \`\"_probability\"\` suffix."
   echo ""
-  echo "    --output_uns_parameters"
+  echo "    --output_compression"
   echo "        type: string"
-  echo "        default: labels_transfer"
-  echo "        The \`.uns\` key to store additional information about the parameters used"
-  echo "        for the label transfer."
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        The compression format to be used on the output h5mu object."
   echo ""
   echo "Execution arguments:"
   echo "    -f, --force_retrain"
@@ -264,6 +264,12 @@ function ViashHelp {
   echo "        type: file, output, file must exist"
   echo "        default: model"
   echo "        Output directory for model"
+  echo ""
+  echo "    --output_uns_parameters"
+  echo "        type: string"
+  echo "        default: xgboost_parameters"
+  echo "        The key in \`uns\` slot of the output AnnData object to store the"
+  echo "        parameters of the XGBoost classifier."
   echo ""
   echo "Learning parameters:"
   echo "    --eta, --learning_rate"
@@ -666,9 +672,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component labels_transfer xgboost"
-LABEL org.opencontainers.image.created="2024-08-30T07:09:46Z"
+LABEL org.opencontainers.image.created="2024-08-30T09:41:43Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0331d7ed173521811fbe970c3bf20e4232b00919"
+LABEL org.opencontainers.image.revision="04fa516eee48000a1b8cd286eb9081b99a0f199b"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -908,32 +914,32 @@ while [[ $# -gt 0 ]]; do
             fi
             shift 1
             ;;
-        --output_obs_uncertainty)
-            if [ -z "$VIASH_PAR_OUTPUT_OBS_UNCERTAINTY" ]; then
-              VIASH_PAR_OUTPUT_OBS_UNCERTAINTY="$2"
+        --output_obs_probability)
+            if [ -z "$VIASH_PAR_OUTPUT_OBS_PROBABILITY" ]; then
+              VIASH_PAR_OUTPUT_OBS_PROBABILITY="$2"
             else
-              VIASH_PAR_OUTPUT_OBS_UNCERTAINTY="$VIASH_PAR_OUTPUT_OBS_UNCERTAINTY;""$2"
+              VIASH_PAR_OUTPUT_OBS_PROBABILITY="$VIASH_PAR_OUTPUT_OBS_PROBABILITY;""$2"
             fi
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_obs_uncertainty. Use "--help" to get more information on the parameters. && exit 1
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_obs_probability. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_obs_uncertainty=*)
-            if [ -z "$VIASH_PAR_OUTPUT_OBS_UNCERTAINTY" ]; then
-              VIASH_PAR_OUTPUT_OBS_UNCERTAINTY=$(ViashRemoveFlags "$1")
+        --output_obs_probability=*)
+            if [ -z "$VIASH_PAR_OUTPUT_OBS_PROBABILITY" ]; then
+              VIASH_PAR_OUTPUT_OBS_PROBABILITY=$(ViashRemoveFlags "$1")
             else
-              VIASH_PAR_OUTPUT_OBS_UNCERTAINTY="$VIASH_PAR_OUTPUT_OBS_UNCERTAINTY;"$(ViashRemoveFlags "$1")
+              VIASH_PAR_OUTPUT_OBS_PROBABILITY="$VIASH_PAR_OUTPUT_OBS_PROBABILITY;"$(ViashRemoveFlags "$1")
             fi
             shift 1
             ;;
-        --output_uns_parameters)
-            [ -n "$VIASH_PAR_OUTPUT_UNS_PARAMETERS" ] && ViashError Bad arguments for option \'--output_uns_parameters\': \'$VIASH_PAR_OUTPUT_UNS_PARAMETERS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_UNS_PARAMETERS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_uns_parameters. Use "--help" to get more information on the parameters. && exit 1
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_uns_parameters=*)
-            [ -n "$VIASH_PAR_OUTPUT_UNS_PARAMETERS" ] && ViashError Bad arguments for option \'--output_uns_parameters=*\': \'$VIASH_PAR_OUTPUT_UNS_PARAMETERS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_UNS_PARAMETERS=$(ViashRemoveFlags "$1")
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --force_retrain)
@@ -983,6 +989,17 @@ while [[ $# -gt 0 ]]; do
         --model_output=*)
             [ -n "$VIASH_PAR_MODEL_OUTPUT" ] && ViashError Bad arguments for option \'--model_output=*\': \'$VIASH_PAR_MODEL_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_MODEL_OUTPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_uns_parameters)
+            [ -n "$VIASH_PAR_OUTPUT_UNS_PARAMETERS" ] && ViashError Bad arguments for option \'--output_uns_parameters\': \'$VIASH_PAR_OUTPUT_UNS_PARAMETERS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_UNS_PARAMETERS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_uns_parameters. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_uns_parameters=*)
+            [ -n "$VIASH_PAR_OUTPUT_UNS_PARAMETERS" ] && ViashError Bad arguments for option \'--output_uns_parameters=*\': \'$VIASH_PAR_OUTPUT_UNS_PARAMETERS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_UNS_PARAMETERS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --learning_rate)
@@ -1244,7 +1261,7 @@ if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
 
   # determine docker image id
   if [[ "$VIASH_ENGINE_ID" == 'docker' ]]; then
-    VIASH_DOCKER_IMAGE_ID='ghcr.io/openpipelines-bio/labels_transfer/xgboost:main_build'
+    VIASH_DOCKER_IMAGE_ID='ghcr.io/openpipelines-bio/openpipeline/labels_transfer/xgboost:main_build'
   fi
 
   # print dockerfile
@@ -1332,10 +1349,6 @@ if [ -z ${VIASH_PAR_INPUT+x} ]; then
   ViashError '--input' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
-if [ -z ${VIASH_PAR_REFERENCE_OBSM_FEATURES+x} ]; then
-  ViashError '--reference_obsm_features' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
 if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
   ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
@@ -1372,9 +1385,6 @@ fi
 if [ -z ${VIASH_PAR_REFERENCE_OBS_TARGETS+x} ]; then
   VIASH_PAR_REFERENCE_OBS_TARGETS="ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level"
 fi
-if [ -z ${VIASH_PAR_OUTPUT_UNS_PARAMETERS+x} ]; then
-  VIASH_PAR_OUTPUT_UNS_PARAMETERS="labels_transfer"
-fi
 if [ -z ${VIASH_PAR_FORCE_RETRAIN+x} ]; then
   VIASH_PAR_FORCE_RETRAIN="false"
 fi
@@ -1386,6 +1396,9 @@ if [ -z ${VIASH_PAR_VERBOSITY+x} ]; then
 fi
 if [ -z ${VIASH_PAR_MODEL_OUTPUT+x} ]; then
   VIASH_PAR_MODEL_OUTPUT="model"
+fi
+if [ -z ${VIASH_PAR_OUTPUT_UNS_PARAMETERS+x} ]; then
+  VIASH_PAR_OUTPUT_UNS_PARAMETERS="xgboost_parameters"
 fi
 if [ -z ${VIASH_PAR_LEARNING_RATE+x} ]; then
   VIASH_PAR_LEARNING_RATE="0.3"
@@ -1602,6 +1615,18 @@ if [[ -n "$VIASH_META_MEMORY_PIB" ]]; then
 fi
 
 # check whether value is belongs to a set of choices
+if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
+  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip;lzf")
+  IFS=';'
+  set -f
+  if ! [[ ";${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]};" =~ ";$VIASH_PAR_OUTPUT_COMPRESSION;" ]]; then
+    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
 if [ ! -z "$VIASH_PAR_SAMPLING_METHOD" ]; then
   VIASH_PAR_SAMPLING_METHOD_CHOICES=("uniform;gradient_based")
   IFS=';'
@@ -1738,12 +1763,13 @@ par = {
   'reference_obs_targets': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGETS+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGETS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_obs_predictions': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PREDICTIONS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
-  'output_obs_uncertainty': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_UNCERTAINTY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_UNCERTAINTY//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
-  'output_uns_parameters': $( if [ ! -z ${VIASH_PAR_OUTPUT_UNS_PARAMETERS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_UNS_PARAMETERS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_obs_probability': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PROBABILITY//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'force_retrain': $( if [ ! -z ${VIASH_PAR_FORCE_RETRAIN+x} ]; then echo "r'${VIASH_PAR_FORCE_RETRAIN//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'use_gpu': $( if [ ! -z ${VIASH_PAR_USE_GPU+x} ]; then echo "r'${VIASH_PAR_USE_GPU//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'verbosity': $( if [ ! -z ${VIASH_PAR_VERBOSITY+x} ]; then echo "int(r'${VIASH_PAR_VERBOSITY//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'model_output': $( if [ ! -z ${VIASH_PAR_MODEL_OUTPUT+x} ]; then echo "r'${VIASH_PAR_MODEL_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_uns_parameters': $( if [ ! -z ${VIASH_PAR_OUTPUT_UNS_PARAMETERS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_UNS_PARAMETERS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'learning_rate': $( if [ ! -z ${VIASH_PAR_LEARNING_RATE+x} ]; then echo "float(r'${VIASH_PAR_LEARNING_RATE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'min_split_loss': $( if [ ! -z ${VIASH_PAR_MIN_SPLIT_LOSS+x} ]; then echo "float(r'${VIASH_PAR_MIN_SPLIT_LOSS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'max_depth': $( if [ ! -z ${VIASH_PAR_MAX_DEPTH+x} ]; then echo "int(r'${VIASH_PAR_MAX_DEPTH//\'/\'\"\'\"r\'}')"; else echo None; fi ),
@@ -1990,27 +2016,27 @@ def project_labels(
     query_dataset,
     cell_type_classifier_model: xgb.XGBClassifier,
     annotation_column_name='label_pred',
-    uncertainty_column_name='label_uncertainty',
-    uncertainty_thresh=None  # Note: currently not passed to predict function
+    probability_column_name='label_probability',
+    probability_thresh=None  # Note: currently not passed to predict function
 ):
     """
-    A function that projects predicted labels onto the query dataset, along with uncertainty scores.
+    A function that projects predicted labels onto the query dataset, along with probability estimations.
     Performs in-place update of the adata object, adding columns to the \`obs\` DataFrame.
 
     Input:
         * \`query_dataset\`: The query \`AnnData\` object
         * \`model_file\`: Path to the classification model file
         * \`prediction_key\`: Column name in \`adata.obs\` where to store the predicted labels
-        * \`uncertainty_key\`: Column name in \`adata.obs\` where to store the uncertainty scores
-        * \`uncertainty_thresh\`: The uncertainty threshold above which we call a cell 'Unknown'
+        * \`probability_key\`: Column name in \`adata.obs\` where to store the labels probabilities
+        * \`probability_thresh\`: The probability threshold below which we call a cell 'Unknown'
 
     Output:
         Nothing is output, the passed anndata is modified inplace
 
     """
 
-    if (uncertainty_thresh is not None) and (uncertainty_thresh < 0 or uncertainty_thresh > 1):
-        raise ValueError(f'\`uncertainty_thresh\` must be \`None\` or between 0 and 1.')
+    if (probability_thresh is not None) and (probability_thresh < 0 or probability_thresh > 1):
+        raise ValueError(f'\`probability_thresh\` must be \`None\` or between 0 and 1.')
 
     query_data = get_query_features(query_dataset, par, logger)
 
@@ -2022,14 +2048,14 @@ def project_labels(
 
     # Format probabilities
     df_probs = pd.DataFrame(probs, columns=cell_type_classifier_model.classes_, index=query_dataset.obs_names)
-    query_dataset.obs[uncertainty_column_name] = 1 - df_probs.max(1)
+    query_dataset.obs[probability_column_name] = df_probs.max(1)
 
     # Note: this is here in case we want to propose a set of values for the user to accept to seed the
     #       manual curation of predicted labels
-    if uncertainty_thresh is not None:
+    if probability_thresh is not None:
         logger.info("Marking uncertain predictions")
         query_dataset.obs[annotation_column_name + "_filtered"] = [
-            val if query_dataset.obs[uncertainty_column_name][i] < uncertainty_thresh
+            val if query_dataset.obs[probability_column_name][i] >= probability_thresh
             else "Unknown" for i, val in enumerate(query_dataset.obs[annotation_column_name])]
 
     return query_dataset
@@ -2040,7 +2066,7 @@ def predict(
     cell_type_classifier_model_path,
     annotation_column_name: str,
     prediction_column_name: str,
-    uncertainty_column_name: str,
+    probability_column_name: str,
     models_info,
     use_gpu: bool = False
 ) -> pd.DataFrame:
@@ -2062,7 +2088,7 @@ def predict(
     project_labels(query_dataset, 
                    cell_type_classifier_model, 
                    annotation_column_name=prediction_column_name, 
-                   uncertainty_column_name=uncertainty_column_name)
+                   probability_column_name=probability_column_name)
 
     logger.info("Converting labels from numbers to classes")
     labels_encoder = LabelEncoder()
@@ -2076,10 +2102,11 @@ def main(par):
     logger.info("Checking arguments")
     par = check_arguments(par)
 
-    mdata = mudata.read(par["input"].strip())
-    adata = mdata.mod[par["modality"]]
+    mdata_query = mudata.read(par["input"].strip())
+    adata_query = mdata_query.mod[par["modality"]]
 
-    adata_reference = sc.read(par["reference"], backup_url=par["reference"])
+    mdata_reference = mudata.read(par["reference"])
+    adata_reference = mdata_reference.mod[par["modality"]]
 
     # If classifiers for targets are in the model_output directory, simply open them and run (unless \`retrain\` != True)
     # If some classifiers are missing, train and save them first
@@ -2097,19 +2124,19 @@ def main(par):
     build_ref_classifiers(adata_reference, targets_to_train, model_path=par["model_output"], 
                           gpu=par["use_gpu"], eval_verbosity=par["verbosity"])
 
-    output_uns_parameters = adata.uns.get(par["output_uns_parameters"], {})
+    output_uns_parameters = adata_query.uns.get(par["output_uns_parameters"], {})
 
     with open(par["model_output"] + "/model_info.json", "r") as f:
         models_info = json.loads(f.read())
 
-    for obs_target, obs_pred, obs_unc in zip(par["reference_obs_targets"], par["output_obs_predictions"], par["output_obs_uncertainty"]):
+    for obs_target, obs_pred, obs_unc in zip(par["reference_obs_targets"], par["output_obs_predictions"], par["output_obs_probability"]):
         logger.info(f"Predicting {obs_target}")
 
-        adata = predict(query_dataset=adata,
+        adata_query = predict(query_dataset=adata_query,
                         cell_type_classifier_model_path=os.path.join(par["model_output"], "classifier_" + obs_target + ".xgb"),
                         annotation_column_name=obs_target, 
                         prediction_column_name=obs_pred,
-                        uncertainty_column_name=obs_unc,
+                        probability_column_name=obs_unc,
                         models_info=models_info,
                         use_gpu=par["use_gpu"])
         
@@ -2120,14 +2147,14 @@ def main(par):
                 **training_params
             }
 
-    adata.uns[par["output_uns_parameters"]] = output_uns_parameters
+    adata_query.uns[par["output_uns_parameters"]] = output_uns_parameters
 
     logger.info("Updating mdata")
-    mdata.mod[par['modality']] = adata
-    mdata.update()
+    mdata_query.mod[par['modality']] = adata_query
+    mdata_query.update()
 
     logger.info("Writing output")
-    mdata.write_h5mu(par['output'].strip())
+    mdata_query.write_h5mu(par['output'].strip())
 
 if __name__ == "__main__":
     main(par)

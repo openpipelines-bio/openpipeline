@@ -3117,11 +3117,21 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p",
     "viash_version" : "0.9.0-RC7",
-    "git_commit" : "0331d7ed173521811fbe970c3bf20e4232b00919",
+    "git_commit" : "04fa516eee48000a1b8cd286eb9081b99a0f199b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
+    "name" : "openpipeline",
     "version" : "dev",
+    "info" : {
+      "test_resources" : [
+        {
+          "type" : "s3",
+          "path" : "s3://openpipelines-data",
+          "dest" : "resources_test"
+        }
+      ]
+    },
     "viash_version" : "0.9.0-RC7",
     "source" : "/home/runner/work/openpipeline/openpipeline/src",
     "target" : "/home/runner/work/openpipeline/openpipeline/target",
@@ -3595,7 +3605,7 @@ meta["defaults"] = [
   directives: readJsonBlob('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/transform/log1p",
+    "image" : "openpipelines-bio/openpipeline/transform/log1p",
     "tag" : "main_build"
   },
   "label" : [

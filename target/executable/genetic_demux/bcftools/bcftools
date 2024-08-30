@@ -485,9 +485,9 @@ RUN apt-get update && \
 RUN wget https://github.com/samtools/bcftools/releases/download/1.16/bcftools-1.16.tar.bz2 -O bcftools.tar.bz2 && tar -xjvf bcftools.tar.bz2 && cd bcftools-1.16 && make prefix=/usr/local install
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux bcftools"
-LABEL org.opencontainers.image.created="2024-08-30T07:09:42Z"
+LABEL org.opencontainers.image.created="2024-08-30T09:41:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0331d7ed173521811fbe970c3bf20e4232b00919"
+LABEL org.opencontainers.image.revision="04fa516eee48000a1b8cd286eb9081b99a0f199b"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -762,7 +762,7 @@ if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
 
   # determine docker image id
   if [[ "$VIASH_ENGINE_ID" == 'docker' ]]; then
-    VIASH_DOCKER_IMAGE_ID='ghcr.io/openpipelines-bio/genetic_demux/bcftools:main_build'
+    VIASH_DOCKER_IMAGE_ID='ghcr.io/openpipelines-bio/openpipeline/genetic_demux/bcftools:main_build'
   fi
 
   # print dockerfile

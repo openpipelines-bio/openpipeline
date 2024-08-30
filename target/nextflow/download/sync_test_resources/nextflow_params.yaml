@@ -1,6 +1,10 @@
+# Inputs
+input: "_viash.yaml"
+
+# Outputs
+# output: "."
+
 # Arguments
-input: "s3://openpipelines-data"
-# output: "resources_test"
 quiet: false
 dryrun: false
 delete: false

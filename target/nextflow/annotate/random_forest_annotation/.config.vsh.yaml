@@ -1,53 +1,27 @@
-name: "bpcells_regress_out"
-namespace: "transform"
+name: "random_forest_annotation"
+namespace: "annotate"
 version: "main_build"
 authors:
-- name: "Dorien Roosen"
+- name: "Jakub Majercik"
   roles:
-  - "maintainer"
   - "author"
-  info:
-    role: "Core Team Member"
-    links:
-      email: "dorien@data-intuitive.com"
-      github: "dorien-er"
-      linkedin: "dorien-roosen"
-    organizations:
-    - name: "Data Intuitive"
-      href: "https://www.data-intuitive.com"
-      role: "Data Scientist"
-- name: "Robrecht Cannoodt"
-  roles:
-  - "contributor"
-  - "author"
-  info:
-    role: "Core Team Member"
-    links:
-      email: "robrecht@data-intuitive.com"
-      github: "rcannood"
-      orcid: "0000-0003-3641-729X"
-      linkedin: "robrechtcannoodt"
-    organizations:
-    - name: "Data Intuitive"
-      href: "https://www.data-intuitive.com"
-      role: "Data Science Engineer"
-    - name: "Open Problems"
-      href: "https://openproblems.bio"
-      role: "Core Member"
-- name: "Weiwei Schultz"
-  roles:
-  - "contributor"
   info:
     role: "Contributor"
+    links:
+      email: "jakub@data-intuitive.com"
+      github: "jakubmajercik"
+      linkedin: "jakubmajercik"
     organizations:
-    - name: "Janssen R&D US"
-      role: "Associate Director Data Sciences"
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Bioinformatics Engineer"
 argument_groups:
-- name: "Arguments"
+- name: "Inputs"
+  description: "Input dataset (query) arguments"
   arguments:
   - type: "file"
     name: "--input"
-    description: "Input h5mu file"
+    description: "The input (query) data to be labeled. Should be a .h5mu file."
     info: null
     example:
     - "input.h5mu"
@@ -57,23 +31,78 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "file"
-    name: "--output"
-    alternatives:
-    - "-o"
-    description: "Output h5mu file."
+  - type: "string"
+    name: "--modality"
+    description: "Which modality to process."
     info: null
     default:
+    - "rna"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--input_layer"
+    description: "The layer in the input data to be used for cell type annotation\
+      \ if .X is not to be used."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Reference"
+  description: "Arguments related to the reference dataset."
+  arguments:
+  - type: "file"
+    name: "--reference"
+    description: "The reference data to train the CellTypist classifiers on. Only\
+      \ required if a pre-trained --model is not provided."
+    info: null
+    example:
+    - "reference.h5mu"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--reference_layer"
+    description: "The layer in the reference data to be used for cell type annotation\
+      \ if .X is not to be used. Data are expected to be processed in the same way\
+      \ as the --input query dataset."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--reference_obs_target"
+    description: "Key in obs field of reference modality with cell-type information."
+    info: null
+    default:
+    - "cell_ontology_class"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Outputs"
+  description: "Output arguments."
+  arguments:
+  - type: "file"
+    name: "--output"
+    description: "Output h5mu file."
+    info: null
+    example:
     - "output.h5mu"
     must_exist: true
     create_parent: true
-    required: true
+    required: false
     direction: "output"
     multiple: false
     multiple_sep: ";"
   - type: "string"
     name: "--output_compression"
-    description: "The compression format to be used on the output h5mu object."
     info: null
     example:
     - "gzip"
@@ -85,60 +114,105 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--modality"
-    description: "The modality to run this component on."
+    name: "--output_obs_predictions"
+    description: "In which `.obs` slots to store the predicted information.\n"
     info: null
     default:
-    - "rna"
+    - "random_forest_pred"
     required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--obs_keys"
-    description: "The .obs keys to regress on."
+    name: "--output_obs_probability"
+    description: "In which `.obs` slots to store the probability of the predictions.\n"
     info: null
+    default:
+    - "random_forest_probability"
     required: false
     direction: "input"
-    multiple: true
+    multiple: false
     multiple_sep: ";"
-  - type: "string"
-    name: "--input_layer"
-    description: "The layer of the adata object to regress on.\nIf not provided, the\
-      \ X attribute of the adata object will be used.\n"
+- name: "Model arguments"
+  description: "Model arguments."
+  arguments:
+  - type: "file"
+    name: "--model"
+    description: "Pretrained model in pkl format. If not provided, the model will\
+      \ be trained on the reference data and --reference should be provided."
     info: null
     example:
-    - "X_normalized"
+    - "pretrained_model.pkl"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--n_estimators"
+    description: "Number of trees in the random forest."
+    info: null
+    default:
+    - 100
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--max_depth"
+    description: "Maximum depth of the trees in the random forest."
+    info: null
     required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--output_layer"
-    description: "The layer of the adata object containing the regressed count data.\n\
-      If not provided, the X attribute of the adata object will be used.\n"
+    name: "--criterion"
+    description: "The function to measure the quality of a split."
     info: null
-    example:
-    - "X_regressed"
+    default:
+    - "gini"
     required: false
+    choices:
+    - "gini"
+    - "entropy"
+    - "log_loss"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--class_weight"
+    description: "Weights associated with classes."
+    info: null
+    default:
+    - "balanced_subsample"
+    required: false
+    choices:
+    - "balanced"
+    - "balanced_subsample"
     direction: "input"
     multiple: false
     multiple_sep: ";"
 resources:
-- type: "r_script"
-  path: "script.R"
+- type: "python_script"
+  path: "script.py"
   is_executable: true
+- type: "file"
+  path: "setup_logger.py"
 - type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
-description: "Regress out the effects of confounding variables using a linear least\
-  \ squares regression model with BPCells.\n"
+description: "Automated cell type annotation tool for scRNA-seq datasets on the basis\
+  \ of random forest."
 test_resources:
 - type: "python_script"
   path: "test.py"
   is_executable: true
 - type: "file"
-  path: "pbmc_1k_protein_v3"
+  path: "TS_Blood_filtered.h5mu"
+- type: "file"
+  path: "pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 - type: "file"
   path: "openpipelinetestutils"
   dest: "openpipelinetestutils"
@@ -149,14 +223,11 @@ links:
   docker_registry: "ghcr.io"
 runners:
 - type: "executable"
-  id: "docker"
+  id: "executable"
   docker_setup_strategy: "ifneedbepullelsecachedbuild"
 - type: "nextflow"
   id: "nextflow"
   directives:
-    label:
-    - "lowmem"
-    - "lowcpu"
     tag: "$id"
   auto:
     simplifyInput: true
@@ -220,25 +291,20 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "rocker/r2u:22.04"
+  image: "python:3.12-slim"
   target_tag: "main_build"
   namespace_separator: "/"
   setup:
   - type: "apt"
     packages:
     - "libhdf5-dev"
-    - "python3"
-    - "python3-pip"
-    - "python3-dev"
-    - "python-is-python3"
+    - "procps"
     interactive: false
-  - type: "r"
-    cran:
-    - "anndata"
-    - "reticulate"
-    github:
-    - "bnprks/BPCells/r"
-    bioc_force_install: false
+  - type: "python"
+    user: false
+    packages:
+    - "scikit-learn==1.4.2"
+    upgrade: true
   - type: "python"
     user: false
     packages:
@@ -261,20 +327,25 @@ engines:
     packages:
     - "viashpy==0.7.0"
     upgrade: true
-  entrypoint: null
+  entrypoint: []
   cmd: null
 build_info:
-  config: "src/transform/bpcells_regress_out/config.vsh.yaml"
-  runner: "docker"
+  config: "src/annotate/random_forest_annotation/config.vsh.yaml"
+  runner: "nextflow"
   engine: "docker"
-  output: "target/docker/transform/bpcells_regress_out"
-  executable: "target/docker/transform/bpcells_regress_out/bpcells_regress_out"
+  output: "target/nextflow/annotate/random_forest_annotation"
+  executable: "target/nextflow/annotate/random_forest_annotation/main.nf"
   viash_version: "0.9.0-RC7"
-  git_commit: "0331d7ed173521811fbe970c3bf20e4232b00919"
+  git_commit: "04fa516eee48000a1b8cd286eb9081b99a0f199b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
+  name: "openpipeline"
   version: "dev"
-  info: null
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
   viash_version: "0.9.0-RC7"
   source: "src"
   target: "target"

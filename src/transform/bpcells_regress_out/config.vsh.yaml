@@ -60,7 +60,7 @@ functionality:
     - type: python_script
       path: test.py
     - path: /resources_test/pbmc_1k_protein_v3
-platforms:
+engines:
   - type: docker
     image: rocker/r2u:22.04
     setup:
@@ -72,7 +72,8 @@ platforms:
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
-
+runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [lowmem, lowcpu]

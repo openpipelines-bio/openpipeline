@@ -2855,7 +2855,7 @@ meta = [
                       {
                         "type" : "double",
                         "name" : "features",
-                        "example" : "X_integrated_scanvi",
+                        "example" : "X_scvi",
                         "required" : false,
                         "description" : "The embedding to use for the classifier's inference. Override using the `--input_obsm_features` argument. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model or preprocessing).\n"
                       }
@@ -2889,7 +2889,7 @@ meta = [
           "name" : "--input_obsm_features",
           "description" : "The `.obsm` key of the embedding to use for the classifier's inference. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model or preprocessing).\n",
           "example" : [
-            "X_integrated_scanvi"
+            "X_scvi"
           ],
           "required" : false,
           "direction" : "input",
@@ -2908,43 +2908,51 @@ meta = [
           "info" : {
             "label" : "Reference",
             "file_format" : {
-              "type" : "h5ad",
-              "X" : {
-                "type" : "double",
-                "name" : "features",
-                "required" : false,
-                "description" : "The expression data to use for the classifier's training, if `--input_obsm_features` argument is not provided.\n"
-              },
-              "obsm" : [
-                {
-                  "type" : "double",
-                  "name" : "features",
-                  "example" : "X_integrated_scanvi",
-                  "description" : "The embedding to use for the classifier's training. Override using the `--reference_obsm_features` argument.\nMake sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).\n",
-                  "required" : true
+              "type" : "h5mu",
+              "mod" : {
+                "rna" : {
+                  "description" : "Modality in AnnData format containing RNA data.",
+                  "required" : true,
+                  "slots" : {
+                    "X" : {
+                      "type" : "double",
+                      "name" : "features",
+                      "required" : false,
+                      "description" : "The expression data to use for the classifier's training, if `--input_obsm_features` argument is not provided.\n"
+                    },
+                    "obsm" : [
+                      {
+                        "type" : "double",
+                        "name" : "features",
+                        "example" : "X_scvi",
+                        "description" : "The embedding to use for the classifier's training. Override using the `--reference_obsm_features` argument.\nMake sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).\n",
+                        "required" : true
+                      }
+                    ],
+                    "obs" : [
+                      {
+                        "type" : "string",
+                        "name" : "targets",
+                        "multiple" : true,
+                        "example" : [
+                          "ann_level_1",
+                          "ann_level_2",
+                          "ann_level_3",
+                          "ann_level_4",
+                          "ann_level_5",
+                          "ann_finest_level"
+                        ],
+                        "description" : "The target labels to transfer. Override using the `--reference_obs_targets` argument.",
+                        "required" : true
+                      }
+                    ]
+                  }
                 }
-              ],
-              "obs" : [
-                {
-                  "type" : "string",
-                  "name" : "targets",
-                  "multiple" : true,
-                  "example" : [
-                    "ann_level_1",
-                    "ann_level_2",
-                    "ann_level_3",
-                    "ann_level_4",
-                    "ann_level_5",
-                    "ann_finest_level"
-                  ],
-                  "description" : "The target labels to transfer. Override using the `--reference_obs_targets` argument.",
-                  "required" : true
-                }
-              ]
+              }
             }
           },
           "example" : [
-            "https:/zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad"
+            "reference.h5mu"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -2956,11 +2964,11 @@ meta = [
         {
           "type" : "string",
           "name" : "--reference_obsm_features",
-          "description" : "The `.obsm` key of the embedding to use for the classifier's training.\nMake sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).\n",
-          "default" : [
-            "X_integrated_scanvi"
+          "description" : "The `.obsm` key of the embedding to use for the classifier's training. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).\n",
+          "example" : [
+            "X_scvi"
           ],
-          "required" : true,
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -2968,7 +2976,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--reference_obs_targets",
-          "description" : "The `.obs` key of the target labels to tranfer.",
+          "description" : "The `.obs` key(s) of the target labels to tranfer.",
           "default" : [
             "ann_level_1",
             "ann_level_2",
@@ -3008,26 +3016,17 @@ meta = [
                     },
                     {
                       "type" : "double",
-                      "name" : "uncertainty",
-                      "description" : "The uncertainty of the predicted labels. Override using the `--output_obs_uncertainty` argument.",
+                      "name" : "probability",
+                      "description" : "The probability of the predicted labels. Override using the `--output_obs_probability` argument.",
                       "required" : false
                     }
                   ],
                   "obsm" : [
                     {
                       "type" : "double",
-                      "name" : "X_integrated_scanvi",
+                      "name" : "X_scvi",
                       "description" : "The embedding used for the classifier's inference. Could have any name, specified by `input_obsm_features` argument.\\"",
                       "required" : false
-                    }
-                  ],
-                  "uns" : [
-                    {
-                      "type" : "string",
-                      "name" : "parameters",
-                      "example" : "labels_tranfer",
-                      "description" : "Additional information about the parameters used for the label transfer.",
-                      "required" : true
                     }
                   ]
                 }
@@ -3052,8 +3051,8 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--output_obs_uncertainty",
-          "description" : "In which `.obs` slots to store the uncertainty of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\\"_uncertainty\\"` suffix.\n",
+          "name" : "--output_obs_probability",
+          "description" : "In which `.obs` slots to store the probability of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\\"_probability\\"` suffix.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : true,
@@ -3061,12 +3060,16 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--output_uns_parameters",
-          "description" : "The `.uns` key to store additional information about the parameters used for the label transfer.",
-          "default" : [
-            "labels_transfer"
+          "name" : "--output_compression",
+          "description" : "The compression format to be used on the output h5mu object.\n",
+          "example" : [
+            "gzip"
           ],
           "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3123,6 +3126,18 @@ meta = [
           "create_parent" : true,
           "required" : false,
           "direction" : "output",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_uns_parameters",
+          "description" : "The key in `uns` slot of the output AnnData object to store the parameters of the XGBoost classifier.",
+          "default" : [
+            "xgboost_parameters"
+          ],
+          "required" : false,
+          "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
         }
@@ -3504,11 +3519,21 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/xgboost",
     "viash_version" : "0.9.0-RC7",
-    "git_commit" : "0331d7ed173521811fbe970c3bf20e4232b00919",
+    "git_commit" : "04fa516eee48000a1b8cd286eb9081b99a0f199b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
+    "name" : "openpipeline",
     "version" : "dev",
+    "info" : {
+      "test_resources" : [
+        {
+          "type" : "s3",
+          "path" : "s3://openpipelines-data",
+          "dest" : "resources_test"
+        }
+      ]
+    },
     "viash_version" : "0.9.0-RC7",
     "source" : "/home/runner/work/openpipeline/openpipeline/src",
     "target" : "/home/runner/work/openpipeline/openpipeline/target",
@@ -3566,12 +3591,13 @@ par = {
   'reference_obs_targets': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGETS+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGETS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_obs_predictions': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PREDICTIONS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'output_obs_uncertainty': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_UNCERTAINTY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_UNCERTAINTY//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'output_uns_parameters': $( if [ ! -z ${VIASH_PAR_OUTPUT_UNS_PARAMETERS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_UNS_PARAMETERS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_obs_probability': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PROBABILITY//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'force_retrain': $( if [ ! -z ${VIASH_PAR_FORCE_RETRAIN+x} ]; then echo "r'${VIASH_PAR_FORCE_RETRAIN//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'use_gpu': $( if [ ! -z ${VIASH_PAR_USE_GPU+x} ]; then echo "r'${VIASH_PAR_USE_GPU//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'verbosity': $( if [ ! -z ${VIASH_PAR_VERBOSITY+x} ]; then echo "int(r'${VIASH_PAR_VERBOSITY//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'model_output': $( if [ ! -z ${VIASH_PAR_MODEL_OUTPUT+x} ]; then echo "r'${VIASH_PAR_MODEL_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_uns_parameters': $( if [ ! -z ${VIASH_PAR_OUTPUT_UNS_PARAMETERS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_UNS_PARAMETERS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'learning_rate': $( if [ ! -z ${VIASH_PAR_LEARNING_RATE+x} ]; then echo "float(r'${VIASH_PAR_LEARNING_RATE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_split_loss': $( if [ ! -z ${VIASH_PAR_MIN_SPLIT_LOSS+x} ]; then echo "float(r'${VIASH_PAR_MIN_SPLIT_LOSS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'max_depth': $( if [ ! -z ${VIASH_PAR_MAX_DEPTH+x} ]; then echo "int(r'${VIASH_PAR_MAX_DEPTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -3818,27 +3844,27 @@ def project_labels(
     query_dataset,
     cell_type_classifier_model: xgb.XGBClassifier,
     annotation_column_name='label_pred',
-    uncertainty_column_name='label_uncertainty',
-    uncertainty_thresh=None  # Note: currently not passed to predict function
+    probability_column_name='label_probability',
+    probability_thresh=None  # Note: currently not passed to predict function
 ):
     """
-    A function that projects predicted labels onto the query dataset, along with uncertainty scores.
+    A function that projects predicted labels onto the query dataset, along with probability estimations.
     Performs in-place update of the adata object, adding columns to the \\`obs\\` DataFrame.
 
     Input:
         * \\`query_dataset\\`: The query \\`AnnData\\` object
         * \\`model_file\\`: Path to the classification model file
         * \\`prediction_key\\`: Column name in \\`adata.obs\\` where to store the predicted labels
-        * \\`uncertainty_key\\`: Column name in \\`adata.obs\\` where to store the uncertainty scores
-        * \\`uncertainty_thresh\\`: The uncertainty threshold above which we call a cell 'Unknown'
+        * \\`probability_key\\`: Column name in \\`adata.obs\\` where to store the labels probabilities
+        * \\`probability_thresh\\`: The probability threshold below which we call a cell 'Unknown'
 
     Output:
         Nothing is output, the passed anndata is modified inplace
 
     """
 
-    if (uncertainty_thresh is not None) and (uncertainty_thresh < 0 or uncertainty_thresh > 1):
-        raise ValueError(f'\\`uncertainty_thresh\\` must be \\`None\\` or between 0 and 1.')
+    if (probability_thresh is not None) and (probability_thresh < 0 or probability_thresh > 1):
+        raise ValueError(f'\\`probability_thresh\\` must be \\`None\\` or between 0 and 1.')
 
     query_data = get_query_features(query_dataset, par, logger)
 
@@ -3850,14 +3876,14 @@ def project_labels(
 
     # Format probabilities
     df_probs = pd.DataFrame(probs, columns=cell_type_classifier_model.classes_, index=query_dataset.obs_names)
-    query_dataset.obs[uncertainty_column_name] = 1 - df_probs.max(1)
+    query_dataset.obs[probability_column_name] = df_probs.max(1)
 
     # Note: this is here in case we want to propose a set of values for the user to accept to seed the
     #       manual curation of predicted labels
-    if uncertainty_thresh is not None:
+    if probability_thresh is not None:
         logger.info("Marking uncertain predictions")
         query_dataset.obs[annotation_column_name + "_filtered"] = [
-            val if query_dataset.obs[uncertainty_column_name][i] < uncertainty_thresh
+            val if query_dataset.obs[probability_column_name][i] >= probability_thresh
             else "Unknown" for i, val in enumerate(query_dataset.obs[annotation_column_name])]
 
     return query_dataset
@@ -3868,7 +3894,7 @@ def predict(
     cell_type_classifier_model_path,
     annotation_column_name: str,
     prediction_column_name: str,
-    uncertainty_column_name: str,
+    probability_column_name: str,
     models_info,
     use_gpu: bool = False
 ) -> pd.DataFrame:
@@ -3890,7 +3916,7 @@ def predict(
     project_labels(query_dataset, 
                    cell_type_classifier_model, 
                    annotation_column_name=prediction_column_name, 
-                   uncertainty_column_name=uncertainty_column_name)
+                   probability_column_name=probability_column_name)
 
     logger.info("Converting labels from numbers to classes")
     labels_encoder = LabelEncoder()
@@ -3904,10 +3930,11 @@ def main(par):
     logger.info("Checking arguments")
     par = check_arguments(par)
 
-    mdata = mudata.read(par["input"].strip())
-    adata = mdata.mod[par["modality"]]
+    mdata_query = mudata.read(par["input"].strip())
+    adata_query = mdata_query.mod[par["modality"]]
 
-    adata_reference = sc.read(par["reference"], backup_url=par["reference"])
+    mdata_reference = mudata.read(par["reference"])
+    adata_reference = mdata_reference.mod[par["modality"]]
 
     # If classifiers for targets are in the model_output directory, simply open them and run (unless \\`retrain\\` != True)
     # If some classifiers are missing, train and save them first
@@ -3925,19 +3952,19 @@ def main(par):
     build_ref_classifiers(adata_reference, targets_to_train, model_path=par["model_output"], 
                           gpu=par["use_gpu"], eval_verbosity=par["verbosity"])
 
-    output_uns_parameters = adata.uns.get(par["output_uns_parameters"], {})
+    output_uns_parameters = adata_query.uns.get(par["output_uns_parameters"], {})
 
     with open(par["model_output"] + "/model_info.json", "r") as f:
         models_info = json.loads(f.read())
 
-    for obs_target, obs_pred, obs_unc in zip(par["reference_obs_targets"], par["output_obs_predictions"], par["output_obs_uncertainty"]):
+    for obs_target, obs_pred, obs_unc in zip(par["reference_obs_targets"], par["output_obs_predictions"], par["output_obs_probability"]):
         logger.info(f"Predicting {obs_target}")
 
-        adata = predict(query_dataset=adata,
+        adata_query = predict(query_dataset=adata_query,
                         cell_type_classifier_model_path=os.path.join(par["model_output"], "classifier_" + obs_target + ".xgb"),
                         annotation_column_name=obs_target, 
                         prediction_column_name=obs_pred,
-                        uncertainty_column_name=obs_unc,
+                        probability_column_name=obs_unc,
                         models_info=models_info,
                         use_gpu=par["use_gpu"])
         
@@ -3948,14 +3975,14 @@ def main(par):
                 **training_params
             }
 
-    adata.uns[par["output_uns_parameters"]] = output_uns_parameters
+    adata_query.uns[par["output_uns_parameters"]] = output_uns_parameters
 
     logger.info("Updating mdata")
-    mdata.mod[par['modality']] = adata
-    mdata.update()
+    mdata_query.mod[par['modality']] = adata_query
+    mdata_query.update()
 
     logger.info("Writing output")
-    mdata.write_h5mu(par['output'].strip())
+    mdata_query.write_h5mu(par['output'].strip())
 
 if __name__ == "__main__":
     main(par)
@@ -4314,7 +4341,7 @@ meta["defaults"] = [
   directives: readJsonBlob('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/labels_transfer/xgboost",
+    "image" : "openpipelines-bio/openpipeline/labels_transfer/xgboost",
     "tag" : "main_build"
   },
   "label" : [

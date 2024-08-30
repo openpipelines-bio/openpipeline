@@ -222,6 +222,22 @@ function ViashHelp {
   echo "        unique element in only 1 sample)"
   echo "          - move: identical to 'same', but moving the conflicting values to"
   echo "        .varm or .obsm"
+  echo ""
+  echo "    --uns_merge_mode"
+  echo "        type: string"
+  echo "        default: make_unique"
+  echo "        choices: [ same, unique, first, only, make_unique ]"
+  echo "        How to handle the merging of .uns across modalities"
+  echo "          - None: keep no data"
+  echo "          - same: only keep elements of the matrices which are the same in each"
+  echo "        of the samples"
+  echo "          - unique: only keep elements for which there is only 1 possible value"
+  echo "        (1 value that can occur in multiple samples)"
+  echo "          - first: keep the annotation from the first sample"
+  echo "          - only: keep elements that show up in only one of the objects (1"
+  echo "        unique element in only 1 sample)"
+  echo "          - make_unique: identical to 'unique', but keys which are not unique"
+  echo "        are made unique by prefixing them with the sample id."
 }
 
 # initialise variables
@@ -508,9 +524,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow concatenate_h5mu"
-LABEL org.opencontainers.image.created="2024-08-30T07:09:50Z"
+LABEL org.opencontainers.image.created="2024-08-30T09:41:36Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0331d7ed173521811fbe970c3bf20e4232b00919"
+LABEL org.opencontainers.image.revision="04fa516eee48000a1b8cd286eb9081b99a0f199b"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -743,6 +759,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OTHER_AXIS_MODE=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --uns_merge_mode)
+            [ -n "$VIASH_PAR_UNS_MERGE_MODE" ] && ViashError Bad arguments for option \'--uns_merge_mode\': \'$VIASH_PAR_UNS_MERGE_MODE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_UNS_MERGE_MODE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --uns_merge_mode. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --uns_merge_mode=*)
+            [ -n "$VIASH_PAR_UNS_MERGE_MODE" ] && ViashError Bad arguments for option \'--uns_merge_mode=*\': \'$VIASH_PAR_UNS_MERGE_MODE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_UNS_MERGE_MODE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         ---engine)
             VIASH_ENGINE_ID="$2"
             shift 2
@@ -829,7 +856,7 @@ if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
 
   # determine docker image id
   if [[ "$VIASH_ENGINE_ID" == 'docker' ]]; then
-    VIASH_DOCKER_IMAGE_ID='ghcr.io/openpipelines-bio/dataflow/concatenate_h5mu:main_build'
+    VIASH_DOCKER_IMAGE_ID='ghcr.io/openpipelines-bio/openpipeline/dataflow/concatenate_h5mu:main_build'
   fi
 
   # print dockerfile
@@ -949,6 +976,9 @@ fi
 if [ -z ${VIASH_PAR_OTHER_AXIS_MODE+x} ]; then
   VIASH_PAR_OTHER_AXIS_MODE="move"
 fi
+if [ -z ${VIASH_PAR_UNS_MERGE_MODE+x} ]; then
+  VIASH_PAR_UNS_MERGE_MODE="make_unique"
+fi
 
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_INPUT" ]; then
@@ -1057,6 +1087,18 @@ if [ ! -z "$VIASH_PAR_OTHER_AXIS_MODE" ]; then
   set -f
   if ! [[ ";${VIASH_PAR_OTHER_AXIS_MODE_CHOICES[*]};" =~ ";$VIASH_PAR_OTHER_AXIS_MODE;" ]]; then
     ViashError '--other_axis_mode' specified value of \'$VIASH_PAR_OTHER_AXIS_MODE\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
+if [ ! -z "$VIASH_PAR_UNS_MERGE_MODE" ]; then
+  VIASH_PAR_UNS_MERGE_MODE_CHOICES=("same;unique;first;only;make_unique")
+  IFS=';'
+  set -f
+  if ! [[ ";${VIASH_PAR_UNS_MERGE_MODE_CHOICES[*]};" =~ ";$VIASH_PAR_UNS_MERGE_MODE;" ]]; then
+    ViashError '--uns_merge_mode' specified value of \'$VIASH_PAR_UNS_MERGE_MODE\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
     exit 1
   fi
   set +f
@@ -1175,7 +1217,8 @@ par = {
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_sample_name': $( if [ ! -z ${VIASH_PAR_OBS_SAMPLE_NAME+x} ]; then echo "r'${VIASH_PAR_OBS_SAMPLE_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'other_axis_mode': $( if [ ! -z ${VIASH_PAR_OTHER_AXIS_MODE+x} ]; then echo "r'${VIASH_PAR_OTHER_AXIS_MODE//\'/\'\"\'\"r\'}'"; else echo None; fi )
+  'other_axis_mode': $( if [ ! -z ${VIASH_PAR_OTHER_AXIS_MODE+x} ]; then echo "r'${VIASH_PAR_OTHER_AXIS_MODE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'uns_merge_mode': $( if [ ! -z ${VIASH_PAR_UNS_MERGE_MODE+x} ]; then echo "r'${VIASH_PAR_UNS_MERGE_MODE//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1274,16 +1317,6 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-def indexes_unique(indices: Iterable[pd.Index]) -> bool:
-    combined_indices = indices[0].append(indices[1:])
-    return combined_indices.is_unique
-
-def check_observations_unique(samples: Iterable[anndata.AnnData]) -> None:
-    observation_ids = [sample.obs.index for sample in samples]
-    if not indexes_unique(observation_ids):
-        raise ValueError("Observations are not unique across samples.")
-
-
 def nunique(row):
     unique = pd.unique(row)
     unique_without_na = pd.core.dtypes.missing.remove_na_arraylike(unique)
@@ -1325,6 +1358,28 @@ def get_first_non_na_value_vector(df):
     col_index = pd.isna(numpy_arr).argmin(axis=1)
     flat_index = n_cols * np.arange(n_rows) + col_index
     return pd.Series(numpy_arr.ravel()[flat_index], index=df.index, name=df.columns[0])
+
+def make_uns_keys_unique(mod_data, concatenated_data):
+    """
+    Check if the uns keys across samples are unique before adding them
+    to the final concatenated object. If a conflict occurs between the samples,
+    add the sample ID to make the key unique again.
+    """
+    all_uns_keys = {}
+    for sample_id, mod in mod_data.items():
+        for uns_key, _ in mod.uns.items():
+            all_uns_keys.setdefault(uns_key, []).append(sample_id)
+    for uns_key, samples_ids in all_uns_keys.items():
+        assert samples_ids
+        if len(samples_ids) == 1:
+            sample_id = samples_ids[0]
+            concatenated_data.uns[uns_key] = mod_data[sample_id].uns[uns_key]
+        else: 
+            for sample_id in samples_ids:
+                concatenated_data.uns[f"{sample_id}_{uns_key}"] = \\
+                    mod_data[sample_id].uns[uns_key]
+    return concatenated_data
+
 
 def split_conflicts_and_concatenated_columns(n_processes: int,
                                              matrices: dict[str, pd.DataFrame],
@@ -1416,33 +1471,58 @@ def split_conflicts_modalities(n_processes: int, samples: dict[str, anndata.AnnD
     return output
 
 
-def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str | Path], 
-                         other_axis_mode: str, input_ids: tuple[str]) -> anndata.AnnData:
+def concatenate_modality(n_processes: int, mod: str | None, input_files: Iterable[str | Path], 
+                         other_axis_mode: str, uns_merge_mode: str, input_ids: tuple[str]) -> anndata.AnnData:
     
     concat_modes = {
         "move": "unique",
     }
     other_axis_mode_to_apply = concat_modes.get(other_axis_mode, other_axis_mode)
 
+    uns_merge_modes = {
+        "make_unique": None
+    }
+    uns_merge_mode_to_apply = uns_merge_modes.get(uns_merge_mode, uns_merge_mode)
+    
     mod_data = {}
+    mod_indices_combined = pd.Index([])
     for input_id, input_file in zip(input_ids, input_files):
-        try:
-            mod_data[input_id] = mu.read_h5ad(input_file, mod=mod)
-        except KeyError as e: # Modality does not exist for this sample, skip it
-            if f"Unable to synchronously open object (object '{mod}' doesn't exist)" not in str(e):
-                raise e
-            pass
-    check_observations_unique(mod_data.values())
-
-    concatenated_data = anndata.concat(mod_data.values(), join='outer', merge=other_axis_mode_to_apply)
+        if mod is not None:
+            try:
+                data = mu.read_h5ad(input_file, mod=mod)
+                mod_data[input_id] = data
+                mod_indices_combined = mod_indices_combined.append(data.obs.index)
+            except KeyError as e: # Modality does not exist for this sample, skip it
+                if f"Unable to synchronously open object (object '{mod}' doesn't exist)" not in str(e):
+                    raise e
+                pass
+        else: # When mod=None, process the 'global' h5mu state
+            with H5File(input_file, 'r') as input_h5:
+                if "uns" in input_h5.keys(): 
+                    uns_data = anndata.experimental.read_elem(input_h5['uns'])
+                    if uns_data:
+                        mod_data[input_id] = anndata.AnnData(uns=uns_data)
+     
+    if not mod_indices_combined.is_unique:
+        raise ValueError("Observations are not unique across samples.")
+    
+    if not mod_data:
+        return anndata.AnnData()
+    
+    concatenated_data = anndata.concat(mod_data.values(), join='outer',
+                                       merge=other_axis_mode_to_apply,
+                                       uns_merge=uns_merge_mode_to_apply)
 
     if other_axis_mode == "move":
         concatenated_data = split_conflicts_modalities(n_processes, mod_data, concatenated_data)
-    
+
+    if uns_merge_mode == "make_unique":
+        concatenated_data = make_uns_keys_unique(mod_data, concatenated_data)
+
     return concatenated_data
 
 def concatenate_modalities(n_processes: int, modalities: list[str], input_files: Path | str,
-                           other_axis_mode: str, output_file: Path | str,
+                           other_axis_mode: str, uns_merge_mode: str, output_file: Path | str,
                            compression: Literal['gzip'] | Literal['lzf'],
                            input_ids: tuple[str] | None = None) -> None:
     """
@@ -1456,10 +1536,16 @@ def concatenate_modalities(n_processes: int, modalities: list[str], input_files:
     mdata = mu.MuData({modality: anndata.AnnData() for modality in modalities})
     mdata.write(output_file_uncompressed, compression=compression)
 
-    for mod_name in modalities:
+    # Use "None" for the global slots (not assigned to any modality)
+    for mod_name in modalities + [None,]:
         new_mod = concatenate_modality(n_processes, mod_name, 
                                        input_files, other_axis_mode, 
-                                       input_ids)
+                                       uns_merge_mode, input_ids)
+        if mod_name is None:
+            if new_mod.uns:
+                with H5File(output_file_uncompressed, 'r+') as open_h5mu_file:
+                    anndata.experimental.write_elem(open_h5mu_file, "uns", dict(new_mod.uns))
+            continue
         logger.info("Writing out modality '%s' to '%s' with compression '%s'.",
                     mod_name, output_file_uncompressed, compression)
         mu.write_h5ad(output_file_uncompressed, data=new_mod, mod=mod_name)
@@ -1502,6 +1588,7 @@ def main() -> None:
                            list(mods),
                            par["input"],
                            par["other_axis_mode"],
+                           par["uns_merge_mode"],
                            par["output"],
                            par["output_compression"],
                            input_ids=input_ids)

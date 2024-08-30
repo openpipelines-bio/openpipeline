@@ -1,7 +1,21 @@
-name: "knn"
+name: "pynndescent_knn"
 namespace: "labels_transfer"
 version: "main_build"
 authors:
+- name: "Dorien Roosen"
+  roles:
+  - "maintainer"
+  - "author"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "dorien@data-intuitive.com"
+      github: "dorien-er"
+      linkedin: "dorien-roosen"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Scientist"
 - name: "Vladimir Shitov"
   roles:
   - "author"
@@ -40,7 +54,7 @@ argument_groups:
               obsm:
               - type: "double"
                 name: "features"
-                example: "X_integrated_scanvi"
+                example: "X_scvi"
                 required: false
                 description: "The embedding to use for the classifier's inference.\
                   \ Override using the `--input_obsm_features` argument. If not provided,\
@@ -71,7 +85,7 @@ argument_groups:
       \ model or preprocessing).\n"
     info: null
     example:
-    - "X_integrated_scanvi"
+    - "X_scvi"
     required: false
     direction: "input"
     multiple: false
@@ -84,38 +98,43 @@ argument_groups:
     info:
       label: "Reference"
       file_format:
-        type: "h5ad"
-        X:
-          type: "double"
-          name: "features"
-          required: false
-          description: "The expression data to use for the classifier's training,\
-            \ if `--input_obsm_features` argument is not provided.\n"
-        obsm:
-        - type: "double"
-          name: "features"
-          example: "X_integrated_scanvi"
-          description: "The embedding to use for the classifier's training. Override\
-            \ using the `--reference_obsm_features` argument.\nMake sure that embedding\
-            \ was obtained in the same way as the query embedding (e.g. by the same\
-            \ model or preprocessing).\n"
-          required: true
-        obs:
-        - type: "string"
-          name: "targets"
-          multiple: true
-          example:
-          - "ann_level_1"
-          - "ann_level_2"
-          - "ann_level_3"
-          - "ann_level_4"
-          - "ann_level_5"
-          - "ann_finest_level"
-          description: "The target labels to transfer. Override using the `--reference_obs_targets`\
-            \ argument."
-          required: true
+        type: "h5mu"
+        mod:
+          rna:
+            description: "Modality in AnnData format containing RNA data."
+            required: true
+            slots:
+              X:
+                type: "double"
+                name: "features"
+                required: false
+                description: "The expression data to use for the classifier's training,\
+                  \ if `--input_obsm_features` argument is not provided.\n"
+              obsm:
+              - type: "double"
+                name: "features"
+                example: "X_scvi"
+                description: "The embedding to use for the classifier's training.\
+                  \ Override using the `--reference_obsm_features` argument.\nMake\
+                  \ sure that embedding was obtained in the same way as the query\
+                  \ embedding (e.g. by the same model or preprocessing).\n"
+                required: true
+              obs:
+              - type: "string"
+                name: "targets"
+                multiple: true
+                example:
+                - "ann_level_1"
+                - "ann_level_2"
+                - "ann_level_3"
+                - "ann_level_4"
+                - "ann_level_5"
+                - "ann_finest_level"
+                description: "The target labels to transfer. Override using the `--reference_obs_targets`\
+                  \ argument."
+                required: true
     example:
-    - "https:/zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad"
+    - "reference.h5mu"
     must_exist: true
     create_parent: true
     required: false
@@ -124,19 +143,20 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--reference_obsm_features"
-    description: "The `.obsm` key of the embedding to use for the classifier's training.\n\
-      Make sure that embedding was obtained in the same way as the query embedding\
-      \ (e.g. by the same model or preprocessing).\n"
+    description: "The `.obsm` key of the embedding to use for the classifier's training.\
+      \ If not provided, the `.X` slot will be used instead.\nMake sure that embedding\
+      \ was obtained in the same way as the query embedding (e.g. by the same model\
+      \ or preprocessing).\n"
     info: null
-    default:
-    - "X_integrated_scanvi"
-    required: true
+    example:
+    - "X_scvi"
+    required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
   - type: "string"
     name: "--reference_obs_targets"
-    description: "The `.obs` key of the target labels to tranfer."
+    description: "The `.obs` key(s) of the target labels to tranfer."
     info: null
     default:
     - "ann_level_1"
@@ -170,23 +190,16 @@ argument_groups:
                 \ argument."
               required: true
             - type: "double"
-              name: "uncertainty"
-              description: "The uncertainty of the predicted labels. Override using\
-                \ the `--output_obs_uncertainty` argument."
+              name: "probability"
+              description: "The probability of the predicted labels. Override using\
+                \ the `--output_obs_probability` argument."
               required: false
             obsm:
             - type: "double"
-              name: "X_integrated_scanvi"
+              name: "X_scvi"
               description: "The embedding used for the classifier's inference. Could\
                 \ have any name, specified by `input_obsm_features` argument.\""
               required: false
-            uns:
-            - type: "string"
-              name: "parameters"
-              example: "labels_tranfer"
-              description: "Additional information about the parameters used for the\
-                \ label transfer."
-              required: true
     must_exist: true
     create_parent: true
     required: true
@@ -204,10 +217,10 @@ argument_groups:
     multiple: true
     multiple_sep: ";"
   - type: "string"
-    name: "--output_obs_uncertainty"
-    description: "In which `.obs` slots to store the uncertainty of the predictions.\n\
+    name: "--output_obs_probability"
+    description: "In which `.obs` slots to store the probability of the predictions.\n\
       If provided, must have the same length as `--reference_obs_targets`.\nIf empty,\
-      \ will default to the `reference_obs_targets` combined with the `\"_uncertainty\"\
+      \ will default to the `reference_obs_targets` combined with the `\"_probability\"\
       ` suffix.\n"
     info: null
     required: false
@@ -215,25 +228,47 @@ argument_groups:
     multiple: true
     multiple_sep: ";"
   - type: "string"
-    name: "--output_uns_parameters"
-    description: "The `.uns` key to store additional information about the parameters\
-      \ used for the label transfer."
+    name: "--output_compression"
+    description: "The compression format to be used on the output h5mu object.\n"
     info: null
-    default:
-    - "labels_transfer"
+    example:
+    - "gzip"
     required: false
+    choices:
+    - "gzip"
+    - "lzf"
     direction: "input"
     multiple: false
     multiple_sep: ";"
-- name: "Learning parameters"
+- name: "KNN label transfer arguments"
   arguments:
+  - type: "string"
+    name: "--weights"
+    description: "Weight function used in prediction. Possible values are:\n- `uniform`\
+      \ - all points in each neighborhood are weighted equally \n- `distance` - weight\
+      \ points by the inverse of their distance\n- `gaussian` - weight points by the\
+      \ sum of their Gaussian kernel similarities to each sample\n"
+    info: null
+    default:
+    - "uniform"
+    required: false
+    choices:
+    - "uniform"
+    - "distance"
+    - "gaussian"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
   - type: "integer"
     name: "--n_neighbors"
-    alternatives:
-    - "-k"
-    description: "Number of nearest neighbors to use for classification"
+    description: "The number of neighbors to use in k-neighbor graph structure used\
+      \ for fast approximate nearest neighbor search with PyNNDescent. \nLarger values\
+      \ will result in more accurate search results at the cost of computation time.\n"
     info: null
-    required: true
+    default:
+    - 15
+    required: false
+    min: 5
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -244,11 +279,10 @@ resources:
 - type: "file"
   path: "helper.py"
 - type: "file"
-  path: "setup_logger.py"
-- type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
-description: "Performs label transfer from reference to query using KNN classifier"
+description: "This component generates a neighborhood graph based using the PyNNDescentTransformer,\
+  \ followed by classification using a k-nearest neighborhood vote.\n"
 test_resources:
 - type: "python_script"
   path: "test.py"
@@ -260,8 +294,7 @@ test_resources:
 - type: "file"
   path: "openpipelinetestutils"
   dest: "openpipelinetestutils"
-info:
-  method_id: "KNN_pynndescent"
+info: null
 status: "enabled"
 links:
   repository: "https://github.com/openpipelines-bio/openpipeline"
@@ -339,14 +372,15 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "python:3.10-slim"
+  image: "python:3.12"
   target_tag: "main_build"
   namespace_separator: "/"
   setup:
   - type: "apt"
     packages:
     - "procps"
-    - "git"
+    - "pkg-config"
+    - "libhdf5-dev"
     interactive: false
   - type: "python"
     user: false
@@ -356,19 +390,11 @@ engines:
     - "pandas!=2.1.2"
     - "numpy<2.0.0"
     upgrade: true
-  - type: "apt"
-    packages:
-    - "libopenblas-dev"
-    - "liblapack-dev"
-    - "gfortran"
-    interactive: false
   - type: "python"
     user: false
     packages:
-    - "scanpy~=1.9.6"
-    - "pynndescent~=0.5.8"
-    - "numba~=0.56.4"
-    - "numpy~=1.23.5"
+    - "pynndescent~=0.5.10"
+    - "numpy<2"
     upgrade: true
   test_setup:
   - type: "python"
@@ -379,17 +405,22 @@ engines:
   entrypoint: []
   cmd: null
 build_info:
-  config: "src/labels_transfer/knn/config.vsh.yaml"
+  config: "src/labels_transfer/pynndescent_knn/config.vsh.yaml"
   runner: "executable"
   engine: "docker"
-  output: "target/executable/labels_transfer/knn"
-  executable: "target/executable/labels_transfer/knn/knn"
+  output: "target/executable/labels_transfer/pynndescent_knn"
+  executable: "target/executable/labels_transfer/pynndescent_knn/pynndescent_knn"
   viash_version: "0.9.0-RC7"
-  git_commit: "0331d7ed173521811fbe970c3bf20e4232b00919"
+  git_commit: "04fa516eee48000a1b8cd286eb9081b99a0f199b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
+  name: "openpipeline"
   version: "dev"
-  info: null
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
   viash_version: "0.9.0-RC7"
   source: "src"
   target: "target"

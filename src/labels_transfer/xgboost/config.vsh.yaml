@@ -30,6 +30,11 @@ argument_groups:
         description: Output directory for model
         direction: output
         required: false
+      - name: "--output_uns_parameters"
+        type: string
+        default: "xgboost_parameters"
+        description: The key in `uns` slot of the output AnnData object to store the parameters of the XGBoost classifier.
+        required: false
   - name: "Learning parameters"
     arguments:
       - name: "--learning_rate"

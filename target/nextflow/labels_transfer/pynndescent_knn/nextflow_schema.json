@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
-"title": "knn",
-"description": "Performs label transfer from reference to query using KNN classifier",
+"title": "pynndescent_knn",
+"description": "This component generates a neighborhood graph based using the PyNNDescentTransformer, followed by classification using a k-nearest neighborhood vote.\n",
 "type": "object",
 "definitions": {
 
@@ -51,23 +51,24 @@
     
 
         ,
-                "output_obs_uncertainty": {
+                "output_obs_probability": {
                 "type":
                 "string",
                 "description": "Type: List of `string`, multiple_sep: `\";\"`. In which `",
-                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. In which `.obs` slots to store the uncertainty of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_uncertainty\"` suffix.\n"
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. In which `.obs` slots to store the probability of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_probability\"` suffix.\n"
             
             }
     
 
         ,
-                "output_uns_parameters": {
+                "output_compression": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `labels_transfer`. The `",
-                "help_text": "Type: `string`, default: `labels_transfer`. The `.uns` key to store additional information about the parameters used for the label transfer."
-            ,
-                "default": "labels_transfer"
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
             }
     
 
@@ -106,8 +107,8 @@
                 "input_obsm_features": {
                 "type":
                 "string",
-                "description": "Type: `string`, example: `X_integrated_scanvi`. The `",
-                "help_text": "Type: `string`, example: `X_integrated_scanvi`. The `.obsm` key of the embedding to use for the classifier\u0027s inference. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model or preprocessing).\n"
+                "description": "Type: `string`, example: `X_scvi`. The `",
+                "help_text": "Type: `string`, example: `X_scvi`. The `.obsm` key of the embedding to use for the classifier\u0027s inference. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model or preprocessing).\n"
             
             }
     
@@ -126,8 +127,8 @@
                 "reference": {
                 "type":
                 "string",
-                "description": "Type: `file`, example: `https:/zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad`. The reference data to train classifiers on",
-                "help_text": "Type: `file`, example: `https:/zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad`. The reference data to train classifiers on."
+                "description": "Type: `file`, example: `reference.h5mu`. The reference data to train classifiers on",
+                "help_text": "Type: `file`, example: `reference.h5mu`. The reference data to train classifiers on."
             
             }
     
@@ -136,10 +137,9 @@
                 "reference_obsm_features": {
                 "type":
                 "string",
-                "description": "Type: `string`, required, default: `X_integrated_scanvi`. The `",
-                "help_text": "Type: `string`, required, default: `X_integrated_scanvi`. The `.obsm` key of the embedding to use for the classifier\u0027s training.\nMake sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).\n"
-            ,
-                "default": "X_integrated_scanvi"
+                "description": "Type: `string`, example: `X_scvi`. The `",
+                "help_text": "Type: `string`, example: `X_scvi`. The `.obsm` key of the embedding to use for the classifier\u0027s training. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).\n"
+            
             }
     
 
@@ -148,7 +148,7 @@
                 "type":
                 "string",
                 "description": "Type: List of `string`, default: `ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level`, multiple_sep: `\";\"`. The `",
-                "help_text": "Type: List of `string`, default: `ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level`, multiple_sep: `\";\"`. The `.obs` key of the target labels to tranfer."
+                "help_text": "Type: List of `string`, default: `ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level`, multiple_sep: `\";\"`. The `.obs` key(s) of the target labels to tranfer."
             ,
                 "default": "ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level"
             }
@@ -158,19 +158,33 @@
 },
     
     
-    "learning parameters" : {
-    "title": "Learning parameters",
+    "knn label transfer arguments" : {
+    "title": "KNN label transfer arguments",
     "type": "object",
     "description": "No description",
     "properties": {
     
         
+                "weights": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance`, `gaussian``. Weight function used in prediction",
+                "help_text": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance`, `gaussian``. Weight function used in prediction. Possible values are:\n- `uniform` - all points in each neighborhood are weighted equally \n- `distance` - weight points by the inverse of their distance\n- `gaussian` - weight points by the sum of their Gaussian kernel similarities to each sample\n",
+                "enum": ["uniform", "distance", "gaussian"]
+            
+            ,
+                "default": "uniform"
+            }
+    
+
+        ,
                 "n_neighbors": {
                 "type":
                 "integer",
-                "description": "Type: `integer`, required. Number of nearest neighbors to use for classification",
-                "help_text": "Type: `integer`, required. Number of nearest neighbors to use for classification"
-            
+                "description": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent",
+                "help_text": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n"
+            ,
+                "default": "15"
             }
     
 
@@ -214,7 +228,7 @@
     },
 
     {
-    "$ref": "#/definitions/learning parameters"
+    "$ref": "#/definitions/knn label transfer arguments"
     },
 
     {
