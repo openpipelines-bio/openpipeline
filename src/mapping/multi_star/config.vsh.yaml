@@ -1,117 +1,119 @@
-functionality:
-  name: multi_star
-  namespace: mapping
-  description: Align fastq files using STAR.
-  authors:
-    - __merge__: /src/authors/angela_pisco.yaml
-      roles: [ author ]
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ author, maintainer ]
-  # generated the argument groups using `utils/process_params.R`
-  __merge__: [., arguments_star.yaml, arguments_htseq.yaml]
-  # manually taking care of the main input files
-  argument_groups:
-    - name: Input/Output
-      arguments:
-        - type: string
-          name: --input_id
-          required: true
-          description: The ID of the sample being processed. This vector should have the same length as the `--input_r1` argument.
-          example: [ mysample, mysample ]
-          multiple: true
-        - type: file
-          name: --input_r1
-          required: true
-          description: Paths to the sequences to be mapped. If using Illumina paired-end reads, only the R1 files should be passed.
-          example: [ mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L002_R1_001.fastq.gz ]
-          multiple: true
-        - type: file
-          name: --input_r2
-          required: false
-          description: Paths to the sequences to be mapped. If using Illumina paired-end reads, only the R2 files should be passed.
-          example: [ mysample_S1_L001_R2_001.fastq.gz, mysample_S1_L002_R2_001.fastq.gz ]
-          multiple: true
-        - type: file
-          name: --reference_index
-          alternatives: --genomeDir
-          description: Path to the reference built by star_build_reference. Corresponds to the --genomeDir argument in the STAR command.
-          example: /path/to/reference
-          required: true
-        - type: file
-          name: --reference_gtf
-          description: Path to the gtf reference file.
-          example: genes.gtf
-          required: true
-        - type: file
-          name: --output
-          alternatives: --outFileNamePrefix
-          description: Path to output directory. Corresponds to the --outFileNamePrefix argument in the STAR command.
-          example: /path/to/foo
-          direction: output
-          required: true
-    - name: Processing arguments
-      arguments:
-        - type: boolean
-          name: --run_htseq_count
-          description: Whether or not to also run htseq-count after STAR.
-          default: true
-        - type: boolean
-          name: --run_multiqc
-          description: Whether or not to also run MultiQC at the end.
-          default: true
-        - type: double
-          name: --min_success_rate
-          default: 0.5
-          description: Fail when the success rate is below this threshold.
-  resources:
-    - type: python_script
-      path: script.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/cellranger_tiny_fastq
-platforms:
-  - type: docker
-    image: python:3.10-slim
-    setup:
-      # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
-      - type: docker
-        env: 
-          - STAR_VERSION 2.7.10b
-          - PACKAGES gcc g++ make wget zlib1g-dev unzip
-      - type: docker
-        run: |
-          apt-get update && \
-            apt-get install -y --no-install-recommends ${PACKAGES} && \
-            cd /tmp && \
-            wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \
-            unzip ${STAR_VERSION}.zip && \
-            cd STAR-${STAR_VERSION}/source && \
-            make STARstatic CXXFLAGS_SIMD=-std=c++11 && \
-            cp STAR /usr/local/bin && \
-            cd / && \
-            rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \
-            apt-get --purge autoremove -y ${PACKAGES} && \
-            apt-get clean
-      - type: apt
-        packages: 
-          - samtools
-          - procps
-      - type: python
-        packages: 
-          - pyyaml
-          - HTSeq
-          - multiprocess
-          - gtfparse
-          - pandas
-          - numpy<2
-          # Pin multiqc to avoid 
-          # 'TypeError: expected str, bytes or os.PathLike object, not NoneType'
-          - multiqc~=1.15.0
-    test_setup:
-      - type: python
-        packages:
-          - pytest
-  - type: nextflow
-    directives:
-      label: [ highmem, highcpu ]
+name: multi_star
+namespace: mapping
+description: Align fastq files using STAR.
+authors:
+  - __merge__: /src/authors/angela_pisco.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ author, maintainer ]
+# generated the argument groups using `utils/process_params.R`
+__merge__: [., arguments_star.yaml, arguments_htseq.yaml]
+# manually taking care of the main input files
+argument_groups:
+  - name: Input/Output
+    arguments:
+      - type: string
+        name: --input_id
+        required: true
+        description: The ID of the sample being processed. This vector should have the same length as the `--input_r1` argument.
+        example: [ mysample, mysample ]
+        multiple: true
+      - type: file
+        name: --input_r1
+        required: true
+        description: Paths to the sequences to be mapped. If using Illumina paired-end reads, only the R1 files should be passed.
+        example: [ mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L002_R1_001.fastq.gz ]
+        multiple: true
+      - type: file
+        name: --input_r2
+        required: false
+        description: Paths to the sequences to be mapped. If using Illumina paired-end reads, only the R2 files should be passed.
+        example: [ mysample_S1_L001_R2_001.fastq.gz, mysample_S1_L002_R2_001.fastq.gz ]
+        multiple: true
+      - type: file
+        name: --reference_index
+        alternatives: --genomeDir
+        description: Path to the reference built by star_build_reference. Corresponds to the --genomeDir argument in the STAR command.
+        example: /path/to/reference
+        required: true
+      - type: file
+        name: --reference_gtf
+        description: Path to the gtf reference file.
+        example: genes.gtf
+        required: true
+      - type: file
+        name: --output
+        alternatives: --outFileNamePrefix
+        description: Path to output directory. Corresponds to the --outFileNamePrefix argument in the STAR command.
+        example: /path/to/foo
+        direction: output
+        required: true
+  - name: Processing arguments
+    arguments:
+      - type: boolean
+        name: --run_htseq_count
+        description: Whether or not to also run htseq-count after STAR.
+        default: true
+      - type: boolean
+        name: --run_multiqc
+        description: Whether or not to also run MultiQC at the end.
+        default: true
+      - type: double
+        name: --min_success_rate
+        default: 0.5
+        description: Fail when the success rate is below this threshold.
+resources:
+  - type: python_script
+    path: script.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/cellranger_tiny_fastq
+
+engines:
+- type: docker
+  image: python:3.10-slim
+  setup:
+    # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
+    - type: docker
+      env: 
+        - STAR_VERSION 2.7.10b
+        - PACKAGES gcc g++ make wget zlib1g-dev unzip
+    - type: docker
+      run: |
+        apt-get update && \
+          apt-get install -y --no-install-recommends ${PACKAGES} && \
+          cd /tmp && \
+          wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \
+          unzip ${STAR_VERSION}.zip && \
+          cd STAR-${STAR_VERSION}/source && \
+          make STARstatic CXXFLAGS_SIMD=-std=c++11 && \
+          cp STAR /usr/local/bin && \
+          cd / && \
+          rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \
+          apt-get --purge autoremove -y ${PACKAGES} && \
+          apt-get clean
+    - type: apt
+      packages: 
+        - samtools
+        - procps
+    - type: python
+      packages: 
+        - pyyaml
+        - HTSeq
+        - multiprocess
+        - gtfparse
+        - pandas
+        - numpy<2
+        # Pin multiqc to avoid 
+        # 'TypeError: expected str, bytes or os.PathLike object, not NoneType'
+        - multiqc~=1.15.0
+  test_setup:
+    - type: python
+      packages:
+        - pytest
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [ highmem, highcpu ]

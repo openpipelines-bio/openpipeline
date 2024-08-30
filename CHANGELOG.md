@@ -12,6 +12,12 @@
 
 * `lianapy`: bumped version to `1.3.0` (PR #827 and PR #862). Additionally, `groupby` is now a required argument.
 
+* `concat`: this component was deprecated and has now been removed, use `concatenate_h5mu` instead (PR #796).
+
+* The `workflows` folder in the root of the project no longer contains symbolic links to the build workflows in `target`.
+  Using any workflows that was previously linked in this directory will now result in an error which will indicate
+  the location of the workflow to be used instead (PR #796).
+  
 * `XGBoost`: bump version to `2.0.3` (PR #646).
 
 * Several components: update anndata to `0.10.8` and mudata to `0.2.3` (PR #645). 
@@ -134,6 +140,8 @@
   which is present in another sample; causing the values being filled with `NA` (PR #837).
 
 * `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR #852).
+
+* Fix failing tests for `ingestion/cellranger_postprocessing`, `ingestion/conversion` and `multiomics/process_batches` (PR #869).
 
 ## DOCUMENTATION
 
