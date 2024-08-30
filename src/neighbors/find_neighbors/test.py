@@ -4,7 +4,8 @@ import mudata as mu
 
 ## VIASH START
 meta = {
-    'functionality_name': 'find_neighbors',
+    'executable': './target/docker/graph/neighbors/find_neighbors',
+    'name': 'find_neighbors',
     'resources_dir': 'resources_test/'
 }
 ## VIASH END

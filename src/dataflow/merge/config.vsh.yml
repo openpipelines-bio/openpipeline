@@ -1,53 +1,55 @@
-functionality:
-  name: merge
-  namespace: "dataflow"
-  description: |
-    Combine one or more single-modality .h5mu files together into one .h5mu file.
-  authors:
-    - __merge__: /src/authors/dries_schaumont.yaml
-      roles: [ maintainer ]
-  arguments:
-    - name: "--input"
-      alternatives: ["-i"]
-      type: file
-      multiple: true
-      description: Paths to the single-modality .h5mu files that need to be combined
-      required: true
-      default: sample_paths
-    - name: "--output"
-      description: Path to the output file.
-      alternatives: ["-o"]
-      type: file
-      direction: output
-      default: "output.h5mu"
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
-  resources:
-    - type: python_script
-      path: script.py
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: ../../../resources_test/merge_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu
-    - path: ../../../resources_test/merge_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu
-platforms:
-  - type: docker
-    image: python:3.10-slim
-    setup:
-      - type: apt
-        packages: 
-          - procps
-      - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
-        packages:
-          - pandas~=2.0.0
-    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
-  - type: native
-  - type: nextflow
-    directives:
-      label: [singlecpu, highmem]
+name: merge
+namespace: "dataflow"
+description: |
+  Combine one or more single-modality .h5mu files together into one .h5mu file.
+authors:
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ maintainer ]
+arguments:
+  - name: "--input"
+    alternatives: ["-i"]
+    type: file
+    multiple: true
+    description: Paths to the single-modality .h5mu files that need to be combined
+    required: true
+    default: sample_paths
+  - name: "--output"
+    description: Path to the output file.
+    alternatives: ["-o"]
+    type: file
+    direction: output
+    default: "output.h5mu"
+  - name: "--output_compression"
+    type: string
+    description: The compression format to be used on the output h5mu object.
+    choices: ["gzip", "lzf"]
+    required: false
+    example: "gzip"
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: ../../../resources_test/merge_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu
+  - path: ../../../resources_test/merge_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu
+
+engines:
+- type: docker
+  image: python:3.10-slim
+  setup:
+    - type: apt
+      packages: 
+        - procps
+    - type: python
+      __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+      packages:
+        - pandas~=2.0.0
+  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [singlecpu, highmem]

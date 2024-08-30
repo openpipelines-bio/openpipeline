@@ -26,6 +26,21 @@ workflow run_wf {
         "output_gtf": "output_gtf"
       ]
     )
+    | build_cellranger_arc_reference.run(
+      runIf: { id, state ->
+        state.target.contains("cellranger_arc")
+      },
+      fromState: [
+        "genome_fasta": "output_fasta",
+        "annotation_gtf": "output_gtf",
+        "output": "output_cellranger_arc",
+        "motifs_file": "motifs_file",
+        "non_nuclear_contigs": "non_nuclear_contigs",
+      ],
+      toState: [
+        "output_cellranger_arc": "output"
+      ],
+    )
     | build_cellranger_reference.run(
       runIf: { id, state ->
         state.target.contains("cellranger")
@@ -72,7 +87,8 @@ workflow run_wf {
       "output_gtf",
       "output_cellranger",
       "output_star",
-      "output_bd_rhapsody"
+      "output_bd_rhapsody",
+      "output_cellranger_arc",
     ])
   emit:
   output_ch
