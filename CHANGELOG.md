@@ -136,6 +136,12 @@
 
 * `reference/make_reference`: Do not try to extract genome fasta and transcriptome gtf if they are not gzipped (PR #856).
 
+* Changes related to syncing the test resources (PR #867):
+
+  - Add `.info.test_resources` to `_viash.yaml` to specify where test resources need to be synced from.
+  - `download/sync_test_resources`: Use `.info.test_resources` in `_viash.yaml` to detect where test resources need to be synced from.
+  - Update CI to use `project/sync-and-cache` instead of `project/sync-and-cache-s3`.
+
 ## BUG FIXES
 
 * `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
