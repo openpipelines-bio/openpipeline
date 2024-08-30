@@ -6,42 +6,12 @@ definitions:
       \ you choose.  \n"
     type: "object"
     properties:
-      functionality:
-        description: "The functionality describes the behaviour of the script in terms\
-          \ of arguments and resources.\nBy specifying a few restrictions (e.g. mandatory\
-          \ arguments) and adding some descriptions, Viash will automatically generate\
-          \ a stylish command-line interface for you.\n"
-        $ref: "#/definitions/Functionality"
-      platforms:
-        description: "A list of platforms to generate target artifacts for.\n\n -\
-          \ Native\n - Docker\n - Nextflow\n"
-        type: "array"
-        items:
-          $ref: "defs_viash.yaml#/definitions/Platform"
-    required:
-    - "functionality"
-    - "platforms"
-    additionalProperties: false
-  Functionality:
-    description: "The functionality-part of the config file describes the behaviour\
-      \ of the script in terms of arguments and resources.\nBy specifying a few restrictions\
-      \ (e.g. mandatory arguments) and adding some descriptions, Viash will automatically\
-      \ generate a stylish command-line interface for you.\n"
-    type: "object"
-    properties:
-      __merge__:
-        $ref: "#/definitions/Merge"
-      name:
-        description: "Name of the component and the filename of the executable when\
-          \ built with `viash build`."
+      label:
+        description: "A clean version of the component's name. This is only used for\
+          \ documentation."
         type: "string"
-      info:
-        description: "Structured information. Can be any shape: a string, vector,\
-          \ map or even nested map."
-        type: "object"
-      version:
-        description: "Version of the component. This field will be used to version\
-          \ the executable and the Docker container."
+      license:
+        description: "The license of the package."
         type: "string"
       authors:
         description: "A list of authors. An author must at least have a name, but\
@@ -83,7 +53,8 @@ definitions:
           \ \n`cpus` specifies the maximum number of (logical) cpus a component is\
           \ allowed to use., whereas\n`memory` specifies the maximum amount of memory\
           \ a component is allowed to allicate. Memory units must be\nin B, KB, MB,\
-          \ GB, TB or PB."
+          \ GB, TB or PB for SI units (1000-base), or KiB, MiB, GiB, TiB or PiB for\
+          \ binary IEC units (1024-base)."
         $ref: "defs_viash.yaml#/definitions/ComputationalRequirements"
       repositories:
         description: "(Pre-)defines repositories that can be used as repository in\
@@ -91,11 +62,67 @@ definitions:
           \ in multiple dependencies."
         type: "array"
         items:
-          $ref: "defs_viash.yaml#/definitions/Repository"
+          $ref: "defs_viash.yaml#/definitions/RepositoryWithName"
+      dependencies:
+        description: "Allows listing Viash components required by this Viash component"
+        type: "array"
+        items:
+          $ref: "defs_viash.yaml#/definitions/Dependency"
+      summary:
+        description: "A one-sentence summary of the component. This is only used for\
+          \ documentation."
+        type: "string"
+      runners:
+        description: "A list of runners to execute target artifacts.\n\n - ExecutableRunner\n\
+          \ - NextflowRunner\n"
+        type: "array"
+        items:
+          $ref: "defs_viash.yaml#/definitions/Runner"
+      name:
+        description: "Name of the component and the filename of the executable when\
+          \ built with `viash build`."
+        type: "string"
+      argument_groups:
+        description: "A grouping of the arguments, used to display the help message.\n\
+          \n - `name: foo`, the name of the argument group. \n - `description: Description\
+          \ of foo`, a description of the argument group. Multiline descriptions are\
+          \ supported.\n - `arguments: [arg1, arg2, ...]`, list of the arguments.\n\
+          \n"
+        type: "array"
+        items:
+          $ref: "defs_viash.yaml#/definitions/ArgumentGroup"
+      description:
+        description: "A description of the component. This is only used for documentation.\
+          \ Multiline descriptions are supported."
+        type: "string"
+      usage:
+        description: "A description on how to use the component. This will be displayed\
+          \ with `--help` under the 'Usage:' section."
+        type: "string"
+      info:
+        description: "Structured information. Can be any shape: a string, vector,\
+          \ map or even nested map."
+        type: "object"
+      version:
+        description: "Version of the component. This field will be used to version\
+          \ the executable and the Docker container."
+        type: "string"
+      links:
+        description: "External links of the component."
+        $ref: "defs_viash.yaml#/definitions/Links"
+      references:
+        description: "References to external resources related to the component."
+        $ref: "defs_viash.yaml#/definitions/References"
+      engines:
+        description: "A list of engine environments to execute target artifacts in.\n\
+          \n - NativeEngine\n - DockerEngine\n"
+        type: "array"
+        items:
+          $ref: "defs_viash.yaml#/definitions/Engine"
       resources:
         description: "Resources are files that support the component. The first resource\
-          \ should be a script that will be executed when the functionality is run.\
-          \ Additional resources will be copied to the same directory.\n\nCommon properties:\n\
+          \ should be a script that will be executed when the component is run. Additional\
+          \ resources will be copied to the same directory.\n\nCommon properties:\n\
           \n * type: `file` / `r_script` / `python_script` / `bash_script` / `javascript_script`\
           \ / `scala_script` / `csharp_script`, specifies the type of the resource.\
           \ The first resource cannot be of type `file`. When the type is not specified,\
@@ -111,6 +138,11 @@ definitions:
         type: "array"
         items:
           $ref: "defs_viash.yaml#/definitions/Resource"
+      keywords:
+        description: "The keywords of the components."
+        type: "array"
+        items:
+          type: "string"
       test_resources:
         description: "One or more scripts to be used to test the component behaviour\
           \ when `viash test` is invoked. Additional files of type `file` will be\
@@ -121,29 +153,6 @@ definitions:
         type: "array"
         items:
           $ref: "defs_viash.yaml#/definitions/Resource"
-      dependencies:
-        description: "Allows listing Viash components required by this Viash component"
-        type: "array"
-        items:
-          $ref: "defs_viash.yaml#/definitions/Dependency"
-      argument_groups:
-        description: "A grouping of the arguments, used to display the help message.\n\
-          \n - `name: foo`, the name of the argument group. \n - `description: Description\
-          \ of foo`, a description of the argument group. Multiline descriptions are\
-          \ supported.\n - `arguments: [arg1, arg2, ...]`, list of the arguments.\n\
-          \n"
-        type: "array"
-        items:
-          # TODO: use #/definitions/Argument instead so we can have validation on the info field?
-          $ref: "defs_viash.yaml#/definitions/ArgumentGroup"
-      description:
-        description: "A description of the component. This will be displayed with\
-          \ `--help`."
-        type: "string"
-      usage:
-        description: "A description on how to use the component. This will be displayed\
-          \ with `--help` under the 'Usage:' section."
-        type: "string"
       namespace:
         description: "Namespace this component is a part of. See the Namespaces guide\
           \ for more information on namespaces."
@@ -156,8 +165,9 @@ definitions:
           \ - boolean_true\n - boolean_false\n"
         type: "array"
         items:
-          # TODO: use #/definitions/Argument instead so we can have validation on the info field?
           $ref: "defs_viash.yaml#/definitions/Argument"
+      __merge__:
+        $ref: "#/definitions/Merge"
     required:
     - "name"
     additionalProperties: false
