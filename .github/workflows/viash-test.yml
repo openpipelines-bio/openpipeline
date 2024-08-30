@@ -3,34 +3,18 @@ name: viash test
 on:
   pull_request:
   push:
-    branches: [ '**' ]
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !contains(github.ref, 'main')}}
 
 jobs:
-  run_ci_check_job:
-    runs-on: ubuntu-latest
-    outputs:
-      run_ci: ${{ steps.github_cli.outputs.check }}
-    steps:
-      - name: 'Check if branch has an existing pull request and the trigger was a push'
-        id: github_cli
-        run: |
-          pull_request=$(gh pr list -R ${{ github.repository }} -H ${{ github.ref_name }} --json url --state open --limit 1 | jq '.[0].url')
-          # If the branch has a PR and this run was triggered by a push event, do not run
-          if [[ "$pull_request" != "null" && "$GITHUB_REF_NAME" != "main" && "${{ github.event_name == 'push' }}" == "true" && "${{ !contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
-            echo "check=false" >> $GITHUB_OUTPUT
-          else
-            echo "check=true" >> $GITHUB_OUTPUT
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GTHB_PAT }}
-
   # phase 1
   list:
-    needs: run_ci_check_job
     env:
       s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
-    if: ${{ needs.run_ci_check_job.outputs.run_ci == 'true'}}
 
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
@@ -49,7 +33,7 @@ jobs:
     - name: Check if all config can be parsed if there is no unicode support
       run: |
         LANG=C viash ns list > /dev/null
-        JAVA_TOOL_OPTIONS=-Dfile.encoding=ascii viash ns build --parallel --setup meh > /dev/null
+        JAVA_TOOL_OPTIONS=-Dfile.encoding=ascii viash ns build --parallel > /dev/null
 
     - uses: viash-io/viash-actions/project/sync-and-cache-s3@v6
       id: cache
@@ -61,7 +45,7 @@ jobs:
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v6
       with:
-        platform: docker
+        engine: docker
         format: json
         query_namespace: ^(?!workflows|test_workflows)
 
@@ -74,13 +58,13 @@ jobs:
       run: |
         echo "matrix=$(jq -c '[ .[] | 
           { 
-            "name": .functionality.name,
-            "namespace_separator": .platforms | map(select(.type == "docker"))[0].namespace_separator,
-            "namespace": .functionality.namespace,
-            "config": .info.config,
-            "dir": .info.config | capture("^(?<dir>.*\/)").dir
+            "name": .name,
+            "namespace_separator": .engines | map(select(.type == "docker"))[0].namespace_separator,
+            "namespace": .namespace,
+            "config": .build_info.config,
+            "dir": .build_info.config | capture("^(?<dir>.*\/)").dir
           }
-        ]' ${{ steps.ns_list_filtered.outputs.output_file }} )" >> $GITHUB_OUTPUT
+        ] | unique' ${{ steps.ns_list_filtered.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
   # phase 2
   viash_test:
@@ -100,7 +84,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - uses: viash-io/viash-actions/setup@v6
-
+    - uses: viash-io/viash-actions/project/update-docker-engine@v6
     # use cache
     - name: Cache resources data
       id: restore_cache
@@ -115,7 +99,7 @@ jobs:
       shell: bash
       if: steps.restore_cache.outputs.cache-hit != 'true'
       run: |
-        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.build_info.config | capture("^(?<dir>.*\/)").dir) as $dir | .test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
         for resource in "${resources[@]}"; do
           if [[ $resource == *"resources_test"* ]]; then
             relative_path=${resource#*resources_test/}
@@ -139,7 +123,7 @@ jobs:
       if: steps.restore_cache.outputs.cache-hit == 'true'
       shell: bash
       run: |
-        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.build_info.config | capture("^(?<dir>.*\/)").dir) as $dir | .test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
         to_not_remove=()
         for resource in "${resources[@]}"; do
           if [[ $resource == *"resources_test"* ]]; then
@@ -172,5 +156,7 @@ jobs:
         viash test \
           "${{ matrix.component.config }}" \
           --cpus 4 \
-          --memory "14gb"
+          --memory "14gb" \
+          --engine docker \
+          --runner executable
 

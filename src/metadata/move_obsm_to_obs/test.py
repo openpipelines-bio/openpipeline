@@ -8,9 +8,9 @@ from subprocess import CalledProcessError
 
 ## VIASH START
 meta = {
-    'functionality_name': 'move_obsm_to_obs',
+    'name': 'move_obsm_to_obs',
     'resources_dir': 'resources_test/',
-    'executable': 'target/docker/metadata/move_obsm_to_obs/move_obsm_to_obs',
+    'executable': 'target/executable/metadata/move_obsm_to_obs/move_obsm_to_obs',
     'config': 'src/metadata/move_obsm_to_obs/config.vsh.yaml'
 }
 ## VIASH END
