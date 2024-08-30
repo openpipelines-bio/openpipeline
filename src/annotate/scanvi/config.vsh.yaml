@@ -53,6 +53,8 @@ argument_groups:
       description: Size of training set.
       required: false
       default: 0.9
+      min: 0.0
+      max: 1.0
     - name: "--reference_max_epochs"
       type: integer
       description: Maximum number of epochs.
@@ -78,6 +80,8 @@ argument_groups:
       description: Factor by which to reduce learning rate.
       required: false
       default: 0.5
+      min: 0.0
+      max: 1.0
     - name: "--reference_early_stopping"
       type: boolean
       description: Early stopping.
@@ -97,6 +101,8 @@ argument_groups:
       description: Size of training set.
       required: false
       default: 0.9
+      min: 0.0
+      max: 1.0
     - name: "--query_max_epochs"
       type: integer
       description: Maximum number of epochs.
@@ -122,6 +128,8 @@ argument_groups:
       description: Factor by which to reduce learning rate.
       required: false
       default: 0.5
+      min: 0.0
+      max: 1.0
     - name: "--query_early_stopping"
       type: boolean
       description: Early stopping.

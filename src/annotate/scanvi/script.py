@@ -52,10 +52,10 @@ scanvi_ref = scvi.model.SCANVI.from_scvi_model(
     )
 
 reference_plan_kwargs = {"lr": par["reference_learning_rate"],
-               "reduce_lr_on_plateau": par['reference_reduce_lr_on_plateau'],
-               "lr_patience": par['reference_lr_patience'],
-               "lr_factor": par['reference_lr_factor']
-               }
+                         "reduce_lr_on_plateau": par['reference_reduce_lr_on_plateau'],
+                         "lr_patience": par['reference_lr_patience'],
+                         "lr_factor": par['reference_lr_factor']
+                        }
 
 logger.info("Training scANVI model on reference data with celltype labels")
 
@@ -74,10 +74,10 @@ scvi.model.SCANVI.prepare_query_anndata(query, scanvi_ref, inplace=True)
 scanvi_query = scvi.model.SCANVI.load_query_data(query, scanvi_ref)
 
 query_plan_kwargs = {"lr": par["query_learning_rate"],
-               "reduce_lr_on_plateau": par['query_reduce_lr_on_plateau'],
-               "lr_patience": par['query_lr_patience'],
-               "lr_factor": par['query_lr_factor']
-               }
+                     "reduce_lr_on_plateau": par['query_reduce_lr_on_plateau'],
+                     "lr_patience": par['query_lr_patience'],
+                     "lr_factor": par['query_lr_factor']
+                    }
 
 scanvi_query.train(
     train_size=par["query_train_size"],
