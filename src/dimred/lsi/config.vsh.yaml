@@ -1,104 +1,103 @@
-functionality:
-  name: lsi
-  namespace: "dimred"
-  description: |
-    Runs Latent Semantic Indexing. Computes cell embeddings, feature loadings and singular values. Uses the implementation of scipy.
-  authors:
-    - __merge__: /src/authors/sarah_ouologuem.yaml
-      roles: [ contributor ]
+name: lsi
+namespace: "dimred"
+description: |
+  Runs Latent Semantic Indexing. Computes cell embeddings, feature loadings and singular values. Uses the implementation of scipy.
+authors:
+  - __merge__: /src/authors/sarah_ouologuem.yaml
+    roles: [ contributor ]
 
-  argument_groups:
-    - name: Inputs
-      arguments:
-        - name: "--input"
-          alternatives: ["-i"]
-          type: file
-          description: Path to input h5mu file
-          direction: input
-          required: true
-          example: input.h5mu
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: Path to input h5mu file
+        direction: input
+        required: true
+        example: input.h5mu
 
-        - name: "--modality"
-          type: string
-          default: "atac"
-          description: On which modality to run LSI on.
-          required: false
+      - name: "--modality"
+        type: string
+        default: "atac"
+        description: On which modality to run LSI on.
+        required: false
 
-        - name: "--layer"
-          type: string
-          description: Use specified layer for expression values. If not specified, uses adata.X.
-          required: false
+      - name: "--layer"
+        type: string
+        description: Use specified layer for expression values. If not specified, uses adata.X.
+        required: false
 
-        - name: "--var_input"
-          type: string
-          description: Column name in .var matrix that will be used to select which genes to run the LSI on. If not specified, uses all features.
-          required: false
+      - name: "--var_input"
+        type: string
+        description: Column name in .var matrix that will be used to select which genes to run the LSI on. If not specified, uses all features.
+        required: false
 
-    - name: LSI options
-      arguments:
-        - name: "--num_components"
-          type: integer
-          default: 50
-          description: Number of components to compute.
-          required: false
+  - name: LSI options
+    arguments:
+      - name: "--num_components"
+        type: integer
+        default: 50
+        description: Number of components to compute.
+        required: false
 
-        - name: "--scale_embeddings"
-          type: boolean
-          default: true
-          description: Scale embeddings to zero mean and unit variance.
+      - name: "--scale_embeddings"
+        type: boolean
+        default: true
+        description: Scale embeddings to zero mean and unit variance.
 
-    - name: Outputs
-      arguments:
-        - name: "--output"
-          alternatives: ["-o"]
-          type: file
-          description: Output h5mu file.
-          direction: output
-          required: true
-          example: output.h5mu
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
 
-        - name: "--output_compression"
-          type: string
-          default: "gzip"
-          description: The compression format to be used on the output h5mu object.
-          choices: ["gzip", "lzf"]
-          required: false
+      - name: "--output_compression"
+        type: string
+        default: "gzip"
+        description: The compression format to be used on the output h5mu object.
+        choices: ["gzip", "lzf"]
+        required: false
 
-        - name: "--obsm_output"
-          type: string
-          default: "X_lsi"
-          description: In which .obsm slot to store the resulting embedding.
-          required: false
+      - name: "--obsm_output"
+        type: string
+        default: "X_lsi"
+        description: In which .obsm slot to store the resulting embedding.
+        required: false
 
-        - name: "--varm_output"
-          type: string
-          default: "LSI"
-          description: In which .varm slot to store the resulting loadings matrix.
-          required: false
+      - name: "--varm_output"
+        type: string
+        default: "LSI"
+        description: In which .varm slot to store the resulting loadings matrix.
+        required: false
 
-        - name: "--uns_output"
-          type: string
-          default: "lsi"
-          description: In which .uns slot to store the stdev.
-          required: false
+      - name: "--uns_output"
+        type: string
+        default: "lsi"
+        description: In which .uns slot to store the stdev.
+        required: false
 
-        - name: "--overwrite"
-          type: boolean_true
-          description: Allow overwriting .obsm, .varm and .uns slots.
+      - name: "--overwrite"
+        type: boolean_true
+        description: Allow overwriting .obsm, .varm and .uns slots.
 
-      
-  resources:
-    - type: python_script
-      path: script.py
-    - path: ../../utils/subset_vars.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: ../../utils/subset_vars.py
-    - path: ../../../resources_test/concat_test_data
     
+resources:
+  - type: python_script
+    path: script.py
+  - path: ../../utils/subset_vars.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: ../../utils/subset_vars.py
+  - path: ../../../resources_test/concat_test_data
+  
 
-platforms:
+engines:
   - type: docker
     image: python:3.9-slim
     setup:
@@ -116,6 +115,8 @@ platforms:
       - type: python
         packages: 
           - pytest
+runners:
+  - type: executable
   - type: nextflow
     directives:
       label: 
