@@ -17,7 +17,7 @@ par = {
     "output_obs_probability": None,
     "output_uns_parameters": "labels_transfer",
     "output_compression": None,
-    "weights": "uniform",
+    "weights": "gaussian",
     "n_neighbors": 15
 }
 meta = {
@@ -43,12 +43,22 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 
 def distances_to_affinities(distances):
+    # Apply Gaussian kernel to distances
     stds = np.std(distances, axis=1)
     stds = (2.0 / stds) ** 2
     stds = stds.reshape(-1, 1)
     distances_tilda = np.exp(-np.true_divide(distances, stds))
-
-    return distances_tilda / np.sum(distances_tilda, axis=1, keepdims=True)
+    
+    # normalize the distances_tilda
+    # if the sum of a row of the distances tilda equals 0,
+    # set normalized distances for that row to 1
+    # else divide the row values by the value of the sum of the row
+    distances_tilda_normalized = np.where(
+        np.sum(distances_tilda, axis=1, keepdims=True) == 0,
+        1,
+        distances_tilda / np.sum(distances_tilda, axis=1, keepdims=True)
+    )
+    return distances_tilda_normalized
 
 logger = setup_logger()
 
@@ -91,9 +101,7 @@ for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"],  par["outp
     logger.info(f"Using KNN classifier with {par['weights']} weights")
     train_y = r_adata.obs[obs_tar].to_numpy()
     classifier = KNeighborsClassifier(n_neighbors=par["n_neighbors"], metric="precomputed", weights=weights_dict[par["weights"]])
-    classifier.fit(
-        X=neighbors_transformer.transform(train_X), y=train_y
-    )
+    classifier.fit(X=neighbors_transformer.transform(train_X), y=train_y)
     predicted_labels = classifier.predict(reference_neighbors)
     probabilities = classifier.predict_proba(reference_neighbors).max(axis=1)
 

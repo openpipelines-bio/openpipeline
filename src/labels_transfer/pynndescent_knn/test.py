@@ -38,6 +38,7 @@ def test_label_transfer(run_component):
     assert "cell_type_pred" in output_data.mod["rna"].obs, f"Predictions cell_type_pred is missing from output\noutput: {output_data.mod['rna'].obs}"
     assert "cell_type_probability" in output_data.mod["rna"].obs, f"Uncertainties cell_type_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
 
+
 @pytest.mark.parametrize("weights", ["uniform", "distance", "gaussian"])
 def test_label_transfer_prediction_columns(run_component, weights):
 
