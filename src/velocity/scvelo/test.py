@@ -4,7 +4,7 @@ from mudata import read_h5mu
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/native/projection/scvelo/scvelo',
+    'name': './target/executable/projection/scvelo/scvelo',
     'resources_dir': './resources_test/'
 }
 ## VIASH END

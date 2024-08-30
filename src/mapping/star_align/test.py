@@ -7,7 +7,7 @@ import shutil
 
 ## VIASH START
 meta = {
-    "functionality_name": "cellranger_count",
+    "name": "cellranger_count",
     "resources_dir": "resources_test"
 }
 ## VIASH END
