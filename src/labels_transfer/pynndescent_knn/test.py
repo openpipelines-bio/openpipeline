@@ -39,14 +39,18 @@ def test_label_transfer(run_component):
     assert "cell_type_probability" in output_data.mod["rna"].obs, f"Uncertainties cell_type_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
 
 
-def test_label_transfer_prediction_columns(run_component):
+@pytest.mark.parametrize("weights", ["uniform", "distance", "gaussian"])
+def test_label_transfer_prediction_columns(run_component, weights):
+
+    output = f"output_{weights}.h5mu"
 
     args = [
         "--input", input_file,
         "--modality", "rna",
         "--reference", reference_file,
         "--reference_obs_targets", "cell_type",
-        "--output", "output.h5mu",
+        "--weights", weights,
+        "--output", output,
         "--output_obs_probability", "test_probability",
         "--output_obs_predictions", "test_prediction",
         "--n_neighbors", "5"
@@ -54,9 +58,9 @@ def test_label_transfer_prediction_columns(run_component):
 
     run_component(args)
 
-    assert Path("output.h5mu").is_file()
+    assert Path(output).is_file()
 
-    output_data = mu.read_h5mu("output.h5mu")
+    output_data = mu.read_h5mu(output)
 
     assert "test_prediction" in output_data.mod["rna"].obs, f"Predictions test_prediction is missing from output\noutput: {output_data.mod['rna'].obs}"
     assert "test_probability" in output_data.mod["rna"].obs, f"Uncertainties test_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
