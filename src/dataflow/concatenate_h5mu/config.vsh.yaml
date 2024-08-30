@@ -72,7 +72,7 @@ test_resources:
     path: test.py
   - path: /resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
   - path: /resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
-engine:
+engines:
   - type: docker
     image: python:3.11-slim
     setup:
@@ -87,7 +87,7 @@ engine:
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
-runner:
+runners:
   - type: executable
   - type: nextflow
     directives:
