@@ -48,7 +48,9 @@ def sample_1_modality_1():
     var = pd.DataFrame([["a", "b"], ["c", "d"], ["e", "f"]],
                         index=df.columns, columns=["Feat1", "Shared_feat"])
     varm = np.random.rand(df.columns.size, 5)
-    ad1 = ad.AnnData(df, obs=obs, var=var, varm={"random_vals_mod1": varm})
+    ad1 = ad.AnnData(df, obs=obs, var=var, varm={"random_vals_mod1": varm}, 
+                     uns={"uns_unique_to_sample1": pd.DataFrame(["foo"], index=["bar"], columns=["col1"]),
+                          "overlapping_uns_key": pd.DataFrame(["jing"], index=["jang"], columns=["col2"])})
     #ad1 = ad.AnnData(df, obs=obs, var=var)
     return ad1
 
@@ -113,7 +115,9 @@ def sample_2_modality_1():
                        index=df.index, columns=["Obs4", "Obs5", "Shared_obs"])
     var = pd.DataFrame([["h", "i"], ["j", "k"]], index=df.columns,
                        columns=["Feat3", "Shared_feat"])
-    ad3 = ad.AnnData(df, obs=obs, var=var)
+    ad3 = ad.AnnData(df, obs=obs, var=var,
+                     uns={"uns_unique_to_sample2": pd.DataFrame(["baz"], index=["qux"], columns=["col3"]),
+                          "overlapping_uns_key": pd.DataFrame(["ping"], index=["pong"], columns=["col4"])})
     return ad3
 
 @pytest.fixture
@@ -792,6 +796,32 @@ def test_concat_var_obs_names_order(run_component, sample_1_h5mu, sample_2_h5mu,
             data_sample = pd.DataFrame(data_sample.X, index=data_sample.obs_names, 
                                        columns=data_sample.var_names).reindex_like(processed_data)
             pd.testing.assert_frame_equal(processed_data, data_sample, check_dtype=False)
+
+
+def test_keep_uns(run_component, sample_1_h5mu, sample_2_h5mu,
+                   write_mudata_to_file, random_h5mu_path):
+    sample_1_h5mu.uns["global_uns_sample1"] = "dolor"
+    sample_1_h5mu.uns["overlapping_global"] = "sed"
+    sample_2_h5mu.uns["global_uns_sample2"] = "amet"
+    sample_2_h5mu.uns["overlapping_global"] = "elit"
+    output_path = random_h5mu_path()
+    run_component([
+        "--input_id", "sample1;sample2",
+        "--input", write_mudata_to_file(sample_1_h5mu),
+        "--input", write_mudata_to_file(sample_2_h5mu),
+        "--output", output_path,
+        "--other_axis_mode", "move",
+        "--uns_merge_mode", "make_unique",
+        ])
+    assert output_path.is_file()
+    concatenated_data = md.read(output_path)
+    mod1 = concatenated_data.mod["mod1"]
+    mod2 = concatenated_data.mod["mod2"]
+    assert set(concatenated_data.uns.keys()) == set(["global_uns_sample1", "global_uns_sample2",
+                                                     "sample1_overlapping_global", "sample2_overlapping_global"])
+    assert set(mod1.uns.keys()) == set(["sample1_overlapping_uns_key", "uns_unique_to_sample1",
+                                        "sample2_overlapping_uns_key", "uns_unique_to_sample2"])
+    assert set(mod2.uns.keys()) == set()
 
 
 if __name__ == '__main__':

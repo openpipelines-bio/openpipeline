@@ -38,7 +38,11 @@
 
 * `reference/cellranger_mkgtf`: Rename `reference/mkgtf` to `reference/cellranger_mkgtf` (PR #846).
 
-* `interactive/run_cellxgene` and `interactive/run_cirrocumulus` were removed (PR #796).
+* `labels_transfer/xgboost`: Align interface with new annotation workflow
+  - Store label probabilities instead of uncertainties
+  - Take `.h5mu` format as an input instead of `.h5ad`
+
+* `labels_transfer/knn`: delete outdated component due to its functionality now implemented in `labels_transfer/pynndescent_knn`
 
 * `reference/build_cellranger_arc_reference`: a default value of "output" is now specified for the argument `--genome`, inline with `reference/build_cellranger_reference` component. Additionally, providing a value for `--organism` is no longer required and its default value of `Homo Sapiens` has been removed (PR #864).
 
@@ -83,11 +87,15 @@
   
 * `dataflow/split_h5mu` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
 
+* `labels_transfer/pynndescent_knn`: component: Added a component for KNN classification based on a PyNNDescent neighborhood graph (PR #830).
+
 * `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
 
 * `workflows/ingestion/make_reference`: Add additional arguments passed through to the STAR and BD Rhapsody reference components (PR #846).
 
 * `annotate/random_forest_annotation` component: Added a random forest cell type annotation component (PR #848).
+
+* `dataflow/concatenate_h5mu`: data from `.uns`, both originating from the global and per-modality slots, is now retained in the final concatenated output object. Additionally, added the `uns_merge_mode` argument in order to tune the behavior when conflicting keys are detected across samples (PR #859).
 
 * `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
 
