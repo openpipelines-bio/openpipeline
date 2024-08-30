@@ -87,7 +87,7 @@
 
 * `workflows/ingestion/make_reference`: Add additional arguments passed through to the STAR and BD Rhapsody reference components (PR #846).
 
-* `annotate/random_forest` component: Added a random forest annotation component (PR #848).
+* `annotate/random_forest_annotation` component: Added a random forest cell type annotation component (PR #848).
 
 * `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
 
