@@ -1,62 +1,61 @@
-functionality:
-  name: scale
-  namespace: "transform"
-  description: |
-    Scale data to unit variance and zero mean.
-  authors:
-    - __merge__: /src/authors/dries_schaumont.yaml
-      roles: [ maintainer ]
-  arguments:
-    # input
-    - name: "--input"
-      alternatives: ["-i"]
-      type: file
-      description: Input h5mu file.
-      direction: input
-      required: true
-      example: input.h5mu
-    - name: "--modality"
-      description: List of modalities to process.
-      type: string
-      default: "rna"
-      required: false
-    - name: "--input_layer"
-      type: "string"
-      description: "Input layer with data to scale. Uses .X by default"
-      required: false
-    - name: "--output_layer"
-      type: string
-      description: "Output layer where scaled data will be stored. If not specified, .X will be used."
-    - name: "--max_value"
-      required: false
-      type: double
-      description: Clip (truncate) to this value after scaling. Does not clip by default.
-    - name: "--zero_center"
-      type: boolean_false
-      description: If set, omit zero-centering variables, which allows to handle sparse input efficiently.
-    # output
-    - name: "--output"
-      alternatives: ["-o"]
-      type: file
-      description: Output h5mu file.
-      direction: output
-      required: true
-      default: output.h5mu
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
-  resources:
-    - type: python_script
-      path: script.py
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/pbmc_1k_protein_v3
-platforms:
+name: scale
+namespace: "transform"
+description: |
+  Scale data to unit variance and zero mean.
+authors:
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ maintainer ]
+arguments:
+  # input
+  - name: "--input"
+    alternatives: ["-i"]
+    type: file
+    description: Input h5mu file.
+    direction: input
+    required: true
+    example: input.h5mu
+  - name: "--modality"
+    description: List of modalities to process.
+    type: string
+    default: "rna"
+    required: false
+  - name: "--input_layer"
+    type: "string"
+    description: "Input layer with data to scale. Uses .X by default"
+    required: false
+  - name: "--output_layer"
+    type: string
+    description: "Output layer where scaled data will be stored. If not specified, .X will be used."
+  - name: "--max_value"
+    required: false
+    type: double
+    description: Clip (truncate) to this value after scaling. Does not clip by default.
+  - name: "--zero_center"
+    type: boolean_false
+    description: If set, omit zero-centering variables, which allows to handle sparse input efficiently.
+  # output
+  - name: "--output"
+    alternatives: ["-o"]
+    type: file
+    description: Output h5mu file.
+    direction: output
+    required: true
+    default: output.h5mu
+  - name: "--output_compression"
+    type: string
+    description: The compression format to be used on the output h5mu object.
+    choices: ["gzip", "lzf"]
+    required: false
+    example: "gzip"
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3
+engines:
   - type: docker
     image: python:3.12-slim
     setup:
@@ -65,8 +64,9 @@ platforms:
           - procps
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
-    __merge__: [ /src/base/requirements/python_test_setup.yaml, .] 
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [lowmem, lowcpu]
-  - type: native

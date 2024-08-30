@@ -21,7 +21,7 @@ assert input.n_mod == output.n_mod, "Number of modalities differ"
 assert input.mod.keys() == output.mod.keys(), "Modalities differ"
 
 # Check atac modality
-assert_annotation_objects_equal(input.mod["atac"], output.mod["atac"])
+assert_annotation_objects_equal(input.mod["atac"], output.mod["atac"], promote_precision=True)
 
 # Check rna modality
 assert "X_umap" in output.mod["rna"].obsm, "X_umap not found in .obsm"

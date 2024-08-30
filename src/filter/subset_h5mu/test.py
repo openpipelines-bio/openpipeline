@@ -4,7 +4,7 @@ import mudata as mu
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/docker/filter/subset_h5mu/subset_h5mu',
+    'executable': './target/executable/filter/subset_h5mu/subset_h5mu',
     'resources_dir': 'resources_test/pbmc_1k_protein_v3/'
 }
 ## VIASH END
