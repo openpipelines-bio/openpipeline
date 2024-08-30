@@ -51,7 +51,7 @@ def set_var_index(adata, var_name):
 
 def main(par):
     
-    if bool(par["model"]) == bool(par["reference"]):
+    if (not par["model"] and not par["reference"]) or (par["model"] and par["reference"]):
         raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
     
     logger = setup_logger()
