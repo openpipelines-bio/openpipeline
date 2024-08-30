@@ -47,7 +47,7 @@ jobs:
         query_namespace: ^(?!workflows|test_workflows)
 
     - id: detect_changed_components
-      uses: viash-io/viash-actions/project/detect-changed-components@add-working-dir-input
+      uses: viash-io/viash-actions/project/detect-changed-components@v6
       with:
         input_file: "${{ steps.ns_list.outputs.output_file }}"
 
