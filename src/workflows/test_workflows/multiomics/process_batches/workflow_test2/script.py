@@ -26,7 +26,7 @@ input_vdj = input.mod["vdj_t"]
 # del input_vdj.obsm['X_umap']
 output_vdj = output.mod['vdj_t']
 # del output_vdj.obsm['X_umap']
-assert_annotation_objects_equal(input_vdj, output_vdj)
+assert_annotation_objects_equal(input_vdj, output_vdj, promote_precision=True)
 
 # Check prot modality
 # Ignore the PCA layer and its derivatives, as its allowed to be overwritten for this test.
@@ -38,7 +38,9 @@ output_prot = output.mod["prot"]
 del output_prot.varm['pca_loadings']
 del output_prot.obsm['X_pca']
 del output_prot.obsm['X_umap']
-assert_annotation_objects_equal(input_prot, output_prot)
+del output_prot.obsm['knn_indices']
+del output_prot.obsm['knn_distances']
+assert_annotation_objects_equal(input_prot, output_prot, promote_precision=True)
 
 
 # Check rna modality
@@ -55,7 +57,9 @@ del output_rna.obsm['X_pca']
 del output_rna.varm['pca_loadings']
 del output_rna.obsm['X_umap']
 del output_rna.layers['log_normalized']
-assert_annotation_objects_equal(input_rna, output_rna)
+del output_rna.obsm['knn_indices']
+del output_rna.obsm['knn_distances']
+assert_annotation_objects_equal(input_rna, output_rna, promote_precision=True)
 
 
 

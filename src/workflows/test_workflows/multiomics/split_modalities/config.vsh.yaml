@@ -40,4 +40,5 @@ engines:
       - type: python
         packages: /opt/openpipelinetestutils
 runners:
+  - type: executable
   - type: nextflow
