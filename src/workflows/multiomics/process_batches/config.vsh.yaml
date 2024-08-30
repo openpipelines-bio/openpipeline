@@ -1,169 +1,168 @@
-functionality:
-  name: "process_batches"
-  namespace: "workflows/multiomics"
-  description: |
-    This workflow serves as an entrypoint into the 'full_pipeline' in order to
-    re-run the multisample processing and the integration setup. An input .h5mu file will 
-    first be split in order to run the multisample processing per modality. Next, the modalities
-    are merged again and the integration setup pipeline is executed. Please note that this workflow
-    assumes that samples from multiple pipelines are already concatenated. 
-  authors:
-    - __merge__: /src/authors/dries_schaumont.yaml
-      roles: [ author, maintainer ]
-  argument_groups:
-    - name: Inputs
-      arguments:
-        - name: "--id"
-          required: true
-          type: string
-          description: ID of the sample.
-          example: foo
-        - name: "--input"
-          alternatives: [-i]
-          description: Path to the sample.
-          required: true
-          multiple: true
-          example: input.h5mu
-          type: file
-        - name: "--rna_layer"
-          type: string
-          description: "Input layer for the gene expression modality. If not specified, .X is used."
-          required: false
-        - name: "--prot_layer"
-          type: string
-          description: "Input layer for the antibody capture modality. If not specified, .X is used."
-          required: false
-    - name: "Outputs"
-      arguments:
-        - name: "--output"
-          type: file
-          required: true
-          direction: output
-          description: Destination path to the output.
-          example: output.h5mu
-    - name: "Highly variable features detection"
-      arguments:
-        - name: "--highly_variable_features_var_output"
-          alternatives: ["--filter_with_hvg_var_output"]
-          required: false
-          type: string
-          default: "filter_with_hvg"
-          description: In which .var slot to store a boolean array corresponding to the highly variable genes.
-        - name: "--highly_variable_features_obs_batch_key"
-          alternatives: [--filter_with_hvg_obs_batch_key]
-          type: string
-          default: "sample_id"
-          required: false
-          description: |
-            If specified, highly-variable genes are selected within each batch separately and merged. This simple 
-            process avoids the selection of batch-specific genes and acts as a lightweight batch correction method.
-    - name: "QC metrics calculation options"
-      arguments:
-        - name: "--var_qc_metrics"
-          description: |
-            Keys to select a boolean (containing only True or False) column from .var.
-            For each cell, calculate the proportion of total values for genes which are labeled 'True', 
-            compared to the total sum of the values for all genes.
-          type: string
-          multiple: True
-          multiple_sep: ','
-          required: false
-          default: ["filter_with_hvg"]
-          example: "ercc,highly_variable"
-        - name: "--top_n_vars"
-          type: integer
-          description: |
-            Number of top vars to be used to calculate cumulative proportions.
-            If not specified, proportions are not calculated. `--top_n_vars 20,50` finds
-            cumulative proportion to the 20th and 50th most expressed vars.
-          multiple: true
-          multiple_sep: ','
-          required: false
-          default: [50, 100, 200, 500]
-    - name: "PCA options"
-      arguments:
-        - name: "--pca_overwrite"
-          type: boolean_true
-          description: "Allow overwriting slots for PCA output."
-    - name: "CLR options"
-      arguments:
-        - name: "--clr_axis"
-          type: integer
-          description: "Axis to perform the CLR transformation on."
-          default: 0
-          required: false
-    - name: "RNA Scaling options"
-      description: |
-        Options for enabling scaling of the log-normalized data to unit variance and zero mean.
-        The scaled data will be output a different layer and representation with reduced dimensions
-        will be created and stored in addition to the non-scaled data.
-      arguments:
-        - name: "--rna_enable_scaling"
-          description: "Enable scaling for the RNA modality."
-          type: boolean_true
-        - name: "--rna_scaling_output_layer"
-          type: string
-          default: "scaled"
-          description: "Output layer where the scaled log-normalized data will be stored."
-        - name: "--rna_scaling_pca_obsm_output"
-          type: string
-          description: |
-            Name of the .obsm key where the PCA representation of the log-normalized
-            and scaled data is stored.
-          default: "scaled_pca"
-        - name: "--rna_scaling_pca_loadings_varm_output"
-          type: string
-          description: |
-            Name of the .varm key where the PCA loadings of the log-normalized and scaled
-            data is stored.
-          default: "scaled_pca_loadings"
-        - name: "--rna_scaling_pca_variance_uns_output"
-          type: string
-          description: |
-            Name of the .uns key where the variance and variance ratio will be stored as a map.
-            The map will contain two keys: variance and variance_ratio respectively.
-          default: "scaled_pca_variance"
-        - name: "--rna_scaling_umap_obsm_output"
-          type: string
-          description:
-            Name of the .obsm key where the UMAP representation of the log-normalized
-            and scaled data is stored.
-          default: "scaled_umap" 
-        - name: "--rna_scaling_max_value"
-          description: "Clip (truncate) data to this value after scaling. If not specified, do not clip."
-          required: false
-          type: double
-        - name: "--rna_scaling_zero_center"
-          type: boolean_false
-          description: If set, omit zero-centering variables, which allows to handle sparse input efficiently."
+name: "process_batches"
+namespace: "workflows/multiomics"
+description: |
+  This workflow serves as an entrypoint into the 'full_pipeline' in order to
+  re-run the multisample processing and the integration setup. An input .h5mu file will 
+  first be split in order to run the multisample processing per modality. Next, the modalities
+  are merged again and the integration setup pipeline is executed. Please note that this workflow
+  assumes that samples from multiple pipelines are already concatenated. 
+authors:
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--id"
+        required: true
+        type: string
+        description: ID of the sample.
+        example: foo
+      - name: "--input"
+        alternatives: [-i]
+        description: Path to the sample.
+        required: true
+        multiple: true
+        example: input.h5mu
+        type: file
+      - name: "--rna_layer"
+        type: string
+        description: "Input layer for the gene expression modality. If not specified, .X is used."
+        required: false
+      - name: "--prot_layer"
+        type: string
+        description: "Input layer for the antibody capture modality. If not specified, .X is used."
+        required: false
+  - name: "Outputs"
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: Destination path to the output.
+        example: output.h5mu
+  - name: "Highly variable features detection"
+    arguments:
+      - name: "--highly_variable_features_var_output"
+        alternatives: ["--filter_with_hvg_var_output"]
+        required: false
+        type: string
+        default: "filter_with_hvg"
+        description: In which .var slot to store a boolean array corresponding to the highly variable genes.
+      - name: "--highly_variable_features_obs_batch_key"
+        alternatives: [--filter_with_hvg_obs_batch_key]
+        type: string
+        default: "sample_id"
+        required: false
+        description: |
+          If specified, highly-variable genes are selected within each batch separately and merged. This simple 
+          process avoids the selection of batch-specific genes and acts as a lightweight batch correction method.
+  - name: "QC metrics calculation options"
+    arguments:
+      - name: "--var_qc_metrics"
+        description: |
+          Keys to select a boolean (containing only True or False) column from .var.
+          For each cell, calculate the proportion of total values for genes which are labeled 'True', 
+          compared to the total sum of the values for all genes.
+        type: string
+        multiple: True
+        multiple_sep: ','
+        required: false
+        default: ["filter_with_hvg"]
+        example: "ercc,highly_variable"
+      - name: "--top_n_vars"
+        type: integer
+        description: |
+          Number of top vars to be used to calculate cumulative proportions.
+          If not specified, proportions are not calculated. `--top_n_vars 20,50` finds
+          cumulative proportion to the 20th and 50th most expressed vars.
+        multiple: true
+        multiple_sep: ','
+        required: false
+        default: [50, 100, 200, 500]
+  - name: "PCA options"
+    arguments:
+      - name: "--pca_overwrite"
+        type: boolean_true
+        description: "Allow overwriting slots for PCA output."
+  - name: "CLR options"
+    arguments:
+      - name: "--clr_axis"
+        type: integer
+        description: "Axis to perform the CLR transformation on."
+        default: 0
+        required: false
+  - name: "RNA Scaling options"
+    description: |
+      Options for enabling scaling of the log-normalized data to unit variance and zero mean.
+      The scaled data will be output a different layer and representation with reduced dimensions
+      will be created and stored in addition to the non-scaled data.
+    arguments:
+      - name: "--rna_enable_scaling"
+        description: "Enable scaling for the RNA modality."
+        type: boolean_true
+      - name: "--rna_scaling_output_layer"
+        type: string
+        default: "scaled"
+        description: "Output layer where the scaled log-normalized data will be stored."
+      - name: "--rna_scaling_pca_obsm_output"
+        type: string
+        description: |
+          Name of the .obsm key where the PCA representation of the log-normalized
+          and scaled data is stored.
+        default: "scaled_pca"
+      - name: "--rna_scaling_pca_loadings_varm_output"
+        type: string
+        description: |
+          Name of the .varm key where the PCA loadings of the log-normalized and scaled
+          data is stored.
+        default: "scaled_pca_loadings"
+      - name: "--rna_scaling_pca_variance_uns_output"
+        type: string
+        description: |
+          Name of the .uns key where the variance and variance ratio will be stored as a map.
+          The map will contain two keys: variance and variance_ratio respectively.
+        default: "scaled_pca_variance"
+      - name: "--rna_scaling_umap_obsm_output"
+        type: string
+        description:
+          Name of the .obsm key where the UMAP representation of the log-normalized
+          and scaled data is stored.
+        default: "scaled_umap" 
+      - name: "--rna_scaling_max_value"
+        description: "Clip (truncate) data to this value after scaling. If not specified, do not clip."
+        required: false
+        type: double
+      - name: "--rna_scaling_zero_center"
+        type: boolean_false
+        description: If set, omit zero-centering variables, which allows to handle sparse input efficiently."
          
-  dependencies:
-    - name: dataflow/merge
-    - name: workflows/multiomics/split_modalities
-      alias: split_modalities_workflow
-    - name: workflows/prot/prot_multisample
-    - name: workflows/rna/rna_multisample
-    - name: workflows/multiomics/dimensionality_reduction
-      alias: dimensionality_reduction_rna
-    - name: workflows/multiomics/dimensionality_reduction
-      alias: dimensionality_reduction_prot
-    - name: transfer/publish
-    - name: workflows/multiomics/dimensionality_reduction
-      alias: dimensionality_reduction_scaling_rna 
-  resources:
-    - type: nextflow_script
-      path: main.nf
-      entrypoint: run_wf
-    - type: file
-      path: /src/workflows/utils/
-  test_resources:
-    - type: nextflow_script
-      path: test.nf
-      entrypoint: test_wf
-    - type: nextflow_script
-      path: test.nf
-      entrypoint: test_wf2
-    - path: /resources_test/concat_test_data
-    - path: /resources_test/10x_5k_anticmv
-platforms:
+dependencies:
+  - name: dataflow/merge
+  - name: workflows/multiomics/split_modalities
+    alias: split_modalities_workflow
+  - name: workflows/prot/prot_multisample
+  - name: workflows/rna/rna_multisample
+  - name: workflows/multiomics/dimensionality_reduction
+    alias: dimensionality_reduction_rna
+  - name: workflows/multiomics/dimensionality_reduction
+    alias: dimensionality_reduction_prot
+  - name: transfer/publish
+  - name: workflows/multiomics/dimensionality_reduction
+    alias: dimensionality_reduction_scaling_rna 
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+  - type: file
+    path: /src/workflows/utils/
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf2
+  - path: /resources_test/concat_test_data
+  - path: /resources_test/10x_5k_anticmv
+runners:
   - type: nextflow
