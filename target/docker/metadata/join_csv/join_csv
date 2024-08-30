@@ -449,13 +449,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.10.8" "mudata~=0.2.4" "pandas!=2.1.2" "numpy<2.0.0"
+  pip install --upgrade --no-cache-dir "anndata==0.10.8" "mudata~=0.2.4" "pandas!=2.1.2" "numpy<2.0.0"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component metadata join_csv"
-LABEL org.opencontainers.image.created="2024-08-29T02:46:56Z"
+LABEL org.opencontainers.image.created="2024-08-30T02:47:30Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1caae6eeb8e92a9df9964eea63b37e272399689f"
+LABEL org.opencontainers.image.revision="821f56ca8ebe0ecfedfab0aa0cc245bcda786c0f"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

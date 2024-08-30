@@ -3402,7 +3402,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.10.8",
+            "anndata==0.10.8",
             "mudata~=0.2.4",
             "pandas!=2.1.2",
             "numpy<2.0.0"
@@ -3506,7 +3506,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/xgboost",
     "viash_version" : "0.8.6",
-    "git_commit" : "1caae6eeb8e92a9df9964eea63b37e272399689f",
+    "git_commit" : "821f56ca8ebe0ecfedfab0aa0cc245bcda786c0f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
