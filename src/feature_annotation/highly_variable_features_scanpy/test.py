@@ -12,7 +12,7 @@ import pandas as pd
 meta = {
     'resources_dir': 'resources_test/',
     'config': './src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml',
-    'executable': './target/docker/feature_annotation/highly_variable_features_scanpy/highly_variable_features_scanpy'
+    'executable': './target/executable/feature_annotation/highly_variable_features_scanpy/highly_variable_features_scanpy'
 }
 ## VIASH END
 
