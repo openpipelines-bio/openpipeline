@@ -68,7 +68,13 @@ argument_groups:
         type: string
         description: |
           The name of the adata.obs column containing the batch labels. Must be provided when 'dsbn' is set to True.
-
+      - name: "--finetuned_checkpoints_key"
+        type: string
+        required: false
+        example: model_state_dict
+        description: |
+          Key in the model file containing the pretrained checkpoints. Only relevant for fine-tuned models.
+          
   - name: Outputs
     arguments:
       - name: "--output"
