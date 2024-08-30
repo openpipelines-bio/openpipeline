@@ -126,8 +126,6 @@
 
 * Bump `viash-actions` to `v6` (PR #821).
 
-* `resources_test_scripts/annotation_test_data.sh` script: Fetch pretrained CellTypist data and model to be used for testing (PR #825).
-
 * `reference/make_reference`: Do not try to extract genome fasta and transcriptome gtf if they are not gzipped (PR #856).
 
 ## BUG FIXES
