@@ -1,80 +1,83 @@
-functionality:
-  name: souporcell
-  namespace: genetic_demux
-  description: "souporcell is a method for clustering mixed-genotype scRNAseq experiments by individual."
-  authors:
-    - __merge__: /src/authors/xichen_wu.yaml
-      roles: [ author ]
-  argument_groups:
-  - name: "Input"
-    arguments:
-    - name: "--fasta"
-      type: file
-      description: reference fasta file
-    - name: "--bam"
-      type: file
-      description: cellranger bam
-    - name: "--bam_index"
-      type: file
-      description: cellranger bam index
-    - name: "--barcodes"
-      type: file
-      description: barcodes.tsv from cellranger
-    - name: "--clusters"
-      type: integer
-      description: number cluster, tbd add easy way to run on a range of k
-    - name: "--ploidy"
-      type: integer
-      default: 2
-      description: ploidy, must be 1 or 2
-    - name: "--min_alt"
-      type: integer
-      default: 10
-      description: min alt to use locus
-    - name: "--min_ref"
-      type: integer
-      default: 10
-      description: min ref to use locus
-    - name: "--max_loci"
-      type: integer
-      default: 2048
-      description: max loci per cell, affects speed
-    - name: "--restarts"
-      type: integer
-      description: number of restarts in clustering, when there are > 12 clusters we recommend increasing this to avoid local minima
-    - name: "--common_variants"
-      type: file
-      description: common variant loci or known variant loci vcf, must be vs same reference fasta
-    - name: "--known_genotypes"
-      type: file
-      description: known variants per clone in population vcf mode, must be .vcf right now we dont accept gzip or bcf sorry
-    - name: "--known_genotypes_sample_names"
-      type: string
-      description: which samples in population vcf from known genotypes option represent the donors in your sample
-    - name: "--skip_remap"
-      type: boolean_true
-      description: dont remap with minimap2 (not recommended unless in conjunction with --common_variants
-    - name: "--ignore"
-      type: boolean_true
-      description: set to True to ignore data error assertions
-  - name: "Output"
-    arguments:
-    - name: "--output"
-      alternatives: [ "-o" ]
-      type: file
-      direction: output
-      description: name of directory to place souporcell files
-      example: "souporcell_out"
-  resources:
-    - type: bash_script
-      path: script.sh
-  test_resources:
-    - type: bash_script
-      path: test.sh
-    - path: ../../../resources_test/demuxafy_test_data
-platforms:
-  - type: docker
-    image: cumulusprod/souporcell:2022.12
-  - type: nextflow
-    directives:
-      label: [ highmem, highcpu ]
+name: souporcell
+namespace: genetic_demux
+description: "souporcell is a method for clustering mixed-genotype scRNAseq experiments by individual."
+authors:
+  - __merge__: /src/authors/xichen_wu.yaml
+    roles: [ author ]
+argument_groups:
+- name: "Input"
+  arguments:
+  - name: "--fasta"
+    type: file
+    description: reference fasta file
+  - name: "--bam"
+    type: file
+    description: cellranger bam
+  - name: "--bam_index"
+    type: file
+    description: cellranger bam index
+  - name: "--barcodes"
+    type: file
+    description: barcodes.tsv from cellranger
+  - name: "--clusters"
+    type: integer
+    description: number cluster, tbd add easy way to run on a range of k
+  - name: "--ploidy"
+    type: integer
+    default: 2
+    description: ploidy, must be 1 or 2
+  - name: "--min_alt"
+    type: integer
+    default: 10
+    description: min alt to use locus
+  - name: "--min_ref"
+    type: integer
+    default: 10
+    description: min ref to use locus
+  - name: "--max_loci"
+    type: integer
+    default: 2048
+    description: max loci per cell, affects speed
+  - name: "--restarts"
+    type: integer
+    description: number of restarts in clustering, when there are > 12 clusters we recommend increasing this to avoid local minima
+  - name: "--common_variants"
+    type: file
+    description: common variant loci or known variant loci vcf, must be vs same reference fasta
+  - name: "--known_genotypes"
+    type: file
+    description: known variants per clone in population vcf mode, must be .vcf right now we dont accept gzip or bcf sorry
+  - name: "--known_genotypes_sample_names"
+    type: string
+    description: which samples in population vcf from known genotypes option represent the donors in your sample
+  - name: "--skip_remap"
+    type: boolean_true
+    description: dont remap with minimap2 (not recommended unless in conjunction with --common_variants
+  - name: "--ignore"
+    type: boolean_true
+    description: set to True to ignore data error assertions
+- name: "Output"
+  arguments:
+  - name: "--output"
+    alternatives: [ "-o" ]
+    type: file
+    direction: output
+    description: name of directory to place souporcell files
+    example: "souporcell_out"
+resources:
+  - type: bash_script
+    path: script.sh
+test_resources:
+  - type: bash_script
+    path: test.sh
+  - path: ../../../resources_test/demuxafy_test_data
+
+engines:
+- type: docker
+  image: cumulusprod/souporcell:2022.12
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [ highmem, highcpu ]

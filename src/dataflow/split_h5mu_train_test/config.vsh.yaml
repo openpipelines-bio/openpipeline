@@ -1,84 +1,83 @@
-functionality:
-  name: split_h5mu_train_test
-  namespace: dataflow
-  description: Split mudata object into training and testing (and validation) datasets based on observations into separate mudata objects.
-  authors:
-    - __merge__: /src/authors/jakub_majercik.yaml
-      roles: [ author ]
+name: split_h5mu_train_test
+namespace: dataflow
+description: Split mudata object into training and testing (and validation) datasets based on observations into separate mudata objects.
+authors:
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
 
-  argument_groups:
-    - name: Inputs
-      description: Input dataset in mudata format.
-      arguments:
-        - name: "--input"
-          type: file
-          description: The input (query) data to be labeled. Should be a .h5mu file.
-          direction: input
-          required: true
-          example: input.h5mu
-        - name: "--modality"
-          description: Which modality to process.
-          type: string
-          default: "rna"
-          required: false
-    - name: Outputs
-      description: Output arguments.
-      arguments:
-        - name: "--output_train"
-          type: file
-          description: The output training data in mudata format.
-          direction: output
-          example: output_train.h5mu
-          required: true
-        - name: "--output_test"
-          type: file
-          description: The output testing data in mudata format.
-          direction: output
-          example: output_test.h5mu
-          required: true
-        - name: "--output_val"
-          type: file
-          description: The output validation data in mudata format.
-          direction: output
-          required: false
-          example: output_val.h5mu
-        - name: "--compression"
-          type: string
-          choices: ["gzip", "lzf"]
-          required: false
-          example: "gzip"
-    - name: Split arguments
-      description: Model arguments.
-      arguments:
-        - name: "--test_size"
-          type: double
-          description: The proportion of the dataset to include in the test split.
-          default: 0.2
-          min: 0.0
-          max: 1.0
-        - name: "--val_size"
-          type: double
-          description: The proportion of the dataset to include in the validation split.
-          min: 0.0
-          max: 1.0
-        - name: "--shuffle"
-          type: boolean_true
-          description: Whether or not to shuffle the data before splitting.
-        - name: "--random_state"
-          type: integer
-          description: The seed used by the random number generator.
+argument_groups:
+  - name: Inputs
+    description: Input dataset in mudata format.
+    arguments:
+      - name: "--input"
+        type: file
+        description: The input (query) data to be labeled. Should be a .h5mu file.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality to process.
+        type: string
+        default: "rna"
+        required: false
+  - name: Outputs
+    description: Output arguments.
+    arguments:
+      - name: "--output_train"
+        type: file
+        description: The output training data in mudata format.
+        direction: output
+        example: output_train.h5mu
+        required: true
+      - name: "--output_test"
+        type: file
+        description: The output testing data in mudata format.
+        direction: output
+        example: output_test.h5mu
+        required: true
+      - name: "--output_val"
+        type: file
+        description: The output validation data in mudata format.
+        direction: output
+        required: false
+        example: output_val.h5mu
+      - name: "--compression"
+        type: string
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
+  - name: Split arguments
+    description: Model arguments.
+    arguments:
+      - name: "--test_size"
+        type: double
+        description: The proportion of the dataset to include in the test split.
+        default: 0.2
+        min: 0.0
+        max: 1.0
+      - name: "--val_size"
+        type: double
+        description: The proportion of the dataset to include in the validation split.
+        min: 0.0
+        max: 1.0
+      - name: "--shuffle"
+        type: boolean_true
+        description: Whether or not to shuffle the data before splitting.
+      - name: "--random_state"
+        type: integer
+        description: The seed used by the random number generator.
 
-  resources:
-    - type: python_script
-      path: script.py
-    - path: /src/utils/setup_logger.py
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
 
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 
-platforms:
+engines:
   - type: docker
     image: python:3.10-slim
     setup:
@@ -94,4 +93,6 @@ platforms:
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
   - type: nextflow
