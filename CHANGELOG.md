@@ -112,9 +112,6 @@
 * `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
 
 * `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
-  
-* `annotate/celltypist` component: Added a CellTypist annotation component (PR #825).
-
 
 * `workflows/annotation/harmony_knn`: workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
 
