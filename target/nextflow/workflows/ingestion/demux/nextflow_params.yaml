@@ -4,9 +4,9 @@ input: # please fill in - example: "bcl_dir"
 sample_sheet: # please fill in - example: "bcl_dir"
 demultiplexer: "bcl2fastq"
 # ignore_missing: true
-# output_fastq: "$id.$key.output_fastq.output_fastq"
-# output_fastqc: "$id.$key.output_fastqc.output_fastqc"
-# output_multiqc: "$id.$key.output_multiqc.output_multiqc"
+# output_fastq: "$id.$key.output_fastq"
+# output_fastqc: "$id.$key.output_fastqc"
+# output_multiqc: "$id.$key.output_multiqc"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

@@ -1,481 +1,359 @@
-functionality:
-  name: "rna_multisample"
-  namespace: "workflows/rna"
-  version: "main_build"
-  authors:
-  - name: "Dries De Maeyer"
-    roles:
-    - "author"
-    info:
-      role: "Core Team Member"
-      links:
-        email: "ddemaeyer@gmail.com"
-        github: "ddemaeyer"
-        linkedin: "dries-de-maeyer-b46a814"
-      organizations:
-      - name: "Janssen Pharmaceuticals"
-        href: "https://www.janssen.com"
-        role: "Principal Scientist"
-  - name: "Robrecht Cannoodt"
-    roles:
-    - "author"
-    - "maintainer"
-    info:
-      role: "Core Team Member"
-      links:
-        email: "robrecht@data-intuitive.com"
-        github: "rcannood"
-        orcid: "0000-0003-3641-729X"
-        linkedin: "robrechtcannoodt"
-      organizations:
-      - name: "Data Intuitive"
-        href: "https://www.data-intuitive.com"
-        role: "Data Science Engineer"
-      - name: "Open Problems"
-        href: "https://openproblems.bio"
-        role: "Core Member"
-  - name: "Dries Schaumont"
-    roles:
-    - "author"
-    info:
-      role: "Core Team Member"
-      links:
-        email: "dries@data-intuitive.com"
-        github: "DriesSchaumont"
-        orcid: "0000-0002-4389-0440"
-        linkedin: "dries-schaumont"
-      organizations:
-      - name: "Data Intuitive"
-        href: "https://www.data-intuitive.com"
-        role: "Data Scientist"
-  argument_groups:
-  - name: "Inputs"
-    arguments:
-    - type: "string"
-      name: "--id"
-      description: "ID of the concatenated file"
-      info: null
-      example:
-      - "concatenated"
-      required: true
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "file"
-      name: "--input"
-      description: "Path to the samples."
-      info: null
-      example:
-      - "dataset.h5mu"
-      must_exist: true
-      create_parent: true
-      required: true
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--modality"
-      description: "Modality to process."
-      info: null
-      default:
-      - "rna"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--layer"
-      description: "Input layer to use. If not specified, .X is used."
-      info: null
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-  - name: "Output"
-    arguments:
-    - type: "file"
-      name: "--output"
-      description: "Destination path to the output."
-      info: null
-      example:
-      - "output.h5mu"
-      must_exist: true
-      create_parent: true
-      required: true
-      direction: "output"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-  - name: "Filtering highly variable features"
-    arguments:
-    - type: "string"
-      name: "--highly_variable_features_var_output"
-      alternatives:
-      - "--filter_with_hvg_var_output"
-      description: "In which .var slot to store a boolean array corresponding to the\
-        \ highly variable features."
-      info: null
-      default:
-      - "filter_with_hvg"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--highly_variable_features_obs_batch_key"
-      alternatives:
-      - "--filter_with_hvg_obs_batch_key"
-      description: "If specified, highly-variable features are selected within each\
-        \ batch separately and merged. This simple \nprocess avoids the selection\
-        \ of batch-specific features and acts as a lightweight batch correction method.\
-        \ \nFor all flavors, featues are first sorted by how many batches they are\
-        \ highly variable. For dispersion-based flavors \nties are broken by normalized\
-        \ dispersion. If flavor = 'seurat_v3', ties are broken by the median (across\n\
-        batches) rank based on within-batch normalized variance.\n"
-      info: null
-      default:
-      - "sample_id"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--highly_variable_features_flavor"
-      alternatives:
-      - "--filter_with_hvg_flavor"
-      description: "Choose the flavor for identifying highly variable features. For\
-        \ the dispersion based methods\nin their default workflows, Seurat passes\
-        \ the cutoffs whereas Cell Ranger passes n_top_features.\n"
-      info: null
-      default:
-      - "seurat"
-      required: false
-      choices:
-      - "seurat"
-      - "cell_ranger"
-      - "seurat_v3"
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "integer"
-      name: "--highly_variable_features_n_top_features"
-      alternatives:
-      - "--filter_with_hvg_n_top_genes"
-      description: "Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor\
-        \ is set to 'seurat_v3'."
-      info: null
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-  - name: "QC metrics calculation options"
-    arguments:
-    - type: "string"
-      name: "--var_qc_metrics"
-      description: "Keys to select a boolean (containing only True or False) column\
-        \ from .var.\nFor each cell, calculate the proportion of total values for\
-        \ genes which are labeled 'True', \ncompared to the total sum of the values\
-        \ for all genes.\n"
-      info: null
-      example:
-      - "ercc,highly_variable"
-      default:
-      - "filter_with_hvg"
-      required: false
-      direction: "input"
-      multiple: true
-      multiple_sep: ";"
-      dest: "par"
-    - type: "integer"
-      name: "--top_n_vars"
-      description: "Number of top vars to be used to calculate cumulative proportions.\n\
-        If not specified, proportions are not calculated. `--top_n_vars 20,50` finds\n\
-        cumulative proportion to the 20th and 50th most expressed vars.\n"
-      info: null
-      default:
-      - 50
-      - 100
-      - 200
-      - 500
-      required: false
-      direction: "input"
-      multiple: true
-      multiple_sep: ";"
-      dest: "par"
-    - type: "string"
-      name: "--output_obs_num_nonzero_vars"
-      description: "Name of column in .obs describing, for each observation, the number\
-        \ of stored values\n(including explicit zeroes). In other words, the name\
-        \ of the column that counts\nfor each row the number of columns that contain\
-        \ data.\n"
-      info: null
-      default:
-      - "num_nonzero_vars"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--output_obs_total_counts_vars"
-      description: "Name of the column for .obs describing, for each observation (row),\n\
-        the sum of the stored values in the columns.\n"
-      info: null
-      default:
-      - "total_counts"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--output_var_num_nonzero_obs"
-      description: "Name of column describing, for each feature, the number of stored\
-        \ values\n(including explicit zeroes). In other words, the name of the column\
-        \ that counts\nfor each column the number of rows that contain data.\n"
-      info: null
-      default:
-      - "num_nonzero_obs"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--output_var_total_counts_obs"
-      description: "Name of the column in .var describing, for each feature (column),\n\
-        the sum of the stored values in the rows.\n"
-      info: null
-      default:
-      - "total_counts"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--output_var_obs_mean"
-      description: "Name of the column in .obs providing the mean of the values in\
-        \ each row.\n"
-      info: null
-      default:
-      - "obs_mean"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--output_var_pct_dropout"
-      description: "Name of the column in .obs providing for each feature the percentage\
-        \ of\nobservations the feature does not appear on (i.e. is missing). Same\
-        \ as `--num_nonzero_obs`\nbut percentage based.\n"
-      info: null
-      default:
-      - "pct_dropout"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-  - name: "RNA Scaling options"
-    description: "Options for enabling scaling of the log-normalized data to unit\
-      \ variance and zero mean.\nThe scaled data will be output a different layer\
-      \ and representation with reduced dimensions\nwill be created and stored in\
-      \ addition to the non-scaled data.\n"
-    arguments:
-    - type: "boolean_true"
-      name: "--enable_scaling"
-      description: "Enable scaling for the RNA modality."
-      info: null
-      direction: "input"
-      dest: "par"
-    - type: "string"
-      name: "--scaling_output_layer"
-      description: "Output layer where the scaled log-normalized data will be stored."
-      info: null
-      default:
-      - "scaled"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "double"
-      name: "--scaling_max_value"
-      description: "Clip (truncate) data to this value after scaling. If not specified,\
-        \ do not clip."
-      info: null
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "boolean_false"
-      name: "--scaling_zero_center"
-      description: "If set, omit zero-centering variables, which allows to handle\
-        \ sparse input efficiently.\""
-      info: null
-      direction: "input"
-      dest: "par"
-  resources:
-  - type: "nextflow_script"
-    path: "main.nf"
-    is_executable: true
-    entrypoint: "run_wf"
-  - type: "file"
-    path: "src/workflows/utils/"
-  - type: "file"
-    path: "./src/workflows/utils/labels.config"
-    dest: "nextflow_labels.config"
-  description: "Processing unimodal multi-sample RNA transcriptomics data."
-  test_resources:
-  - type: "nextflow_script"
-    path: "test.nf"
-    is_executable: true
-    entrypoint: "test_wf"
-  - type: "file"
-    path: "resources_test/concat_test_data"
-  - type: "file"
-    path: "src/base/openpipelinetestutils"
-    dest: "openpipelinetestutils"
+name: "rna_multisample"
+namespace: "workflows/rna"
+version: "main_build"
+authors:
+- name: "Dries De Maeyer"
+  roles:
+  - "author"
   info:
-    image: "/images/concepts/fig_workflow_multiomics_rna_multisample.svg"
-  status: "enabled"
-  requirements:
-    commands:
-    - "ps"
-  dependencies:
-  - name: "transform/normalize_total"
-    repository:
-      type: "local"
-      localPath: ""
-    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/transform/normalize_total/config.vsh.yaml"
-    configInfo:
-      functionalityName: "normalize_total"
-      git_tag: ""
-      git_remote: "https://github.com/openpipelines-bio/openpipeline"
-      viash_version: "0.8.6"
-      config: "/home/runner/work/openpipeline/openpipeline/src/transform/normalize_total/config.vsh.yaml"
-      functionalityNamespace: "transform"
-      output: ""
-      platform: ""
-      git_commit: "7b78bb5aca0ed0129b27bfeff85195414f06c994"
-      executable: "/nextflow/transform/normalize_total/main.nf"
-    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/normalize_total"
-  - name: "transform/log1p"
-    repository:
-      type: "local"
-      localPath: ""
-    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/transform/log1p/config.vsh.yaml"
-    configInfo:
-      functionalityName: "log1p"
-      git_tag: ""
-      git_remote: "https://github.com/openpipelines-bio/openpipeline"
-      viash_version: "0.8.6"
-      config: "/home/runner/work/openpipeline/openpipeline/src/transform/log1p/config.vsh.yaml"
-      functionalityNamespace: "transform"
-      output: ""
-      platform: ""
-      git_commit: "7b78bb5aca0ed0129b27bfeff85195414f06c994"
-      executable: "/nextflow/transform/log1p/main.nf"
-    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p"
-  - name: "feature_annotation/highly_variable_features_scanpy"
-    repository:
-      type: "local"
-      localPath: ""
-    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml"
-    configInfo:
-      functionalityName: "highly_variable_features_scanpy"
-      git_tag: ""
-      git_remote: "https://github.com/openpipelines-bio/openpipeline"
-      viash_version: "0.8.6"
-      config: "/home/runner/work/openpipeline/openpipeline/src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml"
-      functionalityNamespace: "feature_annotation"
-      output: ""
-      platform: ""
-      git_commit: "7b78bb5aca0ed0129b27bfeff85195414f06c994"
-      executable: "/nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
-    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy"
-  - name: "workflows/qc/qc"
-    alias: "rna_qc"
-    repository:
-      type: "local"
-      localPath: ""
-    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/workflows/qc/qc/config.vsh.yaml"
-    configInfo:
-      functionalityName: "qc"
-      git_tag: ""
-      git_remote: "https://github.com/openpipelines-bio/openpipeline"
-      viash_version: "0.8.6"
-      config: "/home/runner/work/openpipeline/openpipeline/src/workflows/qc/qc/config.vsh.yaml"
-      functionalityNamespace: "workflows/qc"
-      output: ""
-      platform: ""
-      git_commit: "7b78bb5aca0ed0129b27bfeff85195414f06c994"
-      executable: "/nextflow/workflows/qc/qc/main.nf"
-    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc"
-  - name: "transform/delete_layer"
-    repository:
-      type: "local"
-      localPath: ""
-    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/transform/delete_layer/config.vsh.yaml"
-    configInfo:
-      functionalityName: "delete_layer"
-      git_tag: ""
-      git_remote: "https://github.com/openpipelines-bio/openpipeline"
-      viash_version: "0.8.6"
-      config: "/home/runner/work/openpipeline/openpipeline/src/transform/delete_layer/config.vsh.yaml"
-      functionalityNamespace: "transform"
-      output: ""
-      platform: ""
-      git_commit: "7b78bb5aca0ed0129b27bfeff85195414f06c994"
-      executable: "/nextflow/transform/delete_layer/main.nf"
-    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/delete_layer"
-  - name: "metadata/add_id"
-    repository:
-      type: "local"
-      localPath: ""
-    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/metadata/add_id/config.vsh.yaml"
-    configInfo:
-      functionalityName: "add_id"
-      git_tag: ""
-      git_remote: "https://github.com/openpipelines-bio/openpipeline"
-      viash_version: "0.8.6"
-      config: "/home/runner/work/openpipeline/openpipeline/src/metadata/add_id/config.vsh.yaml"
-      functionalityNamespace: "metadata"
-      output: ""
-      platform: ""
-      git_commit: "7b78bb5aca0ed0129b27bfeff85195414f06c994"
-      executable: "/nextflow/metadata/add_id/main.nf"
-    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
-  - name: "transform/scale"
-    repository:
-      type: "local"
-      localPath: ""
-    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/transform/scale/config.vsh.yaml"
-    configInfo:
-      functionalityName: "scale"
-      git_tag: ""
-      git_remote: "https://github.com/openpipelines-bio/openpipeline"
-      viash_version: "0.8.6"
-      config: "/home/runner/work/openpipeline/openpipeline/src/transform/scale/config.vsh.yaml"
-      functionalityNamespace: "transform"
-      output: ""
-      platform: ""
-      git_commit: "7b78bb5aca0ed0129b27bfeff85195414f06c994"
-      executable: "/nextflow/transform/scale/main.nf"
-    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/scale"
-  set_wd_to_resources_dir: false
-platforms:
+    role: "Core Team Member"
+    links:
+      email: "ddemaeyer@gmail.com"
+      github: "ddemaeyer"
+      linkedin: "dries-de-maeyer-b46a814"
+    organizations:
+    - name: "Janssen Pharmaceuticals"
+      href: "https://www.janssen.com"
+      role: "Principal Scientist"
+- name: "Robrecht Cannoodt"
+  roles:
+  - "author"
+  - "maintainer"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "robrecht@data-intuitive.com"
+      github: "rcannood"
+      orcid: "0000-0003-3641-729X"
+      linkedin: "robrechtcannoodt"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Science Engineer"
+    - name: "Open Problems"
+      href: "https://openproblems.bio"
+      role: "Core Member"
+- name: "Dries Schaumont"
+  roles:
+  - "author"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "dries@data-intuitive.com"
+      github: "DriesSchaumont"
+      orcid: "0000-0002-4389-0440"
+      linkedin: "dries-schaumont"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Scientist"
+argument_groups:
+- name: "Inputs"
+  arguments:
+  - type: "string"
+    name: "--id"
+    description: "ID of the concatenated file"
+    info: null
+    example:
+    - "concatenated"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--input"
+    description: "Path to the samples."
+    info: null
+    example:
+    - "dataset.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--modality"
+    description: "Modality to process."
+    info: null
+    default:
+    - "rna"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--layer"
+    description: "Input layer to use. If not specified, .X is used."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Output"
+  arguments:
+  - type: "file"
+    name: "--output"
+    description: "Destination path to the output."
+    info: null
+    example:
+    - "output.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+- name: "Filtering highly variable features"
+  arguments:
+  - type: "string"
+    name: "--highly_variable_features_var_output"
+    alternatives:
+    - "--filter_with_hvg_var_output"
+    description: "In which .var slot to store a boolean array corresponding to the\
+      \ highly variable features."
+    info: null
+    default:
+    - "filter_with_hvg"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--highly_variable_features_obs_batch_key"
+    alternatives:
+    - "--filter_with_hvg_obs_batch_key"
+    description: "If specified, highly-variable features are selected within each\
+      \ batch separately and merged. This simple \nprocess avoids the selection of\
+      \ batch-specific features and acts as a lightweight batch correction method.\
+      \ \nFor all flavors, featues are first sorted by how many batches they are highly\
+      \ variable. For dispersion-based flavors \nties are broken by normalized dispersion.\
+      \ If flavor = 'seurat_v3', ties are broken by the median (across\nbatches) rank\
+      \ based on within-batch normalized variance.\n"
+    info: null
+    default:
+    - "sample_id"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--highly_variable_features_flavor"
+    alternatives:
+    - "--filter_with_hvg_flavor"
+    description: "Choose the flavor for identifying highly variable features. For\
+      \ the dispersion based methods\nin their default workflows, Seurat passes the\
+      \ cutoffs whereas Cell Ranger passes n_top_features.\n"
+    info: null
+    default:
+    - "seurat"
+    required: false
+    choices:
+    - "seurat"
+    - "cell_ranger"
+    - "seurat_v3"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--highly_variable_features_n_top_features"
+    alternatives:
+    - "--filter_with_hvg_n_top_genes"
+    description: "Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor\
+      \ is set to 'seurat_v3'."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "QC metrics calculation options"
+  arguments:
+  - type: "string"
+    name: "--var_qc_metrics"
+    description: "Keys to select a boolean (containing only True or False) column\
+      \ from .var.\nFor each cell, calculate the proportion of total values for genes\
+      \ which are labeled 'True', \ncompared to the total sum of the values for all\
+      \ genes.\n"
+    info: null
+    example:
+    - "ercc,highly_variable"
+    default:
+    - "filter_with_hvg"
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ","
+  - type: "integer"
+    name: "--top_n_vars"
+    description: "Number of top vars to be used to calculate cumulative proportions.\n\
+      If not specified, proportions are not calculated. `--top_n_vars 20,50` finds\n\
+      cumulative proportion to the 20th and 50th most expressed vars.\n"
+    info: null
+    default:
+    - 50
+    - 100
+    - 200
+    - 500
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ","
+  - type: "string"
+    name: "--output_obs_num_nonzero_vars"
+    description: "Name of column in .obs describing, for each observation, the number\
+      \ of stored values\n(including explicit zeroes). In other words, the name of\
+      \ the column that counts\nfor each row the number of columns that contain data.\n"
+    info: null
+    default:
+    - "num_nonzero_vars"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_obs_total_counts_vars"
+    description: "Name of the column for .obs describing, for each observation (row),\n\
+      the sum of the stored values in the columns.\n"
+    info: null
+    default:
+    - "total_counts"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_var_num_nonzero_obs"
+    description: "Name of column describing, for each feature, the number of stored\
+      \ values\n(including explicit zeroes). In other words, the name of the column\
+      \ that counts\nfor each column the number of rows that contain data.\n"
+    info: null
+    default:
+    - "num_nonzero_obs"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_var_total_counts_obs"
+    description: "Name of the column in .var describing, for each feature (column),\n\
+      the sum of the stored values in the rows.\n"
+    info: null
+    default:
+    - "total_counts"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_var_obs_mean"
+    description: "Name of the column in .obs providing the mean of the values in each\
+      \ row.\n"
+    info: null
+    default:
+    - "obs_mean"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_var_pct_dropout"
+    description: "Name of the column in .obs providing for each feature the percentage\
+      \ of\nobservations the feature does not appear on (i.e. is missing). Same as\
+      \ `--num_nonzero_obs`\nbut percentage based.\n"
+    info: null
+    default:
+    - "pct_dropout"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "RNA Scaling options"
+  description: "Options for enabling scaling of the log-normalized data to unit variance\
+    \ and zero mean.\nThe scaled data will be output a different layer and representation\
+    \ with reduced dimensions\nwill be created and stored in addition to the non-scaled\
+    \ data.\n"
+  arguments:
+  - type: "boolean_true"
+    name: "--enable_scaling"
+    description: "Enable scaling for the RNA modality."
+    info: null
+    direction: "input"
+  - type: "string"
+    name: "--scaling_output_layer"
+    description: "Output layer where the scaled log-normalized data will be stored."
+    info: null
+    default:
+    - "scaled"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--scaling_max_value"
+    description: "Clip (truncate) data to this value after scaling. If not specified,\
+      \ do not clip."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean_false"
+    name: "--scaling_zero_center"
+    description: "If set, omit zero-centering variables, which allows to handle sparse\
+      \ input efficiently.\""
+    info: null
+    direction: "input"
+resources:
+- type: "nextflow_script"
+  path: "main.nf"
+  is_executable: true
+  entrypoint: "run_wf"
+- type: "file"
+  path: "utils"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Processing unimodal multi-sample RNA transcriptomics data."
+test_resources:
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf"
+- type: "file"
+  path: "concat_test_data"
+- type: "file"
+  path: "openpipelinetestutils"
+  dest: "openpipelinetestutils"
+info:
+  image: "/images/concepts/fig_workflow_multiomics_rna_multisample.svg"
+status: "enabled"
+dependencies:
+- name: "transform/normalize_total"
+  repository:
+    type: "local"
+- name: "transform/log1p"
+  repository:
+    type: "local"
+- name: "feature_annotation/highly_variable_features_scanpy"
+  repository:
+    type: "local"
+- name: "workflows/qc/qc"
+  alias: "rna_qc"
+  repository:
+    type: "local"
+- name: "transform/delete_layer"
+  repository:
+    type: "local"
+- name: "metadata/add_id"
+  repository:
+    type: "local"
+- name: "transform/scale"
+  repository:
+    type: "local"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
 - type: "nextflow"
   id: "nextflow"
   directives:
@@ -487,26 +365,44 @@ platforms:
     publish: false
   config:
     labels:
-      mem1gb: "memory = 1.GB"
-      mem2gb: "memory = 2.GB"
-      mem4gb: "memory = 4.GB"
-      mem8gb: "memory = 8.GB"
-      mem16gb: "memory = 16.GB"
-      mem32gb: "memory = 32.GB"
-      mem64gb: "memory = 64.GB"
-      mem128gb: "memory = 128.GB"
-      mem256gb: "memory = 256.GB"
-      mem512gb: "memory = 512.GB"
-      mem1tb: "memory = 1.TB"
-      mem2tb: "memory = 2.TB"
-      mem4tb: "memory = 4.TB"
-      mem8tb: "memory = 8.TB"
-      mem16tb: "memory = 16.TB"
-      mem32tb: "memory = 32.TB"
-      mem64tb: "memory = 64.TB"
-      mem128tb: "memory = 128.TB"
-      mem256tb: "memory = 256.TB"
-      mem512tb: "memory = 512.TB"
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
       cpu1: "cpus = 1"
       cpu2: "cpus = 2"
       cpu5: "cpus = 5"
@@ -521,11 +417,39 @@ platforms:
     - "includeConfig(\"nextflow_labels.config\")"
   debug: false
   container: "docker"
-info:
-  config: "/home/runner/work/openpipeline/openpipeline/src/workflows/rna/rna_multisample/config.vsh.yaml"
-  platform: "nextflow"
-  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample"
-  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample/main.nf"
-  viash_version: "0.8.6"
-  git_commit: "7b78bb5aca0ed0129b27bfeff85195414f06c994"
+build_info:
+  config: "src/workflows/rna/rna_multisample/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "native"
+  output: "target/nextflow/workflows/rna/rna_multisample"
+  executable: "target/nextflow/workflows/rna/rna_multisample/main.nf"
+  viash_version: "0.9.0-RC7"
+  git_commit: "0331d7ed173521811fbe970c3bf20e4232b00919"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  dependencies:
+  - "target/nextflow/transform/normalize_total"
+  - "target/nextflow/transform/log1p"
+  - "target/nextflow/feature_annotation/highly_variable_features_scanpy"
+  - "target/nextflow/workflows/qc/qc"
+  - "target/nextflow/transform/delete_layer"
+  - "target/nextflow/metadata/add_id"
+  - "target/nextflow/transform/scale"
+package_config:
+  version: "dev"
+  info: null
+  viash_version: "0.9.0-RC7"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
+    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
+    \ := 'includeConfig(\"nextflow_labels.config\")'"
+  - ".version := \"main_build\""
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

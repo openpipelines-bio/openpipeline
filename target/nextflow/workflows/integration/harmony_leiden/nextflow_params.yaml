@@ -28,3 +28,5 @@ obsm_umap: "X_leiden_harmony_umap"
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

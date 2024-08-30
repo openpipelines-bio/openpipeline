@@ -1,7 +1,7 @@
 # Arguments
 input: # please fill in - example: "path/to/file"
 modality: "rna"
-# output: "$id.$key.output.h5ad"
+# output: "output.h5ad"
 # output_compression: "gzip"
 obs_batch: "batch"
 obsm_input: "X_pca"

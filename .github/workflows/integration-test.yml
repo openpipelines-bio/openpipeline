@@ -81,7 +81,7 @@ jobs:
     - name: Remove unused test resources to save space
       shell: bash
       run: |
-        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" -c 'del(.functionality.dependencies)' | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" -c 'del(.dependencies)' | jq -r -c '(.build_info.config | capture("^(?<dir>.*\/)").dir) as $dir | .test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
         to_not_remove=()
         for resource in "${resources[@]}"; do
           if [[ $resource == *"resources_test"* ]]; then
@@ -104,9 +104,8 @@ jobs:
       uses: viash-io/viash-actions/ns-build@v6
       with:
         config_mod: |
-          .functionality.version := 'integration_build'
-          .platforms[.type == 'docker'].target_tag := 'integration_build'
-        platform: 'docker|nextflow'
+          .version := 'integration_build'
+          .engines[.type == 'docker'].target_tag := 'integration_build'
         src: ${{ matrix.component.dir }}
         query: "^test_workflows"
         setup: build

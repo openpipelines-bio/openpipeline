@@ -1,56 +1,55 @@
-functionality:
-  name: "cellranger_multi"
-  namespace: "workflows/ingestion"
-  description: "A pipeline for running Cell Ranger multi."
-  info:
-    name: Cell Ranger multi
-  authors:
-    - __merge__: /src/authors/dries_schaumont.yaml
-      roles: [ author ]
-  __merge__: /src/mapping/cellranger_multi/cellranger_multi.yaml
-  argument_groups:
-    - name: Outputs
-      arguments:
-        - name: "--output_raw"
-          type: file
-          direction: output
-          description: "The raw output folder."
-          required: true
-          example: output_dir/
-        - name: "--output_h5mu"
-          type: file
-          multiple: true
-          description: |
-            Locations for the output files. Must contain a wildcard (*) character,
-            which will be replaced with the sample name.
-          example: "*.h5mu"
-          direction: output
-          required: true
-        - name: "--uns_metrics"
-          type: string
-          description: Name of the .uns slot under which to QC metrics (if any).
-          default: "metrics_cellranger"
-  dependencies:
-    - name: mapping/cellranger_multi
-      alias: cellranger_multi_component
-    - name: convert/from_cellranger_multi_to_h5mu
-  resources:
-    - type: nextflow_script
-      path: main.nf
-      entrypoint: run_wf
-    - type: file
-      path: /src/workflows/utils/
-  test_resources:
-    - type: nextflow_script
-      path: test.nf
-      entrypoint: test_wf
-    - type: nextflow_script
-      path: test.nf
-      entrypoint: test_wf2
-    - path: /resources_test/10x_5k_anticmv/raw/
-      dest: 10x_5k_anticmv/raw/
-    - path: /resources_test/10x_5k_fixed/raw/
-      dest: 10x_5k_fixed/raw/ 
-    - path: /resources_test/reference_gencodev41_chr1
-platforms:
+name: "cellranger_multi"
+namespace: "workflows/ingestion"
+description: "A pipeline for running Cell Ranger multi."
+info:
+  name: Cell Ranger multi
+authors:
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ author ]
+__merge__: /src/mapping/cellranger_multi/cellranger_multi.yaml
+argument_groups:
+  - name: Outputs
+    arguments:
+      - name: "--output_raw"
+        type: file
+        direction: output
+        description: "The raw output folder."
+        required: true
+        example: output_dir/
+      - name: "--output_h5mu"
+        type: file
+        multiple: true
+        description: |
+          Locations for the output files. Must contain a wildcard (*) character,
+          which will be replaced with the sample name.
+        example: "*.h5mu"
+        direction: output
+        required: true
+      - name: "--uns_metrics"
+        type: string
+        description: Name of the .uns slot under which to QC metrics (if any).
+        default: "metrics_cellranger"
+dependencies:
+  - name: mapping/cellranger_multi
+    alias: cellranger_multi_component
+  - name: convert/from_cellranger_multi_to_h5mu
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+  - type: file
+    path: /src/workflows/utils/
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf2
+  - path: /resources_test/10x_5k_anticmv/raw/
+    dest: 10x_5k_anticmv/raw/
+  - path: /resources_test/10x_5k_fixed/raw/
+    dest: 10x_5k_fixed/raw/ 
+  - path: /resources_test/reference_gencodev41_chr1
+runners:
   - type: nextflow

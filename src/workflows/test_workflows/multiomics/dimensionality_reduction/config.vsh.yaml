@@ -1,21 +1,20 @@
-functionality:
-  name: "dimensionality_reduction_test"
-  namespace: "test_workflows/multiomics"
-  description: "This component test the output of the integration test of dimensionality_reduction."
-  authors:
-    - __merge__: /src/authors/kai_waldrant.yaml
-  argument_groups:
-    - name: Inputs
-      arguments:
-        - name: "--input"
-          type: file
-          required: true
-          description: Path to h5mu output.
-          example: foo.final.h5mu
-  resources:
-    - type: python_script
-      path: script.py
-platforms:
+name: "dimensionality_reduction_test"
+namespace: "test_workflows/multiomics"
+description: "This component test the output of the integration test of dimensionality_reduction."
+authors:
+  - __merge__: /src/authors/kai_waldrant.yaml
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        description: Path to h5mu output.
+        example: foo.final.h5mu
+resources:
+  - type: python_script
+    path: script.py
+engines:
   - type: docker
     image: python:3.12-slim
     setup:
@@ -24,4 +23,6 @@ platforms:
           - procps
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+runners:
+  - type: executable
   - type: nextflow

@@ -14,7 +14,7 @@ from itertools import product
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/qc/calculate_qc_metrics/calculate_qc_metrics',
+    'executable': './target/executable/qc/calculate_qc_metrics/calculate_qc_metrics',
     'resources_dir': "./resources_test/pbmc_1k_protein_v3/",
     'config': './src/qc/calculate_qc_metrics/config.vsh.yaml',
     'cpus': 2

@@ -11,12 +11,12 @@ obs_batch: "sample_id"
 # var_input: "foo"
 
 # Outputs
-# output: "$id.$key.output.output"
+# output: "$id.$key.output"
 obsm_output: "X_integrated_totalvi"
 obsm_normalized_rna_output: "X_totalvi_normalized_rna"
 obsm_normalized_protein_output: "X_totalvi_normalized_protein"
-# reference_model_path: "$id.$key.reference_model_path.reference_model_path"
-# query_model_path: "$id.$key.query_model_path.query_model_path"
+# reference_model_path: "totalvi_model_reference"
+# query_model_path: "totalvi_model_query"
 
 # Learning parameters
 max_epochs: 400
@@ -26,3 +26,5 @@ weight_decay: 0.0
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

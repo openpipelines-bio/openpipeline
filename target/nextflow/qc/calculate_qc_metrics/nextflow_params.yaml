@@ -3,10 +3,6 @@ input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # layer: "raw_counts"
 
-# Outputs
-# output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
-
 # Metrics added to .obs
 # var_qc_metrics: ["ercc,highly_variable,mitochondrial"]
 # var_qc_metrics_fill_na_value: true
@@ -20,6 +16,12 @@ output_var_total_counts_obs: "total_counts"
 output_var_obs_mean: "obs_mean"
 output_var_pct_dropout: "pct_dropout"
 
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments
