@@ -6,7 +6,7 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/labels_transfer/knn/knn',
+    'executable': './target/executable/labels_transfer/knn/knn',
     'resources_dir': './resources_test/'
 }
 ## VIASH END

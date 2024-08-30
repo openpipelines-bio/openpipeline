@@ -12,6 +12,12 @@
 
 * `lianapy`: bumped version to `1.3.0` (PR #827 and PR #862). Additionally, `groupby` is now a required argument.
 
+* `concat`: this component was deprecated and has now been removed, use `concatenate_h5mu` instead (PR #796).
+
+* The `workflows` folder in the root of the project no longer contains symbolic links to the build workflows in `target`.
+  Using any workflows that was previously linked in this directory will now result in an error which will indicate
+  the location of the workflow to be used instead (PR #796).
+  
 * `XGBoost`: bump version to `2.0.3` (PR #646).
 
 * Several components: update anndata to `0.10.8` and mudata to `0.2.3` (PR #645). 
@@ -32,7 +38,13 @@
 
 * `reference/cellranger_mkgtf`: Rename `reference/mkgtf` to `reference/cellranger_mkgtf` (PR #846).
 
+* `interactive/run_cellxgene` and `interactive/run_cirrocumulus` were removed (PR #796).
+
+* `reference/build_cellranger_arc_reference`: a default value of "output" is now specified for the argument `--genome`, inline with `reference/build_cellranger_reference` component. Additionally, providing a value for `--organism` is no longer required and its default value of `Homo Sapiens` has been removed (PR #864).
+
 ## NEW FUNCTIONALITY
+
+* Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
 
 * `process_samples`, `process_batches` and `rna_multisample` workflows: added functionality to scale the log-normalized 
   gene expression data to unit variance and zero mean. The scaled data will be output to a different layer and the
@@ -79,7 +91,21 @@
 
 * `annotete/scanvi` component: Added a component to annotate cells using scANVI (PR #833).
 
+* `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
+
+* `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
+
+* `workflows/ingestion/make_reference`: add possibility to build CellRanger ARC references. Added `--motifs_file`, `--non_nuclear_contigs` and `--output_cellranger_arc` arguments (PR #864).
+
+* Test resources (reference_gencodev41_chr1): switch reference genome for CellRanger to ARC variant (PR #864).
+
+* `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
+
+* `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
+
 ## MINOR CHANGES
+
+* `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
 
 * `neighbors/find_neighbors` component: Modified to include results of KNN in the output file (PR #748).
   2 new optional arguments added to set .obsm slots to save KNN results into:
@@ -110,6 +136,8 @@
   which is present in another sample; causing the values being filled with `NA` (PR #837).
 
 * `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR #852).
+
+* Fix failing tests for `ingestion/cellranger_postprocessing`, `ingestion/conversion` and `multiomics/process_batches` (PR #869).
 
 ## DOCUMENTATION
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+set -eou pipefail
 
 ## VIASH START
 par_genome_fasta="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz"
@@ -12,11 +12,16 @@ par_output_gtf="temp/reference.gtf.gz"
 ## VIASH END
 
 # create temporary directory
-tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_functionality_name-XXXXXXXX")
+tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
 }
 trap clean_up EXIT
+
+echo "> Getting path of fasta file"
+par_genome_fasta=$(realpath $par_genome_fasta)
+echo "> Getting path of annotation file"
+par_transcriptome_gtf=$(realpath $par_transcriptome_gtf)
 
 echo "> Processing genome sequence"
 genome_fasta="$tmpdir/genome_sequence.fa"
