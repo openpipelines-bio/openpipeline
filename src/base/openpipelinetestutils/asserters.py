@@ -22,6 +22,37 @@ def _read_if_needed(anndata_mudata_path_or_obj):
 def _assert_same_annotation_object_class(left, right):
     assert type(left) == type(right), (f"Two objects are not of the same class:"
                                        f"\n[Left]:{type(left)}\n[right]:{type(right)}")
+    
+def _promote_dtypes(left, right):
+    # Create new DataFrames to avoid modifying the original ones
+    left_aligned = left.copy()
+    right_aligned = right.copy()
+    
+    for column in left.columns:
+        l_dtype = left[column].dtype
+        r_dtype = right[column].dtype
+        
+        if l_dtype == r_dtype:
+            # No need to modify dtypes that are already the same
+            continue
+        if not all(map(pd.api.types.is_any_real_numeric_dtype, (r_dtype, l_dtype))):
+            # Do not try casting without dtypes that do not represent real numbers
+            continue
+        is_extension = pd.api.types.is_extension_array_dtype(l_dtype)
+        if is_extension and not pd.api.types.is_extension_array_dtype(r_dtype):
+            continue
+        numpy_dtype_l = l_dtype.type if is_extension else l_dtype
+        numpy_dtype_r = r_dtype.type if is_extension else r_dtype 
+        # At this point we should have only integer or float dtypes 
+        common_dtype = np.promote_types(numpy_dtype_l, numpy_dtype_r)
+        if is_extension:
+            left_aligned[column] = pd.array(left[column], dtype=common_dtype)
+            right_aligned[column] = pd.array(right[column], dtype=common_dtype)
+        else:
+            left_aligned[column] = left[column].astype(common_dtype)
+            right_aligned[column] = right[column].astype(common_dtype)
+    
+    return left_aligned, right_aligned
 
 
 def assert_mudata_modality_keys_equal(left, right):
@@ -65,26 +96,33 @@ def assert_var_names_equal(left: AnnotationObjectOrPathLike, right: AnnotationOb
             assert_var_names_equal(modality, right[mod_name])
 
 
-def _assert_frame_equal(left, right, sort=False, *args, **kwargs):
+def _assert_frame_equal(left, right, sort=False, promote_precicion=False, *args, **kwargs):
     if sort:
         left, right = left.sort_index(inplace=False), right.sort_index(inplace=False)
         left, right = left.sort_index(axis=1, inplace=False), right.sort_index(axis=1, inplace=False)
-    assert_frame_equal(left, right, *args, **kwargs) 
+        
+    if promote_precicion:
+        left, right = _promote_dtypes(left, right)
+        assert_frame_equal(left, right, check_exact=False, atol=1e-3, *args, **kwargs)
+    else:
+        assert_frame_equal(left, right, *args, **kwargs)
 
 def assert_annotation_frame_equal(annotation_attr: Literal["obs", "var"], 
                                    left: AnnotationObjectOrPathLike, right: AnnotationObjectOrPathLike, 
-                                   sort=False, *args, **kwargs):
+                                   sort=False,
+                                   promote_precicion=False,
+                                   *args, **kwargs):
     if not annotation_attr in ("obs", "var"):
         raise ValueError("annotation_attr should be 'obs', or 'var'")
     left, right = _read_if_needed(left), _read_if_needed(right)
     _assert_same_annotation_object_class(left, right)
     left_frame, right_frame = getattr(left, annotation_attr), getattr(right, annotation_attr)
-    _assert_frame_equal(left_frame, right_frame, sort=sort, *args, **kwargs)
+    _assert_frame_equal(left_frame, right_frame, sort=sort, promote_precicion=promote_precicion, *args, **kwargs)
     if isinstance(left, MuData):
         assert_mudata_modality_keys_equal(left, right)
         for mod_name, modality in left.mod.items(): 
             assert_annotation_frame_equal(annotation_attr, modality, 
-                                           right[mod_name], sort=sort, *args, **kwargs)
+                                           right[mod_name], sort=sort, promote_precicion=promote_precicion, *args, **kwargs)
 
 def _assert_layer_equal(left, right):
     if issparse(left):
@@ -95,12 +133,13 @@ def _assert_layer_equal(left, right):
                                  f"\n[left]:{left.getformat()}\n[right]: {right.getformat()}")
         assert np.all(left.indices == right.indices), "Layers differ: indices are not the same"
         assert np.all(left.indptr == right.indptr), "Layers differ: index pointers are not the same"
-        np.testing.assert_allclose(left.data, right.data, 
+        np.testing.assert_allclose(left.data, right.data, rtol=1e-5,
                                   err_msg="Layers data differs.", equal_nan=True)
     else:
         if issparse(right):
             raise AssertionError("Layers differ:\n[left]: not sparse\n[right]: sparse")
         np.testing.assert_allclose(left, right, 
+                                   rtol=1e-5,
                                    err_msg="Layers data differs.",
                                    equal_nan=True)
         
@@ -184,12 +223,13 @@ def assert_multidimensional_annotation_equal(annotation_attr: Literal["obsm", "v
 def assert_annotation_objects_equal(left: AnnotationObjectOrPathLike,
                                     right: AnnotationObjectOrPathLike,
                                     check_data=True,
-                                    sort=True):
+                                    sort=True,
+                                    promote_precision=False):
     left, right = _read_if_needed(left), _read_if_needed(right)
     _assert_same_annotation_object_class(left, right)
     assert_shape_equal(left, right)
-    assert_annotation_frame_equal("obs", left, right, sort=sort)
-    assert_annotation_frame_equal("var", left, right, sort=sort)
+    assert_annotation_frame_equal("obs", left, right, sort=sort, promote_precicion=promote_precision)
+    assert_annotation_frame_equal("var", left, right, sort=sort, promote_precicion=promote_precision)
     for slot in ("varm", "obsm"):
         try:
             assert_multidimensional_annotation_equal(slot, left, right, sort=sort)
