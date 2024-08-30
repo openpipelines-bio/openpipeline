@@ -85,6 +85,8 @@
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
   
+* `annotate/celltypist` component: Added a CellTypist annotation component (PR #825).
+
 * `dataflow/split_h5mu` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
 
 * `labels_transfer/pynndescent_knn`: component: Added a component for KNN classification based on a PyNNDescent neighborhood graph (PR #830).
