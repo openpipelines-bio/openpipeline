@@ -6,9 +6,9 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'functionality_name': 'foo',
+    'name': 'foo',
     'resources_dir': 'resources_test/',
-    'executable': './target/docker/dimred/pca/pca',
+    'executable': './target/executable/dimred/pca/pca',
     'config': './src/dimred/pca/config.vsh.yaml'
 }
 ## VIASH END
@@ -110,10 +110,10 @@ def test_highly_variable_column_does_not_exist_raises(run_component):
             "--num_components", "26",
             "--var_input", "does_not_exist"
         ])
-        assert "ValueError: Requested to use .var column does_not_exist as " \
-            "a selection of genes to run the PCA on, but the column is " \
-            "not available for modality rna" in \
-            err.value.stdout.decode('utf-8')
+    assert "ValueError: Requested to use .var column does_not_exist as " \
+        "a selection of genes to run the PCA on, but the column is " \
+        "not available for modality rna" in \
+        err.value.stdout.decode('utf-8')
 
 def test_select_highly_variable_column(run_component, tmp_path):
     output_path = tmp_path / "output.h5mu"
@@ -154,8 +154,8 @@ def test_raise_if_input_layer_is_missing(run_component):
             "--layer", "does_not_exist",
             "--var_input", "filter_with_hvg"
         ])
-        assert "ValueError: does_not_exist was not found in modality rna." in \
-            err.value.stdout.decode('utf-8')
+    assert "ValueError: does_not_exist was not found in modality rna." in \
+        err.value.stdout.decode('utf-8')
 
 def test_output_field_already_present_raises(run_component):
     with pytest.raises(subprocess.CalledProcessError) as err:
@@ -165,9 +165,9 @@ def test_output_field_already_present_raises(run_component):
             "--obsm_output", "X_foo",
             "--num_components", "26"
         ])
-        assert "ValueError: Requested to create field pca_loadings in .varm for " \
-            "modality rna, but field already exists." in \
-            err.value.stdout.decode('utf-8')
+    assert "ValueError: Requested to create field pca_loadings in .varm for " \
+        "modality rna, but field already exists." in \
+        err.value.stdout.decode('utf-8')
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))

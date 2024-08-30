@@ -41,7 +41,6 @@ argument_groups:
           times: in that case, the combination of all attributes separated by colons (:) will be used
           as a unique identifier, e.g. for exons you might use -i gene_id -i exon_number.
         multiple: true
-        multiple_sep: ":"
         info:
           step: htseq
           orig_arg: --idattr
@@ -53,7 +52,6 @@ argument_groups:
           for more than one additional attribute. These attributes are only used as annotations in the
           output, while the determination of how the counts are added together is done based on option -i.
         multiple: true
-        multiple_sep: ":"
         info:
           step: htseq
           orig_arg: --additional-attr

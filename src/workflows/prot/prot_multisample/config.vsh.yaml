@@ -1,0 +1,122 @@
+name: "prot_multisample"
+namespace: "workflows/prot"
+description: "Processing unimodal multi-sample ADT data."
+info:
+  image: /images/concepts/fig_workflow_multiomics_adt_multisample.svg
+authors:
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ author ]
+argument_groups:
+  - name: "Inputs"
+    arguments:
+      - name: "--id"
+        required: true
+        type: string
+        description: ID of the concatenated file
+        example: concatenated
+      - name: "--input"
+        required: true
+        type: file
+        description: Path to the samples.
+        example: dataset.h5mu
+      - name: "--layer"
+        type: string
+        description: "Input layer to use. If not specified, .X is used."
+  - name: "Outputs"
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: Destination path to the output.
+        example: output.h5mu
+  - name: "QC metrics calculation options"
+    arguments:
+      - name: "--var_qc_metrics"
+        description: |
+          Keys to select a boolean (containing only True or False) column from .var.
+          For each cell, calculate the proportion of total values for genes which are labeled 'True', 
+          compared to the total sum of the values for all genes. Defaults to the value from
+          --var_name_mitochondrial_genes.
+        type: string
+        multiple: True
+        multiple_sep: ','
+        required: false
+        example: "ercc,highly_variable"
+      - name: "--top_n_vars"
+        type: integer
+        description: |
+          Number of top vars to be used to calculate cumulative proportions.
+          If not specified, proportions are not calculated. `--top_n_vars 20,50` finds
+          cumulative proportion to the 20th and 50th most expressed vars.
+        multiple: true
+        multiple_sep: ','
+        required: false
+        default: [50, 100, 200, 500]
+      - name: "--output_obs_num_nonzero_vars"
+        description: |
+          Name of column in .obs describing, for each observation, the number of stored values
+          (including explicit zeroes). In other words, the name of the column that counts
+          for each row the number of columns that contain data.
+        type: string
+        required: false
+        default: "num_nonzero_vars"
+      - name: "--output_obs_total_counts_vars"
+        description: |
+          Name of the column for .obs describing, for each observation (row),
+          the sum of the stored values in the columns.
+        type: string
+        required: false
+        default: total_counts
+      - name: "--output_var_num_nonzero_obs"
+        description: |
+          Name of column describing, for each feature, the number of stored values
+          (including explicit zeroes). In other words, the name of the column that counts
+          for each column the number of rows that contain data.
+        type: string
+        required: false
+        default: "num_nonzero_obs"
+      - name: "--output_var_total_counts_obs"
+        description: |
+          Name of the column in .var describing, for each feature (column),
+          the sum of the stored values in the rows.
+        type: string
+        required: false
+        default: total_counts
+      - name: "--output_var_obs_mean"
+        type: string
+        description: |
+          Name of the column in .obs providing the mean of the values in each row.
+        default: "obs_mean"
+        required: false
+      - name: "--output_var_pct_dropout"
+        type: string
+        default: "pct_dropout"
+        description: |
+          Name of the column in .obs providing for each feature the percentage of
+          observations the feature does not appear on (i.e. is missing). Same as `--output_var_num_nonzero_obs`
+          but percentage based.
+  - name: "CLR arguments"
+    arguments:
+      - name: "--clr_axis"
+        type: integer
+        description: Axis across which CLR is performed.
+        default: 0
+        required: false
+dependencies:
+  - name: transform/clr
+  - name: workflows/qc/qc
+    alias: prot_qc
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+  - type: file
+    path: /src/workflows/utils/
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - path: /resources_test/pbmc_1k_protein_v3
+runners:
+  - type: nextflow

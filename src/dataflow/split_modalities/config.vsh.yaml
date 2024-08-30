@@ -1,64 +1,59 @@
-functionality:
-  name: split_modalities
-  namespace: "dataflow"
-  description: |
-    Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
-  authors:
-    - __merge__: /src/authors/dries_schaumont.yaml
-      roles: [ maintainer ]
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ contributor ]
-  arguments:
-    - name: "--input"
-      alternatives: ["-i"]
-      type: file
-      description: Path to a single .h5mu file.
-      required: true
-      default: sample_path
-    - name: "--output"
-      alternatives: ["-o"]
-      type: file
-      required: true
-      direction: output
-      example: "/path/to/output"
-      description: Output directory containing multiple h5mu files.
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
-    - name: "--output_types"
-      type: file
-      required: true
-      direction: output
-      example: types.csv
-      description: A csv containing the base filename and modality type per output file.
-    - name: "--compression"
-      type: string
-      description: The compression format to be used on the final h5mu object.
-      default: "gzip"
-  resources:
-    - type: python_script
-      path: script.py
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
-platforms:
-  - type: docker
-    image: python:3.10-slim
-    setup:
-      - type: apt
-        packages: 
-          - procps
-      - type: python
-        __merge__: /src/base/requirements/anndata_mudata.yaml
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
-  - type: native
-  - type: nextflow
-    directives:
-      label: [singlecpu, lowmem]
+name: split_modalities
+namespace: "dataflow"
+description: |
+  Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
+authors:
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ maintainer ]
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ contributor ]
+arguments:
+  - name: "--input"
+    alternatives: ["-i"]
+    type: file
+    description: Path to a single .h5mu file.
+    required: true
+    default: sample_path
+  - name: "--output"
+    alternatives: ["-o"]
+    type: file
+    required: true
+    direction: output
+    example: "/path/to/output"
+    description: Output directory containing multiple h5mu files.
+  - name: "--output_compression"
+    type: string
+    description: The compression format to be used on the output h5mu object.
+    choices: ["gzip", "lzf"]
+    required: false
+    example: "gzip"
+  - name: "--output_types"
+    type: file
+    required: true
+    direction: output
+    example: types.csv
+    description: A csv containing the base filename and modality type per output file.
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+
+engines:
+- type: docker
+  image: python:3.12-slim
+  setup:
+    - type: apt
+      packages: 
+        - procps
+    - type: python
+      __merge__: /src/base/requirements/anndata_mudata.yaml
+  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [singlecpu, lowmem]

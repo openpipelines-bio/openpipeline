@@ -12,9 +12,21 @@ export NXF_VER=22.10.3
 
 nextflow \
   run . \
-  -main-script src/workflows/ingestion/cellranger_multi/main.nf \
+  -main-script src/workflows/ingestion/cellranger_multi/test.nf \
   -entry test_wf \
   -resume \
-  -profile docker,no_publish \
+  -profile no_publish,docker \
   -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config \
+  -with-trace work/trace.txt
+
+
+nextflow \
+  run . \
+  -main-script src/workflows/ingestion/cellranger_multi/test.nf \
+  -entry test_wf2 \
+  -resume \
+  -profile no_publish,docker \
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config \
   -with-trace work/trace.txt

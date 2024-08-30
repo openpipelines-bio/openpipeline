@@ -1,61 +1,65 @@
-functionality:
-  name: cellranger_mkfastq
-  namespace: demux
-  description: Demultiplex raw sequencing data
-  usage: |
-    cellranger_mkfastq \
-      --input /path/to/bcl \
-      --sample_sheet SampleSheet.csv \
-      --output /path/to/output
-  authors:
-    - __merge__: /src/authors/angela_pisco.yaml
-      roles: [ author ]
-    - __merge__: /src/authors/samuel_d_souza.yaml
-      roles: [ author ]
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ author, maintainer ]
-  arguments:
-    - type: file
-      name: --input
-      description: Path to the (untarred) BCL files. Expects 'RunParameters.xml' at './'.
-      example: /path/to/bcl
-      required: true
-    - type: file
-      name: --sample_sheet
-      description: The path to the sample sheet.
-      example: SampleSheet.csv
-      required: true
-    - type: file
-      name: --output
-      direction: output
-      description: The folder to store the demux results
-      example: "/path/to/output"
-      default: fastqs
-      required: true
-    - name: "--reports"
-      type: file
-      direction: output
-      required: false
-      description: Reports directory
-      example: reports_dir
-  resources:
-    - type: bash_script
-      path: script.sh
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/cellranger_tiny_bcl
-platforms:
-  - type: docker
-    image: ghcr.io/data-intuitive/cellranger:6.1
-    setup:
-      - type: docker
-        run: apt-get update && apt-get upgrade -y
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+name: cellranger_mkfastq
+namespace: demux
+description: Demultiplex raw sequencing data
+usage: |
+  cellranger_mkfastq \
+    --input /path/to/bcl \
+    --sample_sheet SampleSheet.csv \
+    --output /path/to/output
+authors:
+  - __merge__: /src/authors/angela_pisco.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/samuel_d_souza.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ author, maintainer ]
+arguments:
+  - type: file
+    name: --input
+    description: Path to the (untarred) BCL files. Expects 'RunParameters.xml' at './'.
+    example: /path/to/bcl
+    required: true
+  - type: file
+    name: --sample_sheet
+    description: The path to the sample sheet.
+    example: SampleSheet.csv
+    required: true
+  - type: file
+    name: --output
+    direction: output
+    description: The folder to store the demux results
+    example: "/path/to/output"
+    default: fastqs
+    required: true
+  - name: "--reports"
+    type: file
+    direction: output
+    required: false
+    description: Reports directory
+    example: reports_dir
+resources:
+  - type: bash_script
+    path: script.sh
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/cellranger_tiny_bcl
 
-  - type: nextflow
-    directives:
-      label: [ highmem, highcpu ]
+engines:
+- type: docker
+  image: ghcr.io/data-intuitive/cellranger:8.0
+  setup:
+    - type: docker
+      run: |
+        DEBIAN_FRONTEND=noninteractive apt update && \
+        apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
+  test_setup:
+    - type: python
+      __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [ highmem, highcpu ]

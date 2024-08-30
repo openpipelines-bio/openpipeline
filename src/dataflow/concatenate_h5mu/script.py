@@ -121,7 +121,7 @@ def any_row_contains_duplicate_values(n_processes: int, frame: pd.DataFrame) -> 
         is_duplicated = pool.map(nunique, iter(numpy_array))
     return any(is_duplicated)
 
-def concatenate_matrices(n_processes: int, matrices: dict[str, pd.DataFrame]) \
+def concatenate_matrices(n_processes: int, matrices: dict[str, pd.DataFrame], align_to: pd.Index) \
     -> tuple[dict[str, pd.DataFrame], pd.DataFrame | None, dict[str, pd.core.dtypes.dtypes.Dtype]]:
     """
     Merge matrices by combining columns that have the same name.
@@ -131,11 +131,12 @@ def concatenate_matrices(n_processes: int, matrices: dict[str, pd.DataFrame]) \
     column_names = set(column_name for var in matrices.values() for column_name in var)
     logger.debug('Trying to concatenate columns: %s.', ",".join(column_names))
     if not column_names:
-        return {}, None
+        return {}, pd.DataFrame(index=align_to)
     conflicts, concatenated_matrix = \
         split_conflicts_and_concatenated_columns(n_processes,
                                                  matrices,
-                                                 column_names)
+                                                 column_names,
+                                                 align_to)
     concatenated_matrix = cast_to_writeable_dtype(concatenated_matrix)
     conflicts = {conflict_name: cast_to_writeable_dtype(conflict_df) 
                  for conflict_name, conflict_df in conflicts.items()}
@@ -150,7 +151,8 @@ def get_first_non_na_value_vector(df):
 
 def split_conflicts_and_concatenated_columns(n_processes: int,
                                              matrices: dict[str, pd.DataFrame],
-                                             column_names: Iterable[str]) -> \
+                                             column_names: Iterable[str],
+                                             align_to: pd.Index) -> \
                                             tuple[dict[str, pd.DataFrame], pd.DataFrame]:
     """
     Retrieve columns with the same name from a list of dataframes which are
@@ -166,19 +168,20 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
                    for input_id, var in matrices.items()
                    if column_name in var}
         assert columns, "Some columns should have been found."
-        concatenated_columns = pd.concat(columns.values(), axis=1, join="outer")
+        concatenated_columns = pd.concat(columns.values(), axis=1, 
+                                         join="outer", sort=False)
         if any_row_contains_duplicate_values(n_processes, concatenated_columns):
             concatenated_columns.columns = columns.keys() # Use the sample id as column name
-            conflicts[f'conflict_{column_name}'] = concatenated_columns
+            concatenated_columns = concatenated_columns.reindex(align_to, copy=False)
+            conflicts[f'conflict_{column_name}'] = concatenated_columns 
         else:
             unique_values = get_first_non_na_value_vector(concatenated_columns)
-            # concatenated_columns.fillna(method='bfill', axis=1).iloc[:, 0]
             concatenated_matrix.append(unique_values)
-    if concatenated_matrix:
-        concatenated_matrix = pd.concat(concatenated_matrix, join="outer", axis=1)
-    else:
-        concatenated_matrix = pd.DataFrame()
-
+    if not concatenated_matrix:
+        return conflicts, pd.DataFrame(index=align_to)
+    concatenated_matrix = pd.concat(concatenated_matrix, join="outer",
+                                    axis=1, sort=False)
+    concatenated_matrix = concatenated_matrix.reindex(align_to, copy=False)
     return conflicts, concatenated_matrix
 
 def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
@@ -214,15 +217,24 @@ def split_conflicts_modalities(n_processes: int, samples: dict[str, anndata.AnnD
     matrices_to_parse = ("var", "obs")
     for matrix_name in matrices_to_parse:
         matrices = {sample_id: getattr(sample, matrix_name) for sample_id, sample in samples.items()}
-        conflicts, concatenated_matrix = concatenate_matrices(n_processes, matrices)
-        
+        output_index = getattr(output, matrix_name).index 
+        conflicts, concatenated_matrix = concatenate_matrices(n_processes, matrices, output_index)
+        if concatenated_matrix.empty:
+           concatenated_matrix.index = output_index
+
+        # Even though we did not touch the varm and obsm matrices that were already present,
+        # the joining of observations might have caused a dtype change in these matrices as well
+        # so these also need to be casted to a writable dtype...
+        for multidim_name, multidim_data in getattr(output, f"{matrix_name}m").items():
+            new_data = cast_to_writeable_dtype(multidim_data) if isinstance(multidim_data, pd.DataFrame) else multidim_data 
+            getattr(output, f"{matrix_name}m")[multidim_name] = new_data
+
         # Write the conflicts to the output
-        matrix_index = getattr(output, matrix_name).index
         for conflict_name, conflict_data in conflicts.items():
-            getattr(output, f"{matrix_name}m")[conflict_name] = conflict_data.reindex(matrix_index)
+            getattr(output, f"{matrix_name}m")[conflict_name] = conflict_data
 
         # Set other annotation matrices in the output
-        setattr(output, matrix_name, pd.DataFrame() if concatenated_matrix is None else concatenated_matrix)
+        setattr(output, matrix_name, concatenated_matrix)
 
     return output
 
@@ -231,7 +243,7 @@ def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str |
                          other_axis_mode: str, input_ids: tuple[str]) -> anndata.AnnData:
     
     concat_modes = {
-        "move": None,
+        "move": "unique",
     }
     other_axis_mode_to_apply = concat_modes.get(other_axis_mode, other_axis_mode)
 
@@ -240,7 +252,7 @@ def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str |
         try:
             mod_data[input_id] = mu.read_h5ad(input_file, mod=mod)
         except KeyError as e: # Modality does not exist for this sample, skip it
-            if f"Unable to open object '{mod}' doesn't exist" not in str(e):
+            if f"Unable to synchronously open object (object '{mod}' doesn't exist)" not in str(e):
                 raise e
             pass
     check_observations_unique(mod_data.values())

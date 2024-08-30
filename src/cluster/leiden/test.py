@@ -7,11 +7,11 @@ import uuid
 
 ## VIASH START
 meta = {
-    'functionality_name': 'foo',
+    'name': 'foo',
     'resources_dir': 'resources_test/',
     'cpus': 2,
     'config': './src/cluster/leiden/config.vsh.yaml',
-    'executable': './target/docker/cluster/leiden/leiden',
+    'executable': './target/executable/cluster/leiden/leiden',
 }
 ## VIASH END
 
@@ -33,13 +33,13 @@ def mudata_custom_connectivities_key(input_data, random_h5mu_path):
     return output_path
 
 
-@pytest.fixture
-def random_h5mu_path(tmp_path):
-    def wrapper():
-        unique_filename = f"{str(uuid.uuid4())}.h5mu"
-        temp_file = tmp_path / unique_filename
-        return temp_file
-    return wrapper
+# @pytest.fixture
+# def random_h5mu_path(tmp_path):
+#     def wrapper():
+#         unique_filename = f"{str(uuid.uuid4())}.h5mu"
+#         temp_file = tmp_path / unique_filename
+#         return temp_file
+#     return wrapper
 
 @pytest.mark.parametrize("compression", ["gzip", ""])
 @pytest.mark.parametrize("output_key,expected_output_key", [("fooleiden", "fooleiden"), ("", "leiden")])
@@ -47,7 +47,7 @@ def test_leiden(input_path, run_component, random_h5mu_path, compression, output
     output_path = random_h5mu_path()
     args = [
         "--input", input_path,
-        "--resolution", "1:0.25",
+        "--resolution", "1;0.25",
         "--output", output_path]
     if compression:
         args.extend(["--output_compression", compression])
@@ -67,7 +67,7 @@ def test_leiden_custom_connectivities_key(mudata_custom_connectivities_key, run_
     run_component([
          "--input", mudata_custom_connectivities_key,
         "--obsm_name", "fooleiden",
-        "--resolution", "1:0.25",
+        "--resolution", "1;0.25",
         "--output", output_path,
         "--obsp_connectivities", "custom_connectivities",
         "--output_compression", "gzip"

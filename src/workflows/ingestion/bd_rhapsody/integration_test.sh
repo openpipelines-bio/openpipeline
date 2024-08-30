@@ -12,10 +12,11 @@ export NXF_VER=21.10.6
 
 nextflow \
   run . \
-  -main-script workflows/ingestion/bd_rhapsody/main.nf \
+  -main-script src/workflows/ingestion/bd_rhapsody/test.nf \
   -entry test_wf \
   -resume \
   -profile docker,no_publish \
-  -c workflows/utils/labels_ci.config \
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config \
   -with-trace work/trace.txt
 

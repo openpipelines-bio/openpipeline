@@ -1,15 +1,15 @@
-import subprocess
 from os import path
-import mudata as mu
+from mudata import read_h5mu
+import subprocess
 
 ## VIASH START
 meta = {
-  'executable': 'target/docker/correction/cellbender_remove_background/cellbender_remove_background',
-  'resources_dir': 'resources_test/pbmc_1k_protein_v3'
+    'executable': 'target/executable/correction/cellbender_remove_background/cellbender_remove_background',
+    'resources_dir': 'resources_test/pbmc_1k_protein_v3'
 }
 ## VIASH END
 
-file_input = meta["resources_dir"] + "/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5mu"
+file_input = meta["resources_dir"] + "/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 file_output = "output.h5mu"
 
 print("> Check whether cellbender works when it should be working")
@@ -26,9 +26,9 @@ cmd_pars = [
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 
 # check if file exists
-assert path.exists("output.h5mu"), "No output was created."
+assert path.exists(file_output), "No output was created."
 
-data = mu.read_h5mu("output.h5mu")
+data = read_h5mu(file_output)
 
 # check whether gex was found
 assert data.mod["rna"].var["feature_types"].unique() == [

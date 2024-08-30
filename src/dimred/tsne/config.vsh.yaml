@@ -1,0 +1,114 @@
+name: tsne
+namespace: "dimred"
+description: |
+  t-SNE (t-Distributed Stochastic Neighbor Embedding) is a dimensionality reduction technique used to visualize high-dimensional data in a low-dimensional space, revealing patterns and clusters by preserving local data similarities.
+authors:
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ maintainer ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        description: Input h5mu file
+        direction: input
+        required: true
+        example: input.h5mu
+
+      - name: "--modality"
+        type: string
+        default: "rna"
+        required: true
+
+      - name: "--use_rep"
+        type: string
+        description: The `.obsm` slot to use as input for the tSNE computation.
+        required: true
+        example: "X_pca"
+    
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
+
+      - name: "--output_compression"
+        type: string
+        description: The compression format to be used on the output h5mu object.
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
+
+      - name: "--obsm_output"
+        type: string
+        description: The .obsm key to use for storing the tSNE results.
+        default: "X_tsne"
+    
+  - name: Arguments
+    arguments:
+
+      - name: "--n_pcs"
+        type: integer
+        description: The number of principal components to use for the tSNE computation.
+        default: 50
+        required: false
+
+      - name: "--perplexity"
+        type: double
+        description: The perplexity is related to the number of nearest neighbors that is used in other manifold learning algorithms. Larger datasets usually require a larger perplexity. Consider selecting a value between 5 and 50. Different values can result in significantly different results.
+        default: 30.0
+
+      - name: "--min_dist"
+        type: double
+        description: The effective minimum distance between embedded points. Smaller values will result in a more clustered/clumped embedding where nearby points on the manifold are drawn closer together, while larger values will result on a more even dispersal of points. The value should be set relative to the spread value, which determines the scale at which embedded points will be spread out. 
+        default: 0.5
+
+      - name: "--metric"
+        type: string
+        description: Distance metric to calculate neighbors on.
+        default: euclidean
+
+      - name: "--early_exaggeration"
+        type: double
+        description: Controls how tight natural clusters in the original space are in the embedded space and how much space will be between them. For larger values, the space between natural clusters will be larger in the embedded space. Again, the choice of this parameter is not very critical. If the cost function increases during initial optimization, the early exaggeration factor or the learning rate might be too high.
+        default: 12.0
+
+      - name: "--learning_rate"
+        type: double
+        description: The learning rate for t-SNE optimization. Typical values range between 10.0 and 1000.0.
+        default: 1000.0
+
+      - name: "--random_state"
+        type: integer
+        description: The random seed to use for the tSNE computation.
+        required: false
+        default: 0
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3
+engines:
+- type: docker
+  image: python:3.10-slim
+  setup:
+    - type: apt
+      packages:
+        - procps
+    - type: python
+      __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [highcpu, midmem]

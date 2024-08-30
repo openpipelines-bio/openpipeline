@@ -7,7 +7,7 @@ from subprocess import CalledProcessError
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/native/transform/delete_layer/delete_layer',
+    'name': './target/executable/transform/delete_layer/delete_layer',
     'resources_dir': './resources_test/'
 }
 ## VIASH END
@@ -46,9 +46,9 @@ def test_missing_layer_raises(run_component, tmp_path):
             "--modality", "rna",
             "--layer", "test",
             "--output", str(output)])
-        assert not output.is_file()
-        assert "Layer 'test' is not present in modality rna." in \
-                err.value.stdout.decode('utf-8')
+    assert not output.is_file()
+    assert "Layer 'test' is not present in modality rna." in \
+            err.value.stdout.decode('utf-8')
 
 def test_missing_layer_missing_ok(run_component, tmp_path):
     output = tmp_path / "temp.h5mu"

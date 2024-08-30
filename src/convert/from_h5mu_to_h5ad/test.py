@@ -2,10 +2,11 @@ import sys
 import pytest
 import anndata as ad
 import mudata as mu
+from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
-    'executable': 'target/docker/convert/from_h5mu_to_h5ad/from_h5mu_to_h5ad',
+    'executable': 'target/executable/convert/from_h5mu_to_h5ad/from_h5mu_to_h5ad',
     'resources_dir': 'resources_test'
 }
 ## VIASH END
@@ -26,10 +27,11 @@ def test_run(run_component, tmp_path):
     assert output.is_file(), "No output was created."
 
     adata = ad.read_h5ad(output)
-
     mdata = mu.read_h5mu(input)
-    assert adata.n_obs == mdata.mod["rna"].n_obs
-    assert adata.n_vars == mdata.mod["rna"].n_vars
+
+    assert "rna" in mdata.mod.keys()
+    assert_annotation_objects_equal(mdata.mod["rna"], adata)
+
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+set -eou pipefail
 
 ## VIASH START
 par_genome_fasta="resources_test/reference_gencodev41_chr1/reference.fa.gz"
@@ -9,7 +9,7 @@ par_output="gencode_v41_annotation_cellranger.tar.gz"
 ## VIASH END
 
 # create temporary directory
-tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_functionality_name-XXXXXXXX")
+tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
 }
@@ -20,17 +20,6 @@ par_genome_fasta=`realpath $par_genome_fasta`
 par_transcriptome_gtf=`realpath $par_transcriptome_gtf`
 par_output=`realpath $par_output`
 
-# process params
-extra_params=( )
-
-if [ ! -z "$meta_cpus" ]; then 
-  extra_params+=( "--nthreads=$meta_cpus" )
-fi
-if [ ! -z "$meta_memory_gb" ]; then 
-  # always keep 2gb for the OS itself
-  memory_gb=`python -c "print(int('$meta_memory_gb') - 2)"`
-  extra_params+=( "--memgb=$memory_gb" )
-fi
 
 echo "> Unzipping input files"
 unpigz -c "$par_genome_fasta" > "$tmpdir/genome.fa"
@@ -41,7 +30,9 @@ cellranger mkref \
   --fasta "$tmpdir/genome.fa" \
   --genes "$par_transcriptome_gtf" \
   --genome output \
-  "${extra_params[@]}"
+  ${par_reference_version:+--ref-version $par_reference_version} \
+  ${meta_cpus:+--nthreads $meta_cpus} \
+  ${meta_memory_gb:+--memgb $(($meta_memory_gb-2))} # always keep 2 gb for the OS itseld
 
 echo "> Creating archive"
 tar --use-compress-program="pigz -k " -cf "$par_output" -C "$tmpdir/output" .

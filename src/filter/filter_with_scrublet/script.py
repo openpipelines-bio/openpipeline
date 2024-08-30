@@ -20,10 +20,12 @@ par = {
     "distance_metric": "euclidean",
     "obs_name_doublet_score": "scrublet_doublet_score",
     "obs_name_predicted_doublets": "scrublet_predicted_doublets",
-    "do_subset": True
+    "do_subset": True,
+    "layer": None,
 }
 meta = {
-    'functionality_name': 'scrublet'
+    'name': 'scrublet',
+    'resources_dir': '.',
 }
 ### VIASH END
 
@@ -53,8 +55,11 @@ mod = par["modality"]
 logger.info("Processing modality '%s'.", mod)
 data = mdata.mod[mod]
 
+logger.info("Using layer '%s'.", "X" if not par["layer"] else par["layer"])
+input_layer = data.X if not par["layer"] else data.layers[par["layer"]]
+
 logger.info("\tRunning scrublet")
-scrub = scr.Scrublet(data.X)
+scrub = scr.Scrublet(input_layer)
 
 doublet_scores, predicted_doublets = scrub.scrub_doublets(
     min_counts=par["min_counts"],

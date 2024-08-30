@@ -115,4 +115,20 @@ nextflow \
   -resume \
   -profile docker,mount_temp \
   -params-file /tmp/params.yaml \
-  -c src/workflows/utils/labels.config 
+  -c src/workflows/utils/labels.config
+
+# Create h5mu
+cat > /tmp/params.yaml << HERE
+id: "$ID"
+input: "$OUT/processed/10x_5k_lung_crispr.cellranger_multi.output"
+publish_dir: "$OUT/"
+output: "$orig_sample_id.h5mu"
+HERE
+
+nextflow \
+  run . \
+  -main-script target/nextflow/convert/from_cellranger_multi_to_h5mu/main.nf \
+  -resume \
+  -profile docker,mount_temp \
+  -params-file /tmp/params.yaml \
+  -c src/workflows/utils/labels.config

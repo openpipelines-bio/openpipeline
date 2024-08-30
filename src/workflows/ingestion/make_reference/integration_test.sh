@@ -12,9 +12,9 @@ export NXF_VER=23.04.2
 
 nextflow \
   run . \
-  -main-script workflows/ingestion/make_reference/main.nf \
+  -main-script src/workflows/ingestion/make_reference/test.nf \
   -entry test_wf \
   -profile docker,no_publish \
-  -resume \
-  -with-trace work/trace.txt \
-  -with-dag workflows/ingestion/make_reference/graph.dot
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config \
+  -resume

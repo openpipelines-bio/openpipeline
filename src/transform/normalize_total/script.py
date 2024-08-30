@@ -10,7 +10,7 @@ par = {
     "modality": "rna",
     "exclude_highly_expressed": False
 }
-meta = {"functionality_name": "lognorm"}
+meta = {"name": "lognorm"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -45,10 +45,12 @@ if par['input_layer'] and not par['input_layer'] in dat.layers.keys():
     raise ValueError(f"Input layer {par['input_layer']} not found in {mod}")
 output_data = sc.pp.normalize_total(dat,
                                     layer=par["input_layer"],
+                                    target_sum=par["target_sum"],
                                     copy=True if par["output_layer"] else False)
 
 if output_data:
-    dat.layers[par["output_layer"]] = output_data.X
+    result = output_data.X if not par["input_layer"] else output_data.layers[par["input_layer"]]
+    dat.layers[par["output_layer"]] = result
 
 logger.info("Writing to file")
 mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
