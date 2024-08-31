@@ -1,7 +1,7 @@
 # Arguments
 mode: "files"
 input: # please fill in - example: "fastq_dir"
-# output: "$id.$key.output.output"
+# output: "$id.$key.output"
 # threads: 123
 
 # Nextflow input-output arguments

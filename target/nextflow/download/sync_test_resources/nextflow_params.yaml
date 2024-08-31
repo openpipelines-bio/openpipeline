@@ -1,6 +1,10 @@
+# Inputs
+input: "_viash.yaml"
+
+# Outputs
+# output: "."
+
 # Arguments
-input: "s3://openpipelines-data"
-# output: "$id.$key.output.output"
 quiet: false
 dryrun: false
 delete: false

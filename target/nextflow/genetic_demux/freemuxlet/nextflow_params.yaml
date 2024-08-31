@@ -20,9 +20,11 @@ min_umi: 0
 min_snp: 0
 
 # Output
-# output: "$id.$key.output.output"
+# output: "$id.$key.output"
 # out: "freemuxlet"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

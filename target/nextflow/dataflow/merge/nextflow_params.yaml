@@ -1,6 +1,6 @@
 # Arguments
 input: # please fill in - example: ["sample_paths"]
-# output: "$id.$key.output.h5mu"
+# output: "output.h5mu"
 # output_compression: "gzip"
 
 # Nextflow input-output arguments

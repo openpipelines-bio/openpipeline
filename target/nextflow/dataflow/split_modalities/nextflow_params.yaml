@@ -1,6 +1,6 @@
 # Arguments
 input: # please fill in - example: "sample_path"
-# output: "$id.$key.output.output"
+# output: "$id.$key.output"
 # output_compression: "gzip"
 # output_types: "$id.$key.output_types.csv"
 

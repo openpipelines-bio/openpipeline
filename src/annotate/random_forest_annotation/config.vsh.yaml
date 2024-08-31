@@ -1,0 +1,126 @@
+name: random_forest_annotation
+namespace: annotate
+description: Automated cell type annotation tool for scRNA-seq datasets on the basis of random forest.
+authors:
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    description: Input dataset (query) arguments
+    arguments:
+      - name: "--input"
+        type: file
+        description: The input (query) data to be labeled. Should be a .h5mu file.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--input_layer"
+        type: string
+        description: The layer in the input data to be used for cell type annotation if .X is not to be used. 
+  - name: Reference
+    description: Arguments related to the reference dataset.
+    arguments:
+      - name: "--reference"
+        type: file
+        description: "The reference data to train the CellTypist classifiers on. Only required if a pre-trained --model is not provided."
+        example: reference.h5mu
+        direction: input
+        required: false
+      - name: "--reference_layer"
+        type: string
+        description: The layer in the reference data to be used for cell type annotation if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.
+        required: false
+        required: false
+      - name: "--reference_obs_target"
+        type: string
+        description: Key in obs field of reference modality with cell-type information.
+        default: "cell_ontology_class"
+  - name: Outputs
+    description: Output arguments.
+    arguments:
+      - name: "--output"
+        type: file
+        description: Output h5mu file.
+        direction: output
+        example: output.h5mu
+      - name: "--output_compression"
+        type: string
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
+      - name: "--output_obs_predictions"
+        type: string
+        default: random_forest_pred
+        required: false
+        description: |
+          In which `.obs` slots to store the predicted information.
+      - name: "--output_obs_probability"
+        type: string
+        default: random_forest_probability
+        required: false
+        description: |
+          In which `.obs` slots to store the probability of the predictions.
+  - name: Model arguments
+    description: Model arguments.
+    arguments:
+      - name: "--model"
+        type: file
+        description: "Pretrained model in pkl format. If not provided, the model will be trained on the reference data and --reference should be provided."
+        required: false
+        example: pretrained_model.pkl
+      - name: "--n_estimators"
+        type: integer
+        required: false
+        default: 100
+        description: Number of trees in the random forest.
+      - name: "--max_depth"
+        type: integer
+        required: false
+        description: Maximum depth of the trees in the random forest.
+      - name: "--criterion"
+        type: string
+        required: false
+        choices: ["gini", "entropy", "log_loss"]
+        default: "gini"
+        description: The function to measure the quality of a split.
+      - name: "--class_weight"
+        type: string
+        required: false
+        default: "balanced_subsample"
+        choices: ["balanced", "balanced_subsample"]
+        description: Weights associated with classes.
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - libhdf5-dev
+          - procps
+      - type: python
+        packages:
+          - scikit-learn==1.4.2
+      - type: python
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow

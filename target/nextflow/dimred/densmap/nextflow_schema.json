@@ -227,7 +227,7 @@
                 "type":
                 "string",
                 "description": "Type: `string`, default: `spectral`, choices: ``paga`, `spectral`, `random``. How to initialize the low dimensional embedding",
-                "help_text": "Type: `string`, default: `spectral`, choices: ``paga`, `spectral`, `random``. How to initialize the low dimensional embedding. Called `init` in the original UMAP. Options are:\n\n* Any key from `.obsm`\n* `\u0027paga\u0027`: positions from `paga()`\n* `\u0027spectral\u0027`: use a spectral embedding of the graph\n* `\u0027random\u0027`: assign initial embedding positions at random.\n",
+                "help_text": "Type: `string`, default: `spectral`, choices: ``paga`, `spectral`, `random``. How to initialize the low dimensional embedding. Called `init` in the original UMAP. Options are:\n  \n* Any key from `.obsm`\n* `\u0027paga\u0027`: positions from `paga()`\n* `\u0027spectral\u0027`: use a spectral embedding of the graph\n* `\u0027random\u0027`: assign initial embedding positions at random.\n",
                 "enum": ["paga", "spectral", "random"]
             
             ,

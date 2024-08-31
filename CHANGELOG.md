@@ -12,6 +12,12 @@
 
 * `lianapy`: bumped version to `1.3.0` (PR #827 and PR #862). Additionally, `groupby` is now a required argument.
 
+* `concat`: this component was deprecated and has now been removed, use `concatenate_h5mu` instead (PR #796).
+
+* The `workflows` folder in the root of the project no longer contains symbolic links to the build workflows in `target`.
+  Using any workflows that was previously linked in this directory will now result in an error which will indicate
+  the location of the workflow to be used instead (PR #796).
+  
 * `XGBoost`: bump version to `2.0.3` (PR #646).
 
 * Several components: update anndata to `0.10.8` and mudata to `0.2.3` (PR #645). 
@@ -31,6 +37,12 @@
 * `reference/build_star_reference`: Rename `mapping/star_build_reference` to `reference/build_star_reference` (PR #846).
 
 * `reference/cellranger_mkgtf`: Rename `reference/mkgtf` to `reference/cellranger_mkgtf` (PR #846).
+
+* `labels_transfer/xgboost`: Align interface with new annotation workflow
+  - Store label probabilities instead of uncertainties
+  - Take `.h5mu` format as an input instead of `.h5ad`
+
+* `labels_transfer/knn`: delete outdated component due to its functionality now implemented in `labels_transfer/pynndescent_knn`
 
 * `reference/build_cellranger_arc_reference`: a default value of "output" is now specified for the argument `--genome`, inline with `reference/build_cellranger_reference` component. Additionally, providing a value for `--organism` is no longer required and its default value of `Homo Sapiens` has been removed (PR #864).
 
@@ -73,13 +85,23 @@
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
   
+* `annotate/celltypist` component: Added a CellTypist annotation component (PR #825).
+
 * `dataflow/split_h5mu` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
+
+* `labels_transfer/pynndescent_knn`: component: Added a component for KNN classification based on a PyNNDescent neighborhood graph (PR #830).
 
 * `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
 
 * `workflows/ingestion/make_reference`: Add additional arguments passed through to the STAR and BD Rhapsody reference components (PR #846).
 
+* `annotate/random_forest_annotation` component: Added a random forest cell type annotation component (PR #848).
+
+* `dataflow/concatenate_h5mu`: data from `.uns`, both originating from the global and per-modality slots, is now retained in the final concatenated output object. Additionally, added the `uns_merge_mode` argument in order to tune the behavior when conflicting keys are detected across samples (PR #859).
+
 * `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
+
+* `annotete/scanvi` component: Added a component to annotate cells using scANVI (PR #833).
 
 * `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
 
@@ -117,6 +139,12 @@
 * Bump `viash-actions` to `v6` (PR #821).
 
 * `reference/make_reference`: Do not try to extract genome fasta and transcriptome gtf if they are not gzipped (PR #856).
+
+* Changes related to syncing the test resources (PR #867):
+
+  - Add `.info.test_resources` to `_viash.yaml` to specify where test resources need to be synced from.
+  - `download/sync_test_resources`: Use `.info.test_resources` in `_viash.yaml` to detect where test resources need to be synced from.
+  - Update CI to use `project/sync-and-cache` instead of `project/sync-and-cache-s3`.
 
 ## BUG FIXES
 
