@@ -85,7 +85,7 @@ workflow run_wf {
         toState: ["input": "output"]
     )
 
-      | annotation.run(
+      | scgpt_celltype_annotation.run(
       // Padding and tokenization of gene count values.
        fromState: {id, state -> [
           "model": state.model,
