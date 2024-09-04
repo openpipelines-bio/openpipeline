@@ -1,0 +1,39 @@
+name: "workflow_test2"
+namespace: "test_workflows/multiomics/process_batches"
+description: "This component tests the output of the integration test of process_batches test_wf2."
+authors:
+  - __merge__: /src/authors/kai_waldrant.yaml
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        description: Path to the modality summary csv.
+        example: test.h5mu
+      - name: "--orig_input"
+        type: file
+        required: true
+        description: Path to the original input file.
+        example: input.h5mu
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/base/openpipelinetestutils
+    dest: openpipelinetestutils
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+      - type: docker
+        copy: ["openpipelinetestutils /opt/openpipelinetestutils"]
+      - type: apt
+        packages: 
+          - procps
+      - type: python
+        packages: /opt/openpipelinetestutils
+runners:
+  - type: executable
+  - type: nextflow

@@ -1,101 +1,103 @@
-functionality:
-  name: bbknn
-  namespace: "neighbors"
-  description: |
-    BBKNN network generation
-  authors:
-    - __merge__: /src/authors/dries_de_maeyer.yaml
-      roles: [ author ]
-    - __merge__: /src/authors/dries_schaumont.yaml
-      roles: [ maintainer ]
-  arguments:
-    # inputs
-    - name: "--input"
-      alternatives: [-i]
-      type: file
-      description: Input h5mu file
-      direction: input
-      required: true
-    - name: "--modality"
-      type: string
-      default: "rna"
-      required: false
-    - name: "--obsm_input"
-      description: The dimensionality reduction in `.obsm` to use for neighbour detection. Defaults to X_pca.
-      type: string
-      default: "X_pca"
-    - name: "--obs_batch"
-      type: string
-      description: .obs column name discriminating between your batches.
-      default: "batch"
+name: bbknn
+namespace: "neighbors"
+description: |
+  BBKNN network generation
+authors:
+  - __merge__: /src/authors/dries_de_maeyer.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ maintainer ]
+arguments:
+  # inputs
+  - name: "--input"
+    alternatives: [-i]
+    type: file
+    description: Input h5mu file
+    direction: input
+    required: true
+  - name: "--modality"
+    type: string
+    default: "rna"
+    required: false
+  - name: "--obsm_input"
+    description: The dimensionality reduction in `.obsm` to use for neighbour detection. Defaults to X_pca.
+    type: string
+    default: "X_pca"
+  - name: "--obs_batch"
+    type: string
+    description: .obs column name discriminating between your batches.
+    default: "batch"
 
-    # outputs
-    - name: "--output"
-      alternatives: ["-o"]
-      type: file
-      description: Output .h5mu file.
-      direction: output
-      required: true
-      example: output.h5mu
+  # outputs
+  - name: "--output"
+    alternatives: ["-o"]
+    type: file
+    description: Output .h5mu file.
+    direction: output
+    required: true
+    example: output.h5mu
+  
+  - name: "--output_compression"
+    type: string
+    description: The compression format to be used on the output h5mu object.
+    choices: ["gzip", "lzf"]
+    required: false
+    example: "gzip"
     
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
-      
-    - name: "--uns_output"
-      type: string
-      default: neighbors
-      description: Mandatory .uns slot to store various neighbor output objects.
-      
-    - name: "--obsp_distances"
-      type: string
-      default: "distances"
-      description: "In which .obsp slot to store the distance matrix between the resulting neighbors."
-      
-    - name: "--obsp_connectivities"
-      type: string
-      default: "connectivities"
-      description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
+  - name: "--uns_output"
+    type: string
+    default: neighbors
+    description: Mandatory .uns slot to store various neighbor output objects.
+    
+  - name: "--obsp_distances"
+    type: string
+    default: "distances"
+    description: "In which .obsp slot to store the distance matrix between the resulting neighbors."
+    
+  - name: "--obsp_connectivities"
+    type: string
+    default: "connectivities"
+    description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
 
-    # arguments
-    - name: "--n_neighbors_within_batch"
-      type: integer
-      description: How many top neighbours to report for each batch; total number of neighbours in the initial k-nearest-neighbours computation will be this number times the number of batches.
-      default: 3
-    - name: "--n_pcs"
-      type: integer
-      description: How many dimensions (in case of PCA, principal components) to use in the analysis.
-      default: 50
-    - name: "--n_trim"
-      type: integer
-      description: Trim the neighbours of each cell to these many top connectivities. May help with population independence and improve the tidiness of clustering. The lower the value the more independent the individual populations, at the cost of more conserved batch effect. If `None` (default), sets the parameter value automatically to 10 times `neighbors_within_batch` times the number of batches. Set to 0 to skip.
-  resources:
-    - type: python_script
-      path: script.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
-platforms:
-  - type: docker
-    image: python:3.10-slim
-    setup:
-      - type: apt
-        packages: 
-          - procps
-          - build-essential
-      - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
-        packages:
-          - bbknn
-          - scikit-learn~=1.2.2
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+  # arguments
+  - name: "--n_neighbors_within_batch"
+    type: integer
+    description: How many top neighbours to report for each batch; total number of neighbours in the initial k-nearest-neighbours computation will be this number times the number of batches.
+    default: 3
+  - name: "--n_pcs"
+    type: integer
+    description: How many dimensions (in case of PCA, principal components) to use in the analysis.
+    default: 50
+  - name: "--n_trim"
+    type: integer
+    description: Trim the neighbours of each cell to these many top connectivities. May help with population independence and improve the tidiness of clustering. The lower the value the more independent the individual populations, at the cost of more conserved batch effect. If `None` (default), sets the parameter value automatically to 10 times `neighbors_within_batch` times the number of batches. Set to 0 to skip.
+resources:
+  - type: python_script
+    path: script.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 
-  - type: nextflow
-    directives:
-      label: [lowcpu, highmem]
+engines:
+- type: docker
+  image: python:3.10-slim
+  setup:
+    - type: apt
+      packages: 
+        - procps
+        - build-essential
+    - type: python
+      __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+      packages:
+        - bbknn
+        - scikit-learn~=1.2.2
+  test_setup:
+    - type: python
+      __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [lowcpu, highmem]

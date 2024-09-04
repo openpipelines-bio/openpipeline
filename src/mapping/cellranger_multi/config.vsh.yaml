@@ -1,48 +1,51 @@
-functionality:
-  name: cellranger_multi
-  namespace: mapping
-  description: Align fastq files using Cell Ranger multi.
-  authors:
-    - __merge__: /src/authors/angela_pisco.yaml
-      roles: [ author ]
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ author, maintainer ]
-    - __merge__: /src/authors/dries_de_maeyer.yaml
-      roles: [ author ]
-  __merge__: /src/mapping/cellranger_multi/cellranger_multi.yaml
-  argument_groups:
-    - name: Outputs
-      arguments:
-        - type: file
-          name: --output
-          direction: output
-          description: The folder to store the alignment results.
-          example: "/path/to/output"
-          required: true
+name: cellranger_multi
+namespace: mapping
+description: Align fastq files using Cell Ranger multi.
+authors:
+  - __merge__: /src/authors/angela_pisco.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ author, maintainer ]
+  - __merge__: /src/authors/dries_de_maeyer.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/weiwei_schultz.yaml
+    roles: [ contributor ]
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author ]
+__merge__: /src/mapping/cellranger_multi/cellranger_multi.yaml
+argument_groups:
+  - name: Outputs
+    arguments:
+      - type: file
+        name: --output
+        direction: output
+        description: The folder to store the alignment results.
+        example: "/path/to/output"
+        required: true
 
-    - name: Executor arguments
-      arguments:
-        - name: "--dryrun"
-          type: boolean_true
-          description: "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed."
-  resources:
-    - type: python_script
-      path: script.py
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/10x_5k_anticmv/raw/
-      dest: 10x_5k_anticmv/raw/
-    - path: /resources_test/10x_5k_lung_crispr/raw/
-      dest: 10x_5k_lung_crispr/raw/
-    - path: /resources_test/10x_5k_beam/raw/
-      dest: 10x_5k_beam/raw/
-    - path: /resources_test/10x_5k_fixed/raw/
-      dest: 10x_5k_fixed/raw 
-    - path: /resources_test/10x_5k_beam/raw/ 
-    - path: /resources_test/reference_gencodev41_chr1
-platforms:
+  - name: Executor arguments
+    arguments:
+      - name: "--dryrun"
+        type: boolean_true
+        description: "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed."
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/10x_5k_anticmv/raw/
+    dest: 10x_5k_anticmv/raw/
+  - path: /resources_test/10x_5k_lung_crispr/raw/
+    dest: 10x_5k_lung_crispr/raw/
+  - path: /resources_test/10x_5k_beam/raw/
+    dest: 10x_5k_beam/raw/
+  - path: /resources_test/10x_5k_fixed/raw/
+    dest: 10x_5k_fixed/raw 
+  - path: /resources_test/10x_5k_beam/raw/ 
+  - path: /resources_test/reference_gencodev41_chr1
+engines:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger:8.0
     setup:
@@ -54,7 +57,9 @@ platforms:
         packages: 
           - pandas
           - pyyaml
-    __merge__: [ /src/base/requirements/python_test_setup.yaml, .] 
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [ veryhighmem, highcpu ]
