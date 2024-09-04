@@ -151,8 +151,8 @@ model_file = par["model"]
 model_dict = torch.load(model_file, map_location=device)
 
 # Ensure the provided model has the correct architecture
-finetuned_checkpoints_key = par.get("finetuned_checkpoints_key", None)
-if par["finetuned_checkpoints_key"]:
+finetuned_checkpoints_key = par.get("finetuned_checkpoints_key")
+if finetuned_checkpoints_key:
     try:
         model_dict = model_dict[finetuned_checkpoints_key]
     except KeyError as e:
