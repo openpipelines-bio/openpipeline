@@ -16,7 +16,7 @@ nextflow run . \
   -main-script src/workflows/integration/scgpt_leiden/test.nf \
   -profile docker,no_publish \
   -entry test_wf \
-  -with-trace work/trace.txt \
+  -resume \
   -c src/workflows/utils/labels_ci.config \
   -c src/workflows/utils/integration_tests.config
 
