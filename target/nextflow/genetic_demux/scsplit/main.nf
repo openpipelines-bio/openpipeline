@@ -3158,7 +3158,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/scsplit",
     "viash_version" : "0.9.0-RC7",
-    "git_commit" : "dba0b3cfdff462e1a3e9f67f3e5dcaa3285edbdd",
+    "git_commit" : "835e9ba1062f7065845e546dc300b184cfdc2128",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
