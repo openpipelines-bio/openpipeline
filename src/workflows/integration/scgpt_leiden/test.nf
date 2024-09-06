@@ -14,7 +14,6 @@ workflow test_wf {
             model_vocab: resources_test.resolve("source/vocab.json"),
             input_layer: "log_normalized",
             obs_batch_label: "sample",
-            // change default to reduce resource requirements
             n_hvg: 400,
             seed: 1,
             leiden_resolution: [1.0, 0.25]
@@ -69,6 +68,7 @@ workflow test_wf2 {
         model_config: resources_test.resolve("source/args.json"),
         model_vocab: resources_test.resolve("source/vocab.json"),
         input_layer: "log_normalized",
+        obs_batch_label: "sample",
         n_hvg: 400,
         leiden_resolution: [1.0, 0.25],
         output: "test.h5mu"
