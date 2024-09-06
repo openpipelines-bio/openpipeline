@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+set -eou pipefail
 
 ## VIASH START
 par_genome_fasta="resources_test/reference_gencodev41_chr1/reference.fa.gz"
@@ -12,7 +12,7 @@ par_organism="Homo_sapiens"
 ## VIASH END
 
 # create temporary directory
-tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_functionality_name-XXXXXXXX")
+tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
 }
@@ -58,7 +58,7 @@ else
 fi
 
 echo """{
-    organism: \"${par_organism}\"
+    ${par_organism:+organism: \"$par_organism\"}
     genome: [\"${par_genome}\"]
     input_fasta: [\""${tmpdir}/genome.fa"\"]
     input_gtf: [\""${par_annotation_gtf}\""]

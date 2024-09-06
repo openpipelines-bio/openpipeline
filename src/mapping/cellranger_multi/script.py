@@ -57,7 +57,7 @@ meta = {
   'memory_pb': None,
   'temp_dir': '/tmp',
   'config': './target/docker/mapping/cellranger_multi/.config.vsh.yaml',
-  'resources_dir': '/Users/dorienroosen/code/openpipeline'
+  'resources_dir': './resources_test'
 }
 ## VIASH END
 
@@ -94,12 +94,10 @@ fastq_regex = r'^([A-Za-z0-9\-_\.]+)_S(\d+)_(L(\d+)_)?[RI](\d+)_(\d+)\.fastq(\.g
 # Invert some parameters. Keep the original ones in the config for compatibility
 inverted_params = {
     "gex_no_secondary_analysis": "gex_secondary_analysis",
-    "enable_library_compatibility_check": "disable_library_compatibility_check"
 }
 for inverted_param, param in inverted_params.items():
     par[inverted_param] = not par[param] if par[param] is not None else None
     del par[param]
-
 
 GEX_CONFIG_KEYS = {
     "gex_reference": "reference",
@@ -110,7 +108,7 @@ GEX_CONFIG_KEYS = {
     "gex_generate_bam": "create-bam",
     "gex_include_introns": "include-introns",
     "min_assignment_confidence": "min-assignment-confidence",
-    "enable_library_compatibility_check": "check-library-compatibility",
+    "check_library_compatibility": "check-library-compatibility",
     "barcode_sample_assignment": "barcode-sample-assignment",
     "cmo_set": "cmo-set",
     "probe_set": "probe-set",
@@ -257,7 +255,7 @@ def make_paths_absolute(par: dict[str, Any], config: Path | str):
 
     arguments = {
         arg["name"].removeprefix("-").removeprefix("-"): arg
-        for group in config["functionality"]["argument_groups"]
+        for group in config["argument_groups"]
         for arg in group["arguments"]
     }
     for arg_name, arg in arguments.items():
@@ -282,7 +280,7 @@ def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> st
 
     arguments = {
         arg["name"].removeprefix("-").removeprefix("-"): arg
-        for group in config["functionality"]["argument_groups"]
+        for group in config["argument_groups"]
         for arg in group["arguments"]
     }
     for arg_name, arg in arguments.items():
