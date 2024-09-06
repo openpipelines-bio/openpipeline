@@ -43,7 +43,7 @@ argument_groups:
         required: false
         example: "gzip"
 resources:
-  - type:  python_script
+  - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
 test_resources:
