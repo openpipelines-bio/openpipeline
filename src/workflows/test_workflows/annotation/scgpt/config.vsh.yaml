@@ -11,6 +11,11 @@ argument_groups:
         required: true
         description: Path to h5mu output.
         example: foo.final.h5mu
+      - name: "--n_hvg"
+        type: integer
+        required: true
+        description: Number of highly variable genes the input file was subset for.
+        example: 400
 resources:
   - type: python_script
     path: script.py
