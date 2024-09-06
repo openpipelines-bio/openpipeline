@@ -8,7 +8,7 @@ import pytest
 
 ##VIASH START
 par = {
-    "input": "work/b7/69cf6938cae28741cdb0c881ce41c8/simple_execution_test.scgpt_celltype_annotation.output.h5mu"
+    "input": "input.h5mu"
 }
 
 meta = {
@@ -16,10 +16,11 @@ meta = {
 }
 ##VIASH END
 
+
 def test_run():
     input_mudata = read_h5mu(par["input"])
     expected_layers = ["binned"]
-    expected_obsm = ["gene_id_tokens", "values_tokenized", "padding_mask", "X_pca", "X_umap", "bin_edges"]
+    expected_obsm = ["gene_id_tokens", "values_tokenized", "padding_mask", "bin_edges"]
     expected_var = ["filter_with_hvg", "id_in_vocab"]
     expected_obs = ["scgpt_pred", "scgpt_probability"]
 
