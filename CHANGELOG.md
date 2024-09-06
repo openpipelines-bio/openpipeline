@@ -115,6 +115,8 @@
 
 * `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
 
+* `metadata/copy_obs` component: Added a component to copy an .obs column from a MuData object to another (PR #874).
+
 ## MINOR CHANGES
 
 * `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
