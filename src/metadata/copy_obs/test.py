@@ -32,8 +32,8 @@ def test_sample_split(run_component, random_h5mu_path, input_h5mu, input_h5mu_pa
         "--input", input_h5mu_path,
         "--output", output_h5mu_path,
         "--modality", "mod1",
-        "--obs_key_src", "Obs",
-        "--obs_key_dest", "Obs_copy"
+        "--input_obs_key", "Obs",
+        "--output_obs_key", "Obs_copy"
     ]
 
     run_component(args)

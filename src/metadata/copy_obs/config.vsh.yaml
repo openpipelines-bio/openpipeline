@@ -19,7 +19,7 @@ argument_groups:
         type: string
         default: "rna"
         required: false
-      - name: "--obs_key_src"
+      - name: "--input_obs_key"
         type: string
         description: .obs column to be copied.
         required: true
@@ -32,9 +32,9 @@ argument_groups:
         direction: output
         required: true
         example: output.h5mu
-      - name: "--obs_key_dest"
+      - name: "--output_obs_key"
         type: string
-        description: .obs column where the copied --obs_key_src will be stored.
+        description: .obs column where the copied --input_obs_key will be stored.
         required: true
       - name: "--output_compression"
         type: string
