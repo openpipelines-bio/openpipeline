@@ -1,6 +1,6 @@
 name: "scgpt_annotation"
 namespace: "workflows/annotation"
-description: "Pipeline to run scGPT cell type annotation. The pipeline takes a pre-processed h5mu file as input, and takes care of subsetting for HVG, cross-checking the genes with the model vocabulary, and binning, padding and tokenizing the genes for transformer-based cell type prediction. Note that cell-type prediction using scGPT is only possible using a fine-tuned scGPT model."
+description: "Pipeline to run scGPT cell type annotation. The pipeline takes a pre-processed h5mu file as input, and takes care of subsetting for HVG, cross-checking the genes with the model vocabulary, binning, padding and tokenizing the genes for transformer-based cell type prediction. Note that cell-type prediction using scGPT is only possible using a fine-tuned scGPT model."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]

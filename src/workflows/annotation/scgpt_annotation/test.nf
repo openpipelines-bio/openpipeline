@@ -40,16 +40,18 @@ workflow test_wf {
 
       "Output: $output"
     }
-    | toSortedList({a, b -> a[0] <=> b[0]})
+    | scgpt_annotation_test.run(
+        fromState: [
+          "input": "output"
+        ],
+        args: [
+          "n_hvg": 400
+        ]
+    )
+    | toSortedList()
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain 1 event"
       assert output_list.collect{it[0]} == ["simple_execution_test"]
     }
-    | scgpt_annotation_test.run(
-        fromState: ["input": "output"]
-    )
-    | toList()
-    | view { output_list ->
-      assert output_list.size() == 1 : "output channel should contain one event"
-    }
+
 }
