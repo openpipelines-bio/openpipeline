@@ -2987,6 +2987,18 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--finetuned_checkpoints_key",
+          "description" : "Key in the model file containing the pretrained checkpoints. Only relevant for fine-tuned models.\n",
+          "example" : [
+            "model_state_dict"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3268,7 +3280,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding",
     "viash_version" : "0.9.0-RC7",
-    "git_commit" : "4feee893a6112b8f5aae187347da5d9a4c3d6581",
+    "git_commit" : "a325d83036762b3410c0ebba0eadd590777235f0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3333,6 +3345,7 @@ par = {
   'obsm_padding_mask': $( if [ ! -z ${VIASH_PAR_OBSM_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_OBSM_PADDING_MASK//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_batch_label': $( if [ ! -z ${VIASH_PAR_OBS_BATCH_LABEL+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'finetuned_checkpoints_key': $( if [ ! -z ${VIASH_PAR_FINETUNED_CHECKPOINTS_KEY+x} ]; then echo "r'${VIASH_PAR_FINETUNED_CHECKPOINTS_KEY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_embeddings': $( if [ ! -z ${VIASH_PAR_OBSM_EMBEDDINGS+x} ]; then echo "r'${VIASH_PAR_OBSM_EMBEDDINGS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3485,9 +3498,23 @@ model = TransformerModel(
     pre_norm=False  #TODO: Parametrize when GPU-based machine types are supported
     )
 
+
+logger.info("Loading model")
+model_file = par["model"]
+model_dict = torch.load(model_file, map_location=device)
+
+# Ensure the provided model has the correct architecture
+finetuned_checkpoints_key = par.get("finetuned_checkpoints_key")
+if finetuned_checkpoints_key:
+    try:
+        model_dict = model_dict[finetuned_checkpoints_key]
+    except KeyError as e:
+        raise ValueError(f"The key '{finetuned_checkpoints_key}' provided for '--finetuned_checkpoints_key' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.") from e
+
+# Load model
 load_pretrained(
     model,
-    torch.load(model_file, map_location=device),
+    model_dict,
     verbose=False
     )
 

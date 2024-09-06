@@ -3314,7 +3314,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cell_type_annotation",
     "viash_version" : "0.9.0-RC7",
-    "git_commit" : "4feee893a6112b8f5aae187347da5d9a4c3d6581",
+    "git_commit" : "a325d83036762b3410c0ebba0eadd590777235f0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
