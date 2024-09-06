@@ -20,33 +20,35 @@ workflow run_wf {
 
         // Add 'query' id to .obs columns of query dataset
         | add_id.run(
-            fromState: {id, state ->
-                [
-                "input": state.input,
+            fromState: [
+                "input": "input",
+            ],
+            args:[
                 "input_id": "query",
                 "obs_output": "dataset",
-                ]
-            },
+            ],
             toState: ["input": "output"])
         // Add 'reference'id to .obs columns of reference dataset
         | add_id.run(
-                fromState: {id, state ->
-                    [
-                    "input": state.reference,
+                fromState:[
+                    "input": "reference",
+                ],
+                args:[
                     "input_id": "reference",
-                    "obs_output": "dataset",
-                    ]
-                },
+                    "obs_output": "dataset"
+                ],
                 toState: ["reference": "output"])
         // Concatenate query and reference datasets
         | concatenate_h5mu.run(
             fromState: { id, state ->
             [
-                "input": [state.input, state.reference],
-                "input_id": ["query", "reference"],
-                "other_axis_mode": "move"
+                "input": [state.input, state.reference]
             ]
             },
+            args: [
+                "input_id": ["query", "reference"],
+                "other_axis_mode": "move"
+            ],
             toState: ["input": "output"]
             )
         | view {"After concatenation: $it"}
@@ -56,35 +58,40 @@ workflow run_wf {
             [
                 "id": id,
                 "input": state.input,
-                "modality": "rna",
-                "uns_neighbors": "harmonypy_integration_neighbors",
-                "obsp_neighbor_distances": "harmonypy_integration_distances",
-                "obsp_neighbor_connectivities": "harmonypy_integration_connectivities",
+                "modality": state.modality,
                 "embedding": state.obsm_embedding,
                 "obsm_integrated": state.obsm_integrated,
                 "theta": state.theta,
                 "obs_covariates": state.obs_covariates,
-                "obs_cluster": "harmony_integration_leiden",
                 "leiden_resolution": state.leiden_resolution,
-                "obsm_umap": "X_leiden_harmony_umap"
             ]
             },
+            args: [
+                "uns_neighbors": "harmonypy_integration_neighbors",
+                "obsp_neighbor_distances": "harmonypy_integration_distances",
+                "obsp_neighbor_connectivities": "harmonypy_integration_connectivities",
+                "obs_cluster": "harmony_integration_leiden",
+                "obsm_umap": "X_leiden_harmony_umap"
+            ],
             toState: ["input": "output"]
             )
         | view {"After integration: $it"}
         // Split integrated dataset back into a separate reference and query dataset
-        | split_samples.run(
-            fromState: { id, state ->
-            [
-                "input": state.input,
-                "modality": "rna",
+        | split_h5mu.run(
+            fromState: [
+                "input": "input",
+                "modality": "modality"
+            ],
+            args: [
                 "obs_feature": "dataset",
                 "output_files": "sample_files.csv",
                 "drop_obs_nan": "true",
                 "output": "ref_query"
-            ]
-            },
-            toState: [ "output": "output", "output_files": "output_files" ],
+            ],
+            toState: [ 
+                "output": "output", 
+                "output_files": "output_files" 
+            ],
             auto: [ publish: true ]
             )
         | view {"After sample splitting: $it"}
@@ -104,22 +111,20 @@ workflow run_wf {
         | view {"After splitting query: $it"}
         // Perform KNN label transfer from reference to query
         | pynndescent_knn.run(
-            fromState: { id, state ->
-            [
-                "input": state.integrated_query,
-                "modality": "rna",
-                "input_obsm_features": state.obsm_integrated,
-                "reference": state.integrated_reference,
-                "reference_obsm_features": state.obsm_integrated,
-                "reference_obs_targets": state.obs_reference_targets,
-                "output_obs_predictions": state.output_obs_predictions,
-                "output_obs_probability": state.output_obs_probability,
-                "output_compression": state.output_compression,
-                "weights": state.weights,
-                "n_neighbors": state.n_neighbors,
-                "output": state.workflow_output
-            ]
-            },
+            fromState: [
+                "input": "integrated_query",
+                "modality": "modality",
+                "input_obsm_features": "obsm_integrated",
+                "reference": "integrated_reference",
+                "reference_obsm_features": "obsm_integrated",
+                "reference_obs_targets": "obs_reference_targets",
+                "output_obs_predictions": "output_obs_predictions",
+                "output_obs_probability": "output_obs_probability",
+                "output_compression": "output_compression",
+                "weights": "weights",
+                "n_neighbors": "n_neighbors",
+                "output": "workflow_output"
+            ],
             toState: {id, output, state -> ["output": output.output]},
             auto: [ publish: true ]
             )
