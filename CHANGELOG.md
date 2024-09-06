@@ -78,6 +78,8 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `workflows/integration/scgpt_leiden` workflow with scGPT integration followed by Leiden clustering (PR #794).
+
 * `scgpt/cell_type_annotation` component: Added scGPT cell type annotation component (PR #798).
 
 * `resources_test_scripts/scGPT.sh`: Added script to include scGPT test resources (PR #800).
@@ -116,6 +118,8 @@
 * `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
 
 * `workflows/annotation/scgpt_annotation`: workflow: Added a workflow for scGPT-based cell type annotation (PR #832).
+
+* `metadata/copy_obs` component: Added a component to copy an .obs column from a MuData object to another (PR #874).
 
 ## MINOR CHANGES
 
