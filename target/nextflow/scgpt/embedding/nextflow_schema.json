@@ -133,6 +133,16 @@
             }
     
 
+        ,
+                "finetuned_checkpoints_key": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `model_state_dict`. Key in the model file containing the pretrained checkpoints",
+                "help_text": "Type: `string`, example: `model_state_dict`. Key in the model file containing the pretrained checkpoints. Only relevant for fine-tuned models.\n"
+            
+            }
+    
+
 }
 },
     
