@@ -4,20 +4,19 @@ workflow run_wf {
 
   main:
     
-    // add id as _meta join id to be able to merge with source channel and end of workflow
+    
     output_ch = input_ch
         // Set aside the output for this workflow to avoid conflicts
         | map {id, state -> 
         def new_state = state + ["workflow_output": state.output]
         [id, new_state]
         }
-        // Add join_id to state
+        // add id as _meta join id to be able to merge with source channel and end of workflow
         | map{ id, state -> 
         def new_state = state + ["_meta": ["join_id": id]]
         [id, new_state]
         }
         | view {"After adding join_id: $it"}
-
         // Add 'query' id to .obs columns of query dataset
         | add_id.run(
             fromState: [
@@ -38,12 +37,39 @@ workflow run_wf {
                     "obs_output": "dataset"
                 ],
                 toState: ["reference": "output"])
-        // Concatenate query and reference datasets
-        | concatenate_h5mu.run(
-            fromState: { id, state ->
-            [
-                "input": [state.input, state.reference]
+        // Make sure that query and reference dataset have batch information in the same .obs column
+        // By copying the respective .obs columns to the obs column "batch_label"
+        | copy_obs.run(
+            fromState: [
+                "input": "input",
+                "modality": "modality",
+                "input_obs_key": "input_obs_batch_label",
+            ],
+            args: [
+                "output_obs_key": "batch_label"
+            ],
+            toState: [
+                "input": "output"
             ]
+        )
+        | copy_obs.run(
+            fromState: [
+                "input": "reference",
+                "modality": "modality",
+                "input_obs_key": "reference_obs_batch_label",
+            ],
+            args: [
+                "output_obs_key": "batch_label"
+            ],
+            toState: [
+                "reference": "output"
+            ]
+        )
+        // Concatenate query and reference datasets prior to integration
+        | concatenate_h5mu.run(
+            fromState: { id, state -> [
+                "input": [state.input, state.reference]
+                ]
             },
             args: [
                 "input_id": ["query", "reference"],
@@ -62,16 +88,15 @@ workflow run_wf {
                 "embedding": state.obsm_embedding,
                 "obsm_integrated": state.obsm_integrated,
                 "theta": state.theta,
-                "obs_covariates": state.obs_covariates,
                 "leiden_resolution": state.leiden_resolution,
-            ]
-            },
+            ]},
             args: [
                 "uns_neighbors": "harmonypy_integration_neighbors",
                 "obsp_neighbor_distances": "harmonypy_integration_distances",
                 "obsp_neighbor_connectivities": "harmonypy_integration_connectivities",
                 "obs_cluster": "harmony_integration_leiden",
-                "obsm_umap": "X_leiden_harmony_umap"
+                "obsm_umap": "X_leiden_harmony_umap",
+                "obs_covariates": "batch_label"
             ],
             toState: ["input": "output"]
             )
@@ -117,7 +142,7 @@ workflow run_wf {
                 "input_obsm_features": "obsm_integrated",
                 "reference": "integrated_reference",
                 "reference_obsm_features": "obsm_integrated",
-                "reference_obs_targets": "obs_reference_targets",
+                "reference_obs_targets": "reference_obs_targets",
                 "output_obs_predictions": "output_obs_predictions",
                 "output_obs_probability": "output_obs_probability",
                 "output_compression": "output_compression",
