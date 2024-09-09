@@ -44,7 +44,7 @@ workflow run_wf {
           "input": state.input,
           "modality": state.modality,
           "vocab_file": state.model_vocab,
-          "var_gene_names": state.var_gene_names,
+          "input_var_gene_names": state.var_gene_names,
           "output": state.output,
           "pad_token": state.pad_token
         ]
