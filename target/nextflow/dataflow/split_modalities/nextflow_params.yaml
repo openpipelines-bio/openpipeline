@@ -1,0 +1,9 @@
+# Arguments
+input: # please fill in - example: "sample_path"
+# output: "$id.$key.output"
+# output_compression: "gzip"
+# output_types: "$id.$key.output_types.csv"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

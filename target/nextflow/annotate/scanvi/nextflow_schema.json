@@ -1,0 +1,428 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "scanvi",
+"description": "Semi-supervised model for single-cell transcriptomics data. A scVI extension that can leverage the cell type knowledge for a subset of the cells present in the data sets to infer the states of the rest of the cells.",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "Arguments related to the input (aka query) dataset.",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `input.h5mu`. Input h5mu file",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. Input h5mu file."
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. Which modality to process",
+                "help_text": "Type: `string`, default: `rna`. Which modality to process."
+            ,
+                "default": "rna"
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "Arguments related to the output.",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
+            ,
+                "default": "$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+        ,
+                "output_model": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output_model.output_model`, example: `model_dir`. Folder where the state of the trained model will be saved to",
+                "help_text": "Type: `file`, default: `$id.$key.output_model.output_model`, example: `model_dir`. Folder where the state of the trained model will be saved to."
+            ,
+                "default": "$id.$key.output_model.output_model"
+            }
+    
+
+        ,
+                "output_obs_predictions": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scanvi_pred`. In which `",
+                "help_text": "Type: `string`, default: `scanvi_pred`. In which `.obs` slots to store the predicted information.\n"
+            ,
+                "default": "scanvi_pred"
+            }
+    
+
+        ,
+                "output_obs_probability": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scanvi_probability`. In which `",
+                "help_text": "Type: `string`, default: `scanvi_probability`. In which `.obs` slots to store the probability of the predictions.\n"
+            ,
+                "default": "scanvi_probability"
+            }
+    
+
+        ,
+                "output_obsm_scanvi_embedding": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scanvi_embedding`. In which `",
+                "help_text": "Type: `string`, default: `scanvi_embedding`. In which `.obsm` slots to store the scvi embedding.\n"
+            ,
+                "default": "scanvi_embedding"
+            }
+    
+
+        ,
+                "unknown_celltype": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `Unknown`. Label for unknown cell types",
+                "help_text": "Type: `string`, default: `Unknown`. Label for unknown cell types.\n"
+            ,
+                "default": "Unknown"
+            }
+    
+
+}
+},
+    
+    
+    "reference" : {
+    "title": "Reference",
+    "type": "object",
+    "description": "Arguments related to the reference dataset.",
+    "properties": {
+    
+        
+                "reference": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `reference.h5mu`. Reference h5mu file",
+                "help_text": "Type: `file`, required, example: `reference.h5mu`. Reference h5mu file."
+            
+            }
+    
+
+        ,
+                "scvi_reference_model": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `scvi_model.pt`. Pretrained scvi reference model",
+                "help_text": "Type: `file`, required, example: `scvi_model.pt`. Pretrained scvi reference model"
+            
+            }
+    
+
+        ,
+                "reference_obs_label": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `cell_ontology_class`. Key in obs field of reference AnnData with cell-type information",
+                "help_text": "Type: `string`, required, example: `cell_ontology_class`. Key in obs field of reference AnnData with cell-type information."
+            
+            }
+    
+
+}
+},
+    
+    
+    "scanvi reference model training arguments" : {
+    "title": "SCANVI reference model training arguments",
+    "type": "object",
+    "description": "Arguments related to the reference SCANVI model.",
+    "properties": {
+    
+        
+                "reference_train_size": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.9`. Size of training set",
+                "help_text": "Type: `double`, default: `0.9`. Size of training set."
+            ,
+                "default": "0.9"
+            }
+    
+
+        ,
+                "reference_max_epochs": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `400`. Maximum number of epochs",
+                "help_text": "Type: `integer`, default: `400`. Maximum number of epochs."
+            ,
+                "default": "400"
+            }
+    
+
+        ,
+                "reference_learning_rate": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.001`. Learning rate",
+                "help_text": "Type: `double`, default: `0.001`. Learning rate."
+            ,
+                "default": "0.001"
+            }
+    
+
+        ,
+                "reference_reduce_lr_on_plateau": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Reduce learning rate on plateau",
+                "help_text": "Type: `boolean`, default: `true`. Reduce learning rate on plateau."
+            ,
+                "default": "True"
+            }
+    
+
+        ,
+                "reference_lr_patience": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `25`. Patience for learning rate reduction",
+                "help_text": "Type: `integer`, default: `25`. Patience for learning rate reduction."
+            ,
+                "default": "25"
+            }
+    
+
+        ,
+                "reference_lr_factor": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.5`. Factor by which to reduce learning rate",
+                "help_text": "Type: `double`, default: `0.5`. Factor by which to reduce learning rate."
+            ,
+                "default": "0.5"
+            }
+    
+
+        ,
+                "reference_early_stopping": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Early stopping",
+                "help_text": "Type: `boolean`, default: `true`. Early stopping."
+            ,
+                "default": "True"
+            }
+    
+
+        ,
+                "reference_early_stopping_patience": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `50`. Patience for early stopping",
+                "help_text": "Type: `integer`, default: `50`. Patience for early stopping."
+            ,
+                "default": "50"
+            }
+    
+
+}
+},
+    
+    
+    "scanvi query model training arguments" : {
+    "title": "SCANVI query model training arguments",
+    "type": "object",
+    "description": "Arguments related to the query SCANVI model.",
+    "properties": {
+    
+        
+                "query_train_size": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.9`. Size of training set",
+                "help_text": "Type: `double`, default: `0.9`. Size of training set."
+            ,
+                "default": "0.9"
+            }
+    
+
+        ,
+                "query_max_epochs": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `400`. Maximum number of epochs",
+                "help_text": "Type: `integer`, default: `400`. Maximum number of epochs."
+            ,
+                "default": "400"
+            }
+    
+
+        ,
+                "query_learning_rate": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.001`. Learning rate",
+                "help_text": "Type: `double`, default: `0.001`. Learning rate."
+            ,
+                "default": "0.001"
+            }
+    
+
+        ,
+                "query_reduce_lr_on_plateau": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Reduce learning rate on plateau",
+                "help_text": "Type: `boolean`, default: `true`. Reduce learning rate on plateau."
+            ,
+                "default": "True"
+            }
+    
+
+        ,
+                "query_lr_patience": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `25`. Patience for learning rate reduction",
+                "help_text": "Type: `integer`, default: `25`. Patience for learning rate reduction."
+            ,
+                "default": "25"
+            }
+    
+
+        ,
+                "query_lr_factor": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.5`. Factor by which to reduce learning rate",
+                "help_text": "Type: `double`, default: `0.5`. Factor by which to reduce learning rate."
+            ,
+                "default": "0.5"
+            }
+    
+
+        ,
+                "query_early_stopping": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Early stopping",
+                "help_text": "Type: `boolean`, default: `true`. Early stopping."
+            ,
+                "default": "True"
+            }
+    
+
+        ,
+                "query_early_stopping_patience": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `50`. Patience for early stopping",
+                "help_text": "Type: `integer`, default: `50`. Patience for early stopping."
+            ,
+                "default": "50"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/reference"
+    },
+
+    {
+    "$ref": "#/definitions/scanvi reference model training arguments"
+    },
+
+    {
+    "$ref": "#/definitions/scanvi query model training arguments"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}
