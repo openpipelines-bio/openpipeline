@@ -1,6 +1,6 @@
 name: "harmony_knn"
 namespace: "workflows/annotation"
-description: "Pipeline for cell type annotation using leiden integration of reference and query dataset followed by KNN label transfer."
+description: "Workflow for cell type annotation by performing harmony integration of reference and query dataset followed by KNN label transfer."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]
@@ -63,11 +63,6 @@ argument_groups:
           A value of theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
         default: 2
         multiple: true
-      - name: "--obsm_integrated"
-        type: string
-        default: "X_integrated_harmony"
-        required: false
-        description: "In which .obsm slot to store the resulting integrated embedding."
 
   - name: Leiden clustering options
     arguments:
@@ -119,6 +114,11 @@ argument_groups:
           In which `.obs` slots to store the probability of the predictions.
           If provided, must have the same length as `--reference_obs_targets`.
           If empty, will default to the `reference_obs_targets` combined with the `"_probability"` suffix.
+      - name: "--output_obsm_integrated"
+        type: string
+        default: "X_integrated_harmony"
+        required: false
+        description: "In which .obsm slot to store the resulting integrated embedding."
       - name: "--output_compression"
         type: string
         description: |
