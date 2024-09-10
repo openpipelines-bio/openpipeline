@@ -21,15 +21,15 @@ wget "https://zenodo.org/record/7587774/files/TS_Blood_filtered.h5ad?download=1"
 # Download Tabula Sapiens Blood pretrained model from https://doi.org/10.5281/zenodo.7580707
 wget "https://zenodo.org/record/7580707/files/pretrained_models_Blood_ts.tar.gz?download=1" -O "${OUT}/tmp_pretrained_models_Blood_ts.tar.gz"
 
-# # Download PopV specific CL ontology files - now needed for OnClass
-# OUT_ONTOLOGY="${OUT}/ontology"
-# [ -d "$OUT_ONTOLOGY" ] || mkdir -p "$OUT_ONTOLOGY"
-# wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.obo \
-# -O "${OUT_ONTOLOGY}/cl.obo"
-# wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology \
-# -O "${OUT_ONTOLOGY}/cl.ontology"
-# wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology.nlp.emb \
-# -O "${OUT_ONTOLOGY}/cl.ontology.nlp.emb"
+# Download PopV specific CL ontology files - needed for OnClass
+OUT_ONTOLOGY="${OUT}/ontology"
+[ -d "$OUT_ONTOLOGY" ] || mkdir -p "$OUT_ONTOLOGY"
+wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.obo \
+-O "${OUT_ONTOLOGY}/cl.obo"
+wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology \
+-O "${OUT_ONTOLOGY}/cl.ontology"
+wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology.nlp.emb \
+-O "${OUT_ONTOLOGY}/cl.ontology.nlp.emb"
 
 
 # Process Tabula Sapiens Blood reference h5ad
