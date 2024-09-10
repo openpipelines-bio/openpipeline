@@ -61,8 +61,15 @@ def main():
             max_features = int(par["max_features"])
         except ValueError as e:
             raise ValueError(f"Invaldid value {par['max_features']} for --max_features: must either be an integer or one of \'sqrt\', \'log2\' or \'all\'")
+        
+    if par["model"]:
+        if par["reference"]:
+            logger.warning("Both reference and model are provided. Ignoring the reference and using the pre-trained model instead.")
             
-    if par["reference"]:
+        logger.info("Loading a pre-trained model")
+        model = pickle.load(open(par["model"], "rb"))
+        
+    elif par["reference"]:
         logger.info("Reading reference data")
 
         reference_mudata = mu.read_h5mu(par["reference"])
@@ -80,10 +87,6 @@ def main():
             max_features=max_features
         )
         model.fit(reference_matrix, labels)
-
-    elif par["model"]:
-        logger.info("Loading a pre-trained model")
-        model = pickle.load(open(par["model"], "rb"))
 
     else:
         raise ValueError("Either reference or model must be provided")
