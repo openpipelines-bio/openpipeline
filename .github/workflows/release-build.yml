@@ -26,14 +26,11 @@ jobs:
 
     outputs:
       cache_key: ${{ steps.cache.outputs.cache_key }}
+      dest_paths: ${{ steps.cache.outputs.dest_paths }}
 
     steps:
-    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v6
-      id: cache 
-      with:
-        s3_bucket: $s3_bucket
-        dest_path: resources_test
-        cache_key_prefix: resources_test__
+    - uses: viash-io/viash-actions/project/sync-and-cache@v6
+      id: cache
   
   # phase 3
   integration_test:
@@ -64,10 +61,11 @@ jobs:
 
     # use cache
     - name: Cache resources data
-      uses: actions/cache@v4
-      timeout-minutes: 5
+      if: ${{ needs.sync_s3.outputs.cache_key != '' }}
+      uses: actions/cache/restore@v4
+      timeout-minutes: 10
       with:
-        path: resources_test
+        path: ${{ needs.sync_s3.outputs.dest_paths }}
         key: ${{ needs.sync_s3.outputs.cache_key }}
         fail-on-cache-miss: true
 
