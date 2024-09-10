@@ -1,0 +1,20 @@
+# Inputs
+id: # please fill in - example: "foo"
+input: # please fill in - example: "input.h5mu"
+
+# Outputs
+# output: "$id.$key.output"
+
+# Correction arguments
+perform_correction: false
+cellbender_epochs: 150
+
+# Filtering arguments
+# min_genes: 100
+# min_counts: 1000
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments

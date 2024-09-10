@@ -1,0 +1,26 @@
+# Inputs
+input: # please fill in - example: "path/to/file"
+
+# Outputs
+# output: "$id.$key.output"
+# output_compression: "gzip"
+
+# Filtering and normalization
+# min_counts: 123
+# min_counts_u: 123
+# min_cells: 123
+# min_cells_u: 123
+# min_shared_counts: 123
+# min_shared_cells: 123
+# n_top_genes: 123
+log_transform: true
+
+# Fitting parameters
+# n_principal_components: 123
+n_neighbors: 30
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments

@@ -1,0 +1,34 @@
+# Query Input
+id: # please fill in - example: "foo"
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# input_obsm_embedding: "X_pca"
+input_obs_batch_label: # please fill in - example: "sample"
+
+# Reference input
+reference: # please fill in - example: "reference.h5mu"
+reference_obs_targets: # please fill in - example: ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"]
+reference_obs_batch_label: # please fill in - example: "sample"
+
+# Harmony integration options
+theta: [2.0]
+
+# Leiden clustering options
+leiden_resolution: [1.0]
+
+# Neighbor classifier arguments
+weights: "uniform"
+n_neighbors: 15
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_obs_predictions: ["foo"]
+# output_obs_probability: ["foo"]
+output_obsm_integrated: "X_integrated_harmony"
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments
