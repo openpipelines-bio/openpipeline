@@ -95,9 +95,9 @@ argument_groups:
         choices: ["balanced", "balanced_subsample", "uniform"]
         description: |
           Weights associated with classes.
-          The “balanced” mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data as n_samples / (n_classes * np.bincount(y))
+          The “balanced” mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data.
           The “balanced_subsample” mode (default) is the same as “balanced” except that weights are computed based on the bootstrap sample for every tree grown.
-          The `uniform` mode gives all classes a weight  of one.
+          The "uniform" mode gives all classes a weight  of one.
       - name: "--max_features"
         type: string
         default: "200"
