@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
 "title": "scgpt_annotation",
-"description": "Pipeline to run scGPT cell type annotation. The pipeline takes a pre-processed h5mu file as input, and takes care of subsetting for HVG, cross-checking the genes with the model vocabulary, binning, padding and tokenizing the genes for transformer-based cell type prediction. Note that cell-type prediction using scGPT is only possible using a fine-tuned scGPT model.",
+"description": "Cell type annotation workflow using scGPT. \nThe workflow takes a pre-processed h5mu file as query input, and performs\n  - subsetting for HVG\n  - cross-checking of genes with the model vocabulary\n  - binning of gene counts\n  - padding and tokenizing of genes\n  - transformer-based cell type prediction\nNote that cell-type prediction using scGPT is only possible using a fine-tuned scGPT model.\n",
 "type": "object",
 "definitions": {
 
@@ -119,28 +119,28 @@
                 "input_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`. Mudata layer (key from layers) to use as input data for hvg subsetting and binning; if not specified, X is used",
-                "help_text": "Type: `string`. Mudata layer (key from layers) to use as input data for hvg subsetting and binning; if not specified, X is used.\n"
+                "description": "Type: `string`. Mudata layer (key from layers) to use as input data for HVG subsetting and binning; if not specified, X is used",
+                "help_text": "Type: `string`. Mudata layer (key from layers) to use as input data for HVG subsetting and binning; if not specified, X is used.\n"
             
             }
     
 
         ,
-                "var_gene_names": {
+                "input_var_gene_names": {
                 "type":
                 "string",
-                "description": "Type: `string`. The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used",
-                "help_text": "Type: `string`. The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used.\n"
+                "description": "Type: `string`. The ",
+                "help_text": "Type: `string`. The .var field in the input (query) containing gene names; if not provided, the var index will be used.\n"
             
             }
     
 
         ,
-                "obs_batch_label": {
+                "input_obs_batch_label": {
                 "type":
                 "string",
-                "description": "Type: `string`. The name of the adata obs column containing the batch labels",
-                "help_text": "Type: `string`. The name of the adata obs column containing the batch labels.\n"
+                "description": "Type: `string`, required. The ",
+                "help_text": "Type: `string`, required. The .obs field in the input (query) dataset containing the batch labels.\n"
             
             }
     
@@ -159,8 +159,8 @@
                 "model": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `best_model.pt`. The model file containing checkpoints and cell type label mapper",
-                "help_text": "Type: `file`, required, example: `best_model.pt`. The model file containing checkpoints and cell type label mapper.\n"
+                "description": "Type: `file`, required, example: `best_model.pt`. The scGPT model file",
+                "help_text": "Type: `file`, required, example: `best_model.pt`. The scGPT model file. \nMust be a fine-tuned model that contains keys for checkpoints (--finetuned_checkpoints_key) and cell type label mapper(--label_mapper_key).\n"
             
             }
     
@@ -169,8 +169,8 @@
                 "model_config": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `args.json`. The model configuration file",
-                "help_text": "Type: `file`, required, example: `args.json`. The model configuration file. \n"
+                "description": "Type: `file`, required, example: `args.json`. The scGPT model configuration file",
+                "help_text": "Type: `file`, required, example: `args.json`. The scGPT model configuration file. \n"
             
             }
     
@@ -179,8 +179,8 @@
                 "model_vocab": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `vocab.json`. Model vocabulary file directory",
-                "help_text": "Type: `file`, required, example: `vocab.json`. Model vocabulary file directory.\n"
+                "description": "Type: `file`, required, example: `vocab.json`. The scGPT model vocabulary file",
+                "help_text": "Type: `file`, required, example: `vocab.json`. The scGPT model vocabulary file.\n"
             
             }
     
@@ -189,8 +189,8 @@
                 "finetuned_checkpoints_key": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `model_state_dict`. Key in the model  file containing the pretrained checkpoints",
-                "help_text": "Type: `string`, default: `model_state_dict`. Key in the model  file containing the pretrained checkpoints.\n"
+                "description": "Type: `string`, default: `model_state_dict`. Key in the model file containing the pre-trained checkpoints",
+                "help_text": "Type: `string`, default: `model_state_dict`. Key in the model file containing the pre-trained checkpoints.\n"
             ,
                 "default": "model_state_dict"
             }

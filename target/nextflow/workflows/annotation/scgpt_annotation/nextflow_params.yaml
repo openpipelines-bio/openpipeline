@@ -3,8 +3,8 @@ id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # input_layer: "foo"
-# var_gene_names: "foo"
-# obs_batch_label: "foo"
+# input_var_gene_names: "foo"
+input_obs_batch_label: # please fill in - example: "foo"
 
 # Model input
 model: # please fill in - example: "best_model.pt"

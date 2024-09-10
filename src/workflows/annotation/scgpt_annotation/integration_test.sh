@@ -12,7 +12,8 @@ viash ns build -q scgpt_annotation
 
 nextflow run . \
   -main-script src/workflows/annotation/scgpt_annotation/test.nf \
-  -profile docker,no_publish \
+  -resume \
+  -profile no_publish \
   -entry test_wf \
   -with-trace work/trace.txt \
   -c src/workflows/utils/labels_ci.config \

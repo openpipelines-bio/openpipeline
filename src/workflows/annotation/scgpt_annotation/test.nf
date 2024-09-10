@@ -13,10 +13,8 @@ workflow test_wf {
             model: resources_test.resolve("finetuned_model/best_model.pt"),
             model_config: resources_test.resolve("source/args.json"),
             model_vocab: resources_test.resolve("source/vocab.json"),
-            finetuned_checkpoints_key: "model_state_dict",
-            label_mapper_key: "id_to_class",
             input_layer: "log_normalized",
-            obs_batch_label: "sample",
+            input_obs_batch_label: "sample",
             // change default to reduce resource requirements
             n_hvg: 400,
             seed: 1

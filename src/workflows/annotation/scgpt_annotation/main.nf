@@ -10,7 +10,7 @@ workflow run_wf {
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
-    // Annotates the mudata object with highly variable genes.
+    // Annotate the mudata object with highly variable genes.
     | highly_variable_features_scanpy.run(
       fromState: [
           "input": "input",
@@ -24,7 +24,7 @@ workflow run_wf {
         ],
       toState: ["input": "output"]
     )
-    // filter the mudata object based on the HVG
+    // Filter the mudata object based on the HVG
     // do_filter does not need a layer argument because it filters all layers from a modality.
     | do_filter.run(
       fromState: [
@@ -36,13 +36,14 @@ workflow run_wf {
         ],
       toState: ["input": "output"]
     )
-    // Check whether the genes are part of the provided vocabulary. Subsets for genes present in vocab only.
+    // Check whether the genes are part of the provided vocabulary. 
+    // Subsets for genes present in vocab only.
     | cross_check_genes.run(
       fromState: [
           "input": "input",
           "modality": "modality",
           "vocab_file": "model_vocab",
-          "var_gene_names": "var_gene_names",
+          "var_gene_names": "input_var_gene_names",
           "output": "output",
           "pad_token": "pad_token"
         ],
@@ -70,7 +71,7 @@ workflow run_wf {
           "modality": "modality",
           "model_vocab": "model_vocab",
           "input_layer": "binned",
-          "var_gene_names": "var_gene_names",
+          "var_gene_names": "input_var_gene_names",
           "pad_token": "pad_token",
           "pad_value": "pad_value",
           "max_seq_len": "max_seq_len",
@@ -93,7 +94,7 @@ workflow run_wf {
           "finetuned_checkpoints_key": "finetuned_checkpoints_key",
           "input": "input",
           "modality": "modality",
-          "obs_batch_label": "obs_batch_label",
+          "obs_batch_label": "input_obs_batch_label",
           "pad_token": "pad_token",
           "pad_value": "pad_value",
           "n_input_bins": "n_input_bins",

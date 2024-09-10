@@ -1,6 +1,14 @@
 name: "scgpt_annotation"
 namespace: "workflows/annotation"
-description: "Pipeline to run scGPT cell type annotation. The pipeline takes a pre-processed h5mu file as input, and takes care of subsetting for HVG, cross-checking the genes with the model vocabulary, binning, padding and tokenizing the genes for transformer-based cell type prediction. Note that cell-type prediction using scGPT is only possible using a fine-tuned scGPT model."
+description: |
+  Cell type annotation workflow using scGPT. 
+  The workflow takes a pre-processed h5mu file as query input, and performs
+    - subsetting for HVG
+    - cross-checking of genes with the model vocabulary
+    - binning of gene counts
+    - padding and tokenizing of genes
+    - transformer-based cell type prediction
+  Note that cell-type prediction using scGPT is only possible using a fine-tuned scGPT model.
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]
@@ -30,16 +38,17 @@ argument_groups:
         type: string
         required: False
         description: |
-          Mudata layer (key from layers) to use as input data for hvg subsetting and binning; if not specified, X is used.
-      - name: "--var_gene_names"
+          Mudata layer (key from layers) to use as input data for HVG subsetting and binning; if not specified, X is used.
+      - name: "--input_var_gene_names"
         type: string
         required: false
         description: |
-          The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used.
-      - name: "--obs_batch_label"
+          The .var field in the input (query) containing gene names; if not provided, the var index will be used.
+      - name: "--input_obs_batch_label"
         type: string
+        required: true
         description: |
-          The name of the adata obs column containing the batch labels.
+          The .obs field in the input (query) dataset containing the batch labels.
 
   - name: "Model input"
     arguments:
@@ -48,24 +57,25 @@ argument_groups:
         required: true
         example: best_model.pt
         description: |
-          The model file containing checkpoints and cell type label mapper.
+          The scGPT model file. 
+          Must be a fine-tuned model that contains keys for checkpoints (--finetuned_checkpoints_key) and cell type label mapper(--label_mapper_key).
       - name: "--model_config"
         type: file
         required: true
         example: args.json
         description: |
-          The model configuration file. 
+          The scGPT model configuration file. 
       - name: "--model_vocab"
         type: file
         required: true
         example: vocab.json
         description: |
-          Model vocabulary file directory.
+          The scGPT model vocabulary file.
       - name: "--finetuned_checkpoints_key"
         type: string
         default: model_state_dict
         description: |
-          Key in the model  file containing the pretrained checkpoints.
+          Key in the model file containing the pre-trained checkpoints.
       - name: "--label_mapper_key"
         type: string
         default: id_to_class
@@ -141,6 +151,7 @@ argument_groups:
       - name: "--batch_size"
         type: integer
         default: 64
+        min: 1
         description: |
           The batch size to be used for embedding inference.
 
@@ -155,6 +166,7 @@ argument_groups:
           The number of bins to discretize the data into; When no value is provided, data won't be binned.
       - name: "--seed"
         type: integer
+        min: 0
         required: false
         description: |
           Seed for random number generation used for binning. If not set, no seed is used.

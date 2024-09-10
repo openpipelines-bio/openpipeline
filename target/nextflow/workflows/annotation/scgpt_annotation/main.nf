@@ -2904,7 +2904,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--input_layer",
-          "description" : "Mudata layer (key from layers) to use as input data for hvg subsetting and binning; if not specified, X is used.\n",
+          "description" : "Mudata layer (key from layers) to use as input data for HVG subsetting and binning; if not specified, X is used.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -2912,8 +2912,8 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--var_gene_names",
-          "description" : "The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used.\n",
+          "name" : "--input_var_gene_names",
+          "description" : "The .var field in the input (query) containing gene names; if not provided, the var index will be used.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -2921,9 +2921,9 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--obs_batch_label",
-          "description" : "The name of the adata obs column containing the batch labels.\n",
-          "required" : false,
+          "name" : "--input_obs_batch_label",
+          "description" : "The .obs field in the input (query) dataset containing the batch labels.\n",
+          "required" : true,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -2936,7 +2936,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--model",
-          "description" : "The model file containing checkpoints and cell type label mapper.\n",
+          "description" : "The scGPT model file. \nMust be a fine-tuned model that contains keys for checkpoints (--finetuned_checkpoints_key) and cell type label mapper(--label_mapper_key).\n",
           "example" : [
             "best_model.pt"
           ],
@@ -2950,7 +2950,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--model_config",
-          "description" : "The model configuration file. \n",
+          "description" : "The scGPT model configuration file. \n",
           "example" : [
             "args.json"
           ],
@@ -2964,7 +2964,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--model_vocab",
-          "description" : "Model vocabulary file directory.\n",
+          "description" : "The scGPT model vocabulary file.\n",
           "example" : [
             "vocab.json"
           ],
@@ -2978,7 +2978,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--finetuned_checkpoints_key",
-          "description" : "Key in the model  file containing the pretrained checkpoints.\n",
+          "description" : "Key in the model file containing the pre-trained checkpoints.\n",
           "default" : [
             "model_state_dict"
           ],
@@ -3143,6 +3143,7 @@ meta = [
             64
           ],
           "required" : false,
+          "min" : 1,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3170,6 +3171,7 @@ meta = [
           "name" : "--seed",
           "description" : "Seed for random number generation used for binning. If not set, no seed is used.\n",
           "required" : false,
+          "min" : 0,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3190,7 +3192,7 @@ meta = [
       "dest" : "nextflow_labels.config"
     }
   ],
-  "description" : "Pipeline to run scGPT cell type annotation. The pipeline takes a pre-processed h5mu file as input, and takes care of subsetting for HVG, cross-checking the genes with the model vocabulary, binning, padding and tokenizing the genes for transformer-based cell type prediction. Note that cell-type prediction using scGPT is only possible using a fine-tuned scGPT model.",
+  "description" : "Cell type annotation workflow using scGPT. \nThe workflow takes a pre-processed h5mu file as query input, and performs\n  - subsetting for HVG\n  - cross-checking of genes with the model vocabulary\n  - binning of gene counts\n  - padding and tokenizing of genes\n  - transformer-based cell type prediction\nNote that cell-type prediction using scGPT is only possible using a fine-tuned scGPT model.\n",
   "test_resources" : [
     {
       "type" : "nextflow_script",
@@ -3336,9 +3338,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_annotation",
     "viash_version" : "0.9.0-RC7",
-    "git_commit" : "1b2a160c3db547fd49ee6872bdae9edf573fbdf8",
+    "git_commit" : "3e095a74802f1996e21c16da29c3ddff060390ee",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1921-g1b2a160c3d"
+    "git_tag" : "0.2.0-1922-g3e095a7480"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3395,7 +3397,7 @@ workflow run_wf {
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
-    // Annotates the mudata object with highly variable genes.
+    // Annotate the mudata object with highly variable genes.
     | highly_variable_features_scanpy.run(
       fromState: [
           "input": "input",
@@ -3409,7 +3411,7 @@ workflow run_wf {
         ],
       toState: ["input": "output"]
     )
-    // filter the mudata object based on the HVG
+    // Filter the mudata object based on the HVG
     // do_filter does not need a layer argument because it filters all layers from a modality.
     | do_filter.run(
       fromState: [
@@ -3421,13 +3423,14 @@ workflow run_wf {
         ],
       toState: ["input": "output"]
     )
-    // Check whether the genes are part of the provided vocabulary. Subsets for genes present in vocab only.
+    // Check whether the genes are part of the provided vocabulary. 
+    // Subsets for genes present in vocab only.
     | cross_check_genes.run(
       fromState: [
           "input": "input",
           "modality": "modality",
           "vocab_file": "model_vocab",
-          "var_gene_names": "var_gene_names",
+          "var_gene_names": "input_var_gene_names",
           "output": "output",
           "pad_token": "pad_token"
         ],
@@ -3455,7 +3458,7 @@ workflow run_wf {
           "modality": "modality",
           "model_vocab": "model_vocab",
           "input_layer": "binned",
-          "var_gene_names": "var_gene_names",
+          "var_gene_names": "input_var_gene_names",
           "pad_token": "pad_token",
           "pad_value": "pad_value",
           "max_seq_len": "max_seq_len",
@@ -3478,7 +3481,7 @@ workflow run_wf {
           "finetuned_checkpoints_key": "finetuned_checkpoints_key",
           "input": "input",
           "modality": "modality",
-          "obs_batch_label": "obs_batch_label",
+          "obs_batch_label": "input_obs_batch_label",
           "pad_token": "pad_token",
           "pad_value": "pad_value",
           "n_input_bins": "n_input_bins",
