@@ -20,10 +20,11 @@ par = {
     "criterion": "gini",
     "max_depth": None,
     "class_weight": None,
+    "max_features": 200,
     "output_compression": "gzip",
     "reference_layer": None,
     "output_obs_predictions": "random_forest_pred",
-    "output_obs_probability": "random_forest_probability",
+    "output_obs_probability": "random_forest_probability"
 }
 meta = {"resources_dir": "src/annotate/svm"}
 ## VIASH END
@@ -49,7 +50,18 @@ def main():
     input_modality = input_mudata.mod[par["modality"]].copy()
 
     input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X 
-
+    
+    # Handle max_features parameter
+    if par["max_features"] == "all":
+        max_features = None
+    elif par["max_features"] in ["sqrt", "log2"]:
+        max_features = par["max_features"]
+    else:
+        try:
+            max_features = int(par["max_features"])
+        except ValueError as e:
+            raise ValueError(f"Invaldid value {par['max_features']} for --max_features: must either be an integer or one of \'sqrt\', \'log2\' or \'all\'")
+            
     if par["reference"]:
         logger.info("Reading reference data")
 
@@ -64,7 +76,8 @@ def main():
             n_estimators=par["n_estimators"],
             criterion=par["criterion"],
             max_depth=par["max_depth"],
-            class_weight=par["class_weight"]
+            class_weight=par["class_weight"] if not par["class_weight"] == "uniform" else None,
+            max_features=max_features
         )
         model.fit(reference_matrix, labels)
 

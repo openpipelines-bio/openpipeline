@@ -36,11 +36,10 @@ argument_groups:
         type: string
         description: The layer in the reference data to be used for cell type annotation if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.
         required: false
-        required: false
       - name: "--reference_obs_target"
         type: string
         description: Key in obs field of reference modality with cell-type information.
-        default: "cell_ontology_class"
+        required: true
   - name: Outputs
     description: Output arguments.
     arguments:
@@ -82,7 +81,7 @@ argument_groups:
       - name: "--max_depth"
         type: integer
         required: false
-        description: Maximum depth of the trees in the random forest.
+        description: Maximum depth of the trees in the random forest. If not provided, the nodes are expanded until all leaves only contain a single sample.
       - name: "--criterion"
         type: string
         required: false
@@ -93,8 +92,22 @@ argument_groups:
         type: string
         required: false
         default: "balanced_subsample"
-        choices: ["balanced", "balanced_subsample"]
-        description: Weights associated with classes.
+        choices: ["balanced", "balanced_subsample", "uniform"]
+        description: |
+          Weights associated with classes.
+          The “balanced” mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data as n_samples / (n_classes * np.bincount(y))
+          The “balanced_subsample” mode (default) is the same as “balanced” except that weights are computed based on the bootstrap sample for every tree grown.
+          The `uniform` mode gives all classes a weight  of one.
+      - name: "--max_features"
+        type: string
+        default: "200"
+        description: |
+          The number of features to consider when looking for the best split:
+          
+          If the value is an integer: consider max_features features at each split.
+          If “sqrt”:  max_features=sqrt(n_features).
+          If “log2”:  max_features=log2(n_features).
+          If "all": then max_features=n_features.
 
 resources:
   - type: python_script

@@ -68,7 +68,7 @@ def test_simple_execution(run_component, random_h5mu_path, subset_genes):
     run_component([
         "--input", subset_input_file,
         "--reference", subset_reference_file,
-        "--reference_obs_targets", "cell_ontology_class",
+        "--reference_obs_target", "cell_ontology_class",
         "--output", output_file
     ])
 
@@ -126,7 +126,8 @@ def test_with_model(run_component, random_h5mu_path, dummy_model, subset_genes):
     run_component([
         "--input", subset_input_file,
         "--model", dummy_model,
-        "--output", output_file
+        "--output", output_file,
+        "--reference_obs_target", "cell_ontology_class"
     ])
 
     assert os.path.exists(output_file), "Output file does not exist"
@@ -150,10 +151,23 @@ def test_no_model_no_reference_error(run_component, random_h5mu_path):
         run_component([
             "--input", input_file,
             "--output", output_file,
+            "--reference_obs_target", "cell_ontology_class"
         ])
     assert re.search(r"ValueError: Either reference or model must be provided",
             err.value.stdout.decode('utf-8'))
 
+def test_invalid_max_features(run_component, random_h5mu_path):
+    output_file = random_h5mu_path()
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component([
+            "--input", input_file,
+            "--output", output_file,
+            "--reference_obs_target", "cell_ontology_class",
+            "--max_features", "invalid_value"
+        ])
+    assert re.search(r"Invaldid value invalid_value for --max_features: must either be an integer or one of 'sqrt', 'log2' or 'all'",
+            err.value.stdout.decode('utf-8'))
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
