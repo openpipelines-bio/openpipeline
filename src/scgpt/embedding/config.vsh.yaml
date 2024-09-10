@@ -109,7 +109,7 @@ argument_groups:
         default: -2
         description: |
           The value of the padding token.
-      - name: "--dsbn"
+      - name: "--dbsn"
         type: boolean
         default: true
         description: |
@@ -119,6 +119,11 @@ argument_groups:
         default: 64
         description: |
           The batch size to be used for inference
+      - name: "--dsbn"
+        type: boolean
+        default: true
+        description: |
+          Whether to apply domain-specific batch normalization for generating embeddings. When set to True, 'obs_batch_labels' must be set as well.
 
 resources:
   - type: python_script

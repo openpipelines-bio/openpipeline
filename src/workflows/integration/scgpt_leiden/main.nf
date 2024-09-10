@@ -44,7 +44,7 @@ workflow run_wf {
           "input": state.input,
           "modality": state.modality,
           "vocab_file": state.model_vocab,
-          "input_var_gene_names": state.var_gene_names,
+          "var_gene_names": state.var_gene_names,
           "output": state.output,
           "pad_token": state.pad_token
         ]
@@ -98,7 +98,7 @@ workflow run_wf {
           "obs_batch_label": state.obs_batch_label,
           "pad_token": state.pad_token,
           "pad_value": state.pad_value,
-          "dsbn": state.dsbn,
+          "DSBN": state.DSBN,
           "batch_size": state.batch_size,
           "obsm_embeddings": state.obsm_integrated,
           "finetuned_checkpoints_key": state.finetuned_checkpoints_key,
