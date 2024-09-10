@@ -11,6 +11,12 @@ argument_groups:
         required: true
         description: Path to h5mu output.
         example: foo.final.h5mu
+      - name: "--n_hvg"
+        type: integer
+        required: true
+        description: Number of HVG that the input file was subset for
+        example: 500
+        
 resources:
   - type: python_script
     path: script.py

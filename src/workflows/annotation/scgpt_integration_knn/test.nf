@@ -63,6 +63,9 @@ workflow test_wf {
     | scgpt_integration_knn_test.run(
         fromState: [
           "input": "output"
+        ],
+        args: [
+          "n_hvg": 500
         ]
     )
     | toSortedList({a, b -> a[0] <=> b[0]})
