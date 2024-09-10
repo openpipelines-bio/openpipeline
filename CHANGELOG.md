@@ -117,9 +117,9 @@
 
 * `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
 
-* `workflows/annotation/scgpt_annotation`: workflow: Added a workflow for scGPT-based cell type annotation (PR #832).
-
 * `metadata/copy_obs` component: Added a component to copy an .obs column from a MuData object to another (PR #874).
+
+* `workflows/annotation/scgpt_annotation` workflow: Added a scGPT transformer-based cell type annotation workflow (PR #832).
 
 ## MINOR CHANGES
 
