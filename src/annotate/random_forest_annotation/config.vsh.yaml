@@ -58,13 +58,13 @@ argument_groups:
         default: random_forest_pred
         required: false
         description: |
-          In which `.obs` slots to store the predicted information.
+          In which .obs slots to store the predicted information.
       - name: "--output_obs_probability"
         type: string
         default: random_forest_probability
         required: false
         description: |
-          In which `.obs` slots to store the probability of the predictions.
+          In which .obs slots to store the probability of the predictions.
   - name: Model arguments
     description: Model arguments.
     arguments:
@@ -98,16 +98,16 @@ argument_groups:
           The “balanced” mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data.
           The “balanced_subsample” mode (default) is the same as “balanced” except that weights are computed based on the bootstrap sample for every tree grown.
           The "uniform" mode gives all classes a weight  of one.
-      - name: "--max_features"
-        type: string
-        default: "200"
-        description: |
-          The number of features to consider when looking for the best split:
+      # - name: "--max_features"
+      #   type: string
+      #   default: "200"
+      #   description: |
+      #     The number of features to consider when looking for the best split. The value can eitehr be a positive integer or one of 'sqrt', 'log2' or 'all'.
           
-          If the value is an integer: consider max_features features at each split.
-          If “sqrt”:  max_features=sqrt(n_features).
-          If “log2”:  max_features=log2(n_features).
-          If "all": then max_features=n_features.
+      #     If the value is an integer: consider max_features features at each split.
+      #     If “sqrt”: max_features is the squareroot of all input features.
+      #     If “log2”: max_features is the log2 of all input features.
+      #     If "all": max features equals all input features.
 
 resources:
   - type: python_script
