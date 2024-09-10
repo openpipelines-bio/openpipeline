@@ -66,7 +66,7 @@ def main():
         model = CalibratedClassifierCV(svm.LinearSVC(
             C=par["c_reg"],
             max_iter=par["max_iter"],
-            class_weight=par["class_weight"],
+            class_weight=par["class_weight"] if not par["class_weight"]=="uniform" else None,
             dual="auto",
         ))
         model.fit(reference_matrix, labels)

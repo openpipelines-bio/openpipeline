@@ -39,8 +39,8 @@ argument_groups:
         required: false
       - name: "--reference_obs_target"
         type: string
-        description: #TODO: update for multiple: Key in obs field of reference AnnData with cell-type information.
-        default: "cell_ontology_class"
+        description:
+        required: true
   - name: Outputs
     description: Output arguments.
     arguments:
@@ -81,14 +81,20 @@ argument_groups:
       - name: "--max_iter"
         type: integer
         description: "Maximum number of iterations for the SVM."
+        min: 1
         default: 5000
       - name: "--c_reg"
         type: double
         description: "Regularization parameter for the SVM."
+        min: 0.0
         default: 1.0
       - name: "--class_weight"
         type: string
-        description: "Class weights for the SVM."
+        description: |
+          "Class weights for the SVM.  The `uniform` mode gives all classes a weight  of one. 
+          The `balanced` mode (default) uses the values of y to automatically adjust weights inversely 
+          proportional to class frequencies in the input data as n_samples / (n_classes * np.bincount(y))"
+        choices: ["balanced", "uniform"]
         default: "balanced"
 
 resources:

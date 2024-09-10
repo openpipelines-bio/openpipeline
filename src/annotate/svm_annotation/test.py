@@ -73,7 +73,7 @@ def test_simple_execution(run_component, random_h5mu_path, subset_genes):
     run_component([
         "--input", subset_input_file,
         "--reference", subset_reference_file,
-        "--reference_obs_targets", "cell_ontology_class",
+        "--reference_obs_target", "cell_ontology_class",
         "--output", output_file
     ])
 
@@ -128,6 +128,7 @@ def test_with_model(run_component, random_h5mu_path, dummy_model, subset_genes):
 
     run_component([
         "--input", subset_input_file,
+        "--reference_obs_target", "cell_ontology_class",
         "--model", dummy_model,
         "--output", output_file
     ])
@@ -152,6 +153,7 @@ def test_no_model_no_reference_error(run_component, random_h5mu_path):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component([
             "--input", input_file,
+            "--reference_obs_target", "cell_ontology_class",
             "--output", output_file,
         ])
     assert re.search(r"ValueError: Either reference or model must be provided",
