@@ -134,7 +134,7 @@ workflow run_wf {
             [id, state + newKeys]
             }
         | view {"After splitting query: $it"}
-        // Perform KNN label transfer from reference to query
+        // Perform KNN label transfer from integrated reference to integrated query
         | pynndescent_knn.run(
             fromState: [
                 "input": "integrated_query",

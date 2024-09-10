@@ -1,6 +1,6 @@
 name: "harmony_knn"
 namespace: "workflows/annotation"
-description: "Workflow for cell type annotation by performing harmony integration of reference and query dataset followed by KNN label transfer."
+description: "Cell type annotation workflow by performing harmony integration of reference and query dataset followed by KNN label transfer."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]
@@ -31,7 +31,7 @@ argument_groups:
         description: Embedding .obsm column to use as input for integration. Should match the embedding .obsm columng of the --reference dataset.
       - name: "--input_obs_batch_label"
         type: string
-        description: "The .obs field in the input data containing the batch labels."
+        description: "The .obs field in the input (query) dataset containing the batch labels."
         example: "sample"
         required: true
 
@@ -40,17 +40,17 @@ argument_groups:
       - name: "--reference"
         required: true
         type: file
-        description: Reference dataset consisting of the labeled observations to train the classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset(s).
+        description: Reference dataset consisting of the labeled observations to train the KNN classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset.
         example: reference.h5mu
       - name: "--reference_obs_targets"
         type: string
         example: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
         required: true
         multiple: true
-        description: The `.obs` key(s) of the target labels to tranfer.
+        description: The `.obs` key(s) of the target labels to transfer.
       - name: "--reference_obs_batch_label"
         type: string
-        description:  "The .obs field in the input data containing the batch labels."
+        description:  "The .obs field in the reference dataset containing the batch labels."
         example: "sample"
         required: true
 
@@ -61,7 +61,8 @@ argument_groups:
         description: |
           Diversity clustering penalty parameter. Specify for each variable in group.by.vars. 
           A value of theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
-        default: 2
+        min: 0
+        default: [2]
         multiple: true
 
   - name: Leiden clustering options
@@ -69,6 +70,7 @@ argument_groups:
       - name: "--leiden_resolution"
         type: double
         description: Control the coarseness of the clustering. Higher values lead to more clusters.
+        min: 0
         default: [1]
         multiple: true
 
@@ -103,7 +105,7 @@ argument_groups:
         required: false
         multiple: true
         description: |
-          In which `.obs` slots to store the predicted information.
+          In which `.obs` slots to store the predicted cell labels.
           If provided, must have the same length as `--reference_obs_targets`.
           If empty, will default to the `reference_obs_targets` combined with the `"_pred"` suffix.
       - name: "--output_obs_probability"
@@ -118,7 +120,7 @@ argument_groups:
         type: string
         default: "X_integrated_harmony"
         required: false
-        description: "In which .obsm slot to store the resulting integrated embedding."
+        description: "In which .obsm slot to store the integrated embedding."
       - name: "--output_compression"
         type: string
         description: |
