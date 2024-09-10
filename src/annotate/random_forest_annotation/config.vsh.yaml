@@ -81,7 +81,9 @@ argument_groups:
       - name: "--max_depth"
         type: integer
         required: false
-        description: Maximum depth of the trees in the random forest. If not provided, the nodes are expanded until all leaves only contain a single sample.
+        description: |
+          Maximum depth of the trees in the random forest. 
+          If not provided, the nodes are expanded until all leaves only contain a single sample.
       - name: "--criterion"
         type: string
         required: false
@@ -92,6 +94,7 @@ argument_groups:
         type: string
         required: false
         default: "balanced_subsample"
+        choices: ["balanced", "balanced_subsample", "uniform"]
         # choices: ["balanced", "balanced_subsample", "uniform"]
         # description: |
         #   Weights associated with classes.
