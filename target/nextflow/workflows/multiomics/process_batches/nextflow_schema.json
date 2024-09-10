@@ -1,0 +1,355 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "process_batches",
+"description": "This workflow serves as an entrypoint into the \u0027full_pipeline\u0027 in order to\nre-run the multisample processing and the integration setup. An input .h5mu file will \nfirst be split in order to run the multisample processing per modality. Next, the modalities\nare merged again and the integration setup pipeline is executed. Please note that this workflow\nassumes that samples from multiple pipelines are already concatenated. \n",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "id": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `foo`. ID of the sample",
+                "help_text": "Type: `string`, required, example: `foo`. ID of the sample."
+            
+            }
+    
+
+        ,
+                "input": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, required, example: `input.h5mu`, multiple_sep: `\";\"`. Path to the sample",
+                "help_text": "Type: List of `file`, required, example: `input.h5mu`, multiple_sep: `\";\"`. Path to the sample."
+            
+            }
+    
+
+        ,
+                "rna_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Input layer for the gene expression modality",
+                "help_text": "Type: `string`. Input layer for the gene expression modality. If not specified, .X is used."
+            
+            }
+    
+
+        ,
+                "prot_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Input layer for the antibody capture modality",
+                "help_text": "Type: `string`. Input layer for the antibody capture modality. If not specified, .X is used."
+            
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
+            ,
+                "default": "$id.$key.output.h5mu"
+            }
+    
+
+}
+},
+    
+    
+    "highly variable features detection" : {
+    "title": "Highly variable features detection",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "highly_variable_features_var_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `filter_with_hvg`. In which ",
+                "help_text": "Type: `string`, default: `filter_with_hvg`. In which .var slot to store a boolean array corresponding to the highly variable genes."
+            ,
+                "default": "filter_with_hvg"
+            }
+    
+
+        ,
+                "highly_variable_features_obs_batch_key": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `sample_id`. If specified, highly-variable genes are selected within each batch separately and merged",
+                "help_text": "Type: `string`, default: `sample_id`. If specified, highly-variable genes are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific genes and acts as a lightweight batch correction method.\n"
+            ,
+                "default": "sample_id"
+            }
+    
+
+}
+},
+    
+    
+    "qc metrics calculation options" : {
+    "title": "QC metrics calculation options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "var_qc_metrics": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, default: `filter_with_hvg`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from ",
+                "help_text": "Type: List of `string`, default: `filter_with_hvg`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes.\n"
+            ,
+                "default": "filter_with_hvg"
+            }
+    
+
+        ,
+                "top_n_vars": {
+                "type":
+                "string",
+                "description": "Type: List of `integer`, default: `50,100,200,500`, multiple_sep: `\",\"`. Number of top vars to be used to calculate cumulative proportions",
+                "help_text": "Type: List of `integer`, default: `50,100,200,500`, multiple_sep: `\",\"`. Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n"
+            ,
+                "default": "50,100,200,500"
+            }
+    
+
+}
+},
+    
+    
+    "pca options" : {
+    "title": "PCA options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "pca_overwrite": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. Allow overwriting slots for PCA output",
+                "help_text": "Type: `boolean_true`, default: `false`. Allow overwriting slots for PCA output."
+            ,
+                "default": "False"
+            }
+    
+
+}
+},
+    
+    
+    "clr options" : {
+    "title": "CLR options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "clr_axis": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `0`. Axis to perform the CLR transformation on",
+                "help_text": "Type: `integer`, default: `0`. Axis to perform the CLR transformation on."
+            ,
+                "default": "0"
+            }
+    
+
+}
+},
+    
+    
+    "rna scaling options" : {
+    "title": "RNA Scaling options",
+    "type": "object",
+    "description": "Options for enabling scaling of the log-normalized data to unit variance and zero mean.\nThe scaled data will be output a different layer and representation with reduced dimensions\nwill be created and stored in addition to the non-scaled data.\n",
+    "properties": {
+    
+        
+                "rna_enable_scaling": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. Enable scaling for the RNA modality",
+                "help_text": "Type: `boolean_true`, default: `false`. Enable scaling for the RNA modality."
+            ,
+                "default": "False"
+            }
+    
+
+        ,
+                "rna_scaling_output_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scaled`. Output layer where the scaled log-normalized data will be stored",
+                "help_text": "Type: `string`, default: `scaled`. Output layer where the scaled log-normalized data will be stored."
+            ,
+                "default": "scaled"
+            }
+    
+
+        ,
+                "rna_scaling_pca_obsm_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scaled_pca`. Name of the ",
+                "help_text": "Type: `string`, default: `scaled_pca`. Name of the .obsm key where the PCA representation of the log-normalized\nand scaled data is stored.\n"
+            ,
+                "default": "scaled_pca"
+            }
+    
+
+        ,
+                "rna_scaling_pca_loadings_varm_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scaled_pca_loadings`. Name of the ",
+                "help_text": "Type: `string`, default: `scaled_pca_loadings`. Name of the .varm key where the PCA loadings of the log-normalized and scaled\ndata is stored.\n"
+            ,
+                "default": "scaled_pca_loadings"
+            }
+    
+
+        ,
+                "rna_scaling_pca_variance_uns_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scaled_pca_variance`. Name of the ",
+                "help_text": "Type: `string`, default: `scaled_pca_variance`. Name of the .uns key where the variance and variance ratio will be stored as a map.\nThe map will contain two keys: variance and variance_ratio respectively.\n"
+            ,
+                "default": "scaled_pca_variance"
+            }
+    
+
+        ,
+                "rna_scaling_umap_obsm_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scaled_umap`. Name of the ",
+                "help_text": "Type: `string`, default: `scaled_umap`. Name of the .obsm key where the UMAP representation of the log-normalized and scaled data is stored."
+            ,
+                "default": "scaled_umap"
+            }
+    
+
+        ,
+                "rna_scaling_max_value": {
+                "type":
+                "number",
+                "description": "Type: `double`. Clip (truncate) data to this value after scaling",
+                "help_text": "Type: `double`. Clip (truncate) data to this value after scaling. If not specified, do not clip."
+            
+            }
+    
+
+        ,
+                "rna_scaling_zero_center": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_false`, default: `true`. If set, omit zero-centering variables, which allows to handle sparse input efficiently",
+                "help_text": "Type: `boolean_false`, default: `true`. If set, omit zero-centering variables, which allows to handle sparse input efficiently.\""
+            ,
+                "default": "True"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/highly variable features detection"
+    },
+
+    {
+    "$ref": "#/definitions/qc metrics calculation options"
+    },
+
+    {
+    "$ref": "#/definitions/pca options"
+    },
+
+    {
+    "$ref": "#/definitions/clr options"
+    },
+
+    {
+    "$ref": "#/definitions/rna scaling options"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}
