@@ -39,6 +39,11 @@ argument_groups:
         type: file
         description: The .obo file with the cell type ontology.
         required: true
+      - name: "--var_query_gene_names"
+        type: string
+        required: false
+        description: |
+          The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used.
   - name: Reference
     description: Arguments related to the reference dataset.
     arguments:
@@ -52,12 +57,11 @@ argument_groups:
         type: string
         description: The layer in the reference data to be used for cell type annotation if .X is not to be used.
         required: false
-      - name: "--reference_obs_targets"
+      - name: "--reference_obs_target"
         type: string
-        description: #TODO: update for multiple: Key in obs field of reference AnnData with cell-type information.
-        example: ["cell_ontology_class", "celltype"]
-        default: "cell_ontology_class"
-        multiple: true
+        description: The name of the adata obs column in the reference data containing cell type annotations.
+        example: "cell_ontology_class"
+        required: true
   - name: Outputs
     description: Output arguments.
     arguments:
@@ -73,24 +77,18 @@ argument_groups:
         example: "gzip"
       - name: "--output_obs_predictions"
         type: string
-        example: 
+        default: onclass_pred
         required: false
-        multiple: true
         description: |
           In which `.obs` slots to store the predicted information.
-          If provided, must have the same length as `--reference_obs_targets`.
-          If empty, will default to the `reference_obs_targets` combined with the `"_pred"` suffix.
       - name: "--output_obs_probability"
         type: string
-        example: 
+        default: onclass_prob 
         required: false
-        multiple: true
         description: |
-          In which `.obs` slots to store the uncertainty of the predictions.
-          If provided, must have the same length as `--reference_obs_targets`.
-          If empty, will default to the `reference_obs_targets` combined with the `"_probability"` suffix.
+          In which `.obs` slots to store the probability of the predictions.
   - name: Model arguments
-    description: Model arguments.
+    description: Model arguments
     arguments:
       - name: "--model"
         type: string
@@ -103,12 +101,10 @@ argument_groups:
             - a .index file
           e.g. /path/to/model/pretrained_model_target1 as saved by OnClass."
         required: false
-        multiple: true
-        example: [pretrained_model_target1; pretrained_model_target2]
         direction: input
       - name: "--max_iter"
         type: integer
-        default: 100
+        default: 30
         required: false
         description: Maximum number of iterations for training the model.
 

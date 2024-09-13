@@ -20,6 +20,7 @@ cl_ontology_file = f"{meta['resources_dir']}/annotation_test_data/ontology/cl.on
 cl_obo_file = f"{meta['resources_dir']}/annotation_test_data/ontology/cl.obo"
 model_file = f"{meta['resources_dir']}/annotation_test_data/onclass_model/example_file_model"
 
+
 @pytest.fixture
 def swap_gene_symbol(random_h5mu_path):
     def wrapper(input_mudata_file, modality):
@@ -34,13 +35,14 @@ def swap_gene_symbol(random_h5mu_path):
         return swapped_input_mudata_file
     return wrapper
 
+
 def test_simple_execution(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
     
     run_component([
         "--input", input_file,
         "--reference", reference_file,
-        "--reference_obs_targets", "cell_ontology_class",
+        "--reference_obs_target", "cell_ontology_class",
         "--cl_nlp_emb_file", cl_nlp_emb_file,
         "--cl_ontology_file", cl_ontology_file,
         "--cl_obo_file", cl_obo_file,
@@ -56,19 +58,22 @@ def test_simple_execution(run_component, random_h5mu_path):
     assert_annotation_objects_equal(input_mudata.mod["prot"],
                                     output_mudata.mod["prot"])
 
-    assert list(output_mudata.mod["rna"].obs.keys()) == ['cell_ontology_class_pred',
-                                                         'cell_ontology_class_prob']
+    assert list(output_mudata.mod["rna"].obs.keys()) == ['onclass_pred',
+                                                         'onclass_prob']
 
-    obs_values = output_mudata.mod["rna"].obs["cell_ontology_class_prob"]
+    obs_values = output_mudata.mod["rna"].obs["onclass_prob"]
     assert all(0 <= value <= 1 for value in obs_values), ".obs at cell_ontology_class_prob has values outside the range [0, 1]"
 
-def test_multiple_targets(run_component, random_h5mu_path):
+
+def test_custom_obs(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
     
     run_component([
         "--input", input_file,
         "--reference", reference_file,
-        "--reference_obs_targets", "cell_ontology_class;cell_type",
+        "--reference_obs_target", "cell_ontology_class",
+        "--output_obs_predictions", "dummy_pred_1",
+        "--output_obs_probability", "dummy_prob_1",
         "--cl_nlp_emb_file", cl_nlp_emb_file,
         "--cl_ontology_file", cl_ontology_file,
         "--cl_obo_file", cl_obo_file,
@@ -84,49 +89,13 @@ def test_multiple_targets(run_component, random_h5mu_path):
     assert_annotation_objects_equal(input_mudata.mod["prot"],
                                     output_mudata.mod["prot"])
 
-    assert list(output_mudata.mod["rna"].obs.keys()) == ['cell_ontology_class_pred',
-                                                         'cell_ontology_class_prob',
-                                                         'cell_type_pred',
-                                                         'cell_type_prob']
+    assert set(output_mudata.mod["rna"].obs.keys()) == {'dummy_pred_1', 'dummy_prob_1'}
 
-    obs_keys = ['cell_ontology_class_prob', 'cell_type_prob']
+    obs_keys = ['dummy_prob_1']
     for key in obs_keys:
         obs_values = output_mudata.mod["rna"].obs[key]
         assert all(0 <= value <= 1 for value in obs_values), f".obs at {key} has values outside the range [0, 1]"
-
-def test_multiple_targets_custom_obs(run_component, random_h5mu_path):
-    output_file = random_h5mu_path()
-    
-    run_component([
-        "--input", input_file,
-        "--reference", reference_file,
-        "--reference_obs_targets", "cell_ontology_class;cell_type",
-        "--output_obs_predictions", "dummy_pred_1;dummy_pred_2",
-        "--output_obs_probability", "dummy_prob_1;dummy_prob_2",
-        "--cl_nlp_emb_file", cl_nlp_emb_file,
-        "--cl_ontology_file", cl_ontology_file,
-        "--cl_obo_file", cl_obo_file,
-        "--max_iter", "10",
-        "--output", output_file
-    ])
-
-    assert os.path.exists(output_file), "Output file does not exist"
-
-    input_mudata = mu.read_h5mu(input_file)
-    output_mudata = mu.read_h5mu(output_file)
-
-    assert_annotation_objects_equal(input_mudata.mod["prot"],
-                                    output_mudata.mod["prot"])
-
-    assert set(output_mudata.mod["rna"].obs.keys()) == {'dummy_pred_1',
-                                                        'dummy_pred_2',
-                                                        'dummy_prob_1',
-                                                        'dummy_prob_2'}
-
-    obs_keys = ['dummy_prob_1', 'dummy_prob_2']
-    for key in obs_keys:
-        obs_values = output_mudata.mod["rna"].obs[key]
-        assert all(0 <= value <= 1 for value in obs_values), f".obs at {key} has values outside the range [0, 1]"
+        
         
 def test_no_model_no_reference_error(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
@@ -138,9 +107,11 @@ def test_no_model_no_reference_error(run_component, random_h5mu_path):
             "--cl_nlp_emb_file", cl_nlp_emb_file,
             "--cl_ontology_file", cl_ontology_file,
             "--cl_obo_file", cl_obo_file,
+            "--reference_obs_target", "cell_ontology_class"
         ])
-    assert re.search(r"ValueError: Either reference or model must be provided",
+    assert re.search(r"ValueError: Make sure to provide either 'model' or 'reference', but not both.",
             err.value.stdout.decode('utf-8'))
+    
     
 def test_pretrained_model(run_component, random_h5mu_path, swap_gene_symbol):
     output_file = random_h5mu_path()
@@ -151,6 +122,7 @@ def test_pretrained_model(run_component, random_h5mu_path, swap_gene_symbol):
         "--cl_nlp_emb_file", cl_nlp_emb_file,
         "--cl_ontology_file", cl_ontology_file,
         "--cl_obo_file", cl_obo_file,
+        "--reference_obs_target", "cell_ontology_class",
         "--model", model_file,
         "--output", output_file
     ])
@@ -163,11 +135,12 @@ def test_pretrained_model(run_component, random_h5mu_path, swap_gene_symbol):
     assert_annotation_objects_equal(input_mudata.mod["prot"],
                                     output_mudata.mod["prot"])
 
-    assert list(output_mudata.mod["rna"].obs.keys()) == ['cell_ontology_class_pred',
-                                                         'cell_ontology_class_prob']
+    assert list(output_mudata.mod["rna"].obs.keys()) == ['onclass_pred',
+                                                         'onclass_prob']
 
-    obs_values = output_mudata.mod["rna"].obs["cell_ontology_class_prob"]
+    obs_values = output_mudata.mod["rna"].obs["onclass_prob"]
     assert all(0 <= value <= 1 for value in obs_values), ".obs at cell_ontology_class_prob has values outside the range [0, 1]"
+
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))

@@ -4,7 +4,6 @@ import mudata as mu
 import anndata as ad
 import re
 import numpy as np
-import os
 from OnClass.OnClassModel import OnClassModel
 import obonet
 from typing import Dict, Tuple
@@ -18,7 +17,7 @@ par = {
     "modality": "rna",
     "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "model": None,
-    "reference_obs_targets": ["cell_ontology_class"],
+    "reference_obs_targets": "cell_ontology_class",
     "input_layer": None,
     "reference_layer": None,
     "max_iter": 100,
@@ -64,7 +63,8 @@ def map_celltype_to_ontology_id(cl_obo_file: str) -> Tuple[Dict[str, str], Dict[
     """
     graph = obonet.read_obo(cl_obo_file)
     cl_id_to_name = {id_: data.get("name") for id_, data in graph.nodes(data=True)}
-    name_to_cl_id = {data.get("name"): id_ for id_, data in graph.nodes(data=True)}
+    cl_id_to_name = {k: v for k, v in cl_id_to_name.items() if v is not None}
+    name_to_cl_id = {v: k for k, v in cl_id_to_name.items()}
     return cl_id_to_name, name_to_cl_id
 
 def predict_input_data(model: OnClassModel,
@@ -109,21 +109,35 @@ def predict_input_data(model: OnClassModel,
     input_modality.obs[obs_probability] = np.max(onclass_pred[1], axis=1) / onclass_pred[1].sum(1)
     return input_modality
 
+def set_var_index(adata, var_name):
+    adata.var.index = [re.sub("\\.[0-9]+$", "", s) for s in adata.var[var_name]]
+    return adata
+
 def main():
+    
+    if (not par["model"] and not par["reference"]) or (par["model"] and par["reference"]):
+        raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
+    
     logger.info("Reading input data")
     input_mudata = mu.read_h5mu(par["input"])
     input_modality = input_mudata.mod[par["modality"]].copy()
+    
+    # Set var names to the desired gene name format (gene synbol, ensembl id, etc.)
+    input_modality = set_var_index(input_modality, par["var_query_gene_names"]) if par["var_query_gene_names"] else input_modality
+    input_matrix = input_modality.layers[par["input_layer"]].toarray() if par["input_layer"] else input_modality.X.toarray()
 
     id_to_name, name_to_id = map_celltype_to_ontology_id(par["cl_obo_file"])
-    obs_predictions = par["output_obs_predictions"] if par["output_obs_predictions"] else [f"{target}_pred" for target in par["reference_obs_targets"]]
-    obs_probabilities = par["output_obs_probability"] if par["output_obs_probability"] else [f"{target}_prob" for target in par["reference_obs_targets"]]
     
-    if par["input_layer"]:
-        input_matrix = input_modality.layers[par["input_layer"]].toarray()
-    else:
-        input_matrix = input_modality.X.toarray()
+
+    if par["model"]:
+        logger.info("Predicting cell types using pre-trained model")
+        model = OnClassModel(cell_type_nlp_emb_file=par["cl_nlp_emb_file"],
+                             cell_type_network_file=par["cl_ontology_file"])
         
-    if par["reference"]:
+        model.BuildModel(use_pretrain=par["model"], ngene=None)
+    
+    
+    elif par["reference"]:
         logger.info("Reading reference data")
         model = OnClassModel(cell_type_nlp_emb_file=par["cl_nlp_emb_file"],
                              cell_type_network_file=par["cl_ontology_file"])
@@ -142,65 +156,38 @@ def main():
         logger.info("  intersect n_vars: %i", len(common_ens_ids))
         assert len(common_ens_ids) >= 100, "The intersection of genes is too small."
 
-        if par["reference_layer"]:
-            reference_matrix = reference_modality.layers[par["reference_layer"]].toarray()
-        else:
-            reference_matrix = reference_modality.X.toarray()
+        reference_matrix = reference_modality.layers[par["reference_layer"]].toarray() if par["reference_layer"] else reference_modality.X.toarray()
 
-        logger.info("Training models...")
-        for reference_obs_target, obs_prediction, obs_probability in tqdm(zip(par["reference_obs_targets"], obs_predictions, obs_probabilities)):
-            
-            logger.info(f"Training model for {reference_obs_target}")
-            labels = reference_modality.obs[reference_obs_target].tolist()
-            labels_cl = [name_to_id[label] for label in labels]
-            _ = model.EmbedCellTypes(labels_cl)
-            (
-                corr_train_feature,
-                _,
-                corr_train_genes,
-                _,
-            ) = model.ProcessTrainFeature(
-                train_feature=reference_matrix,
-                train_label=labels_cl,
-                train_genes=reference_modality.var_names,
-                test_feature=input_matrix,
-                test_genes=input_modality.var_names,
-                log_transform=False,
-            )
-            model.BuildModel(ngene=len(corr_train_genes))
-            model.Train(corr_train_feature,
-                        labels_cl,
-                        max_iter=par["max_iter"],
-                        save_model=f"model_{reference_obs_target}")
-            
-            logger.info(f"Predicting cell types for {reference_obs_target}")
-            input_modality = predict_input_data(model,
-                                                input_matrix,
-                                                input_modality,
-                                                id_to_name,
-                                                obs_prediction,
-                                                obs_probability)
-
-    elif par["model"]:
-        logger.info("Predicting cell types using pre-trained models")
-        for model_path, reference_obs_target, obs_prediction, obs_probability in zip(par["model"], par["reference_obs_targets"], obs_predictions, obs_probabilities):
-            logger.info(f"Loading model for {reference_obs_target}")
-            model = OnClassModel(cell_type_nlp_emb_file=par["cl_nlp_emb_file"],
-                                cell_type_network_file=par["cl_ontology_file"])
-            
-            model.BuildModel(use_pretrain=model_path, ngene=None)
+        logger.info("Training a model from reference...")
+        labels = reference_modality.obs[par["reference_obs_target"]].tolist()
+        labels_cl = [name_to_id[label] for label in labels]
+        _ = model.EmbedCellTypes(labels_cl)
+        (
+            corr_train_feature,
+            _,
+            corr_train_genes,
+            _,
+        ) = model.ProcessTrainFeature(
+            train_feature=reference_matrix,
+            train_label=labels_cl,
+            train_genes=reference_modality.var_names,
+            test_feature=input_matrix,
+            test_genes=input_modality.var_names,
+            log_transform=False,
+        )
+        model.BuildModel(ngene=len(corr_train_genes))
+        model.Train(corr_train_feature,
+                    labels_cl,
+                    max_iter=par["max_iter"])
         
-            logger.info(f"Predicting cell types for {reference_obs_target}")
-            input_modality = predict_input_data(model,
-                                                input_matrix,
-                                                input_modality,
-                                                id_to_name,
-                                                obs_prediction,
-                                                obs_probability)
-            
-    else:
-        raise ValueError("Either reference or model must be provided")
     
+    logger.info(f"Predicting cell types")
+    input_modality = predict_input_data(model,
+                                        input_matrix,
+                                        input_modality,
+                                        id_to_name,
+                                        par["output_obs_predictions"],
+                                        par["output_obs_probability"])
     logger.info("Writing output data")
     input_mudata.mod[par["modality"]] = input_modality
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
