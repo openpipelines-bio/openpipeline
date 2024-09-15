@@ -570,9 +570,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Elizabeth Mlynarski, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt embedding"
-LABEL org.opencontainers.image.created="2024-09-14T02:47:39Z"
+LABEL org.opencontainers.image.created="2024-09-15T02:50:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5214cdb04938e76cfcecbc377bb05a95c1f05276"
+LABEL org.opencontainers.image.revision="42e06473067aa6080ef275d2f1785f7740c2de47"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
