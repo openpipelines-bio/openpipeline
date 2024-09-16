@@ -3294,7 +3294,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.0-RC7",
-    "git_commit" : "42e06473067aa6080ef275d2f1785f7740c2de47",
+    "git_commit" : "43204dc9b48ee44544a18983cbcc6401cd13904a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
