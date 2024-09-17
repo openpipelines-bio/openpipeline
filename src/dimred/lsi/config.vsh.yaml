@@ -5,7 +5,8 @@ description: |
 authors:
   - __merge__: /src/authors/sarah_ouologuem.yaml
     roles: [ contributor ]
-
+  - __merge__: /src/authors/vladimir_shitov.yaml
+    roles: [ contributor ]
 argument_groups:
   - name: Inputs
     arguments:
