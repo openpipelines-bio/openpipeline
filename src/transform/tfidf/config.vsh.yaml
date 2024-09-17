@@ -55,7 +55,7 @@ arguments:
   # arguments
   - name: "--scale_factor"
     type: integer
-    description: Scale factor to multiply the TF-IDF matrix by (1e4 by default).
+    description: Scale factor to multiply the TF-IDF matrix by.
     default: 10000
 
   - name: "--log_idf"
