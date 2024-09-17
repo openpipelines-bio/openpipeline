@@ -64,7 +64,7 @@ arguments:
     default: true
 
   - name: "--log_tf"
-    description: Whether to log-transform TF term (True by default).
+    description: Whether to log-transform TF term.
     type: boolean
     default: true
 
