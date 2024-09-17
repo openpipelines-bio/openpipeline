@@ -60,17 +60,16 @@ def test_lsi(tmp_path):
 
 
 # 2.test HVF 
-def test_select_highly_variable_column(atac_mudata, tmp_path):
-    output_path = tmp_path / "output_lsi.h5mu"
+def test_select_highly_variable_column(run_component, random_h5mu_path, atac_mudata, tmp_path):
+    output_path = random_h5mu_path()
 
     # run component
     cmd_args = [
-    meta["executable"],
-     "--input", str(atac_mudata),
-     "--output", str(output_path),
-     "--var_input", "highly_variable"
+       "--input", str(atac_mudata),
+       "--output", str(output_path),
+       "--var_input", "highly_variable"
     ]
-    subprocess.run(cmd_args, check=True)
+    run_component(cmd_args)
     
     assert output_path.is_file()
     data = mu.read_h5mu(output_path)
