@@ -102,7 +102,7 @@ test_resources:
 
 engines:
   - type: docker
-    image: python:3.9-slim
+    image: python:3.11-slim
     setup:
       - type: apt
         packages:
