@@ -44,7 +44,7 @@ def tiny_atac_mudata(tmp_path):
     return mdata_path
 
 @pytest.mark.parametrize("mudata", ["tiny_atac_mudata"])
-def test_qc_columns_in_tables(run_component, request, mudata, tmp_path):
+def test_marker_peaks(run_component, request, mudata, tmp_path):
     input_path = request.getfixturevalue(mudata)
     output_path = tmp_path / "foo.h5mu"
 
