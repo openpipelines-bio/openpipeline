@@ -59,7 +59,7 @@ arguments:
     default: 10000
 
   - name: "--log_idf"
-    description: Whether to log-transform IDF term (True by default).
+    description: Whether to log-transform IDF term.
     type: boolean
     default: true
 
