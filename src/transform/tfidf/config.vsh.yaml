@@ -48,7 +48,7 @@ arguments:
 
   - name: "--output_layer"
     type: string
-    description: Output layer to use. By default, "tfidf"
+    description: Output layer to use.
     default: "tfidf"
     required: false
 
