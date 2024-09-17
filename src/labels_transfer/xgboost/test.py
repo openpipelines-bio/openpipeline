@@ -12,7 +12,7 @@ meta = {
 }
 ## VIASH END
 
-reference_file = f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5ad"
+reference_h5ad_file = f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5ad"
 input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
 
@@ -20,11 +20,11 @@ input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_fil
 def test_args(tmp_path, request):
     obsm_features, obs_targets, output_uns_parameters = request.param
 
-    tempfile_reference_file = tmp_path / "reference.h5ad"
+    tempfile_reference_file = tmp_path / "reference.h5mu"
     tempfile_input_file = tmp_path / "input.h5mu"
 
     # read reference
-    reference_adata = anndata.read_h5ad(reference_file)
+    reference_adata = anndata.read_h5ad(reference_h5ad_file)
 
     # generate reference obs targets
     for i, target in enumerate(obs_targets):
@@ -39,8 +39,9 @@ def test_args(tmp_path, request):
     reference_adata.obsm[obsm_features] = np.random.normal(size=(reference_adata.n_obs, 30))
     input_rna_adata.obsm[obsm_features] = np.random.normal(size=(input_rna_adata.n_obs, 30))
 
+    reference_mdata = mudata.MuData({"rna": reference_adata})
     # write files
-    reference_adata.write_h5ad(str(tempfile_reference_file))
+    reference_mdata.write_h5mu(str(tempfile_reference_file))
     input_mudata.write_h5mu(str(tempfile_input_file))
 
     return tempfile_reference_file, reference_adata, tempfile_input_file, input_rna_adata, obsm_features, obs_targets, output_uns_parameters
@@ -72,11 +73,11 @@ def test_label_transfer(run_component, test_args):
 
     output_data = mudata.read_h5mu("output.h5mu")
 
-    exp_uns = "labels_transfer" if output_uns_parameters is None else output_uns_parameters
+    exp_uns = "xgboost_parameters" if output_uns_parameters is None else output_uns_parameters
 
     for target in obs_targets:
         assert f"{target}_pred" in output_data.mod["rna"].obs, f"Predictions are missing from output\noutput: {output_data.mod['rna'].obs}"
-        assert f"{target}_uncertainty" in output_data.mod["rna"].obs, f"Uncertainties are missing from output\noutput: {output_data.mod['rna'].obs}"
+        assert f"{target}_probability" in output_data.mod["rna"].obs, f"Probabilities are missing from output\noutput: {output_data.mod['rna'].obs}"
         assert exp_uns in output_data.mod["rna"].uns, f"Parameters are missing from output\noutput: {output_data.mod['rna'].uns}"
         assert target in output_data.mod["rna"].uns[exp_uns], f"Parameters are missing from output\noutput: {output_data.mod['rna'].uns}"
         assert output_data.mod["rna"].uns[exp_uns][target].get("method") == "XGBClassifier", f"Wrong method in parameters\noutput: {output_data.mod['rna'].uns}"
@@ -126,7 +127,7 @@ def test_retraining(run_component, test_args, tmp_path):
 
     for target in obs_targets:
         assert f"{target}_pred" in output_data.mod["rna"].obs, f"Predictions are missing from output\noutput: {output_data.mod['rna'].obs}"
-        assert f"{target}_uncertainty" in output_data.mod["rna"].obs, f"Uncertainties are missing from output\noutput: {output_data.mod['rna'].obs}"
+        assert f"{target}_probability" in output_data.mod["rna"].obs, f"Probabilities are missing from output\noutput: {output_data.mod['rna'].obs}"
         assert output_uns_parameters in output_data.mod["rna"].uns, f"Parameters are missing from output\noutput: {output_data.mod['rna'].uns}"
         assert target in output_data.mod["rna"].uns[output_uns_parameters], f"Parameters are missing from output\noutput: {output_data.mod['rna'].uns}"
         assert output_data.mod["rna"].uns[output_uns_parameters][target].get("method") == "XGBClassifier", f"Wrong method in parameters\noutput: {output_data.mod['rna'].uns}"
