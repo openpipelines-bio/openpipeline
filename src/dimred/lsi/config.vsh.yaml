@@ -111,10 +111,7 @@ engines:
         __merge__: [../../../src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - muon~=0.1.5
-    test_setup:
-      - type: python
-        packages: 
-          - pytest
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
   - type: executable
   - type: nextflow
