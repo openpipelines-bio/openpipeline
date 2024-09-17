@@ -55,7 +55,7 @@ def test_lsi(tmp_path):
     assert "X_test" in data.mod['atac'].obsm
     assert data.mod["atac"].obsm["X_test"].shape == (data.mod["atac"].n_obs, 30)
     assert "lsi" in data.mod['atac'].uns
-    assert "LSI" in data.mod['atac'].varm
+    assert "lsi" in data.mod['atac'].varm
 
 
 
@@ -77,8 +77,8 @@ def test_select_highly_variable_column(run_component, random_h5mu_path, atac_mud
     assert data.mod["atac"].obsm["X_lsi"].shape == (data.mod["atac"].n_obs, 50)
     assert "highly_variable" in data.mod["atac"].var.columns
     assert "lsi" in data.mod['atac'].uns
-    assert "LSI" in data.mod['atac'].varm
-    assert data.mod["atac"].varm["LSI"].shape == (data.mod["atac"].n_vars, 50)
+    assert "lsi" in data.mod['atac'].varm
+    assert data.mod["atac"].varm["lsi"].shape == (data.mod["atac"].n_vars, 50)
 
 
 def test_highly_variable_column_does_not_exist_raises():
@@ -132,7 +132,7 @@ def test_selecting_input_layer(atac_mudata, tmp_path):
     assert "X_lsi" in data.mod['atac'].obsm
     assert data.mod["atac"].obsm["X_lsi"].shape == (data.mod["atac"].n_obs, 20)
     assert "lsi" in data.mod['atac'].uns
-    assert "LSI" in data.mod['atac'].varm
+    assert "lsi" in data.mod['atac'].varm
 
 
 
@@ -158,7 +158,7 @@ def test_output_field_already_present_raises(tmp_path):
 
     #create slots 
     input_data = mu.read_h5mu(input_path)
-    input_data.mod["atac"].varm["LSI"] = np.zeros(shape=(input_data.mod["atac"].n_vars, 50))
+    input_data.mod["atac"].varm["lsi"] = np.zeros(shape=(input_data.mod["atac"].n_vars, 50))
     input_data.mod["atac"].obsm["X_lsi"] = np.zeros(shape=(input_data.mod["atac"].n_obs, 50))
     input_data.mod["atac"].uns['lsi'] = "test"
     tmp_file = tmp_path / "input_data_adjusted.h5mu"
@@ -182,7 +182,7 @@ def test_output_field_already_present_overwrite(tmp_path):
 
     #create slots 
     input_data = mu.read_h5mu(input_path)
-    input_data.mod["atac"].varm["LSI"] = np.zeros(shape=(input_data.mod["atac"].n_vars, 50))
+    input_data.mod["atac"].varm["lsi"] = np.zeros(shape=(input_data.mod["atac"].n_vars, 50))
     input_data.mod["atac"].obsm["X_lsi"] = np.zeros(shape=(input_data.mod["atac"].n_obs, 50))
     input_data.mod["atac"].uns['lsi'] = "test"
     tmp_file = tmp_path / "input_data_adjusted.h5mu"
@@ -203,7 +203,7 @@ def test_output_field_already_present_overwrite(tmp_path):
     assert "X_lsi" in data.mod['atac'].obsm
     assert data.mod["atac"].obsm["X_lsi"].shape == (data.mod["atac"].n_obs, 30)
     assert "lsi" in data.mod['atac'].uns
-    assert "LSI" in data.mod['atac'].varm
+    assert "lsi" in data.mod['atac'].varm
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
