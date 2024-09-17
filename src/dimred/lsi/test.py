@@ -91,8 +91,8 @@ def test_highly_variable_column_does_not_exist_raises():
         ]
         subprocess.run(cmd_args, check=True)
         
-        assert "ValueError: Requested to use .var column 'does_not_exist' as a selection of genes, but the column is not available." in \
-            err.value.stdout.decode('utf-8')
+      assert "ValueError: Requested to use .var column 'does_not_exist' as a selection of genes, but the column is not available." in \
+          err.value.stdout.decode('utf-8')
         
 
 # 3.test modality
