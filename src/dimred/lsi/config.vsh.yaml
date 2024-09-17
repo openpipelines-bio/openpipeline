@@ -73,7 +73,7 @@ argument_groups:
 
       - name: "--varm_output"
         type: string
-        default: "LSI"
+        default: "lsi"
         description: In which .varm slot to store the resulting loadings matrix.
         required: false
 
