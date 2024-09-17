@@ -36,7 +36,7 @@ def tiny_atac_mudata(tmp_path):
     sc.pp.neighbors(mdata.mod["atac"])
     
     # Simulate clustering to not install leiden dependencies
-    mdata.mod["atac"].obs["leiden"] = np.random.choice(np.arange(5), size=mdata.n_obs)
+    mdata.mod["atac"].obs["leiden"] = pd.Categorical(np.random.choice(np.arange(5), size=mdata.n_obs))
 
     mdata_path = tmp_path / "tiny_atac.h5mu"
     mdata.write(mdata_path)
