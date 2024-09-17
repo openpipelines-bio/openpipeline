@@ -91,8 +91,8 @@ def test_highly_variable_column_does_not_exist_raises():
         ]
         subprocess.run(cmd_args, check=True)
         
-      assert "ValueError: Requested to use .var column 'does_not_exist' as a selection of genes, but the column is not available." in \
-          err.value.stdout.decode('utf-8')
+    assert "ValueError: Requested to use .var column 'does_not_exist' as a selection of genes, but the column is not available." in \
+        err.value.stdout.decode('utf-8')
         
 
 # 3.test modality
@@ -106,8 +106,8 @@ def test_modality_does_not_exist_raises():
         ]
         subprocess.run(cmd_args, check=True)
        
-        assert "ValueError: Modality 'does_not_exist' was not found in mudata " + input_path +"." in \
-            err.value.stdout.decode('utf-8')
+    assert "ValueError: Modality 'does_not_exist' was not found in mudata " + input_path +"." in \
+        err.value.stdout.decode('utf-8')
 
 
 
@@ -146,8 +146,8 @@ def test_raise_if_input_layer_is_missing():
         ]
         subprocess.run(cmd_args, check=True)
         
-        assert "ValueError: Layer 'does_not_exist' was not found in modality 'atac'." in \
-            err.value.stdout.decode('utf-8')
+    assert "ValueError: Layer 'does_not_exist' was not found in modality 'atac'." in \
+        err.value.stdout.decode('utf-8')
 
 
 
@@ -173,9 +173,9 @@ def test_output_field_already_present_raises(tmp_path):
         ]
         subprocess.run(cmd_args, check=True)
        
-        assert "ValueError: Requested to create field X_lsi in .obsm for " \
-            "modality atac, but field already exists." in \
-            err.value.stdout.decode('utf-8')
+    assert "ValueError: Requested to create field X_lsi in .obsm for " \
+        "modality atac, but field already exists." in \
+        err.value.stdout.decode('utf-8')
 
 def test_output_field_already_present_overwrite(tmp_path):
     output_path = tmp_path / "output_lsi.h5mu"
