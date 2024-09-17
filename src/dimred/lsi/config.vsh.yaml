@@ -113,7 +113,7 @@ engines:
       - type: python
         __merge__: [../../../src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - muon~=0.1.5
+          - muon~=0.1.6
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
   - type: executable
