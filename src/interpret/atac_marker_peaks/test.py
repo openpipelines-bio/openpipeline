@@ -6,6 +6,7 @@ import pytest
 import mudata as md
 import scanpy as sc
 import muon as mu
+import numpy as np
 import pandas as pd
 
 ## VIASH START
@@ -33,7 +34,9 @@ def tiny_atac_mudata(tmp_path):
 
     # Run quick and dirty clustering to be able to calculate markers
     sc.pp.neighbors(mdata.mod["atac"])
-    sc.tl.leiden(mdata.mod["atac"])
+    
+    # Simulate clustering to not install leiden dependencies
+    mdata.mod["atac"].obs["leiden"] = np.random.choice(np.arange(5), size=mdata.n_obs)
 
     mdata_path = tmp_path / "tiny_atac.h5mu"
     mdata.write(mdata_path)
