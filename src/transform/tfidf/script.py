@@ -45,7 +45,7 @@ logger.info(par)
 
 mod = par["modality"]
 logger.info("Performing TF-IDF normalization on modality %s", mod)
-adata = mdata.mod[mod]
+adata = mdata.mod[mod].copy()
 
 muon.atac.pp.tfidf(
     adata,
@@ -59,7 +59,7 @@ muon.atac.pp.tfidf(
     to_layer=par["output_layer"],
 )
 
-mdata.mod[mod] = adata
+mdata.mod[mod].layers[par["output_layer"]] = adata.layers[par["output_layer"]]
 
 logger.info("Writing to file")
 mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
