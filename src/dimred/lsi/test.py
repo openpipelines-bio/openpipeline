@@ -37,18 +37,16 @@ def atac_mudata(tmp_path):
     return tmp_path / "atac_mudata.h5mu"
 
 # 1.general test
-def test_lsi(tmp_path):
+def test_lsi(run_component, tmp_path):
     output_path = tmp_path / "output_lsi.h5mu"
-    # run component
-    cmd_args = [
-    meta["executable"],
-     "--input", input_path,
-     "--output", str(output_path),
-     "--obsm_output", "X_test",
-     "--num_components", "30"
-    ]
-    subprocess.run(cmd_args, check=True)
     
+    cmd_args = [
+        "--input", input_path,
+        "--output", str(output_path),
+        "--obsm_output", "X_test",
+        "--num_components", "30"
+    ]
+    run_component(cmd_args)    
 
     assert output_path.is_file()
     data = mu.read_h5mu(output_path)
@@ -60,14 +58,14 @@ def test_lsi(tmp_path):
 
 
 # 2.test HVF 
-def test_select_highly_variable_column(run_component, random_h5mu_path, atac_mudata, tmp_path):
+def test_select_highly_variable_column(run_component, random_h5mu_path, atac_mudata):
     output_path = random_h5mu_path()
 
     # run component
     cmd_args = [
-       "--input", str(atac_mudata),
-       "--output", str(output_path),
-       "--var_input", "highly_variable"
+        "--input", str(atac_mudata),
+        "--output", str(output_path),
+        "--var_input", "highly_variable"
     ]
     run_component(cmd_args)
     
@@ -81,30 +79,28 @@ def test_select_highly_variable_column(run_component, random_h5mu_path, atac_mud
     assert data.mod["atac"].varm["lsi"].shape == (data.mod["atac"].n_vars, 50)
 
 
-def test_highly_variable_column_does_not_exist_raises():
+def test_highly_variable_column_does_not_exist_raises(run_component):
     with pytest.raises(subprocess.CalledProcessError) as err:
         cmd_args = [
-        meta["executable"],
-        "--input", input_path,
-        "--output", "output_lsi.h5mu",
-        "--var_input", "does_not_exist"
+            "--input", input_path,
+            "--output", "output_lsi.h5mu",
+            "--var_input", "does_not_exist"
         ]
-        subprocess.run(cmd_args, check=True)
-        
+        run_component(cmd_args)
+
     assert "ValueError: Requested to use .var column 'does_not_exist' as a selection of genes, but the column is not available." in \
         err.value.stdout.decode('utf-8')
         
 
 # 3.test modality
-def test_modality_does_not_exist_raises():
+def test_modality_does_not_exist_raises(run_component):
     with pytest.raises(subprocess.CalledProcessError) as err:
         cmd_args = [
-        meta["executable"],
-        "--input", input_path,
-        "--output", "output_lsi.h5mu",
-        "--modality", "does_not_exist"
+            "--input", input_path,
+            "--output", "output_lsi.h5mu",
+            "--modality", "does_not_exist"
         ]
-        subprocess.run(cmd_args, check=True)
+        run_component(cmd_args)
        
     assert "ValueError: Modality 'does_not_exist' was not found in mudata " + input_path +"." in \
         err.value.stdout.decode('utf-8')
@@ -112,18 +108,17 @@ def test_modality_does_not_exist_raises():
 
 
 # 4.test layer 
-def test_selecting_input_layer(atac_mudata, tmp_path):
+def test_selecting_input_layer(run_component, atac_mudata, tmp_path):
     output_path = tmp_path / "output_lsi.h5mu"
 
     # run component
     cmd_args = [
-        meta["executable"],
         "--input", str(atac_mudata),
         "--output", str(output_path),
         "--num_components", "20",
         "--layer", "counts"
         ]
-    subprocess.run(cmd_args, check=True)
+    run_component(cmd_args)
 
 
     assert output_path.is_file()
@@ -136,15 +131,14 @@ def test_selecting_input_layer(atac_mudata, tmp_path):
 
 
 
-def test_raise_if_input_layer_is_missing():
+def test_raise_if_input_layer_is_missing(run_component):
     with pytest.raises(subprocess.CalledProcessError) as err:
         cmd_args = [
-        meta["executable"],
-        "--input", input_path,
-        "--output", "output.h5mu",
-        "--layer", "does_not_exist"
+            "--input", input_path,
+            "--output", "output.h5mu",
+            "--layer", "does_not_exist"
         ]
-        subprocess.run(cmd_args, check=True)
+        run_component(cmd_args)
         
     assert "ValueError: Layer 'does_not_exist' was not found in modality 'atac'." in \
         err.value.stdout.decode('utf-8')
@@ -153,7 +147,7 @@ def test_raise_if_input_layer_is_missing():
 
 # 5.test overwrite 
 
-def test_output_field_already_present_raises(tmp_path):
+def test_output_field_already_present_raises(run_component, tmp_path):
     output_path = tmp_path / "output_lsi.h5mu"
 
     #create slots 
@@ -166,18 +160,17 @@ def test_output_field_already_present_raises(tmp_path):
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         cmd_args = [
-        meta["executable"],
-        "--input", str(tmp_file),
-        "--output", str(output_path),
-        "--output_compression", "gzip"
+            "--input", str(tmp_file),
+            "--output", str(output_path),
+            "--output_compression", "gzip"
         ]
-        subprocess.run(cmd_args, check=True)
+        run_component(cmd_args)
        
     assert "ValueError: Requested to create field X_lsi in .obsm for " \
         "modality atac, but field already exists." in \
         err.value.stdout.decode('utf-8')
 
-def test_output_field_already_present_overwrite(tmp_path):
+def test_output_field_already_present_overwrite(run_component, tmp_path):
     output_path = tmp_path / "output_lsi.h5mu"
 
     #create slots 
@@ -189,14 +182,13 @@ def test_output_field_already_present_overwrite(tmp_path):
     input_data.write_h5mu(tmp_file)
 
     cmd_args = [
-        meta["executable"],
         "--input", str(tmp_file),
         "--output", str(output_path),
         "--output_compression", "gzip",
         "--overwrite",
-         "--num_components", "30"
-        ]
-    subprocess.run(cmd_args, check=True)
+        "--num_components", "30"
+    ]
+    run_component(cmd_args)
 
     assert output_path.is_file()
     data = mu.read_h5mu(output_path)
