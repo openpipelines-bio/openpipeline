@@ -41,6 +41,7 @@ argument_groups:
         default: 50
         description: Number of components to compute.
         required: false
+        min: 2
 
       - name: "--scale_embeddings"
         type: boolean
