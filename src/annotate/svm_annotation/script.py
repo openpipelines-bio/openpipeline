@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn import svm
 import pickle
-
+import re
 
 
 ## VIASH START
@@ -47,13 +47,21 @@ def setup_logger():
 logger = setup_logger()
 
 def main():
+    
+    if (not par["model"] and not par["reference"]) or (par["model"] and par["reference"]):
+        raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
+    
     logger.info("Reading input data")
     input_mudata = mu.read_h5mu(par["input"])
     input_modality = input_mudata.mod[par["modality"]].copy()
-
+    
     input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X 
+    
+    if par["model"]:
+        logger.info("Loading a pre-trained model")
+        model = pickle.load(open(par["model"], "rb"))
 
-    if par["reference"]:
+    elif par["reference"]:
         logger.info("Reading reference data")
         
         reference_mudata = mu.read_h5mu(par["reference"])
@@ -70,13 +78,6 @@ def main():
             dual="auto",
         ))
         model.fit(reference_matrix, labels)
-
-    elif par["model"]:
-        logger.info("Loading a pre-trained model")
-        model = pickle.load(open(par["model"], "rb"))
-
-    else:
-        raise ValueError("Either reference or model must be provided")
     
     logger.info("Running predictions...")
     predictions = model.predict(input_matrix)
