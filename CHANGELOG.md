@@ -119,6 +119,8 @@
 
 * `metadata/copy_obs` component: Added a component to copy an .obs column from a MuData object to another (PR #874).
 
+* `workflows/annotation/scgpt_annotation` workflow: Added a scGPT transformer-based cell type annotation workflow (PR #832).
+
 ## MINOR CHANGES
 
 * `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
