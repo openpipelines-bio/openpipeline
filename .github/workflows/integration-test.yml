@@ -36,6 +36,10 @@ jobs:
       dest_paths: ${{ steps.cache.outputs.dest_paths }}
 
     steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     - uses: viash-io/viash-actions/project/sync-and-cache@v6
       id: cache
 
@@ -51,6 +55,10 @@ jobs:
         component: ${{ fromJson(needs.build.outputs.workflow_matrix) }}
 
     steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v2
     
