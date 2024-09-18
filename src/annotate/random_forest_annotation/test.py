@@ -154,12 +154,12 @@ def test_no_model_no_reference_error(run_component, random_h5mu_path):
     assert re.search(r"ValueError: Make sure to provide either 'model' or 'reference', but not both.",
             err.value.stdout.decode('utf-8'))
 
-def test_model_and_reference_error(run_component, random_h5mu_path, subset_reference_file, dummy_model):
+def test_model_and_reference_error(run_component, random_h5mu_path, dummy_model, subset_genes):
     output_file = random_h5mu_path()
-
+    subset_input_file, subset_reference_file = subset_genes(input_file, reference_file, "rna")
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component([
-            "--input", input_file,
+            "--input", subset_input_file,
             "--output", output_file,
             "--reference", subset_reference_file,
             "--reference_obs_target", "cell_ontology_class",
