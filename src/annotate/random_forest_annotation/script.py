@@ -62,10 +62,10 @@ def main():
         except ValueError as e:
             raise ValueError(f"Invaldid value {par['max_features']} for --max_features: must either be an integer or one of \'sqrt\', \'log2\' or \'all\'")
         
+    if (not par["model"] and not par["reference"]) or (par["model"] and par["reference"]):
+        raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
+    
     if par["model"]:
-        if par["reference"]:
-            logger.warning("Both reference and model are provided. Ignoring the reference and using the pre-trained model instead.")
-            
         logger.info("Loading a pre-trained model")
         model = pickle.load(open(par["model"], "rb"))
         
@@ -87,9 +87,6 @@ def main():
             max_features=max_features
         )
         model.fit(reference_matrix, labels)
-
-    else:
-        raise ValueError("Either reference or model must be provided")
 
     logger.info("Running predictions...")
     predictions = model.predict(input_matrix)
