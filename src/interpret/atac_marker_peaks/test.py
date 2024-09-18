@@ -28,7 +28,6 @@ def tiny_atac_mudata(tmp_path):
 
     # Read features annotation and save it to uns
     peak_annotation = pd.read_csv(resources_dir / "counts" / "peak_annotation.tsv", sep="\t")
-    peak_annotation.columns = ["Chromosome", "Start", "End", "gene", "distance", "peak_type"]
     peak_annotation["gene"] = peak_annotation["gene"].astype(str)  # Fixes saving error
     mu.atac.tl.add_peak_annotation(mdata.mod["atac"], peak_annotation)
     
