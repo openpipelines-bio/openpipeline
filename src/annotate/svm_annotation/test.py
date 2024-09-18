@@ -156,7 +156,7 @@ def test_no_model_no_reference_error(run_component, random_h5mu_path):
             "--reference_obs_target", "cell_ontology_class",
             "--output", output_file,
         ])
-    assert re.search(r"ValueError: Either reference or model must be provided",
+    assert re.search(r"ValueError: Make sure to provide either 'model' or 'reference', but not both.",
             err.value.stdout.decode('utf-8'))
 
 
