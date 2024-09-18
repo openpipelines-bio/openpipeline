@@ -30,10 +30,7 @@ def tiny_atac_mudata(tmp_path):
     peak_annotation = pd.read_csv(resources_dir / "counts" / "peak_annotation.tsv", sep="\t")
     peak_annotation.columns = ["Chromosome", "Start", "End", "gene", "distance", "peak_type"]
     peak_annotation["gene"] = peak_annotation["gene"].astype(str)  # Fixes saving error
-    mdata.mod["atac"].uns["peak_annotation"] = peak_annotation
-
-    # Run quick and dirty clustering to be able to calculate markers
-    sc.pp.neighbors(mdata.mod["atac"])
+    mu.atac.pp.add_peak_annotation(mdata.mod["atac"], peak_annotation)
     
     # Simulate clustering to not install leiden dependencies
     mdata.mod["atac"].obs["leiden"] = pd.Categorical(np.random.choice(np.arange(5), size=mdata.n_obs))
