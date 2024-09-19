@@ -2960,7 +2960,7 @@ meta = [
       "dest" : "nextflow_labels.config"
     }
   ],
-  "description" : "Concatenates several uni-modal samples in .h5mu files into a single file.\n",
+  "description" : "Concatenate observations from samples in several (uni- and/or multi-modal) MuData files into a single file.\n",
   "test_resources" : [
     {
       "type" : "python_script",
@@ -3135,7 +3135,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu",
     "viash_version" : "0.9.0-RC7",
-    "git_commit" : "5bbe413e64925301d645fd9127d9d4f4477ce6fc",
+    "git_commit" : "71edf8d40447993222a5d75538d5e277aa335f1b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
