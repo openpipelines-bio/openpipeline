@@ -100,7 +100,7 @@ def test_custom_out_obs_model_params(run_component, random_h5mu_path, subset_gen
         "--input", subset_input_file,
         "--reference", subset_reference_file,
         "--reference_obs_target", "cell_ontology_class",
-        "--output_obs_predictions", "dummy_pred",
+        "--output_obs_prediction", "dummy_pred",
         "--output_obs_probability", "dummy_probability",
         "--max_iter", "1000",
         "--c_reg", "0.1",

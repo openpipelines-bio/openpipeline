@@ -25,7 +25,7 @@ par = {
     "var_query_gene_names": None,
     "var_reference_gene_names": "ensemblid",
     "reference_layer": None,
-    "output_obs_predictions": "svm_pred",
+    "output_obs_prediction": "svm_pred",
     "output_obs_probability": "svm_probability",
 }
 meta = {"resources_dir": "src/annotate/svm"}
@@ -83,7 +83,7 @@ def main():
     predictions = model.predict(input_matrix)
     probabilities = np.max(model.predict_proba(input_matrix), axis=1)
     
-    input_modality.obs[par["output_obs_predictions"]] = predictions
+    input_modality.obs[par["output_obs_prediction"]] = predictions
     input_modality.obs[par["output_obs_probability"]] = probabilities
 
     logger.info("Writing output data")

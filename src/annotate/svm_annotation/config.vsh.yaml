@@ -36,7 +36,6 @@ argument_groups:
         type: string
         description: The layer in the reference data to be used for cell type annotation if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.
         required: false
-        required: false
       - name: "--reference_obs_target"
         type: string
         description:
@@ -54,7 +53,7 @@ argument_groups:
         choices: ["gzip", "lzf"]
         required: false
         example: "gzip"
-      - name: "--output_obs_predictions"
+      - name: "--output_obs_prediction"
         type: string
         default: svm_pred
         required: false
@@ -118,7 +117,7 @@ engines:
           - procps
       - type: python
         packages:
-          - scikit-learn==1.4.2
+          - scikit-learn==1.5.2
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
