@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
 "title": "concatenate_h5mu",
-"description": "Concatenates several uni-modal samples in .h5mu files into a single file.\n",
+"description": "Concatenate observations from samples in several (uni- and/or multi-modal) MuData files into a single file.\n",
 "type": "object",
 "definitions": {
 

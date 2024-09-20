@@ -176,7 +176,8 @@ VIASH_META_TEMP_DIR="$VIASH_TEMP"
 function ViashHelp {
   echo "concatenate_h5mu integration_build"
   echo ""
-  echo "Concatenates several uni-modal samples in .h5mu files into a single file."
+  echo "Concatenate observations from samples in several (uni- and/or multi-modal)"
+  echo "MuData files into a single file."
   echo ""
   echo "Arguments:"
   echo "    -i, --input"
@@ -524,9 +525,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow concatenate_h5mu"
-LABEL org.opencontainers.image.created="2024-09-19T02:49:25Z"
+LABEL org.opencontainers.image.created="2024-09-20T02:49:26Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e834bc3bbde5dd3f5655a5bfb17fc38b0aa2298c"
+LABEL org.opencontainers.image.revision="5fefa334af072d7018580efaaadd7364030ca7ec"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
