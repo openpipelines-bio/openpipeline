@@ -13,7 +13,7 @@ par_reference=`realpath $par_reference`
 par_output=`realpath $par_output`
 
 echo "Creating temporary directory"
-tmpdir=$(mktemp -d "$meta_temp_dir/$meta_functionality_name-XXXXXXXX")
+tmpdir=$(mktemp -d "$meta_temp_dir/$meta_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
 }
