@@ -27,9 +27,9 @@ argument_groups:
       
       - name: "--input_var_hvg_score"
         type: string
-        description: In which layer to find the HVG scores. If not provided, the HVG scores are assumed to be in the .var object.
+        description: In which obsm to find the HVG scores. If not provided, the HVG scores are not passed.
         required: false
-        default: "hvg_score"
+
   - name: Method settings
     arguments:
       - name: "--method_id"
@@ -87,11 +87,6 @@ dependencies:
     repository: openproblems_task_dimensionality_reduction
   - name: methods/umap
     repository: openproblems_task_dimensionality_reduction
-repositories:
-  - type: github
-    name: openproblems_task_dimensionality_reduction
-    repo: openproblems-bio/task_dimensionality_reduction
-    tag: build/main
 resources:
   - type: nextflow_script
     path: main.nf

@@ -1,37 +1,28 @@
 name: openproblems_dr_h5ad_to_h5mu
 namespace: "dimred"
 
+
 argument_groups:
   - name: Inputs
     arguments:
-      - name: "--input"
+      - name: "--input_dataset"
         type: file
         description: Input h5mu file
         direction: input
         required: true
         example: input.h5mu
 
+      - name: "--input_output"
+        type: file
+        description: Method output h5ad file
+        direction: input
+        required: true
+        example: input.h5ad
+
       - name: "--input_modality"
         type: string
         default: "rna"
         required: false
-
-      - name: "--input_layer_counts"
-        type: string
-        description: In which layer to find the raw counts. If not provided, the raw counts are assumed to be in the .X object.
-        required: false
-
-      - name: "--input_layer_normalized"
-        type: string
-        description: In which layer to find the log normalized counts. If not provided, the raw counts are assumed to be in the .X object.
-        required: false
-        default: "log_normalized"
-      
-      - name: "--input_var_hvg_score"
-        type: string
-        description: In which layer to find the HVG scores. If not provided, the HVG scores are assumed to be in the .var object.
-        required: false
-        default: "hvg_score"
 
   - name: Outputs
     arguments:
@@ -42,6 +33,11 @@ argument_groups:
         direction: output
         required: true
         example: output.h5mu
+
+      - name: "--output_obsm_key"
+        description: Key in the .obsm object to use as input.
+        type: string
+        required: false
     
 resources:
   - type: python_script

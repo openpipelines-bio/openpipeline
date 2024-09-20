@@ -3,35 +3,19 @@ import anndata as ad
 
 ## VIASH START
 par = {
-  "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+  "input_dataset": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+  "input_output": "dr_method_output.h5ad",
   "input_modality": "rna",
-  "input_layer_counts": "log_normalized",
-  "input_layer_normalized": "log_normalized",
+  "output_obsm_key": "X_dr",
   "output": "output.h5mu"
 }
 ## VIASH END
 
 print("Reading h5mu file", flush=True)
-mdata = mu.read_h5mu(par["input"])
+mdata = mu.read_h5mu(par["input_dataset"])
+adata = ad.read_h5ad(par["input_output"])
 
-print("Transforming to anndata", flush=True)
-def get_matrix(mdata, modality, layer):
-  if layer == "X":
-    return mdata.mod[modality].X
-  return mdata.mod[modality].layers[layer]
-
-adata = ad.AnnData(
-  layers={
-    "counts": get_matrix(mdata, par["input_modality"], par["input_layer_counts"]),
-    "normalized": get_matrix(mdata, par["input_modality"], par["input_layer_normalized"])
-  },
-  obs=mdata.mod[par["input_modality"]].obs[[]],
-  var=mdata.mod[par["input_modality"]].var[[]],
-  uns={
-    "dataset_id": "dummy",
-    "normalization_id": "dummy"
-  }
-)
+mdata.mod[par["input_modality"]].obsm[par["output_obsm_key"]] = adata.obsm["X_emb"]
 
 print("Writing h5ad file", flush=True)
-adata.write_h5ad(par["output"], compression="gzip")
+mdata.write_h5mu(par["output"])
