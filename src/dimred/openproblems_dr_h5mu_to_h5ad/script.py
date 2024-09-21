@@ -17,7 +17,7 @@ mdata = mu.read_h5mu(par["input"])
 
 print("Transforming to anndata", flush=True)
 def get_matrix(mdata, modality, layer):
-  if layer == "X":
+  if layer is None:
     return mdata.mod[modality].X
   return mdata.mod[modality].layers[layer]
 

@@ -35,7 +35,7 @@ argument_groups:
       - name: "--method_id"
         description: ID of the method to use.
         type: string
-        required: false
+        required: true
         choices: [
           densmap,
           diffusion_map,
@@ -59,7 +59,7 @@ argument_groups:
         example: output.h5mu
 
       - name: "--output_obsm_key"
-        description: Key in the .obsm object to use as input.
+        description: Key in the .obsm object to use as input. If not provided, "X_{method_id}" is used.
         type: string
         required: false
 dependencies:

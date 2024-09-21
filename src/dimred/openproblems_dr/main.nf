@@ -34,7 +34,7 @@ workflow run_wf {
 
     | runEach(
       components: methods,
-      runIf: { id, state, comp ->
+      filter: { id, state, comp ->
         state.method_id == comp.config.name
       },
       fromState: [
@@ -46,16 +46,24 @@ workflow run_wf {
     )
 
     | openproblems_dr_h5ad_to_h5mu.run(
-      fromState: [
-        "input_dataset": "input",
-        "input_output": "method_output",
-        "input_modality": "input_modality",
-        "output_obsm_key": "output_obsm_key",
-      ],
+      fromState: { id, state ->
+        def output_obsm_key = state.output_obsm_key
+        if (!output_obsm_key) {
+          output_obsm_key = "X_" + state.method_id
+        }
+        [
+          "input_dataset": state.input,
+          "input_output": state.method_output,
+          "input_modality": state.input_modality,
+          "output_obsm_key": output_obsm_key
+        ]
+      },
       toState: [
         "output": "output"
       ]
     )
+
+    | setState(["output"])
 
   emit:
   output_ch
