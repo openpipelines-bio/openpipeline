@@ -3160,7 +3160,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/velocyto_to_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "9699f0d9de862c8e9a138f5a02959a108cf8928a",
+    "git_commit" : "24853338d8520e5043ab4f6fcb7d3ea8704918db",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
