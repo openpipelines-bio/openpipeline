@@ -8,7 +8,7 @@ import pytest
 
 ##VIASH START
 par = {
-    "input": "scvi_knn/output.h5mu"
+    "input": "scanorama_knn/output.h5mu"
 }
 
 meta = {
@@ -19,9 +19,9 @@ meta = {
 
 def test_run():
     input_mudata = read_h5mu(par["input"])
-    expected_obsm = ["X_integrated_scvi", "X_leiden_scvi_umap"]
+    expected_obsm = ["X_integrated_scanorama", "X_leiden_scanorama_umap"]
     expected_obs = ["cell_type_pred", "cell_type_probability"]
-    expected_obsp = ["scvi_integration_connectivities", "scvi_integration_distances"]
+    expected_obsp = ["scanorama_integration_connectivities", "scanorama_integration_distances"]
 
     assert "rna" in list(input_mudata.mod.keys()), "Input should contain rna modality."
     assert all(key in list(input_mudata.mod["rna"].obsm) for key in expected_obsm), f"Input mod['rna'] obsm columns should be: {expected_obsm}, found: {input_mudata.mod['rna'].obsm.keys()}."

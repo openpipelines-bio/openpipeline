@@ -8,11 +8,11 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
-viash ns build -q scvi_knn
+viash ns build -q scanorama_knn
 
 nextflow \
   run . \
-  -main-script src/workflows/annotation/scvi_knn/test.nf \
+  -main-script src/workflows/annotation/scanorama_knn/test.nf \
   -entry test_wf \
   -resume \
   -profile no_publish \

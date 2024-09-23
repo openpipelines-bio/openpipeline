@@ -78,32 +78,29 @@ workflow run_wf {
             toState: ["input": "output"]
             )
         | view {"After concatenation: $it"}
-        // Run scvi integration with leiden clustering
-        | scvi_leiden_workflow.run(
+        // Run scanorama integration with leiden clustering
+        | scanorama_leiden_workflow.run(
             fromState: { id, state ->
             [
                 "id": id,
                 "input": state.input,
-                "layer": state.layer, 
+                // "layer": state.layer, 
                 "modality": state.modality,
+                "obsm_input": state.input_obsm_embedding, //
                 "obsm_output": state.output_obsm_integrated,
                 "leiden_resolution": state.leiden_resolution,
-                "var_input": state.var_hvg,
-                "early_stopping": state.early_stopping,
-                "early_stopping_monitor": state.early_stopping_monitor,
-                "early_stoping_patience": state.early_stoping_patience,
-                "early_stopping_min_delta": state.early_stopping_min_delta,
-                "max_epochs": state.max_epochs,
-                "reduce_lr_on_plateau": state.reduce_lr_on_plateau,
-                "lr_factor": state.lr_factor,
-                "lr_patience": state.lr_patience
+                "knn": state.knn,
+                "batch_size": state.batch_size,
+                "sigma": state.sigma,
+                "approx": state.approx,
+                "alpha": state.alpha
             ]},
             args: [
-                "uns_neighbors": "scvi_integration_neighbors",
-                "obsp_neighbor_distances": "scvi_integration_distances",
-                "obsp_neighbor_connectivities": "scvi_integration_connectivities",
-                "obs_cluster": "scvi_integration_leiden",
-                "obsm_umap": "X_leiden_scvi_umap",
+                "uns_neighbors": "scanorama_integration_neighbors",
+                "obsp_neighbor_distances": "scanorama_integration_distances",
+                "obsp_neighbor_connectivities": "scanorama_integration_connectivities",
+                "obs_cluster": "scanorama_integration_leiden",
+                "obsm_umap": "X_leiden_scanorama_umap",
                 "obs_batch": "batch_label"
             ],
             toState: ["input": "output"]

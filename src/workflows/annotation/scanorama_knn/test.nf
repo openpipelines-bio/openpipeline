@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 
-include { scvi_knn } from params.rootDir + "/target/nextflow/workflows/annotation/scvi_knn/main.nf"
-include { scvi_knn_test } from params.rootDir + "/target/nextflow/test_workflows/annotation/scvi_knn_test/main.nf"
+include {scanorama_knn } from params.rootDir + "/target/nextflow/workflows/annotation/scanorama_knn/main.nf"
+include { scanorama_knn_test } from params.rootDir + "/target/nextflow/test_workflows/annotation/scanorama_knn_test/main.nf"
 
 workflow test_wf {
   // allow changing the resources_test dir
@@ -13,7 +13,6 @@ workflow test_wf {
         id: "simple_execution_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
-        obsm_embedding: "X_pca",
         input_obs_batch_label: "sample_id",
         reference_obs_batch_label: "donor_assay",
         reference_obs_targets: "cell_type",
@@ -23,7 +22,6 @@ workflow test_wf {
         id: "no_leiden_resolutions_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
-        obsm_embedding: "X_pca",
         input_obs_batch_label: "sample_id",
         reference_obs_batch_label: "donor_assay",
         reference_obs_targets: "cell_type",
@@ -31,7 +29,7 @@ workflow test_wf {
       ]
     ])
     | map{ state -> [state.id, state] }
-    | scvi_knn 
+    | scanorama_knn 
     | view { output ->
       assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
 
@@ -48,7 +46,7 @@ workflow test_wf {
     
     "Output: $output"
     }
-    | scvi_knn_test.run(
+    | scanorama_knn_test.run(
         fromState: [
           "input": "output"
         ]
