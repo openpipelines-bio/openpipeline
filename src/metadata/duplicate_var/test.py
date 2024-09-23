@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import mudata as mu
 import anndata as ad
+import subprocess
+import re
 import sys
 import pytest
 
@@ -67,6 +69,35 @@ def test_copy_index(run_component, random_h5mu_path, input_h5mu, input_h5mu_path
     assert "Index_copy" not in output_h5mu.mod["mod2"].var, "var index should not have been copied in mod2"
     assert "Index_copy" not in input_h5mu.mod["mod1"].var, "var index should not have been copied in input file"
     assert np.all(output_h5mu.mod["mod1"].var.index == output_h5mu.mod["mod1"].var["Index_copy"]), "copied var index should be identical to original var index"
+
+def test_raise_identical_keys(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
+    output_h5mu_path = random_h5mu_path()
+
+    args = [
+        "--input", input_h5mu_path,
+        "--output", output_h5mu_path,
+        "--modality", "mod1",
+        "--input_var_key", "Feat",
+        "--output_var_key", "Feat"
+    ]
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args)
+    assert re.search(
+        r'ValueError: --input_var_key and --output_var_key are the same: \`Feat\`.',
+        err.value.stdout.decode('utf-8'))
+
+    disable_raise_args = [
+
+        "--input", input_h5mu_path,
+        "--output", output_h5mu_path,
+        "--modality", "mod1",
+        "--disable_raise_on_identical_keys",
+        "--input_var_key", "Feat",
+        "--output_var_key", "Feat"
+    ]
+
+    run_component(disable_raise_args)
 
 
 if __name__ == "__main__":

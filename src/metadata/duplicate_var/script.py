@@ -3,12 +3,13 @@ from mudata import read_h5mu
 
 ## VIASH START
 par = {
-    "input": "input.h5mu",
-    "modality": "mod1",
+    "input": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
+    "modality": "rna",
     "input_var_key": None,
-    "output_var_key": "Feat_copy",
+    "output_var_key": "index_copy",
     "output": "output.h5mu",
-    "output_compression": "gzip"
+    "output_compression": "gzip",
+    "disable_raise_on_identical_keys": False
 }
 meta = {
     "resources_dir": "src/metadata/copy_var"
@@ -45,6 +46,13 @@ if not par["input_var_key"] == par["output_var_key"]:
     else:
         logger.info(f"Copying .var index to {par['output_var_key']}")
         adata.var[par["output_var_key"]] = adata.var.index.copy()
+
+else:
+    if par["disable_raise_on_identical_keys"]:
+        logger.warning(f"--input_var_key and --output_var_key are the same: `{par['input_var_key']}`.")
+    else:
+        raise ValueError(f"--input_var_key and --output_var_key are the same: `{par['input_var_key']}`.")
+
 logger.info("Write output to mudata file")
 
 mdata.write_h5mu(par['output'], compression=par["output_compression"])
