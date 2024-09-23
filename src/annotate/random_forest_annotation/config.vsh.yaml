@@ -104,7 +104,7 @@ argument_groups:
         type: string
         default: "200"
         description: |
-          The number of features to consider when looking for the best split. The value can eitehr be a positive integer or one of `sqrt`, `log2` or `all`.
+          The number of features to consider when looking for the best split. The value can either be a positive integer or one of `sqrt`, `log2` or `all`.
           If integer: consider max_features features at each split.
           If `sqrt`: max_features is the squareroot of all input features.
           If `log2`: max_features is the log2 of all input features.

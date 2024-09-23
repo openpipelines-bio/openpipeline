@@ -52,15 +52,15 @@ def main():
     input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X 
     
     # Handle max_features parameter
-    if par["max_features"] == "all":
-        max_features = None
-    elif par["max_features"] in ["sqrt", "log2"]:
-        max_features = par["max_features"]
-    else:
-        try:
-            max_features = int(par["max_features"])
-        except ValueError as e:
-            raise ValueError(f"Invaldid value {par['max_features']} for --max_features: must either be an integer or one of \'sqrt\', \'log2\' or \'all\'")
+    max_features_conversion = {
+        "all": None,
+        "sqrt": "sqrt",
+        "log2": "log2",  
+    }
+    try:
+        max_features = max_features_conversion.get(par["max_features"], int(par["max_features"]))
+    except ValueError:
+        raise ValueError(f"Invaldid value {par['max_features']} for --max_features: must either be an integer or one of \'sqrt\', \'log2\' or \'all\'")
         
     if (not par["model"] and not par["reference"]) or (par["model"] and par["reference"]):
         raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
