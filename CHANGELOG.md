@@ -119,7 +119,7 @@
 
 * `metadata/copy_obs` component: Added a component to copy an .obs column from a MuData object to another (PR #874).
 
-* `metadata/copy_var` component: Added a component to copy a .var field from a MuData object to another (PR #877).
+* `metadata/duplicate_var` component: Added a component to make a copy from one .var field or index to another .var field within the same MuData object (PR #877).
 
 ## MINOR CHANGES
 
