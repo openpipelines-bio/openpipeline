@@ -119,7 +119,7 @@
 
 * `metadata/copy_obs` component: Added a component to copy an .obs column from a MuData object to another (PR #874).
 
-* `workflow/annotation/scvi_knn` workflow: Cell-type annotation based on scVI integration with KNN label transfer (PR #881). 
+* `workflow/annotation/scanorama_knn` workflow: Cell-type annotation based on scanorama integration with KNN label transfer (PR #884). 
 
 ## MINOR CHANGES
 
