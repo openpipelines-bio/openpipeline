@@ -101,6 +101,8 @@
 
 * `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
 
+* Added `dimred/lsi` component (PR #552).
+
 ## MINOR CHANGES
 
 * `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
@@ -1338,7 +1340,6 @@ on each modality instead of on the whole `MuData` object.
 ## NEW FUNCTIONALITY
 
 * Added `from_10x_to_h5ad` and `download_10x_dataset` components.
-* Added `dimred/lsi` component (PR #552).
 
 ## MINOR CHANGES
 * Workflow `bd_rhapsody_wta`: Minor change to workflow to allow for easy processing of multiple samples with a tsv.
