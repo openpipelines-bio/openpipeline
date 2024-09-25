@@ -15,7 +15,7 @@ par = {
     "log_tf": True,
     "log_tfidf": False
 }
-meta = {"functionality_name": "lognorm"}
+meta = {"name": "tfidf"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
