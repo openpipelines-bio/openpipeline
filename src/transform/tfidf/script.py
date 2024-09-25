@@ -39,7 +39,6 @@ logger = setup_logger()
 
 logger.info("Reading input mudata")
 mdata = mudata.read_h5mu(par["input"])
-mdata.var_names_make_unique()
 
 logger.info(par)
 
