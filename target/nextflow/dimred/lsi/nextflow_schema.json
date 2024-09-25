@@ -1,0 +1,226 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "lsi",
+"description": "Runs Latent Semantic Indexing. Computes cell embeddings, feature loadings and singular values. Uses the implementation of scipy.\n",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `input.h5mu`. Path to input h5mu file",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. Path to input h5mu file"
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `atac`. On which modality to run LSI on",
+                "help_text": "Type: `string`, default: `atac`. On which modality to run LSI on."
+            ,
+                "default": "atac"
+            }
+    
+
+        ,
+                "layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Use specified layer for expression values",
+                "help_text": "Type: `string`. Use specified layer for expression values. If not specified, uses adata.X."
+            
+            }
+    
+
+        ,
+                "var_input": {
+                "type":
+                "string",
+                "description": "Type: `string`. Column name in ",
+                "help_text": "Type: `string`. Column name in .var matrix that will be used to select which genes to run the LSI on. If not specified, uses all features."
+            
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
+            ,
+                "default": "$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
+                "help_text": "Type: `string`, default: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
+                "enum": ["gzip", "lzf"]
+            
+            ,
+                "default": "gzip"
+            }
+    
+
+        ,
+                "obsm_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `X_lsi`. In which ",
+                "help_text": "Type: `string`, default: `X_lsi`. In which .obsm slot to store the resulting embedding."
+            ,
+                "default": "X_lsi"
+            }
+    
+
+        ,
+                "varm_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `lsi`. In which ",
+                "help_text": "Type: `string`, default: `lsi`. In which .varm slot to store the resulting loadings matrix."
+            ,
+                "default": "lsi"
+            }
+    
+
+        ,
+                "uns_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `lsi`. In which ",
+                "help_text": "Type: `string`, default: `lsi`. In which .uns slot to store the stdev."
+            ,
+                "default": "lsi"
+            }
+    
+
+        ,
+                "overwrite": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. Allow overwriting ",
+                "help_text": "Type: `boolean_true`, default: `false`. Allow overwriting .obsm, .varm and .uns slots."
+            ,
+                "default": "False"
+            }
+    
+
+}
+},
+    
+    
+    "lsi options" : {
+    "title": "LSI options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "num_components": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `50`. Number of components to compute",
+                "help_text": "Type: `integer`, default: `50`. Number of components to compute."
+            ,
+                "default": "50"
+            }
+    
+
+        ,
+                "scale_embeddings": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Scale embeddings to zero mean and unit variance",
+                "help_text": "Type: `boolean`, default: `true`. Scale embeddings to zero mean and unit variance."
+            ,
+                "default": "True"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/lsi options"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}

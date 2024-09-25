@@ -558,9 +558,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component annotate random_forest_annotation"
-LABEL org.opencontainers.image.created="2024-09-20T12:57:09Z"
+LABEL org.opencontainers.image.created="2024-09-25T07:39:00Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6d82c2bad02d4486456270e26cb97d40846e3d3d"
+LABEL org.opencontainers.image.revision="528bbb66f1e796938d68dbd4c4e1c170c92faec9"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

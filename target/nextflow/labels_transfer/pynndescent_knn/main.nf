@@ -3320,7 +3320,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/pynndescent_knn",
     "viash_version" : "0.9.0",
-    "git_commit" : "6d82c2bad02d4486456270e26cb97d40846e3d3d",
+    "git_commit" : "528bbb66f1e796938d68dbd4c4e1c170c92faec9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
