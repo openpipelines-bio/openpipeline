@@ -2906,10 +2906,7 @@ meta = [
           "type" : "string",
           "name" : "--reference_obs_target",
           "description" : "Key in obs field of reference modality with cell-type information.",
-          "default" : [
-            "cell_ontology_class"
-          ],
-          "required" : false,
+          "required" : true,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3008,7 +3005,7 @@ meta = [
         {
           "type" : "integer",
           "name" : "--max_depth",
-          "description" : "Maximum depth of the trees in the random forest.",
+          "description" : "Maximum depth of the trees in the random forest. \nIf not provided, the nodes are expanded until all leaves only contain a single sample.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3034,15 +3031,28 @@ meta = [
         {
           "type" : "string",
           "name" : "--class_weight",
-          "description" : "Weights associated with classes.",
+          "description" : "Weights associated with classes.\nThe `balanced` mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data.\nThe `balanced_subsample` mode is the same as `balanced` except that weights are computed based on the bootstrap sample for every tree grown.\nThe `uniform` mode gives all classes a weight  of one.\n",
           "default" : [
             "balanced_subsample"
           ],
           "required" : false,
           "choices" : [
             "balanced",
-            "balanced_subsample"
+            "balanced_subsample",
+            "uniform"
           ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--max_features",
+          "description" : "The number of features to consider when looking for the best split. The value can either be a positive integer or one of `sqrt`, `log2` or `all`.\nIf integer: consider max_features features at each split.\nIf `sqrt`: max_features is the squareroot of all input features.\nIf `log2`: max_features is the log2 of all input features.\nIf `all`: max features equals all input features.\n",
+          "default" : [
+            "200"
+          ],
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3237,7 +3247,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/random_forest_annotation",
     "viash_version" : "0.9.0",
-    "git_commit" : "528bbb66f1e796938d68dbd4c4e1c170c92faec9",
+    "git_commit" : "01f7b942099bc8119e004cc3e69bab31704c95bb",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3306,7 +3316,8 @@ par = {
   'n_estimators': $( if [ ! -z ${VIASH_PAR_N_ESTIMATORS+x} ]; then echo "int(r'${VIASH_PAR_N_ESTIMATORS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'max_depth': $( if [ ! -z ${VIASH_PAR_MAX_DEPTH+x} ]; then echo "int(r'${VIASH_PAR_MAX_DEPTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'criterion': $( if [ ! -z ${VIASH_PAR_CRITERION+x} ]; then echo "r'${VIASH_PAR_CRITERION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'class_weight': $( if [ ! -z ${VIASH_PAR_CLASS_WEIGHT+x} ]; then echo "r'${VIASH_PAR_CLASS_WEIGHT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'class_weight': $( if [ ! -z ${VIASH_PAR_CLASS_WEIGHT+x} ]; then echo "r'${VIASH_PAR_CLASS_WEIGHT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'max_features': $( if [ ! -z ${VIASH_PAR_MAX_FEATURES+x} ]; then echo "r'${VIASH_PAR_MAX_FEATURES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3355,8 +3366,26 @@ def main():
     input_modality = input_mudata.mod[par["modality"]].copy()
 
     input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X 
-
-    if par["reference"]:
+    
+    # Handle max_features parameter
+    max_features_conversion = {
+        "all": None,
+        "sqrt": "sqrt",
+        "log2": "log2",  
+    }
+    try:
+        max_features = max_features_conversion.get(par["max_features"], int(par["max_features"]))
+    except ValueError:
+        raise ValueError(f"Invaldid value {par['max_features']} for --max_features: must either be an integer or one of \\\\'sqrt\\\\', \\\\'log2\\\\' or \\\\'all\\\\'")
+        
+    if (not par["model"] and not par["reference"]) or (par["model"] and par["reference"]):
+        raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
+    
+    if par["model"]:
+        logger.info("Loading a pre-trained model")
+        model = pickle.load(open(par["model"], "rb"))
+        
+    elif par["reference"]:
         logger.info("Reading reference data")
 
         reference_mudata = mu.read_h5mu(par["reference"])
@@ -3370,16 +3399,10 @@ def main():
             n_estimators=par["n_estimators"],
             criterion=par["criterion"],
             max_depth=par["max_depth"],
-            class_weight=par["class_weight"]
+            class_weight=par["class_weight"] if not par["class_weight"] == "uniform" else None,
+            max_features=max_features
         )
         model.fit(reference_matrix, labels)
-
-    elif par["model"]:
-        logger.info("Loading a pre-trained model")
-        model = pickle.load(open(par["model"], "rb"))
-
-    else:
-        raise ValueError("Either reference or model must be provided")
 
     logger.info("Running predictions...")
     predictions = model.predict(input_matrix)
