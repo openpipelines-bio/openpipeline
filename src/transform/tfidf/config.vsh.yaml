@@ -56,6 +56,7 @@ arguments:
     type: integer
     description: Scale factor to multiply the TF-IDF matrix by.
     default: 10000
+    min: 1
 
   - name: "--log_idf"
     description: Whether to log-transform IDF term.
