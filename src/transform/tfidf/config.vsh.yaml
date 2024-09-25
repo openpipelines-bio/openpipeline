@@ -37,7 +37,6 @@ arguments:
     description: Output h5mu file.
     direction: output
     required: true
-    default: output.h5mu
   
   - name: "--output_compression"
     type: string
