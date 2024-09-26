@@ -117,6 +117,8 @@
 
 * `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
 
+* Added `transform/tfidf` component: normalize ATAC data with TF-IDF (PR #870).
+
 * Added `dimred/lsi` component (PR #552).
 
 * `metadata/copy_obs` component: Added a component to copy an .obs column from a MuData object to another (PR #874).
