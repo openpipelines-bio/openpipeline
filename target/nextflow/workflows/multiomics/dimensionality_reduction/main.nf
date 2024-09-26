@@ -3162,7 +3162,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction",
     "viash_version" : "0.9.0",
-    "git_commit" : "01f7b942099bc8119e004cc3e69bab31704c95bb",
+    "git_commit" : "9a479803fea8fc100e3479ea00011bd397b4ee8e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
