@@ -213,8 +213,7 @@ function ViashHelp {
   echo "        as the --input query dataset."
   echo ""
   echo "    --reference_obs_target"
-  echo "        type: string"
-  echo "        default: cell_ontology_class"
+  echo "        type: string, required parameter"
   echo "        Key in obs field of reference modality with cell-type information."
   echo ""
   echo "Outputs:"
@@ -257,6 +256,8 @@ function ViashHelp {
   echo "    --max_depth"
   echo "        type: integer"
   echo "        Maximum depth of the trees in the random forest."
+  echo "        If not provided, the nodes are expanded until all leaves only contain a"
+  echo "        single sample."
   echo ""
   echo "    --criterion"
   echo "        type: string"
@@ -267,8 +268,24 @@ function ViashHelp {
   echo "    --class_weight"
   echo "        type: string"
   echo "        default: balanced_subsample"
-  echo "        choices: [ balanced, balanced_subsample ]"
+  echo "        choices: [ balanced, balanced_subsample, uniform ]"
   echo "        Weights associated with classes."
+  echo "        The \`balanced\` mode uses the values of y to automatically adjust weights"
+  echo "        inversely proportional to class frequencies in the input data."
+  echo "        The \`balanced_subsample\` mode is the same as \`balanced\` except that"
+  echo "        weights are computed based on the bootstrap sample for every tree grown."
+  echo "        The \`uniform\` mode gives all classes a weight  of one."
+  echo ""
+  echo "    --max_features"
+  echo "        type: string"
+  echo "        default: 200"
+  echo "        The number of features to consider when looking for the best split. The"
+  echo "        value can either be a positive integer or one of \`sqrt\`, \`log2\` or"
+  echo "        \`all\`."
+  echo "        If integer: consider max_features features at each split."
+  echo "        If \`sqrt\`: max_features is the squareroot of all input features."
+  echo "        If \`log2\`: max_features is the log2 of all input features."
+  echo "        If \`all\`: max features equals all input features."
 }
 
 # initialise variables
@@ -558,9 +575,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component annotate random_forest_annotation"
-LABEL org.opencontainers.image.created="2024-09-25T02:50:36Z"
+LABEL org.opencontainers.image.created="2024-09-26T02:49:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5cda1d32d90a43d524210d647838784fb005d585"
+LABEL org.opencontainers.image.revision="905adb16d7291c68715066174e568331d24d4733"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -865,6 +882,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_CLASS_WEIGHT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --max_features)
+            [ -n "$VIASH_PAR_MAX_FEATURES" ] && ViashError Bad arguments for option \'--max_features\': \'$VIASH_PAR_MAX_FEATURES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MAX_FEATURES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --max_features. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --max_features=*)
+            [ -n "$VIASH_PAR_MAX_FEATURES" ] && ViashError Bad arguments for option \'--max_features=*\': \'$VIASH_PAR_MAX_FEATURES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MAX_FEATURES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         ---engine)
             VIASH_ENGINE_ID="$2"
             shift 2
@@ -1039,6 +1067,10 @@ if [ -z ${VIASH_PAR_INPUT+x} ]; then
   ViashError '--input' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
+if [ -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then
+  ViashError '--reference_obs_target' is a required argument. Use "--help" to get more information on the parameters.
+  exit 1
+fi
 if [ -z ${VIASH_META_NAME+x} ]; then
   ViashError 'name' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
@@ -1068,9 +1100,6 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
-if [ -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then
-  VIASH_PAR_REFERENCE_OBS_TARGET="cell_ontology_class"
-fi
 if [ -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then
   VIASH_PAR_OUTPUT_OBS_PREDICTIONS="random_forest_pred"
 fi
@@ -1085,6 +1114,9 @@ if [ -z ${VIASH_PAR_CRITERION+x} ]; then
 fi
 if [ -z ${VIASH_PAR_CLASS_WEIGHT+x} ]; then
   VIASH_PAR_CLASS_WEIGHT="balanced_subsample"
+fi
+if [ -z ${VIASH_PAR_MAX_FEATURES+x} ]; then
+  VIASH_PAR_MAX_FEATURES="200"
 fi
 
 # check whether required files exist
@@ -1213,7 +1245,7 @@ if [ ! -z "$VIASH_PAR_CRITERION" ]; then
 fi
 
 if [ ! -z "$VIASH_PAR_CLASS_WEIGHT" ]; then
-  VIASH_PAR_CLASS_WEIGHT_CHOICES=("balanced;balanced_subsample")
+  VIASH_PAR_CLASS_WEIGHT_CHOICES=("balanced;balanced_subsample;uniform")
   IFS=';'
   set -f
   if ! [[ ";${VIASH_PAR_CLASS_WEIGHT_CHOICES[*]};" =~ ";$VIASH_PAR_CLASS_WEIGHT;" ]]; then
@@ -1341,7 +1373,8 @@ par = {
   'n_estimators': $( if [ ! -z ${VIASH_PAR_N_ESTIMATORS+x} ]; then echo "int(r'${VIASH_PAR_N_ESTIMATORS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'max_depth': $( if [ ! -z ${VIASH_PAR_MAX_DEPTH+x} ]; then echo "int(r'${VIASH_PAR_MAX_DEPTH//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'criterion': $( if [ ! -z ${VIASH_PAR_CRITERION+x} ]; then echo "r'${VIASH_PAR_CRITERION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'class_weight': $( if [ ! -z ${VIASH_PAR_CLASS_WEIGHT+x} ]; then echo "r'${VIASH_PAR_CLASS_WEIGHT//\'/\'\"\'\"r\'}'"; else echo None; fi )
+  'class_weight': $( if [ ! -z ${VIASH_PAR_CLASS_WEIGHT+x} ]; then echo "r'${VIASH_PAR_CLASS_WEIGHT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'max_features': $( if [ ! -z ${VIASH_PAR_MAX_FEATURES+x} ]; then echo "r'${VIASH_PAR_MAX_FEATURES//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1390,8 +1423,26 @@ def main():
     input_modality = input_mudata.mod[par["modality"]].copy()
 
     input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X 
-
-    if par["reference"]:
+    
+    # Handle max_features parameter
+    max_features_conversion = {
+        "all": None,
+        "sqrt": "sqrt",
+        "log2": "log2",  
+    }
+    try:
+        max_features = max_features_conversion.get(par["max_features"], int(par["max_features"]))
+    except ValueError:
+        raise ValueError(f"Invaldid value {par['max_features']} for --max_features: must either be an integer or one of \\'sqrt\\', \\'log2\\' or \\'all\\'")
+        
+    if (not par["model"] and not par["reference"]) or (par["model"] and par["reference"]):
+        raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
+    
+    if par["model"]:
+        logger.info("Loading a pre-trained model")
+        model = pickle.load(open(par["model"], "rb"))
+        
+    elif par["reference"]:
         logger.info("Reading reference data")
 
         reference_mudata = mu.read_h5mu(par["reference"])
@@ -1405,16 +1456,10 @@ def main():
             n_estimators=par["n_estimators"],
             criterion=par["criterion"],
             max_depth=par["max_depth"],
-            class_weight=par["class_weight"]
+            class_weight=par["class_weight"] if not par["class_weight"] == "uniform" else None,
+            max_features=max_features
         )
         model.fit(reference_matrix, labels)
-
-    elif par["model"]:
-        logger.info("Loading a pre-trained model")
-        model = pickle.load(open(par["model"], "rb"))
-
-    else:
-        raise ValueError("Either reference or model must be provided")
 
     logger.info("Running predictions...")
     predictions = model.predict(input_matrix)

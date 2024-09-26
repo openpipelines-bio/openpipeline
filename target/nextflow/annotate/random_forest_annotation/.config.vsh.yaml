@@ -80,9 +80,7 @@ argument_groups:
     name: "--reference_obs_target"
     description: "Key in obs field of reference modality with cell-type information."
     info: null
-    default:
-    - "cell_ontology_class"
-    required: false
+    required: true
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -161,7 +159,8 @@ argument_groups:
     multiple_sep: ";"
   - type: "integer"
     name: "--max_depth"
-    description: "Maximum depth of the trees in the random forest."
+    description: "Maximum depth of the trees in the random forest. \nIf not provided,\
+      \ the nodes are expanded until all leaves only contain a single sample.\n"
     info: null
     required: false
     direction: "input"
@@ -183,7 +182,11 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--class_weight"
-    description: "Weights associated with classes."
+    description: "Weights associated with classes.\nThe `balanced` mode uses the values\
+      \ of y to automatically adjust weights inversely proportional to class frequencies\
+      \ in the input data.\nThe `balanced_subsample` mode is the same as `balanced`\
+      \ except that weights are computed based on the bootstrap sample for every tree\
+      \ grown.\nThe `uniform` mode gives all classes a weight  of one.\n"
     info: null
     default:
     - "balanced_subsample"
@@ -191,6 +194,21 @@ argument_groups:
     choices:
     - "balanced"
     - "balanced_subsample"
+    - "uniform"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--max_features"
+    description: "The number of features to consider when looking for the best split.\
+      \ The value can either be a positive integer or one of `sqrt`, `log2` or `all`.\n\
+      If integer: consider max_features features at each split.\nIf `sqrt`: max_features\
+      \ is the squareroot of all input features.\nIf `log2`: max_features is the log2\
+      \ of all input features.\nIf `all`: max features equals all input features.\n"
+    info: null
+    default:
+    - "200"
+    required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -336,7 +354,7 @@ build_info:
   output: "target/nextflow/annotate/random_forest_annotation"
   executable: "target/nextflow/annotate/random_forest_annotation/main.nf"
   viash_version: "0.9.0"
-  git_commit: "5cda1d32d90a43d524210d647838784fb005d585"
+  git_commit: "905adb16d7291c68715066174e568331d24d4733"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

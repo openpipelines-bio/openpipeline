@@ -6,7 +6,7 @@ modality: "rna"
 # Reference
 # reference: "reference.h5mu"
 # reference_layer: "foo"
-reference_obs_target: "cell_ontology_class"
+reference_obs_target: # please fill in - example: "foo"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
@@ -20,6 +20,7 @@ n_estimators: 100
 # max_depth: 123
 criterion: "gini"
 class_weight: "balanced_subsample"
+max_features: "200"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
