@@ -123,6 +123,8 @@
 
 * `metadata/copy_obs` component: Added a component to copy an .obs column from a MuData object to another (PR #874).
 
+* `annotate/svm` component: Added a component to annotate cell types using support vector machine (SVM) (PR #845).
+
 * `metadata/duplicate_var` component: Added a component to make a copy from one .var field or index to another .var field within the same MuData object (PR #877).
 
 * `workflows/annotation/scgpt_integration_knn` workflow: Cell-type annotation based on scGPT integration with KNN label transfer (PR #875).
