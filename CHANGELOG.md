@@ -117,9 +117,15 @@
 
 * `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
 
+* Added `transform/tfidf` component: normalize ATAC data with TF-IDF (PR #870).
+
+* Added `dimred/lsi` component (PR #552).
+
 * `metadata/copy_obs` component: Added a component to copy an .obs column from a MuData object to another (PR #874).
 
 * `annotate/onclass`: component: Added a component to annotate cell types using OnClass (PR #844).
+
+* `metadata/duplicate_var` component: Added a component to make a copy from one .var field or index to another .var field within the same MuData object (PR #877).
 
 ## MINOR CHANGES
 
