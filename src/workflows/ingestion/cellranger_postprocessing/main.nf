@@ -36,6 +36,12 @@ workflow run_wf {
       },
       toState: [input: "output"]
     )
+    // Make sure to use the correct ouput file names, 
+    // irrespective wether or not any of the above 
+    // components were run
+    | publish.run(
+      fromState: [ input: "input", output: "output" ],
+    )
     | setState(["output": "input"])
 
   emit:

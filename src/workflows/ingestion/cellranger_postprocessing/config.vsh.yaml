@@ -56,6 +56,7 @@ dependencies:
   - name: correction/cellbender_remove_background
   - name: filter/filter_with_counts
   - name: filter/subset_h5mu
+  - name: transfer/publish
 # test_dependencies:
 #   - name: convert/from_10xh5_to_h5mu
 test_resources:
