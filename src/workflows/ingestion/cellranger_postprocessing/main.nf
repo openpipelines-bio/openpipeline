@@ -41,8 +41,9 @@ workflow run_wf {
     // components were run
     | publish.run(
       fromState: [ input: "input", output: "output" ],
+      toState: ["output": "output"]
     )
-    | setState(["output": "input"])
+    | setState(["output"])
 
   emit:
   output_ch
