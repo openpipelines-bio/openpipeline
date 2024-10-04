@@ -133,8 +133,8 @@ workflow run_wf {
         "layer": "layer",
       ],
       args: [output_compression: "gzip"],
-      auto: [ publish: true ]
     )
+    | setState(["output": "output"])
 
   emit:
   output_ch
