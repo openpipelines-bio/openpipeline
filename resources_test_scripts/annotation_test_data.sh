@@ -10,10 +10,9 @@ cd "$REPO_ROOT"
 
 ID=annotation_test_data
 OUT=resources_test/$ID/
-DIR=$(dirname "$OUT")
 
 # ideally, this would be a versioned pipeline run
-[ -d "$DIR" ] || mkdir -p "$DIR"
+[ -d "$OUT" ] || mkdir -p "$OUT"
 
 # Download Tabula Sapiens Blood reference h5ad from https://doi.org/10.5281/zenodo.7587774
 wget "https://zenodo.org/record/7587774/files/TS_Blood_filtered.h5ad?download=1" -O "${OUT}/tmp_TS_Blood_filtered.h5ad"
