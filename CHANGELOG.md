@@ -125,6 +125,8 @@
 
 * `annotate/onclass`: component: Added a component to annotate cell types using OnClass (PR #844).
 
+* `annotate/svm` component: Added a component to annotate cell types using support vector machine (SVM) (PR #845).
+
 * `metadata/duplicate_var` component: Added a component to make a copy from one .var field or index to another .var field within the same MuData object (PR #877).
 
 ## MINOR CHANGES
