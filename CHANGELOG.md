@@ -38,7 +38,11 @@
 
 * `reference/cellranger_mkgtf`: Rename `reference/mkgtf` to `reference/cellranger_mkgtf` (PR #846).
 
-* `interactive/run_cellxgene` and `interactive/run_cirrocumulus` were removed (PR #796).
+* `labels_transfer/xgboost`: Align interface with new annotation workflow
+  - Store label probabilities instead of uncertainties
+  - Take `.h5mu` format as an input instead of `.h5ad`
+
+* `labels_transfer/knn`: delete outdated component due to its functionality now implemented in `labels_transfer/pynndescent_knn`
 
 * `reference/build_cellranger_arc_reference`: a default value of "output" is now specified for the argument `--genome`, inline with `reference/build_cellranger_reference` component. Additionally, providing a value for `--organism` is no longer required and its default value of `Homo Sapiens` has been removed (PR #864).
 
@@ -74,6 +78,8 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `workflows/integration/scgpt_leiden` workflow with scGPT integration followed by Leiden clustering (PR #794).
+
 * `scgpt/cell_type_annotation` component: Added scGPT cell type annotation component (PR #798).
 
 * `resources_test_scripts/scGPT.sh`: Added script to include scGPT test resources (PR #800).
@@ -81,13 +87,23 @@
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
   
+* `annotate/celltypist` component: Added a CellTypist annotation component (PR #825).
+
 * `dataflow/split_h5mu` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
+
+* `labels_transfer/pynndescent_knn`: component: Added a component for KNN classification based on a PyNNDescent neighborhood graph (PR #830).
 
 * `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
 
 * `workflows/ingestion/make_reference`: Add additional arguments passed through to the STAR and BD Rhapsody reference components (PR #846).
 
+* `annotate/random_forest_annotation` component: Added a random forest cell type annotation component (PR #848).
+
+* `dataflow/concatenate_h5mu`: data from `.uns`, both originating from the global and per-modality slots, is now retained in the final concatenated output object. Additionally, added the `uns_merge_mode` argument in order to tune the behavior when conflicting keys are detected across samples (PR #859).
+
 * `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
+
+* `annotete/scanvi` component: Added a component to annotate cells using scANVI (PR #833).
 
 * `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
 
@@ -102,6 +118,16 @@
 * `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
 
 * `qc/calculate_atac_qc_metrics`: new component for calculating ATAC QC metrics (PR #868).
+
+* Added `transform/tfidf` component: normalize ATAC data with TF-IDF (PR #870).
+
+* Added `dimred/lsi` component (PR #552).
+
+* `metadata/copy_obs` component: Added a component to copy an .obs column from a MuData object to another (PR #874).
+
+* `annotate/svm` component: Added a component to annotate cell types using support vector machine (SVM) (PR #845).
+
+* `metadata/duplicate_var` component: Added a component to make a copy from one .var field or index to another .var field within the same MuData object (PR #877).
 
 ## MINOR CHANGES
 
@@ -127,6 +153,12 @@
 * Bump `viash-actions` to `v6` (PR #821).
 
 * `reference/make_reference`: Do not try to extract genome fasta and transcriptome gtf if they are not gzipped (PR #856).
+
+* Changes related to syncing the test resources (PR #867):
+
+  - Add `.info.test_resources` to `_viash.yaml` to specify where test resources need to be synced from.
+  - `download/sync_test_resources`: Use `.info.test_resources` in `_viash.yaml` to detect where test resources need to be synced from.
+  - Update CI to use `project/sync-and-cache` instead of `project/sync-and-cache-s3`.
 
 ## BUG FIXES
 

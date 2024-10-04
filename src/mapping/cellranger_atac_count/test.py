@@ -5,7 +5,7 @@ from itertools import zip_longest, chain
 
 ## VIASH START
 meta = {
-    "functionality_name": "cellranger_atac_count",
+    "name": "cellranger_atac_count",
     "resources_dir": "resources_test"
 }
 ## VIASH END
