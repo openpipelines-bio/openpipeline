@@ -202,7 +202,7 @@ jobs:
             "config": .build_info.config,
             "dir": .build_info.config | capture("^(?<dir>.*\/)").dir
           }
-        ]' ${{ steps.ns_list.outputs.output_file }} )" >> $GITHUB_OUTPUT
+        ] | unique' ${{ steps.ns_list.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
         echo "workflows=$(jq -c '[ .[] | . as $config | (.test_resources // [])[] | select(.type == "nextflow_script", .entrypoint) |
         { 
