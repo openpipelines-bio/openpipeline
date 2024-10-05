@@ -2992,7 +2992,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "viashpy==0.7.0"
+            "viashpy==0.8.0"
           ],
           "upgrade" : true
         }
@@ -3005,7 +3005,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/multiqc",
     "viash_version" : "0.9.0",
-    "git_commit" : "b6e1dcefac59dd37874b7cf324677a421fd3b8ac",
+    "git_commit" : "6a32ecdda8891694630f44563f7f7337b0a1efeb",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
