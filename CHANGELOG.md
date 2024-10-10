@@ -171,6 +171,8 @@
 
 * Fix failing tests for `ingestion/cellranger_postprocessing`, `ingestion/conversion` and `multiomics/process_batches` (PR #869).
 
+* `convert/from_10xh5_to_h5mu`: add .uns slot to mdata root when metrics file is provided (PR #887).
+
 ## DOCUMENTATION
 
 * Update authorship of components (PR #835).
