@@ -1,0 +1,77 @@
+name: subset_obsp
+namespace: "filter"
+description: |
+  Create a subset of an .obsp field in a mudata file, by filtering the columns based on the values of an .obs column. The resulting subset is moved to an .obsm slot.
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+  - name: Input
+    arguments:
+    - name: "--input"
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+      example: input.h5mu
+    - name: "--modality"
+      type: string
+      default: "rna"
+      required: false
+    - name: "--input_obsp_key"
+      type: string
+      required: true
+      description: The .obsp column to filter.
+    - name: "--input_obs_key"
+      type: string
+      required: true
+      description: The .obsp column to filter on.
+    - name: "--input_obs_value"
+      type: string
+      required: true
+      description: The value to filter on in the .obs column.
+  - name: Output
+    arguments:
+    - name: "--output"
+      type: file
+      description: Output h5mu file.
+      direction: output
+      example: output.h5mu
+    - name: "--output_obsm_key"
+      type: string
+      required: true
+      description: The .obsm key to store the subset in.
+    - name: "--output_compression"
+      type: string
+      description: The compression format to be used on the output h5mu object.
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+
+engines:
+- type: docker
+  image: python:3.12-slim
+  setup:
+    - type: apt
+      packages: 
+        - procps
+    - type: python
+      __merge__: /src/base/requirements/anndata_mudata.yaml
+  test_setup:
+    - type: python
+      __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [singlecpu, lowmem]
