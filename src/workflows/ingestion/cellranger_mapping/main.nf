@@ -18,8 +18,7 @@ workflow run_wf {
       toState: [
         "input": "output",
         "output_raw": "output"
-      ],
-      auto: [ publish: true ]
+      ]
     )
     // split output dir into map
     | cellranger_count_split.run(
@@ -49,14 +48,9 @@ workflow run_wf {
           "input_metrics_summary": state.metrics_summary
         ]
       },
-      toState: { id, output, state ->
-        [
-          "output_raw": state.output_raw,
-          "output_h5mu": output.output
-        ]
-      },
-      auto: [ publish: true ],
+      toState: ["output_h5mu": "output"]
     )
+    | setState(["output_raw", "output_h5mu"])
 
   emit:
   output_ch

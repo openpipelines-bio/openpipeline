@@ -43,8 +43,7 @@ workflow run_wf {
         ]
         return newState
       },
-      toState: ["output": "output"],
-      auto: [ publish: true ]
+      toState: ["output": "output"]
     )
     | setState(["output"])
   emit:

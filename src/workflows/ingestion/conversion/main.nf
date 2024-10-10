@@ -25,11 +25,9 @@ workflow run_wf {
         }
         passed_state
       },
-      toState: {id, output, state, comp ->
-        ["output": output.output]
-      },
-      auto: [publish: true],
+      toState: ["output": "output"]
     )
+    | setState(["output": "output"])
   
   emit:
   output_ch

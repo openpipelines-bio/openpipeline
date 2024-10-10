@@ -81,7 +81,7 @@ workflow run_wf {
             "compression": "gzip"
           ]
         },
-        auto: [ publish: true ]
+        toState: ["output": "output"]
       )
       | setState(["output"]) 
 

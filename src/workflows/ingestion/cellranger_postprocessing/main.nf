@@ -4,9 +4,10 @@ workflow run_wf {
 
   main:
   // perform correction if so desired
-  mid1_corrected = input_ch
-    | filter{ it[1].perform_correction }
+
+  output_ch = input_ch
     | cellbender_remove_background.run(
+      runIf: {id, state -> state.perform_correction},
       fromState: { id, state ->
         [
           input: state.input,
@@ -16,17 +17,13 @@ workflow run_wf {
         ]
       },
       toState: { id, output, state -> 
-        state + [input: output.output, layer: "cellbender_corrected"]
+        state + ["input": output.output, "layer": "cellbender_corrected"]
       }
     )
-  mid1_uncorrected = input_ch
-    | filter{ ! it[1].perform_correction }
-  mid1 = mid1_corrected.mix(mid1_uncorrected)
-
-  // perform filtering if so desired
-  mid2_filtered = mid1
-    | filter{ it[1].min_genes != null || it[1].min_counts != null }
     | filter_with_counts.run(
+      runIf: {id, state -> 
+        state.min_genes != null || state.min_counts != null
+      },
       fromState: { id, state ->
         [
           input: state.input,
@@ -39,16 +36,14 @@ workflow run_wf {
       },
       toState: [input: "output"]
     )
-  mid2_unfiltered = mid1
-    | filter{ it[1].min_genes == null && it[1].min_counts == null }
-  mid2 = mid2_filtered.mix(mid2_unfiltered)
-    
-  // return output map
-  output_ch = mid2
+    // Make sure to use the correct ouput file names, 
+    // irrespective wether or not any of the above 
+    // components were run
     | publish.run(
       fromState: [ input: "input", output: "output" ],
-      auto: [ publish: true ]
+      toState: ["output": "output"]
     )
+    | setState(["output"])
 
   emit:
   output_ch

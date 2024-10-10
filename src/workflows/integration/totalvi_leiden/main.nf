@@ -139,15 +139,9 @@ workflow run_wf {
           "compression": "gzip"
         ]
       },
-      toState: { id, output, state ->
-        [ 
-          output: output.output, 
-          reference_model_path: state.reference_model_path,
-          query_model_path: state.query_model_path
-        ]
-      },
-      auto: [ publish: true ]
+      toState: ["output", "output"]
     )
+    | setState(["output", "reference_model_path", "query_model_path"])
   emit:
   output_ch
 }
