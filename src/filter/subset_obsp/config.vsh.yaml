@@ -21,11 +21,11 @@ argument_groups:
     - name: "--input_obsp_key"
       type: string
       required: true
-      description: The .obsp column to filter.
+      description: The .obsp field to be filtered.
     - name: "--input_obs_key"
       type: string
       required: true
-      description: The .obsp column to filter on.
+      description: The .obs column to filter on.
     - name: "--input_obs_value"
       type: string
       required: true
