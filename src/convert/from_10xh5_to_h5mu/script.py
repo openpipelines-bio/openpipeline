@@ -5,8 +5,8 @@ import pandas as pd
 
 ## VIASH START
 par = {
-    "input": "raw_feature_bc_matrix_j1.h5",
-    "input_metrics_summary": "metrics_summary_j1.csv",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
+    "input_metrics_summary": None,
     "uns_metrics": "metrics_cellranger",
     "output": "foo.h5mu",
     "min_genes": None,
