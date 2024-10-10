@@ -242,6 +242,8 @@ the result to be out of bounds.
 
 * Fix `--output` argument not working for several workflows (PR #740).
 
+* `convert/from_10xh5_to_h5mu`: add .uns slot to mdata root when metrics file is provided (PR #887).
+
 ## MINOR CHANGES
 
 * `metadata/grep_annotation_column`: Added more logging output (PR #697).
