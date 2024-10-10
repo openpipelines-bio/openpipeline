@@ -5,8 +5,8 @@ import pandas as pd
 
 ## VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
-    "input_metrics_summary": None,
+    "input": "raw_feature_bc_matrix_j1.h5",
+    "input_metrics_summary": "metrics_summary_j1.csv",
     "uns_metrics": "metrics_cellranger",
     "output": "foo.h5mu",
     "min_genes": None,
@@ -44,7 +44,7 @@ adata.var = adata.var\
     .reset_index()\
     .set_index("gene_ids")
 
-# parse metrics summary file and store in .obsm or .obs
+# parse metrics summary file and store in .uns
 if par["input_metrics_summary"] and par["uns_metrics"]:
     logger.info("Reading metrics summary file '%s'", par['input_metrics_summary'])
 
@@ -76,8 +76,9 @@ if par["min_counts"]:
 logger.info("Convert to mudata")
 mdata = mudata.MuData(adata)
 
-# override root .obs
+# override root .obs and .uns
 mdata.obs = adata.obs
+mdata.uns = adata.uns
 
 # write output
 logger.info("Writing %s", par["output"])
