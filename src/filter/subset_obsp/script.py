@@ -37,6 +37,8 @@ def main():
     adata = mdata.mod[par["modality"]]
 
     logger.info(f"Subset columns of obsp matrix under {par['input_obsp_key']} based on {par['input_obs_key']} == {par['input_obs_value']}")
+    # .obsp, .obs and .obsm index and .obsp columns all have a dimension length of `n_obs`
+    # the index dimensions remain unaltered, but .obsp columns will be subset 
     obsp = adata.obsp[par["input_obsp_key"]]
     idx = adata.obs[par["input_obs_key"]].astype(str) == par["input_obs_value"]
     obsm_subset = obsp[:, idx]
