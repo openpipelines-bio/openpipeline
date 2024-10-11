@@ -44,7 +44,6 @@ workflow run_wf {
         return newState
       },
       toState: ["output": "output"],
-      auto: [ publish: true ]
     )
     | setState(["output"])
 
