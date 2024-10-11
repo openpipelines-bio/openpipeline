@@ -10,7 +10,6 @@ cd "$REPO_ROOT"
 
 viash ns build -q ingestion/cellranger_mapping --setup cb --platform nextflow
 
-export NXF_VER=21.10.6
 
 nextflow \
   run . \
