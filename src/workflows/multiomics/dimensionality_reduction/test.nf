@@ -3,20 +3,21 @@ nextflow.enable.dsl=2
 include { dimensionality_reduction } from params.rootDir + "/target/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
 include { dimensionality_reduction_test } from params.rootDir + "/target/nextflow/test_workflows/multiomics/dimensionality_reduction_test/main.nf" 
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
   // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
 
   input_ch = Channel.fromList([
       [
         id: "simple_execution_test",
-        input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
+        input: file(params.resources_test).resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
         layer: "",
         output: "foo.final.h5mu"
       ],
       [
         id: "pca_obsm_output_test",
-        input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
+        input: file(params.resources_test)..resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
         layer: "",
         output: "foo.final.h5mu"
       ],

@@ -2,20 +2,20 @@ nextflow.enable.dsl=2
 
 include { scanorama_leiden } from params.rootDir + "/target/nextflow/workflows/integration/scanorama_leiden/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
 
   output_ch = Channel.fromList([
       [
         id: "simple_execution_test",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         layer: "log_normalized",
         leiden_resolution: [1.0, 0.25],
       ],
       [
         id: "no_leiden_resolutions_test",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         layer: "log_normalized",
         leiden_resolution: [],
       ]

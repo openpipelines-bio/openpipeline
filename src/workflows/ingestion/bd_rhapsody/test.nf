@@ -3,6 +3,8 @@ nextflow.enable.dsl=2
 include { bd_rhapsody } from params.rootDir + "/target/nextflow/workflows/ingestion/bd_rhapsody/main.nf"
 include { bd_rhapsody_test } from params.rootDir + "/target/nextflow/test_workflows/ingestion/bd_rhapsody_test/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
   // allow changing the resources_test dir
   resources_test = file("${params.rootDir}/resources_test")
@@ -11,9 +13,9 @@ workflow test_wf {
     [
       [
         id: "foo",
-        reads: file("$resources_test/bdrhap_5kjrt/raw/12*.fastq.gz"),
-        reference_archive: resources_test.resolve("reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz"),
-        abseq_reference: resources_test.resolve("bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"),
+        reads: file("${params.resources_test}/bdrhap_5kjrt/raw/12*.fastq.gz"),
+        reference_archive: file(params.resources_test).resolve("reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz"),
+        abseq_reference: file(params.resources_test).resolve("bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"),
         cell_calling_data: "mRNA",
         exact_cell_count: 4900
       ] 

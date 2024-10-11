@@ -2,14 +2,15 @@ nextflow.enable.dsl=2
 
 include { harmony_leiden } from params.rootDir + "/target/nextflow/workflows/integration/harmony_leiden/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  resources_test = file("${params.rootDir}/resources_test")
 
   output_ch = 
     Channel.fromList([
       [
         id: "simple_execution_test",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         layer: "log_normalized",
         obs_covariates: "sample_id",
         embedding: "X_pca",
@@ -18,7 +19,7 @@ workflow test_wf {
       ],
       [
         id: "no_leiden_resolutions_test",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         layer: "log_normalized",
         obs_covariates: "sample_id",
         embedding: "X_pca",

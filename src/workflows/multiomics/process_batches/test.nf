@@ -5,21 +5,20 @@ include { process_batches } from targetDir + "/workflows/multiomics/process_batc
 include { workflow_test } from targetDir + "/test_workflows/multiomics/process_batches/workflow_test/main.nf"
 include { workflow_test2 } from targetDir + "/test_workflows/multiomics/process_batches/workflow_test2/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
 
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
-  
   input_ch = Channel.fromList([
       [
           id: "test",
-          input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
+          input: file(params.resources_test).resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
           publish_dir: "foo/",
           clr_axis: 0
       ],
       [
           id: "test2",
-          input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
+          input: file(params.resources_test).resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
           publish_dir: "foo/",
           clr_axis: 1
       ]

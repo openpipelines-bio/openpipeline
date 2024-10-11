@@ -2,16 +2,17 @@ nextflow.enable.dsl=2
 
 include { scgpt_leiden } from params.rootDir + "/target/nextflow/workflows/integration/scgpt_leiden/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-    resources_test = file("${params.rootDir}/resources_test/scgpt")
 
     output_ch = Channel.fromList([
         [
             id: "simple_execution_test",
-            input: resources_test.resolve("test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
-            model: resources_test.resolve("source/best_model.pt"),
-            model_config: resources_test.resolve("source/args.json"),
-            model_vocab: resources_test.resolve("source/vocab.json"),
+            input: file(params.resources_test).resolve("test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
+            model: file(params.resources_test).resolve("source/best_model.pt"),
+            model_config: file(params.resources_test).resolve("source/args.json"),
+            model_vocab: file(params.resources_test).resolve("source/vocab.json"),
             input_layer: "log_normalized",
             obs_batch_label: "sample",
             n_hvg: 400,
@@ -20,10 +21,10 @@ workflow test_wf {
         ],
         [
             id: "no_leiden_resolutions_test",
-            input: resources_test.resolve("test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
-            model: resources_test.resolve("source/best_model.pt"),
-            model_config: resources_test.resolve("source/args.json"),
-            model_vocab: resources_test.resolve("source/vocab.json"),
+            input: file(params.resources_test).resolve("test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
+            model: file(params.resources_test).resolve("source/best_model.pt"),
+            model_config: file(params.resources_test).resources_test.resolve("source/args.json"),
+            model_vocab: file(params.resources_test).resources_test.resolve("source/vocab.json"),
             obs_batch_label: "sample",
             n_hvg: 400,
             seed: 1,

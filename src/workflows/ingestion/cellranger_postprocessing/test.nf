@@ -4,15 +4,15 @@ include { cellranger_postprocessing } from params.rootDir + "/target/nextflow/wo
 include { from_10xh5_to_h5mu } from params.rootDir + "/target/nextflow/convert/from_10xh5_to_h5mu/main.nf"
 include { cellranger_postprocessing_test } from params.rootDir + "/target/nextflow/test_workflows/ingestion/cellranger_postprocessing_test/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
 
   output_ch = Channel.fromList([
       [
         id: "foo",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
-        input_og: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
+        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
+        input_og: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
         perform_correction: true,
         min_genes: 100,
         min_counts: 1000,

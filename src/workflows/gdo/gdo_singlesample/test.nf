@@ -2,6 +2,8 @@ nextflow.enable.dsl=2
 
 include { gdo_singlesample } from params.rootDir + "/target/nextflow/workflows/gdo/gdo_singlesample/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
   // allow changing the resources_test dir
   resources_test = file("${params.rootDir}/resources_test")
@@ -9,7 +11,7 @@ workflow test_wf {
   output_ch = Channel.fromList([
       [
         id: "simple_execution_test",
-        input: resources_test.resolve("10x_5k_lung_crispr/SC3_v3_NextGem_DI_CRISPR_A549_5K.h5mu"),
+        input: file(params.resources_test).resolve("10x_5k_lung_crispr/SC3_v3_NextGem_DI_CRISPR_A549_5K.h5mu"),
         min_counts: 3,
         max_counts: 10000000,
         min_guides_per_cell: 2,
