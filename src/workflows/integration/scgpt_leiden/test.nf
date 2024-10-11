@@ -9,7 +9,7 @@ workflow test_wf {
     output_ch = Channel.fromList([
         [
             id: "simple_execution_test",
-            input: file(params.resources_test).resolve("test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
+            input: file(params.resources_test).resolve("Kim2020_Lung_subset_preprocessed.h5mu"),
             model: file(params.resources_test).resolve("source/best_model.pt"),
             model_config: file(params.resources_test).resolve("source/args.json"),
             model_vocab: file(params.resources_test).resolve("source/vocab.json"),
@@ -21,10 +21,10 @@ workflow test_wf {
         ],
         [
             id: "no_leiden_resolutions_test",
-            input: file(params.resources_test).resolve("test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
+            input: file(params.resources_test).resolve("Kim2020_Lung_subset_preprocessed.h5mu"),
             model: file(params.resources_test).resolve("source/best_model.pt"),
             model_config: file(params.resources_test).resolve("source/args.json"),
-            model_vocab: file(params.resources_test).resolve("source/vocab.json"),
+            model_vocab: file(params.resources_test).resources_test.resolve("source/vocab.json"),
             obs_batch_label: "sample",
             n_hvg: 400,
             seed: 1,
