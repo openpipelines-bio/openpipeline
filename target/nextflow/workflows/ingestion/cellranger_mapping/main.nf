@@ -3223,7 +3223,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_mapping",
     "viash_version" : "0.9.0",
-    "git_commit" : "118df86f8ac3ec1c96e57bb1fd1d8d9702649bf7",
+    "git_commit" : "d80b827009ae29d24dc5883a1d2f3eabc9652152",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3285,8 +3285,7 @@ workflow run_wf {
       toState: [
         "input": "output",
         "output_raw": "output"
-      ],
-      auto: [ publish: true ]
+      ]
     )
     // split output dir into map
     | cellranger_count_split.run(
@@ -3316,14 +3315,9 @@ workflow run_wf {
           "input_metrics_summary": state.metrics_summary
         ]
       },
-      toState: { id, output, state ->
-        [
-          "output_raw": state.output_raw,
-          "output_h5mu": output.output
-        ]
-      },
-      auto: [ publish: true ],
+      toState: ["output_h5mu": "output"]
     )
+    | setState(["output_raw", "output_h5mu"])
 
   emit:
   output_ch

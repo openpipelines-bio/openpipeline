@@ -3231,7 +3231,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/bbknn_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "118df86f8ac3ec1c96e57bb1fd1d8d9702649bf7",
+    "git_commit" : "d80b827009ae29d24dc5883a1d2f3eabc9652152",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3362,11 +3362,9 @@ workflow run_wf {
           "output_compression": "gzip"
        ]
       },
-      toState: { id, output, state -> 
-        [ output: output.output ]
-      },
-      auto: [publish: true]
+      toState: ["output": "output"]
     )
+    | setState(["output"])
 
   emit:
   output_ch
