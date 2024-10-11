@@ -17,7 +17,7 @@ workflow test_wf {
       ],
       [
         id: "pca_obsm_output_test",
-        input: file(params.resources_test)..resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
+        input: file(params.resources_test).resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
         layer: "",
         output: "foo.final.h5mu"
       ],
