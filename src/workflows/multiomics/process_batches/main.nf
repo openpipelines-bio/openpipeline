@@ -215,7 +215,7 @@ workflow run_wf {
             "output": state.workflow_output,
           ]
         },
-        auto: [publish: true]
+        toState: ["output": "output"]
       )
       | setState(["output"])
 
