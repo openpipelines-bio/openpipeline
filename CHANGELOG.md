@@ -117,6 +117,8 @@
 
 * `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
 
+* `qc/calculate_atac_qc_metrics`: new component for calculating ATAC QC metrics (PR #868).
+
 * Added `transform/tfidf` component: normalize ATAC data with TF-IDF (PR #870).
 
 * Added `dimred/lsi` component (PR #552).
