@@ -3221,7 +3221,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xh5_to_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "6f15b86e56773c8ff53b8972709fbafa611c7795",
+    "git_commit" : "99cb605c0f84b61f65e4366816ef8997d33dd535",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3336,7 +3336,7 @@ adata.var = adata.var\\\\
     .reset_index()\\\\
     .set_index("gene_ids")
 
-# parse metrics summary file and store in .obsm or .obs
+# parse metrics summary file and store in .uns
 if par["input_metrics_summary"] and par["uns_metrics"]:
     logger.info("Reading metrics summary file '%s'", par['input_metrics_summary'])
 
@@ -3368,8 +3368,9 @@ if par["min_counts"]:
 logger.info("Convert to mudata")
 mdata = mudata.MuData(adata)
 
-# override root .obs
+# override root .obs and .uns
 mdata.obs = adata.obs
+mdata.uns = adata.uns
 
 # write output
 logger.info("Writing %s", par["output"])
