@@ -515,9 +515,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component transform normalize_total"
-LABEL org.opencontainers.image.created="2024-10-11T07:58:10Z"
+LABEL org.opencontainers.image.created="2024-10-11T08:35:02Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d80b827009ae29d24dc5883a1d2f3eabc9652152"
+LABEL org.opencontainers.image.revision="06b4c9ef01f7a21e6bec054b0871c36f5e3444c7"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
