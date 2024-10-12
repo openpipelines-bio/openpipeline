@@ -3247,7 +3247,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/random_forest_annotation",
     "viash_version" : "0.9.0",
-    "git_commit" : "cbf0ebb5c902236305d909b49bddff4cfb6e3185",
+    "git_commit" : "be88e7c461dd22b3d643a4e58222f3ec9220edd6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

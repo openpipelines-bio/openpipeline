@@ -74,11 +74,9 @@ workflow run_wf {
           "output_compression": "gzip"
         ]
       },
-      auto: [ publish: true ],
-      toState: { id, output, state ->
-        [ output: output.output ]
-      }
+      toState: ["output": "output"]
     )
+    | setState(["output"])
 
   emit:
   output_ch
