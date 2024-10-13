@@ -3200,7 +3200,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.9.0",
-    "git_commit" : "be88e7c461dd22b3d643a4e58222f3ec9220edd6",
+    "git_commit" : "50b9902f6f161a12f4626eca60b1736a9b764ca9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
