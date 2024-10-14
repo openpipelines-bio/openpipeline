@@ -47,11 +47,6 @@ workflow test_wf {
       ]
     ])
     | map{ state -> [state.id, state] }
-    | map {id, state -> 
-      copy = state.reference.copyTo("${id}_reference.h5mu")
-      def new_state = state + ["reference": copy]
-      [id, new_state]
-    }
     | totalvi_leiden
     | view { output ->
       assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
