@@ -6,11 +6,13 @@ from sklearn.neighbors import KNeighborsClassifier
 
 ## VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+    "input": "bbknn_knn/ref_query/run.subset_obsp.output_query.h5mu",
     "modality": "rna",
     "input_obsm_features": None,
-    "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
+    "input_obsm_distances": "bbknn_distances",
+    "reference": "bbknn_knn/ref_query/run.subset_obsp.output_reference.h5mu",
     "reference_obsm_features": None,
+    "reference_obsm_distances": "bbknn_distances",
     "reference_obs_targets": ["cell_type"],
     "output": "foo_distance.h5mu",
     "output_obs_predictions": None,
@@ -77,20 +79,42 @@ r_adata = r_mdata.mod[par["modality"]]
 logger.info("Checking arguments")
 par = check_arguments(par)
 
-# Generating training and inference data
-logger.info("Generating training and inference data")
-train_X = get_reference_features(r_adata, par, logger)
-inference_X = get_query_features(q_adata, par, logger)
+if par["input_obsm_distances"] and par["reference_obsm_distances"]:
+    logger.info("Using pre-calculated distances for KNN classification as provided in `--input_obsm_distances` and `--reference_obsm_distances`.")
+    query_neighbors = q_adata.obsm[par["input_obsm_distances"]]
+    reference_neighbors = r_adata.obsm[par["reference_obsm_distances"]]
 
-neighbors_transformer = PyNNDescentTransformer(
-    n_neighbors=par["n_neighbors"],
-    parallel_batch_queries=True,
-)
-neighbors_transformer.fit(train_X)
+    if query_neighbors.shape[1] != reference_neighbors.shape[1]:
+        raise ValueError("The number of neighbors in the query and reference distance matrices do not match. Make sure both distance matrices contain distances to the reference dataset.")
 
-# Square sparse matrix with distances to n neighbors in reference data
-reference_neighbors = neighbors_transformer.transform(inference_X)
-query_neighbors = neighbors_transformer.transform(train_X)
+    # Make sure the number of neighbors present in the distance matrix matches the requested number of neighbors in --n_neighbors
+    # Otherwise reduce n_neighbors for KNN
+    smallest_neighbor_count = min(
+        np.diff(query_neighbors.indptr).min(),
+        np.diff(reference_neighbors.indptr).min()
+    )
+    if smallest_neighbor_count < par["n_neighbors"]:
+        logger.warning(f"The number of neighbors in the distance matrices is smaller than the requested number of neighbors in --n_neighbors. Reducing n_neighbors to {smallest_neighbor_count} for KNN Classification")
+        par["n_neighbors"] = smallest_neighbor_count
+
+elif par["input_obsm_distances"] or par["reference_obsm_distances"]:
+    raise ValueError("Make sure to provide both --input_obsm_distances and --reference_obsm_distances if you want to use a pre-calculated distance matrix for KNN classification.")
+
+elif not par["input_obsm_distances"] and not par["reference_obsm_distances"]:
+    logger.info("No pre-calculated distances were provided. Calculating distances using the PyNNDescent algorithm.")
+    # Generating training and inference data
+    train_X = get_reference_features(r_adata, par, logger)
+    inference_X = get_query_features(q_adata, par, logger)
+
+    neighbors_transformer = PyNNDescentTransformer(
+        n_neighbors=par["n_neighbors"],
+        parallel_batch_queries=True,
+    )
+    neighbors_transformer.fit(train_X)
+
+    # Square sparse matrix with distances to n neighbors in reference data
+    query_neighbors = neighbors_transformer.transform(inference_X)
+    reference_neighbors = neighbors_transformer.transform(train_X)
 
 # For each target, train a classifier and predict labels
 for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"],  par["output_obs_predictions"], par["output_obs_probability"]):
@@ -104,10 +128,14 @@ for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"],  par["outp
 
     logger.info(f"Using KNN classifier with {par['weights']} weights")
     train_y = r_adata.obs[obs_tar].to_numpy()
-    classifier = KNeighborsClassifier(n_neighbors=par["n_neighbors"], metric="precomputed", weights=weights_dict[par["weights"]])
-    classifier.fit(X=query_neighbors, y=train_y)
-    predicted_labels = classifier.predict(reference_neighbors)
-    probabilities = classifier.predict_proba(reference_neighbors).max(axis=1)
+    classifier = KNeighborsClassifier(
+        n_neighbors=par["n_neighbors"],
+        metric="precomputed",
+        weights=weights_dict[par["weights"]]
+        )
+    classifier.fit(X=reference_neighbors, y=train_y)
+    predicted_labels = classifier.predict(query_neighbors)
+    probabilities = classifier.predict_proba(query_neighbors).max(axis=1)
 
     # save_results
     logger.info(f"Saving predictions to {obs_pred} and probabilities to {obs_proba} in obs")
