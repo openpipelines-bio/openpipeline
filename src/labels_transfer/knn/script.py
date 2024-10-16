@@ -6,13 +6,11 @@ from sklearn.neighbors import KNeighborsClassifier
 
 ## VIASH START
 par = {
-    "input": "bbknn_knn/ref_query/run.subset_obsp.output_query.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
     "input_obsm_features": None,
-    "input_obsm_distances": "bbknn_distances",
-    "reference": "bbknn_knn/ref_query/run.subset_obsp.output_reference.h5mu",
+    "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "reference_obsm_features": None,
-    "reference_obsm_distances": "bbknn_distances",
     "reference_obs_targets": ["cell_type"],
     "output": "foo_distance.h5mu",
     "output_obs_predictions": None,

@@ -31,7 +31,6 @@ argument_groups:
         description: |
           The `.obsm` key of the reference dataset containing pre-calculated distances. 
           If not provided, the distances will be calculated using PyNNDescent.
-          Make sure the distance matrix contains distances relative to the reference dataset itself and were obtained in the same way as the reference embedding.
         example: bbknn_distances
 
   - name: KNN label transfer arguments

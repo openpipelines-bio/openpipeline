@@ -131,6 +131,8 @@
 
 * `filter/subset_obsp` component: Added a component to subset an .obsp matrix by column based on the value of an .obs field. The resulting subset is moved to an .obsm field (PR #888).
 
+* `labels_transfer/knn` component: Allow to perform KNN classification based on a pre-calculated neighborhood graph (PR #890).
+
 ## MINOR CHANGES
 
 * `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
