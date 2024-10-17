@@ -240,7 +240,7 @@ build_info:
   output: "target/nextflow/transform/log1p"
   executable: "target/nextflow/transform/log1p/main.nf"
   viash_version: "0.9.0"
-  git_commit: "0c8132b07d2504c7f5a06996951a8d7ec2738cfe"
+  git_commit: "7ec23e5455d5e9e9953619f4657fe0e035cdf6a2"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
