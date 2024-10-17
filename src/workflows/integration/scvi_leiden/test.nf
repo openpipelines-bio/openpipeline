@@ -2,14 +2,14 @@ nextflow.enable.dsl=2
 
 include { scvi_leiden } from params.rootDir + "/target/nextflow/workflows/integration/scvi_leiden/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
 
   output_ch = Channel.fromList([
       [
         id: "simple_execution_test",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         layer: "log_normalized",
         obs_batch: "sample_id",
         max_epochs: 1,
@@ -17,7 +17,7 @@ workflow test_wf {
       ],
       [
         id: "no_leiden_resolutions_test",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         layer: "log_normalized",
         obs_batch: "sample_id",
         output_model: "no_leiden_resolutions_test_model/",

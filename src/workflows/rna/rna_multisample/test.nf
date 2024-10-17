@@ -2,14 +2,14 @@ nextflow.enable.dsl=2
 
 include { rna_multisample } from params.rootDir + "/target/nextflow/workflows/rna/rna_multisample/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
 
   output_ch = Channel.fromList([
       [
         id: "simple_execution_test",
-        input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
+        input: file(params.resources_test).resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
         output: "concatenated_file.final.h5mu"
       ]
     ])

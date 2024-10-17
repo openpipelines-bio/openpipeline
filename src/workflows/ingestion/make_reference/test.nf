@@ -2,16 +2,16 @@ nextflow.enable.dsl=2
 
 include { make_reference } from params.rootDir + "/target/nextflow/workflows/ingestion/make_reference/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
 
   output_ch = Channel.fromList([
       [
         id: "gencode_v41_ercc",
-        genome_fasta: resources_test.resolve("reference_gencodev41_chr1/reference.fa.gz"),
-        transcriptome_gtf: resources_test.resolve("reference_gencodev41_chr1/reference.gtf.gz"),
-        ercc: resources_test.resolve("reference_gencodev41_chr1/ERCC92.zip"),
+        genome_fasta: file(params.resources_test).resolve("reference_gencodev41_chr1/reference.fa.gz"),
+        transcriptome_gtf: file(params.resources_test).resolve("reference_gencodev41_chr1/reference.gtf.gz"),
+        ercc: file(params.resources_test).resolve("reference_gencodev41_chr1/ERCC92.zip"),
         subset_regex: "(ERCC-00002|chr1)",
         target: ["cellranger", "bd_rhapsody", "star"]
       ]        

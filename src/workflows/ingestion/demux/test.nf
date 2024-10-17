@@ -3,27 +3,28 @@ nextflow.enable.dsl=2
 
 include { demux } from params.rootDir + "/target/nextflow/workflows/ingestion/demux/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  resources_test = file("${params.rootDir}/resources_test")
 
   // or when running from s3:
   Channel.fromList([
     [
       id: "mkfastq_test",
-      input: resources_test.resolve("cellranger_tiny_bcl/bcl"),
-      sample_sheet: resources_test.resolve("cellranger_tiny_bcl/bcl/sample_sheet.csv"),
+      input: file(params.resources_test).resolve("cellranger_tiny_bcl/bcl"),
+      sample_sheet: file(params.resources_test).resolve("cellranger_tiny_bcl/bcl/sample_sheet.csv"),
       demultiplexer: "mkfastq"
     ],
     [
       id: "bclconvert_test",
-      input: resources_test.resolve("cellranger_tiny_bcl/bcl2/"),
-      sample_sheet: resources_test.resolve("cellranger_tiny_bcl/bcl2/sample_sheet.csv"),
+      input: file(params.resources_test).resolve("cellranger_tiny_bcl/bcl2/"),
+      sample_sheet: file(params.resources_test).resolve("cellranger_tiny_bcl/bcl2/sample_sheet.csv"),
       demultiplexer: "bclconvert"
     ],
     [
       id: "bcl2fastq_test",
-      input: resources_test.resolve("cellranger_tiny_bcl/bcl"),
-      sample_sheet: resources_test.resolve("cellranger_tiny_bcl/bcl/sample_sheet.csv"),
+      input: file(params.resources_test).resolve("cellranger_tiny_bcl/bcl"),
+      sample_sheet: file(params.resources_test).resolve("cellranger_tiny_bcl/bcl/sample_sheet.csv"),
       demultiplexer: "bcl2fastq",
       ignore_missing: true
     ]
