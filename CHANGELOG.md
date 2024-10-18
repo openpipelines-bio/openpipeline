@@ -173,6 +173,8 @@
 
 * `convert/from_10xh5_to_h5mu`: add .uns slot to mdata root when metrics file is provided (PR #887).
 
+* Use `params.resources_test` in test workflows in order to point to an alternative location (e.g. a cache).
+
 ## DOCUMENTATION
 
 * Update authorship of components (PR #835).
