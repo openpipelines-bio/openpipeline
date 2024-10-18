@@ -14,6 +14,12 @@ reference_obs_targets: ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_
 # output_obs_probability: ["foo"]
 # output_compression: "gzip"
 
+# Input dataset (query) arguments
+# input_obsm_distances: "bbknn_distances"
+
+# Reference dataset arguments
+# reference_obsm_distances: "bbknn_distances"
+
 # KNN label transfer arguments
 weights: "uniform"
 n_neighbors: 15

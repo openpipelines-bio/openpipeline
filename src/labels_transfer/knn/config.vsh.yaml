@@ -1,7 +1,7 @@
-name: pynndescent_knn
+name: knn
 namespace: "labels_transfer"
 description: |
-  This component generates a neighborhood graph based using the PyNNDescentTransformer, followed by classification using a k-nearest neighborhood vote.
+  This component performs label transfer from reference to query using a K-Neirest Neighbors classifier.
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ maintainer, author ]
@@ -11,6 +11,27 @@ authors:
 __merge__: ../api/common_arguments.yaml
 
 argument_groups:
+  - name: Input dataset (query) arguments
+    arguments:
+      - name: "--input_obsm_distances"
+        type: string
+        direction: input
+        required: false
+        example: bbknn_distances
+        description: |
+          The `.obsm` key of the input (query) dataset containing pre-calculated distances. 
+          If not provided, the distances will be calculated using PyNNDescent.
+          Make sure the distance matrix contains distances relative to the reference dataset and were obtained in the same way as the reference embedding.
+
+  - name: Reference dataset arguments
+    arguments:
+      - name: "--reference_obsm_distances"
+        type: string
+        required: false
+        description: |
+          The `.obsm` key of the reference dataset containing pre-calculated distances. 
+          If not provided, the distances will be calculated using PyNNDescent.
+        example: bbknn_distances
 
   - name: KNN label transfer arguments
     arguments:
@@ -30,6 +51,7 @@ argument_groups:
         description: |
           The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. 
           Larger values will result in more accurate search results at the cost of computation time.
+          
 resources:
   - type: python_script
     path: script.py
@@ -56,9 +78,7 @@ engines:
         packages:
           - pynndescent~=0.5.10
           - numpy<2
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml ]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 
 runners:
   - type: executable

@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
-"title": "pynndescent_knn",
-"description": "This component generates a neighborhood graph based using the PyNNDescentTransformer, followed by classification using a k-nearest neighborhood vote.\n",
+"title": "knn",
+"description": "This component performs label transfer from reference to query using a K-Neirest Neighbors classifier.\n",
 "type": "object",
 "definitions": {
 
@@ -158,6 +158,46 @@
 },
     
     
+    "input dataset (query) arguments" : {
+    "title": "Input dataset (query) arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input_obsm_distances": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `bbknn_distances`. The `",
+                "help_text": "Type: `string`, example: `bbknn_distances`. The `.obsm` key of the input (query) dataset containing pre-calculated distances. \nIf not provided, the distances will be calculated using PyNNDescent.\nMake sure the distance matrix contains distances relative to the reference dataset and were obtained in the same way as the reference embedding.\n"
+            
+            }
+    
+
+}
+},
+    
+    
+    "reference dataset arguments" : {
+    "title": "Reference dataset arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "reference_obsm_distances": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `bbknn_distances`. The `",
+                "help_text": "Type: `string`, example: `bbknn_distances`. The `.obsm` key of the reference dataset containing pre-calculated distances. \nIf not provided, the distances will be calculated using PyNNDescent.\n"
+            
+            }
+    
+
+}
+},
+    
+    
     "knn label transfer arguments" : {
     "title": "KNN label transfer arguments",
     "type": "object",
@@ -217,6 +257,14 @@
 
     {
     "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/input dataset (query) arguments"
+    },
+
+    {
+    "$ref": "#/definitions/reference dataset arguments"
     },
 
     {
