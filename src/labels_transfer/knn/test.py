@@ -23,21 +23,23 @@ input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_fil
 
 
 def test_label_transfer(run_component, random_h5mu_path):
+    
+    output = random_h5mu_path()
 
     args = [
         "--input", input_file,
         "--modality", "rna",
         "--reference", reference_file,
         "--reference_obs_targets", "cell_type",
-        "--output", random_h5mu_path(),
+        "--output", output,
         "--n_neighbors", "5"
     ]
 
     run_component(args)
 
-    assert Path("output.h5mu").is_file()
+    assert Path(output).is_file()
 
-    output_data = mu.read_h5mu("output.h5mu")
+    output_data = mu.read_h5mu(output)
 
     assert "cell_type_pred" in output_data.mod["rna"].obs, f"Predictions cell_type_pred is missing from output\noutput: {output_data.mod['rna'].obs}"
     assert "cell_type_probability" in output_data.mod["rna"].obs, f"Uncertainties cell_type_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
