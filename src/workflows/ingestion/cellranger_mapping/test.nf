@@ -3,15 +3,15 @@ nextflow.enable.dsl=2
 include { cellranger_mapping } from params.rootDir + "/target/nextflow/workflows/ingestion/cellranger_mapping/main.nf"
 include { cellranger_mapping_test } from params.rootDir + "/target/nextflow/test_workflows/ingestion/cellranger_mapping_test/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
 
   output_ch = Channel.fromList([
       [  
         id: "foo",
-        input: resources_test.resolve("cellranger_tiny_fastq/cellranger_tiny_fastq"),
-        reference: resources_test.resolve("cellranger_tiny_fastq/cellranger_tiny_ref"),
+        input: file(params.resources_test).resolve("cellranger_tiny_fastq/cellranger_tiny_fastq"),
+        reference: file(params.resources_test).resolve("cellranger_tiny_fastq/cellranger_tiny_ref"),
         output_type: "filtered",
       ]
     ])

@@ -1,7 +1,5 @@
 viash_version: 0.9.0
 
-version: dev
-
 source: src
 target: target
 
