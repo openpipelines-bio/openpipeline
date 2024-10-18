@@ -80,8 +80,8 @@ par = check_arguments(par)
 if par["input_obsm_distances"] and par["reference_obsm_distances"]:
     logger.info("Using pre-calculated distances for KNN classification as provided in `--input_obsm_distances` and `--reference_obsm_distances`.")
 
-    assert par["input_obsm_distances"] in q_adata, f"Make sure --input_obsm_distances {par['input_obsm_distances']} is a valid .obsm key. Found: {q_adata.obsm.keys()}."
-    assert par["reference_obsm_distances"] in r_adata, f"Make sure --reference_obsm_distances {par['reference_obsm_distances']} is a valid .obsm key. Found: {r_adata.obsm.keys()}."
+    assert par["input_obsm_distances"] in q_adata.obsm, f"Make sure --input_obsm_distances {par['input_obsm_distances']} is a valid .obsm key. Found: {q_adata.obsm.keys()}."
+    assert par["reference_obsm_distances"] in r_adata.obsm, f"Make sure --reference_obsm_distances {par['reference_obsm_distances']} is a valid .obsm key. Found: {r_adata.obsm.keys()}."
 
     query_neighbors = q_adata.obsm[par["input_obsm_distances"]]
     reference_neighbors = r_adata.obsm[par["reference_obsm_distances"]]
