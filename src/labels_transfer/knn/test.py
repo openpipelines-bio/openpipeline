@@ -22,14 +22,14 @@ reference_mdata.write_h5mu(reference_file)
 input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
 
-def test_label_transfer(run_component):
+def test_label_transfer(run_component, random_h5mu_path):
 
     args = [
         "--input", input_file,
         "--modality", "rna",
         "--reference", reference_file,
         "--reference_obs_targets", "cell_type",
-        "--output", "output.h5mu",
+        "--output", random_h5mu_path(),
         "--n_neighbors", "5"
     ]
 
@@ -44,9 +44,9 @@ def test_label_transfer(run_component):
 
 
 @pytest.mark.parametrize("weights", ["uniform", "distance", "gaussian"])
-def test_label_transfer_prediction_columns(run_component, weights):
+def test_label_transfer_prediction_columns(run_component, weights, random_h5mu_path):
 
-    output = f"output_{weights}.h5mu"
+    output = random_h5mu_path()
 
     args = [
         "--input", input_file,
@@ -70,9 +70,9 @@ def test_label_transfer_prediction_columns(run_component, weights):
     assert "test_probability" in output_data.mod["rna"].obs, f"Uncertainties test_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
 
 
-def test_label_transfer_prediction_precomputed_neighbor_graph(run_component):
+def test_label_transfer_prediction_precomputed_neighbor_graph(run_component, random_h5mu_path):
 
-    output = f"output_precomputed.h5mu"
+    output = random_h5mu_path()
 
     # Add mock distance matrix to obsm slot
     reference_mdata = mu.read_h5mu(reference_file)
@@ -112,8 +112,10 @@ def test_label_transfer_prediction_precomputed_neighbor_graph(run_component):
     assert "test_probability" in output_data.mod["rna"].obs, f"Uncertainties test_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
 
 
-def test_raises_distance_matrix_dimensions(run_component):
-    output = "output_dims.h5mu"
+def test_raises_distance_matrix_dimensions(run_component, random_h5mu_path):
+
+    output = random_h5mu_path()
+
     reference_mdata = mu.read_h5mu(reference_file)
     ref_distances = np.random.rand(400, 100)
     ref_distances[ref_distances < 0.5] = 0

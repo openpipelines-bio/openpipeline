@@ -78,9 +78,7 @@ engines:
         packages:
           - pynndescent~=0.5.10
           - numpy<2
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml ]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 
 runners:
   - type: executable
