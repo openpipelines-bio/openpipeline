@@ -44,8 +44,8 @@ workflow test_wf {
 }
 
 workflow test_wf2 {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList([
     [
@@ -96,8 +96,8 @@ workflow test_wf2 {
 }
 
 workflow test_wf3 {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   input_ch = Channel.fromList([
       [
@@ -158,8 +158,8 @@ workflow test_wf3 {
 }
 
 workflow test_wf4 {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList([
     [
@@ -189,8 +189,8 @@ workflow test_wf4 {
 }
 
 workflow test_wf5 {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList([
     [
@@ -237,8 +237,8 @@ workflow test_wf5 {
 }
 
 workflow test_wf6 {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList([
     [
@@ -300,8 +300,8 @@ workflow test_wf6 {
 // }
 
 workflow test_wf7 {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList([
     [
