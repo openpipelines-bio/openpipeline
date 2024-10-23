@@ -1,7 +1,7 @@
 name: tar_extract
 namespace: compression
 description: Extract files from a tar archive
-arguments:                     
+arguments:
   - name: "--input"
     alternatives: ["-i"]
     type: file

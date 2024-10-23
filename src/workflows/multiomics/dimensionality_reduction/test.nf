@@ -3,9 +3,11 @@ nextflow.enable.dsl=2
 include { dimensionality_reduction } from params.rootDir + "/target/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
 include { dimensionality_reduction_test } from params.rootDir + "/target/nextflow/test_workflows/multiomics/dimensionality_reduction_test/main.nf" 
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   input_ch = Channel.fromList([
       [

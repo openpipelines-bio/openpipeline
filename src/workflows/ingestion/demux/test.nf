@@ -3,8 +3,11 @@ nextflow.enable.dsl=2
 
 include { demux } from params.rootDir + "/target/nextflow/workflows/ingestion/demux/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   // or when running from s3:
   Channel.fromList([

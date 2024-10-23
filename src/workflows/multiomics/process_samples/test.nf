@@ -5,9 +5,11 @@ include { remove_modality }  from targetDir + '/filter/remove_modality/main.nf'
 include { move_layer } from targetDir + '/transform/move_layer/main.nf' 
 include { process_samples } from targetDir + "/workflows/multiomics/process_samples/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList([
     [
