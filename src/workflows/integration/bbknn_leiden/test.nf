@@ -48,7 +48,9 @@ workflow test_wf {
 }
 
 workflow test_wf2 {
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
+
   output_ch =
     Channel.fromList([
       [
