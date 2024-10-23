@@ -7,11 +7,13 @@ params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
 
+  resources_test = file(params.resources_test)
+
   output_ch = Channel.fromList([
       [  
         id: "foo",
-        input: file(params.resources_test).resolve("cellranger_tiny_fastq/cellranger_tiny_fastq"),
-        reference: file(params.resources_test).resolve("cellranger_tiny_fastq/cellranger_tiny_ref"),
+        input: resources_test.resolve("cellranger_tiny_fastq/cellranger_tiny_fastq"),
+        reference: resources_test.resolve("cellranger_tiny_fastq/cellranger_tiny_ref"),
         output_type: "filtered",
       ]
     ])

@@ -9,16 +9,18 @@ params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
 
+  resources_test = file(params.resources_test)
+
   input_ch = Channel.fromList([
       [
           id: "test",
-          input: file(params.resources_test).resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
+          input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
           publish_dir: "foo/",
           clr_axis: 0
       ],
       [
           id: "test2",
-          input: file(params.resources_test).resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
+          input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
           publish_dir: "foo/",
           clr_axis: 1
       ]

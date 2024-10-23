@@ -5,13 +5,13 @@ include { rna_singlesample } from params.rootDir + "/target/nextflow/workflows/r
 params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList([
       [
         id: "mitochondrial_test",
-        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
         min_counts: 3,
         max_counts: 10000000,
         min_genes_per_cell: 2,
@@ -27,7 +27,7 @@ workflow test_wf {
       ],
       [
         id: "simple_execution_test",
-        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
         min_counts: 3,
         max_counts: 10000000,
         min_genes_per_cell: 2,

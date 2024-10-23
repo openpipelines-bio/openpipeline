@@ -7,30 +7,32 @@ params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
 
+  resources_test = file(params.resources_test)
+
   output_ch = Channel.fromList([
       [
         id: "10xh5_test",
-        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5"),
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5"),
         input_type: "10xh5",
         modality: null
       ],
       [
         id: "10xmtx_test",
-        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix"),
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix"),
         input_type: "10xmtx",
         modality: null,
         output: "\$id.h5mu"
       ],
       [
         id: "10xmtx",
-        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix"),
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix"),
         input_type: "10xmtx",
         modality: "rna",
         output: "\$key.h5mu"
       ],
       [
         id: "h5ad",
-        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5ad"),
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5ad"),
         input_type: "h5ad",
         modality: "rna",
         output: "\$key.h5mu"

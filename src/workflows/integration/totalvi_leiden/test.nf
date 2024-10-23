@@ -6,11 +6,13 @@ params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
 
+  resources_test = file(params.resources_test)
+
     output_ch = Channel.fromList([
       [
         id: "simple_execution_test",
-        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        reference: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        reference: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         prot_modality: "prot",
         prot_reference_modality: "prot",
         var_input: "filter_with_hvg",
@@ -21,8 +23,8 @@ workflow test_wf {
       ],
       [
         id: "no_prot_leiden_resolutions_test",
-        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        reference: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        reference: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         prot_modality: "prot",
         prot_reference_modality: "prot",
         var_input: "filter_with_hvg",
@@ -34,8 +36,8 @@ workflow test_wf {
       ],
       [
         id: "no_rna_leiden_resolutions_test",
-        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        reference: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        reference: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         prot_modality: "prot",
         prot_reference_modality: "prot",
         var_input: "filter_with_hvg",

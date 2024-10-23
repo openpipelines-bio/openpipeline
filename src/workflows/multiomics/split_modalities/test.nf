@@ -7,10 +7,12 @@ params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
 
+  resources_test = file(params.resources_test)
+
   output_ch = Channel.fromList([
     [
       id: "mouse",
-      input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
+      input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
       publish_dir: "foo/",
       output: "modalities",
       output_types: "types.csv"

@@ -6,30 +6,32 @@ params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
 
+  resources_test = file(params.resources_test)
+
     output_ch = Channel.fromList([
         [
-            id: "simple_execution_test",
-            input: file(params.resources_test).resolve("scgpt/test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
-            model: file(params.resources_test).resolve("scgpt/source/best_model.pt"),
-            model_config: file(params.resources_test).resolve("scgpt/source/args.json"),
-            model_vocab: file(params.resources_test).resolve("scgpt/source/vocab.json"),
-            input_layer: "log_normalized",
-            obs_batch_label: "sample",
-            n_hvg: 400,
-            seed: 1,
-            leiden_resolution: [1.0, 0.25]
+          id: "simple_execution_test",
+          input: resources_test.resolve("scgpt/test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
+          model: resources_test.resolve("scgpt/source/best_model.pt"),
+          model_config: resources_test.resolve("scgpt/source/args.json"),
+          model_vocab: resources_test.resolve("scgpt/source/vocab.json"),
+          input_layer: "log_normalized",
+          obs_batch_label: "sample",
+          n_hvg: 400,
+          seed: 1,
+          leiden_resolution: [1.0, 0.25]
         ],
         [
-            id: "no_leiden_resolutions_test",
-            input: file(params.resources_test).resolve("scgpt/test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
-            model: file(params.resources_test).resolve("scgpt/source/best_model.pt"),
-            model_config: file(params.resources_test).resolve("scgpt/source/args.json"),
-            model_vocab: file(params.resources_test).resolve("scgpt/source/vocab.json"),
-            obs_batch_label: "sample",
-            n_hvg: 400,
-            seed: 1,
-            input_layer: "log_normalized",
-            leiden_resolution: []
+          id: "no_leiden_resolutions_test",
+          input: resources_test.resolve("scgpt/test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
+          model: resources_test.resolve("scgpt/source/best_model.pt"),
+          model_config: resources_test.resolve("scgpt/source/args.json"),
+          model_vocab: resources_test.resolve("scgpt/source/vocab.json"),
+          obs_batch_label: "sample",
+          n_hvg: 400,
+          seed: 1,
+          input_layer: "log_normalized",
+          leiden_resolution: []
         ]
     ])
     | map{ state -> [state.id, state] }

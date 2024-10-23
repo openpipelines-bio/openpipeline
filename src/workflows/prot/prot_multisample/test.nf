@@ -6,17 +6,19 @@ params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
 
+  resources_test = file(params.resources_test)
+
   output_ch = Channel.fromList([
       [
         id: "adt_samples_axis_0",
         sample_id: "pbmc",
-        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         clr_axis: 0
       ],
       [
         id: "adt_samples_axis_1",
         sample_id: "pbmc",
-        input: file(params.resources_test).resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         clr_axis: 1
       ]
     ])

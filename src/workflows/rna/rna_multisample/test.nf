@@ -6,10 +6,12 @@ params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
 
+  resources_test = file(params.resources_test)
+
   output_ch = Channel.fromList([
       [
         id: "simple_execution_test",
-        input: file(params.resources_test).resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
+        input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
         output: "concatenated_file.final.h5mu"
       ]
     ])

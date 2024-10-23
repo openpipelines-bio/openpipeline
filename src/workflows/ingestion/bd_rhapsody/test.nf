@@ -6,16 +6,16 @@ include { bd_rhapsody_test } from params.rootDir + "/target/nextflow/test_workfl
 params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList(
     [
       [
         id: "foo",
         reads: file("${params.resources_test}/bdrhap_5kjrt/raw/12*.fastq.gz"),
-        reference_archive: file(params.resources_test).resolve("reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz"),
-        abseq_reference: file(params.resources_test).resolve("bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"),
+        reference_archive: resources_test.resolve("reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz"),
+        abseq_reference: resources_test.resolve("bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"),
         cell_calling_data: "mRNA",
         exact_cell_count: 4900
       ] 

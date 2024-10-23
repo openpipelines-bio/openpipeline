@@ -6,18 +6,19 @@ include { dimensionality_reduction_test } from params.rootDir + "/target/nextflo
 params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
-  // allow changing the resources_test dir
+
+  resources_test = file(params.resources_test)
 
   input_ch = Channel.fromList([
       [
         id: "simple_execution_test",
-        input: file(params.resources_test).resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
+        input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
         layer: "",
         output: "foo.final.h5mu"
       ],
       [
         id: "pca_obsm_output_test",
-        input: file(params.resources_test).resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
+        input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
         layer: "",
         output: "foo.final.h5mu"
       ],
