@@ -99,7 +99,7 @@
 
 * `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
 
-* `annotete/scanvi` component: Added a component to annotate cells using scANVI (PR #833).
+* `annotate/scanvi` component: Added a component to annotate cells using scANVI (PR #833).
 
 * `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
 
