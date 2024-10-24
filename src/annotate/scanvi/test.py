@@ -201,7 +201,7 @@ def test_raises(run_component, random_h5mu_path, create_scvi_model, create_scanv
             "--output", output_file
         ])
     assert re.search(
-        r"ValueError: Make sure to provide either an '--scvi_reference_model' or an '--scanvi_reference_model', but not both.",
+        r"ValueError: Make sure to provide either an '--scvi_reference_model' or a '--scanvi_reference_model', but not both.",
         err.value.stdout.decode('utf-8')
         )
 

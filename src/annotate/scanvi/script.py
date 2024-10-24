@@ -59,7 +59,7 @@ def setup_logger():
 logger = setup_logger()
 
 if (not par["scvi_reference_model"]) and not (par["scanvi_reference_model"]) or (par["scvi_reference_model"] and par["scanvi_reference_model"]):
-    raise ValueError("Make sure to provide either an '--scvi_reference_model' or an '--scanvi_reference_model', but not both.")
+    raise ValueError("Make sure to provide either an '--scvi_reference_model' or a '--scanvi_reference_model', but not both.")
 
 
 def main():
