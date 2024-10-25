@@ -580,9 +580,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component feature_annotation highly_variable_features_scanpy"
-LABEL org.opencontainers.image.created="2024-10-25T08:06:56Z"
+LABEL org.opencontainers.image.created="2024-10-25T09:08:09Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="435865ea54fac674ef799ab529b39ee90f4ad449"
+LABEL org.opencontainers.image.revision="4c6be490afaec9d5d994966e92de6b3b0f985b14"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
