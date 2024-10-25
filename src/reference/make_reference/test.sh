@@ -77,5 +77,4 @@ if zgrep -q '>ERCC-00002' $fasta; then
 fi
 popd
 
-
 echo "> Test succeeded!"
