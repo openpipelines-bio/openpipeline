@@ -50,6 +50,16 @@
             }
     
 
+        ,
+                "var_input_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`. ",
+                "help_text": "Type: `string`. .var field containing the gene names, if the .var index is not to be used."
+            
+            }
+    
+
 }
 },
     
@@ -142,38 +152,28 @@
 },
     
     
-    "reference" : {
-    "title": "Reference",
+    "reference model" : {
+    "title": "Reference model",
     "type": "object",
-    "description": "Arguments related to the reference dataset.",
+    "description": "Arguments related to the reference model.",
     "properties": {
     
         
-                "reference": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `reference.h5mu`. Reference h5mu file",
-                "help_text": "Type: `file`, required, example: `reference.h5mu`. Reference h5mu file."
-            
-            }
-    
-
-        ,
                 "scvi_reference_model": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `scvi_model.pt`. Pretrained scvi reference model",
-                "help_text": "Type: `file`, required, example: `scvi_model.pt`. Pretrained scvi reference model"
+                "description": "Type: `file`, example: `scvi_model.pt`. Pretrained SCVI reference model to initialize the SCANVI model with",
+                "help_text": "Type: `file`, example: `scvi_model.pt`. Pretrained SCVI reference model to initialize the SCANVI model with. The model needs to include the AnnData object used to trained the model stored. "
             
             }
     
 
         ,
-                "reference_obs_label": {
+                "scanvi_reference_model": {
                 "type":
                 "string",
-                "description": "Type: `string`, required, example: `cell_ontology_class`. Key in obs field of reference AnnData with cell-type information",
-                "help_text": "Type: `string`, required, example: `cell_ontology_class`. Key in obs field of reference AnnData with cell-type information."
+                "description": "Type: `file`, example: `scvi_model.pt`. Pretrained SCANVI reference model",
+                "help_text": "Type: `file`, example: `scvi_model.pt`. Pretrained SCANVI reference model."
             
             }
     
@@ -410,7 +410,7 @@
     },
 
     {
-    "$ref": "#/definitions/reference"
+    "$ref": "#/definitions/reference model"
     },
 
     {

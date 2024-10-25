@@ -2882,49 +2882,46 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--var_input_gene_names",
+          "description" : ".var field containing the gene names, if the .var index is not to be used.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
     {
-      "name" : "Reference",
-      "description" : "Arguments related to the reference dataset.",
+      "name" : "Reference model",
+      "description" : "Arguments related to the reference model.",
       "arguments" : [
         {
           "type" : "file",
-          "name" : "--reference",
-          "description" : "Reference h5mu file.",
-          "example" : [
-            "reference.h5mu"
-          ],
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : true,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "file",
           "name" : "--scvi_reference_model",
-          "description" : "Pretrained scvi reference model",
+          "description" : "Pretrained SCVI reference model to initialize the SCANVI model with. The model needs to include the AnnData object used to trained the model stored. ",
           "example" : [
             "scvi_model.pt"
           ],
           "must_exist" : true,
           "create_parent" : true,
-          "required" : true,
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
         },
         {
-          "type" : "string",
-          "name" : "--reference_obs_label",
-          "description" : "Key in obs field of reference AnnData with cell-type information.",
+          "type" : "file",
+          "name" : "--scanvi_reference_model",
+          "description" : "Pretrained SCANVI reference model.",
           "example" : [
-            "cell_ontology_class"
+            "scvi_model.pt"
           ],
-          "required" : true,
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3253,6 +3250,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/annotate/utils/query_reference_allignment.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3435,7 +3436,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/scanvi",
     "viash_version" : "0.9.0",
-    "git_commit" : "8030dc051a028149778152d4228334a838cf4d4d",
+    "git_commit" : "435865ea54fac674ef799ab529b39ee90f4ad449",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3489,9 +3490,9 @@ import numpy as np
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'var_input_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_INPUT_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'scvi_reference_model': $( if [ ! -z ${VIASH_PAR_SCVI_REFERENCE_MODEL+x} ]; then echo "r'${VIASH_PAR_SCVI_REFERENCE_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'reference_obs_label': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'scanvi_reference_model': $( if [ ! -z ${VIASH_PAR_SCANVI_REFERENCE_MODEL+x} ]; then echo "r'${VIASH_PAR_SCANVI_REFERENCE_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_train_size': $( if [ ! -z ${VIASH_PAR_REFERENCE_TRAIN_SIZE+x} ]; then echo "float(r'${VIASH_PAR_REFERENCE_TRAIN_SIZE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'reference_max_epochs': $( if [ ! -z ${VIASH_PAR_REFERENCE_MAX_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_REFERENCE_MAX_EPOCHS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'reference_learning_rate': $( if [ ! -z ${VIASH_PAR_REFERENCE_LEARNING_RATE+x} ]; then echo "float(r'${VIASH_PAR_REFERENCE_LEARNING_RATE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -3543,6 +3544,8 @@ dep = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
+from query_reference_allignment import set_var_index, cross_check_genes
+
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion
 # from setup_logger import setup_logger
@@ -3561,75 +3564,107 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-logger.info("Reading the input and reference data")
+if (not par["scvi_reference_model"]) and not (par["scanvi_reference_model"]) or (par["scvi_reference_model"] and par["scanvi_reference_model"]):
+    raise ValueError("Make sure to provide either an '--scvi_reference_model' or a '--scanvi_reference_model', but not both.")
 
-input_data = mu.read_h5mu(par["input"])
-query = input_data.mod[par["modality"]]
-reference_data = mu.read_h5mu(par["reference"])
-reference = reference_data.mod[par["modality"]]
 
-logger.info(f"Loading the pretrained scVI model from {par['scvi_reference_model']}")
-scvi_reference_model = scvi.model.SCVI.load(par["scvi_reference_model"], reference)
+def main():
+    logger.info("Reading the query data")
+    # Read in data
+    input_data = mu.read_h5mu(par["input"])
+    input_modality = input_data.mod[par["modality"]].copy()
+    # scANVI requires query and reference gene names to be equivalent 
+    input_modality = set_var_index(input_modality, par["var_input_gene_names"])
 
-logger.info("Setting up scANVI model")
+    if par["scanvi_reference_model"]:
 
-scanvi_ref = scvi.model.SCANVI.from_scvi_model(
-    scvi_reference_model,
-    unlabeled_category=par["unknown_celltype"],
-    labels_key=par["reference_obs_label"],
+        logger.info(f"Loading the pretrained scANVI model from {par['scanvi_reference_model']} and updating it with the query data {par['input']}")
+        scanvi_query = scvi.model.SCANVI.load_query_data(
+            input_modality,
+            par["scanvi_reference_model"],
+            freeze_classifier=True,
+            inplace_subset_query_vars=True
+            )
+
+    elif par["scvi_reference_model"]:
+
+        logger.info("Reading in the reference model and associated reference data")
+        scvi_reference_model = scvi.model.SCVI.load(par["scvi_reference_model"])
+        reference = scvi_reference_model.adata
+
+
+        logger.info("Alligning genes in reference and query dataset")
+        # scANVI requires query and reference gene names to be equivalent 
+        reference = set_var_index(reference)
+        # Subset query dataset based on genes present in reference
+        common_ens_ids = cross_check_genes(input_modality, reference)
+        input_modality = input_modality[:, common_ens_ids]
+
+        logger.info("Instantiating scANVI model from the scVI model")
+        scanvi_ref = scvi.model.SCANVI.from_scvi_model(
+            scvi_reference_model,
+            unlabeled_category=par["unknown_celltype"],
+            labels_key=scvi_reference_model.adata_manager._registry["setup_args"]["labels_key"],
+            )
+
+        reference_plan_kwargs = {
+            "lr": par["reference_learning_rate"],
+            "reduce_lr_on_plateau": par['reference_reduce_lr_on_plateau'],
+            "lr_patience": par['reference_lr_patience'],
+            "lr_factor": par['reference_lr_factor']
+            }
+
+        logger.info("Training scANVI model on reference data with celltype labels")
+
+        scanvi_ref.train(
+            train_size=par["reference_train_size"],
+            max_epochs=par['reference_max_epochs'],
+            early_stopping=par['reference_early_stopping'],
+            early_stopping_patience=par['reference_early_stopping_patience'],
+            plan_kwargs=reference_plan_kwargs,
+            check_val_every_n_epoch=1,
+            accelerator="auto"
+        )
+
+        logger.info(f"Updating scANVI model with query data {par['input']}")
+        scvi.model.SCANVI.prepare_query_anndata(input_modality, scanvi_ref, inplace=True)
+        scanvi_query = scvi.model.SCANVI.load_query_data(input_modality, scanvi_ref)
+
+    logger.info("Training scANVI model with query data")
+    query_plan_kwargs = {
+        "lr": par["query_learning_rate"],
+        "reduce_lr_on_plateau": par['query_reduce_lr_on_plateau'],
+        "lr_patience": par['query_lr_patience'],
+        "lr_factor": par['query_lr_factor']
+        }
+
+    scanvi_query.train(
+        train_size=par["query_train_size"],
+        max_epochs=par['query_max_epochs'],
+        early_stopping=par['query_early_stopping'],
+        early_stopping_patience=par['query_early_stopping_patience'],
+        plan_kwargs=query_plan_kwargs,
+        check_val_every_n_epoch=1,
+        accelerator="auto"
     )
 
-reference_plan_kwargs = {"lr": par["reference_learning_rate"],
-                         "reduce_lr_on_plateau": par['reference_reduce_lr_on_plateau'],
-                         "lr_patience": par['reference_lr_patience'],
-                         "lr_factor": par['reference_lr_factor']
-                        }
+    logger.info("Adding latent representation to query data")
+    input_modality.obsm[par["output_obsm_scanvi_embedding"]] = scanvi_query.get_latent_representation()
 
-logger.info("Training scANVI model on reference data with celltype labels")
+    logger.info("Running predictions on query data")
+    input_modality.obs[par["output_obs_predictions"]] = scanvi_query.predict(input_modality)
+    input_modality.obs[par["output_obs_probability"]] = np.max(scanvi_query.predict(input_modality, soft=True), axis=1)
 
-scanvi_ref.train(
-    train_size=par["reference_train_size"],
-    max_epochs=par['reference_max_epochs'],
-    early_stopping=par['reference_early_stopping'],
-    early_stopping_patience=par['reference_early_stopping_patience'],
-    plan_kwargs=reference_plan_kwargs,
-    check_val_every_n_epoch=1,
-    accelerator="auto",
-)
+    logger.info("Saving output and model")
+    input_data.mod[par["modality"]] = input_modality
+    input_data.write_h5mu(par["output"], compression=par["output_compression"])
 
-logger.info("Updating and training scANVI model with query data")
-scvi.model.SCANVI.prepare_query_anndata(query, scanvi_ref, inplace=True)
-scanvi_query = scvi.model.SCANVI.load_query_data(query, scanvi_ref)
+    if par["output_model"]:
+        scanvi_query.save(par["output_model"], overwrite=True)
 
-query_plan_kwargs = {"lr": par["query_learning_rate"],
-                     "reduce_lr_on_plateau": par['query_reduce_lr_on_plateau'],
-                     "lr_patience": par['query_lr_patience'],
-                     "lr_factor": par['query_lr_factor']
-                    }
 
-scanvi_query.train(
-    train_size=par["query_train_size"],
-    max_epochs=par['query_max_epochs'],
-    early_stopping=par['query_early_stopping'],
-    early_stopping_patience=par['query_early_stopping_patience'],
-    plan_kwargs=query_plan_kwargs,
-    check_val_every_n_epoch=1,
-    accelerator="auto",
-)
-
-logger.info("Adding latent representation to query data")
-query.obsm[par["output_obsm_scanvi_embedding"]] = scanvi_query.get_latent_representation()
-
-logger.info("Running predictions on query data")
-query.obs[par["output_obs_predictions"]] = scanvi_query.predict(query)
-query.obs[par["output_obs_probability"]] = np.max(scanvi_query.predict(query, soft=True), axis=1)
-
-logger.info("Saving output and model")
-input_data.mod[par["modality"]] = query
-input_data.write_h5mu(par["output"], compression=par["output_compression"])
-
-if par["output_model"]:
-    scanvi_query.save(par["output_model"], overwrite=True)
+if __name__ == '__main__':
+    main()
 VIASHMAIN
 python -B "$tempscript"
 '''

@@ -3342,7 +3342,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/demuxlet",
     "viash_version" : "0.9.0",
-    "git_commit" : "8030dc051a028149778152d4228334a838cf4d4d",
+    "git_commit" : "435865ea54fac674ef799ab529b39ee90f4ad449",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
