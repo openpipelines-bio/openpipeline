@@ -173,6 +173,8 @@
 
 * `convert/from_10xh5_to_h5mu`: add .uns slot to mdata root when metrics file is provided (PR #887).
 
+* Fix ingestion components not working when optional arguments are unset (PR #xxx).
+
 ## DOCUMENTATION
 
 * Update authorship of components (PR #835).
