@@ -53,7 +53,7 @@ resources:
     path: script.sh
 test_resources:
   - type: bash_script
-    path: run_test.sh
+    path: test.sh
   - path: /resources_test/reference_gencodev41_chr1
 engines:
   - type: docker
