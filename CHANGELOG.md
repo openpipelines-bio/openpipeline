@@ -1,4 +1,4 @@
-# openpipelines x.x.x
+# openpipelines 2.x.x (Unreleased)
 
 ## BREAKING CHANGES
 
@@ -142,8 +142,6 @@
 
 * Bump scvelo to `0.3.2` (PR #828).
 
-* Bump viash to `0.8.6` (PR #815).
-
 * Pin numpy<2 for several components (PR #815).
 
 * Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
@@ -162,13 +160,6 @@
 
 ## BUG FIXES
 
-* `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
-  data dtype (dtype) changed as a result of adding more observations after concatenation, causing `TypeError`.
-  One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
-  which is present in another sample; causing the values being filled with `NA` (PR #837).
-
-* `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR #852).
-
 * Fix failing tests for `ingestion/cellranger_postprocessing`, `ingestion/conversion` and `multiomics/process_batches` (PR #869).
 
 * `convert/from_10xh5_to_h5mu`: add .uns slot to mdata root when metrics file is provided (PR #887).
@@ -176,6 +167,27 @@
 ## DOCUMENTATION
 
 * Update authorship of components (PR #835).
+
+# openpipelines 1.0.3
+
+## BUG FIXES
+
+* `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR # , backported from PR #852).
+
+# openpipelines 1.0.2
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
+  data dtype (dtype) changed as a result of adding more observations after concatenation, causing `TypeError`.
+  One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
+  which is present in another sample; causing the values being filled with `NA` (PR #842, backported from PR #837).
+
+# openpipelines 1.0.1
+
+## BUG FIXES
+
+* Bump viash to `0.8.6` (PR #816, backported from #815). This changes the at-runtime generated nextflow process from an in-memory to an on-disk temporary file, which should cause less issues with Nextflow Fusion.
 
 # openpipelines 1.0.0-rc6
 
