@@ -3006,7 +3006,7 @@ meta = [
   "test_resources" : [
     {
       "type" : "bash_script",
-      "path" : "run_test.sh",
+      "path" : "test.sh",
       "is_executable" : true
     },
     {
@@ -3143,7 +3143,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference",
     "viash_version" : "0.9.0",
-    "git_commit" : "f3b8a578bdf2c4cbb686f2e2b04b9a2f23b2aef5",
+    "git_commit" : "ecc0b50cc6b92618a635caa1f1818750e80854df",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
