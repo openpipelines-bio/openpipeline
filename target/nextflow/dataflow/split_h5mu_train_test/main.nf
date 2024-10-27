@@ -3167,7 +3167,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_h5mu_train_test",
     "viash_version" : "0.9.0",
-    "git_commit" : "ecc0b50cc6b92618a635caa1f1818750e80854df",
+    "git_commit" : "c980815123b2aa8bce2bb24edbde00979cc6abcb",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
