@@ -528,9 +528,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scanorama"
-LABEL org.opencontainers.image.created="2024-10-27T02:51:48Z"
+LABEL org.opencontainers.image.created="2024-10-28T02:51:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c980815123b2aa8bce2bb24edbde00979cc6abcb"
+LABEL org.opencontainers.image.revision="4c8bb3b81cb458fda8bf0796b7de06ed6c8f3638"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
