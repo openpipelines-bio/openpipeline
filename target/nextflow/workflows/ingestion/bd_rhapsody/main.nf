@@ -3540,7 +3540,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/bd_rhapsody",
     "viash_version" : "0.9.0",
-    "git_commit" : "52249311012837c92837ce1f0def0584de1eb427",
+    "git_commit" : "890fcf6c135251443dae782dbacaf31118a795d9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
