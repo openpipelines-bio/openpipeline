@@ -3286,7 +3286,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding",
     "viash_version" : "0.9.0",
-    "git_commit" : "a4a0159dbaed719e4bfb904713fb3c209a8a18f8",
+    "git_commit" : "f55d82b36c3c0ed971786c14196d19fe3c993eab",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
