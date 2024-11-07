@@ -3071,7 +3071,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star_to_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "f55d82b36c3c0ed971786c14196d19fe3c993eab",
+    "git_commit" : "aa031e2f96ebd69bc14217159fdf63e1ab370de7",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
