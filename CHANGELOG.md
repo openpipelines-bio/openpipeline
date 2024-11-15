@@ -170,6 +170,8 @@
 
 * `transform/normalize_total` component: pass the `target_sum` argument to `sc.pp.normalize_total()` (PR #823).
 
+* `from_cellranger_multi_to_h5mu`: fix missing `pytest` dependency (PR #897).
+
 ## DOCUMENTATION
 
 * Update authorship of components (PR #835).
