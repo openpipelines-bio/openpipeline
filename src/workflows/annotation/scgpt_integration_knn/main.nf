@@ -3,8 +3,6 @@ workflow run_wf {
     input_ch
 
   main:
-    
-    
     output_ch = input_ch
         // Set aside the output for this workflow to avoid conflicts
         | map {id, state -> 
@@ -152,7 +150,6 @@ workflow run_wf {
                 "output": "output", 
                 "output_files": "output_files" 
             ],
-            auto: [ publish: true ]
             )
         | view {"After sample splitting: $it"}
         // map the integrated query and reference datasets back to the state
@@ -186,7 +183,6 @@ workflow run_wf {
                 "output": "workflow_output"
             ],
             toState: {id, output, state -> ["output": output.output]},
-            auto: [ publish: true ]
             )
     
   emit:
