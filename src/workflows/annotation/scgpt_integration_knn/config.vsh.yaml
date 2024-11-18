@@ -48,7 +48,7 @@ argument_groups:
       - name: "--reference"
         required: true
         type: file
-        description: Reference dataset consisting of the labeled observations to train the classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset(s).
+        description: Reference dataset consisting of observations with cell type labels present in the .obs --reference_obs_batch_label column to train the classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset(s).
         example: reference.h5mu
       - name: "--reference_obs_targets"
         type: string
@@ -127,7 +127,7 @@ argument_groups:
         type: integer
         required: false
         description: |
-          The maximum sequence length of the tokenized data.
+          The maximum sequence length of the tokenized data. Defaults to the number of features if not provided.
 
   - name: "Embedding arguments"
     arguments:
