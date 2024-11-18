@@ -1,4 +1,5 @@
 # openpipelines 2.x.x (Unreleased)
+# openpipelines 2.x.x (Unreleased)
 
 ## BREAKING CHANGES
 
@@ -100,6 +101,7 @@
 * `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
 
 * `annotate/scanvi` component: Added a component to annotate cells using scANVI (PR #833).
+* `annotate/scanvi` component: Added a component to annotate cells using scANVI (PR #833).
 
 * `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
 
@@ -112,6 +114,10 @@
 * `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
 
 * `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
+
+* Added `transform/tfidf` component: normalize ATAC data with TF-IDF (PR #870).
+
+* Added `dimred/lsi` component (PR #552).
 
 * Added `transform/tfidf` component: normalize ATAC data with TF-IDF (PR #870).
 
@@ -167,14 +173,42 @@
 * `convert/from_10xh5_to_h5mu`: add .uns slot to mdata root when metrics file is provided (PR #887).
 
 * Fix ingestion components not working when optional arguments are unset (PR #894).
+* Fix failing tests for `ingestion/cellranger_postprocessing`, `ingestion/conversion` and `multiomics/process_batches` (PR #869).
+
+* `convert/from_10xh5_to_h5mu`: add .uns slot to mdata root when metrics file is provided (PR #887).
+
+* Fix ingestion components not working when optional arguments are unset (PR #894).
 
 * `transform/normalize_total` component: pass the `target_sum` argument to `sc.pp.normalize_total()` (PR #823).
+* `transform/normalize_total` component: pass the `target_sum` argument to `sc.pp.normalize_total()` (PR #823).
 
+* `from_cellranger_multi_to_h5mu`: fix missing `pytest` dependency (PR #897).
 * `from_cellranger_multi_to_h5mu`: fix missing `pytest` dependency (PR #897).
 
 ## DOCUMENTATION
 
 * Update authorship of components (PR #835).
+
+# openpipelines 1.0.3
+
+## BUG FIXES
+
+* `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR # , backported from PR #852).
+
+# openpipelines 1.0.2
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
+  data dtype (dtype) changed as a result of adding more observations after concatenation, causing `TypeError`.
+  One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
+  which is present in another sample; causing the values being filled with `NA` (PR #842, backported from PR #837).
+
+# openpipelines 1.0.1
+
+## BUG FIXES
+
+* Bump viash to `0.8.6` (PR #816, backported from #815). This changes the at-runtime generated nextflow process from an in-memory to an on-disk temporary file, which should cause less issues with Nextflow Fusion.
 
 # openpipelines 1.0.3
 
