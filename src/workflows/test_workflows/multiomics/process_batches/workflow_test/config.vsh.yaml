@@ -38,4 +38,4 @@ runners:
   - type: executable
   - type: nextflow
     directives:
-      labels: ["midmem"]
+      label: ["midmem"]
