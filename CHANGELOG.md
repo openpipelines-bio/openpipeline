@@ -117,13 +117,13 @@
 
 * Added `dimred/lsi` component (PR #552).
 
-* `metadata/copy_obs` component: Added a component to copy an .obs column from a MuData object to another (PR #874).
+* `metadata/duplicate_obs` component: Added a component to make a copy from one .obs field or index to another .obs field within the same MuData object (PR #874, PR #899).
 
 * `annotate/onclass`: component: Added a component to annotate cell types using OnClass (PR #844).
 
 * `annotate/svm` component: Added a component to annotate cell types using support vector machine (SVM) (PR #845).
 
-* `metadata/duplicate_var` component: Added a component to make a copy from one .var field or index to another .var field within the same MuData object (PR #877).
+* `metadata/duplicate_var` component: Added a component to make a copy from one .var field or index to another .var field within the same MuData object (PR #877, PR #899).
 
 * `filter/subset_obsp` component: Added a component to subset an .obsp matrix by column based on the value of an .obs field. The resulting subset is moved to an .obsm field (PR #888).
 
