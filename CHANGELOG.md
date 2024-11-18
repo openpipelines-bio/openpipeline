@@ -117,10 +117,6 @@
 
 * Added `dimred/lsi` component (PR #552).
 
-* Added `transform/tfidf` component: normalize ATAC data with TF-IDF (PR #870).
-
-* Added `dimred/lsi` component (PR #552).
-
 * `metadata/copy_obs` component: Added a component to copy an .obs column from a MuData object to another (PR #874).
 
 * `annotate/onclass`: component: Added a component to annotate cell types using OnClass (PR #844).
