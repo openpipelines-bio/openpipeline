@@ -223,12 +223,12 @@ argument_groups:
 dependencies:
   - name: workflows/integration/scgpt_leiden
     alias: scgpt_leiden_workflow
-  - name: labels_transfer/pynndescent_knn
+  - name: labels_transfer/knn
   - name: dataflow/split_h5mu
   - name: dataflow/concatenate_h5mu
   - name: metadata/add_id
   - name: metadata/copy_obs
-  - name: metadata/copy_var
+  - name: metadata/duplicate_var
 
 resources:
   - type: nextflow_script

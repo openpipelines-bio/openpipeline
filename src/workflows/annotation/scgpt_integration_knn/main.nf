@@ -67,27 +67,29 @@ workflow run_wf {
         )
         // Make sure the .var columns containing the gene names has the same name prior to integration
         // By copying the respective .var columns to the var column "gene_symbols"
-        | copy_var.run(
+        | duplicate_var.run(
             fromState: [
                 "input": "input",
                 "modality": "modality",
                 "input_var_key": "input_var_gene_names"
             ],
             args: [
-                "output_var_key": "gene_symbols"
+                "output_var_key": "gene_symbols",
+                "disable_raise_on_identical_keys": "true"
             ],
             toState: [
                 "input": "output"
             ]
         )
-        | copy_var.run(
+        | duplicate_var.run(
             fromState: [
                 "input": "reference",
                 "modality": "modality",
                 "input_var_key": "reference_var_gene_names"
             ],
             args: [
-                "output_var_key": "gene_symbols"
+                "output_var_key": "gene_symbols",
+                "disable_raise_on_identical_keys": "true"
             ],
             toState: [
                 "reference": "output"
@@ -169,7 +171,7 @@ workflow run_wf {
             }
         | view {"After splitting query: $it"}
         // Perform KNN label transfer from reference to query
-        | pynndescent_knn.run(
+        | knn.run(
             fromState: [
                 "input": "integrated_query",
                 "modality": "modality",
