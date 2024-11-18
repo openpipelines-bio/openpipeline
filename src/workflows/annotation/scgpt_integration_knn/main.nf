@@ -24,17 +24,19 @@ workflow run_wf {
                 "input_id": "query",
                 "obs_output": "dataset",
             ],
-            toState: ["input": "output"])
+            toState: ["input": "output"]
+        )
         // Add 'reference'id to .obs columns of reference dataset
         | add_id.run(
-                fromState:[
-                    "input": "reference",
-                ],
-                args:[
-                    "input_id": "reference",
-                    "obs_output": "dataset"
-                ],
-                toState: ["reference": "output"])
+            fromState:[
+                "input": "reference",
+            ],
+            args:[
+                "input_id": "reference",
+                "obs_output": "dataset"
+            ],
+            toState: ["reference": "output"]
+        )
         // Make sure that query and reference dataset have batch information in the same .obs column
         // By copying the respective .obs columns to the obs column "batch_label"
         | copy_obs.run(
@@ -102,7 +104,7 @@ workflow run_wf {
                 "other_axis_mode": "move"
             ],
             toState: ["input": "output"]
-            )
+        )
         | view {"After concatenation: $it"}
         // Run scgpt integration with leiden clustering
         | scgpt_leiden_workflow.run(
@@ -132,7 +134,7 @@ workflow run_wf {
                 "var_gene_names": "gene_symbols"
             ],
             toState: ["input": "output"]
-            )
+        )
         | view {"After integration: $it"}
         // Split integrated dataset back into a separate reference and query dataset
         | split_h5mu.run(
@@ -150,7 +152,7 @@ workflow run_wf {
                 "output": "output", 
                 "output_files": "output_files" 
             ],
-            )
+        )
         | view {"After sample splitting: $it"}
         // map the integrated query and reference datasets back to the state
         | map {id, state ->
