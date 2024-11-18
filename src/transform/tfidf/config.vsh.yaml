@@ -1,0 +1,105 @@
+name: tfidf
+namespace: "transform"
+description: |
+  Perform TF-IDF normalization of the data (typically, ATAC).
+
+  TF-IDF stands for "term frequency - inverse document frequency". It is a technique from natural language processing analysis.
+  In the context of ATAC data, "terms" are the features (genes) and "documents" are the observations (cells). 
+  TF-IDF normalization is applied to single-cell ATAC-seq data to highlight the importance of specific genomic regions (typically peaks)
+  across different cells while down-weighting regions that are commonly accessible across many cells. 
+authors:
+  - __merge__: /src/authors/vladimir_shitov.yaml
+    roles: [ maintainer ]
+arguments:
+  # input
+  - name: "--input"
+    alternatives: ["-i"]
+    type: file
+    description: Input h5mu file
+    direction: input
+    required: true
+    example: input.h5mu
+
+  - name: "--modality"
+    type: string
+    default: "atac"
+    required: false
+
+  - name: "--input_layer"
+    type: string
+    required: false
+    description: "Input layer to use. By default, X is normalized"
+    
+  # output
+  - name: "--output"
+    alternatives: ["-o"]
+    type: file
+    description: Output h5mu file.
+    direction: output
+    required: true
+  
+  - name: "--output_compression"
+    type: string
+    description: The compression format to be used on the output h5mu object.
+    choices: ["gzip", "lzf"]
+    required: false
+    example: "gzip"
+
+  - name: "--output_layer"
+    type: string
+    description: Output layer to use.
+    default: "tfidf"
+    required: false
+
+  # arguments
+  - name: "--scale_factor"
+    type: integer
+    description: Scale factor to multiply the TF-IDF matrix by.
+    default: 10000
+    min: 1
+
+  - name: "--log_idf"
+    description: Whether to log-transform IDF term.
+    type: boolean
+    default: true
+
+  - name: "--log_tf"
+    description: Whether to log-transform TF term.
+    type: boolean
+    default: true
+
+  - name: "--log_tfidf"
+    description: Whether to log-transform TF*IDF term (False by default). Can only be used when log_tf and log_idf are False.
+    type: boolean
+    default: false
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/cellranger_atac_tiny_bcl/counts/
+engines:
+  - type: docker
+    image: python:3.10-slim-bullseye
+    setup:
+      - type: apt
+        packages: 
+          - libhdf5-dev
+          - procps
+          - pkg-config  # Otherwise h5py installation fails, which is required for scanpy
+          - gcc
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+        packages:
+          - muon~=0.1.5
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [midmem, lowcpu]

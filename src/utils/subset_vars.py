@@ -1,5 +1,5 @@
 def subset_vars(adata, subset_col):
-    """Subset highly variable genes from AnnData object
+    """Subset AnnData object on highly variable genes
     
     Parameters
     ----------
@@ -13,4 +13,7 @@ def subset_vars(adata, subset_col):
     AnnData
         Copy of `adata` with subsetted features
     """
+    if not subset_col in adata.var.columns:
+        raise ValueError(f"Requested to use .var column '{subset_col}' as a selection of genes, but the column is not available.")
+
     return adata[:, adata.var[subset_col]].copy()

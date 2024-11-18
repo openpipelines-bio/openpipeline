@@ -49,7 +49,7 @@ resources:
     path: script.sh
 test_resources:
   - type: bash_script
-    path: run_test.sh
+    path: test.sh
 engines:
   - type: docker
     image: ubuntu:22.04
