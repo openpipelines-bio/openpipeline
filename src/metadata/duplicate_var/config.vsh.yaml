@@ -27,7 +27,7 @@ argument_groups:
     arguments:
       - name: "--disable_raise_on_identical_keys"
         type: boolean_true
-        description: If provided, the function will not raise an error if the --input_var_key is identical to --output_var_key.
+        description: If provided, the function will not raise an error if the --output_var_key already exists in the dataset.
   - name: "MuData Output"
     arguments:
       - name: "--output"

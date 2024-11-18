@@ -39,7 +39,7 @@ logger.info("Read mudata from file")
 mdata = read_h5mu(par['input'])
 adata = mdata.mod[par['modality']]
 
-if not par["input_var_key"] == par["output_var_key"]:
+if not par["output_var_key"] in adata.var:
     if par["input_var_key"]:
         logger.info(f"Copying .var key {par['input_var_key']} to {par['output_var_key']}")
         adata.var[par["output_var_key"]] = adata.var[par["input_var_key"]].copy()
@@ -49,9 +49,9 @@ if not par["input_var_key"] == par["output_var_key"]:
 
 else:
     if par["disable_raise_on_identical_keys"]:
-        logger.warning(f"--input_var_key and --output_var_key are the same: `{par['input_var_key']}`.")
+        logger.warning(f"--output_var_key already exists: `{par['output_var_key']}`. Data can not be duplicated.")
     else:
-        raise ValueError(f"--input_var_key and --output_var_key are the same: `{par['input_var_key']}`.")
+        raise ValueError(f"--output_var_key already exists: `{par['output_var_key']}`. Data can not be duplicated.")
 
 logger.info("Write output to mudata file")
 

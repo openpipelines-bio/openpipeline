@@ -2,10 +2,10 @@ import pandas as pd
 import numpy as np
 import mudata as mu
 import anndata as ad
-import subprocess
 import re
 import sys
 import pytest
+import subprocess
 
 
 @pytest.fixture
@@ -27,15 +27,15 @@ def input_h5mu_path(write_mudata_to_file, input_h5mu):
     return write_mudata_to_file(input_h5mu)
 
 
-def test_copy_var(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
+def test_copy_obs(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
     output_h5mu_path = random_h5mu_path()
 
     args = [
         "--input", input_h5mu_path,
         "--output", output_h5mu_path,
         "--modality", "mod1",
-        "--input_var_key", "Feat",
-        "--output_var_key", "Feat_copy"
+        "--input_obs_key", "Obs",
+        "--output_obs_key", "Obs_copy"
     ]
 
     run_component(args)
@@ -44,10 +44,11 @@ def test_copy_var(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
 
     output_h5mu = mu.read_h5mu(output_h5mu_path)
 
-    assert "Feat_copy" in output_h5mu.mod["mod1"].var, "var key was not copied in mod1"
-    assert "Feat_copy" not in output_h5mu.mod["mod2"].var, "var key should not have been copied in mod2"
-    assert "Feat_copy" not in input_h5mu.mod["mod1"].var, "var key should not have been copied in input file"
-    assert np.all(output_h5mu.mod["mod1"].var["Feat"] == output_h5mu.mod["mod1"].var["Feat_copy"]), "copied var column should be identical to original var column"
+    assert "Obs_copy" in output_h5mu.mod["mod1"].obs, "obs key was not copied in mod1"
+    assert "Obs_copy" not in output_h5mu.mod["mod2"].obs, "obs key should not have been copied in mod2"
+    assert "Obs copy" not in input_h5mu.mod["mod1"].obs, "obs key should not have been copied in input file"
+    assert np.all(output_h5mu.mod["mod1"].obs["Obs"] == output_h5mu.mod["mod1"].obs["Obs_copy"]), "copied obs column should be identical to original obs column"
+
 
 def test_copy_index(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
     output_h5mu_path = random_h5mu_path()
@@ -56,7 +57,7 @@ def test_copy_index(run_component, random_h5mu_path, input_h5mu, input_h5mu_path
         "--input", input_h5mu_path,
         "--output", output_h5mu_path,
         "--modality", "mod1",
-        "--output_var_key", "Index_copy"
+        "--output_obs_key", "Obs_copy"
     ]
 
     run_component(args)
@@ -65,10 +66,11 @@ def test_copy_index(run_component, random_h5mu_path, input_h5mu, input_h5mu_path
 
     output_h5mu = mu.read_h5mu(output_h5mu_path)
 
-    assert "Index_copy" in output_h5mu.mod["mod1"].var, "var index was not copied in mod1"
-    assert "Index_copy" not in output_h5mu.mod["mod2"].var, "var index should not have been copied in mod2"
-    assert "Index_copy" not in input_h5mu.mod["mod1"].var, "var index should not have been copied in input file"
-    assert np.all(output_h5mu.mod["mod1"].var.index == output_h5mu.mod["mod1"].var["Index_copy"]), "copied var index should be identical to original var index"
+    assert "Obs_copy" in output_h5mu.mod["mod1"].obs, "obs key was not copied in mod1"
+    assert "Obs_copy" not in output_h5mu.mod["mod2"].obs, "obs key should not have been copied in mod2"
+    assert "Obs copy" not in input_h5mu.mod["mod1"].obs, "obs key should not have been copied in input file"
+    assert np.all(output_h5mu.mod["mod1"].obs.index == output_h5mu.mod["mod1"].obs["Obs_copy"]), "copied obs column should be identical to original obs index"
+
 
 def test_raise_identical_keys(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
     output_h5mu_path = random_h5mu_path()
@@ -77,14 +79,14 @@ def test_raise_identical_keys(run_component, random_h5mu_path, input_h5mu, input
         "--input", input_h5mu_path,
         "--output", output_h5mu_path,
         "--modality", "mod1",
-        "--input_var_key", "Feat",
-        "--output_var_key", "Feat"
+        "--input_obs_key", "Obs",
+        "--output_obs_key", "Obs"
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
     assert re.search(
-        r'ValueError: --output_var_key already exists: \`Feat\`. Data can not be duplicated.',
+        r'ValueError: --output_obs_key already exists: \`Obs\`. Data can not be duplicated.',
         err.value.stdout.decode('utf-8'))
 
     disable_raise_args = [
@@ -93,8 +95,8 @@ def test_raise_identical_keys(run_component, random_h5mu_path, input_h5mu, input
         "--output", output_h5mu_path,
         "--modality", "mod1",
         "--disable_raise_on_identical_keys",
-        "--input_var_key", "Feat",
-        "--output_var_key", "Feat"
+        "--input_obs_key", "Obs",
+        "--output_obs_key", "Obs"
     ]
 
     run_component(disable_raise_args)
