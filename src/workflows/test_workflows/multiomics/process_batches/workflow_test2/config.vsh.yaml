@@ -37,4 +37,5 @@ engines:
 runners:
   - type: executable
   - type: nextflow
-    label: ["midmem"]
+    directives:
+      label: ["midmem"]
