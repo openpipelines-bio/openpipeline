@@ -76,7 +76,7 @@ workflow run_wf {
                 "other_axis_mode": "move"
             ],
             toState: ["input": "output"]
-            )
+        )
         | view {"After concatenation: $it"}
         // Run scvi integration with leiden clustering
         | scvi_leiden_workflow.run(
@@ -107,7 +107,7 @@ workflow run_wf {
                 "obs_batch": "batch_label"
             ],
             toState: ["input": "output"]
-            )
+        )
         | view {"After integration: $it"}
         // Split integrated dataset back into a separate reference and query dataset
         | split_h5mu.run(
@@ -126,7 +126,7 @@ workflow run_wf {
                 "output_files": "output_files" 
             ],
             auto: [ publish: true ]
-            )
+        )
         | view {"After sample splitting: $it"}
         // map the integrated query and reference datasets back to the state
         | map {id, state ->
@@ -143,7 +143,7 @@ workflow run_wf {
             }
         | view {"After splitting query: $it"}
         // Perform KNN label transfer from integrated reference to integrated query
-        | pynndescent_knn.run(
+        | knn.run(
             fromState: [
                 "input": "integrated_query",
                 "modality": "modality",
@@ -160,7 +160,7 @@ workflow run_wf {
             ],
             toState: {id, output, state -> ["output": output.output]},
             auto: [ publish: true ]
-            )
+        )
 
   emit:
     output_ch

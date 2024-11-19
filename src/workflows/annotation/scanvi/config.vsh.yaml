@@ -164,7 +164,7 @@ argument_groups:
 dependencies:
   - name: workflows/integration/scvi_leiden
     alias: scvi_leiden_workflow
-  - name: labels_transfer/pynndescent_knn
+  - name: labels_transfer/knn
   - name: dataflow/split_h5mu
   - name: dataflow/concatenate_h5mu
   - name: metadata/add_id
