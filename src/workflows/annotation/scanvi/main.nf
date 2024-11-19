@@ -26,7 +26,8 @@ workflow run_wf {
                 "input_id": "query",
                 "obs_output": "dataset",
             ],
-            toState: ["input": "output"])
+            toState: ["input": "output"]
+        )
         // Add 'reference'id to .obs columns of reference dataset
         | add_id.run(
                 fromState:[
@@ -36,7 +37,8 @@ workflow run_wf {
                     "input_id": "reference",
                     "obs_output": "dataset"
                 ],
-                toState: ["reference": "output"])
+                toState: ["reference": "output"]
+        )
         // Make sure that query and reference dataset have batch information in the same .obs column
         // By copying the respective .obs columns to the obs column "batch_label"
         | copy_obs.run(
