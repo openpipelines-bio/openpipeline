@@ -71,8 +71,9 @@ engines:
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
-          - scirpy~=0.12.0
-          - pandas~=2.2.2
+          - scirpy~=0.19.0
+          - pytest # Scirpy has patsy as a dependency and it requires pytest
+          - pandas~=2.2.3
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
