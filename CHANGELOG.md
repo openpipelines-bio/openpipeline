@@ -20,7 +20,7 @@
   
 * `XGBoost`: bump version to `2.0.3` (PR #646).
 
-* Several components: update anndata to `0.10.8` and mudata to `0.2.3` (PR #645). 
+* Several components: update anndata to `0.11.1` and mudata to `0.3.1` (PR #645 and PR #901), and scanpy to `1.10.4` (PR #901). 
 
 * `filter/filter_with_hvg`: this component was deprecated and has now been removed. Use `feature_annotation/highly_variable_features_scanpy` instead (PR #843).
 
@@ -43,6 +43,10 @@
   - Take `.h5mu` format as an input instead of `.h5ad`
 
 * `reference/build_cellranger_arc_reference`: a default value of "output" is now specified for the argument `--genome`, inline with `reference/build_cellranger_reference` component. Additionally, providing a value for `--organism` is no longer required and its default value of `Homo Sapiens` has been removed (PR #864).
+
+## MAJOR CHANGES
+
+* Bump popv to `0.4.2` (PR #901)
 
 ## NEW FUNCTIONALITY
 
@@ -130,6 +134,8 @@
 * `labels_transfer/knn` component: Enable using additional distance functions for KNN classification (PR #830) and allow to perform KNN classification based on a pre-calculated neighborhood graph (PR #890).
 
 ## MINOR CHANGES
+
+* Several components: bump python version (PR #901).
 
 * `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
 

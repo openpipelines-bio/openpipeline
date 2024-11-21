@@ -99,13 +99,15 @@ test_resources:
   - path: /resources_test/pbmc_1k_protein_v3
 engines:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.12-slim
     setup:
       - type: apt
         packages: 
           - procps
       - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+        packages:
+          - scanpy~=1.9.6
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
     __merge__: [/src/base/requirements/python_test_setup.yaml, .]
 
 runners:

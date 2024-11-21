@@ -140,6 +140,7 @@ if par['flavor'] == "seurat_v3" and not par['n_top_features']:
 try:
     out = sc.pp.highly_variable_genes(**hvg_args)
     if par['obs_batch_key'] is not None:
+        out = out.reindex(index=data.var.index, method=None)
         assert (out.index == data.var.index).all(), "Expected output index values to be equivalent to the input index"
 except ValueError as err:
     if str(err) == "cannot specify integer `bins` when input data contains infinity":
