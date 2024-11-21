@@ -18,9 +18,11 @@ argument_groups:
         example: output_dir/
       - name: "--output_h5mu"
         type: file
+        multiple: true
         description: |
           Locations for the output files. Must contain a wildcard (*) character,
           which will be replaced with the sample name.
+        example: "*.h5mu"
         direction: output
         required: true
       - name: "--uns_metrics"
