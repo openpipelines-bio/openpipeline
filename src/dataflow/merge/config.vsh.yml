@@ -37,15 +37,13 @@ test_resources:
 
 engines:
 - type: docker
-  image: python:3.10-slim
+  image: python:3.12-slim
   setup:
     - type: apt
       packages: 
         - procps
     - type: python
       __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
-      packages:
-        - pandas~=2.0.0
   __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 
 runners:

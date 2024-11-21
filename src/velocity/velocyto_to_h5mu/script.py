@@ -1,5 +1,11 @@
+import sys
 import anndata as ad
 import mudata as mu
+import numpy as np
+numpy_module = sys.modules['numpy']
+numpy_module.string_ = np.bytes_
+numpy_module.unicode_ = np.str_
+sys.modules['numpy'] = numpy_module
 
 ## VIASH START
 par = {
