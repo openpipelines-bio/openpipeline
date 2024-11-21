@@ -38,3 +38,4 @@ resources_test
 
 # vscode
 .vscode/launch.json
+.vscode/settings.json
