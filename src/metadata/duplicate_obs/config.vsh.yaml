@@ -21,7 +21,7 @@ argument_groups:
         required: false
       - name: "--input_obs_key"
         type: string
-        description: .obs column to be copied. If no key is provided, the .var index will be copied.
+        description: .obs column to be copied. If no key is provided, the .obs index will be copied.
         required: false
   - name: "Arguments"
     arguments:
