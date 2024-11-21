@@ -1,3 +1,10 @@
+import sys
+import numpy as np
+numpy_module = sys.modules['numpy']
+numpy_module.string_ = np.bytes_
+numpy_module.unicode_ = np.str_
+sys.modules['numpy'] = numpy_module
+
 import subprocess
 import pathlib
 import mudata
@@ -25,7 +32,7 @@ subprocess.run(
         input_h5mu,
         "--output",
         output,
-        "--output_compresion", "gzip"
+        "--output_compression", "gzip"
     ],
     check=True
 )

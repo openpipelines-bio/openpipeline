@@ -3244,7 +3244,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scanpy~=1.9.6"
+            "scanpy~=1.10.4"
           ],
           "upgrade" : true
         },
@@ -3260,10 +3260,8 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata==0.10.8",
-            "mudata~=0.2.4",
-            "pandas!=2.1.2",
-            "numpy<2.0.0"
+            "anndata~=0.11.1",
+            "mudata~=0.3.1"
           ],
           "upgrade" : true
         }
@@ -3300,7 +3298,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.0",
-    "git_commit" : "02909d2d22b5feeda0a310810f1bced96d1f96ea",
+    "git_commit" : "6a53401d937f39388b990c254b326fc762244c11",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

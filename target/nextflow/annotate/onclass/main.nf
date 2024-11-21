@@ -3171,7 +3171,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.8",
+      "image" : "python:3.11",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3179,11 +3179,11 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scikit-learn==0.24.0",
-            "OnClass==1.2",
-            "tensorflow==2.13.1",
-            "obonet==1.1.0",
-            "mudata"
+            "anndata~=0.11.1",
+            "mudata~=0.3.1",
+            "OnClass~=1.3",
+            "tensorflow",
+            "obonet"
           ],
           "upgrade" : true
         }
@@ -3220,7 +3220,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/onclass",
     "viash_version" : "0.9.0",
-    "git_commit" : "02909d2d22b5feeda0a310810f1bced96d1f96ea",
+    "git_commit" : "6a53401d937f39388b990c254b326fc762244c11",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3273,7 +3273,6 @@ import numpy as np
 from OnClass.OnClassModel import OnClassModel
 import obonet
 from typing import Dict, Tuple
-from tqdm import tqdm
 
 
 ## VIASH START

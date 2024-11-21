@@ -495,16 +495,16 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata==0.10.8" "mudata~=0.2.4" "pandas!=2.1.2" "numpy<2.0.0" "scanpy~=1.9.6"
+  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4"
 
 RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
   Rscript -e 'remotes::install_cran(c("testthat", "anndata", "hdf5r"), repos = "https://cran.rstudio.com")'
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component process_10xh5 filter_10xh5"
-LABEL org.opencontainers.image.created="2024-11-20T07:22:59Z"
+LABEL org.opencontainers.image.created="2024-11-21T08:39:45Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="02909d2d22b5feeda0a310810f1bced96d1f96ea"
+LABEL org.opencontainers.image.revision="6a53401d937f39388b990c254b326fc762244c11"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
