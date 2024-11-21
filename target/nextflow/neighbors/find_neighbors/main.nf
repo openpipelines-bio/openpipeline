@@ -3034,30 +3034,6 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--obsm_knn_indices",
-          "description" : "In which .obsm slot to store the indices of the k-nearest neighbors.",
-          "default" : [
-            "knn_indices"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--obsm_knn_distances",
-          "description" : "In which .obsm slot to store the distances of the k-nearest neighbors.",
-          "default" : [
-            "knn_distances"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
         }
       ]
     }
@@ -3202,7 +3178,7 @@ meta = [
           "packages" : [
             "anndata~=0.11.1",
             "mudata~=0.3.1",
-            "scanpy~=1.9.6"
+            "scanpy~=1.10.4"
           ],
           "upgrade" : true
         }
@@ -3239,7 +3215,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors",
     "viash_version" : "0.9.0",
-    "git_commit" : "010fe21e790cdea0f048d9dc1e9aefff10c7cce8",
+    "git_commit" : "3d32f80a3719eb06549ece0f3a72991af2dc0aa2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3306,9 +3282,7 @@ par = {
   'obsp_connectivities': $( if [ ! -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then echo "r'${VIASH_PAR_OBSP_CONNECTIVITIES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'metric': $( if [ ! -z ${VIASH_PAR_METRIC+x} ]; then echo "r'${VIASH_PAR_METRIC//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'num_neighbors': $( if [ ! -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_NUM_NEIGHBORS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int(r'${VIASH_PAR_SEED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'obsm_knn_indices': $( if [ ! -z ${VIASH_PAR_OBSM_KNN_INDICES+x} ]; then echo "r'${VIASH_PAR_OBSM_KNN_INDICES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obsm_knn_distances': $( if [ ! -z ${VIASH_PAR_OBSM_KNN_DISTANCES+x} ]; then echo "r'${VIASH_PAR_OBSM_KNN_DISTANCES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int(r'${VIASH_PAR_SEED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3368,7 +3342,6 @@ neighbors.compute_neighbors(
     metric=par["metric"],
     random_state=par["seed"],
     method="umap",
-    write_knn_indices=True
 )
 
 adata.uns[par["uns_output"]] = {
@@ -3385,8 +3358,6 @@ adata.uns[par["uns_output"]] = {
 
 adata.obsp[par["obsp_distances"]] = neighbors.distances
 adata.obsp[par["obsp_connectivities"]] = neighbors.connectivities
-adata.obsm[par["obsm_knn_indices"]] = neighbors.knn_indices
-adata.obsm[par["obsm_knn_distances"]] = neighbors.knn_distances
 
 
 logger.info("Writing to %s", par["output"])

@@ -2882,24 +2882,6 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--obsm_knn_indices",
-          "description" : "The slot in `.obsm` where the kNN indices are stored.\n",
-          "required" : true,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--obsm_knn_distances",
-          "description" : "The slot in `.obsm` where the kNN distances are stored.\n",
-          "required" : true,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
         }
       ]
     },
@@ -3287,7 +3269,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/densmap",
     "viash_version" : "0.9.0",
-    "git_commit" : "010fe21e790cdea0f048d9dc1e9aefff10c7cce8",
+    "git_commit" : "3d32f80a3719eb06549ece0f3a72991af2dc0aa2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3343,8 +3325,6 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_neighbors': $( if [ ! -z ${VIASH_PAR_UNS_NEIGHBORS+x} ]; then echo "r'${VIASH_PAR_UNS_NEIGHBORS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_pca': $( if [ ! -z ${VIASH_PAR_OBSM_PCA+x} ]; then echo "r'${VIASH_PAR_OBSM_PCA//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obsm_knn_indices': $( if [ ! -z ${VIASH_PAR_OBSM_KNN_INDICES+x} ]; then echo "r'${VIASH_PAR_OBSM_KNN_INDICES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obsm_knn_distances': $( if [ ! -z ${VIASH_PAR_OBSM_KNN_DISTANCES+x} ]; then echo "r'${VIASH_PAR_OBSM_KNN_DISTANCES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3440,10 +3420,6 @@ X_densmap = UMAP(
   dens_lambda=par["lambda"],
   dens_frac=par["fraction"],
   dens_var_shift=par["var_shift"],
-  precomputed_knn=(
-    data.obsm[par["obsm_knn_indices"]],
-    data.obsm[par["obsm_knn_distances"]],
-  )
 ).fit_transform(data.obsm[par["obsm_pca"]])
 
 logger.info(f"Writing densMAP embeddings to .mod[{par['modality']}].obsm[{par['obsm_output']}]")
@@ -3465,8 +3441,6 @@ data.uns['densmap'] = {
     'dens_lambda': par["lambda"],
     'dens_frac': par["fraction"],
     'dens_var_shift': par["var_shift"],
-    'knn_indices_key': par["obsm_knn_indices"],
-    'knn_distances_key': par["obsm_knn_distances"],
   }
 }
 

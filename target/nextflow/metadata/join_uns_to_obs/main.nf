@@ -3055,7 +3055,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/join_uns_to_obs",
     "viash_version" : "0.9.0",
-    "git_commit" : "010fe21e790cdea0f048d9dc1e9aefff10c7cce8",
+    "git_commit" : "3d32f80a3719eb06549ece0f3a72991af2dc0aa2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

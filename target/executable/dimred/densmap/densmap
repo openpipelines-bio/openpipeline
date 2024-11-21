@@ -200,14 +200,6 @@ function ViashHelp {
   echo "        type: string, required parameter"
   echo "        The slot in \`.obsm\` where the PCA results are stored."
   echo ""
-  echo "    --obsm_knn_indices"
-  echo "        type: string, required parameter"
-  echo "        The slot in \`.obsm\` where the kNN indices are stored."
-  echo ""
-  echo "    --obsm_knn_distances"
-  echo "        type: string, required parameter"
-  echo "        The slot in \`.obsm\` where the kNN distances are stored."
-  echo ""
   echo "Outputs:"
   echo "    -o, --output"
   echo "        type: file, required parameter, output, file must exist"
@@ -614,9 +606,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component dimred densmap"
-LABEL org.opencontainers.image.created="2024-11-21T10:01:24Z"
+LABEL org.opencontainers.image.created="2024-11-21T14:56:34Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="010fe21e790cdea0f048d9dc1e9aefff10c7cce8"
+LABEL org.opencontainers.image.revision="3d32f80a3719eb06549ece0f3a72991af2dc0aa2"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -798,28 +790,6 @@ while [[ $# -gt 0 ]]; do
         --obsm_pca=*)
             [ -n "$VIASH_PAR_OBSM_PCA" ] && ViashError Bad arguments for option \'--obsm_pca=*\': \'$VIASH_PAR_OBSM_PCA\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBSM_PCA=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --obsm_knn_indices)
-            [ -n "$VIASH_PAR_OBSM_KNN_INDICES" ] && ViashError Bad arguments for option \'--obsm_knn_indices\': \'$VIASH_PAR_OBSM_KNN_INDICES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBSM_KNN_INDICES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsm_knn_indices. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --obsm_knn_indices=*)
-            [ -n "$VIASH_PAR_OBSM_KNN_INDICES" ] && ViashError Bad arguments for option \'--obsm_knn_indices=*\': \'$VIASH_PAR_OBSM_KNN_INDICES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBSM_KNN_INDICES=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --obsm_knn_distances)
-            [ -n "$VIASH_PAR_OBSM_KNN_DISTANCES" ] && ViashError Bad arguments for option \'--obsm_knn_distances\': \'$VIASH_PAR_OBSM_KNN_DISTANCES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBSM_KNN_DISTANCES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsm_knn_distances. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --obsm_knn_distances=*)
-            [ -n "$VIASH_PAR_OBSM_KNN_DISTANCES" ] && ViashError Bad arguments for option \'--obsm_knn_distances=*\': \'$VIASH_PAR_OBSM_KNN_DISTANCES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBSM_KNN_DISTANCES=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -1158,14 +1128,6 @@ if [ -z ${VIASH_PAR_INPUT+x} ]; then
 fi
 if [ -z ${VIASH_PAR_OBSM_PCA+x} ]; then
   ViashError '--obsm_pca' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_OBSM_KNN_INDICES+x} ]; then
-  ViashError '--obsm_knn_indices' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_OBSM_KNN_DISTANCES+x} ]; then
-  ViashError '--obsm_knn_distances' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
 if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
@@ -1592,8 +1554,6 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'uns_neighbors': $( if [ ! -z ${VIASH_PAR_UNS_NEIGHBORS+x} ]; then echo "r'${VIASH_PAR_UNS_NEIGHBORS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_pca': $( if [ ! -z ${VIASH_PAR_OBSM_PCA+x} ]; then echo "r'${VIASH_PAR_OBSM_PCA//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'obsm_knn_indices': $( if [ ! -z ${VIASH_PAR_OBSM_KNN_INDICES+x} ]; then echo "r'${VIASH_PAR_OBSM_KNN_INDICES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'obsm_knn_distances': $( if [ ! -z ${VIASH_PAR_OBSM_KNN_DISTANCES+x} ]; then echo "r'${VIASH_PAR_OBSM_KNN_DISTANCES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1689,10 +1649,6 @@ X_densmap = UMAP(
   dens_lambda=par["lambda"],
   dens_frac=par["fraction"],
   dens_var_shift=par["var_shift"],
-  precomputed_knn=(
-    data.obsm[par["obsm_knn_indices"]],
-    data.obsm[par["obsm_knn_distances"]],
-  )
 ).fit_transform(data.obsm[par["obsm_pca"]])
 
 logger.info(f"Writing densMAP embeddings to .mod[{par['modality']}].obsm[{par['obsm_output']}]")
@@ -1714,8 +1670,6 @@ data.uns['densmap'] = {
     'dens_lambda': par["lambda"],
     'dens_frac': par["fraction"],
     'dens_var_shift': par["var_shift"],
-    'knn_indices_key': par["obsm_knn_indices"],
-    'knn_distances_key': par["obsm_knn_distances"],
   }
 }
 
