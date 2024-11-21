@@ -139,11 +139,6 @@
 
 * `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
 
-* `neighbors/find_neighbors` component: Modified to include results of KNN in the output file (PR #748).
-  2 new optional arguments added to set .obsm slots to save KNN results into:
-  - `obsm_knn_indices`
-  - `obsm_knn_distances`
-
 * `cellbender_remove_background_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
 
 * Bump scvelo to `0.3.2` (PR #828).
@@ -163,10 +158,6 @@
   - Add `.info.test_resources` to `_viash.yaml` to specify where test resources need to be synced from.
   - `download/sync_test_resources`: Use `.info.test_resources` in `_viash.yaml` to detect where test resources need to be synced from.
   - Update CI to use `project/sync-and-cache` instead of `project/sync-and-cache-s3`.
-
-* `neighbors/find_neighbors`: removed the possibility to save knn outputs to .obsm. `--obsm_knn_indices` and `--obsm_knn_distances` arguments are no longer available (PR #903).
-* `dimred/densmap`: removed the possibility to input custom knn indices and distances. `--obsm_knn_indices` and `--obsm_knn_distances` arguments are no longer available (PR #903).
-
 
 ## BUG FIXES
 
