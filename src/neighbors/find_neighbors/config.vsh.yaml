@@ -93,9 +93,7 @@ engines:
         packages: 
           - procps
       - type: python
-        packages:
-          - scanpy
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
     __merge__: [/src/base/requirements/python_test_setup.yaml, .]
 
 runners:

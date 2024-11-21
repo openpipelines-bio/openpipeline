@@ -164,6 +164,10 @@
   - `download/sync_test_resources`: Use `.info.test_resources` in `_viash.yaml` to detect where test resources need to be synced from.
   - Update CI to use `project/sync-and-cache` instead of `project/sync-and-cache-s3`.
 
+* `neighbors/find_neighbors`: removed the possibility to save knn outputs to .obsm. `--obsm_knn_indices` and `--obsm_knn_distances` arguments are no longer available (PR #903).
+* `dimred/densmap`: removed the possibility to input custom knn indices and distances. `--obsm_knn_indices` and `--obsm_knn_distances` arguments are no longer available (PR #903).
+
+
 ## BUG FIXES
 
 * Fix failing tests for `ingestion/cellranger_postprocessing`, `ingestion/conversion` and `multiomics/process_batches` (PR #869).
