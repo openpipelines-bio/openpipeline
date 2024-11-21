@@ -5,7 +5,7 @@ from mudata import read_h5mu
 par = {
     "input": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "modality": "rna",
-    "disable_raise_on_identical_keys": False,
+    "overwrite_existing_key": False,
     "input_obs_key": None,
     "output_obs_key": "index_copy",
     "output": "output.h5mu",
@@ -53,11 +53,12 @@ if not par["output_obs_key"] in adata.obs:
     duplicate_obs(adata, par["input_obs_key"], par["output_obs_key"])
 
 else:
-    if par["overwrite_existing_key"]:
-        logger.warning(f"--output_obs_key already exists: `{par['output_obs_key']}`. Data in par['output_obs_key'] will be overwritten.")
-        duplicate_obs(adata, par["input_obs_key"], par["output_obs_key"])
-    else:
+    if not par["overwrite_existing_key"]:
         raise ValueError(f"--output_obs_key already exists: `{par['output_obs_key']}`. Data can not be duplicated.")
+
+    logger.warning(f"--output_obs_key already exists: `{par['output_obs_key']}`. Data in par['output_obs_key'] will be overwritten.")
+    duplicate_obs(adata, par["input_obs_key"], par["output_obs_key"])
+
 
 logger.info("Write output to mudata file")
 mdata.write_h5mu(par['output'], compression=par["output_compression"])

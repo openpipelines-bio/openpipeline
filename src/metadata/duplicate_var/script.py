@@ -9,7 +9,7 @@ par = {
     "output_var_key": "index_copy",
     "output": "output.h5mu",
     "output_compression": "gzip",
-    "disable_raise_on_identical_keys": False
+    "overwrite_existing_key": False
 }
 meta = {
     "resources_dir": "src/metadata/copy_var"
@@ -53,11 +53,11 @@ if not par["output_var_key"] in adata.var:
     duplicate_var(adata, par["input_var_key"], par["output_var_key"])
 
 else:
-    if par["overwrite_existing_key"]:
-        logger.warning(f"--output_var_key already exists: `{par['output_var_key']}`. Data in `{par['output_var_key']}` .var column will be overwritten.")
-        duplicate_var(adata, par["input_var_key"], par["output_var_key"])
-    else:
+    if not par["overwrite_existing_key"]:
         raise ValueError(f"--output_var_key already exists: `{par['output_var_key']}`. Data can not be duplicated.")
+
+    logger.warning(f"--output_var_key already exists: `{par['output_var_key']}`. Data in `{par['output_var_key']}` .var column will be overwritten.")
+    duplicate_var(adata, par["input_var_key"], par["output_var_key"])
 
 logger.info("Write output to mudata file")
 

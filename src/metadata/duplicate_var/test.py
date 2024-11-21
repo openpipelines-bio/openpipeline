@@ -70,7 +70,7 @@ def test_copy_index(run_component, random_h5mu_path, input_h5mu, input_h5mu_path
     assert "Index_copy" not in input_h5mu.mod["mod1"].var, "var index should not have been copied in input file"
     assert np.all(output_h5mu.mod["mod1"].var.index == output_h5mu.mod["mod1"].var["Index_copy"]), "copied var index should be identical to original var index"
 
-def test_raise_identical_keys(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
+def test_overwrite_keys(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
     output_h5mu_path = random_h5mu_path()
 
     args = [
