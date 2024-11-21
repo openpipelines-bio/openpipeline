@@ -10,7 +10,7 @@ numpy_module = sys.modules['numpy']
 numpy_module.float_ = numpy.float64
 sys.modules['numpy'] = numpy_module
 
-# Backwards compatibility for scirpy
+# Backwards compatibility for scipy
 import scipy
 scipy_module = sys.modules['scipy']
 scipy_module.sparse._base._spbase.A = property(lambda self: self.toarray())
