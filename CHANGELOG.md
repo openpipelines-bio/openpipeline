@@ -20,7 +20,7 @@
   
 * `XGBoost`: bump version to `2.0.3` (PR #646).
 
-* Several components: update anndata to `0.10.8` and mudata to `0.2.3` (PR #645). 
+* Several components: update anndata to `0.11.1` and mudata to `0.3.1` (PR #645 and PR #901), and scanpy to `1.10.4` (PR #901). 
 
 * `filter/filter_with_hvg`: this component was deprecated and has now been removed. Use `feature_annotation/highly_variable_features_scanpy` instead (PR #843).
 
@@ -43,6 +43,10 @@
   - Take `.h5mu` format as an input instead of `.h5ad`
 
 * `reference/build_cellranger_arc_reference`: a default value of "output" is now specified for the argument `--genome`, inline with `reference/build_cellranger_reference` component. Additionally, providing a value for `--organism` is no longer required and its default value of `Homo Sapiens` has been removed (PR #864).
+
+## MAJOR CHANGES
+
+* Bump popv to `0.4.2` (PR #901)
 
 ## NEW FUNCTIONALITY
 
@@ -117,13 +121,13 @@
 
 * Added `dimred/lsi` component (PR #552).
 
-* `metadata/copy_obs` component: Added a component to copy an .obs column from a MuData object to another (PR #874).
+* `metadata/duplicate_obs` component: Added a component to make a copy from one .obs field or index to another .obs field within the same MuData object (PR #874, PR #899).
 
 * `annotate/onclass`: component: Added a component to annotate cell types using OnClass (PR #844).
 
 * `annotate/svm` component: Added a component to annotate cell types using support vector machine (SVM) (PR #845).
 
-* `metadata/duplicate_var` component: Added a component to make a copy from one .var field or index to another .var field within the same MuData object (PR #877).
+* `metadata/duplicate_var` component: Added a component to make a copy from one .var field or index to another .var field within the same MuData object (PR #877, PR #899).
 
 * `filter/subset_obsp` component: Added a component to subset an .obsp matrix by column based on the value of an .obs field. The resulting subset is moved to an .obsm field (PR #888).
 
@@ -133,6 +137,8 @@
 
 
 ## MINOR CHANGES
+
+* Several components: bump python version (PR #901).
 
 * `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
 
