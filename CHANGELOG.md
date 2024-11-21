@@ -139,11 +139,6 @@
 
 * `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
 
-* `neighbors/find_neighbors` component: Modified to include results of KNN in the output file (PR #748).
-  2 new optional arguments added to set .obsm slots to save KNN results into:
-  - `obsm_knn_indices`
-  - `obsm_knn_distances`
-
 * `cellbender_remove_background_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
 
 * Bump scvelo to `0.3.2` (PR #828).
