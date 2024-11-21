@@ -53,9 +53,9 @@ argument_groups:
 - name: "Arguments"
   arguments:
   - type: "boolean_true"
-    name: "--disable_raise_on_identical_keys"
-    description: "If provided, the function will not raise an error if the --input_var_key\
-      \ is identical to --output_var_key."
+    name: "--overwrite_existing_key"
+    description: "If set to true and the --output_obs_key already exists in the input\
+      \ file, the .obs field will be overwritten."
     info: null
     direction: "input"
 - name: "MuData Output"
@@ -228,7 +228,7 @@ build_info:
   output: "target/executable/metadata/duplicate_var"
   executable: "target/executable/metadata/duplicate_var/duplicate_var"
   viash_version: "0.9.0"
-  git_commit: "6a53401d937f39388b990c254b326fc762244c11"
+  git_commit: "010fe21e790cdea0f048d9dc1e9aefff10c7cce8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

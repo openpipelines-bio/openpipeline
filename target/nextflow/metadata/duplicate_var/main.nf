@@ -2881,8 +2881,8 @@ meta = [
       "arguments" : [
         {
           "type" : "boolean_true",
-          "name" : "--disable_raise_on_identical_keys",
-          "description" : "If provided, the function will not raise an error if the --input_var_key is identical to --output_var_key.",
+          "name" : "--overwrite_existing_key",
+          "description" : "If set to true and the --output_obs_key already exists in the input file, the .obs field will be overwritten.",
           "direction" : "input"
         }
       ]
@@ -3107,7 +3107,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/duplicate_var",
     "viash_version" : "0.9.0",
-    "git_commit" : "6a53401d937f39388b990c254b326fc762244c11",
+    "git_commit" : "010fe21e790cdea0f048d9dc1e9aefff10c7cce8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3160,7 +3160,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_var_key': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_KEY+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_KEY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'disable_raise_on_identical_keys': $( if [ ! -z ${VIASH_PAR_DISABLE_RAISE_ON_IDENTICAL_KEYS+x} ]; then echo "r'${VIASH_PAR_DISABLE_RAISE_ON_IDENTICAL_KEYS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'overwrite_existing_key': $( if [ ! -z ${VIASH_PAR_OVERWRITE_EXISTING_KEY+x} ]; then echo "r'${VIASH_PAR_OVERWRITE_EXISTING_KEY//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_var_key': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_KEY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_KEY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
@@ -3214,19 +3214,25 @@ logger.info("Read mudata from file")
 mdata = read_h5mu(par['input'])
 adata = mdata.mod[par['modality']]
 
-if not par["input_var_key"] == par["output_var_key"]:
-    if par["input_var_key"]:
-        logger.info(f"Copying .var key {par['input_var_key']} to {par['output_var_key']}")
-        adata.var[par["output_var_key"]] = adata.var[par["input_var_key"]].copy()
+
+def duplicate_var(adata, input_key, output_key):
+    if input_key:
+        logger.info(f"Copying .var key {input_key} to {output_key}")
+        adata.var[output_key] = adata.var[input_key].copy()
     else:
-        logger.info(f"Copying .var index to {par['output_var_key']}")
-        adata.var[par["output_var_key"]] = adata.var.index.copy()
+        logger.info(f"Copying .var index to {output_key}")
+        adata.var[output_key] = adata.var.index.copy()
+
+
+if not par["output_var_key"] in adata.var:
+    duplicate_var(adata, par["input_var_key"], par["output_var_key"])
 
 else:
-    if par["disable_raise_on_identical_keys"]:
-        logger.warning(f"--input_var_key and --output_var_key are the same: \\`{par['input_var_key']}\\`.")
-    else:
-        raise ValueError(f"--input_var_key and --output_var_key are the same: \\`{par['input_var_key']}\\`.")
+    if not par["overwrite_existing_key"]:
+        raise ValueError(f"--output_var_key already exists: \\`{par['output_var_key']}\\`. Data can not be duplicated.")
+
+    logger.warning(f"--output_var_key already exists: \\`{par['output_var_key']}\\`. Data in \\`{par['output_var_key']}\\` .var column will be overwritten.")
+    duplicate_var(adata, par["input_var_key"], par["output_var_key"])
 
 logger.info("Write output to mudata file")
 

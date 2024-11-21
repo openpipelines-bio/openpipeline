@@ -4,7 +4,7 @@ modality: "rna"
 # input_var_key: "foo"
 
 # Arguments
-disable_raise_on_identical_keys: false
+overwrite_existing_key: false
 
 # MuData Output
 # output: "$id.$key.output.h5mu"

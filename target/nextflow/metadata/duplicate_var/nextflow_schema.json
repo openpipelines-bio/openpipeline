@@ -30,11 +30,11 @@
     "properties": {
     
         
-                "disable_raise_on_identical_keys": {
+                "overwrite_existing_key": {
                 "type":
                 "boolean",
-                "description": "Type: `boolean_true`, default: `false`. If provided, the function will not raise an error if the --input_var_key is identical to --output_var_key",
-                "help_text": "Type: `boolean_true`, default: `false`. If provided, the function will not raise an error if the --input_var_key is identical to --output_var_key."
+                "description": "Type: `boolean_true`, default: `false`. If set to true and the --output_obs_key already exists in the input file, the ",
+                "help_text": "Type: `boolean_true`, default: `false`. If set to true and the --output_obs_key already exists in the input file, the .obs field will be overwritten."
             ,
                 "default": "False"
             }

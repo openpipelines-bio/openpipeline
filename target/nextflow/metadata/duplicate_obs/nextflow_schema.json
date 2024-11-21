@@ -1,6 +1,6 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
-"title": "copy_obs",
+"title": "duplicate_obs",
 "description": "Make a copy of an existing .obs column to another .obs column.\n",
 "type": "object",
 "definitions": {
@@ -21,6 +21,27 @@
         }
     },
 
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "overwrite_existing_key": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. If set to true and the --output_obs_key already exists in the input file, the ",
+                "help_text": "Type: `boolean_true`, default: `false`. If set to true and the --output_obs_key already exists in the input file, the .obs field will be overwritten."
+            ,
+                "default": "False"
+            }
+    
+
+}
+},
     
     
     "mudata input" : {
@@ -54,8 +75,8 @@
                 "input_obs_key": {
                 "type":
                 "string",
-                "description": "Type: `string`, required. ",
-                "help_text": "Type: `string`, required. .obs column to be copied."
+                "description": "Type: `string`. ",
+                "help_text": "Type: `string`. .obs column to be copied. If no key is provided, the .obs index will be copied."
             
             }
     
@@ -129,6 +150,10 @@
 }
 },
 "allOf": [
+
+    {
+    "$ref": "#/definitions/arguments"
+    },
 
     {
     "$ref": "#/definitions/mudata input"
