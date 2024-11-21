@@ -39,19 +39,25 @@ logger.info("Read mudata from file")
 mdata = read_h5mu(par['input'])
 adata = mdata.mod[par['modality']]
 
-if not par["output_obs_key"] in adata.obs:
-    if par["input_obs_key"]:
-        logger.info(f"Copying .obs key {par['input_obs_key']} to {par['output_obs_key']}")
-        adata.obs[par["output_obs_key"]] = adata.obs[par["input_obs_key"]].copy()
+
+def duplicate_obs(adata, input_key, output_key):
+    if input_key:
+        logger.info(f"Copying .obs key {input_key} to {output_key}")
+        adata.obs[output_key] = adata.obs[input_key].copy()
     else:
-        logger.info(f"Copying .obs index to {par['output_obs_key']}")
-        adata.obs[par["output_obs_key"]] = adata.obs.index.copy()
+        logger.info(f"Copying .obs index to {output_key}")
+        adata.obs[output_key] = adata.obs.index.copy()
+
+     
+if not par["output_obs_key"] in adata.obs:
+    duplicate_obs(adata, par["input_obs_key"], par["output_obs_key"])
 
 else:
-    if par["disable_raise_on_identical_keys"]:
-        logger.warning(f"--output_obs_key already exists: `{par['output_obs_key']}`. Data can not be duplicated.")
+    if par["overwrite_existing_key"]:
+        logger.warning(f"--output_obs_key already exists: `{par['output_obs_key']}`. Data in par['output_obs_key'] will be overwritten.")
+        duplicate_obs(adata, par["input_obs_key"], par["output_obs_key"])
     else:
         raise ValueError(f"--output_obs_key already exists: `{par['output_obs_key']}`. Data can not be duplicated.")
-        
+
 logger.info("Write output to mudata file")
 mdata.write_h5mu(par['output'], compression=par["output_compression"])

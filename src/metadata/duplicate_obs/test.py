@@ -72,7 +72,7 @@ def test_copy_index(run_component, random_h5mu_path, input_h5mu, input_h5mu_path
     assert np.all(output_h5mu.mod["mod1"].obs.index == output_h5mu.mod["mod1"].obs["Obs_copy"]), "copied obs column should be identical to original obs index"
 
 
-def test_raise_identical_keys(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
+def test_overwrite_keys(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
     output_h5mu_path = random_h5mu_path()
 
     args = [
@@ -94,7 +94,7 @@ def test_raise_identical_keys(run_component, random_h5mu_path, input_h5mu, input
         "--input", input_h5mu_path,
         "--output", output_h5mu_path,
         "--modality", "mod1",
-        "--disable_raise_on_identical_keys",
+        "--overwrite_existing_key",
         "--input_obs_key", "Obs",
         "--output_obs_key", "Obs"
     ]

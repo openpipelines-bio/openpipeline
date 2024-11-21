@@ -92,7 +92,7 @@ def test_raise_identical_keys(run_component, random_h5mu_path, input_h5mu, input
         "--input", input_h5mu_path,
         "--output", output_h5mu_path,
         "--modality", "mod1",
-        "--disable_raise_on_identical_keys",
+        "--overwrite_existing_key",
         "--input_var_key", "Feat",
         "--output_var_key", "Feat"
     ]
