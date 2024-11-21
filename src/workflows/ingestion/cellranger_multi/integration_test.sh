@@ -8,6 +8,8 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 # ensure that the command below is run from the root of the repository
 cd "$REPO_ROOT"
 
+export NXF_VER=22.10.3
+
 nextflow \
   run . \
   -main-script src/workflows/ingestion/cellranger_multi/test.nf \
