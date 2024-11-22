@@ -47,6 +47,7 @@ def test_marker_peaks(run_component, request, mudata, tmp_path):
     args = [
         "--input", str(input_path),
         "--output", str(output_path),
+        "--output_marker_peaks", str(tmp_path / "marker_peaks.tsv"),
         "--modality", "atac",
         "--groupby", "leiden"
     ]
@@ -58,6 +59,10 @@ def test_marker_peaks(run_component, request, mudata, tmp_path):
     data_with_markers = md.read(output_path)
 
     assert "rank_genes_groups" in data_with_markers.mod["atac"].uns
+
+    marker_peaks = pd.read_csv(tmp_path / "marker_peaks.tsv", sep="\t")
+    assert marker_peaks.shape[0] > 0
+    assert "pvals_adj" in marker_peaks.columns
 
 
 if __name__ == "__main__":
