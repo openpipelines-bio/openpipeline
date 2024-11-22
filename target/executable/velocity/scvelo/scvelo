@@ -531,13 +531,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scvelo[vi]~=0.3.2" "scipy~=1.14.1" "scanpy~=1.9.8"
+  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scvelo[vi]~=0.3.2" "scipy~=1.14.1" "scanpy~=1.9.8" && \
+  python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component velocity scvelo"
-LABEL org.opencontainers.image.created="2024-11-22T02:52:49Z"
+LABEL org.opencontainers.image.created="2024-11-22T19:39:52Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="407167fba2d63c80ec2ac82b7d349e026e3c30ad"
+LABEL org.opencontainers.image.revision="597349327dfc379dc1b6f45d8b167a4fb7b518b3"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1280,7 +1281,7 @@ numpy_module = sys.modules['numpy']
 numpy_module.float_ = numpy.float64
 sys.modules['numpy'] = numpy_module
 
-# Backwards compatibility for scirpy
+# Backwards compatibility for scipy
 import scipy
 scipy_module = sys.modules['scipy']
 scipy_module.sparse._base._spbase.A = property(lambda self: self.toarray())

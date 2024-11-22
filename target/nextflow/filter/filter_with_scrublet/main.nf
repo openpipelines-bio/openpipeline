@@ -3177,6 +3177,9 @@ meta = [
             "scrublet",
             "annoy==1.16.3"
           ],
+          "script" : [
+            "exec(\\"try:\\\\n  import awkward\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  exit(1)\\")"
+          ],
           "upgrade" : true
         }
       ],
@@ -3198,7 +3201,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.9.0",
-    "git_commit" : "407167fba2d63c80ec2ac82b7d349e026e3c30ad",
+    "git_commit" : "597349327dfc379dc1b6f45d8b167a4fb7b518b3",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

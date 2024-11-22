@@ -112,12 +112,29 @@ jobs:
         config_mod: |
           .version := 'integration_build'
           .engines[.type == 'docker'].target_tag := 'integration_build'
-        src: ${{ matrix.component.dir }}
-        query: "^test_workflows"
-        setup: build
+        query_name: ${{ matrix.component.name }}
+        query_namespace: ${{ matrix.component.namespace }}
 
+    - name: Reset main script after building dependencies
+      run: |
+        git restore --source origin/integration_build -- ${{ matrix.component.main_script }}
+  
+    - name: Build test dependencies containers
+      uses: viash-io/viash-actions/ns-build@v6
+      with:
+        config_mod: |
+          .version := 'integration_build'
+          .engines[.type == 'docker'].target_tag := 'integration_build'
+        query_name: ${{ matrix.component.name }}
+        query_namespace: ${{ matrix.component.namespace }}
+        setup: alwayspullelsebuild
+
+    - name: Remove docker builder cache
+      run: |
+        docker builder prune -a -f 
+    
     - name: Run integration test
-      timeout-minutes: 60
+      timeout-minutes: 120
       run: |
         # todo: replace with viash test command
         export NXF_VER=22.04.5
