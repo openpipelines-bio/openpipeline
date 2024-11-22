@@ -293,9 +293,9 @@ build_info:
   output: "target/nextflow/genetic_demux/scsplit"
   executable: "target/nextflow/genetic_demux/scsplit/main.nf"
   viash_version: "0.9.0"
-  git_commit: "a7f8635c3186491d1365e86038b96c964b539807"
+  git_commit: "f8ab6e27e40b62af0213ecb1fc47585539893c1f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "1.0.0"
+  git_tag: "1.0.0-1-gf8ab6e27e4"
 package_config:
   name: "openpipeline"
   version: "dev"
