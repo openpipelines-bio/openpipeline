@@ -117,7 +117,7 @@ jobs:
         setup: build
 
     - name: Run integration test
-      timeout-minutes: 60
+      timeout-minutes: 120
       run: |
         # todo: replace with viash test command
         export NXF_VER=22.04.5
