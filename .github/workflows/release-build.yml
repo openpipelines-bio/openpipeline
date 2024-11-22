@@ -94,6 +94,16 @@ jobs:
         find ./resources_test/ "${to_not_remove[@]}" -type f -exec rm {} +
         tree ./resources_test/
 
+    - name: Build test dependencies
+      uses: viash-io/viash-actions/ns-build@v6
+      with:
+        config_mod: |
+          .version := '${{ github.event.inputs.version_tag }}'
+          .engines[.type == 'docker'].target_tag := '${{ github.event.inputs.version_tag }}'
+        src: ${{ matrix.component.dir }}
+        query: "^test_workflows"
+        setup: build
+
     - name: Run integration test
       timeout-minutes: 120
       run: |
