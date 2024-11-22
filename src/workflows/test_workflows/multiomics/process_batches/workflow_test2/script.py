@@ -38,8 +38,6 @@ output_prot = output.mod["prot"]
 del output_prot.varm['pca_loadings']
 del output_prot.obsm['X_pca']
 del output_prot.obsm['X_umap']
-del output_prot.obsm['knn_indices']
-del output_prot.obsm['knn_distances']
 assert_annotation_objects_equal(input_prot, output_prot, promote_precision=True)
 
 
@@ -57,8 +55,6 @@ del output_rna.obsm['X_pca']
 del output_rna.varm['pca_loadings']
 del output_rna.obsm['X_umap']
 del output_rna.layers['log_normalized']
-del output_rna.obsm['knn_indices']
-del output_rna.obsm['knn_distances']
 assert_annotation_objects_equal(input_rna, output_rna, promote_precision=True)
 
 
