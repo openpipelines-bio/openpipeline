@@ -3034,30 +3034,6 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--obsm_knn_indices",
-          "description" : "In which .obsm slot to store the indices of the k-nearest neighbors.",
-          "default" : [
-            "knn_indices"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--obsm_knn_distances",
-          "description" : "In which .obsm slot to store the distances of the k-nearest neighbors.",
-          "default" : [
-            "knn_distances"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
         }
       ]
     }
@@ -3185,7 +3161,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.10-slim",
+      "image" : "python:3.12-slim",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3200,11 +3176,9 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata==0.10.8",
-            "mudata~=0.2.4",
-            "pandas!=2.1.2",
-            "numpy<2.0.0",
-            "scanpy~=1.9.6"
+            "anndata~=0.11.1",
+            "mudata~=0.3.1",
+            "scanpy~=1.10.4"
           ],
           "upgrade" : true
         }
@@ -3241,7 +3215,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors",
     "viash_version" : "0.9.0",
-    "git_commit" : "a4163c9e598153af014345b537d1a81f1f7d15c1",
+    "git_commit" : "407167fba2d63c80ec2ac82b7d349e026e3c30ad",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3285,6 +3259,12 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
+import sys
+import numpy as np
+numpy_module = sys.modules['numpy']
+numpy_module.float_ = np.float64
+sys.modules['numpy'] = numpy_module
+
 import mudata as mu
 import scanpy as sc
 import sys
@@ -3302,9 +3282,7 @@ par = {
   'obsp_connectivities': $( if [ ! -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then echo "r'${VIASH_PAR_OBSP_CONNECTIVITIES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'metric': $( if [ ! -z ${VIASH_PAR_METRIC+x} ]; then echo "r'${VIASH_PAR_METRIC//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'num_neighbors': $( if [ ! -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_NUM_NEIGHBORS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int(r'${VIASH_PAR_SEED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'obsm_knn_indices': $( if [ ! -z ${VIASH_PAR_OBSM_KNN_INDICES+x} ]; then echo "r'${VIASH_PAR_OBSM_KNN_INDICES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obsm_knn_distances': $( if [ ! -z ${VIASH_PAR_OBSM_KNN_DISTANCES+x} ]; then echo "r'${VIASH_PAR_OBSM_KNN_DISTANCES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int(r'${VIASH_PAR_SEED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3364,7 +3342,6 @@ neighbors.compute_neighbors(
     metric=par["metric"],
     random_state=par["seed"],
     method="umap",
-    write_knn_indices=True
 )
 
 adata.uns[par["uns_output"]] = {
@@ -3381,8 +3358,6 @@ adata.uns[par["uns_output"]] = {
 
 adata.obsp[par["obsp_distances"]] = neighbors.distances
 adata.obsp[par["obsp_connectivities"]] = neighbors.connectivities
-adata.obsm[par["obsm_knn_indices"]] = neighbors.knn_indices
-adata.obsm[par["obsm_knn_distances"]] = neighbors.knn_distances
 
 
 logger.info("Writing to %s", par["output"])

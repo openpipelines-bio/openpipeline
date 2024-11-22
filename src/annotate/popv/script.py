@@ -18,7 +18,7 @@ except ModuleNotFoundError:
         return False
 
 # where to find the obo files
-cl_obo_folder = "/opt/PopV/ontology/"
+cl_obo_folder = "/opt/PopV/resources/ontology/"
 
 ## VIASH START
 par = {
@@ -70,7 +70,7 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-use_gpu = cuda_is_available() or mps_is_available()
+use_gpu = cuda_is_available()
 logger.info("GPU enabled? %s", use_gpu)
 
 # Helper functions
@@ -173,7 +173,7 @@ def main(par, meta):
             save_path_trained_models=temp_dir,
             # hardcoded values
             cl_obo_folder=cl_obo_folder,
-            use_gpu=use_gpu
+            accelerator='cuda' if use_gpu else None
         )
         method_kwargs = {}
         if 'scanorama' in par['methods']:

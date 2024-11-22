@@ -71,26 +71,6 @@
             }
     
 
-        ,
-                "obsm_knn_indices": {
-                "type":
-                "string",
-                "description": "Type: `string`, required. The slot in `",
-                "help_text": "Type: `string`, required. The slot in `.obsm` where the kNN indices are stored.\n"
-            
-            }
-    
-
-        ,
-                "obsm_knn_distances": {
-                "type":
-                "string",
-                "description": "Type: `string`, required. The slot in `",
-                "help_text": "Type: `string`, required. The slot in `.obsm` where the kNN distances are stored.\n"
-            
-            }
-    
-
 }
 },
     

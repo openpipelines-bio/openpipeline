@@ -3060,7 +3060,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.9-slim",
+      "image" : "python:3.10-slim",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3116,7 +3116,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/velocyto",
     "viash_version" : "0.9.0",
-    "git_commit" : "a4163c9e598153af014345b537d1a81f1f7d15c1",
+    "git_commit" : "407167fba2d63c80ec2ac82b7d349e026e3c30ad",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -564,16 +564,16 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata==0.10.8" "mudata~=0.2.4" "pandas!=2.1.2" "numpy<2.0.0"
+  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1"
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "pynndescent~=0.5.10" "numpy<2"
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component labels_transfer knn"
-LABEL org.opencontainers.image.created="2024-11-21T02:52:25Z"
+LABEL org.opencontainers.image.created="2024-11-22T02:52:51Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a4163c9e598153af014345b537d1a81f1f7d15c1"
+LABEL org.opencontainers.image.revision="407167fba2d63c80ec2ac82b7d349e026e3c30ad"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

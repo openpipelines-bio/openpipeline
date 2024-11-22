@@ -3184,7 +3184,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.9",
+      "image" : "python:3.12",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3192,11 +3192,9 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata==0.10.8",
-            "mudata~=0.2.4",
-            "pandas!=2.1.2",
-            "numpy<2.0.0",
-            "scanpy~=1.9.6",
+            "anndata~=0.11.1",
+            "mudata~=0.3.1",
+            "scanpy~=1.10.4",
             "scikit-misc"
           ],
           "upgrade" : true
@@ -3220,7 +3218,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.9.0",
-    "git_commit" : "a4163c9e598153af014345b537d1a81f1f7d15c1",
+    "git_commit" : "407167fba2d63c80ec2ac82b7d349e026e3c30ad",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3415,6 +3413,7 @@ if par['flavor'] == "seurat_v3" and not par['n_top_features']:
 try:
     out = sc.pp.highly_variable_genes(**hvg_args)
     if par['obs_batch_key'] is not None:
+        out = out.reindex(index=data.var.index, method=None)
         assert (out.index == data.var.index).all(), "Expected output index values to be equivalent to the input index"
 except ValueError as err:
     if str(err) == "cannot specify integer \\`bins\\` when input data contains infinity":

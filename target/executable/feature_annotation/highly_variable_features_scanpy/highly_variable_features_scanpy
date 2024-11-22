@@ -573,16 +573,16 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM python:3.9
+FROM python:3.12
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata==0.10.8" "mudata~=0.2.4" "pandas!=2.1.2" "numpy<2.0.0" "scanpy~=1.9.6" "scikit-misc"
+  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4" "scikit-misc"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component feature_annotation highly_variable_features_scanpy"
-LABEL org.opencontainers.image.created="2024-11-21T02:52:22Z"
+LABEL org.opencontainers.image.created="2024-11-22T02:52:48Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a4163c9e598153af014345b537d1a81f1f7d15c1"
+LABEL org.opencontainers.image.revision="407167fba2d63c80ec2ac82b7d349e026e3c30ad"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1508,6 +1508,7 @@ if par['flavor'] == "seurat_v3" and not par['n_top_features']:
 try:
     out = sc.pp.highly_variable_genes(**hvg_args)
     if par['obs_batch_key'] is not None:
+        out = out.reindex(index=data.var.index, method=None)
         assert (out.index == data.var.index).all(), "Expected output index values to be equivalent to the input index"
 except ValueError as err:
     if str(err) == "cannot specify integer \`bins\` when input data contains infinity":

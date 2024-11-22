@@ -3071,7 +3071,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.10-slim",
+      "image" : "python:3.12-slim",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3086,12 +3086,17 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata==0.10.8",
-            "mudata~=0.2.4",
-            "pandas!=2.1.2",
-            "numpy<2.0.0",
-            "gtfparse",
-            "polars[pyarrow]"
+            "gtfparse"
+          ],
+          "upgrade" : true
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "anndata~=0.11.1",
+            "mudata~=0.3.1",
+            "pyarrow~=18.0.0"
           ],
           "upgrade" : true
         }
@@ -3104,7 +3109,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count_to_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "a4163c9e598153af014345b537d1a81f1f7d15c1",
+    "git_commit" : "407167fba2d63c80ec2ac82b7d349e026e3c30ad",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -3,8 +3,6 @@ input: # please fill in - example: "input.h5mu"
 modality: "rna"
 uns_neighbors: "neighbors"
 obsm_pca: # please fill in - example: "foo"
-obsm_knn_indices: # please fill in - example: "foo"
-obsm_knn_distances: # please fill in - example: "foo"
 
 # Outputs
 # output: "$id.$key.output.h5mu"

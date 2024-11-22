@@ -547,13 +547,13 @@ function ViashDockerfile {
 FROM python:3.11
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.9.6" "anndata==0.10.8" "mudata~=0.2.4" "pandas!=2.1.2" "numpy<2.0.0"
+  pip install --upgrade --no-cache-dir "scanpy~=1.10.4" "anndata~=0.11.1" "mudata~=0.3.1"
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Dorien Roosen, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component feature_annotation score_genes_scanpy"
-LABEL org.opencontainers.image.created="2024-11-21T02:52:23Z"
+LABEL org.opencontainers.image.created="2024-11-22T02:52:49Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a4163c9e598153af014345b537d1a81f1f7d15c1"
+LABEL org.opencontainers.image.revision="407167fba2d63c80ec2ac82b7d349e026e3c30ad"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

@@ -512,13 +512,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata==0.10.8" "mudata~=0.2.4" "pandas!=2.1.2" "numpy<2.0.0" "scanpy~=1.9.6" "leidenalg~=0.10.0"
+  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4" "leidenalg~=0.10.0"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component cluster leiden"
-LABEL org.opencontainers.image.created="2024-11-21T02:52:18Z"
+LABEL org.opencontainers.image.created="2024-11-22T02:52:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a4163c9e598153af014345b537d1a81f1f7d15c1"
+LABEL org.opencontainers.image.revision="407167fba2d63c80ec2ac82b7d349e026e3c30ad"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

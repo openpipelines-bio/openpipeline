@@ -1,4 +1,4 @@
-name: "copy_obs"
+name: "duplicate_obs"
 namespace: "metadata"
 version: "integration_build"
 authors:
@@ -43,12 +43,21 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--input_obs_key"
-    description: ".obs column to be copied."
+    description: ".obs column to be copied. If no key is provided, the .obs index\
+      \ will be copied."
     info: null
-    required: true
+    required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
+- name: "Arguments"
+  arguments:
+  - type: "boolean_true"
+    name: "--overwrite_existing_key"
+    description: "If set to true and the --output_obs_key already exists in the input\
+      \ file, the .obs field will be overwritten."
+    info: null
+    direction: "input"
 - name: "MuData Output"
   arguments:
   - type: "file"
@@ -192,10 +201,8 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "anndata==0.10.8"
-    - "mudata~=0.2.4"
-    - "pandas!=2.1.2"
-    - "numpy<2.0.0"
+    - "anndata~=0.11.1"
+    - "mudata~=0.3.1"
     upgrade: true
   test_setup:
   - type: "docker"
@@ -214,13 +221,13 @@ engines:
   entrypoint: []
   cmd: null
 build_info:
-  config: "src/metadata/copy_obs/config.vsh.yaml"
-  runner: "executable"
+  config: "src/metadata/duplicate_obs/config.vsh.yaml"
+  runner: "nextflow"
   engine: "docker"
-  output: "target/executable/metadata/copy_obs"
-  executable: "target/executable/metadata/copy_obs/copy_obs"
+  output: "target/nextflow/metadata/duplicate_obs"
+  executable: "target/nextflow/metadata/duplicate_obs/main.nf"
   viash_version: "0.9.0"
-  git_commit: "a4163c9e598153af014345b537d1a81f1f7d15c1"
+  git_commit: "407167fba2d63c80ec2ac82b7d349e026e3c30ad"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

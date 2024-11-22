@@ -69,10 +69,6 @@ X_densmap = UMAP(
   dens_lambda=par["lambda"],
   dens_frac=par["fraction"],
   dens_var_shift=par["var_shift"],
-  precomputed_knn=(
-    data.obsm[par["obsm_knn_indices"]],
-    data.obsm[par["obsm_knn_distances"]],
-  )
 ).fit_transform(data.obsm[par["obsm_pca"]])
 
 logger.info(f"Writing densMAP embeddings to .mod[{par['modality']}].obsm[{par['obsm_output']}]")
@@ -94,8 +90,6 @@ data.uns['densmap'] = {
     'dens_lambda': par["lambda"],
     'dens_frac': par["fraction"],
     'dens_var_shift': par["var_shift"],
-    'knn_indices_key': par["obsm_knn_indices"],
-    'knn_distances_key': par["obsm_knn_distances"],
   }
 }
 

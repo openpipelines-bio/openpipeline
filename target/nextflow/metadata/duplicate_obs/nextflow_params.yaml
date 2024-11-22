@@ -1,7 +1,10 @@
 # MuData Input
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-input_obs_key: # please fill in - example: "foo"
+# input_obs_key: "foo"
+
+# Arguments
+overwrite_existing_key: false
 
 # MuData Output
 # output: "$id.$key.output.h5mu"
@@ -11,5 +14,3 @@ output_obs_key: # please fill in - example: "foo"
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-
-# Arguments

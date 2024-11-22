@@ -253,16 +253,6 @@ function ViashHelp {
   echo "        type: integer"
   echo "        default: 0"
   echo "        A random seed."
-  echo ""
-  echo "    --obsm_knn_indices"
-  echo "        type: string"
-  echo "        default: knn_indices"
-  echo "        In which .obsm slot to store the indices of the k-nearest neighbors."
-  echo ""
-  echo "    --obsm_knn_distances"
-  echo "        type: string"
-  echo "        default: knn_distances"
-  echo "        In which .obsm slot to store the distances of the k-nearest neighbors."
 }
 
 # initialise variables
@@ -538,20 +528,20 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM python:3.10-slim
+FROM python:3.12-slim
 ENTRYPOINT []
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y procps && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata==0.10.8" "mudata~=0.2.4" "pandas!=2.1.2" "numpy<2.0.0" "scanpy~=1.9.6"
+  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component neighbors find_neighbors"
-LABEL org.opencontainers.image.created="2024-11-21T02:52:26Z"
+LABEL org.opencontainers.image.created="2024-11-22T02:52:52Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a4163c9e598153af014345b537d1a81f1f7d15c1"
+LABEL org.opencontainers.image.revision="407167fba2d63c80ec2ac82b7d349e026e3c30ad"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -824,28 +814,6 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_SEED=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --obsm_knn_indices)
-            [ -n "$VIASH_PAR_OBSM_KNN_INDICES" ] && ViashError Bad arguments for option \'--obsm_knn_indices\': \'$VIASH_PAR_OBSM_KNN_INDICES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBSM_KNN_INDICES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsm_knn_indices. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --obsm_knn_indices=*)
-            [ -n "$VIASH_PAR_OBSM_KNN_INDICES" ] && ViashError Bad arguments for option \'--obsm_knn_indices=*\': \'$VIASH_PAR_OBSM_KNN_INDICES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBSM_KNN_INDICES=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --obsm_knn_distances)
-            [ -n "$VIASH_PAR_OBSM_KNN_DISTANCES" ] && ViashError Bad arguments for option \'--obsm_knn_distances\': \'$VIASH_PAR_OBSM_KNN_DISTANCES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBSM_KNN_DISTANCES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsm_knn_distances. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --obsm_knn_distances=*)
-            [ -n "$VIASH_PAR_OBSM_KNN_DISTANCES" ] && ViashError Bad arguments for option \'--obsm_knn_distances=*\': \'$VIASH_PAR_OBSM_KNN_DISTANCES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBSM_KNN_DISTANCES=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         ---engine)
             VIASH_ENGINE_ID="$2"
             shift 2
@@ -1070,12 +1038,6 @@ fi
 if [ -z ${VIASH_PAR_SEED+x} ]; then
   VIASH_PAR_SEED="0"
 fi
-if [ -z ${VIASH_PAR_OBSM_KNN_INDICES+x} ]; then
-  VIASH_PAR_OBSM_KNN_INDICES="knn_indices"
-fi
-if [ -z ${VIASH_PAR_OBSM_KNN_DISTANCES+x} ]; then
-  VIASH_PAR_OBSM_KNN_DISTANCES="knn_distances"
-fi
 
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
@@ -1278,6 +1240,12 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
+import sys
+import numpy as np
+numpy_module = sys.modules['numpy']
+numpy_module.float_ = np.float64
+sys.modules['numpy'] = numpy_module
+
 import mudata as mu
 import scanpy as sc
 import sys
@@ -1295,9 +1263,7 @@ par = {
   'obsp_connectivities': $( if [ ! -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then echo "r'${VIASH_PAR_OBSP_CONNECTIVITIES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'metric': $( if [ ! -z ${VIASH_PAR_METRIC+x} ]; then echo "r'${VIASH_PAR_METRIC//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'num_neighbors': $( if [ ! -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_NUM_NEIGHBORS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int(r'${VIASH_PAR_SEED//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'obsm_knn_indices': $( if [ ! -z ${VIASH_PAR_OBSM_KNN_INDICES+x} ]; then echo "r'${VIASH_PAR_OBSM_KNN_INDICES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'obsm_knn_distances': $( if [ ! -z ${VIASH_PAR_OBSM_KNN_DISTANCES+x} ]; then echo "r'${VIASH_PAR_OBSM_KNN_DISTANCES//\'/\'\"\'\"r\'}'"; else echo None; fi )
+  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int(r'${VIASH_PAR_SEED//\'/\'\"\'\"r\'}')"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1357,7 +1323,6 @@ neighbors.compute_neighbors(
     metric=par["metric"],
     random_state=par["seed"],
     method="umap",
-    write_knn_indices=True
 )
 
 adata.uns[par["uns_output"]] = {
@@ -1374,8 +1339,6 @@ adata.uns[par["uns_output"]] = {
 
 adata.obsp[par["obsp_distances"]] = neighbors.distances
 adata.obsp[par["obsp_connectivities"]] = neighbors.connectivities
-adata.obsm[par["obsm_knn_indices"]] = neighbors.knn_indices
-adata.obsm[par["obsm_knn_distances"]] = neighbors.knn_distances
 
 
 logger.info("Writing to %s", par["output"])

@@ -70,7 +70,7 @@ def test_copy_index(run_component, random_h5mu_path, input_h5mu, input_h5mu_path
     assert "Index_copy" not in input_h5mu.mod["mod1"].var, "var index should not have been copied in input file"
     assert np.all(output_h5mu.mod["mod1"].var.index == output_h5mu.mod["mod1"].var["Index_copy"]), "copied var index should be identical to original var index"
 
-def test_raise_identical_keys(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
+def test_overwrite_keys(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
     output_h5mu_path = random_h5mu_path()
 
     args = [
@@ -84,7 +84,7 @@ def test_raise_identical_keys(run_component, random_h5mu_path, input_h5mu, input
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
     assert re.search(
-        r'ValueError: --input_var_key and --output_var_key are the same: \`Feat\`.',
+        r'ValueError: --output_var_key already exists: \`Feat\`. Data can not be duplicated.',
         err.value.stdout.decode('utf-8'))
 
     disable_raise_args = [
@@ -92,7 +92,7 @@ def test_raise_identical_keys(run_component, random_h5mu_path, input_h5mu, input
         "--input", input_h5mu_path,
         "--output", output_h5mu_path,
         "--modality", "mod1",
-        "--disable_raise_on_identical_keys",
+        "--overwrite_existing_key",
         "--input_var_key", "Feat",
         "--output_var_key", "Feat"
     ]

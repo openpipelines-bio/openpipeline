@@ -3158,7 +3158,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.9-slim",
+      "image" : "python:3.12-slim",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3173,10 +3173,8 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata==0.10.8",
-            "mudata~=0.2.4",
-            "pandas!=2.1.2",
-            "numpy<2.0.0"
+            "anndata~=0.11.1",
+            "mudata~=0.3.1"
           ],
           "upgrade" : true
         }
@@ -3199,7 +3197,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts",
     "viash_version" : "0.9.0",
-    "git_commit" : "a4163c9e598153af014345b537d1a81f1f7d15c1",
+    "git_commit" : "407167fba2d63c80ec2ac82b7d349e026e3c30ad",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
