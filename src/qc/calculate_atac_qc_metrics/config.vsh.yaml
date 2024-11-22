@@ -110,7 +110,7 @@ engines:
           - pysam~=0.22.0
     test_setup:
       - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, /src/base/requirements/scanpy.yaml, .]
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
 runners:
   - type: executable
   - type: nextflow
