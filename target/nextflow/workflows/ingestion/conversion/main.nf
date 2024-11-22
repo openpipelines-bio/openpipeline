@@ -2978,6 +2978,15 @@ meta = [
       "dest" : "openpipelinetestutils"
     }
   ],
+  "info" : {
+    "name" : "Convert to MuData",
+    "test_dependencies" : [
+      {
+        "name" : "conversion_test",
+        "namespace" : "test_workflows/ingestion"
+      }
+    ]
+  },
   "status" : "enabled",
   "dependencies" : [
     {
@@ -3087,7 +3096,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/conversion",
     "viash_version" : "0.9.0",
-    "git_commit" : "597349327dfc379dc1b6f45d8b167a4fb7b518b3",
+    "git_commit" : "dd14bcaf17f674a30a7ec1397eaf6e420b2e4c3a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
