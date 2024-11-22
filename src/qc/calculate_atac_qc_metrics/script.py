@@ -42,8 +42,6 @@ def main():
     logger.info("Reading input data")
     mdata = mu.read(par["input"])
 
-    logger.debug("Making var names unique")
-    mdata.var_names_make_unique()
     atac = mdata.mod[par["modality"]]
 
     logger.info("Checking if QC columns are already calculated")
