@@ -6,7 +6,7 @@ import pandas as pd
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "output": "foo.h5mu",
-    "output_df": "marker_peaks.tsv",
+    "output_marker_peaks": "marker_peaks.tsv",
     "output_compression": "gzip",
     "modality": "atac",
     "groupby": "leiden",

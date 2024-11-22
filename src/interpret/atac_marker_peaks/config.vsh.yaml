@@ -32,7 +32,7 @@ argument_groups:
         choices: ["gzip", "lzf"]
         required: false
         example: "gzip"
-      - name: "--output_df"
+      - name: "--output_marker_peaks"
         type: file
         description: Output tsv file with marker peaks.
         direction: output
