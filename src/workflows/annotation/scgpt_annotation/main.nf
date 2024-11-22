@@ -64,8 +64,8 @@ workflow run_wf {
         ],
         toState: ["input": "output"]
     )
+    // Padding and tokenization of gene count values.
     | pad_tokenize.run(
-      // Padding and tokenization of gene count values.
         fromState: [
           "input": "input",
           "modality": "modality",
@@ -84,7 +84,7 @@ workflow run_wf {
         ],
         toState: ["input": "output"]
     )
-    // Padding and tokenization of gene count values.
+    // scGPT decoder-based cell type annotation.
     | scgpt_celltype_annotation.run(
         fromState: [
           "model": "model",
@@ -110,8 +110,7 @@ workflow run_wf {
           "obsm_gene_tokens": "gene_id_tokens",
           "obsm_tokenized_values": "values_tokenized"
         ],
-        toState: {id, output, state -> ["output": output.output]},
-        auto: [ publish: true]
+        toState: {id, output, state -> ["output": output.output]}
     )
 
   emit:
