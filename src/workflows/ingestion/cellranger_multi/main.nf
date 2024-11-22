@@ -62,7 +62,6 @@ workflow run_wf {
       fromState: {id, state ->
         [
           "input": state.input,
-          "output": '*.$id.$key.h5mu',
           "uns_metrics": state.uns_metrics,
           "output_compression": "gzip"
         ]
