@@ -3218,6 +3218,9 @@ meta = [
             "jaxlib<0.4.23",
             "jax<0.4.23"
           ],
+          "script" : [
+            "exec(\\"try:\\\\n  import awkward\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  exit(1)\\")"
+          ],
           "upgrade" : true
         }
       ],
@@ -3239,7 +3242,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi",
     "viash_version" : "0.9.0",
-    "git_commit" : "3d32f80a3719eb06549ece0f3a72991af2dc0aa2",
+    "git_commit" : "bf5152a910d67ba8907600bb94c30804b9448015",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

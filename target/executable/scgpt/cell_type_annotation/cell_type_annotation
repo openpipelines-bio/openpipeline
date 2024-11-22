@@ -563,16 +563,17 @@ function ViashDockerfile {
 FROM nvcr.io/nvidia/pytorch:23.09-py3
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4"
+  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4" && \
+  python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scgpt==0.2.1"
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt cell_type_annotation"
-LABEL org.opencontainers.image.created="2024-11-21T14:56:37Z"
+LABEL org.opencontainers.image.created="2024-11-22T08:25:40Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3d32f80a3719eb06549ece0f3a72991af2dc0aa2"
+LABEL org.opencontainers.image.revision="bf5152a910d67ba8907600bb94c30804b9448015"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
