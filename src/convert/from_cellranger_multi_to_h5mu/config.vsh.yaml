@@ -63,7 +63,7 @@ test_resources:
   - path: /resources_test/10x_5k_fixed
 engines:
   - type: docker
-    image: python:3.11-slim
+    image: python:3.12-slim
     setup:
       - type: apt
         packages: 
@@ -71,9 +71,14 @@ engines:
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
-          - scirpy~=0.19.0
-          - pytest # Scirpy has patsy as a dependency and it requires pytest
+          # Starting from version 13, scirpy started using awkward arrays
+          # https://scirpy.scverse.org/en/latest/changelog.html#v0-13-0-new-data-structure-based-on-awkward-arrays
+          # But awkward arrays are still considered experimental by anndata:
+          # https://anndata.readthedocs.io/en/latest/tutorials/notebooks/awkward-arrays.html
+          # Officially, scirpy supports numpy 2.0 from version 17 onwards, but pinning <13 seems to work.
+          - scirpy~=0.12.0
           - pandas~=2.2.3
+          - pytest # Scirpy has patsy as a dependency and it requires pytest
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
