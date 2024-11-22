@@ -1,9 +1,23 @@
 import sys
-import scvelo
 import mudata
 from contextlib import redirect_stdout
 from pathlib import Path
 import matplotlib as mpl
+
+# Backwards compatibility for numpy 2.0
+import numpy
+numpy_module = sys.modules['numpy']
+numpy_module.float_ = numpy.float64
+sys.modules['numpy'] = numpy_module
+
+# Backwards compatibility for scipy
+import scipy
+scipy_module = sys.modules['scipy']
+scipy_module.sparse._base._spbase.A = property(lambda self: self.toarray())
+
+sys.modules['scipy'] = scipy_module
+
+import scvelo
 
 ## VIASH START
 from collections import defaultdict

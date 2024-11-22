@@ -7,7 +7,6 @@ import numpy as np
 from OnClass.OnClassModel import OnClassModel
 import obonet
 from typing import Dict, Tuple
-from tqdm import tqdm
 
 
 ## VIASH START

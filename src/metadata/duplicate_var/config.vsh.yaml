@@ -25,9 +25,9 @@ argument_groups:
         required: false
   - name: "Arguments"
     arguments:
-      - name: "--disable_raise_on_identical_keys"
+      - name: "--overwrite_existing_key"
         type: boolean_true
-        description: If provided, the function will not raise an error if the --input_var_key is identical to --output_var_key.
+        description: If set to true and the --output_obs_key already exists in the input file, the .obs field will be overwritten.
   - name: "MuData Output"
     arguments:
       - name: "--output"
