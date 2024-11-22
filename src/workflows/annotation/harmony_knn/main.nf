@@ -4,7 +4,6 @@ workflow run_wf {
 
   main:
     
-    
     output_ch = input_ch
         // Set aside the output for this workflow to avoid conflicts
         | map {id, state -> 
@@ -26,7 +25,8 @@ workflow run_wf {
                 "input_id": "query",
                 "obs_output": "dataset",
             ],
-            toState: ["input": "output"])
+            toState: ["input": "output"]
+        )
         // Add 'reference'id to .obs columns of reference dataset
         | add_id.run(
                 fromState:[
@@ -36,14 +36,16 @@ workflow run_wf {
                     "input_id": "reference",
                     "obs_output": "dataset"
                 ],
-                toState: ["reference": "output"])
+                toState: ["reference": "output"]
+        )
         // Make sure that query and reference dataset have batch information in the same .obs column
         // By copying the respective .obs columns to the obs column "batch_label"
-        | copy_obs.run(
+        | duplicate_obs.run(
             fromState: [
                 "input": "input",
                 "modality": "modality",
                 "input_obs_key": "input_obs_batch_label",
+                "overwrite_existing_key": "overwrite_existing_key"
             ],
             args: [
                 "output_obs_key": "batch_label"
@@ -52,11 +54,12 @@ workflow run_wf {
                 "input": "output"
             ]
         )
-        | copy_obs.run(
+        | duplicate_obs.run(
             fromState: [
                 "input": "reference",
                 "modality": "modality",
                 "input_obs_key": "reference_obs_batch_label",
+                "overwrite_existing_key": "overwrite_existing_key"
             ],
             args: [
                 "output_obs_key": "batch_label"
@@ -76,7 +79,7 @@ workflow run_wf {
                 "other_axis_mode": "move"
             ],
             toState: ["input": "output"]
-            )
+        )
         | view {"After concatenation: $it"}
         // Run harmony integration with leiden clustering
         | harmony_leiden_workflow.run(
@@ -99,7 +102,7 @@ workflow run_wf {
                 "obs_covariates": "batch_label"
             ],
             toState: ["input": "output"]
-            )
+        )
         | view {"After integration: $it"}
         // Split integrated dataset back into a separate reference and query dataset
         | split_h5mu.run(
@@ -118,7 +121,7 @@ workflow run_wf {
                 "output_files": "output_files" 
             ],
             auto: [ publish: true ]
-            )
+        )
         | view {"After sample splitting: $it"}
         // map the integrated query and reference datasets back to the state
         | map {id, state ->
@@ -132,10 +135,10 @@ workflow run_wf {
             def integrated_reference = outputDir.resolve(reference_file.filename)
             def newKeys = ["integrated_query": integrated_query, "integrated_reference": integrated_reference]
             [id, state + newKeys]
-            }
+        }
         | view {"After splitting query: $it"}
         // Perform KNN label transfer from integrated reference to integrated query
-        | pynndescent_knn.run(
+        | knn.run(
             fromState: [
                 "input": "integrated_query",
                 "modality": "modality",
@@ -151,8 +154,7 @@ workflow run_wf {
                 "output": "workflow_output"
             ],
             toState: {id, output, state -> ["output": output.output]},
-            auto: [ publish: true ]
-            )
+        )
     
   emit:
     output_ch

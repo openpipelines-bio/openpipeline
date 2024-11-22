@@ -34,6 +34,9 @@ argument_groups:
         description: "The .obs field in the input (query) dataset containing the batch labels."
         example: "sample"
         required: true
+      - name: "--overwrite_existing_key"
+        type: boolean_true
+        description: If provided, will overwrite existing fields in the input dataset when data are copied during the reference alignment process.
 
   - name: Reference input
     arguments:
@@ -132,11 +135,11 @@ argument_groups:
 dependencies:
   - name: workflows/integration/harmony_leiden
     alias: harmony_leiden_workflow
-  - name: labels_transfer/pynndescent_knn
+  - name: labels_transfer/knn
   - name: dataflow/split_h5mu
   - name: dataflow/concatenate_h5mu
   - name: metadata/add_id
-  - name: metadata/copy_obs
+  - name: metadata/duplicate_obs
 
 resources:
   - type: nextflow_script
