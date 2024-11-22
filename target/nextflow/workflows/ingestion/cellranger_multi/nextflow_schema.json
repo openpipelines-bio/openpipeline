@@ -44,10 +44,10 @@
                 "output_h5mu": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, default: `$id.$key.output_h5mu_*.h5mu`, example: `*.h5mu`, multiple_sep: `\";\"`. Locations for the output files",
-                "help_text": "Type: List of `file`, required, default: `$id.$key.output_h5mu_*.h5mu`, example: `*.h5mu`, multiple_sep: `\";\"`. Locations for the output files. Must contain a wildcard (*) character,\nwhich will be replaced with the sample name.\n"
+                "description": "Type: `file`, required, default: `$id.$key.output_h5mu.h5mu`, example: `*.h5mu`. Locations for the output files",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_h5mu.h5mu`, example: `*.h5mu`. Locations for the output files. Must contain a wildcard (*) character,\nwhich will be replaced with the sample name.\n"
             ,
-                "default": "$id.$key.output_h5mu_*.h5mu"
+                "default": "$id.$key.output_h5mu.h5mu"
             }
     
 

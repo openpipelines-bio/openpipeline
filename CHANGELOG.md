@@ -2,7 +2,7 @@
 
 ## BREAKING CHANGES
 
-* Added cell multiplexing support to the `from_cellranger_multi_to_h5mu` component and the `cellranger_multi` workflow. These components now output multiple .h5mu files. The `output` and `output_h5mu` arguments respectively now require a value containing a wildcard character `*`, which will be replaced by the sample ID to form the final output file names . Additionally, a `sample_csv` argument is added to the `from_cellragner_multi_to_h5mu` component which describes the sample name per output file (PR #803).
+* Added cell multiplexing support to the `from_cellranger_multi_to_h5mu` component and the `cellranger_multi` workflow. For the `from_cellranger_multi_to_h5mu` component, the `output` argument now requires a value containing a wildcard character `*`, which will be replaced by the sample ID to form the final output file names. Additionally, a `sample_csv` argument is added to the `from_cellragner_multi_to_h5mu` component which describes the sample name per output file. No change is required for the `output_h5mu` argument from the `cellranger_multi` workflow, the workflow will just emit multiple events in case of a multiplexed run, one for each sample. The id of the events (and default output file names) are set by `--sample_ids` (in case of cell multiplexing), or (as before) by the user provided `id` for the input (PR #803 and PR #902).
 
 * `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
 

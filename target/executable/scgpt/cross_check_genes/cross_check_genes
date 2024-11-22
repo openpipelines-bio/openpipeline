@@ -505,9 +505,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Dorien Roosen, Elizabeth Mlynarski, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt cross_check_genes"
-LABEL org.opencontainers.image.created="2024-11-22T08:25:41Z"
+LABEL org.opencontainers.image.created="2024-11-22T09:59:31Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bf5152a910d67ba8907600bb94c30804b9448015"
+LABEL org.opencontainers.image.revision="a061618772a5e1de1a9bfcf443434fe3bef4a8c9"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

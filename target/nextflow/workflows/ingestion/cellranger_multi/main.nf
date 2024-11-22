@@ -3506,7 +3506,7 @@ meta = [
           "create_parent" : true,
           "required" : true,
           "direction" : "output",
-          "multiple" : true,
+          "multiple" : false,
           "multiple_sep" : ";"
         },
         {
@@ -3682,7 +3682,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi",
     "viash_version" : "0.9.0",
-    "git_commit" : "bf5152a910d67ba8907600bb94c30804b9448015",
+    "git_commit" : "a061618772a5e1de1a9bfcf443434fe3bef4a8c9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3788,7 +3788,6 @@ workflow run_wf {
       fromState: {id, state ->
         [
           "input": state.input,
-          "output": state.output_h5mu,
           "uns_metrics": state.uns_metrics,
           "output_compression": "gzip"
         ]
