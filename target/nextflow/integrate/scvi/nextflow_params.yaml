@@ -10,8 +10,8 @@ obs_batch: "sample_id"
 # obs_continuous_covariate: ["foo"]
 
 # Outputs
-# output: "$id.$key.output.output"
-# output_model: "$id.$key.output_model.output_model"
+# output: "$id.$key.output"
+# output_model: "$id.$key.output_model"
 # output_compression: "gzip"
 obsm_output: "X_scvi_integrated"
 
@@ -40,7 +40,7 @@ early_stopping_min_delta: 0.0
 # max_epochs: 123
 reduce_lr_on_plateau: true
 lr_factor: 0.6
-lr_patience: 30
+lr_patience: 30.0
 
 # Data validition
 n_obs_min_count: 0
@@ -49,3 +49,5 @@ n_var_min_count: 0
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

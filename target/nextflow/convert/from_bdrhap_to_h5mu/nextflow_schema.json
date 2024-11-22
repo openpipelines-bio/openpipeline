@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
 "title": "from_bdrhap_to_h5mu",
-"description": "Convert the output of a BD Rhapsody WTA pipeline to a MuData h5 file.\n",
+"description": "Convert the output of a BD Rhapsody pipeline v2.x to a MuData h5 file.\n",
 "type": "object",
 "definitions": {
 
@@ -43,8 +43,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `input_dir/`. The output of a BD Rhapsody workflow",
-                "help_text": "Type: `file`, required, example: `input_dir/`. The output of a BD Rhapsody workflow."
+                "description": "Type: `file`, required, example: `sample.h5mu`. The output h5mu of a BD Rhapsody workflow",
+                "help_text": "Type: `file`, required, example: `sample.h5mu`. The output h5mu of a BD Rhapsody workflow."
             
             }
     

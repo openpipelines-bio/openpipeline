@@ -54,8 +54,8 @@
                 "obs_filter": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\":\"`. Which ",
-                "help_text": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\":\"`. Which .obs columns to use to filter the observations by."
+                "description": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\";\"`. Which ",
+                "help_text": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\";\"`. Which .obs columns to use to filter the observations by."
             
             }
     
@@ -64,8 +64,8 @@
                 "var_filter": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\":\"`. Which ",
-                "help_text": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\":\"`. Which .var columns to use to filter the observations by."
+                "description": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\";\"`. Which ",
+                "help_text": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\";\"`. Which .var columns to use to filter the observations by."
             
             }
     

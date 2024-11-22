@@ -1,27 +1,24 @@
-import sys
-import warnings
-
-import mudata
+import mudata as mu
 import numpy as np
-import scanpy as sc
-from scipy.sparse import issparse
-import pynndescent
-import numba
-
+import sys
+from pynndescent import PyNNDescentTransformer
+from sklearn.neighbors import KNeighborsClassifier
 
 ## VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
-    "input_obsm_features": "X_integrated_scanvi",
-    "reference": "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad",
-    "reference_obsm_features": "X_integrated_scanvi",
-    "reference_obs_targets": ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"],
-    "output": "foo.h5mu",
+    "input_obsm_features": None,
+    "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
+    "reference_obsm_features": None,
+    "reference_obs_targets": ["cell_type"],
+    "output": "foo_distance.h5mu",
     "output_obs_predictions": None,
-    "output_obs_uncertainty": None,
+    "output_obs_probability": None,
     "output_uns_parameters": "labels_transfer",
-    "n_neighbors": 1
+    "output_compression": None,
+    "weights": "distance",
+    "n_neighbors": 15
 }
 meta = {
     "resources_dir": "src/labels_transfer/utils"
@@ -30,9 +27,8 @@ meta = {
 
 sys.path.append(meta["resources_dir"])
 from helper import check_arguments, get_reference_features, get_query_features
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
+
+
 def setup_logger():
     import logging
     from sys import stdout
@@ -47,89 +43,107 @@ def setup_logger():
     return logger
 # END TEMPORARY WORKAROUND setup_logger
 
-@numba.njit
-def weighted_prediction(weights, ref_cats):
-    """Get highest weight category."""
-    N = len(weights)
-    predictions = np.zeros((N,), dtype=ref_cats.dtype)
-    uncertainty = np.zeros((N,))
-    for i in range(N):
-        obs_weights = weights[i]
-        obs_cats = ref_cats[i]
-        best_prob = 0
-        for c in np.unique(obs_cats):
-            cand_prob = np.sum(obs_weights[obs_cats == c])
-            if cand_prob > best_prob:
-                best_prob = cand_prob
-                predictions[i] = c
-                uncertainty[i] = max(1 - best_prob, 0)
-
-    return predictions, uncertainty
 
 def distances_to_affinities(distances):
+    # Apply Gaussian kernel to distances
     stds = np.std(distances, axis=1)
     stds = (2.0 / stds) ** 2
     stds = stds.reshape(-1, 1)
     distances_tilda = np.exp(-np.true_divide(distances, stds))
 
-    return distances_tilda / np.sum(distances_tilda, axis=1, keepdims=True)
+    # normalize the distances_tilda
+    # if the sum of a row of the distances tilda equals 0,
+    # set normalized distances for that row to 1
+    # else divide the row values by the value of the sum of the row
+    distances_tilda_normalized = np.where(
+        np.sum(distances_tilda, axis=1, keepdims=True) == 0,
+        1,
+        distances_tilda / np.sum(distances_tilda, axis=1, keepdims=True)
+    )
+    return distances_tilda_normalized
 
-def main(par):
-    logger = setup_logger()
 
-    logger.info("Checking arguments")
-    par = check_arguments(par)
+logger = setup_logger()
 
-    logger.info("Reading input (query) data")
-    mdata = mudata.read(par["input"])
-    adata = mdata.mod[par["modality"]]
+# Reading in data
+logger.info(f"Reading in query dataset {par['input']} and reference datasets {par['reference']}")
+q_mdata = mu.read_h5mu(par["input"])
+q_adata = q_mdata.mod[par["modality"]]
 
-    logger.info("Reading reference data")
-    adata_reference = sc.read(par["reference"], backup_url=par["reference"])
+r_mdata = mu.read_h5mu(par["reference"])
+r_adata = r_mdata.mod[par["modality"]]
 
-    # fetch feature data
-    train_data = get_reference_features(adata_reference, par, logger)
-    query_data = get_query_features(adata, par, logger)
+# check arguments
+logger.info("Checking arguments")
+par = check_arguments(par)
 
-    # pynndescent does not support sparse matrices
-    if issparse(train_data):
-        warnings.warn("Converting sparse matrix to dense. This may consume a lot of memory.")
-        train_data = train_data.toarray()
+if par["input_obsm_distances"] and par["reference_obsm_distances"]:
+    logger.info("Using pre-calculated distances for KNN classification as provided in `--input_obsm_distances` and `--reference_obsm_distances`.")
 
-    logger.debug(f"Shape of train data: {train_data.shape}")
+    assert par["input_obsm_distances"] in q_adata.obsm, f"Make sure --input_obsm_distances {par['input_obsm_distances']} is a valid .obsm key. Found: {q_adata.obsm.keys()}."
+    assert par["reference_obsm_distances"] in r_adata.obsm, f"Make sure --reference_obsm_distances {par['reference_obsm_distances']} is a valid .obsm key. Found: {r_adata.obsm.keys()}."
 
-    logger.info("Building NN index")
-    ref_nn_index = pynndescent.NNDescent(train_data, n_neighbors=par["n_neighbors"])
-    ref_nn_index.prepare()
+    query_neighbors = q_adata.obsm[par["input_obsm_distances"]]
+    reference_neighbors = r_adata.obsm[par["reference_obsm_distances"]]
 
-    ref_neighbors, ref_distances = ref_nn_index.query(query_data, k=par["n_neighbors"])
+    if query_neighbors.shape[1] != reference_neighbors.shape[1]:
+        raise ValueError("The number of neighbors in the query and reference distance matrices do not match. Make sure both distance matrices contain distances to the reference dataset.")
 
-    weights = distances_to_affinities(ref_distances)
+    # Make sure the number of neighbors present in the distance matrix matches the requested number of neighbors in --n_neighbors
+    # Otherwise reduce n_neighbors for KNN
+    smallest_neighbor_count = min(
+        np.diff(query_neighbors.indptr).min(),
+        np.diff(reference_neighbors.indptr).min()
+    )
+    if smallest_neighbor_count < par["n_neighbors"]:
+        logger.warning(f"The number of neighbors in the distance matrices is smaller than the requested number of neighbors in --n_neighbors. Reducing n_neighbors to {smallest_neighbor_count} for KNN Classification")
+        par["n_neighbors"] = smallest_neighbor_count
 
-    output_uns_parameters = adata.uns.get(par["output_uns_parameters"], {})
+elif par["input_obsm_distances"] or par["reference_obsm_distances"]:
+    raise ValueError("Make sure to provide both --input_obsm_distances and --reference_obsm_distances if you want to use a pre-calculated distance matrix for KNN classification.")
 
-    # for each annotation level, get prediction and uncertainty
-    
-    for obs_tar, obs_pred, obs_unc in zip(par["reference_obs_targets"], par["output_obs_predictions"], par["output_obs_uncertainty"]):
-        logger.info(f"Predicting labels for {obs_tar}")
-        ref_cats = adata_reference.obs[obs_tar].cat.codes.to_numpy()[ref_neighbors]
-        prediction, uncertainty = weighted_prediction(weights, ref_cats)
-        prediction = np.asarray(adata_reference.obs[obs_tar].cat.categories)[prediction]
-        
-        adata.obs[obs_pred], adata.obs[obs_unc] = prediction, uncertainty
-        
-        # Write information about labels transfer to uns
-        output_uns_parameters[obs_tar] = {
-            "method": "KNN_pynndescent",
-            "n_neighbors": par["n_neighbors"],
-            "reference": par["reference"]
-        }
+elif not par["input_obsm_distances"] and not par["reference_obsm_distances"]:
+    logger.info("No pre-calculated distances were provided. Calculating distances using the PyNNDescent algorithm.")
+    # Generating training and inference data
+    train_X = get_reference_features(r_adata, par, logger)
+    inference_X = get_query_features(q_adata, par, logger)
 
-    adata.uns[par["output_uns_parameters"]] = output_uns_parameters
+    neighbors_transformer = PyNNDescentTransformer(
+        n_neighbors=par["n_neighbors"],
+        parallel_batch_queries=True,
+    )
+    neighbors_transformer.fit(train_X)
 
-    mdata.mod[par['modality']] = adata
-    mdata.update()
-    mdata.write_h5mu(par['output'].strip())
+    # Square sparse matrix with distances to n neighbors in reference data
+    query_neighbors = neighbors_transformer.transform(inference_X)
+    reference_neighbors = neighbors_transformer.transform(train_X)
 
-if __name__ == "__main__":
-    main(par)
+# For each target, train a classifier and predict labels
+for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"],  par["output_obs_predictions"], par["output_obs_probability"]):
+    logger.info(f"Predicting labels for {obs_tar}")
+
+    weights_dict = {
+        "uniform": "uniform",
+        "distance": "distance",
+        "gaussian": distances_to_affinities
+    }
+
+    logger.info(f"Using KNN classifier with {par['weights']} weights")
+    train_y = r_adata.obs[obs_tar].to_numpy()
+    classifier = KNeighborsClassifier(
+        n_neighbors=par["n_neighbors"],
+        metric="precomputed",
+        weights=weights_dict[par["weights"]]
+        )
+    classifier.fit(X=reference_neighbors, y=train_y)
+    predicted_labels = classifier.predict(query_neighbors)
+    probabilities = classifier.predict_proba(query_neighbors).max(axis=1)
+
+    # save_results
+    logger.info(f"Saving predictions to {obs_pred} and probabilities to {obs_proba} in obs")
+    q_adata.obs[obs_pred] = predicted_labels
+    q_adata.obs[obs_proba] = probabilities
+
+logger.info(f"Saving output data to {par['output']}")
+q_mdata.mod[par['modality']] = q_adata
+q_mdata.write_h5mu(par['output'], compression=par['output_compression'])

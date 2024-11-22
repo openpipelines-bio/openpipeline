@@ -1,0 +1,83 @@
+name: build_cellranger_arc_reference
+namespace: reference
+description: Build a Cell Ranger-arc and -atac compatible reference folder from user-supplied genome FASTA and gene GTF files. Creates a new folder named after the genome.
+authors:
+  - __merge__: /src/authors/vladimir_shitov.yaml
+    roles: [ author ]
+arguments:
+  # inputs
+  - type: file
+    name: --genome_fasta
+    required: true
+    description: Reference genome fasta.
+    example: genome_sequence.fa.gz
+  - type: file
+    name: --annotation_gtf
+    required: true
+    description: Reference annotation.
+    example: annotation.gtf.gz
+  - type: file
+    name: --motifs_file
+    required: false
+    description: Transcription factor motifs in JASPAR format. See https://support.10xgenomics.com/single-cell-multiome-atac-gex/software/pipelines/latest/advanced/references
+    example: JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified
+  - type: string
+    name: --non_nuclear_contigs
+    multiple: true
+    required: false
+    description: Name(s) of contig(s) that do not have any chromatin structure, for example, mitochondria or plastids. These contigs are excluded from peak calling since the entire contig will be "open" due to a lack of chromatin structure. Leave empty if there are no such contigs.
+    example: chrM
+    default: chrM
+  - type: file
+    name: --output
+    direction: output
+    required: true
+    description: Output folder
+    example: cellranger_reference
+  - type: string
+    name: --genome
+    required: true
+    default: "output"
+    description: Name of the genome. This will be the name of the intermediate output folder
+    example: GRCh38
+  - type: string
+    name: --organism
+    required: false
+    description: Name of the organism. This is displayed in the web summary but is otherwise not used in the analysis.
+  - type: string
+    name: --subset_regex
+    description: Will subset the reference chromosomes using the given regex.
+    example: (ERCC-00002|chr1)
+resources:
+  - type: bash_script
+    path: script.sh
+test_resources:
+  - type: bash_script
+    path: test.sh
+  - path: /resources_test/reference_gencodev41_chr1
+engines:
+  - type: docker
+    image: ghcr.io/data-intuitive/cellranger_arc:2.0
+    setup:
+      - type: docker
+        run: |
+          DEBIAN_FRONTEND=noninteractive apt update && \
+          apt upgrade -y && apt install -y procps pigz && rm -rf /var/lib/apt/lists/*
+    test_setup:
+      - type: docker
+      - type: apt
+        packages: [ git, wget ]
+      - type: docker
+        run: |
+          TARGETARCH="${TARGETARCH:-$(dpkg --print-architecture)}" && \
+          TARGETOS="${TARGETOS:-linux}" && \
+          PATH="${PATH}:/usr/local/go/bin" && \
+          wget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
+          rm go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
+          git clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \
+          cd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit && rm -r /usr/local/go
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [ highmem, highcpu ]

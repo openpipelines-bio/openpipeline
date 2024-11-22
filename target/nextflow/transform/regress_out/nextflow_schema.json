@@ -77,8 +77,28 @@
                 "obs_keys": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, multiple_sep: `\":\"`. Which ",
-                "help_text": "Type: List of `string`, multiple_sep: `\":\"`. Which .obs keys to regress on."
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. Which ",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. Which .obs keys to regress on."
+            
+            }
+    
+
+        ,
+                "input_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `X_normalized`. The layer of the adata object to regress on",
+                "help_text": "Type: `string`, example: `X_normalized`. The layer of the adata object to regress on.\nIf not provided, the X attribute of the adata object will be used.\n"
+            
+            }
+    
+
+        ,
+                "output_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `X_regressed`. The layer of the adata object containing the regressed count data",
+                "help_text": "Type: `string`, example: `X_regressed`. The layer of the adata object containing the regressed count data.\nIf not provided, the X attribute of the adata object will be used.\n"
             
             }
     

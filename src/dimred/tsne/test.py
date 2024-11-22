@@ -7,13 +7,13 @@ import re
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/dimred/tsne/tsne',
-    'resources_dir': './resources_test/',
+    'executable': './target/executable/dimred/tsne/tsne',
+    'resources_dir': './resources_test/pbmc_1k_protein_v3/',
     'config': './src/dimred/tsne/config.vsh.yaml'
 }
 ## VIASH END
 
-input_path = meta["resources_dir"] + "pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+input_path = meta["resources_dir"] + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 
 @pytest.fixture
 def mudata_no_obsm_pca(write_mudata_to_file):

@@ -148,8 +148,8 @@
                 "cell_filter_grouping": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `dataset_id:tissue:assay:disease:cell_type`, multiple_sep: `\":\"`. A subset of \u0027obs\u0027 columns by which to group the cells for filtering",
-                "help_text": "Type: List of `string`, example: `dataset_id:tissue:assay:disease:cell_type`, multiple_sep: `\":\"`. A subset of \u0027obs\u0027 columns by which to group the cells for filtering.\nOnly groups surpassing or equal to the `--cell_filter_minimum_count`\nthreshold will be retained. Take care not to introduce a selection\nbias against cells with more fine-grained ontology annotations.\n"
+                "description": "Type: List of `string`, example: `dataset_id;tissue;assay;disease;cell_type`, multiple_sep: `\";\"`. A subset of \u0027obs\u0027 columns by which to group the cells for filtering",
+                "help_text": "Type: List of `string`, example: `dataset_id;tissue;assay;disease;cell_type`, multiple_sep: `\";\"`. A subset of \u0027obs\u0027 columns by which to group the cells for filtering.\nOnly groups surpassing or equal to the `--cell_filter_minimum_count`\nthreshold will be retained. Take care not to introduce a selection\nbias against cells with more fine-grained ontology annotations.\n"
             
             }
     

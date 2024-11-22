@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
 "title": "sync_test_resources",
-"description": "Synchronise the test resources from s3://openpipelines-data to resources_test",
+"description": "Sync test resources to the local filesystem",
 "type": "object",
 "definitions": {
 
@@ -23,8 +23,8 @@
 
     
     
-    "arguments" : {
-    "title": "Arguments",
+    "inputs" : {
+    "title": "Inputs",
     "type": "object",
     "description": "No description",
     "properties": {
@@ -33,25 +33,45 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `s3://openpipelines-data`. Path to the S3 bucket to sync from",
-                "help_text": "Type: `string`, default: `s3://openpipelines-data`. Path to the S3 bucket to sync from."
+                "description": "Type: `file`, default: `_viash.yaml`. Path to the _viash",
+                "help_text": "Type: `file`, default: `_viash.yaml`. Path to the _viash.yaml project configuration file."
             ,
-                "default": "s3://openpipelines-data"
+                "default": "_viash.yaml"
             }
     
 
-        ,
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.output`. Path to the test resource directory",
-                "help_text": "Type: `file`, default: `$id.$key.output.output`. Path to the test resource directory."
+                "description": "Type: `file`, default: `$id.$key.output.output`. Path to the directory where the resources will be synced to",
+                "help_text": "Type: `file`, default: `$id.$key.output.output`. Path to the directory where the resources will be synced to."
             ,
                 "default": "$id.$key.output.output"
             }
     
 
-        ,
+}
+},
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
                 "quiet": {
                 "type":
                 "boolean",
@@ -88,8 +108,8 @@
                 "exclude": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, multiple_sep: `\":\"`. Exclude all files or objects from the command that matches the specified pattern",
-                "help_text": "Type: List of `string`, multiple_sep: `\":\"`. Exclude all files or objects from the command that matches the specified pattern."
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. Exclude all files or objects from the command that matches the specified pattern",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. Exclude all files or objects from the command that matches the specified pattern."
             
             }
     
@@ -120,6 +140,14 @@
 }
 },
 "allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
 
     {
     "$ref": "#/definitions/arguments"

@@ -7,7 +7,7 @@ verbose: 100
 doublet_prior: 0.5
 geno_error: 0.1
 bf_thres: 5.41
-frac_init_clust: 1
+frac_init_clust: 1.0
 iter_init: 10
 keep_init_missing: false
 randomize_singlet_score: false
@@ -20,9 +20,11 @@ min_umi: 0
 min_snp: 0
 
 # Output
-# output: "$id.$key.output.output"
+# output: "$id.$key.output"
 # out: "freemuxlet"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

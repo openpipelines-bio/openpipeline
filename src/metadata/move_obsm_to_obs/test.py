@@ -8,9 +8,9 @@ from subprocess import CalledProcessError
 
 ## VIASH START
 meta = {
-    'functionality_name': 'move_obsm_to_obs',
+    'name': 'move_obsm_to_obs',
     'resources_dir': 'resources_test/',
-    'executable': 'target/docker/metadata/move_obsm_to_obs/move_obsm_to_obs',
+    'executable': 'target/executable/metadata/move_obsm_to_obs/move_obsm_to_obs',
     'config': 'src/metadata/move_obsm_to_obs/config.vsh.yaml'
 }
 ## VIASH END
@@ -61,14 +61,18 @@ def test_move_obsm_to_obs_non_overlapping_obs_fails(run_component, write_temp_h5
                                                     h5mu_with_non_overlapping_observations, tmp_path):
     output = tmp_path/ "output.h5mu"
     # Mudata seems to handle this error, but keep this test in just in case mudata drops the ball.
-    with pytest.raises(CalledProcessError) as err:
+    with pytest.raises((CalledProcessError, ValueError)) as err:
         run_component(["--input", write_temp_h5mu(h5mu_with_non_overlapping_observations),
                     "--modality", "mod1",
                     "--obsm_key", "obsm_key",
                     "--output", output
                     ])
-    re.search(r"value.index does not match parent’s axis 0 names",
-        err.value.stdout.decode('utf-8'))
+    expected_message = r"value.index does not match parent’s obs names"
+    if isinstance(err, CalledProcessError):
+        assert re.search(expected_message, err.value.stdout.decode('utf-8'))
+    else:
+        assert re.search(expected_message, str(err))
+
 
 
 def test_error_non_existing_modality(run_component, h5mu, write_temp_h5mu, tmp_path):
@@ -79,7 +83,7 @@ def test_error_non_existing_modality(run_component, h5mu, write_temp_h5mu, tmp_p
                     "--obsm_key", "obsm_key",
                     "--output", output
                     ])
-    re.search(r"ValueError: Modality foo does not exist\.",
+    assert re.search(r"ValueError: Modality foo does not exist\.",
         err.value.stdout.decode('utf-8'))
     
 def test_execute_twice_overwrites(run_component, h5mu, write_temp_h5mu, tmp_path):

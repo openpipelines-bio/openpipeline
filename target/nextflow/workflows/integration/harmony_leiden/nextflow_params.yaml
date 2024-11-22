@@ -16,11 +16,11 @@ obsp_neighbor_connectivities: "harmonypy_integration_connectivities"
 embedding: "X_pca"
 obsm_integrated: "X_pca_integrated"
 obs_covariates: # please fill in - example: ["batch", "sample"]
-theta: [2]
+theta: [2.0]
 
 # Clustering options
 obs_cluster: "harmony_integration_leiden"
-leiden_resolution: [1]
+leiden_resolution: [1.0]
 
 # Umap options
 obsm_umap: "X_leiden_harmony_umap"
@@ -28,3 +28,5 @@ obsm_umap: "X_leiden_harmony_umap"
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

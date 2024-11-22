@@ -23,6 +23,141 @@
 
     
     
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.output`. The query data in ",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.output`. The query data in .h5mu format with predicted labels transfered from the reference."
+            ,
+                "default": "$id.$key.output.output"
+            }
+    
+
+        ,
+                "output_obs_predictions": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. In which `",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. In which `.obs` slots to store the predicted information.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_pred\"` suffix.\n"
+            
+            }
+    
+
+        ,
+                "output_obs_probability": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. In which `",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. In which `.obs` slots to store the probability of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_probability\"` suffix.\n"
+            
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+}
+},
+    
+    
+    "input dataset (query) arguments" : {
+    "title": "Input dataset (query) arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required. The query data to transfer the labels to",
+                "help_text": "Type: `file`, required. The query data to transfer the labels to. Should be a .h5mu file."
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. Which modality to use",
+                "help_text": "Type: `string`, default: `rna`. Which modality to use."
+            ,
+                "default": "rna"
+            }
+    
+
+        ,
+                "input_obsm_features": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `X_scvi`. The `",
+                "help_text": "Type: `string`, example: `X_scvi`. The `.obsm` key of the embedding to use for the classifier\u0027s inference. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model or preprocessing).\n"
+            
+            }
+    
+
+}
+},
+    
+    
+    "reference dataset arguments" : {
+    "title": "Reference dataset arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "reference": {
+                "type":
+                "string",
+                "description": "Type: `file`, example: `reference.h5mu`. The reference data to train classifiers on",
+                "help_text": "Type: `file`, example: `reference.h5mu`. The reference data to train classifiers on."
+            
+            }
+    
+
+        ,
+                "reference_obsm_features": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `X_scvi`. The `",
+                "help_text": "Type: `string`, example: `X_scvi`. The `.obsm` key of the embedding to use for the classifier\u0027s training. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).\n"
+            
+            }
+    
+
+        ,
+                "reference_obs_targets": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, default: `ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level`, multiple_sep: `\";\"`. The `",
+                "help_text": "Type: List of `string`, default: `ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level`, multiple_sep: `\";\"`. The `.obs` key(s) of the target labels to tranfer."
+            ,
+                "default": "ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level"
+            }
+    
+
+}
+},
+    
+    
     "execution arguments" : {
     "title": "Execution arguments",
     "type": "object",
@@ -73,6 +208,17 @@
             }
     
 
+        ,
+                "output_uns_parameters": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `xgboost_parameters`. The key in `uns` slot of the output AnnData object to store the parameters of the XGBoost classifier",
+                "help_text": "Type: `string`, default: `xgboost_parameters`. The key in `uns` slot of the output AnnData object to store the parameters of the XGBoost classifier."
+            ,
+                "default": "xgboost_parameters"
+            }
+    
+
 }
 },
     
@@ -98,10 +244,10 @@
                 "min_split_loss": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `0`. Minimum loss reduction required to make a further partition on a leaf node of the tree",
-                "help_text": "Type: `double`, default: `0`. Minimum loss reduction required to make a further partition on a leaf node of the tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+                "description": "Type: `double`, default: `0.0`. Minimum loss reduction required to make a further partition on a leaf node of the tree",
+                "help_text": "Type: `double`, default: `0.0`. Minimum loss reduction required to make a further partition on a leaf node of the tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "0"
+                "default": "0.0"
             }
     
 
@@ -131,10 +277,10 @@
                 "max_delta_step": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `0`. Maximum delta step we allow each leaf output to be",
-                "help_text": "Type: `double`, default: `0`. Maximum delta step we allow each leaf output to be. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+                "description": "Type: `double`, default: `0.0`. Maximum delta step we allow each leaf output to be",
+                "help_text": "Type: `double`, default: `0.0`. Maximum delta step we allow each leaf output to be. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "0"
+                "default": "0.0"
             }
     
 
@@ -142,10 +288,10 @@
                 "subsample": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `1`. Subsample ratio of the training instances",
-                "help_text": "Type: `double`, default: `1`. Subsample ratio of the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+                "description": "Type: `double`, default: `1.0`. Subsample ratio of the training instances",
+                "help_text": "Type: `double`, default: `1.0`. Subsample ratio of the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "1"
+                "default": "1.0"
             }
     
 
@@ -166,10 +312,10 @@
                 "colsample_bytree": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `1`. Fraction of columns to be subsampled",
-                "help_text": "Type: `double`, default: `1`. Fraction of columns to be subsampled. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+                "description": "Type: `double`, default: `1.0`. Fraction of columns to be subsampled",
+                "help_text": "Type: `double`, default: `1.0`. Fraction of columns to be subsampled. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "1"
+                "default": "1.0"
             }
     
 
@@ -177,10 +323,10 @@
                 "colsample_bylevel": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `1`. Subsample ratio of columns for each level",
-                "help_text": "Type: `double`, default: `1`. Subsample ratio of columns for each level. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+                "description": "Type: `double`, default: `1.0`. Subsample ratio of columns for each level",
+                "help_text": "Type: `double`, default: `1.0`. Subsample ratio of columns for each level. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "1"
+                "default": "1.0"
             }
     
 
@@ -188,10 +334,10 @@
                 "colsample_bynode": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `1`. Subsample ratio of columns for each node (split)",
-                "help_text": "Type: `double`, default: `1`. Subsample ratio of columns for each node (split). Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+                "description": "Type: `double`, default: `1.0`. Subsample ratio of columns for each node (split)",
+                "help_text": "Type: `double`, default: `1.0`. Subsample ratio of columns for each node (split). Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "1"
+                "default": "1.0"
             }
     
 
@@ -199,10 +345,10 @@
                 "reg_lambda": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `1`. L2 regularization term on weights",
-                "help_text": "Type: `double`, default: `1`. L2 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+                "description": "Type: `double`, default: `1.0`. L2 regularization term on weights",
+                "help_text": "Type: `double`, default: `1.0`. L2 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "1"
+                "default": "1.0"
             }
     
 
@@ -210,10 +356,10 @@
                 "reg_alpha": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `0`. L1 regularization term on weights",
-                "help_text": "Type: `double`, default: `0`. L1 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+                "description": "Type: `double`, default: `0.0`. L1 regularization term on weights",
+                "help_text": "Type: `double`, default: `0.0`. L1 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "0"
+                "default": "0.0"
             }
     
 
@@ -221,10 +367,10 @@
                 "scale_pos_weight": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `1`. Control the balance of positive and negative weights, useful for unbalanced classes",
-                "help_text": "Type: `double`, default: `1`. Control the balance of positive and negative weights, useful for unbalanced classes. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+                "description": "Type: `double`, default: `1.0`. Control the balance of positive and negative weights, useful for unbalanced classes",
+                "help_text": "Type: `double`, default: `1.0`. Control the balance of positive and negative weights, useful for unbalanced classes. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "1"
+                "default": "1.0"
             }
     
 
@@ -254,6 +400,18 @@
 }
 },
 "allOf": [
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/input dataset (query) arguments"
+    },
+
+    {
+    "$ref": "#/definitions/reference dataset arguments"
+    },
 
     {
     "$ref": "#/definitions/execution arguments"

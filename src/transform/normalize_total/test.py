@@ -7,7 +7,7 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'functionality_name': 'lognorm',
+    'name': 'lognorm',
     'resources_dir': 'resources_test/'
 }
 ## VIASH END
@@ -46,6 +46,23 @@ def test_run(run_component, tmp_path):
     col_corr = np.corrcoef(rna_in.X[:,nz_col[0]].toarray().flatten(), rna_out.X[:,nz_col[0]].toarray().flatten())[0,1]
     assert row_corr > .1
     assert col_corr > .1
+    
+def test_target_sum(run_component, tmp_path):
+    output = tmp_path / "output.h5mu"
+    cmd_pars = [
+        "--input", input,
+        "--output", str(output),
+        "--output_compression", "gzip",
+        "--target_sum", "10000"
+    ]
+    run_component(cmd_pars)
+
+    assert output.is_file(), "No output was created."
+
+    mu_output = mu.read_h5mu(output)
+    rna_out = mu_output.mod["rna"]
+
+    assert np.all(np.abs(rna_out.X.sum(axis=1) - 10000) < 1), "Expression should have changed"
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))

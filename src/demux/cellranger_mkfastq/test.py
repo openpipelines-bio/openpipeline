@@ -1,9 +1,10 @@
 import sys
+from pathlib import Path
 import pytest
 
 ## VIASH START
 meta = {
-    "functionality_name": "cellranger_mkfastq",
+    "name": "cellranger_mkfastq",
     "resources_dir": "resources_test"
 }
 ## VIASH END

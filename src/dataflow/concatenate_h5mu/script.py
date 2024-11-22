@@ -18,7 +18,8 @@ par = {
     "output": "foo.h5mu",
     "input_id": ["mouse", "human"],
     "other_axis_mode": "move",
-    "output_compression": "gzip"
+    "output_compression": "gzip",
+    "uns_merge_mode": "make_unique",
 }
 meta = {
     "cpus": 10,
@@ -97,16 +98,6 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-def indexes_unique(indices: Iterable[pd.Index]) -> bool:
-    combined_indices = indices[0].append(indices[1:])
-    return combined_indices.is_unique
-
-def check_observations_unique(samples: Iterable[anndata.AnnData]) -> None:
-    observation_ids = [sample.obs.index for sample in samples]
-    if not indexes_unique(observation_ids):
-        raise ValueError("Observations are not unique across samples.")
-
-
 def nunique(row):
     unique = pd.unique(row)
     unique_without_na = pd.core.dtypes.missing.remove_na_arraylike(unique)
@@ -148,6 +139,28 @@ def get_first_non_na_value_vector(df):
     col_index = pd.isna(numpy_arr).argmin(axis=1)
     flat_index = n_cols * np.arange(n_rows) + col_index
     return pd.Series(numpy_arr.ravel()[flat_index], index=df.index, name=df.columns[0])
+
+def make_uns_keys_unique(mod_data, concatenated_data):
+    """
+    Check if the uns keys across samples are unique before adding them
+    to the final concatenated object. If a conflict occurs between the samples,
+    add the sample ID to make the key unique again.
+    """
+    all_uns_keys = {}
+    for sample_id, mod in mod_data.items():
+        for uns_key, _ in mod.uns.items():
+            all_uns_keys.setdefault(uns_key, []).append(sample_id)
+    for uns_key, samples_ids in all_uns_keys.items():
+        assert samples_ids
+        if len(samples_ids) == 1:
+            sample_id = samples_ids[0]
+            concatenated_data.uns[uns_key] = mod_data[sample_id].uns[uns_key]
+        else: 
+            for sample_id in samples_ids:
+                concatenated_data.uns[f"{sample_id}_{uns_key}"] = \
+                    mod_data[sample_id].uns[uns_key]
+    return concatenated_data
+
 
 def split_conflicts_and_concatenated_columns(n_processes: int,
                                              matrices: dict[str, pd.DataFrame],
@@ -220,7 +233,15 @@ def split_conflicts_modalities(n_processes: int, samples: dict[str, anndata.AnnD
         output_index = getattr(output, matrix_name).index 
         conflicts, concatenated_matrix = concatenate_matrices(n_processes, matrices, output_index)
         if concatenated_matrix.empty:
-           concatenated_matrix.index = output_index 
+           concatenated_matrix.index = output_index
+
+        # Even though we did not touch the varm and obsm matrices that were already present,
+        # the joining of observations might have caused a dtype change in these matrices as well
+        # so these also need to be casted to a writable dtype...
+        for multidim_name, multidim_data in getattr(output, f"{matrix_name}m").items():
+            new_data = cast_to_writeable_dtype(multidim_data) if isinstance(multidim_data, pd.DataFrame) else multidim_data 
+            getattr(output, f"{matrix_name}m")[multidim_name] = new_data
+
         # Write the conflicts to the output
         for conflict_name, conflict_data in conflicts.items():
             getattr(output, f"{matrix_name}m")[conflict_name] = conflict_data
@@ -231,33 +252,58 @@ def split_conflicts_modalities(n_processes: int, samples: dict[str, anndata.AnnD
     return output
 
 
-def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str | Path], 
-                         other_axis_mode: str, input_ids: tuple[str]) -> anndata.AnnData:
+def concatenate_modality(n_processes: int, mod: str | None, input_files: Iterable[str | Path], 
+                         other_axis_mode: str, uns_merge_mode: str, input_ids: tuple[str]) -> anndata.AnnData:
     
     concat_modes = {
         "move": "unique",
     }
     other_axis_mode_to_apply = concat_modes.get(other_axis_mode, other_axis_mode)
 
+    uns_merge_modes = {
+        "make_unique": None
+    }
+    uns_merge_mode_to_apply = uns_merge_modes.get(uns_merge_mode, uns_merge_mode)
+    
     mod_data = {}
+    mod_indices_combined = pd.Index([])
     for input_id, input_file in zip(input_ids, input_files):
-        try:
-            mod_data[input_id] = mu.read_h5ad(input_file, mod=mod)
-        except KeyError as e: # Modality does not exist for this sample, skip it
-            if f"Unable to synchronously open object (object '{mod}' doesn't exist)" not in str(e):
-                raise e
-            pass
-    check_observations_unique(mod_data.values())
-
-    concatenated_data = anndata.concat(mod_data.values(), join='outer', merge=other_axis_mode_to_apply)
+        if mod is not None:
+            try:
+                data = mu.read_h5ad(input_file, mod=mod)
+                mod_data[input_id] = data
+                mod_indices_combined = mod_indices_combined.append(data.obs.index)
+            except KeyError as e: # Modality does not exist for this sample, skip it
+                if f"Unable to synchronously open object (object '{mod}' doesn't exist)" not in str(e):
+                    raise e
+                pass
+        else: # When mod=None, process the 'global' h5mu state
+            with H5File(input_file, 'r') as input_h5:
+                if "uns" in input_h5.keys(): 
+                    uns_data = anndata.experimental.read_elem(input_h5['uns'])
+                    if uns_data:
+                        mod_data[input_id] = anndata.AnnData(uns=uns_data)
+     
+    if not mod_indices_combined.is_unique:
+        raise ValueError("Observations are not unique across samples.")
+    
+    if not mod_data:
+        return anndata.AnnData()
+    
+    concatenated_data = anndata.concat(mod_data.values(), join='outer',
+                                       merge=other_axis_mode_to_apply,
+                                       uns_merge=uns_merge_mode_to_apply)
 
     if other_axis_mode == "move":
         concatenated_data = split_conflicts_modalities(n_processes, mod_data, concatenated_data)
-    
+
+    if uns_merge_mode == "make_unique":
+        concatenated_data = make_uns_keys_unique(mod_data, concatenated_data)
+
     return concatenated_data
 
 def concatenate_modalities(n_processes: int, modalities: list[str], input_files: Path | str,
-                           other_axis_mode: str, output_file: Path | str,
+                           other_axis_mode: str, uns_merge_mode: str, output_file: Path | str,
                            compression: Literal['gzip'] | Literal['lzf'],
                            input_ids: tuple[str] | None = None) -> None:
     """
@@ -271,10 +317,16 @@ def concatenate_modalities(n_processes: int, modalities: list[str], input_files:
     mdata = mu.MuData({modality: anndata.AnnData() for modality in modalities})
     mdata.write(output_file_uncompressed, compression=compression)
 
-    for mod_name in modalities:
+    # Use "None" for the global slots (not assigned to any modality)
+    for mod_name in modalities + [None,]:
         new_mod = concatenate_modality(n_processes, mod_name, 
                                        input_files, other_axis_mode, 
-                                       input_ids)
+                                       uns_merge_mode, input_ids)
+        if mod_name is None:
+            if new_mod.uns:
+                with H5File(output_file_uncompressed, 'r+') as open_h5mu_file:
+                    anndata.experimental.write_elem(open_h5mu_file, "uns", dict(new_mod.uns))
+            continue
         logger.info("Writing out modality '%s' to '%s' with compression '%s'.",
                     mod_name, output_file_uncompressed, compression)
         mu.write_h5ad(output_file_uncompressed, data=new_mod, mod=mod_name)
@@ -317,6 +369,7 @@ def main() -> None:
                            list(mods),
                            par["input"],
                            par["other_axis_mode"],
+                           par["uns_merge_mode"],
                            par["output"],
                            par["output_compression"],
                            input_ids=input_ids)

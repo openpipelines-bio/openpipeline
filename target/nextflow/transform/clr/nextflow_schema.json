@@ -93,6 +93,19 @@
             }
     
 
+        ,
+                "axis": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `0`, choices: ``0`, `1``. Axis across which CLR is performed",
+                "help_text": "Type: `integer`, default: `0`, choices: ``0`, `1``. Axis across which CLR is performed. If set to 0, CLR is performed across observations (cells).\nIf set to 1, CLR is performed across features (genes).\n",
+                "enum": [0, 1]
+            
+            ,
+                "default": "0"
+            }
+    
+
 }
 },
     

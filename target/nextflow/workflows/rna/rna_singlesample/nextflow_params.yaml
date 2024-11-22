@@ -12,7 +12,7 @@ input: # please fill in - example: "dataset.h5mu"
 # min_genes_per_cell: 200
 # max_genes_per_cell: 1500000
 # min_cells_per_gene: 3
-# min_fraction_mito: 0
+# min_fraction_mito: 0.0
 # max_fraction_mito: 0.2
 
 # Mitochondrial gene detection
@@ -24,3 +24,5 @@ mitochondrial_gene_regex: "^[mM][tT]-"
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

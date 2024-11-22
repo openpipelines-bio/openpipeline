@@ -1,3 +1,10 @@
+import sys
+import numpy as np
+numpy_module = sys.modules['numpy']
+numpy_module.string_ = np.bytes_
+numpy_module.unicode_ = np.str_
+sys.modules['numpy'] = numpy_module
+
 import subprocess
 import pathlib
 import mudata
@@ -5,7 +12,7 @@ import loompy
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/native/convert/from_velocyto_to_h5mu/from_velocyto_to_h5mu',
+    'name': './target/native/convert/from_velocyto_to_h5mu/from_velocyto_to_h5mu',
     'resources_dir': './resources_test/'
 }
 ## VIASH END
@@ -15,7 +22,7 @@ input_loom = tiny_fastq / "velocyto.loom"
 input_h5mu = tiny_fastq / "raw_dataset.h5mu"
 output = pathlib.Path("output.h5mu")
 
-print(f"Running {meta['functionality_name']}", flush=True)
+print(f"Running {meta['name']}", flush=True)
 subprocess.run(
     args=[
         meta["executable"],
@@ -25,7 +32,7 @@ subprocess.run(
         input_h5mu,
         "--output",
         output,
-        "--output_compresion", "gzip"
+        "--output_compression", "gzip"
     ],
     check=True
 )

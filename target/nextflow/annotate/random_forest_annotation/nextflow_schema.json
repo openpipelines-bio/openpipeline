@@ -1,0 +1,283 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "random_forest_annotation",
+"description": "Automated cell type annotation tool for scRNA-seq datasets on the basis of random forest.",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "Input dataset (query) arguments",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `input.h5mu`. The input (query) data to be labeled",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. The input (query) data to be labeled. Should be a .h5mu file."
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. Which modality to process",
+                "help_text": "Type: `string`, default: `rna`. Which modality to process."
+            ,
+                "default": "rna"
+            }
+    
+
+        ,
+                "input_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. The layer in the input data to be used for cell type annotation if ",
+                "help_text": "Type: `string`. The layer in the input data to be used for cell type annotation if .X is not to be used."
+            
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "Output arguments.",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
+                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
+            ,
+                "default": "$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+        ,
+                "output_obs_predictions": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `random_forest_pred`. In which `",
+                "help_text": "Type: `string`, default: `random_forest_pred`. In which `.obs` slots to store the predicted information.\n"
+            ,
+                "default": "random_forest_pred"
+            }
+    
+
+        ,
+                "output_obs_probability": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `random_forest_probability`. In which `",
+                "help_text": "Type: `string`, default: `random_forest_probability`. In which `.obs` slots to store the probability of the predictions.\n"
+            ,
+                "default": "random_forest_probability"
+            }
+    
+
+}
+},
+    
+    
+    "reference" : {
+    "title": "Reference",
+    "type": "object",
+    "description": "Arguments related to the reference dataset.",
+    "properties": {
+    
+        
+                "reference": {
+                "type":
+                "string",
+                "description": "Type: `file`, example: `reference.h5mu`. The reference data to train the CellTypist classifiers on",
+                "help_text": "Type: `file`, example: `reference.h5mu`. The reference data to train the CellTypist classifiers on. Only required if a pre-trained --model is not provided."
+            
+            }
+    
+
+        ,
+                "reference_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. The layer in the reference data to be used for cell type annotation if ",
+                "help_text": "Type: `string`. The layer in the reference data to be used for cell type annotation if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset."
+            
+            }
+    
+
+        ,
+                "reference_obs_target": {
+                "type":
+                "string",
+                "description": "Type: `string`, required. Key in obs field of reference modality with cell-type information",
+                "help_text": "Type: `string`, required. Key in obs field of reference modality with cell-type information."
+            
+            }
+    
+
+}
+},
+    
+    
+    "model arguments" : {
+    "title": "Model arguments",
+    "type": "object",
+    "description": "Model arguments.",
+    "properties": {
+    
+        
+                "model": {
+                "type":
+                "string",
+                "description": "Type: `file`, example: `pretrained_model.pkl`. Pretrained model in pkl format",
+                "help_text": "Type: `file`, example: `pretrained_model.pkl`. Pretrained model in pkl format. If not provided, the model will be trained on the reference data and --reference should be provided."
+            
+            }
+    
+
+        ,
+                "n_estimators": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `100`. Number of trees in the random forest",
+                "help_text": "Type: `integer`, default: `100`. Number of trees in the random forest."
+            ,
+                "default": "100"
+            }
+    
+
+        ,
+                "max_depth": {
+                "type":
+                "integer",
+                "description": "Type: `integer`. Maximum depth of the trees in the random forest",
+                "help_text": "Type: `integer`. Maximum depth of the trees in the random forest. \nIf not provided, the nodes are expanded until all leaves only contain a single sample.\n"
+            
+            }
+    
+
+        ,
+                "criterion": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `gini`, choices: ``gini`, `entropy`, `log_loss``. The function to measure the quality of a split",
+                "help_text": "Type: `string`, default: `gini`, choices: ``gini`, `entropy`, `log_loss``. The function to measure the quality of a split.",
+                "enum": ["gini", "entropy", "log_loss"]
+            
+            ,
+                "default": "gini"
+            }
+    
+
+        ,
+                "class_weight": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `balanced_subsample`, choices: ``balanced`, `balanced_subsample`, `uniform``. Weights associated with classes",
+                "help_text": "Type: `string`, default: `balanced_subsample`, choices: ``balanced`, `balanced_subsample`, `uniform``. Weights associated with classes.\nThe `balanced` mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data.\nThe `balanced_subsample` mode is the same as `balanced` except that weights are computed based on the bootstrap sample for every tree grown.\nThe `uniform` mode gives all classes a weight  of one.\n",
+                "enum": ["balanced", "balanced_subsample", "uniform"]
+            
+            ,
+                "default": "balanced_subsample"
+            }
+    
+
+        ,
+                "max_features": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `200`. The number of features to consider when looking for the best split",
+                "help_text": "Type: `string`, default: `200`. The number of features to consider when looking for the best split. The value can either be a positive integer or one of `sqrt`, `log2` or `all`.\nIf integer: consider max_features features at each split.\nIf `sqrt`: max_features is the squareroot of all input features.\nIf `log2`: max_features is the log2 of all input features.\nIf `all`: max features equals all input features.\n"
+            ,
+                "default": "200"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/reference"
+    },
+
+    {
+    "$ref": "#/definitions/model arguments"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}

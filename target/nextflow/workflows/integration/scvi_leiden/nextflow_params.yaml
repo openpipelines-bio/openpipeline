@@ -6,7 +6,7 @@ modality: "rna"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_model: "$id.$key.output_model.output_model"
+# output_model: "$id.$key.output_model"
 
 # Neighbour calculation
 uns_neighbors: "scvi_integration_neighbors"
@@ -24,11 +24,11 @@ early_stopping_min_delta: 0.0
 # max_epochs: 123
 reduce_lr_on_plateau: true
 lr_factor: 0.6
-lr_patience: 30
+lr_patience: 30.0
 
 # Clustering options
 obs_cluster: "scvi_integration_leiden"
-leiden_resolution: [1]
+leiden_resolution: [1.0]
 
 # Umap options
 obsm_umap: "X_scvi_umap"
@@ -36,3 +36,5 @@ obsm_umap: "X_scvi_umap"
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments
