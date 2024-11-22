@@ -39,11 +39,12 @@ workflow run_wf {
         )
         // Make sure that query and reference dataset have batch information in the same .obs column
         // By copying the respective .obs columns to the obs column "batch_label"
-        | copy_obs.run(
+        | duplicate_obs.run(
             fromState: [
                 "input": "input",
                 "modality": "modality",
                 "input_obs_key": "input_obs_batch_label",
+                "overwrite_existing_key": "overwrite_existing_key"
             ],
             args: [
                 "output_obs_key": "batch_label"
@@ -52,11 +53,12 @@ workflow run_wf {
                 "input": "output"
             ]
         )
-        | copy_obs.run(
+        | duplicate_obs.run(
             fromState: [
                 "input": "reference",
                 "modality": "modality",
                 "input_obs_key": "reference_obs_batch_label",
+                "overwrite_existing_key": "overwrite_existing_key"
             ],
             args: [
                 "output_obs_key": "batch_label"
@@ -71,11 +73,11 @@ workflow run_wf {
             fromState: [
                 "input": "input",
                 "modality": "modality",
-                "input_var_key": "input_var_gene_names"
+                "input_var_key": "input_var_gene_names",
+                "overwrite_existing_key": "overwrite_existing_key"
             ],
             args: [
                 "output_var_key": "gene_symbols",
-                "disable_raise_on_identical_keys": "true"
             ],
             toState: [
                 "input": "output"
@@ -85,11 +87,11 @@ workflow run_wf {
             fromState: [
                 "input": "reference",
                 "modality": "modality",
-                "input_var_key": "reference_var_gene_names"
+                "input_var_key": "reference_var_gene_names",
+                "overwrite_existing_key": "overwrite_existing_key"
             ],
             args: [
                 "output_var_key": "gene_symbols",
-                "disable_raise_on_identical_keys": "true"
             ],
             toState: [
                 "reference": "output"
@@ -168,7 +170,7 @@ workflow run_wf {
             def integrated_reference = outputDir.resolve(reference_file.filename)
             def newKeys = ["integrated_query": integrated_query, "integrated_reference": integrated_reference]
             [id, state + newKeys]
-            }
+        }
         | view {"After splitting query: $it"}
         // Perform KNN label transfer from reference to query
         | knn.run(
@@ -187,7 +189,7 @@ workflow run_wf {
                 "output": "workflow_output"
             ],
             toState: {id, output, state -> ["output": output.output]},
-            )
+        )
     
   emit:
     output_ch

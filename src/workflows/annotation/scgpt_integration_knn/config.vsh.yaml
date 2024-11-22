@@ -42,6 +42,9 @@ argument_groups:
         description: "The .obs field in the input (query) dataset containing the batch labels."
         example: "sample"
         required: true
+      - name: "--overwrite_existing_key"
+        type: boolean_true
+        description: If provided, will overwrite existing fields in the input dataset when data are copied during the reference alignment process.
 
   - name: Reference input
     arguments:
@@ -227,7 +230,7 @@ dependencies:
   - name: dataflow/split_h5mu
   - name: dataflow/concatenate_h5mu
   - name: metadata/add_id
-  - name: metadata/copy_obs
+  - name: metadata/duplicate_obs
   - name: metadata/duplicate_var
 
 resources:
