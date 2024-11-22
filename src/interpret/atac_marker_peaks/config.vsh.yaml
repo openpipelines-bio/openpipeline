@@ -70,14 +70,13 @@ engines:
           - gcc
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        __merge__: [ /src/base/requirements/scanpy.yaml, .]
         packages:
-          - numpy~=1.23.5
-          - scanpy~=1.9.3
-          - muon~=0.1.6
+          - muon~=0.1.5
           - pysam~=0.22.0
     test_setup:
       - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, /src/base/requirements/scanpy.yaml, .]
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
 runners:
   - type: executable
   - type: nextflow
