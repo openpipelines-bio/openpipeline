@@ -557,9 +557,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component integrate totalvi"
-LABEL org.opencontainers.image.created="2024-11-23T08:15:44Z"
+LABEL org.opencontainers.image.created="2024-11-23T08:22:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="82f8c5b319215d61ef772a7766a98eb5e4f2a8ee"
+LABEL org.opencontainers.image.revision="7a5d99042aeba7efd1f5df766d3eefa3f07ff5ff"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

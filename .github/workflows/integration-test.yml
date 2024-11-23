@@ -108,8 +108,8 @@ jobs:
 
     - name: Build test dependencies
       run: |
-        readarray -t test_dependencies < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.[].info.test_dependencies // []) | flatten | .[] | (.namespace + "/" + .name)')
-        for dependency in "${resources[@]}"; do
+        readarray -t test_dependencies < <(viash ns list --format json "${{ matrix.component.config }}" | jq -r -c '(.[].info.test_dependencies // []) | flatten | .[] | (.namespace + "/" + .name)')
+        for dependency in "${test_dependencies[@]}"; do
           echo $dependency
           viash ns build -q "$dependency" -c ".version := 'integration_build'" -c ".engines[.type == 'docker'].target_tag := 'integration_build'" --setup alwayspullelsebuild
         done
