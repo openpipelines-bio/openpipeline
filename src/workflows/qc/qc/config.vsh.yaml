@@ -6,7 +6,7 @@ authors:
     roles: [ author, maintainer ]
 info:
   test_dependencies:
-    - name: test_qc
+    - name: qc_test
       namespace: test_workflows/qc
 argument_groups:
   - name: Inputs
