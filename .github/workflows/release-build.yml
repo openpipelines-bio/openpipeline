@@ -94,6 +94,34 @@ jobs:
         find ./resources_test/ "${to_not_remove[@]}" -type f -exec rm {} +
         tree ./resources_test/
 
+    - name: Build test dependencies
+      uses: viash-io/viash-actions/ns-build@v6
+      with:
+        config_mod: |
+          .version := '${{ github.event.inputs.version_tag }}'
+          .engines[.type == 'docker'].target_tag := '${{ github.event.inputs.version_tag }}'
+          query_name: ${{ matrix.component.name }}
+          query_namespace: ${{ matrix.component.namespace }}
+  
+    - name: Reset main script after building dependencies
+      run: |
+        git restore --source origin/integration_build -- ${{ matrix.component.main_script }}
+  
+    - name: Build test dependencies containers
+      uses: viash-io/viash-actions/ns-build@v6
+      with:
+        config_mod: |
+          .version := 'integration_build'
+          .engines[.type == 'docker'].target_tag := 'integration_build'
+        query_name: ${{ matrix.component.name }}
+        query_namespace: ${{ matrix.component.namespace }}
+        setup: alwayspullelsebuild
+  
+    - name: Remove docker builder cache
+      run: |
+        docker builder prune -a -f 
+      
+
     - name: Run integration test
       timeout-minutes: 120
       run: |

@@ -3474,6 +3474,18 @@ meta = [
       "dest" : "openpipelinetestutils"
     }
   ],
+  "info" : {
+    "test_dependencies" : [
+      {
+        "name" : "move_layer",
+        "namespace" : "transform"
+      },
+      {
+        "name" : "remove_modality",
+        "namespace" : "filter"
+      }
+    ]
+  },
   "status" : "enabled",
   "dependencies" : [
     {
@@ -3620,7 +3632,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.9.0",
-    "git_commit" : "09a69c61522eda39c5eea699cd4cf0a24b79d86a",
+    "git_commit" : "82f8c5b319215d61ef772a7766a98eb5e4f2a8ee",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

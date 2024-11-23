@@ -4,6 +4,8 @@ description: "Run harmony integration followed by neighbour calculations, leiden
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author ]
+info:
+  test_dependencies:
 argument_groups:
   - name: "Inputs"
     arguments:

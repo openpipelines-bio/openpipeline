@@ -3010,7 +3010,17 @@ meta = [
     }
   ],
   "info" : {
-    "name" : "Cell Ranger post-processing"
+    "name" : "Cell Ranger post-processing",
+    "test_dependencies" : [
+      {
+        "name" : "from_10xh5_to_h5mu",
+        "namespace" : "convert"
+      },
+      {
+        "name" : "cellranger_postprocessing_test",
+        "namespace" : "test_workflows/ingestion"
+      }
+    ]
   },
   "status" : "enabled",
   "dependencies" : [
@@ -3127,7 +3137,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_postprocessing",
     "viash_version" : "0.9.0",
-    "git_commit" : "09a69c61522eda39c5eea699cd4cf0a24b79d86a",
+    "git_commit" : "82f8c5b319215d61ef772a7766a98eb5e4f2a8ee",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
