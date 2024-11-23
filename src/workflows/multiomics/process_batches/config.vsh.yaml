@@ -9,12 +9,6 @@ description: |
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author, maintainer ]
-info:
-  test_dependencies:
-    - name: workflow_test
-      namespace: test_workflows/multiomics/process_batches
-    - name: workflow_test2
-      namespace: test_workflows/multiomics/process_batches
 argument_groups:
   - name: Inputs
     arguments:

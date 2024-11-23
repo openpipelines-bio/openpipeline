@@ -4,10 +4,6 @@ description: "Run calculations that output information required for most integra
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author ]
-info:
-  test_dependencies:
-    - name: dimensionality_reduction_test
-      namespace: test_workflows/multiomics
 argument_groups:
   - name: "Inputs"
     arguments:

@@ -107,16 +107,15 @@ jobs:
         tree ./resources_test/
 
     - name: Build test dependencies
-      run: |
-        readarray -t test_dependencies < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.[].info.test_dependencies // []) | flatten | .[] | (.namespace + "/" + .name)'
-        for dependency in "${resources[@]}"; do
-          viash ns build -q "$dependency" -c ".version := 'integration_build'" -c ".engines[.type == 'docker'].target_tag := 'integration_build'" --setup alwayspullelsebuild
-        done
+      uses: viash-io/viash-actions/ns-build@v6
+      with:
+        config_mod: |
+          .version := 'integration_build'
+          .engines[.type == 'docker'].target_tag := 'integration_build'
+        src: ${{ matrix.component.dir }}
+        query: "^test_workflows"
+        setup: build
 
-    - name: Remove docker builder cache
-      run: |
-        docker builder prune -a -f 
-    
     - name: Run integration test
       timeout-minutes: 120
       run: |

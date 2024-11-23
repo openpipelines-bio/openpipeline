@@ -174,7 +174,6 @@ jobs:
         commit_message: "deploy: ${{github.sha}}"
         skip_dirty_check: true
         branch:  ${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}
-    
     - name: "List components"
       id: ns_list
       uses: viash-io/viash-actions/ns-list@v6
@@ -182,7 +181,7 @@ jobs:
         engine: docker
         src: src
         format: json
-        query_namespace: ^(?!workflows|test_workflows)
+        query_namespace: ^(?!workflows)|(workflows/test_workflows)
 
     - name: "List workflows"
       id: ns_list_workflows

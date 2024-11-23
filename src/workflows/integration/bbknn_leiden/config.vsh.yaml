@@ -1,8 +1,6 @@
 name: "bbknn_leiden"
 namespace: "workflows/integration"
 description: "Run bbknn followed by leiden clustering and run umap on the result."
-info:
-  test_dependencies:
 authors:
   - __merge__: /src/authors/mauro_saporita.yaml
     roles: [ author ]

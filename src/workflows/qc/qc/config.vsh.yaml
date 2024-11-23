@@ -4,10 +4,6 @@ description: "A pipeline to add basic qc statistics to a MuData "
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author, maintainer ]
-info:
-  test_dependencies:
-    - name: test_qc
-      namespace: test_workflows/qc
 argument_groups:
   - name: Inputs
     arguments:

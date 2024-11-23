@@ -3112,13 +3112,7 @@ meta = [
     }
   ],
   "info" : {
-    "name" : "Cell Ranger mapping",
-    "test_dependencies" : [
-      {
-        "name" : "cellranger_mapping_test",
-        "namespace" : "test_workflows/ingestion"
-      }
-    ]
+    "name" : "Cell Ranger mapping"
   },
   "status" : "enabled",
   "dependencies" : [
@@ -3229,7 +3223,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_mapping",
     "viash_version" : "0.9.0",
-    "git_commit" : "dd14bcaf17f674a30a7ec1397eaf6e420b2e4c3a",
+    "git_commit" : "09a69c61522eda39c5eea699cd4cf0a24b79d86a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

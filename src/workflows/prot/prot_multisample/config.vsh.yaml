@@ -3,7 +3,6 @@ namespace: "workflows/prot"
 description: "Processing unimodal multi-sample ADT data."
 info:
   image: /images/concepts/fig_workflow_multiomics_adt_multisample.svg
-  test_dependencies:
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author ]
