@@ -3059,7 +3059,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_star_reference",
     "viash_version" : "0.9.0",
-    "git_commit" : "7a5d99042aeba7efd1f5df766d3eefa3f07ff5ff",
+    "git_commit" : "30119889fd59f0bca9713fd3ba30e551f6ac7f9e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
