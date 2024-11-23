@@ -922,9 +922,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt, Dries De Maeyer, Weiwei Schultz, Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_multi"
-LABEL org.opencontainers.image.created="2024-11-23T12:57:41Z"
+LABEL org.opencontainers.image.created="2024-11-23T16:17:09Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4eedf9f50b04d26d498b4bdfcf62728463ef4a8e"
+LABEL org.opencontainers.image.revision="6717b927207350bf8c6c578d537bcc65f4ff723d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
