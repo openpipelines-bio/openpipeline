@@ -3138,6 +3138,18 @@ meta = [
       "dest" : "openpipelinetestutils"
     }
   ],
+  "info" : {
+    "test_dependencies" : [
+      {
+        "name" : "workflow_test",
+        "namespace" : "test_workflows/multiomics/process_batches"
+      },
+      {
+        "name" : "workflow_test2",
+        "namespace" : "test_workflows/multiomics/process_batches"
+      }
+    ]
+  },
   "status" : "enabled",
   "dependencies" : [
     {
@@ -3281,9 +3293,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.9.0",
-    "git_commit" : "a6d628bf800f7a7f7715abb3fc12e7a4db17c03f",
+    "git_commit" : "5590881fe4c782987e9b3040a7bcaebc3450e49d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "1.0.0-2-ga6d628bf80"
+    "git_tag" : "1.0.0-3-g5590881fe4"
   },
   "package_config" : {
     "name" : "openpipeline",

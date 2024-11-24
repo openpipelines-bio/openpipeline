@@ -609,9 +609,9 @@ RUN pip install --upgrade pip && \
   python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background_v0_2"
-LABEL org.opencontainers.image.created="2024-11-22T13:51:33Z"
+LABEL org.opencontainers.image.created="2024-11-24T08:17:24Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a6d628bf800f7a7f7715abb3fc12e7a4db17c03f"
+LABEL org.opencontainers.image.revision="5590881fe4c782987e9b3040a7bcaebc3450e49d"
 LABEL org.opencontainers.image.version="2.0.0-rc.1"
 
 VIASHDOCKER

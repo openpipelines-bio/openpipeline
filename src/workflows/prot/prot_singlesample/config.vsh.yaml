@@ -3,6 +3,7 @@ namespace: "workflows/prot"
 description: "Processing unimodal single-sample CITE-seq data."
 info:
   image: /images/concepts/fig_workflow_multiomics_adt_singlesample.svg
+  test_dependencies:
 authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
     roles: [ author ]
