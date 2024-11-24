@@ -3054,9 +3054,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/remove_modality",
     "viash_version" : "0.9.0",
-    "git_commit" : "5590881fe4c782987e9b3040a7bcaebc3450e49d",
+    "git_commit" : "7412e4eb9df078ab884a60dccbf5b17d9657db60",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "1.0.0-3-g5590881fe4"
+    "git_tag" : "1.0.0-4-g7412e4eb9d"
   },
   "package_config" : {
     "name" : "openpipeline",
