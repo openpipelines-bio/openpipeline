@@ -147,7 +147,27 @@ jobs:
         path: ${{ needs.sync_s3.outputs.dest_paths }}
         key: ${{ needs.sync_s3.outputs.cache_key }}
         fail-on-cache-miss: true
-
+    - name: Remove unused test resources to save space
+      shell: bash
+      run: |
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" -c 'del(.dependencies)' | jq -r -c '(.build_info.config | capture("^(?<dir>.*\/)").dir) as $dir | .test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        to_not_remove=()
+        for resource in "${resources[@]}"; do
+          if [[ $resource == *"resources_test"* ]]; then
+            relative_path=${resource#*resources_test/}
+            relative_path_trailing_slash_removed=${relative_path%/}
+            to_not_remove+=("-path" "./resources_test/$relative_path_trailing_slash_removed" "-prune" "-o")
+          fi
+        done
+        # Remove last prune and -o
+        if (( ${#errors[@]} )); then
+          unset 'to_not_remove[${#to_not_remove[@]}-1]'
+          unset 'to_not_remove[${#to_not_remove[@]}-1]'
+          to_not_remove+=( "(" "${to_not_remove[@]}" ")" "-prune" "-o")
+        fi
+        echo "Not removing ${to_not_remove[@]}"
+        find ./resources_test/ "${to_not_remove[@]}" -type f -exec rm {} +
+        tree ./resources_test/
     - name: Login to the nvidia container registry
       uses: docker/login-action@v3
       env: 
