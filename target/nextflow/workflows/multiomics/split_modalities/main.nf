@@ -2942,6 +2942,14 @@ meta = [
       "dest" : "openpipelinetestutils"
     }
   ],
+  "info" : {
+    "test_dependencies" : [
+      {
+        "name" : "split_modalities_test",
+        "namespace" : "test_workflows/multiomics"
+      }
+    ]
+  },
   "status" : "enabled",
   "dependencies" : [
     {
@@ -3040,7 +3048,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities",
     "viash_version" : "0.9.0",
-    "git_commit" : "edaefc4248ceed0c3914bd05eccbc62b1f740362",
+    "git_commit" : "fe9f9887d0b409884f96969014e655b5cb5ab3c5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

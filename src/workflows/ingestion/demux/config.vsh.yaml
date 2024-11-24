@@ -5,6 +5,7 @@ description: |
 info:
   name: Demux
   short_description: A generic pipeline for running bcl2fastq, bcl-convert or Cell Ranger mkfastq.
+  test_dependencies:
 authors:
   - __merge__: /src/authors/toni_verbeiren.yaml
     roles: [ author, maintainer ]
