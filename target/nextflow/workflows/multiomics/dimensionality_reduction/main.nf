@@ -3053,6 +3053,14 @@ meta = [
       "dest" : "openpipelinetestutils"
     }
   ],
+  "info" : {
+    "test_dependencies" : [
+      {
+        "name" : "dimensionality_reduction_test",
+        "namespace" : "test_workflows/multiomics"
+      }
+    ]
+  },
   "status" : "enabled",
   "dependencies" : [
     {
@@ -3162,7 +3170,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction",
     "viash_version" : "0.9.0",
-    "git_commit" : "a061618772a5e1de1a9bfcf443434fe3bef4a8c9",
+    "git_commit" : "aec70b012074203ba6616da2cc8f55b7f88b903a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
