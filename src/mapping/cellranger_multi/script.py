@@ -399,12 +399,10 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         logger.info("  Creating Cell Ranger argument")
         temp_id="run"
         proc_pars=["--disable-ui", "--id", temp_id]
-        
-        memory = int(meta['memory_gb']) - 2 if meta['memory_gb'] else None
+
         command_line_parameters = {
             "--localcores": meta['cpus'],
-            "--localmem": memory,
-            "--localvmem": memory,
+            "--localmem": int(meta['memory_gb']) - 2 if meta['memory_gb'] else None,
         }
         for param, param_value in command_line_parameters.items():
             if param_value:

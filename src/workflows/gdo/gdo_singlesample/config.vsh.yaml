@@ -1,9 +1,6 @@
 name: "gdo_singlesample"
 namespace: "workflows/gdo"
 description: "Processing unimodal single-sample guide-derived oligonucleotide (GDO) data."
-info:
-  name: "GDO Singlesample"
-  test_dependencies:
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author ]

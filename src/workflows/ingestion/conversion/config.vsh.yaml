@@ -1,11 +1,6 @@
 name: "conversion"
 namespace: "workflows/ingestion"
 description: "A pipeline to convert different file formats to .h5mu."
-info:
-  name: Convert to MuData
-  test_dependencies:
-    - name: conversion_test
-      namespace: test_workflows/ingestion
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author, maintainer ]

@@ -174,7 +174,6 @@ jobs:
         commit_message: "deploy: ${{github.sha}}"
         skip_dirty_check: true
         branch:  ${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}
-    
     - name: "List components"
       id: ns_list
       uses: viash-io/viash-actions/ns-list@v6
@@ -182,7 +181,7 @@ jobs:
         engine: docker
         src: src
         format: json
-        query_namespace: ^(?!workflows|test_workflows)
+        query_namespace: ^(?!workflows)|(workflows/test_workflows)
 
     - name: "List workflows"
       id: ns_list_workflows
@@ -217,6 +216,7 @@ jobs:
 
   # phase 2
   build_and_deploy_docker_containers:
+    name: "Build and Deploy Docker Images"
     needs: build_and_deploy_target_folder
     if: ${{github.event_name == 'push' || inputs.push_containers }}
 
@@ -226,8 +226,6 @@ jobs:
       fail-fast: false
       matrix:
         component: ${{ fromJson(needs.build_and_deploy_target_folder.outputs.component_matrix) }}
-    
-    name: "${{matrix.component.name}} - ${{matrix.component.namespace}} - Build and push docker image"
 
     steps:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'

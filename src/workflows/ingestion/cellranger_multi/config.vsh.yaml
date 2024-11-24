@@ -3,9 +3,6 @@ namespace: "workflows/ingestion"
 description: "A pipeline for running Cell Ranger multi."
 info:
   name: Cell Ranger multi
-  test_dependencies:
-    - name: cellranger_multi_test
-      namespace: test_workflows/ingestion
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author ]

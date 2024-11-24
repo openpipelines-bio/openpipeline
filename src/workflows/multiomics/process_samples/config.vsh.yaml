@@ -1,12 +1,6 @@
 name: "process_samples"
 namespace: "workflows/multiomics"
 description: "A pipeline to analyse multiple multiomics samples."
-info:
-  test_dependencies:
-    - name: move_layer
-      namespace: transform
-    - name: remove_modality
-      namespace: filter
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author, maintainer ]

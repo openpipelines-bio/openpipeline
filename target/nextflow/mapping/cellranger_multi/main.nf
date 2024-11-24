@@ -3801,7 +3801,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.9.0",
-    "git_commit" : "6717b927207350bf8c6c578d537bcc65f4ff723d",
+    "git_commit" : "edaefc4248ceed0c3914bd05eccbc62b1f740362",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -4275,12 +4275,10 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         logger.info("  Creating Cell Ranger argument")
         temp_id="run"
         proc_pars=["--disable-ui", "--id", temp_id]
-        
-        memory = int(meta['memory_gb']) - 2 if meta['memory_gb'] else None
+
         command_line_parameters = {
             "--localcores": meta['cpus'],
-            "--localmem": memory,
-            "--localvmem": memory,
+            "--localmem": int(meta['memory_gb']) - 2 if meta['memory_gb'] else None,
         }
         for param, param_value in command_line_parameters.items():
             if param_value:
