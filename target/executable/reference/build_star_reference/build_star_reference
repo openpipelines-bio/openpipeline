@@ -508,9 +508,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_star_reference"
-LABEL org.opencontainers.image.created="2024-11-25T05:49:51Z"
+LABEL org.opencontainers.image.created="2024-11-25T13:11:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="11e9b716c560890fbdaed974dd5557b03e093f14"
+LABEL org.opencontainers.image.revision="12e02ca619a0900f7689ece1ea8f679620e335af"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
