@@ -603,7 +603,7 @@ build_info:
   output: "target/nextflow/correction/cellbender_remove_background"
   executable: "target/nextflow/correction/cellbender_remove_background/main.nf"
   viash_version: "0.9.0"
-  git_commit: "aec70b012074203ba6616da2cc8f55b7f88b903a"
+  git_commit: "11e9b716c560890fbdaed974dd5557b03e093f14"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

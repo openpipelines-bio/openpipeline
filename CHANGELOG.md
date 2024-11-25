@@ -1,4 +1,4 @@
-# openpipelines 2.x.x (Unreleased)
+# openpipelines 2.0.0-rc.1
 
 ## BREAKING CHANGES
 
