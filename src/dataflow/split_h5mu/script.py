@@ -1,6 +1,7 @@
 import mudata as mu
 import pandas as pd
 import re
+import gc
 from pathlib import Path
 from collections import defaultdict
 
@@ -103,6 +104,7 @@ def main():
         # avoid keeping files in memory
         del mdata_obs
         del adata_obs
+        gc.collect()
 
     logger.info(f"Writing output_files CSV file to {par['output_files']}")
     df = pd.DataFrame({"name": obs_features_s, "filename": obs_files})
