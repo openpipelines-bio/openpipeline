@@ -100,6 +100,10 @@ def main():
         mdata_obs.mod[par["modality"]] = adata_obs
         mdata_obs.write_h5mu(output_dir / mdata_obs_name, compression=par["output_compression"])
 
+        # avoid keeping files in memory
+        del mdata_obs
+        del adata_obs
+
     logger.info(f"Writing output_files CSV file to {par['output_files']}")
     df = pd.DataFrame({"name": obs_features_s, "filename": obs_files})
     df.to_csv(par["output_files"], index=False)
