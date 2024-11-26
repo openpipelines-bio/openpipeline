@@ -1,4 +1,4 @@
-name: copy_obs
+name: duplicate_obs
 namespace: "metadata"
 description: |
   Make a copy of an existing .obs column to another .obs column.
@@ -21,8 +21,13 @@ argument_groups:
         required: false
       - name: "--input_obs_key"
         type: string
-        description: .obs column to be copied.
-        required: true
+        description: .obs column to be copied. If no key is provided, the .obs index will be copied.
+        required: false
+  - name: "Arguments"
+    arguments:
+      - name: "--overwrite_existing_key"
+        type: boolean_true
+        description: If set to true and the --output_obs_key already exists in the input file, the .obs field will be overwritten.
   - name: "MuData Output"
     arguments:
       - name: "--output"
