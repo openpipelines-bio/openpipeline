@@ -507,9 +507,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow split_h5mu"
-LABEL org.opencontainers.image.created="2024-11-25T02:55:03Z"
+LABEL org.opencontainers.image.created="2024-11-26T02:53:49Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4092659369edd6d738cd92a2d5bad563de7c7d7c"
+LABEL org.opencontainers.image.revision="cb5b3c93593117b9cf56007c4eb540a2be8ad29f"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1147,6 +1147,7 @@ cat > "\$tempscript" << 'VIASHMAIN'
 import mudata as mu
 import pandas as pd
 import re
+import gc
 from pathlib import Path
 from collections import defaultdict
 
@@ -1261,6 +1262,11 @@ def main():
         logger.info(f"Writing h5mu filtered for {par['obs_feature']} {obs_name} to file {output_dir / mdata_obs_name}")
         mdata_obs.mod[par["modality"]] = adata_obs
         mdata_obs.write_h5mu(output_dir / mdata_obs_name, compression=par["output_compression"])
+
+        # avoid keeping files in memory
+        del mdata_obs
+        del adata_obs
+        gc.collect()
 
     logger.info(f"Writing output_files CSV file to {par['output_files']}")
     df = pd.DataFrame({"name": obs_features_s, "filename": obs_files})

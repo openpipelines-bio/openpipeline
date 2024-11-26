@@ -3107,7 +3107,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "4092659369edd6d738cd92a2d5bad563de7c7d7c",
+    "git_commit" : "cb5b3c93593117b9cf56007c4eb540a2be8ad29f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3154,6 +3154,7 @@ cat > "$tempscript" << VIASHMAIN
 import mudata as mu
 import pandas as pd
 import re
+import gc
 from pathlib import Path
 from collections import defaultdict
 
@@ -3268,6 +3269,11 @@ def main():
         logger.info(f"Writing h5mu filtered for {par['obs_feature']} {obs_name} to file {output_dir / mdata_obs_name}")
         mdata_obs.mod[par["modality"]] = adata_obs
         mdata_obs.write_h5mu(output_dir / mdata_obs_name, compression=par["output_compression"])
+
+        # avoid keeping files in memory
+        del mdata_obs
+        del adata_obs
+        gc.collect()
 
     logger.info(f"Writing output_files CSV file to {par['output_files']}")
     df = pd.DataFrame({"name": obs_features_s, "filename": obs_files})

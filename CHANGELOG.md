@@ -1,4 +1,10 @@
-# openpipelines 2.x.x (Unreleased)
+# openpipelines 2.0.0-rc.2
+
+## MINOR CHANGES
+
+* `dataflow/split_h5mu`: Optimize resource usage of the component (PR #913).
+
+# openpipelines 2.0.0-rc.1
 
 ## BREAKING CHANGES
 
