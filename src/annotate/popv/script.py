@@ -173,7 +173,7 @@ def main(par, meta):
             save_path_trained_models=temp_dir,
             # hardcoded values
             cl_obo_folder=cl_obo_folder,
-            accelerator='cuda' if use_gpu else None
+            accelerator='cuda' if use_gpu else 'cpu'
         )
         method_kwargs = {}
         if 'scanorama' in par['methods']:
