@@ -1,0 +1,69 @@
+name: csr_dtype_cast
+namespace: "dataflow"
+description: |
+  Casts the dtypes of AnnData.layer.indptr and AnnData.layer.indices to scipy-compatible dtypes.
+      
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        description: Input h5mu file
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        type: string
+        default: "rna"
+        required: false
+      - name: "--layer"
+        type: string
+        example: "raw_counts"
+        required: false
+      - name: "--dtype"
+        type: string
+        choices: ["int32", "int64"]
+        default: "int32"
+  
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        type: file
+        description: Output h5mu file.
+        direction: output
+        example: output.h5mu
+      - name: "--output_compression"
+        type: string
+        description: The compression format to be used on the output h5ad object.
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
+resources:
+  - type: python_script
+    path: script.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+
+engines:
+  - type: docker
+    image: python:3.11-slim
+    setup:
+      - type: apt
+        packages: 
+          - procps
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        packages:
+          - scipy==1.14.1
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [singlecpu, midmem]
