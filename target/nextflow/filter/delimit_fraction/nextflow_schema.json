@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -87,7 +87,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -130,7 +130,7 @@
                 "description": "Type: `double`, default: `0.0`. Min fraction for an observation to be retained (True in output)",
                 "help_text": "Type: `double`, default: `0.0`. Min fraction for an observation to be retained (True in output)."
             ,
-                "default": "0.0"
+                "default":0.0
             }
     
 
@@ -141,7 +141,7 @@
                 "description": "Type: `double`, default: `1.0`. Max fraction for an observation to be retained (True in output)",
                 "help_text": "Type: `double`, default: `1.0`. Max fraction for an observation to be retained (True in output)."
             ,
-                "default": "1.0"
+                "default":1.0
             }
     
 

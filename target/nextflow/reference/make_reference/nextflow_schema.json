@@ -76,7 +76,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output_fasta.gz`, example: `genome_sequence.fa.gz`. Output genome sequence fasta",
                 "help_text": "Type: `file`, required, default: `$id.$key.output_fasta.gz`, example: `genome_sequence.fa.gz`. Output genome sequence fasta."
             ,
-                "default": "$id.$key.output_fasta.gz"
+                "default":"$id.$key.output_fasta.gz"
             }
     
 
@@ -87,7 +87,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output_gtf.gz`, example: `transcriptome_annotation.gtf.gz`. Output transcriptome annotation gtf",
                 "help_text": "Type: `file`, required, default: `$id.$key.output_gtf.gz`, example: `transcriptome_annotation.gtf.gz`. Output transcriptome annotation gtf."
             ,
-                "default": "$id.$key.output_gtf.gz"
+                "default":"$id.$key.output_gtf.gz"
             }
     
 

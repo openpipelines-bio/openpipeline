@@ -36,7 +36,7 @@
                 "description": "Type: `file`, required, default: `input.h5mu`. Input MuData file",
                 "help_text": "Type: `file`, required, default: `input.h5mu`. Input MuData file"
             ,
-                "default": "input.h5mu"
+                "default":"input.h5mu"
             }
     
 
@@ -47,7 +47,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -58,7 +58,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5ad`. Output AnnData file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5ad`. Output AnnData file."
             ,
-                "default": "$id.$key.output.h5ad"
+                "default":"$id.$key.output.h5ad"
             }
     
 
@@ -71,7 +71,7 @@
                 "enum": ["gzip", "lzf"]
             
             ,
-                "default": "gzip"
+                "default":"gzip"
             }
     
 

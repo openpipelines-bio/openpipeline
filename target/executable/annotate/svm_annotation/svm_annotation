@@ -563,9 +563,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component annotate svm_annotation"
-LABEL org.opencontainers.image.created="2024-11-26T02:53:53Z"
+LABEL org.opencontainers.image.created="2024-11-27T02:55:37Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cb5b3c93593117b9cf56007c4eb540a2be8ad29f"
+LABEL org.opencontainers.image.revision="89cd6a86179934b6cd6c8310464a7718f48af401"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

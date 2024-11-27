@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `string`, default: `sample_id`. Column name discriminating between your batches",
                 "help_text": "Type: `string`, default: `sample_id`. Column name discriminating between your batches."
             ,
-                "default": "sample_id"
+                "default":"sample_id"
             }
     
 
@@ -138,7 +138,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -149,7 +149,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_model.output_model`. Folder where the state of the trained model will be saved to",
                 "help_text": "Type: `file`, default: `$id.$key.output_model.output_model`. Folder where the state of the trained model will be saved to."
             ,
-                "default": "$id.$key.output_model.output_model"
+                "default":"$id.$key.output_model.output_model"
             }
     
 
@@ -172,7 +172,7 @@
                 "description": "Type: `string`, default: `X_scvi_integrated`. In which ",
                 "help_text": "Type: `string`, default: `X_scvi_integrated`. In which .obsm slot to store the resulting integrated embedding."
             ,
-                "default": "X_scvi_integrated"
+                "default":"X_scvi_integrated"
             }
     
 
@@ -193,7 +193,7 @@
                 "description": "Type: `integer`, default: `128`. Number of nodes per hidden layer",
                 "help_text": "Type: `integer`, default: `128`. Number of nodes per hidden layer."
             ,
-                "default": "128"
+                "default":128
             }
     
 
@@ -204,7 +204,7 @@
                 "description": "Type: `integer`, default: `30`. Dimensionality of the latent space",
                 "help_text": "Type: `integer`, default: `30`. Dimensionality of the latent space."
             ,
-                "default": "30"
+                "default":30
             }
     
 
@@ -215,7 +215,7 @@
                 "description": "Type: `integer`, default: `2`. Number of hidden layers used for encoder and decoder neural-networks",
                 "help_text": "Type: `integer`, default: `2`. Number of hidden layers used for encoder and decoder neural-networks."
             ,
-                "default": "2"
+                "default":2
             }
     
 
@@ -226,7 +226,7 @@
                 "description": "Type: `double`, default: `0.1`. Dropout rate for the neural networks",
                 "help_text": "Type: `double`, default: `0.1`. Dropout rate for the neural networks."
             ,
-                "default": "0.1"
+                "default":0.1
             }
     
 
@@ -239,7 +239,7 @@
                 "enum": ["gene", "gene-batch", "gene-label", "gene-cell"]
             
             ,
-                "default": "gene"
+                "default":"gene"
             }
     
 
@@ -252,7 +252,7 @@
                 "enum": ["nb", "zinb", "poisson"]
             
             ,
-                "default": "nb"
+                "default":"nb"
             }
     
 
@@ -275,7 +275,7 @@
                 "enum": ["encoder", "decoder", "none", "both"]
             
             ,
-                "default": "both"
+                "default":"both"
             }
     
 
@@ -288,7 +288,7 @@
                 "enum": ["encoder", "decoder", "none", "both"]
             
             ,
-                "default": "none"
+                "default":"none"
             }
     
 
@@ -299,7 +299,7 @@
                 "description": "Type: `boolean_false`, default: `true`. Whether to concatenate covariates to expression in encoder",
                 "help_text": "Type: `boolean_false`, default: `true`. Whether to concatenate covariates to expression in encoder"
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -310,7 +310,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Whether to concatenate covariates into output of hidden layers in encoder/decoder",
                 "help_text": "Type: `boolean_true`, default: `false`. Whether to concatenate covariates into output of hidden layers in encoder/decoder. \nThis option only applies when n_layers \u003e 1. The covariates are concatenated to\nthe input of subsequent hidden layers.\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -321,7 +321,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Use observed library size for RNA as scaling factor in mean of conditional distribution",
                 "help_text": "Type: `boolean_true`, default: `false`. Use observed library size for RNA as scaling factor in mean of conditional distribution.\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -354,7 +354,7 @@
                 "enum": ["elbo_validation", "reconstruction_loss_validation", "kl_local_validation"]
             
             ,
-                "default": "elbo_validation"
+                "default":"elbo_validation"
             }
     
 
@@ -365,7 +365,7 @@
                 "description": "Type: `integer`, default: `45`. Number of validation epochs with no improvement after which training will be stopped",
                 "help_text": "Type: `integer`, default: `45`. Number of validation epochs with no improvement after which training will be stopped."
             ,
-                "default": "45"
+                "default":45
             }
     
 
@@ -376,7 +376,7 @@
                 "description": "Type: `double`, default: `0.0`. Minimum change in the monitored quantity to qualify as an improvement, i",
                 "help_text": "Type: `double`, default: `0.0`. Minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than min_delta, will count as no improvement."
             ,
-                "default": "0.0"
+                "default":0.0
             }
     
 
@@ -407,7 +407,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus",
                 "help_text": "Type: `boolean`, default: `true`. Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -418,7 +418,7 @@
                 "description": "Type: `double`, default: `0.6`. Factor to reduce learning rate",
                 "help_text": "Type: `double`, default: `0.6`. Factor to reduce learning rate."
             ,
-                "default": "0.6"
+                "default":0.6
             }
     
 
@@ -429,7 +429,7 @@
                 "description": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced",
                 "help_text": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced."
             ,
-                "default": "30.0"
+                "default":30.0
             }
     
 
@@ -450,7 +450,7 @@
                 "description": "Type: `integer`, default: `0`. Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training",
                 "help_text": "Type: `integer`, default: `0`. Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -461,7 +461,7 @@
                 "description": "Type: `integer`, default: `0`. Minimum number of genes threshold ensuring that every var_input filter has sufficient observations (genes) for model training",
                 "help_text": "Type: `integer`, default: `0`. Minimum number of genes threshold ensuring that every var_input filter has sufficient observations (genes) for model training."
             ,
-                "default": "0"
+                "default":0
             }
     
 

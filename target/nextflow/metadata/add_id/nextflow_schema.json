@@ -56,7 +56,7 @@
                 "description": "Type: `string`, default: `sample_id`. Name of the ",
                 "help_text": "Type: `string`, default: `sample_id`. Name of the .obs column where to store the id."
             ,
-                "default": "sample_id"
+                "default":"sample_id"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. "
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -90,7 +90,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Join the id to the ",
                 "help_text": "Type: `boolean_true`, default: `false`. Join the id to the .obs index (.obs_names)."
             ,
-                "default": "False"
+                "default":false
             }
     
 

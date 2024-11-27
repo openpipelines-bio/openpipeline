@@ -56,7 +56,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Read BAM input on stdin",
                 "help_text": "Type: `boolean_true`, default: `false`. Read BAM input on stdin."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -137,7 +137,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Write gVCF output, which indicates coverage in uncalled regions",
                 "help_text": "Type: `boolean_true`, default: `false`. Write gVCF output, which indicates coverage in uncalled regions."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -168,7 +168,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Only provide variant calls and genotype likelihoods for sites and alleles which are provided in the VCF input, and provide output in the VCF for all input alleles, not just those which have support in the data",
                 "help_text": "Type: `boolean_true`, default: `false`. Only provide variant calls and genotype likelihoods for sites and alleles which are provided in the VCF input, and provide output in the VCF for all input alleles, not just those which have support in the data."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -189,7 +189,7 @@
                 "description": "Type: `boolean_true`, default: `false`. At sites where genotypes are made over haplotype alleles, provide information about all alleles in output, not only those which are called",
                 "help_text": "Type: `boolean_true`, default: `false`. At sites where genotypes are made over haplotype alleles, provide information about all alleles in output, not only those which are called."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -200,7 +200,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Report even loci which appear to be monomorphic, and report all considered alleles, even those which are not in called genotypes",
                 "help_text": "Type: `boolean_true`, default: `false`. Report even loci which appear to be monomorphic, and report all considered alleles, even those which are not in called genotypes."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -211,7 +211,7 @@
                 "description": "Type: `double`, default: `0.0`. Report sites if the probability that there is a polymorphism at the site is greater than N",
                 "help_text": "Type: `double`, default: `0.0`. Report sites if the probability that there is a polymorphism at the site is greater than N. Note that post-filtering is generally recommended over the use of this parameter."
             ,
-                "default": "0.0"
+                "default":0.0
             }
     
 
@@ -222,7 +222,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Generate strict VCF format (FORMAT/GQ will be an int)",
                 "help_text": "Type: `boolean_true`, default: `false`. Generate strict VCF format (FORMAT/GQ will be an int)."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -233,7 +233,7 @@
                 "description": "Type: `double`, default: `0.001`. The expected mutation rate or pairwise nucleotide diversity among the population under analysis",
                 "help_text": "Type: `double`, default: `0.001`. The expected mutation rate or pairwise nucleotide diversity among the population under analysis. This serves as the single parameter to the Ewens Sampling Formula prior model."
             ,
-                "default": "0.001"
+                "default":0.001
             }
     
 
@@ -244,7 +244,7 @@
                 "description": "Type: `integer`, default: `2`. Sets the default ploidy for the analysis to N",
                 "help_text": "Type: `integer`, default: `2`. Sets the default ploidy for the analysis to N."
             ,
-                "default": "2"
+                "default":2
             }
     
 
@@ -255,7 +255,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Assume that samples result from pooled sequencing",
                 "help_text": "Type: `boolean_true`, default: `false`. Assume that samples result from pooled sequencing. Model pooled samples using discrete genotypes across pools."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -266,7 +266,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Output all alleles which pass input filters, regardles of genotyping outcome or model",
                 "help_text": "Type: `boolean_true`, default: `false`. Output all alleles which pass input filters, regardles of genotyping outcome or model."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -277,7 +277,7 @@
                 "description": "Type: `boolean_true`, default: `false`. This flag includes the reference allele in the analysis as if it is another sample from the same population",
                 "help_text": "Type: `boolean_true`, default: `false`. This flag includes the reference allele in the analysis as if it is another sample from the same population."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -288,7 +288,7 @@
                 "description": "Type: `string`, default: `100,60`. Assign mapping quality of MQ to the reference allele at each site and base quality of BQ",
                 "help_text": "Type: `string`, default: `100,60`. Assign mapping quality of MQ to the reference allele at each site and base quality of BQ."
             ,
-                "default": "100,60"
+                "default":"100,60"
             }
     
 
@@ -299,7 +299,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Ignore SNP alleles",
                 "help_text": "Type: `boolean_true`, default: `false`. Ignore SNP alleles."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -310,7 +310,7 @@
                 "description": "Type: `boolean_false`, default: `true`. Ignore multi-nuceotide polymorphisms, MNPs",
                 "help_text": "Type: `boolean_false`, default: `true`. Ignore multi-nuceotide polymorphisms, MNPs. MNPs are excluded as default."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -321,7 +321,7 @@
                 "description": "Type: `boolean_false`, default: `true`. Ignore insertion and deletion alleles",
                 "help_text": "Type: `boolean_false`, default: `true`. Ignore insertion and deletion alleles. Indels are excluded as default."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -332,7 +332,7 @@
                 "description": "Type: `boolean_false`, default: `true`. Ignore complex events (composites of other classes)",
                 "help_text": "Type: `boolean_false`, default: `true`. Ignore complex events (composites of other classes). Complex are excluded as default"
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -343,7 +343,7 @@
                 "description": "Type: `integer`, default: `0`. Evaluate only the best N SNP alleles, ranked by sum of supporting quality scores",
                 "help_text": "Type: `integer`, default: `0`. Evaluate only the best N SNP alleles, ranked by sum of supporting quality scores."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -354,7 +354,7 @@
                 "description": "Type: `integer`, default: `3`. Allow haplotype calls with contiguous embedded matches of up to this length",
                 "help_text": "Type: `integer`, default: `3`. Allow haplotype calls with contiguous embedded matches of up to this length."
             ,
-                "default": "3"
+                "default":3
             }
     
 
@@ -365,7 +365,7 @@
                 "description": "Type: `integer`, default: `5`. When assembling observations across repeats, require the total repeat length at least this many bp",
                 "help_text": "Type: `integer`, default: `5`. When assembling observations across repeats, require the total repeat length at least this many bp."
             ,
-                "default": "5"
+                "default":5
             }
     
 
@@ -376,7 +376,7 @@
                 "description": "Type: `integer`, default: `1`. To detect interrupted repeats, build across sequence until it has entropy \u003e N bits per bp",
                 "help_text": "Type: `integer`, default: `1`. To detect interrupted repeats, build across sequence until it has entropy \u003e N bits per bp. Set to 0 to turn off."
             ,
-                "default": "1"
+                "default":1
             }
     
 
@@ -387,7 +387,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Exclude observations which do not fully span the dynamically-determined detection window",
                 "help_text": "Type: `boolean_true`, default: `false`. Exclude observations which do not fully span the dynamically-determined detection window.  (default, use all observations, dividing partial support across matching haplotypes when generating haplotypes.)"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -398,7 +398,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Turn off left-alignment of indels, which is enabled by default",
                 "help_text": "Type: `boolean_true`, default: `false`. Turn off left-alignment of indels, which is enabled by default."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -409,7 +409,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Include duplicate-marked alignments in the analysis",
                 "help_text": "Type: `boolean_true`, default: `false`. Include duplicate-marked alignments in the analysis. default: exclude duplicates marked as such in alignments"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -420,7 +420,7 @@
                 "description": "Type: `integer`, default: `1`. Exclude alignments from analysis if they have a mapping quality less than Q",
                 "help_text": "Type: `integer`, default: `1`. Exclude alignments from analysis if they have a mapping quality less than Q."
             ,
-                "default": "1"
+                "default":1
             }
     
 
@@ -431,7 +431,7 @@
                 "description": "Type: `integer`, default: `1`. Exclude alleles from analysis if their supporting base quality is less than Q",
                 "help_text": "Type: `integer`, default: `1`. Exclude alleles from analysis if their supporting base quality is less than Q. Default value is changed according to the instruction of scSplit."
             ,
-                "default": "1"
+                "default":1
             }
     
 
@@ -442,7 +442,7 @@
                 "description": "Type: `integer`, default: `0`. Consider any allele in which the sum of qualities of supporting observations is at least Q",
                 "help_text": "Type: `integer`, default: `0`. Consider any allele in which the sum of qualities of supporting observations is at least Q."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -453,7 +453,7 @@
                 "description": "Type: `integer`, default: `0`. Consider any allele in which and the sum of mapping qualities of supporting reads is at least",
                 "help_text": "Type: `integer`, default: `0`. Consider any allele in which and the sum of mapping qualities of supporting reads is at least."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -464,7 +464,7 @@
                 "description": "Type: `integer`, default: `10`. Count mismatches toward --read-mismatch-limit if the base quality of the mismatch is \u003e= Q",
                 "help_text": "Type: `integer`, default: `10`. Count mismatches toward --read-mismatch-limit if the base quality of the mismatch is \u003e= Q."
             ,
-                "default": "10"
+                "default":10
             }
     
 
@@ -475,7 +475,7 @@
                 "description": "Type: `double`, default: `1.0`. Exclude reads with more than N mismatches where each mismatch has base quality \u003e= mismatch-base-quality-threshold",
                 "help_text": "Type: `double`, default: `1.0`. Exclude reads with more than N mismatches where each mismatch has base quality \u003e= mismatch-base-quality-threshold."
             ,
-                "default": "1.0"
+                "default":1.0
             }
     
 
@@ -516,7 +516,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Use stringent input base and mapping quality filters, equivalent to -m 30 -q 20 -R 0 -S 0",
                 "help_text": "Type: `boolean_true`, default: `false`. Use stringent input base and mapping quality filters, equivalent to -m 30 -q 20 -R 0 -S 0"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -527,7 +527,7 @@
                 "description": "Type: `double`, default: `0.05`. Require at least this fraction of observations supporting an alternate allele within a single individual in order to evaluate the position",
                 "help_text": "Type: `double`, default: `0.05`. Require at least this fraction of observations supporting an alternate allele within a single individual in order to evaluate the position."
             ,
-                "default": "0.05"
+                "default":0.05
             }
     
 
@@ -538,7 +538,7 @@
                 "description": "Type: `integer`, default: `2`. Require at least this count of observations supporting an alternate allele within a single individual in order to evaluate the position",
                 "help_text": "Type: `integer`, default: `2`. Require at least this count of observations supporting an alternate allele within a single individual in order to evaluate the position."
             ,
-                "default": "2"
+                "default":2
             }
     
 
@@ -549,7 +549,7 @@
                 "description": "Type: `integer`, default: `0`. Require at least this sum of quality of observations supporting an alternate allele within a single individual in order to evaluate the position",
                 "help_text": "Type: `integer`, default: `0`. Require at least this sum of quality of observations supporting an alternate allele within a single individual in order to evaluate the position."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -560,7 +560,7 @@
                 "description": "Type: `integer`, default: `1`. Require at least this count of observations supporting an alternate allele within the total population in order to use the allele in analysis",
                 "help_text": "Type: `integer`, default: `1`. Require at least this count of observations supporting an alternate allele within the total population in order to use the allele in analysis."
             ,
-                "default": "1"
+                "default":1
             }
     
 
@@ -571,7 +571,7 @@
                 "description": "Type: `integer`, default: `0`. Require at least this coverage to process a site",
                 "help_text": "Type: `integer`, default: `0`. Require at least this coverage to process a site."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -592,7 +592,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Equivalent to --pooled-discrete --hwe-priors-off and removal of Ewens Sampling Formula component of priors",
                 "help_text": "Type: `boolean_true`, default: `false`. Equivalent to --pooled-discrete --hwe-priors-off and removal of Ewens Sampling Formula component of priors."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -603,7 +603,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Disable estimation of the probability of the combination arising under HWE given the allele frequency as estimated by observation frequency",
                 "help_text": "Type: `boolean_true`, default: `false`. Disable estimation of the probability of the combination arising under HWE given the allele frequency as estimated by observation frequency."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -614,7 +614,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Disable incorporation of prior expectations about observations",
                 "help_text": "Type: `boolean_true`, default: `false`. Disable incorporation of prior expectations about observations. Uses read placement probability, strand balance probability, and read position probability."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -625,7 +625,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Disable use of aggregate probability of observation balance between alleles as a component of the priors",
                 "help_text": "Type: `boolean_true`, default: `false`. Disable use of aggregate probability of observation balance between alleles as a component of the priors."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -656,7 +656,7 @@
                 "description": "Type: `double`, default: `1.0E-8`. An estimate of contamination to use for all samples",
                 "help_text": "Type: `double`, default: `1.0E-8`. An estimate of contamination to use for all samples."
             ,
-                "default": "1e-08"
+                "default":1e-08
             }
     
 
@@ -667,7 +667,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Use legacy (polybayes equivalent) genotype likelihood calculations",
                 "help_text": "Type: `boolean_true`, default: `false`. Use legacy (polybayes equivalent) genotype likelihood calculations"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -688,7 +688,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Report genotypes using the maximum-likelihood estimate provided from genotype likelihoods",
                 "help_text": "Type: `boolean_true`, default: `false`. Report genotypes using the maximum-likelihood estimate provided from genotype likelihoods."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -699,7 +699,7 @@
                 "description": "Type: `integer`, default: `1000`. Iterate no more than N times during genotyping step",
                 "help_text": "Type: `integer`, default: `1000`. Iterate no more than N times during genotyping step."
             ,
-                "default": "1000"
+                "default":1000
             }
     
 
@@ -710,7 +710,7 @@
                 "description": "Type: `integer`, default: `6`. Integrate no deeper than the Nth best genotype by likelihood when genotyping",
                 "help_text": "Type: `integer`, default: `6`. Integrate no deeper than the Nth best genotype by likelihood when genotyping."
             ,
-                "default": "6"
+                "default":6
             }
     
 
@@ -721,7 +721,7 @@
                 "description": "Type: `string`, default: `1,3`. Integrate all genotype combinations in our posterior space which include no more than N samples with their Mth best data likelihood",
                 "help_text": "Type: `string`, default: `1,3`. Integrate all genotype combinations in our posterior space which include no more than N samples with their Mth best data likelihood."
             ,
-                "default": "1,3"
+                "default":"1,3"
             }
     
 
@@ -732,7 +732,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Skip sample genotypings for which the sample has no supporting reads",
                 "help_text": "Type: `boolean_true`, default: `false`. Skip sample genotypings for which the sample has no supporting reads."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -753,7 +753,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Use mapping quality of alleles when calculating data likelihoods",
                 "help_text": "Type: `boolean_true`, default: `false`. Use mapping quality of alleles when calculating data likelihoods."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -764,7 +764,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Use a weighted sum of base qualities around an indel, scaled by the distance from the indel",
                 "help_text": "Type: `boolean_true`, default: `false`. Use a weighted sum of base qualities around an indel, scaled by the distance from the indel. By default use a minimum BQ in flanking sequence."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -775,7 +775,7 @@
                 "description": "Type: `double`, default: `0.9`. Incorporate non-independence of reads by scaling successive observations by this factor during data likelihood calculations",
                 "help_text": "Type: `double`, default: `0.9`. Incorporate non-independence of reads by scaling successive observations by this factor during data likelihood calculations."
             ,
-                "default": "0.9"
+                "default":0.9
             }
     
 
@@ -786,7 +786,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Calculate the marginal probability of genotypes and report as GQ in each sample field in the VCF output",
                 "help_text": "Type: `boolean_true`, default: `false`. Calculate the marginal probability of genotypes and report as GQ in each sample field in the VCF output."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -797,7 +797,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Print debugging output",
                 "help_text": "Type: `boolean_true`, default: `false`. Print debugging output."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -808,7 +808,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Print more verbose debugging output",
                 "help_text": "Type: `boolean_true`, default: `false`. Print more verbose debugging output"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -829,7 +829,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.output`, example: `freebayes_out`. Output directory",
                 "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `freebayes_out`. Output directory"
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 

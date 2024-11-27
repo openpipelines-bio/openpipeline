@@ -46,7 +46,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -69,7 +69,7 @@
                 "description": "Type: `string`, default: `rna`. The modality to run this component on",
                 "help_text": "Type: `string`, default: `rna`. The modality to run this component on."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 

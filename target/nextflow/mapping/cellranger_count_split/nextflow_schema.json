@@ -46,7 +46,7 @@
                 "description": "Type: `file`, default: `$id.$key.filtered_h5.h5`, example: `filtered_feature_bc_matrix.h5`. ",
                 "help_text": "Type: `file`, default: `$id.$key.filtered_h5.h5`, example: `filtered_feature_bc_matrix.h5`. "
             ,
-                "default": "$id.$key.filtered_h5.h5"
+                "default":"$id.$key.filtered_h5.h5"
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `file`, default: `$id.$key.metrics_summary.csv`, example: `metrics_summary.csv`. ",
                 "help_text": "Type: `file`, default: `$id.$key.metrics_summary.csv`, example: `metrics_summary.csv`. "
             ,
-                "default": "$id.$key.metrics_summary.csv"
+                "default":"$id.$key.metrics_summary.csv"
             }
     
 
@@ -68,7 +68,7 @@
                 "description": "Type: `file`, default: `$id.$key.molecule_info.h5`, example: `molecule_info.h5`. ",
                 "help_text": "Type: `file`, default: `$id.$key.molecule_info.h5`, example: `molecule_info.h5`. "
             ,
-                "default": "$id.$key.molecule_info.h5"
+                "default":"$id.$key.molecule_info.h5"
             }
     
 
@@ -79,7 +79,7 @@
                 "description": "Type: `file`, default: `$id.$key.bam.bam`, example: `possorted_genome_bam.bam`. ",
                 "help_text": "Type: `file`, default: `$id.$key.bam.bam`, example: `possorted_genome_bam.bam`. "
             ,
-                "default": "$id.$key.bam.bam"
+                "default":"$id.$key.bam.bam"
             }
     
 
@@ -90,7 +90,7 @@
                 "description": "Type: `file`, default: `$id.$key.bai.bai`, example: `possorted_genome_bam.bam.bai`. ",
                 "help_text": "Type: `file`, default: `$id.$key.bai.bai`, example: `possorted_genome_bam.bam.bai`. "
             ,
-                "default": "$id.$key.bai.bai"
+                "default":"$id.$key.bai.bai"
             }
     
 
@@ -101,7 +101,7 @@
                 "description": "Type: `file`, default: `$id.$key.raw_h5.h5`, example: `raw_feature_bc_matrix.h5`. ",
                 "help_text": "Type: `file`, default: `$id.$key.raw_h5.h5`, example: `raw_feature_bc_matrix.h5`. "
             ,
-                "default": "$id.$key.raw_h5.h5"
+                "default":"$id.$key.raw_h5.h5"
             }
     
 

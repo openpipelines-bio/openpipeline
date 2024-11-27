@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5ad`. Output ",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5ad`. Output .h5mu file"
             ,
-                "default": "$id.$key.output.h5ad"
+                "default":"$id.$key.output.h5ad"
             }
     
 
@@ -80,7 +80,7 @@
                 "description": "Type: `string`, default: `batch`. Column name discriminating between your batches",
                 "help_text": "Type: `string`, default: `batch`. Column name discriminating between your batches."
             ,
-                "default": "batch"
+                "default":"batch"
             }
     
 
@@ -91,7 +91,7 @@
                 "description": "Type: `string`, default: `X_pca`. Basis obsm slot to run scanorama on",
                 "help_text": "Type: `string`, default: `X_pca`. Basis obsm slot to run scanorama on."
             ,
-                "default": "X_pca"
+                "default":"X_pca"
             }
     
 
@@ -102,7 +102,7 @@
                 "description": "Type: `string`, default: `X_scanorama`. The name of the field in adata",
                 "help_text": "Type: `string`, default: `X_scanorama`. The name of the field in adata.obsm where the integrated embeddings will be stored after running this function. Defaults to X_scanorama."
             ,
-                "default": "X_scanorama"
+                "default":"X_scanorama"
             }
     
 
@@ -113,7 +113,7 @@
                 "description": "Type: `integer`, default: `20`. Number of nearest neighbors to use for matching",
                 "help_text": "Type: `integer`, default: `20`. Number of nearest neighbors to use for matching."
             ,
-                "default": "20"
+                "default":20
             }
     
 
@@ -124,7 +124,7 @@
                 "description": "Type: `integer`, default: `5000`. The batch size used in the alignment vector computation",
                 "help_text": "Type: `integer`, default: `5000`. The batch size used in the alignment vector computation. Useful when integrating very large (\u003e100k samples) datasets. Set to large value that runs within available memory."
             ,
-                "default": "5000"
+                "default":5000
             }
     
 
@@ -135,7 +135,7 @@
                 "description": "Type: `double`, default: `15.0`. Correction smoothing parameter on Gaussian kernel",
                 "help_text": "Type: `double`, default: `15.0`. Correction smoothing parameter on Gaussian kernel."
             ,
-                "default": "15.0"
+                "default":15.0
             }
     
 
@@ -146,7 +146,7 @@
                 "description": "Type: `boolean`, default: `true`. Use approximate nearest neighbors with Python annoy; greatly speeds up matching runtime",
                 "help_text": "Type: `boolean`, default: `true`. Use approximate nearest neighbors with Python annoy; greatly speeds up matching runtime."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -157,7 +157,7 @@
                 "description": "Type: `double`, default: `0.1`. Alignment score minimum cutoff",
                 "help_text": "Type: `double`, default: `0.1`. Alignment score minimum cutoff"
             ,
-                "default": "0.1"
+                "default":0.1
             }
     
 

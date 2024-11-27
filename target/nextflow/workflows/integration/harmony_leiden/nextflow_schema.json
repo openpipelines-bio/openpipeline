@@ -56,7 +56,7 @@
                 "description": "Type: `string`, default: `log_normalized`. use specified layer for expression values instead of the ",
                 "help_text": "Type: `string`, default: `log_normalized`. use specified layer for expression values instead of the .X object from the modality."
             ,
-                "default": "log_normalized"
+                "default":"log_normalized"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to process",
                 "help_text": "Type: `string`, default: `rna`. Which modality to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -88,7 +88,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -109,7 +109,7 @@
                 "description": "Type: `string`, default: `harmonypy_integration_neighbors`. In which ",
                 "help_text": "Type: `string`, default: `harmonypy_integration_neighbors`. In which .uns slot to store various neighbor output objects."
             ,
-                "default": "harmonypy_integration_neighbors"
+                "default":"harmonypy_integration_neighbors"
             }
     
 
@@ -120,7 +120,7 @@
                 "description": "Type: `string`, default: `harmonypy_integration_distances`. In which ",
                 "help_text": "Type: `string`, default: `harmonypy_integration_distances`. In which .obsp slot to store the distance matrix between the resulting neighbors."
             ,
-                "default": "harmonypy_integration_distances"
+                "default":"harmonypy_integration_distances"
             }
     
 
@@ -131,7 +131,7 @@
                 "description": "Type: `string`, default: `harmonypy_integration_connectivities`. In which ",
                 "help_text": "Type: `string`, default: `harmonypy_integration_connectivities`. In which .obsp slot to store the connectivities matrix between the resulting neighbors."
             ,
-                "default": "harmonypy_integration_connectivities"
+                "default":"harmonypy_integration_connectivities"
             }
     
 
@@ -152,7 +152,7 @@
                 "description": "Type: `string`, default: `X_pca`. Embedding to use as input",
                 "help_text": "Type: `string`, default: `X_pca`. Embedding to use as input"
             ,
-                "default": "X_pca"
+                "default":"X_pca"
             }
     
 
@@ -163,7 +163,7 @@
                 "description": "Type: `string`, default: `X_pca_integrated`. In which ",
                 "help_text": "Type: `string`, default: `X_pca_integrated`. In which .obsm slot to store the resulting integrated embedding."
             ,
-                "default": "X_pca_integrated"
+                "default":"X_pca_integrated"
             }
     
 
@@ -184,7 +184,7 @@
                 "description": "Type: List of `double`, default: `2.0`, multiple_sep: `\";\"`. Diversity clustering penalty parameter",
                 "help_text": "Type: List of `double`, default: `2.0`, multiple_sep: `\";\"`. Diversity clustering penalty parameter. Specify for each variable in group.by.vars. \ntheta=0 does not encourage any diversity. Larger values of theta\nresult in more diverse clusters.\"\n"
             ,
-                "default": "2.0"
+                "default":"2.0"
             }
     
 
@@ -205,7 +205,7 @@
                 "description": "Type: `string`, default: `harmony_integration_leiden`. Prefix for the ",
                 "help_text": "Type: `string`, default: `harmony_integration_leiden`. Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for \u0027--obs_cluster\u0027 suffixed with an underscore and one of the resolutions\nresolutions specified in \u0027--leiden_resolution\u0027.\n"
             ,
-                "default": "harmony_integration_leiden"
+                "default":"harmony_integration_leiden"
             }
     
 
@@ -216,7 +216,7 @@
                 "description": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering",
                 "help_text": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
             ,
-                "default": "1.0"
+                "default":"1.0"
             }
     
 
@@ -237,7 +237,7 @@
                 "description": "Type: `string`, default: `X_leiden_harmony_umap`. In which ",
                 "help_text": "Type: `string`, default: `X_leiden_harmony_umap`. In which .obsm slot to store the resulting UMAP embedding."
             ,
-                "default": "X_leiden_harmony_umap"
+                "default":"X_leiden_harmony_umap"
             }
     
 

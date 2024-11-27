@@ -46,7 +46,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5`, example: `pbmc_1k_protein_v3_raw_feature_bc_matrix.h5`. Path where to store output",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5`, example: `pbmc_1k_protein_v3_raw_feature_bc_matrix.h5`. Path where to store output."
             ,
-                "default": "$id.$key.output.h5"
+                "default":"$id.$key.output.h5"
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Increase verbosity",
                 "help_text": "Type: `boolean_true`, default: `false`. Increase verbosity"
             ,
-                "default": "False"
+                "default":false
             }
     
 

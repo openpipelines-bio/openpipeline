@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `atac`. On which modality to run LSI on",
                 "help_text": "Type: `string`, default: `atac`. On which modality to run LSI on."
             ,
-                "default": "atac"
+                "default":"atac"
             }
     
 
@@ -87,7 +87,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -100,7 +100,7 @@
                 "enum": ["gzip", "lzf"]
             
             ,
-                "default": "gzip"
+                "default":"gzip"
             }
     
 
@@ -111,7 +111,7 @@
                 "description": "Type: `string`, default: `X_lsi`. In which ",
                 "help_text": "Type: `string`, default: `X_lsi`. In which .obsm slot to store the resulting embedding."
             ,
-                "default": "X_lsi"
+                "default":"X_lsi"
             }
     
 
@@ -122,7 +122,7 @@
                 "description": "Type: `string`, default: `lsi`. In which ",
                 "help_text": "Type: `string`, default: `lsi`. In which .varm slot to store the resulting loadings matrix."
             ,
-                "default": "lsi"
+                "default":"lsi"
             }
     
 
@@ -133,7 +133,7 @@
                 "description": "Type: `string`, default: `lsi`. In which ",
                 "help_text": "Type: `string`, default: `lsi`. In which .uns slot to store the stdev."
             ,
-                "default": "lsi"
+                "default":"lsi"
             }
     
 
@@ -144,7 +144,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Allow overwriting ",
                 "help_text": "Type: `boolean_true`, default: `false`. Allow overwriting .obsm, .varm and .uns slots."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -165,7 +165,7 @@
                 "description": "Type: `integer`, default: `50`. Number of components to compute",
                 "help_text": "Type: `integer`, default: `50`. Number of components to compute."
             ,
-                "default": "50"
+                "default":50
             }
     
 
@@ -176,7 +176,7 @@
                 "description": "Type: `boolean`, default: `true`. Scale embeddings to zero mean and unit variance",
                 "help_text": "Type: `boolean`, default: `true`. Scale embeddings to zero mean and unit variance."
             ,
-                "default": "True"
+                "default":true
             }
     
 

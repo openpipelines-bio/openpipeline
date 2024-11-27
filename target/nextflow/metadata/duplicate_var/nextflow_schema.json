@@ -36,7 +36,7 @@
                 "description": "Type: `boolean_true`, default: `false`. If set to true and the --output_obs_key already exists in the input file, the ",
                 "help_text": "Type: `boolean_true`, default: `false`. If set to true and the --output_obs_key already exists in the input file, the .obs field will be overwritten."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -98,7 +98,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
