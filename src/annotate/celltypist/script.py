@@ -28,7 +28,10 @@ meta = {
 }
 ## VIASH END
 
+sys.path.append(meta["resources_dir"])
+
 # START TEMPORARY WORKAROUND setup_logger
+# reason: resources aren't available when using Nextflow fusion
 def setup_logger():
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
@@ -38,16 +41,17 @@ def setup_logger():
     logger.addHandler(console_handler)
 
     return logger
+# from query_reference_allignment import set_var_index, cross_check_genes, subset_vars
+
 # END TEMPORARY WORKAROUND setup_logger
+
+from query_reference_allignment import set_var_index, cross_check_genes, subset_vars
 
 def check_celltypist_format(indata):
     if np.abs(np.expm1(indata[0]).sum()-10000) > 1:
         return False
     return True
 
-def set_var_index(adata, var_name):
-    adata.var.index = [re.sub("\\.[0-9]+$", "", s) for s in adata.var[var_name]]
-    return adata
 
 def main(par):
     
@@ -61,7 +65,7 @@ def main(par):
     
     # Set var names to the desired gene name format (gene synbol, ensembl id, etc.)
     # CellTypist requires query gene names to be in the same format as the reference data.
-    input_modality = set_var_index(input_modality, par["var_query_gene_names"]) if par["var_query_gene_names"] else input_modality
+    input_modality = set_var_index(input_modality, par["var_query_gene_names"])
 
     if par["model"]:
         logger.info("Loading CellTypist model")
@@ -92,24 +96,29 @@ def main(par):
         labels = reference_modality.obs[par["reference_obs_target"]]
         
         logger.info("Training CellTypist model on reference") 
-        model = celltypist.train(reference_matrix,
-                                 labels=labels,
-                                 genes=reference_modality.var.index,
-                                 C=par["C"],
-                                 max_iter=par["max_iter"],
-                                 use_SGD=par["use_SGD"],
-                                 feature_selection=par["feature_selection"],
-                                 check_expression=par["check_expression"])
+        model = celltypist.train(
+            reference_matrix,
+            labels=labels,
+            genes=reference_modality.var.index,
+            C=par["C"],
+            max_iter=par["max_iter"],
+            use_SGD=par["use_SGD"],
+            feature_selection=par["feature_selection"],
+            check_expression=par["check_expression"]
+            )
             
     logger.info("Predicting CellTypist annotations")
-    predictions = celltypist.annotate(input_modality,
-                                      model,
-                                      majority_voting=par["majority_voting"])
+    predictions = celltypist.annotate(
+        input_modality,
+        model,
+        majority_voting=par["majority_voting"]
+        )
     input_modality.obs[par["output_obs_predictions"]] = predictions.predicted_labels["predicted_labels"]
     input_modality.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(axis=1).values
     
     input_mudata.mod[par["modality"]] = input_modality
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
-    
+
+
 if __name__ == '__main__':
     main(par)

@@ -91,7 +91,7 @@ def main():
         # scANVI requires query and reference gene names to be equivalent 
         reference = set_var_index(reference)
         # Subset query dataset based on genes present in reference
-        common_ens_ids = cross_check_genes(input_modality, reference)
+        common_ens_ids = cross_check_genes(input_modality.var.index, reference.var.index)
         input_modality = input_modality[:, common_ens_ids]
 
         logger.info("Instantiating scANVI model from the scVI model")

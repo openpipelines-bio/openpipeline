@@ -26,15 +26,14 @@ def set_var_index(adata: ad.AnnData, var_name: str | None = None):
         adata.var.index = [re.sub("\\.[0-9]+$", "", s) for s in adata.var.index]
     return adata
 
-
-def cross_check_genes(query: ad.AnnData, reference: ad.AnnData):
+def cross_check_genes(query_genes, reference_genes, min_gene_overlap=100):
     logger.info("Detecting common vars based on gene ids")
-    common_ens_ids = list(set(reference.var.index).intersection(set(query.var.index)))
+    common_ens_ids = list(set(reference_genes).intersection(set(query_genes)))
 
-    logger.info("  reference n_vars: %i", reference.n_vars)
-    logger.info("  input n_vars: %i", query.n_vars)
+    logger.info("  reference n_vars: %i", len(reference_genes))
+    logger.info("  input n_vars: %i", len(query_genes))
     logger.info("  intersect n_vars: %i", len(common_ens_ids))
-    assert len(common_ens_ids) >= 100, "The intersection of genes between the query and reference dataset is too small."
+    assert len(common_ens_ids) >= min_gene_overlap, "The intersection of genes between the query and reference dataset is too small."
 
     return common_ens_ids
 
