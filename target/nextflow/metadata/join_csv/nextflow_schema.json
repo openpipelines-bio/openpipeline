@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -87,7 +87,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -130,7 +130,7 @@
                 "description": "Type: `string`, default: `id`. column of the the csv that corresponds to the sample id",
                 "help_text": "Type: `string`, default: `id`. column of the the csv that corresponds to the sample id."
             ,
-                "default": "id"
+                "default":"id"
             }
     
 

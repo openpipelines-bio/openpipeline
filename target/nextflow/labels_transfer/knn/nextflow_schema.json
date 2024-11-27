@@ -36,7 +36,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`. The query data in ",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`. The query data in .h5mu format with predicted labels transfered from the reference."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -99,7 +99,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to use",
                 "help_text": "Type: `string`, default: `rna`. Which modality to use."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -150,7 +150,7 @@
                 "description": "Type: List of `string`, default: `ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level`, multiple_sep: `\";\"`. The `",
                 "help_text": "Type: List of `string`, default: `ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level`, multiple_sep: `\";\"`. The `.obs` key(s) of the target labels to tranfer."
             ,
-                "default": "ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level"
+                "default":"ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level"
             }
     
 
@@ -213,7 +213,7 @@
                 "enum": ["uniform", "distance", "gaussian"]
             
             ,
-                "default": "uniform"
+                "default":"uniform"
             }
     
 
@@ -224,7 +224,7 @@
                 "description": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent",
                 "help_text": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n"
             ,
-                "default": "15"
+                "default":15
             }
     
 

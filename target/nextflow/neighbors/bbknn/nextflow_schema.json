@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `string`, default: `X_pca`. The dimensionality reduction in `",
                 "help_text": "Type: `string`, default: `X_pca`. The dimensionality reduction in `.obsm` to use for neighbour detection. Defaults to X_pca."
             ,
-                "default": "X_pca"
+                "default":"X_pca"
             }
     
 
@@ -68,7 +68,7 @@
                 "description": "Type: `string`, default: `batch`. ",
                 "help_text": "Type: `string`, default: `batch`. .obs column name discriminating between your batches."
             ,
-                "default": "batch"
+                "default":"batch"
             }
     
 
@@ -79,7 +79,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output ",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output .h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -102,7 +102,7 @@
                 "description": "Type: `string`, default: `neighbors`. Mandatory ",
                 "help_text": "Type: `string`, default: `neighbors`. Mandatory .uns slot to store various neighbor output objects."
             ,
-                "default": "neighbors"
+                "default":"neighbors"
             }
     
 
@@ -113,7 +113,7 @@
                 "description": "Type: `string`, default: `distances`. In which ",
                 "help_text": "Type: `string`, default: `distances`. In which .obsp slot to store the distance matrix between the resulting neighbors."
             ,
-                "default": "distances"
+                "default":"distances"
             }
     
 
@@ -124,7 +124,7 @@
                 "description": "Type: `string`, default: `connectivities`. In which ",
                 "help_text": "Type: `string`, default: `connectivities`. In which .obsp slot to store the connectivities matrix between the resulting neighbors."
             ,
-                "default": "connectivities"
+                "default":"connectivities"
             }
     
 
@@ -135,7 +135,7 @@
                 "description": "Type: `integer`, default: `3`. How many top neighbours to report for each batch; total number of neighbours in the initial k-nearest-neighbours computation will be this number times the number of batches",
                 "help_text": "Type: `integer`, default: `3`. How many top neighbours to report for each batch; total number of neighbours in the initial k-nearest-neighbours computation will be this number times the number of batches."
             ,
-                "default": "3"
+                "default":3
             }
     
 
@@ -146,7 +146,7 @@
                 "description": "Type: `integer`, default: `50`. How many dimensions (in case of PCA, principal components) to use in the analysis",
                 "help_text": "Type: `integer`, default: `50`. How many dimensions (in case of PCA, principal components) to use in the analysis."
             ,
-                "default": "50"
+                "default":50
             }
     
 

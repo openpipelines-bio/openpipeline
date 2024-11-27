@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to process",
                 "help_text": "Type: `string`, default: `rna`. Which modality to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -97,7 +97,7 @@
                 "description": "Type: `string`, default: `unknown`. If `input_obs_label` is specified, cells with this value will be treated as unknown and will be predicted by the model",
                 "help_text": "Type: `string`, default: `unknown`. If `input_obs_label` is specified, cells with this value will be treated as unknown and will be predicted by the model."
             ,
-                "default": "unknown"
+                "default":"unknown"
             }
     
 
@@ -118,7 +118,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -149,9 +149,7 @@
                 "type":
                 "string",
                 "description": "Type: List of `string`, required, example: `knn_on_scvi;scanvi`, multiple_sep: `\";\"`, choices: ``celltypist`, `knn_on_bbknn`, `knn_on_scanorama`, `knn_on_scvi`, `onclass`, `rf`, `scanvi`, `svm``. Methods to call cell types",
-                "help_text": "Type: List of `string`, required, example: `knn_on_scvi;scanvi`, multiple_sep: `\";\"`, choices: ``celltypist`, `knn_on_bbknn`, `knn_on_scanorama`, `knn_on_scvi`, `onclass`, `rf`, `scanvi`, `svm``. Methods to call cell types. By default, runs to knn_on_scvi and scanvi.",
-                "enum": ["celltypist", "knn_on_bbknn", "knn_on_scanorama", "knn_on_scvi", "onclass", "rf", "scanvi", "svm"]
-            
+                "help_text": "Type: List of `string`, required, example: `knn_on_scvi;scanvi`, multiple_sep: `\";\"`, choices: ``celltypist`, `knn_on_bbknn`, `knn_on_scanorama`, `knn_on_scvi`, `onclass`, `rf`, `scanvi`, `svm``. Methods to call cell types. By default, runs to knn_on_scvi and scanvi."
             
             }
     
@@ -193,7 +191,7 @@
                 "description": "Type: `string`, default: `cell_ontology_class`. Key in obs field of reference AnnData with cell-type information",
                 "help_text": "Type: `string`, default: `cell_ontology_class`. Key in obs field of reference AnnData with cell-type information."
             ,
-                "default": "cell_ontology_class"
+                "default":"cell_ontology_class"
             }
     
 
@@ -204,7 +202,7 @@
                 "description": "Type: `string`, default: `donor_assay`. Key in obs field of input adata for batch information",
                 "help_text": "Type: `string`, default: `donor_assay`. Key in obs field of input adata for batch information."
             ,
-                "default": "donor_assay"
+                "default":"donor_assay"
             }
     
 

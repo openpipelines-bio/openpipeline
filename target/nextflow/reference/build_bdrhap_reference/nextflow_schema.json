@@ -76,7 +76,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.reference_archive.gz`, example: `reference.tar.gz`. A Compressed archive containing the Reference Genome Index and annotation GTF files",
                 "help_text": "Type: `file`, required, default: `$id.$key.reference_archive.gz`, example: `reference.tar.gz`. A Compressed archive containing the Reference Genome Index and annotation GTF files. This archive is meant to be used as an\ninput in the BD Rhapsody Sequencing Analysis Pipeline.\n"
             ,
-                "default": "$id.$key.reference_archive.gz"
+                "default":"$id.$key.reference_archive.gz"
             }
     
 
@@ -97,7 +97,7 @@
                 "description": "Type: List of `string`, default: `chrM;chrMT;M;MT`, multiple_sep: `\";\"`. Names of the Mitochondrial contigs in the provided Reference Genome",
                 "help_text": "Type: List of `string`, default: `chrM;chrMT;M;MT`, multiple_sep: `\";\"`. Names of the Mitochondrial contigs in the provided Reference Genome. Fragments originating from contigs other than these are\nidentified as \u0027nuclear fragments\u0027 in the ATACseq analysis pipeline.\n"
             ,
-                "default": "chrM;chrMT;M;MT"
+                "default":"chrM;chrMT;M;MT"
             }
     
 
@@ -108,7 +108,7 @@
                 "description": "Type: `boolean_true`, default: `false`. By default the input Transcript Annotation files are filtered based on the gene_type/gene_biotype attribute",
                 "help_text": "Type: `boolean_true`, default: `false`. By default the input Transcript Annotation files are filtered based on the gene_type/gene_biotype attribute. Only features \nhaving the following attribute values are kept:\n\n  - protein_coding\n  - lncRNA \n  - IG_LV_gene\n  - IG_V_gene\n  - IG_V_pseudogene\n  - IG_D_gene\n  - IG_J_gene\n  - IG_J_pseudogene\n  - IG_C_gene\n  - IG_C_pseudogene\n  - TR_V_gene\n  - TR_V_pseudogene\n  - TR_D_gene\n  - TR_J_gene\n  - TR_J_pseudogene\n  - TR_C_gene\n\n  If you have already pre-filtered the input Annotation files and/or wish to turn-off the filtering, please set this option to True.\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -119,7 +119,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Build a WTA only index, otherwise builds a WTA + ATAC index",
                 "help_text": "Type: `boolean_true`, default: `false`. Build a WTA only index, otherwise builds a WTA + ATAC index."
             ,
-                "default": "False"
+                "default":false
             }
     
 

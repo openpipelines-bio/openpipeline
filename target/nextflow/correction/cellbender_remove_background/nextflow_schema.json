@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. List of modalities to process",
                 "help_text": "Type: `string`, default: `rna`. List of modalities to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Full count matrix as an h5mu file, with background RNA removed",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Full count matrix as an h5mu file, with background RNA removed. This file contains all the original droplet barcodes."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -90,7 +90,7 @@
                 "description": "Type: `string`, default: `cellbender_corrected`. Output layer",
                 "help_text": "Type: `string`, default: `cellbender_corrected`. Output layer"
             ,
-                "default": "cellbender_corrected"
+                "default":"cellbender_corrected"
             }
     
 
@@ -101,7 +101,7 @@
                 "description": "Type: `string`, default: `cellbender_background_fraction`. ",
                 "help_text": "Type: `string`, default: `cellbender_background_fraction`. "
             ,
-                "default": "cellbender_background_fraction"
+                "default":"cellbender_background_fraction"
             }
     
 
@@ -112,7 +112,7 @@
                 "description": "Type: `string`, default: `cellbender_cell_probability`. ",
                 "help_text": "Type: `string`, default: `cellbender_cell_probability`. "
             ,
-                "default": "cellbender_cell_probability"
+                "default":"cellbender_cell_probability"
             }
     
 
@@ -123,7 +123,7 @@
                 "description": "Type: `string`, default: `cellbender_cell_size`. ",
                 "help_text": "Type: `string`, default: `cellbender_cell_size`. "
             ,
-                "default": "cellbender_cell_size"
+                "default":"cellbender_cell_size"
             }
     
 
@@ -134,7 +134,7 @@
                 "description": "Type: `string`, default: `cellbender_droplet_efficiency`. ",
                 "help_text": "Type: `string`, default: `cellbender_droplet_efficiency`. "
             ,
-                "default": "cellbender_droplet_efficiency"
+                "default":"cellbender_droplet_efficiency"
             }
     
 
@@ -145,7 +145,7 @@
                 "description": "Type: `string`, default: `cellbender_latent_scale`. ",
                 "help_text": "Type: `string`, default: `cellbender_latent_scale`. "
             ,
-                "default": "cellbender_latent_scale"
+                "default":"cellbender_latent_scale"
             }
     
 
@@ -156,7 +156,7 @@
                 "description": "Type: `string`, default: `cellbender_ambient_expression`. ",
                 "help_text": "Type: `string`, default: `cellbender_ambient_expression`. "
             ,
-                "default": "cellbender_ambient_expression"
+                "default":"cellbender_ambient_expression"
             }
     
 
@@ -167,7 +167,7 @@
                 "description": "Type: `string`, default: `cellbender_gene_expression_encoding`. ",
                 "help_text": "Type: `string`, default: `cellbender_gene_expression_encoding`. "
             ,
-                "default": "cellbender_gene_expression_encoding"
+                "default":"cellbender_gene_expression_encoding"
             }
     
 
@@ -188,7 +188,7 @@
                 "description": "Type: `boolean`, default: `false`. Will use the Cell Ranger QC to determine the estimated number of cells",
                 "help_text": "Type: `boolean`, default: `false`. Will use the Cell Ranger QC to determine the estimated number of cells"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -241,7 +241,7 @@
                 "enum": ["naive", "simple", "ambient", "swapping", "full"]
             
             ,
-                "default": "full"
+                "default":"full"
             }
     
 
@@ -252,7 +252,7 @@
                 "description": "Type: `integer`, default: `150`. Number of epochs to train",
                 "help_text": "Type: `integer`, default: `150`. Number of epochs to train."
             ,
-                "default": "150"
+                "default":150
             }
     
 
@@ -263,7 +263,7 @@
                 "description": "Type: `integer`, default: `5`. Droplets with UMI counts below this number are completely \nexcluded from the analysis",
                 "help_text": "Type: `integer`, default: `5`. Droplets with UMI counts below this number are completely \nexcluded from the analysis. This can help identify the correct \nprior for empty droplet counts in the rare case where empty \ncounts are extremely high (over 200).\n"
             ,
-                "default": "5"
+                "default":5
             }
     
 
@@ -274,7 +274,7 @@
                 "description": "Type: `integer`, default: `64`. Dimension of latent variable z",
                 "help_text": "Type: `integer`, default: `64`. Dimension of latent variable z.\n"
             ,
-                "default": "64"
+                "default":64
             }
     
 
@@ -285,7 +285,7 @@
                 "description": "Type: List of `integer`, default: `512`, multiple_sep: `\";\"`. Dimension of hidden layers in the encoder for z",
                 "help_text": "Type: List of `integer`, default: `512`, multiple_sep: `\";\"`. Dimension of hidden layers in the encoder for z.\n"
             ,
-                "default": "512"
+                "default":"512"
             }
     
 
@@ -296,7 +296,7 @@
                 "description": "Type: `double`, default: `0.9`. Training detail: the fraction of the data used for training",
                 "help_text": "Type: `double`, default: `0.9`. Training detail: the fraction of the data used for training.\nThe rest is never seen by the inference algorithm. Speeds up learning.\n"
             ,
-                "default": "0.9"
+                "default":0.9
             }
     
 
@@ -307,7 +307,7 @@
                 "description": "Type: `double`, default: `0.2`. Training detail: the fraction of the training data each epoch that \nis drawn (randomly sampled) from surely empty droplets",
                 "help_text": "Type: `double`, default: `0.2`. Training detail: the fraction of the training data each epoch that \nis drawn (randomly sampled) from surely empty droplets.\n"
             ,
-                "default": "0.2"
+                "default":0.2
             }
     
 
@@ -328,7 +328,7 @@
                 "description": "Type: List of `double`, default: `0.01`, multiple_sep: `\";\"`. Target \u0027delta\u0027 false positive rate in [0, 1)",
                 "help_text": "Type: List of `double`, default: `0.01`, multiple_sep: `\";\"`. Target \u0027delta\u0027 false positive rate in [0, 1). Use 0 for a cohort\nof samples which will be jointly analyzed for differential expression.\nA false positive is a true signal count that is erroneously removed.\nMore background removal is accompanied by more signal removal at\nhigh values of FPR. You can specify multiple values, which will\ncreate multiple output files.\n"
             ,
-                "default": "0.01"
+                "default":"0.01"
             }
     
 
@@ -349,7 +349,7 @@
                 "description": "Type: `double`, default: `0.1`. Controls how many features are included in the analysis, which\ncan lead to a large speedup",
                 "help_text": "Type: `double`, default: `0.1`. Controls how many features are included in the analysis, which\ncan lead to a large speedup. If a feature is expected to have less\nthan PROJECTED_AMBIENT_COUNT_THRESHOLD counts total in all cells\n(summed), then that gene is excluded, and it will be unchanged\nin the output count matrix. For example, \nPROJECTED_AMBIENT_COUNT_THRESHOLD = 0 will include all features\nwhich have even a single count in any empty droplet.\n"
             ,
-                "default": "0.1"
+                "default":0.1
             }
     
 
@@ -360,7 +360,7 @@
                 "description": "Type: `double`, default: `1.0E-4`. Training detail: lower learning rate for inference",
                 "help_text": "Type: `double`, default: `1.0E-4`. Training detail: lower learning rate for inference.\nA OneCycle learning rate schedule is used, where the\nupper learning rate is ten times this value. (For this\nvalue, probably do not exceed 1e-3).\n"
             ,
-                "default": "0.0001"
+                "default":0.0001
             }
     
 
@@ -391,7 +391,7 @@
                 "description": "Type: `integer`, default: `1`. Number of times to attempt to train the model",
                 "help_text": "Type: `integer`, default: `1`. Number of times to attempt to train the model. At each subsequent attempt,\nthe learning rate is multiplied by LEARNING_RATE_RETRY_MULT.\n"
             ,
-                "default": "1"
+                "default":1
             }
     
 
@@ -402,7 +402,7 @@
                 "description": "Type: `double`, default: `0.2`. Learning rate is multiplied by this amount each time a new training\nattempt is made",
                 "help_text": "Type: `double`, default: `0.2`. Learning rate is multiplied by this amount each time a new training\nattempt is made. (This parameter is only used if training fails based\non EPOCH_ELBO_FAIL_FRACTION or FINAL_ELBO_FAIL_FRACTION and\nNUM_TRAINING_TRIES is \u003e 1.) \n"
             ,
-                "default": "0.2"
+                "default":0.2
             }
     
 
@@ -413,7 +413,7 @@
                 "description": "Type: `integer`, default: `128`. Training detail: size of batches when creating the posterior",
                 "help_text": "Type: `integer`, default: `128`. Training detail: size of batches when creating the posterior.\nReduce this to avoid running out of GPU memory creating the posterior\n(will be slower).\n"
             ,
-                "default": "128"
+                "default":128
             }
     
 
@@ -458,7 +458,7 @@
                 "enum": ["map", "mean", "cdf", "sample", "mckp"]
             
             ,
-                "default": "mckp"
+                "default":"mckp"
             }
     
 
@@ -469,7 +469,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Including the flag --estimator-multiple-cpu will use more than one\nCPU to compute the MCKP output count estimator in parallel (does nothing\nfor other estimators)",
                 "help_text": "Type: `boolean_true`, default: `false`. Including the flag --estimator-multiple-cpu will use more than one\nCPU to compute the MCKP output count estimator in parallel (does nothing\nfor other estimators).\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -490,7 +490,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Including the flag --debug will log extra messages useful for debugging",
                 "help_text": "Type: `boolean_true`, default: `false`. Including the flag --debug will log extra messages useful for debugging.\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -501,7 +501,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Including the flag --cuda will run the inference on a\nGPU",
                 "help_text": "Type: `boolean_true`, default: `false`. Including the flag --cuda will run the inference on a\nGPU.\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 

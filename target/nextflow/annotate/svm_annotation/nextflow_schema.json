@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to process",
                 "help_text": "Type: `string`, default: `rna`. Which modality to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -77,7 +77,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -100,7 +100,7 @@
                 "description": "Type: `string`, default: `svm_pred`. In which `",
                 "help_text": "Type: `string`, default: `svm_pred`. In which `.obs` slots to store the predicted information.\n"
             ,
-                "default": "svm_pred"
+                "default":"svm_pred"
             }
     
 
@@ -111,7 +111,7 @@
                 "description": "Type: `string`, default: `svm_probability`. In which `",
                 "help_text": "Type: `string`, default: `svm_probability`. In which `.obs` slots to store the probability of the predictions.\n"
             ,
-                "default": "svm_probability"
+                "default":"svm_probability"
             }
     
 
@@ -182,7 +182,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether to perform feature selection",
                 "help_text": "Type: `boolean`, default: `true`. Whether to perform feature selection."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -193,7 +193,7 @@
                 "description": "Type: `integer`, default: `5000`. Maximum number of iterations for the SVM",
                 "help_text": "Type: `integer`, default: `5000`. Maximum number of iterations for the SVM."
             ,
-                "default": "5000"
+                "default":5000
             }
     
 
@@ -204,7 +204,7 @@
                 "description": "Type: `double`, default: `1.0`. Regularization parameter for the SVM",
                 "help_text": "Type: `double`, default: `1.0`. Regularization parameter for the SVM."
             ,
-                "default": "1.0"
+                "default":1.0
             }
     
 
@@ -217,7 +217,7 @@
                 "enum": ["balanced", "uniform"]
             
             ,
-                "default": "balanced"
+                "default":"balanced"
             }
     
 

@@ -38,7 +38,7 @@
                 "enum": ["files", "dir"]
             
             ,
-                "default": "files"
+                "default":"files"
             }
     
 
@@ -59,7 +59,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `qc`. Output directory to write reports to",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `qc`. Output directory to write reports to."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 

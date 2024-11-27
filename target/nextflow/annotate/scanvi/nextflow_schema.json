@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to process",
                 "help_text": "Type: `string`, default: `rna`. Which modality to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -77,7 +77,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -100,7 +100,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_model.output_model`, example: `model_dir`. Folder where the state of the trained model will be saved to",
                 "help_text": "Type: `file`, default: `$id.$key.output_model.output_model`, example: `model_dir`. Folder where the state of the trained model will be saved to."
             ,
-                "default": "$id.$key.output_model.output_model"
+                "default":"$id.$key.output_model.output_model"
             }
     
 
@@ -111,7 +111,7 @@
                 "description": "Type: `string`, default: `scanvi_pred`. In which `",
                 "help_text": "Type: `string`, default: `scanvi_pred`. In which `.obs` slots to store the predicted information.\n"
             ,
-                "default": "scanvi_pred"
+                "default":"scanvi_pred"
             }
     
 
@@ -122,7 +122,7 @@
                 "description": "Type: `string`, default: `scanvi_probability`. In which `",
                 "help_text": "Type: `string`, default: `scanvi_probability`. In which `.obs` slots to store the probability of the predictions.\n"
             ,
-                "default": "scanvi_probability"
+                "default":"scanvi_probability"
             }
     
 
@@ -133,7 +133,7 @@
                 "description": "Type: `string`, default: `scanvi_embedding`. In which `",
                 "help_text": "Type: `string`, default: `scanvi_embedding`. In which `.obsm` slots to store the scvi embedding.\n"
             ,
-                "default": "scanvi_embedding"
+                "default":"scanvi_embedding"
             }
     
 
@@ -144,7 +144,7 @@
                 "description": "Type: `string`, default: `Unknown`. Label for unknown cell types",
                 "help_text": "Type: `string`, default: `Unknown`. Label for unknown cell types.\n"
             ,
-                "default": "Unknown"
+                "default":"Unknown"
             }
     
 
@@ -195,7 +195,7 @@
                 "description": "Type: `double`, default: `0.9`. Size of training set",
                 "help_text": "Type: `double`, default: `0.9`. Size of training set."
             ,
-                "default": "0.9"
+                "default":0.9
             }
     
 
@@ -206,7 +206,7 @@
                 "description": "Type: `integer`, default: `400`. Maximum number of epochs",
                 "help_text": "Type: `integer`, default: `400`. Maximum number of epochs."
             ,
-                "default": "400"
+                "default":400
             }
     
 
@@ -217,7 +217,7 @@
                 "description": "Type: `double`, default: `0.001`. Learning rate",
                 "help_text": "Type: `double`, default: `0.001`. Learning rate."
             ,
-                "default": "0.001"
+                "default":0.001
             }
     
 
@@ -228,7 +228,7 @@
                 "description": "Type: `boolean`, default: `true`. Reduce learning rate on plateau",
                 "help_text": "Type: `boolean`, default: `true`. Reduce learning rate on plateau."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -239,7 +239,7 @@
                 "description": "Type: `integer`, default: `25`. Patience for learning rate reduction",
                 "help_text": "Type: `integer`, default: `25`. Patience for learning rate reduction."
             ,
-                "default": "25"
+                "default":25
             }
     
 
@@ -250,7 +250,7 @@
                 "description": "Type: `double`, default: `0.5`. Factor by which to reduce learning rate",
                 "help_text": "Type: `double`, default: `0.5`. Factor by which to reduce learning rate."
             ,
-                "default": "0.5"
+                "default":0.5
             }
     
 
@@ -261,7 +261,7 @@
                 "description": "Type: `boolean`, default: `true`. Early stopping",
                 "help_text": "Type: `boolean`, default: `true`. Early stopping."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -272,7 +272,7 @@
                 "description": "Type: `integer`, default: `50`. Patience for early stopping",
                 "help_text": "Type: `integer`, default: `50`. Patience for early stopping."
             ,
-                "default": "50"
+                "default":50
             }
     
 
@@ -293,7 +293,7 @@
                 "description": "Type: `double`, default: `0.9`. Size of training set",
                 "help_text": "Type: `double`, default: `0.9`. Size of training set."
             ,
-                "default": "0.9"
+                "default":0.9
             }
     
 
@@ -304,7 +304,7 @@
                 "description": "Type: `integer`, default: `400`. Maximum number of epochs",
                 "help_text": "Type: `integer`, default: `400`. Maximum number of epochs."
             ,
-                "default": "400"
+                "default":400
             }
     
 
@@ -315,7 +315,7 @@
                 "description": "Type: `double`, default: `0.001`. Learning rate",
                 "help_text": "Type: `double`, default: `0.001`. Learning rate."
             ,
-                "default": "0.001"
+                "default":0.001
             }
     
 
@@ -326,7 +326,7 @@
                 "description": "Type: `boolean`, default: `true`. Reduce learning rate on plateau",
                 "help_text": "Type: `boolean`, default: `true`. Reduce learning rate on plateau."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -337,7 +337,7 @@
                 "description": "Type: `integer`, default: `25`. Patience for learning rate reduction",
                 "help_text": "Type: `integer`, default: `25`. Patience for learning rate reduction."
             ,
-                "default": "25"
+                "default":25
             }
     
 
@@ -348,7 +348,7 @@
                 "description": "Type: `double`, default: `0.5`. Factor by which to reduce learning rate",
                 "help_text": "Type: `double`, default: `0.5`. Factor by which to reduce learning rate."
             ,
-                "default": "0.5"
+                "default":0.5
             }
     
 
@@ -359,7 +359,7 @@
                 "description": "Type: `boolean`, default: `true`. Early stopping",
                 "help_text": "Type: `boolean`, default: `true`. Early stopping."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -370,7 +370,7 @@
                 "description": "Type: `integer`, default: `50`. Patience for early stopping",
                 "help_text": "Type: `integer`, default: `50`. Patience for early stopping."
             ,
-                "default": "50"
+                "default":50
             }
     
 

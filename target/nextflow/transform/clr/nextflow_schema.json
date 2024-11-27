@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `prot`. ",
                 "help_text": "Type: `string`, default: `prot`. "
             ,
-                "default": "prot"
+                "default":"prot"
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -102,7 +102,7 @@
                 "enum": [0, 1]
             
             ,
-                "default": "0"
+                "default":0
             }
     
 
