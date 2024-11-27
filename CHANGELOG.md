@@ -1,5 +1,9 @@
 # openpipelines 2.0.0-rc.2
 
+## BUG FIXES
+
+* `annotate/popv`: fix popv raising `ValueError` when an accelerator (e.g. GPU) is unavailable (PR #918, backported from PR #915).
+
 ## MINOR CHANGES
 
 * `dataflow/split_h5mu`: Optimize resource usage of the component (PR #917, backported from PR #913).
