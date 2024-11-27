@@ -2,7 +2,7 @@
 
 ## BUG FIXES
 
-* `annotate/popv`: fix popv raising `ValueError` when an accelerator (e.g. GPU) is unavailable (PR #915).
+* `annotate/popv`: fix popv raising `ValueError` when an accelerator (e.g. GPU) is unavailable (PR #918, backported from PR #915).
 
 ## MINOR CHANGES
 
