@@ -66,7 +66,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The processed output file in h5mu format",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The processed output file in h5mu format."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -77,7 +77,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. The unprocessed output directory containing all the outputs from the pipeline",
                 "help_text": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. The unprocessed output directory containing all the outputs from the pipeline."
             ,
-                "default": "$id.$key.output_raw.output_raw"
+                "default":"$id.$key.output_raw.output_raw"
             }
     
 
@@ -308,7 +308,7 @@
                 "description": "Type: `string`, default: `sample`. Specify a run name to use as the output file base name",
                 "help_text": "Type: `string`, default: `sample`. Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.\n"
             ,
-                "default": "sample"
+                "default":"sample"
             }
     
 
@@ -319,7 +319,7 @@
                 "description": "Type: `boolean`, default: `false`. Specify whether to create the BAM file output\n",
                 "help_text": "Type: `boolean`, default: `false`. Specify whether to create the BAM file output\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -380,7 +380,7 @@
                 "description": "Type: `boolean`, default: `true`. Run jobs in parallel",
                 "help_text": "Type: `boolean`, default: `true`. Run jobs in parallel."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -391,7 +391,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Add timestamps to the errors, warnings, and notifications",
                 "help_text": "Type: `boolean_true`, default: `false`. Add timestamps to the errors, warnings, and notifications."
             ,
-                "default": "False"
+                "default":false
             }
     
 

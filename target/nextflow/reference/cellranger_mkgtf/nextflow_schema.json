@@ -46,7 +46,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output_gtf.gz`, example: `output.gtf.gz`. Output GTF file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output_gtf.gz`, example: `output.gtf.gz`. Output GTF file."
             ,
-                "default": "$id.$key.output_gtf.gz"
+                "default":"$id.$key.output_gtf.gz"
             }
     
 

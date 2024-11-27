@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. The modality key of the MuData object containing the RNA AnnData object",
                 "help_text": "Type: `string`, default: `rna`. The modality key of the MuData object containing the RNA AnnData object.\n"
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -87,7 +87,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output cross-checked anndata file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output cross-checked anndata file.\n"
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -120,7 +120,7 @@
                 "description": "Type: `string`, default: `\u003cpad\u003e`. The padding token used in the model",
                 "help_text": "Type: `string`, default: `\u003cpad\u003e`. The padding token used in the model.\n"
             ,
-                "default": "<pad>"
+                "default":"<pad>"
             }
     
 

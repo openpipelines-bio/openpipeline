@@ -66,7 +66,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -89,7 +89,7 @@
                 "description": "Type: `string`, default: `metrics_cellranger`. Name of the ",
                 "help_text": "Type: `string`, default: `metrics_cellranger`. Name of the .uns slot under which to QC metrics (if any)."
             ,
-                "default": "metrics_cellranger"
+                "default":"metrics_cellranger"
             }
     
 

@@ -86,7 +86,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -107,7 +107,7 @@
                 "description": "Type: `string`, default: `filter_with_hvg`. In which ",
                 "help_text": "Type: `string`, default: `filter_with_hvg`. In which .var slot to store a boolean array corresponding to the highly variable genes."
             ,
-                "default": "filter_with_hvg"
+                "default":"filter_with_hvg"
             }
     
 
@@ -118,7 +118,7 @@
                 "description": "Type: `string`, default: `sample_id`. If specified, highly-variable genes are selected within each batch separately and merged",
                 "help_text": "Type: `string`, default: `sample_id`. If specified, highly-variable genes are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific genes and acts as a lightweight batch correction method.\n"
             ,
-                "default": "sample_id"
+                "default":"sample_id"
             }
     
 
@@ -139,7 +139,7 @@
                 "description": "Type: List of `string`, default: `filter_with_hvg`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from ",
                 "help_text": "Type: List of `string`, default: `filter_with_hvg`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes.\n"
             ,
-                "default": "filter_with_hvg"
+                "default":"filter_with_hvg"
             }
     
 
@@ -150,7 +150,7 @@
                 "description": "Type: List of `integer`, default: `50,100,200,500`, multiple_sep: `\",\"`. Number of top vars to be used to calculate cumulative proportions",
                 "help_text": "Type: List of `integer`, default: `50,100,200,500`, multiple_sep: `\",\"`. Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n"
             ,
-                "default": "50,100,200,500"
+                "default":"50,100,200,500"
             }
     
 
@@ -171,7 +171,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Allow overwriting slots for PCA output",
                 "help_text": "Type: `boolean_true`, default: `false`. Allow overwriting slots for PCA output."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -192,7 +192,7 @@
                 "description": "Type: `integer`, default: `0`. Axis to perform the CLR transformation on",
                 "help_text": "Type: `integer`, default: `0`. Axis to perform the CLR transformation on."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -213,7 +213,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Enable scaling for the RNA modality",
                 "help_text": "Type: `boolean_true`, default: `false`. Enable scaling for the RNA modality."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -224,7 +224,7 @@
                 "description": "Type: `string`, default: `scaled`. Output layer where the scaled log-normalized data will be stored",
                 "help_text": "Type: `string`, default: `scaled`. Output layer where the scaled log-normalized data will be stored."
             ,
-                "default": "scaled"
+                "default":"scaled"
             }
     
 
@@ -235,7 +235,7 @@
                 "description": "Type: `string`, default: `scaled_pca`. Name of the ",
                 "help_text": "Type: `string`, default: `scaled_pca`. Name of the .obsm key where the PCA representation of the log-normalized\nand scaled data is stored.\n"
             ,
-                "default": "scaled_pca"
+                "default":"scaled_pca"
             }
     
 
@@ -246,7 +246,7 @@
                 "description": "Type: `string`, default: `scaled_pca_loadings`. Name of the ",
                 "help_text": "Type: `string`, default: `scaled_pca_loadings`. Name of the .varm key where the PCA loadings of the log-normalized and scaled\ndata is stored.\n"
             ,
-                "default": "scaled_pca_loadings"
+                "default":"scaled_pca_loadings"
             }
     
 
@@ -257,7 +257,7 @@
                 "description": "Type: `string`, default: `scaled_pca_variance`. Name of the ",
                 "help_text": "Type: `string`, default: `scaled_pca_variance`. Name of the .uns key where the variance and variance ratio will be stored as a map.\nThe map will contain two keys: variance and variance_ratio respectively.\n"
             ,
-                "default": "scaled_pca_variance"
+                "default":"scaled_pca_variance"
             }
     
 
@@ -268,7 +268,7 @@
                 "description": "Type: `string`, default: `scaled_umap`. Name of the ",
                 "help_text": "Type: `string`, default: `scaled_umap`. Name of the .obsm key where the UMAP representation of the log-normalized and scaled data is stored."
             ,
-                "default": "scaled_umap"
+                "default":"scaled_umap"
             }
     
 
@@ -289,7 +289,7 @@
                 "description": "Type: `boolean_false`, default: `true`. If set, omit zero-centering variables, which allows to handle sparse input efficiently",
                 "help_text": "Type: `boolean_false`, default: `true`. If set, omit zero-centering variables, which allows to handle sparse input efficiently.\""
             ,
-                "default": "True"
+                "default":true
             }
     
 

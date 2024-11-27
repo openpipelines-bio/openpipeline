@@ -66,7 +66,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output_dir.output_dir`, example: `output_dir`. The unprocessed output directory containing all the outputs from the pipeline",
                 "help_text": "Type: `file`, required, default: `$id.$key.output_dir.output_dir`, example: `output_dir`. The unprocessed output directory containing all the outputs from the pipeline."
             ,
-                "default": "$id.$key.output_dir.output_dir"
+                "default":"$id.$key.output_dir.output_dir"
             }
     
 
@@ -77,7 +77,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_seurat.rds`, example: `output_seurat.rds`. Single-cell analysis tool inputs",
                 "help_text": "Type: `file`, default: `$id.$key.output_seurat.rds`, example: `output_seurat.rds`. Single-cell analysis tool inputs. Seurat (.rds) input file containing RSEC molecules data table and all cell annotation metadata."
             ,
-                "default": "$id.$key.output_seurat.rds"
+                "default":"$id.$key.output_seurat.rds"
             }
     
 
@@ -88,7 +88,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_mudata.h5mu`, example: `output_mudata.h5mu`. ",
                 "help_text": "Type: `file`, default: `$id.$key.output_mudata.h5mu`, example: `output_mudata.h5mu`. "
             ,
-                "default": "$id.$key.output_mudata.h5mu"
+                "default":"$id.$key.output_mudata.h5mu"
             }
     
 
@@ -99,7 +99,7 @@
                 "description": "Type: `file`, default: `$id.$key.metrics_summary.csv`, example: `metrics_summary.csv`. Metrics Summary",
                 "help_text": "Type: `file`, default: `$id.$key.metrics_summary.csv`, example: `metrics_summary.csv`. Metrics Summary. Report containing sequencing, molecules, and cell metrics."
             ,
-                "default": "$id.$key.metrics_summary.csv"
+                "default":"$id.$key.metrics_summary.csv"
             }
     
 
@@ -110,7 +110,7 @@
                 "description": "Type: `file`, default: `$id.$key.pipeline_report.html`, example: `pipeline_report.html`. Pipeline Report",
                 "help_text": "Type: `file`, default: `$id.$key.pipeline_report.html`, example: `pipeline_report.html`. Pipeline Report. Summary report containing the results from the sequencing analysis pipeline run."
             ,
-                "default": "$id.$key.pipeline_report.html"
+                "default":"$id.$key.pipeline_report.html"
             }
     
 
@@ -121,7 +121,7 @@
                 "description": "Type: `file`, default: `$id.$key.rsec_mols_per_cell.zip`, example: `RSEC_MolsPerCell_MEX.zip`. Molecules per bioproduct per cell bassed on RSEC",
                 "help_text": "Type: `file`, default: `$id.$key.rsec_mols_per_cell.zip`, example: `RSEC_MolsPerCell_MEX.zip`. Molecules per bioproduct per cell bassed on RSEC"
             ,
-                "default": "$id.$key.rsec_mols_per_cell.zip"
+                "default":"$id.$key.rsec_mols_per_cell.zip"
             }
     
 
@@ -132,7 +132,7 @@
                 "description": "Type: `file`, default: `$id.$key.dbec_mols_per_cell.zip`, example: `DBEC_MolsPerCell_MEX.zip`. Molecules per bioproduct per cell bassed on DBEC",
                 "help_text": "Type: `file`, default: `$id.$key.dbec_mols_per_cell.zip`, example: `DBEC_MolsPerCell_MEX.zip`. Molecules per bioproduct per cell bassed on DBEC. DBEC data table is only output if the experiment includes targeted mRNA or AbSeq bioproducts."
             ,
-                "default": "$id.$key.dbec_mols_per_cell.zip"
+                "default":"$id.$key.dbec_mols_per_cell.zip"
             }
     
 
@@ -143,7 +143,7 @@
                 "description": "Type: `file`, default: `$id.$key.rsec_mols_per_cell_unfiltered.zip`, example: `RSEC_MolsPerCell_Unfiltered_MEX.zip`. Unfiltered tables containing all cell labels with 10 reads",
                 "help_text": "Type: `file`, default: `$id.$key.rsec_mols_per_cell_unfiltered.zip`, example: `RSEC_MolsPerCell_Unfiltered_MEX.zip`. Unfiltered tables containing all cell labels with 10 reads."
             ,
-                "default": "$id.$key.rsec_mols_per_cell_unfiltered.zip"
+                "default":"$id.$key.rsec_mols_per_cell_unfiltered.zip"
             }
     
 
@@ -154,7 +154,7 @@
                 "description": "Type: `file`, default: `$id.$key.bam.bam`, example: `BioProduct.bam`. Alignment file of R2 with associated R1 annotations for Bioproduct",
                 "help_text": "Type: `file`, default: `$id.$key.bam.bam`, example: `BioProduct.bam`. Alignment file of R2 with associated R1 annotations for Bioproduct."
             ,
-                "default": "$id.$key.bam.bam"
+                "default":"$id.$key.bam.bam"
             }
     
 
@@ -165,7 +165,7 @@
                 "description": "Type: `file`, default: `$id.$key.bam_index.bai`, example: `BioProduct.bam.bai`. Index file for the alignment file",
                 "help_text": "Type: `file`, default: `$id.$key.bam_index.bai`, example: `BioProduct.bam.bai`. Index file for the alignment file."
             ,
-                "default": "$id.$key.bam_index.bai"
+                "default":"$id.$key.bam_index.bai"
             }
     
 
@@ -176,7 +176,7 @@
                 "description": "Type: `file`, default: `$id.$key.bioproduct_stats.csv`, example: `Bioproduct_Stats.csv`. Bioproduct Stats",
                 "help_text": "Type: `file`, default: `$id.$key.bioproduct_stats.csv`, example: `Bioproduct_Stats.csv`. Bioproduct Stats. Metrics from RSEC and DBEC Unique Molecular Identifier adjustment algorithms on a per-bioproduct basis."
             ,
-                "default": "$id.$key.bioproduct_stats.csv"
+                "default":"$id.$key.bioproduct_stats.csv"
             }
     
 
@@ -187,7 +187,7 @@
                 "description": "Type: `file`, default: `$id.$key.dimred_tsne.csv`, example: `tSNE_coordinates.csv`. t-SNE dimensionality reduction coordinates per cell index",
                 "help_text": "Type: `file`, default: `$id.$key.dimred_tsne.csv`, example: `tSNE_coordinates.csv`. t-SNE dimensionality reduction coordinates per cell index"
             ,
-                "default": "$id.$key.dimred_tsne.csv"
+                "default":"$id.$key.dimred_tsne.csv"
             }
     
 
@@ -198,7 +198,7 @@
                 "description": "Type: `file`, default: `$id.$key.dimred_umap.csv`, example: `UMAP_coordinates.csv`. UMAP dimensionality reduction coordinates per cell index",
                 "help_text": "Type: `file`, default: `$id.$key.dimred_umap.csv`, example: `UMAP_coordinates.csv`. UMAP dimensionality reduction coordinates per cell index"
             ,
-                "default": "$id.$key.dimred_umap.csv"
+                "default":"$id.$key.dimred_umap.csv"
             }
     
 
@@ -209,7 +209,7 @@
                 "description": "Type: `file`, default: `$id.$key.immune_cell_classification.csv`, example: `Immune_Cell_Classification.csv`. Immune Cell Classification",
                 "help_text": "Type: `file`, default: `$id.$key.immune_cell_classification.csv`, example: `Immune_Cell_Classification.csv`. Immune Cell Classification. Cell type classification based on the expression of immune cell markers."
             ,
-                "default": "$id.$key.immune_cell_classification.csv"
+                "default":"$id.$key.immune_cell_classification.csv"
             }
     
 
@@ -280,7 +280,7 @@
                 "description": "Type: `file`, default: `$id.$key.sample_tag_metrics.csv`, example: `Sample_Tag_Metrics.csv`. Sample Tag Metrics",
                 "help_text": "Type: `file`, default: `$id.$key.sample_tag_metrics.csv`, example: `Sample_Tag_Metrics.csv`. Sample Tag Metrics. Metrics from the sample determination algorithm."
             ,
-                "default": "$id.$key.sample_tag_metrics.csv"
+                "default":"$id.$key.sample_tag_metrics.csv"
             }
     
 
@@ -291,7 +291,7 @@
                 "description": "Type: `file`, default: `$id.$key.sample_tag_calls.csv`, example: `Sample_Tag_Calls.csv`. Sample Tag Calls",
                 "help_text": "Type: `file`, default: `$id.$key.sample_tag_calls.csv`, example: `Sample_Tag_Calls.csv`. Sample Tag Calls. Assigned Sample Tag for each putative cell"
             ,
-                "default": "$id.$key.sample_tag_calls.csv"
+                "default":"$id.$key.sample_tag_calls.csv"
             }
     
 
@@ -302,7 +302,7 @@
                 "description": "Type: List of `file`, default: `$id.$key.sample_tag_counts_*.zip`, example: `Sample_Tag1.zip`, multiple_sep: `\";\"`. Sample Tag Counts",
                 "help_text": "Type: List of `file`, default: `$id.$key.sample_tag_counts_*.zip`, example: `Sample_Tag1.zip`, multiple_sep: `\";\"`. Sample Tag Counts. Separate data tables and metric summary for cells assigned to each sample tag. Note: For putative cells that could not be assigned a specific Sample Tag, a Multiplet_and_Undetermined.zip file is also output."
             ,
-                "default": "$id.$key.sample_tag_counts_*.zip"
+                "default":"$id.$key.sample_tag_counts_*.zip"
             }
     
 
@@ -313,7 +313,7 @@
                 "description": "Type: `file`, default: `$id.$key.sample_tag_counts_unassigned.zip`, example: `Multiplet_and_Undetermined.zip`. Sample Tag Counts Unassigned",
                 "help_text": "Type: `file`, default: `$id.$key.sample_tag_counts_unassigned.zip`, example: `Multiplet_and_Undetermined.zip`. Sample Tag Counts Unassigned. Data table and metric summary for cells that could not be assigned a specific Sample Tag."
             ,
-                "default": "$id.$key.sample_tag_counts_unassigned.zip"
+                "default":"$id.$key.sample_tag_counts_unassigned.zip"
             }
     
 
@@ -334,7 +334,7 @@
                 "description": "Type: `file`, default: `$id.$key.vdj_metrics.csv`, example: `VDJ_Metrics.csv`. VDJ Metrics",
                 "help_text": "Type: `file`, default: `$id.$key.vdj_metrics.csv`, example: `VDJ_Metrics.csv`. VDJ Metrics. Overall metrics from the VDJ analysis."
             ,
-                "default": "$id.$key.vdj_metrics.csv"
+                "default":"$id.$key.vdj_metrics.csv"
             }
     
 
@@ -345,7 +345,7 @@
                 "description": "Type: `file`, default: `$id.$key.vdj_per_cell.csv`, example: `VDJ_perCell.csv`. VDJ Per Cell",
                 "help_text": "Type: `file`, default: `$id.$key.vdj_per_cell.csv`, example: `VDJ_perCell.csv`. VDJ Per Cell. Cell specific read and molecule counts, VDJ gene segments, CDR3 sequences, paired chains, and cell type."
             ,
-                "default": "$id.$key.vdj_per_cell.csv"
+                "default":"$id.$key.vdj_per_cell.csv"
             }
     
 
@@ -356,7 +356,7 @@
                 "description": "Type: `file`, default: `$id.$key.vdj_per_cell_uncorrected.csv`, example: `VDJ_perCell_uncorrected.csv`. VDJ Per Cell Uncorrected",
                 "help_text": "Type: `file`, default: `$id.$key.vdj_per_cell_uncorrected.csv`, example: `VDJ_perCell_uncorrected.csv`. VDJ Per Cell Uncorrected. Cell specific read and molecule counts, VDJ gene segments, CDR3 sequences, paired chains, and cell type."
             ,
-                "default": "$id.$key.vdj_per_cell_uncorrected.csv"
+                "default":"$id.$key.vdj_per_cell_uncorrected.csv"
             }
     
 
@@ -367,7 +367,7 @@
                 "description": "Type: `file`, default: `$id.$key.vdj_dominant_contigs.csv`, example: `VDJ_Dominant_Contigs_AIRR.csv`. VDJ Dominant Contigs",
                 "help_text": "Type: `file`, default: `$id.$key.vdj_dominant_contigs.csv`, example: `VDJ_Dominant_Contigs_AIRR.csv`. VDJ Dominant Contigs. Dominant contig for each cell label chain type combination (putative cells only)."
             ,
-                "default": "$id.$key.vdj_dominant_contigs.csv"
+                "default":"$id.$key.vdj_dominant_contigs.csv"
             }
     
 
@@ -378,7 +378,7 @@
                 "description": "Type: `file`, default: `$id.$key.vdj_unfiltered_contigs.csv`, example: `VDJ_Unfiltered_Contigs_AIRR.csv`. VDJ Unfiltered Contigs",
                 "help_text": "Type: `file`, default: `$id.$key.vdj_unfiltered_contigs.csv`, example: `VDJ_Unfiltered_Contigs_AIRR.csv`. VDJ Unfiltered Contigs. All contigs that were assembled and annotated successfully (all cells)."
             ,
-                "default": "$id.$key.vdj_unfiltered_contigs.csv"
+                "default":"$id.$key.vdj_unfiltered_contigs.csv"
             }
     
 
@@ -399,7 +399,7 @@
                 "description": "Type: `file`, default: `$id.$key.atac_metrics.csv`, example: `ATAC_Metrics.csv`. ATAC Metrics",
                 "help_text": "Type: `file`, default: `$id.$key.atac_metrics.csv`, example: `ATAC_Metrics.csv`. ATAC Metrics. Overall metrics from the ATAC-Seq analysis."
             ,
-                "default": "$id.$key.atac_metrics.csv"
+                "default":"$id.$key.atac_metrics.csv"
             }
     
 
@@ -410,7 +410,7 @@
                 "description": "Type: `file`, default: `$id.$key.atac_metrics_json.json`, example: `ATAC_Metrics.json`. ATAC Metrics JSON",
                 "help_text": "Type: `file`, default: `$id.$key.atac_metrics_json.json`, example: `ATAC_Metrics.json`. ATAC Metrics JSON. Overall metrics from the ATAC-Seq analysis in JSON format."
             ,
-                "default": "$id.$key.atac_metrics_json.json"
+                "default":"$id.$key.atac_metrics_json.json"
             }
     
 
@@ -421,7 +421,7 @@
                 "description": "Type: `file`, default: `$id.$key.atac_fragments.gz`, example: `ATAC_Fragments.bed.gz`. ATAC Fragments",
                 "help_text": "Type: `file`, default: `$id.$key.atac_fragments.gz`, example: `ATAC_Fragments.bed.gz`. ATAC Fragments. Chromosomal location, cell index, and read support for each fragment detected"
             ,
-                "default": "$id.$key.atac_fragments.gz"
+                "default":"$id.$key.atac_fragments.gz"
             }
     
 
@@ -432,7 +432,7 @@
                 "description": "Type: `file`, default: `$id.$key.atac_fragments_index.tbi`, example: `ATAC_Fragments.bed.gz.tbi`. Index of ATAC Fragments",
                 "help_text": "Type: `file`, default: `$id.$key.atac_fragments_index.tbi`, example: `ATAC_Fragments.bed.gz.tbi`. Index of ATAC Fragments."
             ,
-                "default": "$id.$key.atac_fragments_index.tbi"
+                "default":"$id.$key.atac_fragments_index.tbi"
             }
     
 
@@ -443,7 +443,7 @@
                 "description": "Type: `file`, default: `$id.$key.atac_transposase_sites.gz`, example: `ATAC_Transposase_Sites.bed.gz`. ATAC Transposase Sites",
                 "help_text": "Type: `file`, default: `$id.$key.atac_transposase_sites.gz`, example: `ATAC_Transposase_Sites.bed.gz`. ATAC Transposase Sites. Chromosomal location, cell index, and read support for each transposase site detected"
             ,
-                "default": "$id.$key.atac_transposase_sites.gz"
+                "default":"$id.$key.atac_transposase_sites.gz"
             }
     
 
@@ -454,7 +454,7 @@
                 "description": "Type: `file`, default: `$id.$key.atac_transposase_sites_index.tbi`, example: `ATAC_Transposase_Sites.bed.gz.tbi`. Index of ATAC Transposase Sites",
                 "help_text": "Type: `file`, default: `$id.$key.atac_transposase_sites_index.tbi`, example: `ATAC_Transposase_Sites.bed.gz.tbi`. Index of ATAC Transposase Sites."
             ,
-                "default": "$id.$key.atac_transposase_sites_index.tbi"
+                "default":"$id.$key.atac_transposase_sites_index.tbi"
             }
     
 
@@ -465,7 +465,7 @@
                 "description": "Type: `file`, default: `$id.$key.atac_peaks.gz`, example: `ATAC_Peaks.bed.gz`. ATAC Peaks",
                 "help_text": "Type: `file`, default: `$id.$key.atac_peaks.gz`, example: `ATAC_Peaks.bed.gz`. ATAC Peaks. Peak regions of transposase activity"
             ,
-                "default": "$id.$key.atac_peaks.gz"
+                "default":"$id.$key.atac_peaks.gz"
             }
     
 
@@ -476,7 +476,7 @@
                 "description": "Type: `file`, default: `$id.$key.atac_peaks_index.tbi`, example: `ATAC_Peaks.bed.gz.tbi`. Index of ATAC Peaks",
                 "help_text": "Type: `file`, default: `$id.$key.atac_peaks_index.tbi`, example: `ATAC_Peaks.bed.gz.tbi`. Index of ATAC Peaks."
             ,
-                "default": "$id.$key.atac_peaks_index.tbi"
+                "default":"$id.$key.atac_peaks_index.tbi"
             }
     
 
@@ -487,7 +487,7 @@
                 "description": "Type: `file`, default: `$id.$key.atac_peak_annotation.gz`, example: `peak_annotation.tsv.gz`. ATAC Peak Annotation",
                 "help_text": "Type: `file`, default: `$id.$key.atac_peak_annotation.gz`, example: `peak_annotation.tsv.gz`. ATAC Peak Annotation. Estimated annotation of peak-to-gene connections"
             ,
-                "default": "$id.$key.atac_peak_annotation.gz"
+                "default":"$id.$key.atac_peak_annotation.gz"
             }
     
 
@@ -498,7 +498,7 @@
                 "description": "Type: `file`, default: `$id.$key.atac_cell_by_peak.zip`, example: `ATAC_Cell_by_Peak_MEX.zip`. ATAC Cell by Peak",
                 "help_text": "Type: `file`, default: `$id.$key.atac_cell_by_peak.zip`, example: `ATAC_Cell_by_Peak_MEX.zip`. ATAC Cell by Peak. Peak regions of transposase activity per cell"
             ,
-                "default": "$id.$key.atac_cell_by_peak.zip"
+                "default":"$id.$key.atac_cell_by_peak.zip"
             }
     
 
@@ -509,7 +509,7 @@
                 "description": "Type: `file`, default: `$id.$key.atac_cell_by_peak_unfiltered.zip`, example: `ATAC_Cell_by_Peak_Unfiltered_MEX.zip`. ATAC Cell by Peak Unfiltered",
                 "help_text": "Type: `file`, default: `$id.$key.atac_cell_by_peak_unfiltered.zip`, example: `ATAC_Cell_by_Peak_Unfiltered_MEX.zip`. ATAC Cell by Peak Unfiltered. Unfiltered file containing all cell labels with \u003e=1 transposase sites in peaks."
             ,
-                "default": "$id.$key.atac_cell_by_peak_unfiltered.zip"
+                "default":"$id.$key.atac_cell_by_peak_unfiltered.zip"
             }
     
 
@@ -520,7 +520,7 @@
                 "description": "Type: `file`, default: `$id.$key.atac_bam.bam`, example: `ATAC.bam`. ATAC BAM",
                 "help_text": "Type: `file`, default: `$id.$key.atac_bam.bam`, example: `ATAC.bam`. ATAC BAM. Alignment file for R1 and R2 with associated I2 annotations for ATAC-Seq. Only output if the BAM generation flag is set to true."
             ,
-                "default": "$id.$key.atac_bam.bam"
+                "default":"$id.$key.atac_bam.bam"
             }
     
 
@@ -531,7 +531,7 @@
                 "description": "Type: `file`, default: `$id.$key.atac_bam_index.bai`, example: `ATAC.bam.bai`. Index of ATAC BAM",
                 "help_text": "Type: `file`, default: `$id.$key.atac_bam_index.bai`, example: `ATAC.bam.bai`. Index of ATAC BAM."
             ,
-                "default": "$id.$key.atac_bam_index.bai"
+                "default":"$id.$key.atac_bam_index.bai"
             }
     
 
@@ -552,7 +552,7 @@
                 "description": "Type: `file`, default: `$id.$key.protein_aggregates_experimental.csv`, example: `Protein_Aggregates_Experimental.csv`. Protein Aggregates Experimental",
                 "help_text": "Type: `file`, default: `$id.$key.protein_aggregates_experimental.csv`, example: `Protein_Aggregates_Experimental.csv`. Protein Aggregates Experimental"
             ,
-                "default": "$id.$key.protein_aggregates_experimental.csv"
+                "default":"$id.$key.protein_aggregates_experimental.csv"
             }
     
 
@@ -733,7 +733,7 @@
                 "description": "Type: `string`, default: `sample`. Specify a run name to use as the output file base name",
                 "help_text": "Type: `string`, default: `sample`. Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.\n"
             ,
-                "default": "sample"
+                "default":"sample"
             }
     
 
@@ -744,7 +744,7 @@
                 "description": "Type: `boolean`, default: `false`. Specify whether to create the BAM file output\n",
                 "help_text": "Type: `boolean`, default: `false`. Specify whether to create the BAM file output\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -805,7 +805,7 @@
                 "description": "Type: `boolean`, default: `true`. Run jobs in parallel",
                 "help_text": "Type: `boolean`, default: `true`. Run jobs in parallel."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -816,7 +816,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Add timestamps to the errors, warnings, and notifications",
                 "help_text": "Type: `boolean_true`, default: `false`. Add timestamps to the errors, warnings, and notifications."
             ,
-                "default": "False"
+                "default":false
             }
     
 

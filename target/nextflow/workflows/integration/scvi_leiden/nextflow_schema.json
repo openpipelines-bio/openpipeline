@@ -56,7 +56,7 @@
                 "description": "Type: `string`, default: `log_normalized`. use specified layer for expression values instead of the ",
                 "help_text": "Type: `string`, default: `log_normalized`. use specified layer for expression values instead of the .X object from the modality."
             ,
-                "default": "log_normalized"
+                "default":"log_normalized"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to process",
                 "help_text": "Type: `string`, default: `rna`. Which modality to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -88,7 +88,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -99,7 +99,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output_model.output_model`, example: `output_dir`. Folder where the state of the trained model will be saved to",
                 "help_text": "Type: `file`, required, default: `$id.$key.output_model.output_model`, example: `output_dir`. Folder where the state of the trained model will be saved to."
             ,
-                "default": "$id.$key.output_model.output_model"
+                "default":"$id.$key.output_model.output_model"
             }
     
 
@@ -120,7 +120,7 @@
                 "description": "Type: `string`, default: `scvi_integration_neighbors`. In which ",
                 "help_text": "Type: `string`, default: `scvi_integration_neighbors`. In which .uns slot to store various neighbor output objects."
             ,
-                "default": "scvi_integration_neighbors"
+                "default":"scvi_integration_neighbors"
             }
     
 
@@ -131,7 +131,7 @@
                 "description": "Type: `string`, default: `scvi_integration_distances`. In which ",
                 "help_text": "Type: `string`, default: `scvi_integration_distances`. In which .obsp slot to store the distance matrix between the resulting neighbors."
             ,
-                "default": "scvi_integration_distances"
+                "default":"scvi_integration_distances"
             }
     
 
@@ -142,7 +142,7 @@
                 "description": "Type: `string`, default: `scvi_integration_connectivities`. In which ",
                 "help_text": "Type: `string`, default: `scvi_integration_connectivities`. In which .obsp slot to store the connectivities matrix between the resulting neighbors."
             ,
-                "default": "scvi_integration_connectivities"
+                "default":"scvi_integration_connectivities"
             }
     
 
@@ -173,7 +173,7 @@
                 "description": "Type: `string`, default: `X_scvi_integrated`. In which ",
                 "help_text": "Type: `string`, default: `X_scvi_integrated`. In which .obsm slot to store the resulting integrated embedding."
             ,
-                "default": "X_scvi_integrated"
+                "default":"X_scvi_integrated"
             }
     
 
@@ -206,7 +206,7 @@
                 "enum": ["elbo_validation", "reconstruction_loss_validation", "kl_local_validation"]
             
             ,
-                "default": "elbo_validation"
+                "default":"elbo_validation"
             }
     
 
@@ -217,7 +217,7 @@
                 "description": "Type: `integer`, default: `45`. Number of validation epochs with no improvement after which training will be stopped",
                 "help_text": "Type: `integer`, default: `45`. Number of validation epochs with no improvement after which training will be stopped."
             ,
-                "default": "45"
+                "default":45
             }
     
 
@@ -228,7 +228,7 @@
                 "description": "Type: `double`, default: `0.0`. Minimum change in the monitored quantity to qualify as an improvement, i",
                 "help_text": "Type: `double`, default: `0.0`. Minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than min_delta, will count as no improvement."
             ,
-                "default": "0.0"
+                "default":0.0
             }
     
 
@@ -249,7 +249,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus",
                 "help_text": "Type: `boolean`, default: `true`. Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -260,7 +260,7 @@
                 "description": "Type: `double`, default: `0.6`. Factor to reduce learning rate",
                 "help_text": "Type: `double`, default: `0.6`. Factor to reduce learning rate."
             ,
-                "default": "0.6"
+                "default":0.6
             }
     
 
@@ -271,7 +271,7 @@
                 "description": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced",
                 "help_text": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced."
             ,
-                "default": "30.0"
+                "default":30.0
             }
     
 
@@ -292,7 +292,7 @@
                 "description": "Type: `string`, default: `scvi_integration_leiden`. Prefix for the ",
                 "help_text": "Type: `string`, default: `scvi_integration_leiden`. Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for \u0027--obs_cluster\u0027 suffixed with an underscore and one of the resolutions\nresolutions specified in \u0027--leiden_resolution\u0027.\n"
             ,
-                "default": "scvi_integration_leiden"
+                "default":"scvi_integration_leiden"
             }
     
 
@@ -303,7 +303,7 @@
                 "description": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering",
                 "help_text": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
             ,
-                "default": "1.0"
+                "default":"1.0"
             }
     
 
@@ -324,7 +324,7 @@
                 "description": "Type: `string`, default: `X_scvi_umap`. In which ",
                 "help_text": "Type: `string`, default: `X_scvi_umap`. In which .obsm slot to store the resulting UMAP embedding."
             ,
-                "default": "X_scvi_umap"
+                "default":"X_scvi_umap"
             }
     
 

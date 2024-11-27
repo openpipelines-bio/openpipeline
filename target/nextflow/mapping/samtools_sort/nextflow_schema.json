@@ -36,7 +36,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Sort unmapped reads (those in chromosome \"*\") by their sequence minimiser (Schleimer et al",
                 "help_text": "Type: `boolean_true`, default: `false`. Sort unmapped reads (those in chromosome \"*\") by their sequence minimiser (Schleimer et al., 2003; Roberts et al., 2004), \nalso reverse complementing as appropriate. This has the effect of collating some similar data together, improving the \ncompressibility of the unmapped sequence. The minimiser kmer size is adjusted using the -K option. Note data compressed \nin this manner may need to be name collated prior to conversion back to fastq.\n\nMapped sequences are sorted by chromosome and position. \n"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Sort by read names (i",
                 "help_text": "Type: `boolean_true`, default: `false`. Sort by read names (i.e., the QNAME field) rather than by chromosomal coordinates."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -78,7 +78,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Do not add a @PG line to the header of the output file",
                 "help_text": "Type: `boolean_true`, default: `false`. Do not add a @PG line to the header of the output file."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -119,7 +119,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output_bam.bam`, example: `output.bam`. Filename to output the counts to",
                 "help_text": "Type: `file`, required, default: `$id.$key.output_bam.bam`, example: `output.bam`. Filename to output the counts to."
             ,
-                "default": "$id.$key.output_bam.bam"
+                "default":"$id.$key.output_bam.bam"
             }
     
 
@@ -130,7 +130,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_bai.bai`, example: `output.bam.bai`. BAI-format index for BAM file",
                 "help_text": "Type: `file`, default: `$id.$key.output_bai.bai`, example: `output.bam.bai`. BAI-format index for BAM file."
             ,
-                "default": "$id.$key.output_bai.bai"
+                "default":"$id.$key.output_bai.bai"
             }
     
 

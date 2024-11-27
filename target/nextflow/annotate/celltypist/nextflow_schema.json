@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to process",
                 "help_text": "Type: `string`, default: `rna`. Which modality to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -87,7 +87,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -110,7 +110,7 @@
                 "description": "Type: `string`, default: `celltypist_pred`. In which `",
                 "help_text": "Type: `string`, default: `celltypist_pred`. In which `.obs` slots to store the predicted information.\n"
             ,
-                "default": "celltypist_pred"
+                "default":"celltypist_pred"
             }
     
 
@@ -121,7 +121,7 @@
                 "description": "Type: `string`, default: `celltypist_probability`. In which `",
                 "help_text": "Type: `string`, default: `celltypist_probability`. In which `.obs` slots to store the probability of the predictions.\n"
             ,
-                "default": "celltypist_probability"
+                "default":"celltypist_probability"
             }
     
 
@@ -162,7 +162,7 @@
                 "description": "Type: `string`, default: `cell_ontology_class`. The name of the adata obs column in the reference data containing cell type annotations",
                 "help_text": "Type: `string`, default: `cell_ontology_class`. The name of the adata obs column in the reference data containing cell type annotations."
             ,
-                "default": "cell_ontology_class"
+                "default":"cell_ontology_class"
             }
     
 
@@ -173,7 +173,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Whether to check the expression of the reference dataset to the format reccomended by CellTypist",
                 "help_text": "Type: `boolean_true`, default: `false`. Whether to check the expression of the reference dataset to the format reccomended by CellTypist.\nCellTypist requires data to be log-normalized to 10000 counts per cell.\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -214,7 +214,7 @@
                 "description": "Type: `boolean`, default: `false`. Whether to perform feature selection",
                 "help_text": "Type: `boolean`, default: `false`. Whether to perform feature selection."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -225,7 +225,7 @@
                 "description": "Type: `boolean`, default: `false`. Whether to refine the predicted labels by running the majority voting classifier after over-clustering",
                 "help_text": "Type: `boolean`, default: `false`. Whether to refine the predicted labels by running the majority voting classifier after over-clustering."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -236,7 +236,7 @@
                 "description": "Type: `double`, default: `1.0`. Inverse of regularization strength in logistic regression",
                 "help_text": "Type: `double`, default: `1.0`. Inverse of regularization strength in logistic regression."
             ,
-                "default": "1.0"
+                "default":1.0
             }
     
 
@@ -247,7 +247,7 @@
                 "description": "Type: `integer`, default: `1000`. Maximum number of iterations before reaching the minimum of the cost function",
                 "help_text": "Type: `integer`, default: `1000`. Maximum number of iterations before reaching the minimum of the cost function."
             ,
-                "default": "1000"
+                "default":1000
             }
     
 
@@ -258,7 +258,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Whether to use the stochastic gradient descent algorithm",
                 "help_text": "Type: `boolean_true`, default: `false`. Whether to use the stochastic gradient descent algorithm."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -269,7 +269,7 @@
                 "description": "Type: `double`, default: `0.0`. \"For the dominant cell type within a subcluster, the minimum proportion of cells required to \nsupport naming of the subcluster by this cell type",
                 "help_text": "Type: `double`, default: `0.0`. \"For the dominant cell type within a subcluster, the minimum proportion of cells required to \nsupport naming of the subcluster by this cell type. Ignored if majority_voting is set to False. \nSubcluster that fails to pass this proportion threshold will be assigned \u0027Heterogeneous\u0027.\"\n"
             ,
-                "default": "0.0"
+                "default":0.0
             }
     
 

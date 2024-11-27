@@ -76,7 +76,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -207,7 +207,7 @@
                 "description": "Type: `string`, default: `^[mM][tT]-`. Regex string that identifies mitochondrial genes from --var_gene_names",
                 "help_text": "Type: `string`, default: `^[mM][tT]-`. Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n"
             ,
-                "default": "^[mM][tT]-"
+                "default":"^[mM][tT]-"
             }
     
 

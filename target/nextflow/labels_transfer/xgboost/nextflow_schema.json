@@ -36,7 +36,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`. The query data in ",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`. The query data in .h5mu format with predicted labels transfered from the reference."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -99,7 +99,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to use",
                 "help_text": "Type: `string`, default: `rna`. Which modality to use."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -150,7 +150,7 @@
                 "description": "Type: List of `string`, default: `ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level`, multiple_sep: `\";\"`. The `",
                 "help_text": "Type: List of `string`, default: `ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level`, multiple_sep: `\";\"`. The `.obs` key(s) of the target labels to tranfer."
             ,
-                "default": "ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level"
+                "default":"ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level"
             }
     
 
@@ -171,7 +171,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Retrain models on the reference even if model_output directory already has trained classifiers",
                 "help_text": "Type: `boolean_true`, default: `false`. Retrain models on the reference even if model_output directory already has trained classifiers. WARNING! It will rewrite existing classifiers for targets in the model_output directory!"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -182,7 +182,7 @@
                 "description": "Type: `boolean`, default: `false`. Use GPU during models training and inference (recommended)",
                 "help_text": "Type: `boolean`, default: `false`. Use GPU during models training and inference (recommended)."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -193,7 +193,7 @@
                 "description": "Type: `integer`, default: `1`. The verbosity level for evaluation of the classifier from the range [0,2]",
                 "help_text": "Type: `integer`, default: `1`. The verbosity level for evaluation of the classifier from the range [0,2]"
             ,
-                "default": "1"
+                "default":1
             }
     
 
@@ -204,7 +204,7 @@
                 "description": "Type: `file`, default: `$id.$key.model_output.model_output`. Output directory for model",
                 "help_text": "Type: `file`, default: `$id.$key.model_output.model_output`. Output directory for model"
             ,
-                "default": "$id.$key.model_output.model_output"
+                "default":"$id.$key.model_output.model_output"
             }
     
 
@@ -215,7 +215,7 @@
                 "description": "Type: `string`, default: `xgboost_parameters`. The key in `uns` slot of the output AnnData object to store the parameters of the XGBoost classifier",
                 "help_text": "Type: `string`, default: `xgboost_parameters`. The key in `uns` slot of the output AnnData object to store the parameters of the XGBoost classifier."
             ,
-                "default": "xgboost_parameters"
+                "default":"xgboost_parameters"
             }
     
 
@@ -236,7 +236,7 @@
                 "description": "Type: `double`, default: `0.3`. Step size shrinkage used in update to prevents overfitting",
                 "help_text": "Type: `double`, default: `0.3`. Step size shrinkage used in update to prevents overfitting. Range: [0,1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "0.3"
+                "default":0.3
             }
     
 
@@ -247,7 +247,7 @@
                 "description": "Type: `double`, default: `0.0`. Minimum loss reduction required to make a further partition on a leaf node of the tree",
                 "help_text": "Type: `double`, default: `0.0`. Minimum loss reduction required to make a further partition on a leaf node of the tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "0.0"
+                "default":0.0
             }
     
 
@@ -258,7 +258,7 @@
                 "description": "Type: `integer`, default: `6`. Maximum depth of a tree",
                 "help_text": "Type: `integer`, default: `6`. Maximum depth of a tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "6"
+                "default":6
             }
     
 
@@ -269,7 +269,7 @@
                 "description": "Type: `integer`, default: `1`. Minimum sum of instance weight (hessian) needed in a child",
                 "help_text": "Type: `integer`, default: `1`. Minimum sum of instance weight (hessian) needed in a child. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "1"
+                "default":1
             }
     
 
@@ -280,7 +280,7 @@
                 "description": "Type: `double`, default: `0.0`. Maximum delta step we allow each leaf output to be",
                 "help_text": "Type: `double`, default: `0.0`. Maximum delta step we allow each leaf output to be. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "0.0"
+                "default":0.0
             }
     
 
@@ -291,7 +291,7 @@
                 "description": "Type: `double`, default: `1.0`. Subsample ratio of the training instances",
                 "help_text": "Type: `double`, default: `1.0`. Subsample ratio of the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "1.0"
+                "default":1.0
             }
     
 
@@ -304,7 +304,7 @@
                 "enum": ["uniform", "gradient_based"]
             
             ,
-                "default": "uniform"
+                "default":"uniform"
             }
     
 
@@ -315,7 +315,7 @@
                 "description": "Type: `double`, default: `1.0`. Fraction of columns to be subsampled",
                 "help_text": "Type: `double`, default: `1.0`. Fraction of columns to be subsampled. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "1.0"
+                "default":1.0
             }
     
 
@@ -326,7 +326,7 @@
                 "description": "Type: `double`, default: `1.0`. Subsample ratio of columns for each level",
                 "help_text": "Type: `double`, default: `1.0`. Subsample ratio of columns for each level. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "1.0"
+                "default":1.0
             }
     
 
@@ -337,7 +337,7 @@
                 "description": "Type: `double`, default: `1.0`. Subsample ratio of columns for each node (split)",
                 "help_text": "Type: `double`, default: `1.0`. Subsample ratio of columns for each node (split). Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "1.0"
+                "default":1.0
             }
     
 
@@ -348,7 +348,7 @@
                 "description": "Type: `double`, default: `1.0`. L2 regularization term on weights",
                 "help_text": "Type: `double`, default: `1.0`. L2 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "1.0"
+                "default":1.0
             }
     
 
@@ -359,7 +359,7 @@
                 "description": "Type: `double`, default: `0.0`. L1 regularization term on weights",
                 "help_text": "Type: `double`, default: `0.0`. L1 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "0.0"
+                "default":0.0
             }
     
 
@@ -370,7 +370,7 @@
                 "description": "Type: `double`, default: `1.0`. Control the balance of positive and negative weights, useful for unbalanced classes",
                 "help_text": "Type: `double`, default: `1.0`. Control the balance of positive and negative weights, useful for unbalanced classes. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
             ,
-                "default": "1.0"
+                "default":1.0
             }
     
 

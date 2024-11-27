@@ -36,7 +36,7 @@
                 "description": "Type: `file`, default: `_viash.yaml`. Path to the _viash",
                 "help_text": "Type: `file`, default: `_viash.yaml`. Path to the _viash.yaml project configuration file."
             ,
-                "default": "_viash.yaml"
+                "default":"_viash.yaml"
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.output`. Path to the directory where the resources will be synced to",
                 "help_text": "Type: `file`, default: `$id.$key.output.output`. Path to the directory where the resources will be synced to."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -78,7 +78,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Displays the operations that would be performed using the specified command without actually running them",
                 "help_text": "Type: `boolean_true`, default: `false`. Displays the operations that would be performed using the specified command without actually running them."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -89,7 +89,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Does not display the operations performed from the specified command",
                 "help_text": "Type: `boolean_true`, default: `false`. Does not display the operations performed from the specified command."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -100,7 +100,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Files that exist in the destination but not in the source are deleted during sync",
                 "help_text": "Type: `boolean_true`, default: `false`. Files that exist in the destination but not in the source are deleted during sync."
             ,
-                "default": "False"
+                "default":false
             }
     
 
