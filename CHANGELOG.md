@@ -2,7 +2,7 @@
 
 ## MINOR CHANGES
 
-* `dataflow/split_h5mu`: Optimize resource usage of the component (PR #913).
+* `dataflow/split_h5mu`: Optimize resource usage of the component (PR #917, backported from PR #913).
 
 # openpipelines 2.0.0-rc.1
 
