@@ -1,0 +1,276 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "onclass",
+"description": "OnClass is a python package for single-cell cell type annotation. It uses the Cell Ontology to capture the cell type similarity. \nThese similarities enable OnClass to annotate cell types that are never seen in the training data.\n",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "Input dataset (query) arguments",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `input.h5mu`. The input (query) data to be labeled",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. The input (query) data to be labeled. Should be a .h5mu file."
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. Which modality to process",
+                "help_text": "Type: `string`, default: `rna`. Which modality to process."
+            ,
+                "default":"rna"
+            }
+    
+
+        ,
+                "input_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. The layer in the input data to be used for cell type annotation if ",
+                "help_text": "Type: `string`. The layer in the input data to be used for cell type annotation if .X is not to be used."
+            
+            }
+    
+
+        ,
+                "cl_nlp_emb_file": {
+                "type":
+                "string",
+                "description": "Type: `file`, required. The ",
+                "help_text": "Type: `file`, required. The .nlp.emb file with the cell type embeddings."
+            
+            }
+    
+
+        ,
+                "cl_ontology_file": {
+                "type":
+                "string",
+                "description": "Type: `file`, required. The ",
+                "help_text": "Type: `file`, required. The .ontology file with the cell type ontology."
+            
+            }
+    
+
+        ,
+                "cl_obo_file": {
+                "type":
+                "string",
+                "description": "Type: `file`, required. The ",
+                "help_text": "Type: `file`, required. The .obo file with the cell type ontology."
+            
+            }
+    
+
+        ,
+                "var_query_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`. The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used",
+                "help_text": "Type: `string`. The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used.\n"
+            
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "Output arguments.",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
+                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
+            ,
+                "default":"$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+        ,
+                "output_obs_predictions": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `onclass_pred`. In which `",
+                "help_text": "Type: `string`, default: `onclass_pred`. In which `.obs` slots to store the predicted information.\n"
+            ,
+                "default":"onclass_pred"
+            }
+    
+
+        ,
+                "output_obs_probability": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `onclass_prob`. In which `",
+                "help_text": "Type: `string`, default: `onclass_prob`. In which `.obs` slots to store the probability of the predictions.\n"
+            ,
+                "default":"onclass_prob"
+            }
+    
+
+}
+},
+    
+    
+    "reference" : {
+    "title": "Reference",
+    "type": "object",
+    "description": "Arguments related to the reference dataset.",
+    "properties": {
+    
+        
+                "reference": {
+                "type":
+                "string",
+                "description": "Type: `file`, example: `reference.h5mu`. The reference data to train the CellTypist classifiers on",
+                "help_text": "Type: `file`, example: `reference.h5mu`. The reference data to train the CellTypist classifiers on. Only required if a pre-trained --model is not provided."
+            
+            }
+    
+
+        ,
+                "reference_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. The layer in the reference data to be used for cell type annotation if ",
+                "help_text": "Type: `string`. The layer in the reference data to be used for cell type annotation if .X is not to be used."
+            
+            }
+    
+
+        ,
+                "reference_obs_target": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `cell_ontology_class`. The name of the adata obs column in the reference data containing cell type annotations",
+                "help_text": "Type: `string`, required, example: `cell_ontology_class`. The name of the adata obs column in the reference data containing cell type annotations."
+            
+            }
+    
+
+}
+},
+    
+    
+    "model arguments" : {
+    "title": "Model arguments",
+    "type": "object",
+    "description": "Model arguments",
+    "properties": {
+    
+        
+                "model": {
+                "type":
+                "string",
+                "description": "Type: `string`. \"Pretrained model path without a file extension",
+                "help_text": "Type: `string`. \"Pretrained model path without a file extension. If not provided, the model will be trained \non the reference data and --reference should be provided. The path namespace should contain:\n  - a .npz or .pkl file\n  - a .data file\n  - a .meta file\n  - a .index file\ne.g. /path/to/model/pretrained_model_target1 as saved by OnClass.\"\n"
+            
+            }
+    
+
+        ,
+                "max_iter": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `30`. Maximum number of iterations for training the model",
+                "help_text": "Type: `integer`, default: `30`. Maximum number of iterations for training the model."
+            ,
+                "default":30
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/reference"
+    },
+
+    {
+    "$ref": "#/definitions/model arguments"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}

@@ -1,0 +1,30 @@
+# Input
+# sam: "path/to/file"
+tag_group: "CB"
+tag_umi: "UB"
+exclude_flag: 1796
+# vcf: "path/to/file"
+# sm: "foo"
+# sm_list: "foo"
+sam_verbose: 1000000
+vcf_verbose: 1000
+skip_umi: false
+cap_bq: 40
+min_bq: 13
+min_mq: 20
+min_td: 0
+excl_flag: 3844
+# group_list: "foo"
+min_total: 0
+min_uniq: 0
+min_snp: 0
+
+# Output
+# output: "$id.$key.output"
+# out: "demuxlet_dsc"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments

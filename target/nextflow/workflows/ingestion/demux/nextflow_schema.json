@@ -1,0 +1,153 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "demux",
+"description": "Convert `.bcl` files to `.fastq` files using bcl2fastq, bcl-convert or Cell Ranger mkfastq.\n",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "id": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `foo`. ID of the sample",
+                "help_text": "Type: `string`, required, example: `foo`. ID of the sample."
+            
+            }
+    
+
+        ,
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `bcl_dir`. Input run directory",
+                "help_text": "Type: `file`, required, example: `bcl_dir`. Input run directory"
+            
+            }
+    
+
+        ,
+                "sample_sheet": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `bcl_dir`. Pointer to the sample sheet",
+                "help_text": "Type: `file`, required, example: `bcl_dir`. Pointer to the sample sheet"
+            
+            }
+    
+
+        ,
+                "demultiplexer": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `bcl2fastq`, choices: ``bclconvert`, `bcl2fastq`, `mkfastq``. The multiplexer to use, one of bclconvert or mkfastq",
+                "help_text": "Type: `string`, default: `bcl2fastq`, choices: ``bclconvert`, `bcl2fastq`, `mkfastq``. The multiplexer to use, one of bclconvert or mkfastq",
+                "enum": ["bclconvert", "bcl2fastq", "mkfastq"]
+            
+            ,
+                "default":"bcl2fastq"
+            }
+    
+
+        ,
+                "ignore_missing": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`. Should the demultiplexer ignore missing entities (filter, ",
+                "help_text": "Type: `boolean`. Should the demultiplexer ignore missing entities (filter, ...)"
+            
+            }
+    
+
+        ,
+                "output_fastq": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output_fastq.output_fastq`, example: `fastq_dir`. Output directory containig fastq files",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_fastq.output_fastq`, example: `fastq_dir`. Output directory containig fastq files"
+            ,
+                "default":"$id.$key.output_fastq.output_fastq"
+            }
+    
+
+        ,
+                "output_fastqc": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output_fastqc.output_fastqc`, example: `reports_dir`. Reports directory produced by FastQC",
+                "help_text": "Type: `file`, default: `$id.$key.output_fastqc.output_fastqc`, example: `reports_dir`. Reports directory produced by FastQC"
+            ,
+                "default":"$id.$key.output_fastqc.output_fastqc"
+            }
+    
+
+        ,
+                "output_multiqc": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output_multiqc.output_multiqc`, example: `reports_dir`. Reports directory produced by MultiQC",
+                "help_text": "Type: `file`, default: `$id.$key.output_multiqc.output_multiqc`, example: `reports_dir`. Reports directory produced by MultiQC"
+            ,
+                "default":"$id.$key.output_multiqc.output_multiqc"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/arguments"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}

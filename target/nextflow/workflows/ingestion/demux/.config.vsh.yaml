@@ -1,0 +1,324 @@
+name: "demux"
+namespace: "workflows/ingestion"
+version: "dtype_csr_fix_build"
+authors:
+- name: "Toni Verbeiren"
+  roles:
+  - "author"
+  - "maintainer"
+  info:
+    role: "Core Team Member"
+    links:
+      github: "tverbeiren"
+      linkedin: "verbeiren"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Scientist and CEO"
+- name: "Marijke Van Moerbeke"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      github: "mvanmoerbeke"
+      orcid: "0000-0002-3097-5621"
+      linkedin: "marijke-van-moerbeke-84303a34"
+    organizations:
+    - name: "OpenAnalytics"
+      href: "https://www.openanalytics.eu"
+      role: "Statistical Consultant"
+- name: "Angela Oliveira Pisco"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      github: "aopisco"
+      orcid: "0000-0003-0142-2355"
+      linkedin: "aopisco"
+    organizations:
+    - name: "Insitro"
+      href: "https://insitro.com"
+      role: "Director of Computational Biology"
+    - name: "Open Problems"
+      href: "https://openproblems.bio"
+      role: "Core Member"
+- name: "Samuel D'Souza"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      github: "srdsam"
+      linkedin: "samuel-d-souza-887023150/"
+    organizations:
+    - name: "Chan Zuckerberg Biohub"
+      href: "https://www.czbiohub.org"
+      role: "Data Engineer"
+- name: "Robrecht Cannoodt"
+  roles:
+  - "author"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "robrecht@data-intuitive.com"
+      github: "rcannood"
+      orcid: "0000-0003-3641-729X"
+      linkedin: "robrechtcannoodt"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Science Engineer"
+    - name: "Open Problems"
+      href: "https://openproblems.bio"
+      role: "Core Member"
+argument_groups:
+- name: "Arguments"
+  arguments:
+  - type: "string"
+    name: "--id"
+    description: "ID of the sample."
+    info: null
+    example:
+    - "foo"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--input"
+    alternatives:
+    - "-i"
+    description: "Input run directory"
+    info: null
+    example:
+    - "bcl_dir"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--sample_sheet"
+    alternatives:
+    - "-s"
+    description: "Pointer to the sample sheet"
+    info: null
+    example:
+    - "bcl_dir"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--demultiplexer"
+    description: "The multiplexer to use, one of bclconvert or mkfastq"
+    info: null
+    default:
+    - "bcl2fastq"
+    required: false
+    choices:
+    - "bclconvert"
+    - "bcl2fastq"
+    - "mkfastq"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--ignore_missing"
+    description: "Should the demultiplexer ignore missing entities (filter, ...)"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_fastq"
+    description: "Output directory containig fastq files"
+    info: null
+    example:
+    - "fastq_dir"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_fastqc"
+    description: "Reports directory produced by FastQC"
+    info: null
+    example:
+    - "reports_dir"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_multiqc"
+    description: "Reports directory produced by MultiQC"
+    info: null
+    example:
+    - "reports_dir"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "nextflow_script"
+  path: "main.nf"
+  is_executable: true
+  entrypoint: "run_wf"
+- type: "file"
+  path: "utils"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Convert `.bcl` files to `.fastq` files using bcl2fastq, bcl-convert\
+  \ or Cell Ranger mkfastq.\n"
+test_resources:
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf"
+- type: "file"
+  path: "cellranger_tiny_bcl"
+- type: "file"
+  path: "openpipelinetestutils"
+  dest: "openpipelinetestutils"
+info:
+  name: "Demux"
+  short_description: "A generic pipeline for running bcl2fastq, bcl-convert or Cell\
+    \ Ranger mkfastq."
+status: "enabled"
+dependencies:
+- name: "demux/cellranger_mkfastq"
+  repository:
+    type: "local"
+- name: "demux/bcl_convert"
+  repository:
+    type: "local"
+- name: "demux/bcl2fastq"
+  repository:
+    type: "local"
+- name: "qc/fastqc"
+  repository:
+    type: "local"
+- name: "qc/multiqc"
+  repository:
+    type: "local"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+build_info:
+  config: "src/workflows/ingestion/demux/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "native"
+  output: "target/nextflow/workflows/ingestion/demux"
+  executable: "target/nextflow/workflows/ingestion/demux/main.nf"
+  viash_version: "0.9.0"
+  git_commit: "8e249d6629bb9a50292707c10daaca8f7d03c0bd"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-1940-g8e249d6629"
+  dependencies:
+  - "target/nextflow/demux/cellranger_mkfastq"
+  - "target/nextflow/demux/bcl_convert"
+  - "target/nextflow/demux/bcl2fastq"
+  - "target/nextflow/qc/fastqc"
+  - "target/nextflow/qc/multiqc"
+package_config:
+  name: "openpipeline"
+  version: "dev"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+  viash_version: "0.9.0"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
+    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
+    \ := 'includeConfig(\"nextflow_labels.config\")'"
+  - ".version := \"dtype_csr_fix_build\""
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"
