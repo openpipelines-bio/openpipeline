@@ -564,9 +564,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Matthias Beyens, Dries De Maeyer, Robrecht Cannoodt, Kai Waldrant"
 LABEL org.opencontainers.image.description="Companion container for running component query cellxgene_census"
-LABEL org.opencontainers.image.created="2024-11-27T14:19:07Z"
+LABEL org.opencontainers.image.created="2024-11-27T15:31:11Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="686217bf7f7dadccb6d8a730b953d8124da01c58"
+LABEL org.opencontainers.image.revision="110cb5de582bb6fb0f8f8301faf3accca016b93b"
 LABEL org.opencontainers.image.version="2.0.0-rc.2"
 
 VIASHDOCKER
