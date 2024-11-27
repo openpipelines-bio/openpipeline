@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `string`, default: `X_pca`. Which ",
                 "help_text": "Type: `string`, default: `X_pca`. Which .obsm slot to use as a starting PCA embedding."
             ,
-                "default": "X_pca"
+                "default":"X_pca"
             }
     
 
@@ -68,7 +68,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file containing the found neighbors",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file containing the found neighbors."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -91,7 +91,7 @@
                 "description": "Type: `string`, default: `neighbors`. Mandatory ",
                 "help_text": "Type: `string`, default: `neighbors`. Mandatory .uns slot to store various neighbor output objects."
             ,
-                "default": "neighbors"
+                "default":"neighbors"
             }
     
 
@@ -102,7 +102,7 @@
                 "description": "Type: `string`, default: `distances`. In which ",
                 "help_text": "Type: `string`, default: `distances`. In which .obsp slot to store the distance matrix between the resulting neighbors."
             ,
-                "default": "distances"
+                "default":"distances"
             }
     
 
@@ -113,7 +113,7 @@
                 "description": "Type: `string`, default: `connectivities`. In which ",
                 "help_text": "Type: `string`, default: `connectivities`. In which .obsp slot to store the connectivities matrix between the resulting neighbors."
             ,
-                "default": "connectivities"
+                "default":"connectivities"
             }
     
 
@@ -126,7 +126,7 @@
                 "enum": ["cityblock", "cosine", "euclidean", "l1", "l2", "manhattan", "braycurtis", "canberra", "chebyshev", "correlation", "dice", "hamming", "jaccard", "kulsinski", "mahalanobis", "minkowski", "rogerstanimoto", "russellrao", "seuclidean", "sokalmichener", "sokalsneath", "sqeuclidean", "yule"]
             
             ,
-                "default": "euclidean"
+                "default":"euclidean"
             }
     
 
@@ -137,7 +137,7 @@
                 "description": "Type: `integer`, default: `15`. The size of local neighborhood (in terms of number of neighboring data points) used for manifold approximation",
                 "help_text": "Type: `integer`, default: `15`. The size of local neighborhood (in terms of number of neighboring data points) used for manifold approximation. Larger values result in more global views of the manifold, while smaller values result in more local data being preserved. In general values should be in the range 2 to 100. If knn is True, number of nearest neighbors to be searched. If knn is False, a Gaussian kernel width is set to the distance of the n_neighbors neighbor."
             ,
-                "default": "15"
+                "default":15
             }
     
 
@@ -148,7 +148,7 @@
                 "description": "Type: `integer`, default: `0`. A random seed",
                 "help_text": "Type: `integer`, default: `0`. A random seed."
             ,
-                "default": "0"
+                "default":0
             }
     
 

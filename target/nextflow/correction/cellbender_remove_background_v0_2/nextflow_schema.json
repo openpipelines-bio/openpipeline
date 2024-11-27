@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. List of modalities to process",
                 "help_text": "Type: `string`, default: `rna`. List of modalities to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Full count matrix as an h5mu file, with background RNA removed",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Full count matrix as an h5mu file, with background RNA removed. This file contains all the original droplet barcodes."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -90,7 +90,7 @@
                 "description": "Type: `string`, default: `corrected`. Output layer",
                 "help_text": "Type: `string`, default: `corrected`. Output layer"
             ,
-                "default": "corrected"
+                "default":"corrected"
             }
     
 
@@ -101,7 +101,7 @@
                 "description": "Type: `string`, default: `latent_rt_efficiency`. ",
                 "help_text": "Type: `string`, default: `latent_rt_efficiency`. "
             ,
-                "default": "latent_rt_efficiency"
+                "default":"latent_rt_efficiency"
             }
     
 
@@ -112,7 +112,7 @@
                 "description": "Type: `string`, default: `latent_cell_probability`. ",
                 "help_text": "Type: `string`, default: `latent_cell_probability`. "
             ,
-                "default": "latent_cell_probability"
+                "default":"latent_cell_probability"
             }
     
 
@@ -123,7 +123,7 @@
                 "description": "Type: `string`, default: `latent_scale`. ",
                 "help_text": "Type: `string`, default: `latent_scale`. "
             ,
-                "default": "latent_scale"
+                "default":"latent_scale"
             }
     
 
@@ -134,7 +134,7 @@
                 "description": "Type: `string`, default: `ambient_expression`. ",
                 "help_text": "Type: `string`, default: `ambient_expression`. "
             ,
-                "default": "ambient_expression"
+                "default":"ambient_expression"
             }
     
 
@@ -145,7 +145,7 @@
                 "description": "Type: `string`, default: `cellbender_latent_gene_encoding`. ",
                 "help_text": "Type: `string`, default: `cellbender_latent_gene_encoding`. "
             ,
-                "default": "cellbender_latent_gene_encoding"
+                "default":"cellbender_latent_gene_encoding"
             }
     
 
@@ -186,7 +186,7 @@
                 "description": "Type: `boolean`, default: `true`. Will use the Cell Ranger QC to determine the estimated number of cells",
                 "help_text": "Type: `boolean`, default: `true`. Will use the Cell Ranger QC to determine the estimated number of cells"
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -199,7 +199,7 @@
                 "enum": ["simple", "ambient", "swapping", "full"]
             
             ,
-                "default": "full"
+                "default":"full"
             }
     
 
@@ -210,7 +210,7 @@
                 "description": "Type: `integer`, default: `150`. Number of epochs to train",
                 "help_text": "Type: `integer`, default: `150`. Number of epochs to train."
             ,
-                "default": "150"
+                "default":150
             }
     
 
@@ -221,7 +221,7 @@
                 "description": "Type: `integer`, default: `15`. Droplets with UMI counts below this number are completely \nexcluded from the analysis",
                 "help_text": "Type: `integer`, default: `15`. Droplets with UMI counts below this number are completely \nexcluded from the analysis. This can help identify the correct \nprior for empty droplet counts in the rare case where empty \ncounts are extremely high (over 200).\n"
             ,
-                "default": "15"
+                "default":15
             }
     
 
@@ -232,7 +232,7 @@
                 "description": "Type: `integer`, default: `100`. Dimension of latent variable z",
                 "help_text": "Type: `integer`, default: `100`. Dimension of latent variable z.\n"
             ,
-                "default": "100"
+                "default":100
             }
     
 
@@ -243,7 +243,7 @@
                 "description": "Type: List of `integer`, default: `500`, multiple_sep: `\";\"`. Dimension of hidden layers in the encoder for z",
                 "help_text": "Type: List of `integer`, default: `500`, multiple_sep: `\";\"`. Dimension of hidden layers in the encoder for z.\n"
             ,
-                "default": "500"
+                "default":"500"
             }
     
 
@@ -254,7 +254,7 @@
                 "description": "Type: `double`, default: `0.9`. Training detail: the fraction of the data used for training",
                 "help_text": "Type: `double`, default: `0.9`. Training detail: the fraction of the data used for training.\nThe rest is never seen by the inference algorithm. Speeds up learning.\n"
             ,
-                "default": "0.9"
+                "default":0.9
             }
     
 
@@ -265,7 +265,7 @@
                 "description": "Type: `double`, default: `0.5`. Training detail: the fraction of the training data each epoch that \nis drawn (randomly sampled) from surely empty droplets",
                 "help_text": "Type: `double`, default: `0.5`. Training detail: the fraction of the training data each epoch that \nis drawn (randomly sampled) from surely empty droplets.\n"
             ,
-                "default": "0.5"
+                "default":0.5
             }
     
 
@@ -276,7 +276,7 @@
                 "description": "Type: List of `double`, default: `0.01`, multiple_sep: `\";\"`. Target false positive rate in (0, 1)",
                 "help_text": "Type: List of `double`, default: `0.01`, multiple_sep: `\";\"`. Target false positive rate in (0, 1). A false positive\nis a true signal count that is erroneously removed.\nMore background removal is accompanied by more signal\nremoval at high values of FPR. You can specify\nmultiple values, which will create multiple output\nfiles.\n"
             ,
-                "default": "0.01"
+                "default":"0.01"
             }
     
 
@@ -287,7 +287,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Including the flag --exclude-antibody-capture will\ncause remove-background to operate on gene counts\nonly, ignoring other features",
                 "help_text": "Type: `boolean_true`, default: `false`. Including the flag --exclude-antibody-capture will\ncause remove-background to operate on gene counts\nonly, ignoring other features.\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -308,7 +308,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Including the flag --cuda will run the inference on a\nGPU",
                 "help_text": "Type: `boolean_true`, default: `false`. Including the flag --cuda will run the inference on a\nGPU.\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 

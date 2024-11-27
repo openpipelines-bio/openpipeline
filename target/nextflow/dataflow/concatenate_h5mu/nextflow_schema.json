@@ -56,7 +56,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. "
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -79,7 +79,7 @@
                 "description": "Type: `string`, default: `sample_id`. Name of the ",
                 "help_text": "Type: `string`, default: `sample_id`. Name of the .obs key under which to add the sample names."
             ,
-                "default": "sample_id"
+                "default":"sample_id"
             }
     
 
@@ -92,7 +92,7 @@
                 "enum": ["same", "unique", "first", "only", "concat", "move"]
             
             ,
-                "default": "move"
+                "default":"move"
             }
     
 
@@ -105,7 +105,7 @@
                 "enum": ["same", "unique", "first", "only", "make_unique"]
             
             ,
-                "default": "make_unique"
+                "default":"make_unique"
             }
     
 

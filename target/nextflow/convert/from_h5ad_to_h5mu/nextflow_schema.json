@@ -36,7 +36,7 @@
                 "description": "Type: List of `file`, required, default: `input.h5ad`, multiple_sep: `\";\"`. Input h5ad files",
                 "help_text": "Type: List of `file`, required, default: `input.h5ad`, multiple_sep: `\";\"`. Input h5ad files"
             ,
-                "default": "input.h5ad"
+                "default":"input.h5ad"
             }
     
 
@@ -47,7 +47,7 @@
                 "description": "Type: List of `string`, default: `rna`, multiple_sep: `\";\"`. ",
                 "help_text": "Type: List of `string`, default: `rna`, multiple_sep: `\";\"`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -58,7 +58,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`. Output MuData file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`. Output MuData file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 

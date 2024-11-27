@@ -36,7 +36,7 @@
                 "description": "Type: `file`, required, default: `sample_path`. Path to a single ",
                 "help_text": "Type: `file`, required, default: `sample_path`. Path to a single .h5mu file."
             ,
-                "default": "sample_path"
+                "default":"sample_path"
             }
     
 
@@ -47,7 +47,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `/path/to/output`. Output directory containing multiple h5mu files",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `/path/to/output`. Output directory containing multiple h5mu files."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -70,7 +70,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output_types.csv`, example: `types.csv`. A csv containing the base filename and modality type per output file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output_types.csv`, example: `types.csv`. A csv containing the base filename and modality type per output file."
             ,
-                "default": "$id.$key.output_types.csv"
+                "default":"$id.$key.output_types.csv"
             }
     
 

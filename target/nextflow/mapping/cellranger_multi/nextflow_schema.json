@@ -36,7 +36,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `/path/to/output`. The folder to store the alignment results",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `/path/to/output`. The folder to store the alignment results."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -185,9 +185,7 @@
                 "type":
                 "string",
                 "description": "Type: List of `string`, example: `Gene Expression`, multiple_sep: `\";\"`, choices: ``Gene Expression`, `VDJ`, `VDJ-T`, `VDJ-B`, `VDJ-T-GD`, `Antibody Capture`, `CRISPR Guide Capture`, `Multiplexing Capture`, `Antigen Capture`, `Custom``. The underlying feature type of the library",
-                "help_text": "Type: List of `string`, example: `Gene Expression`, multiple_sep: `\";\"`, choices: ``Gene Expression`, `VDJ`, `VDJ-T`, `VDJ-B`, `VDJ-T-GD`, `Antibody Capture`, `CRISPR Guide Capture`, `Multiplexing Capture`, `Antigen Capture`, `Custom``. The underlying feature type of the library.\n",
-                "enum": ["Gene Expression", "VDJ", "VDJ-T", "VDJ-B", "VDJ-T-GD", "Antibody Capture", "CRISPR Guide Capture", "Multiplexing Capture", "Antigen Capture", "Custom"]
-            
+                "help_text": "Type: List of `string`, example: `Gene Expression`, multiple_sep: `\";\"`, choices: ``Gene Expression`, `VDJ`, `VDJ-T`, `VDJ-B`, `VDJ-T-GD`, `Antibody Capture`, `CRISPR Guide Capture`, `Multiplexing Capture`, `Antigen Capture`, `Custom``. The underlying feature type of the library.\n"
             
             }
     
@@ -349,7 +347,7 @@
                 "description": "Type: `boolean`, default: `false`. Whether or not to run the secondary analysis e",
                 "help_text": "Type: `boolean`, default: `false`. Whether or not to run the secondary analysis e.g. clustering."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -360,7 +358,7 @@
                 "description": "Type: `boolean`, default: `false`. Whether to generate a BAM file",
                 "help_text": "Type: `boolean`, default: `false`. Whether to generate a BAM file."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -391,7 +389,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether or not to include intronic reads in counts",
                 "help_text": "Type: `boolean`, default: `true`. Whether or not to include intronic reads in counts.\nThis option does not apply to Fixed RNA Profiling analysis.\n"
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -424,7 +422,7 @@
                 "enum": ["auto", "threeprime", "fiveprime", "SC3Pv1", "SC3Pv2", "SC3Pv3", "SC3Pv4", "SC3Pv3LT", "SC3Pv3HT", "SC5P-PE", "SC5P-R2", "SC-FB", "SC5P-R2-v3", "SCP5-PE-v3", "SC5PHT", "MFRP", "MFRP-R1", "MFRP-RNA", "MFRP-Ab", "SFRP", "MFRP-Ab-R2pos50", "MFRP-RNA-R1", "MFRP-Ab-R1", "ARC-v1"]
             
             ,
-                "default": "auto"
+                "default":"auto"
             }
     
 
@@ -615,7 +613,7 @@
                 "description": "Type: `boolean`, default: `true`. Optional",
                 "help_text": "Type: `boolean`, default: `true`. Optional. This option allows users to disable the check that evaluates 10x Barcode overlap between\nibraries when multiple libraries are specified (e.g., Gene Expression + Antibody Capture). Setting\nthis option to false will disable the check across all library combinations. We recommend running\nthis check (default), however if the pipeline errors out, users can bypass the check to generate\noutputs for troubleshooting.\n"
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -636,7 +634,7 @@
                 "description": "Type: `boolean_true`, default: `false`. If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed",
                 "help_text": "Type: `boolean_true`, default: `false`. If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed."
             ,
-                "default": "False"
+                "default":false
             }
     
 

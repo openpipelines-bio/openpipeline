@@ -46,7 +46,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`. Generated network as output",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Generated network as output."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -69,7 +69,7 @@
                 "description": "Type: `integer`, default: `800`. Width of the page",
                 "help_text": "Type: `integer`, default: `800`. Width of the page"
             ,
-                "default": "800"
+                "default":800
             }
     
 
@@ -80,7 +80,7 @@
                 "description": "Type: `integer`, default: `600`. Height of the page",
                 "help_text": "Type: `integer`, default: `600`. Height of the page"
             ,
-                "default": "600"
+                "default":600
             }
     
 
@@ -91,7 +91,7 @@
                 "description": "Type: `string`, default: `white`, example: `#F0F0F0`. Background color for pngs/svgs (not pdfs)",
                 "help_text": "Type: `string`, default: `white`, example: `#F0F0F0`. Background color for pngs/svgs (not pdfs)"
             ,
-                "default": "white"
+                "default":"white"
             }
     
 

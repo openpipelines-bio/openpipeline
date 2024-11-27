@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `CB`. Tag representing readgroup or cell barcodes, in the case to partition the BAM file into multiple groups",
                 "help_text": "Type: `string`, default: `CB`. Tag representing readgroup or cell barcodes, in the case to partition the BAM file into multiple groups. For 10x genomics, use CB."
             ,
-                "default": "CB"
+                "default":"CB"
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `string`, default: `UB`. Tag representing UMIs",
                 "help_text": "Type: `string`, default: `UB`. Tag representing UMIs. For 10x genomiucs, use UB."
             ,
-                "default": "UB"
+                "default":"UB"
             }
     
 
@@ -88,7 +88,7 @@
                 "description": "Type: `string`, default: `GT`. FORMAT field to extract the genotype, likelihood, or posterior from",
                 "help_text": "Type: `string`, default: `GT`. FORMAT field to extract the genotype, likelihood, or posterior from"
             ,
-                "default": "GT"
+                "default":"GT"
             }
     
 
@@ -99,7 +99,7 @@
                 "description": "Type: `double`, default: `0.1`. Offset of genotype error rate",
                 "help_text": "Type: `double`, default: `0.1`. Offset of genotype error rate. [error] = [offset] + [1-offset]*[coeff]*[1-r2]"
             ,
-                "default": "0.1"
+                "default":0.1
             }
     
 
@@ -110,7 +110,7 @@
                 "description": "Type: `double`, default: `0.0`. Slope of genotype error rate",
                 "help_text": "Type: `double`, default: `0.0`. Slope of genotype error rate. [error] = [offset] + [1-offset]*[coeff]*[1-r2]"
             ,
-                "default": "0.0"
+                "default":0.0
             }
     
 
@@ -121,7 +121,7 @@
                 "description": "Type: `string`, default: `R2`. INFO field name representing R2 value",
                 "help_text": "Type: `string`, default: `R2`. INFO field name representing R2 value. Used for representing imputation quality."
             ,
-                "default": "R2"
+                "default":"R2"
             }
     
 
@@ -132,7 +132,7 @@
                 "description": "Type: `integer`, default: `1`. Minimum minor allele frequency",
                 "help_text": "Type: `integer`, default: `1`. Minimum minor allele frequency."
             ,
-                "default": "1"
+                "default":1
             }
     
 
@@ -143,7 +143,7 @@
                 "description": "Type: `double`, default: `0.5`. Minimum call rate",
                 "help_text": "Type: `double`, default: `0.5`. Minimum call rate."
             ,
-                "default": "0.5"
+                "default":0.5
             }
     
 
@@ -154,7 +154,7 @@
                 "description": "Type: `string`, default: `0.5`. Grid of alpha to search for (default is 0",
                 "help_text": "Type: `string`, default: `0.5`. Grid of alpha to search for (default is 0.1, 0.2, 0.3, 0.4, 0.5)"
             ,
-                "default": "0.5"
+                "default":"0.5"
             }
     
 
@@ -165,7 +165,7 @@
                 "description": "Type: `double`, default: `0.5`. Prior of doublet",
                 "help_text": "Type: `double`, default: `0.5`. Prior of doublet"
             ,
-                "default": "0.5"
+                "default":0.5
             }
     
 
@@ -196,7 +196,7 @@
                 "description": "Type: `integer`, default: `1000000`. Verbose message frequency for SAM/BAM/CRAM",
                 "help_text": "Type: `integer`, default: `1000000`. Verbose message frequency for SAM/BAM/CRAM."
             ,
-                "default": "1000000"
+                "default":1000000
             }
     
 
@@ -207,7 +207,7 @@
                 "description": "Type: `integer`, default: `1000`. Verbose message frequency for VCF/BCF",
                 "help_text": "Type: `integer`, default: `1000`. Verbose message frequency for VCF/BCF."
             ,
-                "default": "1000"
+                "default":1000
             }
     
 
@@ -218,7 +218,7 @@
                 "description": "Type: `integer`, default: `20`. Maximum base quality (higher BQ will be capped)",
                 "help_text": "Type: `integer`, default: `20`. Maximum base quality (higher BQ will be capped)."
             ,
-                "default": "20"
+                "default":20
             }
     
 
@@ -229,7 +229,7 @@
                 "description": "Type: `integer`, default: `13`. Minimum base quality to consider (lower BQ will be skipped)",
                 "help_text": "Type: `integer`, default: `13`. Minimum base quality to consider (lower BQ will be skipped)."
             ,
-                "default": "13"
+                "default":13
             }
     
 
@@ -240,7 +240,7 @@
                 "description": "Type: `integer`, default: `20`. Minimum mapping quality to consider (lower MQ will be ignored)",
                 "help_text": "Type: `integer`, default: `20`. Minimum mapping quality to consider (lower MQ will be ignored)."
             ,
-                "default": "20"
+                "default":20
             }
     
 
@@ -251,7 +251,7 @@
                 "description": "Type: `integer`, default: `0`. Minimum distance to the tail (lower will be ignored)",
                 "help_text": "Type: `integer`, default: `0`. Minimum distance to the tail (lower will be ignored)."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -262,7 +262,7 @@
                 "description": "Type: `integer`, default: `3844`. SAM/BAM FLAGs to be excluded",
                 "help_text": "Type: `integer`, default: `3844`. SAM/BAM FLAGs to be excluded."
             ,
-                "default": "3844"
+                "default":3844
             }
     
 
@@ -283,7 +283,7 @@
                 "description": "Type: `integer`, default: `0`. Minimum number of total reads for a droplet/cell to be considered",
                 "help_text": "Type: `integer`, default: `0`. Minimum number of total reads for a droplet/cell to be considered."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -294,7 +294,7 @@
                 "description": "Type: `integer`, default: `0`. Minimum number of SNPs with coverage for a droplet/cell to be considered",
                 "help_text": "Type: `integer`, default: `0`. Minimum number of SNPs with coverage for a droplet/cell to be considered."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -305,7 +305,7 @@
                 "description": "Type: `integer`, default: `0`. Minimum number of UMIs for a droplet/cell to be considered",
                 "help_text": "Type: `integer`, default: `0`. Minimum number of UMIs for a droplet/cell to be considered."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -326,7 +326,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.output`, example: `demux`. Output directory",
                 "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `demux`. Output directory"
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 

@@ -36,7 +36,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -59,7 +59,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to store the output in",
                 "help_text": "Type: `string`, default: `rna`. Which modality to store the output in."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -100,7 +100,7 @@
                 "description": "Type: `boolean_true`, default: `false`. If true, the experiment metadata will be added to the cell metadata",
                 "help_text": "Type: `boolean_true`, default: `false`. If true, the experiment metadata will be added to the cell metadata. More specifically: `collection_id`, `collection_name`, `collection_doi`, `dataset_title`."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -181,7 +181,7 @@
                 "description": "Type: `integer`, default: `50`. Remove cells with less than this number of genes",
                 "help_text": "Type: `integer`, default: `50`. Remove cells with less than this number of genes."
             ,
-                "default": "50"
+                "default":50
             }
     
 
@@ -192,7 +192,7 @@
                 "description": "Type: `integer`, default: `0`. Remove cells with less than this number of counts",
                 "help_text": "Type: `integer`, default: `0`. Remove cells with less than this number of counts."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -203,7 +203,7 @@
                 "description": "Type: `integer`, default: `5`. Remove genes expressed in less than this number of cells",
                 "help_text": "Type: `integer`, default: `5`. Remove genes expressed in less than this number of cells."
             ,
-                "default": "5"
+                "default":5
             }
     
 
@@ -214,7 +214,7 @@
                 "description": "Type: `integer`, default: `0`. Remove genes with less than this number of counts",
                 "help_text": "Type: `integer`, default: `0`. Remove genes with less than this number of counts."
             ,
-                "default": "0"
+                "default":0
             }
     
 

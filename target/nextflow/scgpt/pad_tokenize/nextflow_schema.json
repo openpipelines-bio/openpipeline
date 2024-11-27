@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `string`, default: `binned`. The name of the layer to be padded and tokenized",
                 "help_text": "Type: `string`, default: `binned`. The name of the layer to be padded and tokenized.\n"
             ,
-                "default": "binned"
+                "default":"binned"
             }
     
 
@@ -98,7 +98,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output h5mu file containing obsm arrays for gene tokens, tokenized data and padding mask",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output h5mu file containing obsm arrays for gene tokens, tokenized data and padding mask.\n"
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -121,7 +121,7 @@
                 "description": "Type: `string`, default: `gene_id_tokens`, example: `values.pt`. The key of the ",
                 "help_text": "Type: `string`, default: `gene_id_tokens`, example: `values.pt`. The key of the .obsm array containing the gene token ids\n"
             ,
-                "default": "gene_id_tokens"
+                "default":"gene_id_tokens"
             }
     
 
@@ -132,7 +132,7 @@
                 "description": "Type: `string`, default: `values_tokenized`. The key of the ",
                 "help_text": "Type: `string`, default: `values_tokenized`. The key of the .obsm array containing the count values of the tokenized genes\n"
             ,
-                "default": "values_tokenized"
+                "default":"values_tokenized"
             }
     
 
@@ -143,7 +143,7 @@
                 "description": "Type: `string`, default: `padding_mask`. The key of the ",
                 "help_text": "Type: `string`, default: `padding_mask`. The key of the .obsm array containing the padding mask.\n"
             ,
-                "default": "padding_mask"
+                "default":"padding_mask"
             }
     
 
@@ -164,7 +164,7 @@
                 "description": "Type: `string`, default: `\u003cpad\u003e`. Token used for padding",
                 "help_text": "Type: `string`, default: `\u003cpad\u003e`. Token used for padding.\n"
             ,
-                "default": "<pad>"
+                "default":"<pad>"
             }
     
 
@@ -175,7 +175,7 @@
                 "description": "Type: `integer`, default: `-2`. The value of the padding token",
                 "help_text": "Type: `integer`, default: `-2`. The value of the padding token.\n"
             ,
-                "default": "-2"
+                "default":-2
             }
     
 

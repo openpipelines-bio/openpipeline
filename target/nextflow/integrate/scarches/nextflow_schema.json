@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `string`, default: `test_dataset`. Name of query dataset to use as a batch name",
                 "help_text": "Type: `string`, default: `test_dataset`. Name of query dataset to use as a batch name. If not set, name of the input file is used"
             ,
-                "default": "test_dataset"
+                "default":"test_dataset"
             }
     
 
@@ -88,7 +88,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -111,7 +111,7 @@
                 "description": "Type: `file`, default: `$id.$key.model_output.model_output`. Output directory for model",
                 "help_text": "Type: `file`, default: `$id.$key.model_output.model_output`. Output directory for model"
             ,
-                "default": "$id.$key.model_output.model_output"
+                "default":"$id.$key.model_output.model_output"
             }
     
 
@@ -122,7 +122,7 @@
                 "description": "Type: `string`, default: `X_integrated_scanvi`. In which ",
                 "help_text": "Type: `string`, default: `X_integrated_scanvi`. In which .obsm slot to store the resulting integrated embedding."
             ,
-                "default": "X_integrated_scanvi"
+                "default":"X_integrated_scanvi"
             }
     
 
@@ -155,7 +155,7 @@
                 "enum": ["elbo_validation", "reconstruction_loss_validation", "kl_local_validation"]
             
             ,
-                "default": "elbo_validation"
+                "default":"elbo_validation"
             }
     
 
@@ -166,7 +166,7 @@
                 "description": "Type: `integer`, default: `45`. Number of validation epochs with no improvement after which training will be stopped",
                 "help_text": "Type: `integer`, default: `45`. Number of validation epochs with no improvement after which training will be stopped."
             ,
-                "default": "45"
+                "default":45
             }
     
 
@@ -177,7 +177,7 @@
                 "description": "Type: `double`, default: `0.0`. Minimum change in the monitored quantity to qualify as an improvement, i",
                 "help_text": "Type: `double`, default: `0.0`. Minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than min_delta, will count as no improvement."
             ,
-                "default": "0.0"
+                "default":0.0
             }
     
 
@@ -208,7 +208,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus",
                 "help_text": "Type: `boolean`, default: `true`. Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -219,7 +219,7 @@
                 "description": "Type: `double`, default: `0.6`. Factor to reduce learning rate",
                 "help_text": "Type: `double`, default: `0.6`. Factor to reduce learning rate."
             ,
-                "default": "0.6"
+                "default":0.6
             }
     
 
@@ -230,7 +230,7 @@
                 "description": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced",
                 "help_text": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced."
             ,
-                "default": "30.0"
+                "default":30.0
             }
     
 

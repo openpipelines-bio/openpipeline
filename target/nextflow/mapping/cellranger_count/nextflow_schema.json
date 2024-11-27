@@ -66,7 +66,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `/path/to/output`. The folder to store the alignment results",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `/path/to/output`. The folder to store the alignment results."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -109,7 +109,7 @@
                 "enum": ["auto", "threeprime", "fiveprime", "SC3Pv1", "SC3Pv2", "SC3Pv3", "SC3Pv4", "SC3Pv3LT", "SC3Pv3HT", "SC5P-PE-v3", "SC5P-PE", "SC5P-R2", "SC-FB", "ARC-v1"]
             
             ,
-                "default": "auto"
+                "default":"auto"
             }
     
 
@@ -120,7 +120,7 @@
                 "description": "Type: `boolean`, default: `false`. Whether or not to run the secondary analysis e",
                 "help_text": "Type: `boolean`, default: `false`. Whether or not to run the secondary analysis e.g. clustering."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -131,7 +131,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether to generate a BAM file",
                 "help_text": "Type: `boolean`, default: `true`. Whether to generate a BAM file."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -142,7 +142,7 @@
                 "description": "Type: `boolean`, default: `true`. Include intronic reads in count",
                 "help_text": "Type: `boolean`, default: `true`. Include intronic reads in count."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -183,7 +183,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether to check for barcode compatibility between libraries",
                 "help_text": "Type: `boolean`, default: `true`. Whether to check for barcode compatibility between libraries.\n"
             ,
-                "default": "True"
+                "default":true
             }
     
 

@@ -46,7 +46,7 @@
                 "description": "Type: `integer`, default: `2`. Number of donors to demultiplex; can be larger than provided in donor_file",
                 "help_text": "Type: `integer`, default: `2`. Number of donors to demultiplex; can be larger than provided in donor_file."
             ,
-                "default": "2"
+                "default":2
             }
     
 
@@ -79,7 +79,7 @@
                 "enum": ["GT", "GP", "PL"]
             
             ,
-                "default": "PL"
+                "default":"PL"
             }
     
 
@@ -90,7 +90,7 @@
                 "description": "Type: `boolean`, default: `false`. If use, not checking doublets",
                 "help_text": "Type: `boolean`, default: `false`. If use, not checking doublets."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -101,7 +101,7 @@
                 "description": "Type: `integer`, default: `50`. Number of random initializations, when GT needs to learn",
                 "help_text": "Type: `integer`, default: `50`. Number of random initializations, when GT needs to learn."
             ,
-                "default": "50"
+                "default":50
             }
     
 
@@ -112,7 +112,7 @@
                 "description": "Type: `integer`, default: `0`. Number of extra donor in pre-cluster, when GT needs to learn",
                 "help_text": "Type: `integer`, default: `0`. Number of extra donor in pre-cluster, when GT needs to learn."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -133,7 +133,7 @@
                 "description": "Type: `boolean`, default: `false`. If use, treat donor GT as prior only",
                 "help_text": "Type: `boolean`, default: `false`. If use, treat donor GT as prior only."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -144,7 +144,7 @@
                 "description": "Type: `boolean`, default: `false`. If use, turn on SNP specific allelic ratio",
                 "help_text": "Type: `boolean`, default: `false`. If use, turn on SNP specific allelic ratio."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -155,7 +155,7 @@
                 "description": "Type: `boolean`, default: `false`. If use, turn off plotting GT distance",
                 "help_text": "Type: `boolean`, default: `false`. If use, turn off plotting GT distance."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -186,7 +186,7 @@
                 "description": "Type: `boolean`, default: `false`. If use, detect ambient RNAs in each cell",
                 "help_text": "Type: `boolean`, default: `false`. If use, detect ambient RNAs in each cell."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -207,7 +207,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.output`, example: `vireo`. Output directory",
                 "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `vireo`. Output directory"
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 

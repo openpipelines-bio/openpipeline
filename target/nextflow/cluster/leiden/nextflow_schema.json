@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `string`, default: `connectivities`. In which ",
                 "help_text": "Type: `string`, default: `connectivities`. In which .obsp slot the neighbor connectivities can be found."
             ,
-                "default": "connectivities"
+                "default":"connectivities"
             }
     
 
@@ -68,7 +68,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -91,7 +91,7 @@
                 "description": "Type: `string`, default: `leiden`. Name of the ",
                 "help_text": "Type: `string`, default: `leiden`. Name of the .obsm key under which to add the cluster labels.\nThe name of the columns in the matrix will correspond to the resolutions.\n"
             ,
-                "default": "leiden"
+                "default":"leiden"
             }
     
 
@@ -102,7 +102,7 @@
                 "description": "Type: List of `double`, required, default: `1.0`, multiple_sep: `\";\"`. A parameter value controlling the coarseness of the clustering",
                 "help_text": "Type: List of `double`, required, default: `1.0`, multiple_sep: `\";\"`. A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.\nMultiple values will result in clustering being performed multiple times.\n"
             ,
-                "default": "1.0"
+                "default":"1.0"
             }
     
 

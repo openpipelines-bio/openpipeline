@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to process",
                 "help_text": "Type: `string`, default: `rna`. Which modality to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -117,7 +117,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -140,7 +140,7 @@
                 "description": "Type: `string`, default: `onclass_pred`. In which `",
                 "help_text": "Type: `string`, default: `onclass_pred`. In which `.obs` slots to store the predicted information.\n"
             ,
-                "default": "onclass_pred"
+                "default":"onclass_pred"
             }
     
 
@@ -151,7 +151,7 @@
                 "description": "Type: `string`, default: `onclass_prob`. In which `",
                 "help_text": "Type: `string`, default: `onclass_prob`. In which `.obs` slots to store the probability of the predictions.\n"
             ,
-                "default": "onclass_prob"
+                "default":"onclass_prob"
             }
     
 
@@ -222,7 +222,7 @@
                 "description": "Type: `integer`, default: `30`. Maximum number of iterations for training the model",
                 "help_text": "Type: `integer`, default: `30`. Maximum number of iterations for training the model."
             ,
-                "default": "30"
+                "default":30
             }
     
 
