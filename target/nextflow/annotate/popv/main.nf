@@ -3257,7 +3257,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv",
     "viash_version" : "0.9.0",
-    "git_commit" : "89cd6a86179934b6cd6c8310464a7718f48af401",
+    "git_commit" : "09ed4df0c285dc42290b61e5d20200728a8eb0a4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3489,7 +3489,7 @@ def main(par, meta):
             save_path_trained_models=temp_dir,
             # hardcoded values
             cl_obo_folder=cl_obo_folder,
-            accelerator='cuda' if use_gpu else None
+            accelerator='cuda' if use_gpu else 'cpu'
         )
         method_kwargs = {}
         if 'scanorama' in par['methods']:

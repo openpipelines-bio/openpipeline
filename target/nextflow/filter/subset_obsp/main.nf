@@ -3116,7 +3116,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/subset_obsp",
     "viash_version" : "0.9.0",
-    "git_commit" : "89cd6a86179934b6cd6c8310464a7718f48af401",
+    "git_commit" : "09ed4df0c285dc42290b61e5d20200728a8eb0a4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
