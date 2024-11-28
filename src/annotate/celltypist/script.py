@@ -13,12 +13,13 @@ par = {
     "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "model": None,
     "reference_obs_target": "cell_ontology_class",
+    "reference_var_input": None,
     "check_expression": False,
     "feature_selection": True,
     "majority_voting": True,
     "output_compression": "gzip",
-    "var_query_gene_names": None,
-    "var_reference_gene_names": "ensemblid",
+    "input_var_gene_names": None,
+    "reference_var_gene_names": "ensemblid",
     "input_layer": None,
     "reference_layer": None,
     "output_obs_predictions": "celltypist_pred",
@@ -27,8 +28,6 @@ par = {
 meta = {
 }
 ## VIASH END
-
-sys.path.append(meta["resources_dir"])
 
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion
@@ -41,11 +40,37 @@ def setup_logger():
     logger.addHandler(console_handler)
 
     return logger
-# from query_reference_allignment import set_var_index, cross_check_genes, subset_vars
 
+# from query_reference_allignment import set_var_index, cross_check_genes, subset_vars
+logger = setup_logger()
+import anndata as ad
+from typing import List
+
+def set_var_index(adata: ad.AnnData, var_name: str | None = None):
+    if var_name:
+        adata.var.index = [re.sub("\\.[0-9]+$", "", s) for s in adata.var[var_name]]
+    else:
+        adata.var.index = [re.sub("\\.[0-9]+$", "", s) for s in adata.var.index]
+    return adata
+
+def cross_check_genes(query_genes: List[str], reference_genes: List[str], min_gene_overlap: int = 100):
+    logger.info("Detecting common vars based on gene ids")
+    common_ens_ids = list(set(reference_genes).intersection(set(query_genes)))
+
+    logger.info("  reference n_vars: %i", len(reference_genes))
+    logger.info("  input n_vars: %i", len(query_genes))
+    logger.info("  intersect n_vars: %i", len(common_ens_ids))
+    assert len(common_ens_ids) >= min_gene_overlap, "The intersection of genes between the query and reference dataset is too small."
+
+    return common_ens_ids
+
+def subset_vars(adata: ad.AnnData, var_column: str | None = None):
+    if var_column:
+        return adata[:, adata.var[var_column]]
+    else:
+        return adata
 # END TEMPORARY WORKAROUND setup_logger
 
-from query_reference_allignment import set_var_index, cross_check_genes, subset_vars
 
 def check_celltypist_format(indata):
     if np.abs(np.expm1(indata[0]).sum()-10000) > 1:
@@ -54,37 +79,34 @@ def check_celltypist_format(indata):
 
 
 def main(par):
-    
+
     if (not par["model"] and not par["reference"]) or (par["model"] and par["reference"]):
         raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
-    
-    logger = setup_logger()
 
     input_mudata = mu.read_h5mu(par["input"])
     input_modality = input_mudata.mod[par["modality"]].copy()
-    
-    # Set var names to the desired gene name format (gene synbol, ensembl id, etc.)
-    # CellTypist requires query gene names to be in the same format as the reference data.
-    input_modality = set_var_index(input_modality, par["var_query_gene_names"])
+
+    # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
+    # CellTypist requires query gene names to be in index
+    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
 
     if par["model"]:
         logger.info("Loading CellTypist model")
         model = celltypist.models.Model.load(par["model"])
-    
+
     elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
-                
-        if par["var_reference_gene_names"]:
-            reference_modality = set_var_index(reference_modality, par["var_reference_gene_names"])
-                    
-        logger.info("Detecting common vars")
-        common_ens_ids = reference_modality.var.index.intersection(input_modality.var.index)
-        
-        logger.info("  reference n_vars: %i", reference_modality.n_vars)
-        logger.info("  input n_vars: %i", input_modality.n_vars)
-        logger.info("  intersect n_vars: %i", len(common_ens_ids))
-        assert len(common_ens_ids) >= 100, "The intersection of genes is too small."
-        
+
+        # subset to HVG if required
+        reference_modality = subset_vars(reference_modality, par["reference_var_input"])
+
+        # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)  
+        # CellTypist requires query gene names to be in index
+        reference_modality = set_var_index(reference_modality, par["reference_var_gene_names"])
+
+        # Ensure enough overlap between genes in query and reference
+        cross_check_genes(input_modality.var.index, reference_modality.var.index)
+
         input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X
         reference_matrix = reference_modality.layers[par["reference_layer"]] if par["reference_layer"] else reference_modality.X
 
@@ -92,10 +114,10 @@ def main(par):
             logger.warning("Input data is not in the reccommended format for CellTypist.")
         if not check_celltypist_format(reference_matrix):
             logger.warning("Reference data is not in the reccommended format for CellTypist.")
-        
+
         labels = reference_modality.obs[par["reference_obs_target"]]
-        
-        logger.info("Training CellTypist model on reference") 
+
+        logger.info("Training CellTypist model on reference")
         model = celltypist.train(
             reference_matrix,
             labels=labels,
@@ -106,7 +128,7 @@ def main(par):
             feature_selection=par["feature_selection"],
             check_expression=par["check_expression"]
             )
-            
+
     logger.info("Predicting CellTypist annotations")
     predictions = celltypist.annotate(
         input_modality,
@@ -115,7 +137,7 @@ def main(par):
         )
     input_modality.obs[par["output_obs_predictions"]] = predictions.predicted_labels["predicted_labels"]
     input_modality.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(axis=1).values
-    
+
     input_mudata.mod[par["modality"]] = input_modality
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
 

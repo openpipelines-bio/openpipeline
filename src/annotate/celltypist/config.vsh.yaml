@@ -26,7 +26,7 @@ argument_groups:
       - name: "--input_layer"
         type: string
         description: The layer in the input data to be used for cell type annotation if .X is not to be used. 
-      - name: "--var_query_gene_names"
+      - name: "--input_var_gene_names"
         type: string
         required: false
         description: |
@@ -53,11 +53,17 @@ argument_groups:
         description: | 
           Whether to check the expression of the reference dataset to the format reccomended by CellTypist.
           CellTypist requires data to be log-normalized to 10000 counts per cell.
-      - name: "--var_reference_gene_names"
+      - name: "--reference_var_gene_names"
         type: string
         required: false
         description: |
           The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
+      - name: "--reference_var_input"
+        type: string
+        required: false
+        description: |
+          .var column containing highly variable genes. By default, do not subset genes.
+  
   - name: Model arguments
     description: Model arguments.
     arguments:

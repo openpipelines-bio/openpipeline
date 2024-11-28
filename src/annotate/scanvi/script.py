@@ -38,7 +38,7 @@ meta = {"resources_dir": "src/annotate/utils"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-from query_reference_allignment import set_var_index, cross_check_genes
+from query_reference_allignment import set_var_index, cross_check_genes, subset_vars
 
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion

@@ -1,10 +1,11 @@
 import re
-
+from typing import List
 import anndata as ad
+import logging
+from sys import stdout
+
 
 def setup_logger():
-    import logging
-    from sys import stdout
 
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
@@ -12,9 +13,9 @@ def setup_logger():
     logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
     console_handler.setFormatter(logFormatter)
     logger.addHandler(console_handler)
-
     return logger
-# END TEMPORARY WORKAROUND setup_logger
+
+
 logger = setup_logger()
 
 
@@ -26,7 +27,8 @@ def set_var_index(adata: ad.AnnData, var_name: str | None = None):
         adata.var.index = [re.sub("\\.[0-9]+$", "", s) for s in adata.var.index]
     return adata
 
-def cross_check_genes(query_genes, reference_genes, min_gene_overlap=100):
+
+def cross_check_genes(query_genes: List[str], reference_genes: List[str], min_gene_overlap: int = 100):
     logger.info("Detecting common vars based on gene ids")
     common_ens_ids = list(set(reference_genes).intersection(set(query_genes)))
 
