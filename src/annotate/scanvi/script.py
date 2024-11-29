@@ -7,9 +7,9 @@ import numpy as np
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
-    "var_query_gene_names": None,
-    "scvi_reference_model": "resources_test/annotation_test_data/scvi_model",
-    "scanvi_reference_model": None,
+    "var_input_gene_names": None,
+    "scvi_reference_model": None,
+    "scanvi_reference_model": "resources_test/annotation_test_data/scanvi_model",
     "unknown_celltype": "Unkown",
     "output": "output.h5mu",
     "output_obsm_scanvi_embedding": "scanvi_embedding",
@@ -38,7 +38,7 @@ meta = {"resources_dir": "src/annotate/utils"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-from query_reference_allignment import set_var_index, cross_check_genes, subset_vars
+from query_reference_allignment import set_var_index, cross_check_genes
 
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion
@@ -91,7 +91,7 @@ def main():
         # scANVI requires query and reference gene names to be equivalent 
         reference = set_var_index(reference)
         # Subset query dataset based on genes present in reference
-        common_ens_ids = cross_check_genes(input_modality.var.index, reference.var.index)
+        common_ens_ids = cross_check_genes(input_modality.var.index, reference.var.index, min_gene_overlap=par["reference_query_gene_overlap"])
         input_modality = input_modality[:, common_ens_ids]
 
         logger.info("Instantiating scANVI model from the scVI model")

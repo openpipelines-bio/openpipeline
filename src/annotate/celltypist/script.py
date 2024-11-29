@@ -10,15 +10,17 @@ par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix_log_normalized.h5mu",
     "output": "output.h5mu",
     "modality": "rna",
-    "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
-    "model": None,
+    "reference": None,
+    # "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
+    "model": "resources_test/annotation_test_data/celltypist_model_Immune_All_Low.pkl",
+    "input_reference_gene_overlap": 100,
     "reference_obs_target": "cell_ontology_class",
     "reference_var_input": None,
     "check_expression": False,
     "feature_selection": True,
     "majority_voting": True,
     "output_compression": "gzip",
-    "input_var_gene_names": None,
+    "input_var_gene_names": "gene_symbol",
     "reference_var_gene_names": "ensemblid",
     "input_layer": None,
     "reference_layer": None,
@@ -93,6 +95,7 @@ def main(par):
     if par["model"]:
         logger.info("Loading CellTypist model")
         model = celltypist.models.Model.load(par["model"])
+        cross_check_genes(input_modality.var.index, model.features, min_gene_overlap=par["input_reference_gene_overlap"])
 
     elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
@@ -105,7 +108,7 @@ def main(par):
         reference_modality = set_var_index(reference_modality, par["reference_var_gene_names"])
 
         # Ensure enough overlap between genes in query and reference
-        cross_check_genes(input_modality.var.index, reference_modality.var.index)
+        cross_check_genes(input_modality.var.index, reference_modality.var.index, min_gene_overlap=par["input_reference_gene_overlap"])
 
         input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X
         reference_matrix = reference_modality.layers[par["reference_layer"]] if par["reference_layer"] else reference_modality.X
@@ -138,6 +141,7 @@ def main(par):
     input_modality.obs[par["output_obs_predictions"]] = predictions.predicted_labels["predicted_labels"]
     input_modality.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(axis=1).values
 
+    # copy observations back to input data (with full set of features)
     input_mudata.mod[par["modality"]] = input_modality
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
 

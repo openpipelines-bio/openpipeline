@@ -29,7 +29,7 @@ def set_var_index(adata: ad.AnnData, var_name: str | None = None):
 
 
 def cross_check_genes(query_genes: List[str], reference_genes: List[str], min_gene_overlap: int = 100):
-    logger.info("Detecting common vars based on gene ids")
+    logger.info(f"Detecting overlap between query and reference genes, minimal expected overlap: {min_gene_overlap}")
     common_ens_ids = list(set(reference_genes).intersection(set(query_genes)))
 
     logger.info("  reference n_vars: %i", len(reference_genes))
