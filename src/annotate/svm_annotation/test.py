@@ -22,15 +22,15 @@ reference_file = f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtere
 
 sys.path.append(meta["resources_dir"])
 from cross_check_genes import cross_check_genes
-from subset_vars import subset_vars
 from set_var_index import set_var_index
 
 
 @pytest.fixture
 def dummy_model(tmp_path):
-    reference_modality = mu.read_h5mu(reference_file).mod["rna"]
+    reference_modality = mu.read_h5mu(reference_file).mod["rna"].copy()
     reference_modality = set_var_index(reference_modality, "ensemblid")
-    input_modality = mu.read_h5mu(input_file).mod["rna"]
+    
+    input_modality = mu.read_h5mu(input_file).mod["rna"].copy()
     input_modality = set_var_index(input_modality, None)
 
     common_genes = cross_check_genes(input_modality.var.index, reference_modality.var.index)
@@ -67,11 +67,9 @@ def test_simple_execution(run_component, random_h5mu_path):
     input_mudata = mu.read_h5mu(input_file)
     output_mudata = mu.read_h5mu(output_file)
 
-    assert_annotation_objects_equal(input_mudata.mod["prot"],
-                                    output_mudata.mod["prot"])
+    assert_annotation_objects_equal(input_mudata.mod["prot"], output_mudata.mod["prot"])
 
-    assert list(output_mudata.mod["rna"].obs.keys()) == ['svm_pred',
-                                                         'svm_probability']
+    assert list(output_mudata.mod["rna"].obs.keys()) == ['svm_pred', 'svm_probability']
 
     obs_values = output_mudata.mod["rna"].obs["svm_probability"]
     assert all(0 <= value <= 1 for value in obs_values), "probabilities outside the range [0, 1]"
@@ -97,11 +95,9 @@ def test_custom_out_obs_model_params(run_component, random_h5mu_path):
     input_mudata = mu.read_h5mu(input_file)
     output_mudata = mu.read_h5mu(output_file)
 
-    assert_annotation_objects_equal(input_mudata.mod["prot"],
-                                    output_mudata.mod["prot"])
+    assert_annotation_objects_equal(input_mudata.mod["prot"], output_mudata.mod["prot"])
 
-    assert list(output_mudata.mod["rna"].obs.keys()) == ['dummy_pred',
-                                                         'dummy_probability']
+    assert list(output_mudata.mod["rna"].obs.keys()) == ['dummy_pred', 'dummy_probability']
 
     obs_values = output_mudata.mod["rna"].obs["dummy_probability"]
     assert all(0 <= value <= 1 for value in obs_values), "probabilities outside the range [0, 1]"
@@ -122,8 +118,7 @@ def test_with_model(run_component, random_h5mu_path, dummy_model):
     input_mudata = mu.read_h5mu(input_file)
     output_mudata = mu.read_h5mu(output_file)
 
-    assert_annotation_objects_equal(input_mudata.mod["prot"],
-                                    output_mudata.mod["prot"])
+    assert_annotation_objects_equal(input_mudata.mod["prot"], output_mudata.mod["prot"])
 
     assert list(output_mudata.mod["rna"].obs.keys()) == ['svm_pred',
                                                          'svm_probability']
@@ -141,8 +136,10 @@ def test_no_model_no_reference_error(run_component, random_h5mu_path):
             "--reference_obs_target", "cell_ontology_class",
             "--output", output_file,
         ])
-    assert re.search(r"ValueError: Make sure to provide either 'model' or 'reference', but not both.",
-            err.value.stdout.decode('utf-8'))
+    assert re.search(
+        r"ValueError: Make sure to provide either 'model' or 'reference', but not both.",
+         err.value.stdout.decode('utf-8')
+         )
 
 
 if __name__ == '__main__':

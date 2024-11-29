@@ -1,5 +1,6 @@
 from typing import List
 
+
 def cross_check_genes(query_genes: List[str], reference_genes: List[str], min_gene_overlap: int = 100) -> List[str]:
     """Cross check the overlap between two lists of genes
 

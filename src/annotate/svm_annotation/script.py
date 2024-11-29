@@ -46,7 +46,8 @@ def main():
         raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
     logger.info("Reading input data")
     input_mudata = mu.read_h5mu(par["input"])
-    input_modality = input_mudata.mod[par["modality"]].copy()
+    input_adata = input_mudata.mod[par["modality"]]
+    input_modality = input_adata.copy()
     input_modality = set_var_index(input_modality, par["input_var_gene_names"])
 
     if par["model"]:
@@ -96,11 +97,10 @@ def main():
     predictions = model.predict(input_matrix)
     probabilities = np.max(model.predict_proba(input_matrix), axis=1)
 
-    input_modality.obs[par["output_obs_prediction"]] = predictions
-    input_modality.obs[par["output_obs_probability"]] = probabilities
+    input_adata.obs[par["output_obs_prediction"]] = predictions
+    input_adata.obs[par["output_obs_probability"]] = probabilities
 
     logger.info("Writing output data")
-    input_mudata.mod[par["modality"]] = input_modality
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
 
 
