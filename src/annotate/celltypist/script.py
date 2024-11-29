@@ -1,8 +1,6 @@
 import sys
-import logging
 import celltypist
 import mudata as mu
-import re
 import numpy as np
 
 ## VIASH START
@@ -31,48 +29,13 @@ meta = {
 }
 ## VIASH END
 
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-def setup_logger():
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(sys.stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+from cross_check_genes import cross_check_genes
+from set_var_index import set_var_index
+from subset_vars import subset_vars
 
-    return logger
-
-# from query_reference_allignment import set_var_index, cross_check_genes, subset_vars
 logger = setup_logger()
-import anndata as ad
-from typing import List
-
-def set_var_index(adata: ad.AnnData, var_name: str | None = None):
-    if var_name:
-        adata.var.index = [re.sub("\\.[0-9]+$", "", s) for s in adata.var[var_name]]
-    else:
-        adata.var.index = [re.sub("\\.[0-9]+$", "", s) for s in adata.var.index]
-    return adata
-
-def cross_check_genes(query_genes: List[str], reference_genes: List[str], min_gene_overlap: int = 100):
-    logger.info("Detecting common vars based on gene ids")
-    common_ens_ids = list(set(reference_genes).intersection(set(query_genes)))
-
-    logger.info("  reference n_vars: %i", len(reference_genes))
-    logger.info("  input n_vars: %i", len(query_genes))
-    logger.info("  intersect n_vars: %i", len(common_ens_ids))
-    assert len(common_ens_ids) >= min_gene_overlap, "The intersection of genes between the query and reference dataset is too small."
-
-    return common_ens_ids
-
-def subset_vars(adata: ad.AnnData, var_column: str | None = None):
-    if var_column:
-        return adata[:, adata.var[var_column]]
-    else:
-        return adata
-# END TEMPORARY WORKAROUND setup_logger
-
 
 def check_celltypist_format(indata):
     if np.abs(np.expm1(indata[0]).sum()-10000) > 1:
@@ -101,7 +64,8 @@ def main(par):
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
 
         # subset to HVG if required
-        reference_modality = subset_vars(reference_modality, par["reference_var_input"])
+        if par["reference_var_input"]:
+            reference_modality = subset_vars(reference_modality, par["reference_var_input"])  
 
         # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)  
         # CellTypist requires query gene names to be in index

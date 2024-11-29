@@ -38,24 +38,10 @@ meta = {"resources_dir": "src/annotate/utils"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-from query_reference_allignment import set_var_index, cross_check_genes
+from setup_logger import setup_logger
+from cross_check_genes import cross_check_genes
+from set_var_index import set_var_index
 
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
 if (not par["scvi_reference_model"]) and not (par["scanvi_reference_model"]) or (par["scvi_reference_model"] and par["scanvi_reference_model"]):
@@ -85,7 +71,6 @@ def main():
         logger.info("Reading in the reference model and associated reference data")
         scvi_reference_model = scvi.model.SCVI.load(par["scvi_reference_model"])
         reference = scvi_reference_model.adata
-
 
         logger.info("Alligning genes in reference and query dataset")
         # scANVI requires query and reference gene names to be equivalent 
