@@ -28,8 +28,7 @@ meta = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-
-
+from helper import read_gene_list
 
 # read data
 mdata = mu.read(par["input"])

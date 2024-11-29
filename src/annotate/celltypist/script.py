@@ -28,7 +28,7 @@ meta = {
 }
 ## VIASH END
 
-
+from setup_logger import setup_logger
 
 def check_celltypist_format(indata):
     if np.abs(np.expm1(indata[0]).sum()-10000) > 1:

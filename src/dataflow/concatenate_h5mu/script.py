@@ -28,7 +28,8 @@ meta = {
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
-
+from compress_h5mu import compress_h5mu
+from setup_logger import setup_logger
 
 logger = setup_logger()
 

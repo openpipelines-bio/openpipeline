@@ -17,6 +17,7 @@ meta = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import compress_h5mu
 
 logger = setup_logger()
 
