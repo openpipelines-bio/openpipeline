@@ -77,7 +77,7 @@ def main():
 
         else:
             logger.warning("Model does not have feature names saved. Could not check overlap of model's features with query genes.")
- 
+
     elif par["reference"]:
         logger.info("Reading reference data")
 
@@ -93,7 +93,7 @@ def main():
         common_genes = cross_check_genes(input_modality.var.index, reference_modality.var.index, par["input_reference_gene_overlap"])
         reference_modality = reference_modality[:, common_genes]
         input_modality = input_modality[:, common_genes]
-        
+
         reference_matrix = reference_modality.layers[par["reference_layer"]] if par["reference_layer"] else reference_modality.X
         input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X
 

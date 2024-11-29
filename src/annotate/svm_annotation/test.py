@@ -29,7 +29,7 @@ from set_var_index import set_var_index
 def dummy_model(tmp_path):
     reference_modality = mu.read_h5mu(reference_file).mod["rna"].copy()
     reference_modality = set_var_index(reference_modality, "ensemblid")
-    
+
     input_modality = mu.read_h5mu(input_file).mod["rna"].copy()
     input_modality = set_var_index(input_modality, None)
 
