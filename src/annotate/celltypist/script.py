@@ -27,7 +27,7 @@ par = {
 meta = {
 }
 ## VIASH END
-
+sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 
 def check_celltypist_format(indata):

@@ -23,6 +23,8 @@ sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 from compress_h5mu import compress_h5mu
 
+logger = setup_logger()
+
 def main():
     input_file, output_file, mod_name = Path(par["input"]), Path(par["output"]), par['modality']
 

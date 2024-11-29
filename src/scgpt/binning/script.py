@@ -1,3 +1,4 @@
+import sys
 import mudata as mu
 import numpy as np
 from scipy.sparse import csr_matrix
@@ -18,6 +19,7 @@ par = {
 if par["seed"]:
     np.random.seed(par["seed"])
 
+sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 logger = setup_logger()
 

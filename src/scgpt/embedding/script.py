@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import mudata as mu
 import json
@@ -28,6 +29,7 @@ par = {
     }
 ## VIASH END
 
+sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 logger = setup_logger()
 

@@ -1,3 +1,4 @@
+import sys
 import mudata as mu
 
 ### VIASH START
@@ -12,7 +13,7 @@ par = {
   'output_compression': None,
 }
 ### VIASH END
-
+sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 logger = setup_logger()
 

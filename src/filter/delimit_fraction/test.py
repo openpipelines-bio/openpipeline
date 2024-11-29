@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 import numpy as np
 from subprocess import CalledProcessError
+from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
@@ -14,8 +15,7 @@ meta = {
 
 ## VIASH END
 
-from openpipelinetestutils.asserters import assert_annotation_objects_equal
-
+sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 logger = setup_logger()
 

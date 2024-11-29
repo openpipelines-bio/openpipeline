@@ -1,3 +1,4 @@
+import sys
 import mudata as mu
 import numpy as np
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
@@ -13,8 +14,10 @@ par = {
 }
 ## VIASH END
 
+sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 logger = setup_logger()
+
 # Read in data
 logger.info(f"Reading {par['input']}")
 mudata = mu.read_h5mu(par["input"])

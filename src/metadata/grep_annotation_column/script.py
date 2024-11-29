@@ -1,3 +1,4 @@
+import sys
 import mudata as mu
 from pathlib import Path
 from operator import attrgetter
@@ -21,7 +22,7 @@ par = {
     "output_compression": "gzip"
 }
 ### VIASH END
-
+sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 logger = setup_logger()
 
