@@ -27,6 +27,12 @@ argument_groups:
         description: .var field containing the gene names, if the .var index is not to be used.
         type: string
         required: false
+      - name: "--input_reference_gene_overlap"
+        type: integer
+        default: 100
+        min: 1
+        description: | 
+          The minimum number of genes present in both the reference and query datasets.
 
   - name: Reference model
     description: Arguments related to the reference model.

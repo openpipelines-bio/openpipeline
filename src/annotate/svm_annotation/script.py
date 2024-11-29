@@ -1,12 +1,9 @@
 import sys
-import logging
 import mudata as mu
 import numpy as np
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn import svm
 import pickle
-import re
-
 
 ## VIASH START
 par = {
