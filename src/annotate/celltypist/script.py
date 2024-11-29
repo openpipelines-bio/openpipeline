@@ -49,7 +49,8 @@ def main(par):
         raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
 
     input_mudata = mu.read_h5mu(par["input"])
-    input_modality = input_mudata.mod[par["modality"]].copy()
+    input_adata = input_mudata.mod[par["modality"]]
+    input_modality = input_adata.copy()
 
     # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
     # CellTypist requires query gene names to be in index
@@ -102,11 +103,10 @@ def main(par):
         model,
         majority_voting=par["majority_voting"]
         )
-    input_modality.obs[par["output_obs_predictions"]] = predictions.predicted_labels["predicted_labels"]
-    input_modality.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(axis=1).values
+    input_adata.obs[par["output_obs_predictions"]] = predictions.predicted_labels["predicted_labels"]
+    input_adata.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(axis=1).values
 
     # copy observations back to input data (with full set of features)
-    input_mudata.mod[par["modality"]] = input_modality
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
 
 

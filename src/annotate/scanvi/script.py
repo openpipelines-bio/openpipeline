@@ -51,8 +51,9 @@ if (not par["scvi_reference_model"]) and not (par["scanvi_reference_model"]) or 
 def main():
     logger.info("Reading the query data")
     # Read in data
-    input_data = mu.read_h5mu(par["input"])
-    input_modality = input_data.mod[par["modality"]].copy()
+    input_mdata = mu.read_h5mu(par["input"])
+    input_adata = input_mdata.mod[par["modality"]]
+    input_modality = input_adata.copy()
     # scANVI requires query and reference gene names to be equivalent 
     input_modality = set_var_index(input_modality, par["var_input_gene_names"])
 
@@ -128,15 +129,14 @@ def main():
     )
 
     logger.info("Adding latent representation to query data")
-    input_modality.obsm[par["output_obsm_scanvi_embedding"]] = scanvi_query.get_latent_representation()
+    input_adata.obsm[par["output_obsm_scanvi_embedding"]] = scanvi_query.get_latent_representation()
 
     logger.info("Running predictions on query data")
-    input_modality.obs[par["output_obs_predictions"]] = scanvi_query.predict(input_modality)
-    input_modality.obs[par["output_obs_probability"]] = np.max(scanvi_query.predict(input_modality, soft=True), axis=1)
+    input_adata.obs[par["output_obs_predictions"]] = scanvi_query.predict(input_modality)
+    input_adata.obs[par["output_obs_probability"]] = np.max(scanvi_query.predict(input_modality, soft=True), axis=1)
 
     logger.info("Saving output and model")
-    input_data.mod[par["modality"]] = input_modality
-    input_data.write_h5mu(par["output"], compression=par["output_compression"])
+    input_mdata.write_h5mu(par["output"], compression=par["output_compression"])
 
     if par["output_model"]:
         scanvi_query.save(par["output_model"], overwrite=True)
