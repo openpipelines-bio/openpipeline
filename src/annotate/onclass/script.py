@@ -120,6 +120,8 @@ def main():
     input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X
     # Onclass needs dense matrix format
     input_matrix = input_matrix.toarray()
+    
+    id_to_name, name_to_id = map_celltype_to_ontology_id(par["cl_obo_file"])
 
     if par["model"]:
         logger.info("Predicting cell types using pre-trained model")
@@ -146,7 +148,6 @@ def main():
 
         cross_check_genes(input_modality.var.index, reference_modality.var.index, par["input_reference_gene_overlap"])
 
-        id_to_name, name_to_id = map_celltype_to_ontology_id(par["cl_obo_file"])
         reference_matrix = reference_modality.layers[par["reference_layer"]] if par["reference_layer"] else reference_modality.X
         # Onclass needs dense matrix format
         reference_matrix = reference_matrix.toarray()
