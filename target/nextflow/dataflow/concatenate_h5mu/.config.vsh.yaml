@@ -134,6 +134,8 @@ resources:
 - type: "file"
   path: "setup_logger.py"
 - type: "file"
+  path: "compress_h5mu.py"
+- type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
 description: "Concatenate observations from samples in several (uni- and/or multi-modal)\
@@ -273,7 +275,7 @@ build_info:
   output: "target/nextflow/dataflow/concatenate_h5mu"
   executable: "target/nextflow/dataflow/concatenate_h5mu/main.nf"
   viash_version: "0.9.0"
-  git_commit: "18c8d71245b9cbe427c98dfb42490e446f48f620"
+  git_commit: "fb12381e291a18d9841840b234490518e094ba41"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

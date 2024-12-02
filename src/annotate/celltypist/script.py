@@ -27,18 +27,8 @@ par = {
 meta = {
 }
 ## VIASH END
-
-# START TEMPORARY WORKAROUND setup_logger
-def setup_logger():
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(sys.stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
 
 def check_celltypist_format(indata):
     if np.abs(np.expm1(indata[0]).sum()-10000) > 1:

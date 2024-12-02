@@ -3509,7 +3509,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.9.0",
-    "git_commit" : "18c8d71245b9cbe427c98dfb42490e446f48f620",
+    "git_commit" : "fb12381e291a18d9841840b234490518e094ba41",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3624,13 +3624,7 @@ dep = {
 import sys
 sys.path.append(meta['resources_dir'])
 
-# START TEMPORARY WORKAROUND subset_vars
-# reason: resources aren't available when using Nextflow fusion
-# from subset_vars import subset_vars
-def subset_vars(adata, subset_col):
-    return adata[:, adata.var[subset_col]].copy()
-
-# END TEMPORARY WORKAROUND subset_vars
+from subset_vars import subset_vars
 
 #TODO: optionally, move to qa
 # https://github.com/openpipelines-bio/openpipeline/issues/435

@@ -3053,6 +3053,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/setup_logger.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3205,7 +3209,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize",
     "viash_version" : "0.9.0",
-    "git_commit" : "18c8d71245b9cbe427c98dfb42490e446f48f620",
+    "git_commit" : "fb12381e291a18d9841840b234490518e094ba41",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3249,6 +3253,7 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
+import sys
 import mudata as mu
 import numpy as np
 from scipy.sparse import issparse
@@ -3299,22 +3304,8 @@ dep = {
 
 ## VIASH END
 
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
 logger = setup_logger()
 
 logger.info("Reading in data")
