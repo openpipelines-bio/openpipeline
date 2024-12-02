@@ -43,7 +43,7 @@ def test_popv_with_other_layer(run_component, tmp_path):
         "--input", tmp_path / "input.h5mu",
         "--reference", reference_file,
         "--output", "output.h5mu",
-        "--methods", "rf;svm;knn_on_scanorama"
+        "--methods", "rf;svm;knn_on_scanorama;knn_on_scvi"
     ])
 
 def test_popv_with_non_overlapping_cells(run_component, tmp_path):

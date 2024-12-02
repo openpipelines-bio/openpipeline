@@ -41,7 +41,7 @@ def test_cellranger_multi_basic(run_component, tmp_path):
     # as a floating point number
     metrics_df_with_index = converted_data.uns['metrics_cellranger'].set_index(["Metric Name", "Library Type", "Category"]) 
     percentage = metrics_df_with_index.loc[("Confidently mapped reads in cells", "Gene Expression", "Cells"), "Metric Value"]
-    assert percentage[0] == "0.8569"
+    assert percentage.iloc[0] == "0.8569"
 
     thousand_delimited_number = metrics_df_with_index.loc[("Cells", "Gene Expression", "Cells"), "Metric Value"]
     thousand_delimited_number == "3,798" 

@@ -52,7 +52,11 @@ engines:
     image: eddelbuettel/r2u:22.04
     setup:
       - type: apt
-        packages: libhdf5-dev python3-pip python3-dev
+        packages:
+          - libhdf5-dev
+          - python3-pip
+          - python3-dev
+          - python-is-python3
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       - type: r
