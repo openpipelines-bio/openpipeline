@@ -97,10 +97,9 @@ def main():
     predictions = model.predict(input_matrix)
     probabilities = np.max(model.predict_proba(input_matrix), axis=1)
 
+    logger.info("Writing output data")
     input_adata.obs[par["output_obs_prediction"]] = predictions
     input_adata.obs[par["output_obs_probability"]] = probabilities
-
-    logger.info("Writing output data")
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
 
 
