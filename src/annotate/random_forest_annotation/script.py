@@ -40,7 +40,6 @@ from cross_check_genes import cross_check_genes
 from subset_vars import subset_vars
 from set_var_index import set_var_index
 
-
 logger = setup_logger()
 
 

@@ -41,7 +41,6 @@ sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 from cross_check_genes import cross_check_genes
 from set_var_index import set_var_index
-
 logger = setup_logger()
 
 if (not par["scvi_reference_model"]) and not (par["scanvi_reference_model"]) or (par["scvi_reference_model"] and par["scanvi_reference_model"]):
