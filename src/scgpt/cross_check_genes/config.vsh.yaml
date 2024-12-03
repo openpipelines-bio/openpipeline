@@ -42,6 +42,10 @@ argument_groups:
         required: false
         description: |
           The name of the adata.var column containing gene names. By default the .var index will be used.
+      - name: "--var_input"
+        type: string
+        required: false
+        description: ".var column containing highly variable genes. If provided, will only cross-check HVG filtered genes."
   - name: Outputs
     arguments:
       - name: "--output"
@@ -56,6 +60,11 @@ argument_groups:
         choices: ["gzip", "lzf"]
         required: false
         example: "gzip"
+      - name: "--output_var_filter"
+        type: string
+        default: "id_in_vocab"
+        description: In which .var slot to store a boolean array corresponding to which observations should be filtered out based on HVG and model vocabulary.
+
   - name: Arguments
     arguments:
       - name: "--pad_token"
@@ -71,7 +80,7 @@ resources:
 test_resources:
   - type: python_script
     path: test.py
-  - path: /resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu
+  - path: /resources_test/scgpt/test_resources/Kim2020_Lung_subset_preprocessed.h5mu
   - path: /resources_test/scgpt/source/vocab.json
 
 engines:
