@@ -1,8 +1,22 @@
 # openpipelines x.x.x
 
+# BREAKING CHANGES
+
+* Several components under `src/scgpt` (`cross_check_genes`, `tokenize_pad`, `binning`) now processes the input (query) datasets differently. Instead of subsetting datasets based on genes in the model vocabulary and/or highly variable genes,these components require an input .var column with a boolean mask specifying this information. The results are written back to the original input data, preserving the dataset structure.
+
 # MINOR CHANGES
 
 * Several component (cleanup): remove workaround for using being able to use shared utility functions with Nextflow Fusion (PR #920).
+
+* `workflows/annotation/scgpt_annotation` workflow: Added a scGPT transformer-based cell type annotation workflow (PR #832).
+
+* `scgpt/cross_check_genes` component update: Highly variable genes are now cross-checked using `var_input`. The filtering information is stored in the `--output_var_filter` .var field instead of subsetting the dataset (PR #832).
+
+* `scgpt/binning` component update: This component now requires the `--var_inpu`t parameter to provide gene filtering information. Binned data is written to the `--output_obsm_binned_counts` .obsm field in the original input data (PR #832).
+
+* `scgpt/pad_tokenize` component update: Genes are padded and tokenized based on filtering information in --var_input and --input_obsm_binned_counts. The component no longer subsets datasets (PR #832).
+
+* `scgpt/cell_type_annotation` component update: Added support for multi-processing to enhance performance (PR #832).
 
 # openpipelines 2.0.0-rc.2
 
@@ -148,8 +162,6 @@
 * `filter/subset_obsp` component: Added a component to subset an .obsp matrix by column based on the value of an .obs field. The resulting subset is moved to an .obsm field (PR #888).
 
 * `labels_transfer/knn` component: Enable using additional distance functions for KNN classification (PR #830) and allow to perform KNN classification based on a pre-calculated neighborhood graph (PR #890).
-
-* `workflows/annotation/scgpt_annotation` workflow: Added a scGPT transformer-based cell type annotation workflow (PR #832).
 
 ## MINOR CHANGES
 
