@@ -3301,7 +3301,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.0",
-    "git_commit" : "d7b8bd8c7031481ef22c0fb1def2301208c97f9e",
+    "git_commit" : "8f1ac45984335ea83708421eb36accfb44f98f07",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3401,18 +3401,8 @@ dep = {
 }
 
 ## VIASH END
-
-# START TEMPORARY WORKAROUND setup_logger
-def setup_logger():
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(sys.stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
 
 def check_celltypist_format(indata):
     if np.abs(np.expm1(indata[0]).sum()-10000) > 1:

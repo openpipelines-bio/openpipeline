@@ -571,9 +571,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt cell_type_annotation"
-LABEL org.opencontainers.image.created="2024-12-02T02:58:39Z"
+LABEL org.opencontainers.image.created="2024-12-03T02:58:53Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d7b8bd8c7031481ef22c0fb1def2301208c97f9e"
+LABEL org.opencontainers.image.revision="8f1ac45984335ea83708421eb36accfb44f98f07"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1407,6 +1407,7 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
+import sys
 import json
 import os
 import mudata as mu
@@ -1470,22 +1471,8 @@ dep = {
 
 ## VIASH END
 
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
 logger = setup_logger()
 
 class SeqDataset(Dataset):

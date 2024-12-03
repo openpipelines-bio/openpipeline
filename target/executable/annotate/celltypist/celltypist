@@ -596,9 +596,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate celltypist"
-LABEL org.opencontainers.image.created="2024-12-02T02:58:37Z"
+LABEL org.opencontainers.image.created="2024-12-03T02:58:51Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d7b8bd8c7031481ef22c0fb1def2301208c97f9e"
+LABEL org.opencontainers.image.revision="8f1ac45984335ea83708421eb36accfb44f98f07"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1477,18 +1477,8 @@ dep = {
 }
 
 ## VIASH END
-
-# START TEMPORARY WORKAROUND setup_logger
-def setup_logger():
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(sys.stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
 
 def check_celltypist_format(indata):
     if np.abs(np.expm1(indata[0]).sum()-10000) > 1:

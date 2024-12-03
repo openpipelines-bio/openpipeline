@@ -548,9 +548,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component dimred tsne"
-LABEL org.opencontainers.image.created="2024-12-02T02:58:34Z"
+LABEL org.opencontainers.image.created="2024-12-03T02:58:48Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d7b8bd8c7031481ef22c0fb1def2301208c97f9e"
+LABEL org.opencontainers.image.revision="8f1ac45984335ea83708421eb36accfb44f98f07"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1338,22 +1338,7 @@ dep = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
+from setup_logger import setup_logger
 logger = setup_logger()
 
 logger.info("Reading %s", par["input"])
