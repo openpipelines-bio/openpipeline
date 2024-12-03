@@ -114,3 +114,4 @@ input_adata.obsm["bin_edges"] = np.stack(bin_edges)
 
 # Write mudata output 
 logger.info("Writing output data")
+mdata. write_h5mu(par["output"], compression=par["output_compression"])
