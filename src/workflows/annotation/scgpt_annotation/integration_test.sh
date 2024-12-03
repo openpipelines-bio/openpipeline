@@ -9,8 +9,7 @@ cd "$REPO_ROOT"
 nextflow run . \
   -main-script src/workflows/annotation/scgpt_annotation/test.nf \
   -resume \
-  -profile no_publish \
+  -profile docker,no_publish \
   -entry test_wf \
-  -with-trace work/trace.txt \
   -c src/workflows/utils/labels_ci.config \
   -c src/workflows/utils/integration_tests.config

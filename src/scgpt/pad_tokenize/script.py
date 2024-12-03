@@ -10,7 +10,7 @@ from scgpt.tokenizer.gene_tokenizer import GeneVocab
 par = {
     "input": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_binned.h5mu",
     "model_vocab": "resources_test/scgpt/source/vocab.json",
-    "output": "resources_test/scgpt/test_resources/Kim2020_Lung_tokenized.h5mu",
+    "output": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_tokenized.h5mu",
     "pad_token": "<pad>",
     "pad_value": -2,
     "modality": "rna",

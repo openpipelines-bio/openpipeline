@@ -188,7 +188,7 @@ dependencies:
   - name: feature_annotation/highly_variable_features_scanpy
   - name: filter/do_filter
   - name: scgpt/pad_tokenize
-  - name: scgpt/annotation
+  - name: scgpt/cell_type_annotation
     alias: scgpt_celltype_annotation
 
 runners:
