@@ -36,6 +36,11 @@ argument_groups:
         required: false
         description: |
           The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
+      - name: "--var_input"
+        type: string
+        default: "id_in_vocab"
+        description: |
+          The name of the adata.var column containing boolean mask for vocabulary-cross checked and/or highly variable genes.
       - name: "--input_obsm_binned_counts"
         type: string
         default: "binned_counts"
@@ -98,6 +103,7 @@ resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
+  - path: /src/utils/subset_vars.py
 test_resources:
   - type: python_script
     path: test.py

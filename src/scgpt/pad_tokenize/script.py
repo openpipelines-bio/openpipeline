@@ -8,7 +8,7 @@ from scgpt.tokenizer.gene_tokenizer import GeneVocab
 
 ## VIASH START
 par = {
-    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu",
+    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_binned.h5mu",
     "model_vocab": "resources_test/scgpt/source/vocab.json",
     "output": "resources_test/scgpt/test_resources/Kim2020_Lung_tokenized.h5mu",
     "pad_token": "<pad>",
@@ -20,12 +20,21 @@ par = {
     "obsm_gene_tokens": "gene_id_tokens",
     "obsm_tokenized_values": "values_tokenized",
     "obsm_padding_mask": "padding_mask",
-    "output_compression": None
+    "output_compression": None,
+    "var_input": "id_in_vocab"
     }
+meta = {
+    "resources_dir": "src/utils/"
+}
+
+# mdata = mu.read(par["input"])
+# mdata.mod["rna"].obsm["binned_counts"] = mdata.mod["rna"].layers["binned"]
+# mdata.write_h5mu(par["input"])
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from subset_vars import subset_vars
 logger = setup_logger()
 
 logger.info("Reading in data")
@@ -35,6 +44,8 @@ mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
+adata = subset_vars(adata, par["var_input"])
+
 # Set padding specs
 pad_token = par["pad_token"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
@@ -43,7 +54,7 @@ pad_value = -2
 logger.info("Fetching counts and gene names")
 # Fetch counts
 all_counts = (
-    adata.obsm[par["input_obsm_binned_counts"]].A
+    adata.obsm[par["input_obsm_binned_counts"]].toarray()
     if issparse(adata.obsm[par["input_obsm_binned_counts"]])
     else adata.obsm[par["input_obsm_binned_counts"]]
 )

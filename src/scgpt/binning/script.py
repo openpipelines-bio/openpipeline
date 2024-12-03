@@ -6,14 +6,14 @@ import warnings
 
 ## VIASH START
 par = {
-    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_preprocessed.h5mu",
-    "output": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_binned_sparse.h5mu",
+    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_genes_cross_checked.h5mu",
+    "output": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_binned.h5mu",
     "modality": "rna",
     "input_layer": None,
     "output_obsm_binned_counts": "binned_counts",
     "n_input_bins": 51,
     "output_compression": None,
-    "var_input": "filter_with_hvg",
+    "var_input": "id_in_vocab",
     "seed": 0
 }
 meta = {

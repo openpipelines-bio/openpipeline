@@ -38,7 +38,7 @@ workflow run_wf {
       args: [
         "var_input": "scgpt_filter_with_hvg",
         "output_var_filter": "scgpt_cross_checked_genes"
-      ]
+      ],
       toState: ["input": "output"]
     )
     // Bins the data into a fixed number of bins.
@@ -73,7 +73,8 @@ workflow run_wf {
         "input_obsm_binned_counts": "binned_counts",
         "obsm_gene_tokens": "gene_id_tokens",
         "obsm_tokenized_values": "values_tokenized",
-        "obsm_padding_mask": "padding_mask"
+        "obsm_padding_mask": "padding_mask",
+        "var_input": "scgpt_cross_checked_genes"
       ],
       toState: ["input": "output"]
     )
