@@ -31,17 +31,17 @@ argument_groups:
         example: vocab.json
         description: |
           Path to model vocabulary file.
-      - name: "--input_layer"
-        type: string
-        default: "binned"
-        required: false
-        description: |
-          The name of the layer to be padded and tokenized.
       - name: "--var_gene_names"
         type: string
         required: false
         description: |
           The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
+      - name: "--input_obsm_binned_counts"
+        type: string
+        default: "binned_counts"
+        required: false
+        description: |
+          The name of the .obsm field containing the binned counts to be padded and tokenized.
 
   - name: Outputs
     arguments:
@@ -113,9 +113,7 @@ engines:
         packages:
           - scgpt==0.2.1
           - ipython~=8.5.0
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml ]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
   - type: executable
   - type: nextflow

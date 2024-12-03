@@ -14,7 +14,7 @@ par = {
     "pad_token": "<pad>",
     "pad_value": -2,
     "modality": "rna",
-    "input_layer": "X_binned",
+    "input_obsm_binned_counts": "binned_counts",
     "max_seq_len": None,
     "var_gene_names": None,
     "obsm_gene_tokens": "gene_id_tokens",
@@ -43,9 +43,9 @@ pad_value = -2
 logger.info("Fetching counts and gene names")
 # Fetch counts
 all_counts = (
-    adata.layers[par["input_layer"]].A
-    if issparse(adata.layers[par["input_layer"]])
-    else adata.layers[par["input_layer"]]
+    adata.obsm[par["input_obsm_binned_counts"]].A
+    if issparse(adata.obsm[par["input_obsm_binned_counts"]])
+    else adata.obsm[par["input_obsm_binned_counts"]]
 )
 
 # Fetching gene names
@@ -92,9 +92,8 @@ all_gene_ids, all_values = tokenized_data["genes"], tokenized_data["values"]
 padding_mask = all_gene_ids.eq(vocab[pad_token])
 
 logger.info("Writing output data")
-adata.obsm[par["obsm_gene_tokens"]] = all_gene_ids.numpy()
-adata.obsm[par["obsm_tokenized_values"]] = all_values.numpy()
-adata.obsm[par["obsm_padding_mask"]] = padding_mask.numpy()
+input_adata.obsm[par["obsm_gene_tokens"]] = all_gene_ids.numpy()
+input_adata.obsm[par["obsm_tokenized_values"]] = all_values.numpy()
+input_adata.obsm[par["obsm_padding_mask"]] = padding_mask.numpy()
 
-mdata.mod[par["modality"]] = adata
 mdata.write(par["output"], compression=par["output_compression"])
