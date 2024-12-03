@@ -2,7 +2,7 @@
 
 # BREAKING CHANGES
 
-* Several components under `src/scgpt` (`cross_check_genes`, `tokenize_pad`, `binning`) now processes the input (query) datasets differently. Instead of subsetting datasets based on genes in the model vocabulary and/or highly variable genes, these components require an input .var column with a boolean mask specifying this information. The results are written back to the original input data, preserving the dataset structure.
+* Several components under `src/scgpt` (`cross_check_genes`, `tokenize_pad`, `binning`) now processes the input (query) datasets differently. Instead of subsetting datasets based on genes in the model vocabulary and/or highly variable genes, these components require an input .var column with a boolean mask specifying this information. The results are written back to the original input data, preserving the dataset structure (PR #832).
 
 # MINOR CHANGES
 
