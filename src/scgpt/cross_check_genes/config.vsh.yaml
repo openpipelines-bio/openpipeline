@@ -45,7 +45,7 @@ argument_groups:
       - name: "--var_input"
         type: string
         required: false
-        description: ".var column containing highly variable genes. If provided, will only cross-check HVG filtered genes."
+        description: ".var column containing highly variable genes. If provided, will only cross-check HVG filtered genes with model vocabulary."
   - name: Outputs
     arguments:
       - name: "--output"

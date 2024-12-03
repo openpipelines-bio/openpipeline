@@ -1,6 +1,5 @@
 import sys
 import mudata as mu
-import numpy as np
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
 
 ## VIASH START
