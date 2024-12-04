@@ -14,33 +14,35 @@ from scgpt.utils import set_seed
 
 ## VIASH START
 par = {
-  'input': r'resources_test/scgpt/test_resources/Kim2020_Lung_subset_tokenized.h5mu',
-  'modality': r'rna',
-  'model': r'resources_test/scgpt/source/best_model.pt',
-  'model_config': r'resources_test/scgpt/source/args.json',
-  'model_vocab': r'resources_test/scgpt/source/vocab.json',
-  'obs_batch_label': r'sample',
-  'obsm_gene_tokens': r'gene_id_tokens',
-  'obsm_tokenized_values': r'values_tokenized',
-  'output': r'output.h5mu',
-  'output_compression': None,
-  'obs_predicted_cell_class': r'predicted_cell_class',
-  'obs_predicted_cell_label': r'predicted_cell_label',
-  'dsbn': True,
-  'seed': 0,
-  'pad_token': "<pad>",
-  'pad_value': -2,
-  'n_input_bins': 51,
-  'batch_size': 64,
-  'finetuned_checkpoints_key': 'mapping_dic',
-  'label_mapper_key': 'id_to_class'
+    "input": r"resources_test/scgpt/test_resources/Kim2020_Lung_subset_tokenized.h5mu",
+    "modality": r"rna",
+    "model": r"resources_test/scgpt/source/best_model.pt",
+    "model_config": r"resources_test/scgpt/source/args.json",
+    "model_vocab": r"resources_test/scgpt/source/vocab.json",
+    "obs_batch_label": r"sample",
+    "obsm_gene_tokens": r"gene_id_tokens",
+    "obsm_tokenized_values": r"values_tokenized",
+    "output": r"output.h5mu",
+    "output_compression": None,
+    "obs_predicted_cell_class": r"predicted_cell_class",
+    "obs_predicted_cell_label": r"predicted_cell_label",
+    "dsbn": True,
+    "seed": 0,
+    "pad_token": "<pad>",
+    "pad_value": -2,
+    "n_input_bins": 51,
+    "batch_size": 64,
+    "finetuned_checkpoints_key": "mapping_dic",
+    "label_mapper_key": "id_to_class",
 }
 
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
+
 
 class SeqDataset(Dataset):
     def __init__(self, data: Dict[str, torch.Tensor]):
@@ -52,7 +54,8 @@ class SeqDataset(Dataset):
     def __getitem__(self, idx):
         return {k: v[idx] for k, v in self.data.items()}
 
-warnings.filterwarnings('ignore')
+
+warnings.filterwarnings("ignore")
 
 # Setting seed
 if par["seed"]:
@@ -70,7 +73,9 @@ adata = input_adata.copy()
 
 # Fetch batch ids for domain-specific batch normalization
 if par["dsbn"] and not par["obs_batch_label"]:
-    raise ValueError("When dsbn is set to True, you are required to provide batch labels (obs_batch_labels).")
+    raise ValueError(
+        "When dsbn is set to True, you are required to provide batch labels (obs_batch_labels)."
+    )
 elif par["dsbn"] and par["obs_batch_label"]:
     logger.info("Fetching batch id's for domain-specific batch normalization")
     batch_id_cats = adata.obs[par["obs_batch_label"]].astype("category")
@@ -107,11 +112,13 @@ logger.info("Loading model")
 model_file = par["model"]
 model_dict = torch.load(model_file, map_location=device)
 for k, v in {
-        "--finetuned_checkpoints_key": par["finetuned_checkpoints_key"],
-        "--label_mapper_key": par["label_mapper_key"],
-        }.items():
+    "--finetuned_checkpoints_key": par["finetuned_checkpoints_key"],
+    "--label_mapper_key": par["label_mapper_key"],
+}.items():
     if v not in model_dict.keys():
-        raise KeyError(f"The key '{v}' provided for '{k}' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.")
+        raise KeyError(
+            f"The key '{v}' provided for '{k}' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper."
+        )
 pretrained_dict = model_dict[par["finetuned_checkpoints_key"]]
 
 # Label mapper configuration
@@ -142,9 +149,9 @@ model = TransformerModel(
     input_emb_style="continuous",
     n_input_bins=par["n_input_bins"],
     cell_emb_style="cls",  # required for cell-type annotation
-    use_fast_transformer=False,   #TODO: parametrize when GPU is available
-    fast_transformer_backend="flash",  #TODO: parametrize when GPU is available
-    pre_norm=False,  #TODO: parametrize when GPU is available
+    use_fast_transformer=False,  # TODO: parametrize when GPU is available
+    fast_transformer_backend="flash",  # TODO: parametrize when GPU is available
+    pre_norm=False,  # TODO: parametrize when GPU is available
 )
 
 
@@ -170,11 +177,13 @@ model.to(device)
 # Load tokenized gene data
 logger.info("Loading data for inference")
 for k, v in {
-        "--obsm_gene_tokens": par["obsm_gene_tokens"],
-        "--obsm_tokenized_values": par["obsm_tokenized_values"],
-        }.items():
+    "--obsm_gene_tokens": par["obsm_gene_tokens"],
+    "--obsm_tokenized_values": par["obsm_tokenized_values"],
+}.items():
     if v not in adata.obsm.keys():
-        raise KeyError(f"The parameter '{v}' provided for '{k}' could not be found in adata.obsm")
+        raise KeyError(
+            f"The parameter '{v}' provided for '{k}' could not be found in adata.obsm"
+        )
 
 input_gene_ids = adata.obsm[par["obsm_gene_tokens"]]
 input_values = adata.obsm[par["obsm_tokenized_values"]]
@@ -230,7 +239,9 @@ probabilities = np.concatenate(probabilities, axis=0)
 # Assign cell type labels to predicted classes
 logger.info("Assigning cell type predictions and probabilities")
 adata.obs["scgpt_class_pred"] = predictions
-adata.obs[par["output_obs_predictions"]] = adata.obs["scgpt_class_pred"].map(lambda x: cell_type_mapper[x])
+adata.obs[par["output_obs_predictions"]] = adata.obs["scgpt_class_pred"].map(
+    lambda x: cell_type_mapper[x]
+)
 adata.obs[par["output_obs_probability"]] = probabilities
 
 # Write output

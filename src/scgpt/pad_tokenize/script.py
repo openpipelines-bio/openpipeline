@@ -20,12 +20,13 @@ par = {
     "obsm_gene_tokens": "gene_id_tokens",
     "obsm_tokenized_values": "values_tokenized",
     "obsm_padding_mask": "padding_mask",
-    "output_compression": None
-    }
+    "output_compression": None,
+}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading in data")
@@ -73,7 +74,9 @@ else:
     max_seq_len = par["max_seq_len"]
 
 # Tokenize and pad data
-logger.info(f"Padding and tokenizing data with max length of {max_seq_len}, padding token {pad_token} and pad value {pad_value}.")
+logger.info(
+    f"Padding and tokenizing data with max length of {max_seq_len}, padding token {pad_token} and pad value {pad_value}."
+)
 tokenized_data = tokenize_and_pad_batch(
     all_counts,
     gene_ids,
@@ -85,8 +88,8 @@ tokenized_data = tokenize_and_pad_batch(
     include_zero_gene=False,
     return_pt=True,
     mod_type=None,
-    vocab_mod=None
-    )
+    vocab_mod=None,
+)
 
 all_gene_ids, all_values = tokenized_data["genes"], tokenized_data["values"]
 padding_mask = all_gene_ids.eq(vocab[pad_token])

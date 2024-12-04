@@ -10,7 +10,7 @@ meta = {
     "resources_dir": "resources_test/scgpt",
     "executable": "./target/docker/scgpt/integration_pad_tokenize/integration_pad_tokenize",
     "temp_dir": "tmp",
-    "config": "./target/docker/scgpt/integration_pad_tokenize/.config.vsh.yaml"
+    "config": "./target/docker/scgpt/integration_pad_tokenize/.config.vsh.yaml",
 }
 ## VIASH END
 
@@ -19,7 +19,7 @@ vocab_file = f"{meta['resources_dir']}/scgpt/source/vocab.json"
 input_file = mu.read(input)
 
 ## START TEMPORARY WORKAROUND DATA PREPROCESSING
-#TODO: Remove this workaround once scGPT preproc modules are implemented
+# TODO: Remove this workaround once scGPT preproc modules are implemented
 # Read in data
 adata = input_file.mod["rna"]
 
@@ -42,8 +42,8 @@ for s in special_tokens:
 # Cross-check genes with pre-trained model
 genes = adata.var["gene_name"].tolist()
 adata.var["id_in_vocab"] = [
-        1 if gene in vocab else -1 for gene in adata.var["gene_name"]
-    ]
+    1 if gene in vocab else -1 for gene in adata.var["gene_name"]
+]
 gene_ids_in_vocab = np.array(adata.var["id_in_vocab"])
 adata = adata[:, adata.var["id_in_vocab"] >= 0]
 
@@ -60,7 +60,7 @@ preprocessor = Preprocessor(
     hvg_flavor="seurat_v3",
     binning=51,
     result_binned_key="binned",
-    )
+)
 
 preprocessor(adata, batch_key="str_batch")
 
@@ -72,21 +72,35 @@ input_file.mod["rna"] = adata
 
 def test_integration_pad_tokenize(run_component, tmp_path):
     output = tmp_path / "Kim2020_Lung_tokenized.h5mu"
-    input_preprocessed = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu"
+    input_preprocessed = (
+        f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu"
+    )
     input_file.write(input_preprocessed)
 
-    run_component([
-        "--input", input_preprocessed,
-        "--output", output,
-        "--modality", "rna",
-        "--obsm_gene_tokens", "gene_id_tokens",
-        "--obsm_tokenized_values", "values_tokenized",
-        "--obsm_padding_mask", "padding_mask",
-        "--pad_token", "<pad>",
-        "--pad_value", "-2",
-        "--input_layer", "binned",
-        "--model_vocab", vocab_file
-    ])
+    run_component(
+        [
+            "--input",
+            input_preprocessed,
+            "--output",
+            output,
+            "--modality",
+            "rna",
+            "--obsm_gene_tokens",
+            "gene_id_tokens",
+            "--obsm_tokenized_values",
+            "values_tokenized",
+            "--obsm_padding_mask",
+            "padding_mask",
+            "--pad_token",
+            "<pad>",
+            "--pad_value",
+            "-2",
+            "--input_layer",
+            "binned",
+            "--model_vocab",
+            vocab_file,
+        ]
+    )
 
     output_file = mu.read(output)
     output_adata = output_file.mod["rna"]
@@ -96,14 +110,24 @@ def test_integration_pad_tokenize(run_component, tmp_path):
     padding_mask = output_adata.obsm["padding_mask"]
 
     # check output dimensions
-    ## nr of genes that are tokenized 
-    assert gene_ids.shape[1] <= output_adata.var.shape[0] + 1, "gene_ids shape[1] is higher than adata.var.shape[0] (n_hvg + 1)"
-    assert values.shape[1] <= output_adata.var.shape[0] + 1, "values shape[1] is higher than adata.var.shape[0] (n_hvg + 1)"
-    assert padding_mask.shape[1] <= output_adata.var.shape[0] + 1, "padding_mask shape[1] is higher than adata.var.shape[0] (n_hvg + 1)"
+    ## nr of genes that are tokenized
+    assert (
+        gene_ids.shape[1] <= output_adata.var.shape[0] + 1
+    ), "gene_ids shape[1] is higher than adata.var.shape[0] (n_hvg + 1)"
+    assert (
+        values.shape[1] <= output_adata.var.shape[0] + 1
+    ), "values shape[1] is higher than adata.var.shape[0] (n_hvg + 1)"
+    assert (
+        padding_mask.shape[1] <= output_adata.var.shape[0] + 1
+    ), "padding_mask shape[1] is higher than adata.var.shape[0] (n_hvg + 1)"
 
     ## equal size of output tensors
-    assert gene_ids.shape == values.shape, "gene_ids shape[1] does not match values shape[1]"
-    assert gene_ids.shape == padding_mask.shape, "gene_ids shape[1] does not match padding_mask shape[1]"
+    assert (
+        gene_ids.shape == values.shape
+    ), "gene_ids shape[1] does not match values shape[1]"
+    assert (
+        gene_ids.shape == padding_mask.shape
+    ), "gene_ids shape[1] does not match padding_mask shape[1]"
 
     ## check values of output tensors
     assert gene_ids.dtype == "int64", "tokenized gene_ids are not integers"
@@ -115,14 +139,26 @@ def test_integration_pad_tokenize(run_component, tmp_path):
     assert padding_mask.dtype == bool, "padding mask is not boolean"
 
     ## check cls token
-    assert (gene_ids[:, 0] == vocab["<cls>"]).all(), "cls token was not correctly appended at the beginning of the gene_ids tensor"
-    assert (values[:, 0] == 0).all(), "cls token was not correctly appended at the beginning of the values tensors"
+    assert (
+        gene_ids[:, 0] == vocab["<cls>"]
+    ).all(), (
+        "cls token was not correctly appended at the beginning of the gene_ids tensor"
+    )
+    assert (
+        values[:, 0] == 0
+    ).all(), (
+        "cls token was not correctly appended at the beginning of the values tensors"
+    )
 
     # check padding values
     masked_gene_ids = gene_ids[padding_mask]
     unmasked_gene_ids = gene_ids[~padding_mask]
-    assert all(masked_gene_ids == vocab["<pad>"]), "masked gene_ids contain non-pad tokens"
-    assert all(unmasked_gene_ids != vocab["<pad>"]), "unmasked gene_ids contain pad tokens"
+    assert all(
+        masked_gene_ids == vocab["<pad>"]
+    ), "masked gene_ids contain non-pad tokens"
+    assert all(
+        unmasked_gene_ids != vocab["<pad>"]
+    ), "unmasked gene_ids contain pad tokens"
 
     masked_values = values[padding_mask]
     unmasked_values = values[~padding_mask]
@@ -130,5 +166,5 @@ def test_integration_pad_tokenize(run_component, tmp_path):
     assert all(unmasked_values != -2), "unmasked values contain pad values"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

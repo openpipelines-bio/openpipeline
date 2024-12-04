@@ -2,6 +2,7 @@ import re
 
 import anndata as ad
 
+
 def setup_logger():
     import logging
     from sys import stdout
@@ -14,6 +15,8 @@ def setup_logger():
     logger.addHandler(console_handler)
 
     return logger
+
+
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
@@ -34,7 +37,9 @@ def cross_check_genes(query: ad.AnnData, reference: ad.AnnData):
     logger.info("  reference n_vars: %i", reference.n_vars)
     logger.info("  input n_vars: %i", query.n_vars)
     logger.info("  intersect n_vars: %i", len(common_ens_ids))
-    assert len(common_ens_ids) >= 100, "The intersection of genes between the query and reference dataset is too small."
+    assert (
+        len(common_ens_ids) >= 100
+    ), "The intersection of genes between the query and reference dataset is too small."
 
     return common_ens_ids
 

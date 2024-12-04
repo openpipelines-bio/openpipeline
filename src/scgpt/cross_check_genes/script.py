@@ -10,12 +10,13 @@ par = {
     "modality": "rna",
     "input_var_gene_names": None,
     "pad_token": "<pad>",
-    "vocab_file": "resources_test/scgpt/source/vocab.json"
+    "vocab_file": "resources_test/scgpt/source/vocab.json",
 }
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 # Read in data
@@ -30,8 +31,10 @@ special_tokens = [pad_token, "<cls>", "<eoc>"]
 if not par["input_var_gene_names"]:
     genes = adata.var.index.astype(str).tolist()
 elif par["input_var_gene_names"] not in adata.var.columns:
-    raise ValueError(f"Gene name column '{par['input_var_gene_names']}' not found in .mod['{par['modality']}'].obs.")
-else: 
+    raise ValueError(
+        f"Gene name column '{par['input_var_gene_names']}' not found in .mod['{par['modality']}'].obs."
+    )
+else:
     genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
 
 # Cross-check genes with pre-trained model
@@ -44,7 +47,7 @@ vocab = GeneVocab.from_file(vocab_file)
 
 logger.info("Filtering genes based on model vocab")
 adata.var["id_in_vocab"] = [1 if gene in vocab else -1 for gene in genes]
-    
+
 gene_ids_in_vocab = np.array(adata.var["id_in_vocab"])
 
 logger.info("Subsetting input data based on genes present in model vocab")
