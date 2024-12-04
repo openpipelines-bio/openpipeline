@@ -1793,8 +1793,7 @@ function create_hardlinks() {
   # Create the destination directory if it doesn't exist
   [ -d "\$(dirname "\$dest")" ] || mkdir -p "\$(dirname "\$dest")"
 
-  # Create the hardlink
-  ln -s "\$source" "\$dest"
+  ln -s "\$(realpath "\$source")" "\$dest"
 }
 
 mkdir -p "\$(dirname '${yamlFile}')"
