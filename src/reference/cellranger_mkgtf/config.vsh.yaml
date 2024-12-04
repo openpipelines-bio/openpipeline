@@ -27,8 +27,6 @@ resources:
   - type: bash_script
     path: script.sh
 test_resources:
-  # - type: bash_script
-  #   path: run_test.sh
   - type: python_script
     path: test.py
   - path: /resources_test/reference_gencodev41_chr1

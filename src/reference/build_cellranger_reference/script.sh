@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eou pipefail
+set -eo pipefail
 
 ## VIASH START
 par_genome_fasta="resources_test/reference_gencodev41_chr1/reference.fa.gz"

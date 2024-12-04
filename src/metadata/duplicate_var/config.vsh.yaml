@@ -1,7 +1,7 @@
-name: copy_obs
+name: duplicate_var
 namespace: "metadata"
 description: |
-  Make a copy of an existing .obs column to another .obs column.
+  Make a copy of an existing .var field or index to another .var field within the same mudata object.
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author ]
@@ -19,10 +19,15 @@ argument_groups:
         type: string
         default: "rna"
         required: false
-      - name: "--input_obs_key"
+      - name: "--input_var_key"
         type: string
-        description: .obs column to be copied.
-        required: true
+        description: .var field to be copied. If no key is provided, the .var index will be copied.
+        required: false
+  - name: "Arguments"
+    arguments:
+      - name: "--overwrite_existing_key"
+        type: boolean_true
+        description: If set to true and the --output_obs_key already exists in the input file, the .obs field will be overwritten.
   - name: "MuData Output"
     arguments:
       - name: "--output"
@@ -32,9 +37,9 @@ argument_groups:
         direction: output
         required: true
         example: output.h5mu
-      - name: "--output_obs_key"
+      - name: "--output_var_key"
         type: string
-        description: .obs column where the copied --input_obs_key will be stored.
+        description: .var field where the copied --input_var_key will be stored.
         required: true
       - name: "--output_compression"
         type: string

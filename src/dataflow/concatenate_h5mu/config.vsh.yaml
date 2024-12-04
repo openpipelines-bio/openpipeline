@@ -1,7 +1,7 @@
 name: concatenate_h5mu
 namespace: "dataflow"
 description: |
-  Concatenates several uni-modal samples in .h5mu files into a single file.
+  Concatenate observations from samples in several (uni- and/or multi-modal) MuData files into a single file.
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ maintainer ]
@@ -66,7 +66,7 @@ resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
-  # - path: /src/utils/compress_h5mu.py
+  - path: /src/utils/compress_h5mu.py
 test_resources:
   - type: python_script
     path: test.py

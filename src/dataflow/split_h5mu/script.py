@@ -1,6 +1,8 @@
+import sys
 import mudata as mu
 import pandas as pd
 import re
+import gc
 from pathlib import Path
 from collections import defaultdict
 
@@ -26,22 +28,8 @@ par["input"] = "test_san.h5mu"
 par["obs_feature"] = "Obs"
 ### VIASH END
 
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
 logger = setup_logger()
 
 
@@ -99,6 +87,11 @@ def main():
         logger.info(f"Writing h5mu filtered for {par['obs_feature']} {obs_name} to file {output_dir / mdata_obs_name}")
         mdata_obs.mod[par["modality"]] = adata_obs
         mdata_obs.write_h5mu(output_dir / mdata_obs_name, compression=par["output_compression"])
+
+        # avoid keeping files in memory
+        del mdata_obs
+        del adata_obs
+        gc.collect()
 
     logger.info(f"Writing output_files CSV file to {par['output_files']}")
     df = pd.DataFrame({"name": obs_features_s, "filename": obs_files})

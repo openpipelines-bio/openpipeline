@@ -43,6 +43,7 @@ jobs:
       uses: viash-io/viash-actions/ns-list@v6
       with:
         engine: docker
+        runner: executable
         format: json
         query_namespace: ^(?!workflows|test_workflows)
 

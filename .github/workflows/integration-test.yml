@@ -36,6 +36,10 @@ jobs:
       dest_paths: ${{ steps.cache.outputs.dest_paths }}
 
     steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     - uses: viash-io/viash-actions/project/sync-and-cache@v6
       id: cache
 
@@ -51,6 +55,10 @@ jobs:
         component: ${{ fromJson(needs.build.outputs.workflow_matrix) }}
 
     steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v2
     
@@ -99,17 +107,19 @@ jobs:
         tree ./resources_test/
 
     - name: Build test dependencies
-      uses: viash-io/viash-actions/ns-build@v6
-      with:
-        config_mod: |
-          .version := 'integration_build'
-          .engines[.type == 'docker'].target_tag := 'integration_build'
-        src: ${{ matrix.component.dir }}
-        query: "^test_workflows"
-        setup: build
+      run: |
+        readarray -t test_dependencies < <(viash ns list --format json "${{ matrix.component.config }}" | jq -r -c '(.[].info.test_dependencies // []) | flatten | .[] | (.namespace + "/" + .name)')
+        for dependency in "${test_dependencies[@]}"; do
+          echo $dependency
+          viash ns build -q "$dependency" -c ".version := 'integration_build'" -c ".engines[.type == 'docker'].target_tag := 'integration_build'" --setup alwayspullelsebuild
+        done
 
+    - name: Remove docker builder cache
+      run: |
+        docker builder prune -a -f 
+    
     - name: Run integration test
-      timeout-minutes: 60
+      timeout-minutes: 120
       run: |
         # todo: replace with viash test command
         export NXF_VER=22.04.5

@@ -1,8 +1,24 @@
 # openpipelines x.x.x
 
+# MINOR CHANGES
+
+* Several component (cleanup): remove workaround for using being able to use shared utility functions with Nextflow Fusion (PR #920).
+
+# openpipelines 2.0.0-rc.2
+
+## BUG FIXES
+
+* `annotate/popv`: fix popv raising `ValueError` when an accelerator (e.g. GPU) is unavailable (PR #915).
+
+## MINOR CHANGES
+
+* `dataflow/split_h5mu`: Optimize resource usage of the component (PR #913).
+
+# openpipelines 2.0.0-rc.1
+
 ## BREAKING CHANGES
 
-* Added cell multiplexing support to the `from_cellranger_multi_to_h5mu` component and the `cellranger_multi` workflow. These components now output multiple .h5mu files. The `output` and `output_h5mu` arguments respectively now require a value containing a wildcard character `*`, which will be replaced by the sample ID to form the final output file names . Additionally, a `sample_csv` argument is added to the `from_cellragner_multi_to_h5mu` component which describes the sample name per output file (PR #803).
+* Added cell multiplexing support to the `from_cellranger_multi_to_h5mu` component and the `cellranger_multi` workflow. For the `from_cellranger_multi_to_h5mu` component, the `output` argument now requires a value containing a wildcard character `*`, which will be replaced by the sample ID to form the final output file names. Additionally, a `sample_csv` argument is added to the `from_cellragner_multi_to_h5mu` component which describes the sample name per output file. No change is required for the `output_h5mu` argument from the `cellranger_multi` workflow, the workflow will just emit multiple events in case of a multiplexed run, one for each sample. The id of the events (and default output file names) are set by `--sample_ids` (in case of cell multiplexing), or (as before) by the user provided `id` for the input (PR #803 and PR #902).
 
 * `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
 
@@ -20,7 +36,7 @@
   
 * `XGBoost`: bump version to `2.0.3` (PR #646).
 
-* Several components: update anndata to `0.10.8` and mudata to `0.2.3` (PR #645). 
+* Several components: update anndata to `0.11.1` and mudata to `0.3.1` (PR #645 and PR #901), and scanpy to `1.10.4` (PR #901). 
 
 * `filter/filter_with_hvg`: this component was deprecated and has now been removed. Use `feature_annotation/highly_variable_features_scanpy` instead (PR #843).
 
@@ -42,9 +58,11 @@
   - Store label probabilities instead of uncertainties
   - Take `.h5mu` format as an input instead of `.h5ad`
 
-* `labels_transfer/knn`: delete outdated component due to its functionality now implemented in `labels_transfer/pynndescent_knn`
-
 * `reference/build_cellranger_arc_reference`: a default value of "output" is now specified for the argument `--genome`, inline with `reference/build_cellranger_reference` component. Additionally, providing a value for `--organism` is no longer required and its default value of `Homo Sapiens` has been removed (PR #864).
+
+## MAJOR CHANGES
+
+* Bump popv to `0.4.2` (PR #901)
 
 ## NEW FUNCTIONALITY
 
@@ -91,8 +109,6 @@
 
 * `dataflow/split_h5mu` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
 
-* `labels_transfer/pynndescent_knn`: component: Added a component for KNN classification based on a PyNNDescent neighborhood graph (PR #830).
-
 * `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
 
 * `workflows/ingestion/make_reference`: Add additional arguments passed through to the STAR and BD Rhapsody reference components (PR #846).
@@ -103,7 +119,7 @@
 
 * `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
 
-* `annotete/scanvi` component: Added a component to annotate cells using scANVI (PR #833).
+* `annotate/scanvi` component: Added a component to annotate cells using scANVI (PR #833).
 
 * `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
 
@@ -117,24 +133,33 @@
 
 * `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
 
-* `metadata/copy_obs` component: Added a component to copy an .obs column from a MuData object to another (PR #874).
+* Added `transform/tfidf` component: normalize ATAC data with TF-IDF (PR #870).
+
+* Added `dimred/lsi` component (PR #552).
+
+* `metadata/duplicate_obs` component: Added a component to make a copy from one .obs field or index to another .obs field within the same MuData object (PR #874, PR #899).
+
+* `annotate/onclass`: component: Added a component to annotate cell types using OnClass (PR #844).
+
+* `annotate/svm` component: Added a component to annotate cell types using support vector machine (SVM) (PR #845).
+
+* `metadata/duplicate_var` component: Added a component to make a copy from one .var field or index to another .var field within the same MuData object (PR #877, PR #899).
+
+* `filter/subset_obsp` component: Added a component to subset an .obsp matrix by column based on the value of an .obs field. The resulting subset is moved to an .obsm field (PR #888).
+
+* `labels_transfer/knn` component: Enable using additional distance functions for KNN classification (PR #830) and allow to perform KNN classification based on a pre-calculated neighborhood graph (PR #890).
 
 * `workflow/annotation/scvi_knn` workflow: Cell-type annotation based on scVI integration with KNN label transfer (PR #881). 
 
 ## MINOR CHANGES
 
-* `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
+* Several components: bump python version (PR #901).
 
-* `neighbors/find_neighbors` component: Modified to include results of KNN in the output file (PR #748).
-  2 new optional arguments added to set .obsm slots to save KNN results into:
-  - `obsm_knn_indices`
-  - `obsm_knn_distances`
+* `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
 
 * `cellbender_remove_background_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
 
 * Bump scvelo to `0.3.2` (PR #828).
-
-* Bump viash to `0.8.6` (PR #815).
 
 * Pin numpy<2 for several components (PR #815).
 
@@ -154,18 +179,40 @@
 
 ## BUG FIXES
 
-* `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
-  data dtype (dtype) changed as a result of adding more observations after concatenation, causing `TypeError`.
-  One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
-  which is present in another sample; causing the values being filled with `NA` (PR #837).
-
-* `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR #852).
-
 * Fix failing tests for `ingestion/cellranger_postprocessing`, `ingestion/conversion` and `multiomics/process_batches` (PR #869).
+
+* `convert/from_10xh5_to_h5mu`: add .uns slot to mdata root when metrics file is provided (PR #887).
+
+* Fix ingestion components not working when optional arguments are unset (PR #894).
+
+* `transform/normalize_total` component: pass the `target_sum` argument to `sc.pp.normalize_total()` (PR #823).
+
+* `from_cellranger_multi_to_h5mu`: fix missing `pytest` dependency (PR #897).
 
 ## DOCUMENTATION
 
 * Update authorship of components (PR #835).
+
+# openpipelines 1.0.3
+
+## BUG FIXES
+
+* `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR # , backported from PR #852).
+
+# openpipelines 1.0.2
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
+  data dtype (dtype) changed as a result of adding more observations after concatenation, causing `TypeError`.
+  One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
+  which is present in another sample; causing the values being filled with `NA` (PR #842, backported from PR #837).
+
+# openpipelines 1.0.1
+
+## BUG FIXES
+
+* Bump viash to `0.8.6` (PR #816, backported from #815). This changes the at-runtime generated nextflow process from an in-memory to an on-disk temporary file, which should cause less issues with Nextflow Fusion.
 
 # openpipelines 1.0.0-rc6
 
@@ -173,8 +220,6 @@
 
 * `dataflow/concatenate_h5mu`: fix regression bug where observations are no longer linked to the correct metadata
 after concatenation (PR #807)
-
-* `transform/normalize_total` component: pass the `target_sum` argument to `sc.pp.normalize_total()` (PR #823).
 
 # openpipelines 1.0.0-rc5
 

@@ -1,4 +1,6 @@
-# set -eo pipefail
+#!/bin/bash
+
+set -eou pipefail
 
 ## VIASH START
 meta_resources_dir="./resources_test"
