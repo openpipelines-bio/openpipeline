@@ -42,7 +42,7 @@ argument_groups:
     choices: ["gzip", "lzf"]
     required: false
     example: "gzip"
-  - name: "--output_files"
+  - name: "--output_types"
     type: file
     required: true
     direction: output

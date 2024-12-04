@@ -60,17 +60,17 @@ def input_h5mu_path_non_unique_filenames(write_mudata_to_file, input_h5mu_non_un
 
 def test_sample_split(run_component, random_path, input_h5mu, input_h5mu_path):
     output_dir = random_path()
-    output_files = random_path(extension="csv")
+    output_types = random_path(extension="csv")
     args = [
         "--input", input_h5mu_path,
         "--output", str(output_dir),
         "--modality", "mod1",
         "--obs_feature", "Obs",
-        "--output_files", str(output_files),
+        "--output_types", str(output_types),
     ]
 
     run_component(args)
-    assert output_files.is_file()
+    assert output_types.is_file()
     assert output_dir.is_dir()
 
     # check output dir and file names
@@ -119,21 +119,21 @@ def test_sample_split(run_component, random_path, input_h5mu, input_h5mu_path):
         B,{s2_file.name}
         """
     )
-    with open(output_files, 'r') as open_csv_file:
+    with open(output_types, 'r') as open_csv_file:
         result = open_csv_file.read()
         assert result == expected_csv_output
 
 
 def test_sample_split_dropna(run_component, random_path, input_h5mu, input_h5mu_path):
     output_dir = random_path()
-    output_files = random_path(extension="csv")
+    output_types = random_path(extension="csv")
     args = [
         "--input", input_h5mu_path,
         "--output", str(output_dir),
         "--modality", "mod1",
         "--obs_feature", "Obs",
         "--drop_obs_nan", "true",
-        "--output_files", str(output_files),
+        "--output_types", str(output_types),
     ]
 
     run_component(args)
@@ -157,7 +157,7 @@ def test_sample_split_dropna(run_component, random_path, input_h5mu, input_h5mu_
 
 def test_sanitizing(run_component, random_path, input_h5mu_path_non_unique_filenames):
     output_dir = random_path()
-    output_files = random_path(extension="csv")
+    output_types = random_path(extension="csv")
 
     args = [
         "--input", input_h5mu_path_non_unique_filenames,
@@ -165,7 +165,7 @@ def test_sanitizing(run_component, random_path, input_h5mu_path_non_unique_filen
         "--modality", "mod3",
         "--obs_feature", "Obs",
         "--drop_obs_nan", "true",
-        "--output_files", str(output_files)
+        "--output_types", str(output_types)
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:
@@ -180,7 +180,7 @@ def test_sanitizing(run_component, random_path, input_h5mu_path_non_unique_filen
             "--modality", "mod3",
             "--obs_feature", "Obs",
             "--drop_obs_nan", "true",
-            "--output_files", str(output_files),
+            "--output_types", str(output_types),
             "--ensure_unique_filenames", "true"
         ]
 

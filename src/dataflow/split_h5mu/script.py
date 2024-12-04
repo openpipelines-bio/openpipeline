@@ -14,7 +14,7 @@ par = {
   'output': 'reference_download/sample_split',
   'drop_obs_nan': "true",
   'output_compression': None,
-  'output_files': 'reference_download/sample_files.csv',
+  'output_types': 'reference_download/sample_files.csv',
   'ensure_unique_filenames': True
 }
 import anndata as ad
@@ -93,9 +93,9 @@ def main():
         del adata_obs
         gc.collect()
 
-    logger.info(f"Writing output_files CSV file to {par['output_files']}")
+    logger.info(f"Writing output_types CSV file to {par['output_types']}")
     df = pd.DataFrame({"name": obs_features_s, "filename": obs_files})
-    df.to_csv(par["output_files"], index=False)
+    df.to_csv(par["output_types"], index=False)
 
 
 if __name__ == '__main__':
