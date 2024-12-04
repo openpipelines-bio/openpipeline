@@ -1763,19 +1763,68 @@ process publishStatesProc {
     .transpose()
     .collectMany{infile, outfile ->
       if (infile.toString() != outfile.toString()) {
-        [
-          "[ -d \"\$(dirname '${outfile.toString()}')\" ] || mkdir -p \"\$(dirname '${outfile.toString()}')\"",
-          "cp -r '${infile.toString()}' '${outfile.toString()}'"
-        ]
+        ["create_hardlinks '${infile.toString()}' '${outfile.toString()}'"]
       } else {
         // no need to copy if infile is the same as outfile
         []
       }
     }
   """
+# Function to recursively create hardlinks from source to destination
+# Arguments:
+#   \$1: Source path
+#   \$2: Destination path
+function create_hardlinks() {
+  set -x
+  local source="\$1"
+  local dest="\$2"
+
+  # Remove trailing slashes from paths
+  source="\${source%/}"
+  dest="\${dest%/}"
+
+  # check if source exists
+  if [ ! -e "\$source" ]; then
+    echo "Source path does not exist: \$source"
+    return 1
+  fi
+
+  # if is file, create hardlink
+  if [ -f "\$source" ]; then
+    # Create the destination directory if it doesn't exist
+    mkdir -p "\$(dirname "\$dest")"
+    # Create the hardlink
+    ln "\$source" "\$dest"
+    return
+  fi
+
+  # Create the destination directory if it doesn't exist
+  mkdir -p "\$(dirname "\$dest")"
+
+  # Iterate over files and directories in the source path
+  find "\$source" -depth -print0 | while IFS= read -r -d '' item; do
+    # Construct the relative path of the item
+    relative_path="\${item#\$source}"
+    # Skip the source directory itself
+    if [[ "\$relative_path" == "" ]]; then
+      continue
+    fi
+    # Construct the destination path for the item
+    dest_path="\$dest/\$relative_path"
+
+    # Create the parent directory in the destination
+    mkdir -p "\$(dirname "\$dest_path")"
+
+    # Create the hardlink
+    ln "\$item" "\$dest_path"
+  done
+}
+
 mkdir -p "\$(dirname '${yamlFile}')"
 echo "Storing state as yaml"
-echo '${yamlBlob}' > '${yamlFile}'
+cat > '${yamlFile}' << HERE
+${yamlBlob}
+HERE
 echo "Copying output files to destination folder"
 ${copyCommands.join("\n  ")}
 """
