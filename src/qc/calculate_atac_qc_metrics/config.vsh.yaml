@@ -94,7 +94,7 @@ test_resources:
   - path: /resources_test/cellranger_atac_tiny_bcl/counts/
 engines:
   - type: docker
-    image: python:3.9-slim
+    image: python:3.11-slim
     setup:
       - type: apt
         packages: 
