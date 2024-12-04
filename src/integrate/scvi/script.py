@@ -33,13 +33,7 @@ meta = {
 import sys
 sys.path.append(meta['resources_dir'])
 
-# START TEMPORARY WORKAROUND subset_vars
-# reason: resources aren't available when using Nextflow fusion
-# from subset_vars import subset_vars
-def subset_vars(adata, subset_col):
-    return adata[:, adata.var[subset_col]].copy()
-
-# END TEMPORARY WORKAROUND subset_vars
+from subset_vars import subset_vars
 
 #TODO: optionally, move to qa
 # https://github.com/openpipelines-bio/openpipeline/issues/435

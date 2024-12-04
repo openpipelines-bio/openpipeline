@@ -1,4 +1,20 @@
-# openpipelines 2.x.x (Unreleased)
+# openpipelines x.x.x
+
+# MINOR CHANGES
+
+* Several component (cleanup): remove workaround for using being able to use shared utility functions with Nextflow Fusion (PR #920).
+
+# openpipelines 2.0.0-rc.2
+
+## BUG FIXES
+
+* `annotate/popv`: fix popv raising `ValueError` when an accelerator (e.g. GPU) is unavailable (PR #915).
+
+## MINOR CHANGES
+
+* `dataflow/split_h5mu`: Optimize resource usage of the component (PR #913).
+
+# openpipelines 2.0.0-rc.1
 
 ## BREAKING CHANGES
 
