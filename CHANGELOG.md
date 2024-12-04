@@ -1,5 +1,9 @@
 # openpipelines x.x.x
 
+# NEW FUNCTIONALITY 
+
+* `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
+
 # MINOR CHANGES
 
 * Several component (cleanup): remove workaround for using being able to use shared utility functions with Nextflow Fusion (PR #920).
@@ -148,8 +152,6 @@
 * `filter/subset_obsp` component: Added a component to subset an .obsp matrix by column based on the value of an .obs field. The resulting subset is moved to an .obsm field (PR #888).
 
 * `labels_transfer/knn` component: Enable using additional distance functions for KNN classification (PR #830) and allow to perform KNN classification based on a pre-calculated neighborhood graph (PR #890).
-
-* `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
 
 ## MINOR CHANGES
 

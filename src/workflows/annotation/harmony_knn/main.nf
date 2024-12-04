@@ -29,14 +29,14 @@ workflow run_wf {
         )
         // Add 'reference'id to .obs columns of reference dataset
         | add_id.run(
-                fromState:[
-                    "input": "reference",
-                ],
-                args:[
-                    "input_id": "reference",
-                    "obs_output": "dataset"
-                ],
-                toState: ["reference": "output"]
+            fromState:[
+                "input": "reference",
+            ],
+            args:[
+                "input_id": "reference",
+                "obs_output": "dataset"
+            ],
+            toState: ["reference": "output"]
         )
         // Make sure that query and reference dataset have batch information in the same .obs column
         // By copying the respective .obs columns to the obs column "batch_label"
@@ -92,7 +92,8 @@ workflow run_wf {
                 "obsm_integrated": state.output_obsm_integrated,
                 "theta": state.theta,
                 "leiden_resolution": state.leiden_resolution,
-            ]},
+                ]
+            },
             args: [
                 "uns_neighbors": "harmonypy_integration_neighbors",
                 "obsp_neighbor_distances": "harmonypy_integration_distances",
