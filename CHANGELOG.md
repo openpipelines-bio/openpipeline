@@ -1,5 +1,9 @@
 # openpipelines x.x.x
 
+# NEW FUNCTIONALITY 
+
+* `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
+
 # MINOR CHANGES
 
 * Several component (cleanup): remove workaround for using being able to use shared utility functions with Nextflow Fusion (PR #920).
