@@ -1776,6 +1776,7 @@ process publishStatesProc {
 #   \$2: Destination path
 function create_hardlinks() {
   set -x
+
   local source="\$1"
   local dest="\$2"
 
@@ -1789,35 +1790,11 @@ function create_hardlinks() {
     return 1
   fi
 
-  # if is file, create hardlink
-  if [ -f "\$source" ]; then
-    # Create the destination directory if it doesn't exist
-    mkdir -p "\$(dirname "\$dest")"
-    # Create the hardlink
-    ln "\$source" "\$dest"
-    return
-  fi
-
   # Create the destination directory if it doesn't exist
-  mkdir -p "\$(dirname "\$dest")"
+  [ -d "\$(dirname "\$dest")" ] || mkdir -p "\$(dirname "\$dest")"
 
-  # Iterate over files and directories in the source path
-  find "\$source" -depth -print0 | while IFS= read -r -d '' item; do
-    # Construct the relative path of the item
-    relative_path="\${item#\$source}"
-    # Skip the source directory itself
-    if [[ "\$relative_path" == "" ]]; then
-      continue
-    fi
-    # Construct the destination path for the item
-    dest_path="\$dest/\$relative_path"
-
-    # Create the parent directory in the destination
-    mkdir -p "\$(dirname "\$dest_path")"
-
-    # Create the hardlink
-    ln "\$item" "\$dest_path"
-  done
+  # Create the hardlink
+  ln -s "\$source" "\$dest"
 }
 
 mkdir -p "\$(dirname '${yamlFile}')"
