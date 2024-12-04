@@ -1,0 +1,154 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "harmonypy",
+"description": "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony. Based on an implementation in python from https://github.com/slowkow/harmonypy",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required. Input h5mu file",
+                "help_text": "Type: `file`, required. Input h5mu file"
+            
+            }
+    
+
+        ,
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file."
+            ,
+                "default":"$id.$key.output.output"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. ",
+                "help_text": "Type: `string`, default: `rna`. "
+            ,
+                "default":"rna"
+            }
+    
+
+        ,
+                "obsm_input": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `X_pca`. Which ",
+                "help_text": "Type: `string`, default: `X_pca`. Which .obsm slot to use as a starting PCA embedding."
+            ,
+                "default":"X_pca"
+            }
+    
+
+        ,
+                "obsm_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `X_pca_integrated`. In which ",
+                "help_text": "Type: `string`, default: `X_pca_integrated`. In which .obsm slot to store the resulting integrated embedding."
+            ,
+                "default":"X_pca_integrated"
+            }
+    
+
+        ,
+                "theta": {
+                "type":
+                "string",
+                "description": "Type: List of `double`, default: `2.0`, multiple_sep: `\";\"`. Diversity clustering penalty parameter",
+                "help_text": "Type: List of `double`, default: `2.0`, multiple_sep: `\";\"`. Diversity clustering penalty parameter. Specify for each variable in group.by.vars. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
+            ,
+                "default":"2.0"
+            }
+    
+
+        ,
+                "obs_covariates": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, required, example: `batch;sample`, multiple_sep: `\";\"`. The ",
+                "help_text": "Type: List of `string`, required, example: `batch;sample`, multiple_sep: `\";\"`. The .obs field(s) that define the covariate(s) to regress out."
+            
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/arguments"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}

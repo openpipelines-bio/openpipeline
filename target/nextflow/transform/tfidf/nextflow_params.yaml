@@ -1,0 +1,15 @@
+# Arguments
+input: # please fill in - example: "input.h5mu"
+modality: "atac"
+# input_layer: "foo"
+# output: "$id.$key.output"
+# output_compression: "gzip"
+output_layer: "tfidf"
+scale_factor: 10000
+log_idf: true
+log_tf: true
+log_tfidf: false
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
