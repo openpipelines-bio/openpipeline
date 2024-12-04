@@ -9,7 +9,7 @@ par_output="gencode_v41_annotation_cellranger.tar.gz"
 ## VIASH END
 
 # create temporary directory
-tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_functionality_name-XXXXXXXX")
+tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
 }

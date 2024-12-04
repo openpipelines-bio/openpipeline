@@ -87,7 +87,7 @@ workflow run_wf {
       | runEach(
         components: [rna_multisample, prot_multisample],
         filter: { id, state, component ->
-          state.modality + "_multisample" == component.config.functionality.name
+          state.modality + "_multisample" == component.config.name
         },
         fromState: { id, state, component -> 
           def newState = multisample_arguments.get(state.modality).collectEntries{key_, value_ -> 
@@ -215,7 +215,7 @@ workflow run_wf {
             "output": state.workflow_output,
           ]
         },
-        auto: [publish: true]
+        toState: ["output": "output"]
       )
       | setState(["output"])
 

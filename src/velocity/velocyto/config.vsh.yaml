@@ -1,59 +1,59 @@
-functionality:
-  name: velocyto
-  namespace: "velocity"
-  description: "Runs the velocity analysis on a BAM file, outputting a loom file."
-  authors:
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ maintainer ]
-  arguments:
-    - name: "--input"
-      alternatives: [-i]
-      type: file
-      direction: input
-      description: "Path to BAM file"
-      required: true
-    - name: "--transcriptome"
-      alternatives: [-t]
-      type: file
-      direction: input
-      description: "Path to GTF file"
-      required: true
-    - name: "--barcode"
-      alternatives: [-b]
-      type: file
-      direction: input
-      description: |
-        Valid barcodes file, to filter the bam. If --bcfile is not specified all the cell barcodes will be included.
-        Cell barcodes should be specified in the bcfile as the 'CB' tag for each read
-      required: false
-    - name: "--without_umi"
-      type: boolean_true
-      description: "foo"
-    - name: "--output"
-      alternatives: [-o]
-      required: true
-      type: file
-      direction: output
-      description: "Velocyto loom file"
-    - name: "--logic"
-      alternatives: ["-l"]
-      type: string
-      required: false
-      choices: ["Default", "Permissive10X", "Intermediate10X", "ValidatedIntrons10X", "Stricter10X", "ObservedSpanning10X", "Discordant10X", "SmartSeq2"]
-      default: Default
-      description: "The logic to use for the filtering."
-  resources:
-    - type: bash_script
-      path: script.sh
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/cellranger_tiny_fastq
-    - path: /resources_test/rna_velocity
-    - path: /resources_test/reference_gencodev41_chr1
-platforms:
+name: velocyto
+namespace: "velocity"
+description: "Runs the velocity analysis on a BAM file, outputting a loom file."
+authors:
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ maintainer ]
+arguments:
+  - name: "--input"
+    alternatives: [-i]
+    type: file
+    direction: input
+    description: "Path to BAM file"
+    required: true
+  - name: "--transcriptome"
+    alternatives: [-t]
+    type: file
+    direction: input
+    description: "Path to GTF file"
+    required: true
+  - name: "--barcode"
+    alternatives: [-b]
+    type: file
+    direction: input
+    description: |
+      Valid barcodes file, to filter the bam. If --bcfile is not specified all the cell barcodes will be included.
+      Cell barcodes should be specified in the bcfile as the 'CB' tag for each read
+    required: false
+  - name: "--without_umi"
+    type: boolean_true
+    description: "foo"
+  - name: "--output"
+    alternatives: [-o]
+    required: true
+    type: file
+    direction: output
+    description: "Velocyto loom file"
+  - name: "--logic"
+    alternatives: ["-l"]
+    type: string
+    required: false
+    choices: ["Default", "Permissive10X", "Intermediate10X", "ValidatedIntrons10X", "Stricter10X", "ObservedSpanning10X", "Discordant10X", "SmartSeq2"]
+    default: Default
+    description: "The logic to use for the filtering."
+resources:
+  - type: bash_script
+    path: script.sh
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/cellranger_tiny_fastq
+  - path: /resources_test/rna_velocity
+  - path: /resources_test/reference_gencodev41_chr1
+
+engines:
   - type: docker
-    image: python:3.9-slim
+    image: python:3.10-slim
     setup:
       - type: apt
         packages:
@@ -73,7 +73,8 @@ platforms:
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
-  - type: native
+runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [highmem, lowcpu]

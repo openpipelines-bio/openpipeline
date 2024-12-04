@@ -4,7 +4,7 @@ from mudata import read_h5mu
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/convert/from_cellranger_multi_to_h5mu/from_cellranger_multi_to_h5mu',
+    'executable': './target/executable/convert/from_cellranger_multi_to_h5mu/from_cellranger_multi_to_h5mu',
     'resources_dir': 'resources_test/',
     'config': 'src/convert/from_cellranger_multi_to_h5mu/config.vsh.yaml'
 }
@@ -41,7 +41,7 @@ def test_cellranger_multi_basic(run_component, tmp_path):
     # as a floating point number
     metrics_df_with_index = converted_data.uns['metrics_cellranger'].set_index(["Metric Name", "Library Type", "Category"]) 
     percentage = metrics_df_with_index.loc[("Confidently mapped reads in cells", "Gene Expression", "Cells"), "Metric Value"]
-    assert percentage[0] == "0.8569"
+    assert percentage.iloc[0] == "0.8569"
 
     thousand_delimited_number = metrics_df_with_index.loc[("Cells", "Gene Expression", "Cells"), "Metric Value"]
     thousand_delimited_number == "3,798" 

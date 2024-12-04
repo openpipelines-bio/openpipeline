@@ -1,120 +1,124 @@
-functionality:
-  name: xgboost
-  namespace: "labels_transfer"
-  description: "Performs label transfer from reference to query using XGBoost classifier"
-  info:
-    method_id: XGBClassifier
-  authors:
-    - __merge__: /src/authors/vladimir_shitov.yaml
-      roles: [ author ]
-  __merge__: ../api/common_arguments.yaml
-  argument_groups:
-    - name: "Execution arguments"
-      arguments:
-        - name: "--force_retrain"
-          alternatives: ["-f"]
-          type: boolean_true
-          description: "Retrain models on the reference even if model_output directory already has trained classifiers. WARNING! It will rewrite existing classifiers for targets in the model_output directory!"
-        - name: "--use_gpu"
-          type: boolean
-          description: "Use GPU during models training and inference (recommended)."
-          default: false
-        - name: "--verbosity"
-          alternatives: ["-v"]
-          type: integer
-          description: "The verbosity level for evaluation of the classifier from the range [0,2]"
-          required: false
-          default: 1
-        - name: "--model_output"
-          type: file
-          default: "model"
-          description: Output directory for model
-          direction: output
-          required: false
-    - name: "Learning parameters"
-      arguments:
-        - name: "--learning_rate"
-          alternatives: ["--eta"]
-          type: double
-          description: "Step size shrinkage used in update to prevents overfitting. Range: [0,1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
-          required: false
-          default: 0.3
-        - name: "--min_split_loss"
-          alternatives: ["--gamma"]
-          type: double
-          description: "Minimum loss reduction required to make a further partition on a leaf node of the tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
-          required: false
-          default: 0
-        - name: "--max_depth"
-          alternatives: ["-d"]
-          type: integer
-          description: "Maximum depth of a tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
-          required: false
-          default: 6
-        - name: "--min_child_weight"
-          type: integer
-          description: "Minimum sum of instance weight (hessian) needed in a child. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
-          required: false
-          default: 1
-        - name: "--max_delta_step"
-          type: double
-          description: "Maximum delta step we allow each leaf output to be. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
-          required: false
-          default: 0
-        - name: "--subsample"
-          type: double
-          description: "Subsample ratio of the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
-          required: false
-          default: 1
-        - name: "--sampling_method"
-          type: string
-          choices: [uniform, gradient_based]
-          description: "The method to use to sample the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
-          required: false
-          default: "uniform"
-        - name: "--colsample_bytree"
-          type: double
-          description: "Fraction of columns to be subsampled. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
-          required: false
-          default: 1
-        - name: "--colsample_bylevel"
-          type: double
-          description: "Subsample ratio of columns for each level. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
-          required: false
-          default: 1
-        - name: "--colsample_bynode"
-          type: double
-          description: "Subsample ratio of columns for each node (split). Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
-          required: false
-          default: 1
-        - name: "--reg_lambda"
-          alternatives: ["--lambda"]
-          type: double
-          description: "L2 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
-          required: false
-          default: 1
-        - name: "--reg_alpha"
-          alternatives: ["--alpha"]
-          type: double
-          description: "L1 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
-          required: false
-          default: 0
-        - name: "--scale_pos_weight"
-          type: double
-          description: "Control the balance of positive and negative weights, useful for unbalanced classes. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
-          required: false
-          default: 1
-  resources:
-    - type: python_script
-      path: script.py
-    - path: ../utils/helper.py
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/annotation_test_data/
-    - path: /resources_test/pbmc_1k_protein_v3/
-platforms:
+name: xgboost
+namespace: "labels_transfer"
+description: "Performs label transfer from reference to query using XGBoost classifier"
+info:
+  method_id: XGBClassifier
+authors:
+  - __merge__: /src/authors/vladimir_shitov.yaml
+    roles: [ author ]
+__merge__: ../api/common_arguments.yaml
+argument_groups:
+  - name: "Execution arguments"
+    arguments:
+      - name: "--force_retrain"
+        alternatives: ["-f"]
+        type: boolean_true
+        description: "Retrain models on the reference even if model_output directory already has trained classifiers. WARNING! It will rewrite existing classifiers for targets in the model_output directory!"
+      - name: "--use_gpu"
+        type: boolean
+        description: "Use GPU during models training and inference (recommended)."
+        default: false
+      - name: "--verbosity"
+        alternatives: ["-v"]
+        type: integer
+        description: "The verbosity level for evaluation of the classifier from the range [0,2]"
+        required: false
+        default: 1
+      - name: "--model_output"
+        type: file
+        default: "model"
+        description: Output directory for model
+        direction: output
+        required: false
+      - name: "--output_uns_parameters"
+        type: string
+        default: "xgboost_parameters"
+        description: The key in `uns` slot of the output AnnData object to store the parameters of the XGBoost classifier.
+        required: false
+  - name: "Learning parameters"
+    arguments:
+      - name: "--learning_rate"
+        alternatives: ["--eta"]
+        type: double
+        description: "Step size shrinkage used in update to prevents overfitting. Range: [0,1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+        required: false
+        default: 0.3
+      - name: "--min_split_loss"
+        alternatives: ["--gamma"]
+        type: double
+        description: "Minimum loss reduction required to make a further partition on a leaf node of the tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+        required: false
+        default: 0
+      - name: "--max_depth"
+        alternatives: ["-d"]
+        type: integer
+        description: "Maximum depth of a tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+        required: false
+        default: 6
+      - name: "--min_child_weight"
+        type: integer
+        description: "Minimum sum of instance weight (hessian) needed in a child. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+        required: false
+        default: 1
+      - name: "--max_delta_step"
+        type: double
+        description: "Maximum delta step we allow each leaf output to be. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+        required: false
+        default: 0
+      - name: "--subsample"
+        type: double
+        description: "Subsample ratio of the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+        required: false
+        default: 1
+      - name: "--sampling_method"
+        type: string
+        choices: [uniform, gradient_based]
+        description: "The method to use to sample the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+        required: false
+        default: "uniform"
+      - name: "--colsample_bytree"
+        type: double
+        description: "Fraction of columns to be subsampled. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+        required: false
+        default: 1
+      - name: "--colsample_bylevel"
+        type: double
+        description: "Subsample ratio of columns for each level. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+        required: false
+        default: 1
+      - name: "--colsample_bynode"
+        type: double
+        description: "Subsample ratio of columns for each node (split). Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+        required: false
+        default: 1
+      - name: "--reg_lambda"
+        alternatives: ["--lambda"]
+        type: double
+        description: "L2 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+        required: false
+        default: 1
+      - name: "--reg_alpha"
+        alternatives: ["--alpha"]
+        type: double
+        description: "L1 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+        required: false
+        default: 0
+      - name: "--scale_pos_weight"
+        type: double
+        description: "Control the balance of positive and negative weights, useful for unbalanced classes. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+        required: false
+        default: 1
+resources:
+  - type: python_script
+    path: script.py
+  - path: ../utils/helper.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/annotation_test_data/
+  - path: /resources_test/pbmc_1k_protein_v3/
+engines:
   - type: docker
     image: python:3.10-slim
     setup:
@@ -136,7 +140,8 @@ platforms:
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
+runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [highmem, highcpu, gpu]
-  - type: native

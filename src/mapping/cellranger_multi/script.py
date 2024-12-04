@@ -62,22 +62,7 @@ meta = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
+from setup_logger import setup_logger
 logger = setup_logger()
 
 # Tested with cellranger 7.0:
@@ -255,7 +240,7 @@ def make_paths_absolute(par: dict[str, Any], config: Path | str):
 
     arguments = {
         arg["name"].removeprefix("-").removeprefix("-"): arg
-        for group in config["functionality"]["argument_groups"]
+        for group in config["argument_groups"]
         for arg in group["arguments"]
     }
     for arg_name, arg in arguments.items():
@@ -280,7 +265,7 @@ def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> st
 
     arguments = {
         arg["name"].removeprefix("-").removeprefix("-"): arg
-        for group in config["functionality"]["argument_groups"]
+        for group in config["argument_groups"]
         for arg in group["arguments"]
     }
     for arg_name, arg in arguments.items():

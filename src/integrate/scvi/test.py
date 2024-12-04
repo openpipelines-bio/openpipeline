@@ -7,7 +7,7 @@ from anndata.tests.helpers import assert_equal
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/integrate/scvi/scvi',
+    'executable': './target/executable/integrate/scvi/scvi',
     'resources_dir': './resources_test/pbmc_1k_protein_v3/'
 }
 ## VIASH END
@@ -15,13 +15,7 @@ meta = {
 import sys
 sys.path.append(meta['resources_dir'])
 
-# START TEMPORARY WORKAROUND subset_vars
-# reason: resources aren't available when using Nextflow fusion
-# from subset_vars import subset_vars
-def subset_vars(adata, subset_col):
-    return adata[:, adata.var[subset_col]].copy()
-
-# END TEMPORARY WORKAROUND subset_vars
+from subset_vars import subset_vars
 
 input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu"
 

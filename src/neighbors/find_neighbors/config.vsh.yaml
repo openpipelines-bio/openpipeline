@@ -1,106 +1,93 @@
-functionality:
-  name: find_neighbors
-  namespace: "neighbors"
-  description: |
-    Compute a neighborhood graph of observations [McInnes18].
+name: find_neighbors
+namespace: "neighbors"
+description: |
+  Compute a neighborhood graph of observations [McInnes18].
 
-    The neighbor search efficiency of this heavily relies on UMAP [McInnes18], which also provides a method for estimating connectivities of data points - the connectivity of the manifold (method=='umap'). If method=='gauss', connectivities are computed according to [Coifman05], in the adaption of [Haghverdi16].
-  authors:
-    - __merge__: /src/authors/dries_de_maeyer.yaml
-      roles: [ maintainer ]
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ contributor ]
-  arguments:
-    # input
-    - name: "--input"
-      alternatives: ["-i"]
-      type: file
-      description: Input h5mu file
-      direction: input
-      required: true
-      example: input.h5mu
+  The neighbor search efficiency of this heavily relies on UMAP [McInnes18], which also provides a method for estimating connectivities of data points - the connectivity of the manifold (method=='umap'). If method=='gauss', connectivities are computed according to [Coifman05], in the adaption of [Haghverdi16].
+authors:
+  - __merge__: /src/authors/dries_de_maeyer.yaml
+    roles: [ maintainer ]
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ contributor ]
+arguments:
+  # input
+  - name: "--input"
+    alternatives: ["-i"]
+    type: file
+    description: Input h5mu file
+    direction: input
+    required: true
+    example: input.h5mu
 
-    - name: "--modality"
-      type: string
-      default: "rna"
-      required: false
+  - name: "--modality"
+    type: string
+    default: "rna"
+    required: false
 
-    - name: "--obsm_input"
-      type: string
-      default: "X_pca"
-      required: false
-      description: "Which .obsm slot to use as a starting PCA embedding."
+  - name: "--obsm_input"
+    type: string
+    default: "X_pca"
+    required: false
+    description: "Which .obsm slot to use as a starting PCA embedding."
 
-    # output
-    - name: "--output"
-      alternatives: ["-o"]
-      type: file
-      description: Output h5mu file containing the found neighbors.
-      direction: output
-      example: output.h5mu
+  # output
+  - name: "--output"
+    alternatives: ["-o"]
+    type: file
+    description: Output h5mu file containing the found neighbors.
+    direction: output
+    example: output.h5mu
     
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
+  - name: "--output_compression"
+    type: string
+    description: The compression format to be used on the output h5mu object.
+    choices: ["gzip", "lzf"]
+    required: false
+    example: "gzip"
   
-    - name: "--uns_output"
-      type: string
-      default: neighbors
-      description: Mandatory .uns slot to store various neighbor output objects.
+  - name: "--uns_output"
+    type: string
+    default: neighbors
+    description: Mandatory .uns slot to store various neighbor output objects.
       
-    - name: "--obsp_distances"
-      type: string
-      default: "distances"
-      description: "In which .obsp slot to store the distance matrix between the resulting neighbors."
+  - name: "--obsp_distances"
+    type: string
+    default: "distances"
+    description: "In which .obsp slot to store the distance matrix between the resulting neighbors."
       
-    - name: "--obsp_connectivities"
-      type: string
-      default: "connectivities"
-      description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
+  - name: "--obsp_connectivities"
+    type: string
+    default: "connectivities"
+    description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
 
-    # arguments
-    - name: "--metric"
-      type: string
-      default: "euclidean"
-      description: The distance metric to be used in the generation of the nearest neighborhood network.
-      choices: [ 'cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan', 'braycurtis', 'canberra', 'chebyshev', 'correlation', 'dice', 'hamming', 'jaccard', 'kulsinski', 'mahalanobis', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule' ]
+  # arguments
+  - name: "--metric"
+    type: string
+    default: "euclidean"
+    description: The distance metric to be used in the generation of the nearest neighborhood network.
+    choices: [ 'cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan', 'braycurtis', 'canberra', 'chebyshev', 'correlation', 'dice', 'hamming', 'jaccard', 'kulsinski', 'mahalanobis', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule' ]
 
-    - name: "--num_neighbors"
-      type: integer
-      default: 15
-      description: The size of local neighborhood (in terms of number of neighboring data points) used for manifold approximation. Larger values result in more global views of the manifold, while smaller values result in more local data being preserved. In general values should be in the range 2 to 100. If knn is True, number of nearest neighbors to be searched. If knn is False, a Gaussian kernel width is set to the distance of the n_neighbors neighbor.
+  - name: "--num_neighbors"
+    type: integer
+    default: 15
+    description: The size of local neighborhood (in terms of number of neighboring data points) used for manifold approximation. Larger values result in more global views of the manifold, while smaller values result in more local data being preserved. In general values should be in the range 2 to 100. If knn is True, number of nearest neighbors to be searched. If knn is False, a Gaussian kernel width is set to the distance of the n_neighbors neighbor.
     
-    - name: "--seed"
-      type: integer
-      default: 0
-      description: A random seed.
+  - name: "--seed"
+    type: integer
+    default: 0
+    description: A random seed.
 
-    - name: "--obsm_knn_indices"
-      type: string
-      default: "knn_indices"
-      description: "In which .obsm slot to store the indices of the k-nearest neighbors."
-      required: false
-
-    - name: "--obsm_knn_distances"
-      type: string
-      default: "knn_distances"
-      description: "In which .obsm slot to store the distances of the k-nearest neighbors."
-      required: false
-
-  resources:
-    - type: python_script
-      path: script.py
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/pbmc_1k_protein_v3
-platforms:
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3
+engines:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.12-slim
     setup:
       - type: apt
         packages: 
@@ -109,6 +96,8 @@ platforms:
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
     __merge__: [/src/base/requirements/python_test_setup.yaml, .]
 
+runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [lowcpu, midmem]
