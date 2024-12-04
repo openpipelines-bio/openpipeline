@@ -10,6 +10,8 @@
 
 * `annotate/popv`: fix popv raising `ValueError` when an accelerator (e.g. GPU) is unavailable (PR #915).
 
+* `src/dataflow/split_h5mu`: change output parameter from `--output_files` to `--output_types` to resolve symlink-related publishing issues on Fusion-based infrastructures (PR #922)
+
 ## MINOR CHANGES
 
 * `dataflow/split_h5mu`: Optimize resource usage of the component (PR #913).
