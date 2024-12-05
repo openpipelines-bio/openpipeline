@@ -8,6 +8,8 @@
 
 * `scgpt/cell_type_annotation` component update: Added support for multi-processing (PR #832).
 
+* CI: Use `params.resources_test` in test workflows in order to point to an alternative location (e.g. a cache) (PR #889).
+
 ## MINOR CHANGES
 
 * Several component (cleanup): remove workaround for using being able to use shared utility functions with Nextflow Fusion (PR #920).
@@ -197,7 +199,6 @@
 
 * `convert/from_10xh5_to_h5mu`: add .uns slot to mdata root when metrics file is provided (PR #887).
 
-* Use `params.resources_test` in test workflows in order to point to an alternative location (e.g. a cache).
 * Fix ingestion components not working when optional arguments are unset (PR #894).
 
 * `transform/normalize_total` component: pass the `target_sum` argument to `sc.pp.normalize_total()` (PR #823).
