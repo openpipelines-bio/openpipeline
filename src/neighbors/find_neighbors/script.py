@@ -1,8 +1,9 @@
 import sys
 import numpy as np
-numpy_module = sys.modules['numpy']
+
+numpy_module = sys.modules["numpy"]
 numpy_module.float_ = np.float64
-sys.modules['numpy'] = numpy_module
+sys.modules["numpy"] = numpy_module
 
 import mudata as mu
 import scanpy as sc
@@ -12,22 +13,21 @@ import sys
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "output": "output.h5mu",
-    "metric": 'cosine',
+    "metric": "cosine",
     "num_neighbors": 15,
     "modality": "rna",
     "obsm_input": "X_pca",
     "uns_output": "neighbors",
     "obsp_distances": "distances",
     "obsp_connectivities": "connectivities",
-    "seed": None
+    "seed": None,
 }
-meta = {
-    'resources_dir': "."
-}
+meta = {"resources_dir": "."}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading input mudata")
@@ -46,15 +46,15 @@ neighbors.compute_neighbors(
 )
 
 adata.uns[par["uns_output"]] = {
-    'connectivities_key': par["obsp_connectivities"],
-    'distances_key': par["obsp_distances"],
-    'params': {
-        'n_neighbors': neighbors.n_neighbors,
-        'method': "umap",
-        'random_state': par["seed"],
-        'metric': par["metric"],
-        'use_rep': par["obsm_input"]
-    }
+    "connectivities_key": par["obsp_connectivities"],
+    "distances_key": par["obsp_distances"],
+    "params": {
+        "n_neighbors": neighbors.n_neighbors,
+        "method": "umap",
+        "random_state": par["seed"],
+        "metric": par["metric"],
+        "use_rep": par["obsm_input"],
+    },
 }
 
 adata.obsp[par["obsp_distances"]] = neighbors.distances

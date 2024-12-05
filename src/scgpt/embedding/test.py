@@ -15,7 +15,7 @@ meta = {
     "resources_dir": "resources_test",
     "executable": "./target/docker/scgpt/integration_embedding/integration_embedding",
     "temp_dir": "tmp",
-    "config": "./target/docker/scgpt/integration_embedding/.config.vsh.yaml"
+    "config": "./target/docker/scgpt/integration_embedding/.config.vsh.yaml",
 }
 ## VIASH END
 
@@ -26,9 +26,7 @@ vocab_file = f"{meta['resources_dir']}/source/vocab.json"
 model_config_file = f"{meta['resources_dir']}/source/args.json"
 input_file = mu.read(input)
 
-
 def test_integration_embedding(run_component, tmp_path):
-
     output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
 
     run_component([
@@ -50,17 +48,26 @@ def test_integration_embedding(run_component, tmp_path):
     output_adata = output_mdata.mod["rna"]
 
     # check that embedding obs is present
-    assert 'X_scGPT' in output_adata.obsm.keys(), "X_scGPT is not present in anndata obsm keys"
+    assert (
+        "X_scGPT" in output_adata.obsm.keys()
+    ), "X_scGPT is not present in anndata obsm keys"
 
     # check embedding size
-    assert output_adata.obsm["X_scGPT"].shape[1] == 512, "Embedding size does not equal 512"
+    assert (
+        output_adata.obsm["X_scGPT"].shape[1] == 512
+    ), "Embedding size does not equal 512"
 
     # check embedding value range
-    assert not all(np.isnan(output_adata.obsm["X_scGPT"][0])), "Embedding values are nan"
-    assert all([all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]), "Range of embedding values is outside of [-1, 1]"
+    assert not all(
+        np.isnan(output_adata.obsm["X_scGPT"][0])
+    ), "Embedding values are nan"
+    assert all(
+        [all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]
+    ), "Range of embedding values is outside of [-1, 1]"
 
     # Run embeddings without dsbn
     output_embedding_file_without_dsbn = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
+
     run_component([
         "--input", input,
         "--modality", "rna",
@@ -79,7 +86,10 @@ def test_integration_embedding(run_component, tmp_path):
     output_adata_no_dsbn = output_mdata_no_dsbn.mod["rna"]
 
     # Assert that embeddings without dsbn are different
-    assert not (output_adata.obsm["X_scGPT"] == output_adata_no_dsbn.obsm["X_scGPT"]).all(), "Embeddings with and without dsbn are the same"
+    assert not (
+        output_adata.obsm["X_scGPT"] == output_adata_no_dsbn.obsm["X_scGPT"]
+    ).all(), "Embeddings with and without dsbn are the same"
+
 
 
 def test_integration_embedding_dsbn_without_batch_labels(run_component, tmp_path):
@@ -102,7 +112,8 @@ def test_integration_embedding_dsbn_without_batch_labels(run_component, tmp_path
         run_component(args)
     assert re.search(
         r"ValueError: When dsbn is set to True, you are required to provide batch labels \(input_obs_batch_labels\)\.",
-        err.value.stdout.decode('utf-8'))
+        err.value.stdout.decode("utf-8"),
+    )
 
 
 def test_integration_embedding_non_existing_keys(run_component, tmp_path):
@@ -127,8 +138,8 @@ def test_integration_embedding_non_existing_keys(run_component, tmp_path):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args_1)
     assert re.search(
-        r"KeyError: \'dummy_gene_name_key\'",
-        err.value.stdout.decode('utf-8'))
+        r"KeyError: \'dummy_gene_name_key\'", err.value.stdout.decode("utf-8")
+    )
 
     # Test for non-existing batch label key
     args_2 = [
@@ -148,8 +159,8 @@ def test_integration_embedding_non_existing_keys(run_component, tmp_path):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args_2)
     assert re.search(
-        r"KeyError: \'dummy_batch_label_key\'",
-        err.value.stdout.decode('utf-8'))
+        r"KeyError: \'dummy_batch_label_key\'", err.value.stdout.decode("utf-8")
+    )
 
     # Test for non-existing tokenized values key
     args_3 = [
@@ -170,7 +181,8 @@ def test_integration_embedding_non_existing_keys(run_component, tmp_path):
         run_component(args_3)
     assert re.search(
         r'KeyError: "The parameter \'dummy_values_tokenized\' provided for \'--obsm_tokenized_values\' could not be found in adata.obsm"',
-        err.value.stdout.decode('utf-8'))
+        err.value.stdout.decode("utf-8"),
+    )
 
 
 def test_finetuned_model(run_component, tmp_path):
@@ -196,14 +208,22 @@ def test_finetuned_model(run_component, tmp_path):
     output_adata = output_mdata.mod["rna"]
 
     # check that embedding obs is present
-    assert 'X_scGPT' in output_adata.obsm.keys(), "X_scGPT is not present in anndata obsm keys"
+    assert (
+        "X_scGPT" in output_adata.obsm.keys()
+    ), "X_scGPT is not present in anndata obsm keys"
 
     # check embedding size
-    assert output_adata.obsm["X_scGPT"].shape[1] == 512, "Embedding size does not equal 512"
+    assert (
+        output_adata.obsm["X_scGPT"].shape[1] == 512
+    ), "Embedding size does not equal 512"
 
     # check embedding value range
-    assert not all(np.isnan(output_adata.obsm["X_scGPT"][0])), "Embedding values are nan"
-    assert all([all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]), "Range of embedding values is outside of [-1, 1]"
+    assert not all(
+        np.isnan(output_adata.obsm["X_scGPT"][0])
+    ), "Embedding values are nan"
+    assert all(
+        [all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]
+    ), "Range of embedding values is outside of [-1, 1]"
 
 
 def test_finetuned_model_architecture(run_component, tmp_path):
@@ -227,9 +247,10 @@ def test_finetuned_model_architecture(run_component, tmp_path):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
     assert re.search(
-        r'ValueError: The key \'dummy_checkpoints_key\' provided for \'--finetuned_checkpoints_key\' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.',
-        err.value.stdout.decode('utf-8'))
+        r"ValueError: The key \'dummy_checkpoints_key\' provided for \'--finetuned_checkpoints_key\' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.",
+        err.value.stdout.decode("utf-8"),
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
