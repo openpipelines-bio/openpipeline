@@ -12,16 +12,15 @@ par = {
     "pad_token": "<pad>",
     "var_input": "filter_with_hvg",
     "vocab_file": "resources_test/scgpt/source/vocab.json",
-    "output_compression": None
+    "output_compression": None,
 }
 
-meta = {
-    "resources_dir": "src/utils"
-}
+meta = {"resources_dir": "src/utils"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 # Read in data
@@ -36,7 +35,9 @@ special_tokens = [pad_token, "<cls>", "<eoc>"]
 if not par["input_var_gene_names"]:
     genes = adata.var.index.astype(str).tolist()
 elif par["input_var_gene_names"] not in adata.var.columns:
-    raise ValueError(f"Gene name column '{par['input_var_gene_names']}' not found in .mod['{par['modality']}'].obs.")
+    raise ValueError(
+        f"Gene name column '{par['input_var_gene_names']}' not found in .mod['{par['modality']}'].obs."
+    )
 else:
     genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
 
@@ -49,12 +50,18 @@ vocab = GeneVocab.from_file(vocab_file)
 if par["var_input"]:
     logger.info("Filtering genes based on model vocab and HVG")
     filter_with_hvg = adata.var[par["var_input"]].tolist()
-    gene_filter_mask = [1 if gene in vocab and hvg else 0 for gene, hvg in zip(genes, filter_with_hvg)]
-    logger.info(f"Total number of genes after HVG present in model vocab: {str(sum(gene_filter_mask))}")
+    gene_filter_mask = [
+        1 if gene in vocab and hvg else 0 for gene, hvg in zip(genes, filter_with_hvg)
+    ]
+    logger.info(
+        f"Total number of genes after HVG present in model vocab: {str(sum(gene_filter_mask))}"
+    )
 else:
     logger.info("Filtering genes based on model vocab")
     gene_filter_mask = [1 if gene in vocab else 0 for gene in genes]
-    logger.info(f"Total number of genes present in model vocab: {str(sum(gene_filter_mask))}")
+    logger.info(
+        f"Total number of genes present in model vocab: {str(sum(gene_filter_mask))}"
+    )
 
 logger.info(f"Writing to {par['output']}")
 adata.var[par["output_var_filter"]] = gene_filter_mask

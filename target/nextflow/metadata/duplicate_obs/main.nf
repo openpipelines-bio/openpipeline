@@ -3110,7 +3110,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/duplicate_obs",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3196,11 +3196,12 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Read mudata from file")
-mdata = read_h5mu(par['input'])
-adata = mdata.mod[par['modality']]
+mdata = read_h5mu(par["input"])
+adata = mdata.mod[par["modality"]]
 
 
 def duplicate_obs(adata, input_key, output_key):
@@ -3211,20 +3212,24 @@ def duplicate_obs(adata, input_key, output_key):
         logger.info(f"Copying .obs index to {output_key}")
         adata.obs[output_key] = adata.obs.index.copy()
 
-     
-if not par["output_obs_key"] in adata.obs:
+
+if par["output_obs_key"] not in adata.obs:
     duplicate_obs(adata, par["input_obs_key"], par["output_obs_key"])
 
 else:
     if not par["overwrite_existing_key"]:
-        raise ValueError(f"--output_obs_key already exists: \\`{par['output_obs_key']}\\`. Data can not be duplicated.")
+        raise ValueError(
+            f"--output_obs_key already exists: \\`{par['output_obs_key']}\\`. Data can not be duplicated."
+        )
 
-    logger.warning(f"--output_obs_key already exists: \\`{par['output_obs_key']}\\`. Data in par['output_obs_key'] will be overwritten.")
+    logger.warning(
+        f"--output_obs_key already exists: \\`{par['output_obs_key']}\\`. Data in par['output_obs_key'] will be overwritten."
+    )
     duplicate_obs(adata, par["input_obs_key"], par["output_obs_key"])
 
 
 logger.info("Write output to mudata file")
-mdata.write_h5mu(par['output'], compression=par["output_compression"])
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

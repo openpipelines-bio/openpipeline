@@ -3180,6 +3180,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "demuxlet.patch"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3291,10 +3295,16 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ubuntu:20.04",
+      "image" : "ubuntu:22.04",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
+        {
+          "type" : "docker",
+          "copy" : [
+            "demuxlet.patch /opt/demuxlet.patch"
+          ]
+        },
         {
           "type" : "apt",
           "packages" : [
@@ -3321,7 +3331,7 @@ meta = [
         {
           "type" : "docker",
           "run" : [
-            "git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin"
+            "git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && cd /tmp/popscle && git apply /opt/demuxlet.patch && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin"
           ]
         },
         {
@@ -3342,7 +3352,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/demuxlet",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

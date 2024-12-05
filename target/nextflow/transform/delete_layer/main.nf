@@ -3086,7 +3086,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/delete_layer",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3177,29 +3177,40 @@ from compress_h5mu import compress_h5mu
 
 logger = setup_logger()
 
-def main():
-    input_file, output_file, mod_name = Path(par["input"]), Path(par["output"]), par['modality']
 
-    logger.info('Reading input file %s, modality %s.', input_file, mod_name)
+def main():
+    input_file, output_file, mod_name = (
+        Path(par["input"]),
+        Path(par["output"]),
+        par["modality"],
+    )
+
+    logger.info("Reading input file %s, modality %s.", input_file, mod_name)
     mod = read_h5ad(input_file, mod=mod_name)
-    for layer in par['layer']:
+    for layer in par["layer"]:
         if layer not in mod.layers:
-            if par['missing_ok']:
+            if par["missing_ok"]:
                 continue
             raise ValueError(f"Layer '{layer}' is not present in modality {mod_name}.")
-        logger.info('Deleting layer %s from modality %s.', layer, mod_name)
+        logger.info("Deleting layer %s from modality %s.", layer, mod_name)
         del mod.layers[layer]
 
-    logger.info('Writing output to %s.', par['output'])
-    output_file_uncompressed = output_file.with_name(output_file.stem + "_uncompressed.h5mu") \\\\
-        if par["output_compression"] else output_file
-    shutil.copyfile(par['input'], output_file_uncompressed)
+    logger.info("Writing output to %s.", par["output"])
+    output_file_uncompressed = (
+        output_file.with_name(output_file.stem + "_uncompressed.h5mu")
+        if par["output_compression"]
+        else output_file
+    )
+    shutil.copyfile(par["input"], output_file_uncompressed)
     write_h5ad(filename=output_file_uncompressed, mod=mod_name, data=mod)
     if par["output_compression"]:
-        compress_h5mu(output_file_uncompressed, output_file, compression=par["output_compression"])
+        compress_h5mu(
+            output_file_uncompressed, output_file, compression=par["output_compression"]
+        )
         output_file_uncompressed.unlink()
 
-    logger.info('Finished.')
+    logger.info("Finished.")
+
 
 if __name__ == "__main__":
     main()

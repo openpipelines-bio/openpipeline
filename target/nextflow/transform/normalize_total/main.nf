@@ -3129,7 +3129,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/normalize_total",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3217,6 +3217,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading input mudata")
@@ -3228,15 +3229,21 @@ logger.info(par)
 mod = par["modality"]
 logger.info("Performing total normalization on modality %s", mod)
 dat = mdata.mod[mod]
-if par['input_layer'] and not par['input_layer'] in dat.layers.keys():
+if par["input_layer"] and par["input_layer"] not in dat.layers.keys():
     raise ValueError(f"Input layer {par['input_layer']} not found in {mod}")
-output_data = sc.pp.normalize_total(dat,
-                                    layer=par["input_layer"],
-                                    target_sum=par["target_sum"],
-                                    copy=True if par["output_layer"] else False)
+output_data = sc.pp.normalize_total(
+    dat,
+    layer=par["input_layer"],
+    target_sum=par["target_sum"],
+    copy=True if par["output_layer"] else False,
+)
 
 if output_data:
-    result = output_data.X if not par["input_layer"] else output_data.layers[par["input_layer"]]
+    result = (
+        output_data.X
+        if not par["input_layer"]
+        else output_data.layers[par["input_layer"]]
+    )
     dat.layers[par["output_layer"]] = result
 
 logger.info("Writing to file")

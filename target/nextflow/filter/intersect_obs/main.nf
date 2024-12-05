@@ -3087,7 +3087,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/intersect_obs",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3177,48 +3177,55 @@ from compress_h5mu import compress_h5mu
 
 logger = setup_logger()
 
+
 def main():
-    modality_names = par['modalities']
+    modality_names = par["modalities"]
 
     if len(modality_names) < 2:
         raise ValueError("Please provide two more more modalities.")
-    
+
     obs_names = {}
-    for mod_name in par['modalities']:
+    for mod_name in par["modalities"]:
         try:
-            modality = mu.read_h5ad(filename=par['input'], mod=mod_name)
+            modality = mu.read_h5ad(filename=par["input"], mod=mod_name)
         except KeyError:
-            raise ValueError(f"Modality {mod_name} does not exist for file {par['input']}.")
+            raise ValueError(
+                f"Modality {mod_name} does not exist for file {par['input']}."
+            )
 
         obs_names[mod_name] = modality.obs_names.copy()
         del modality
-    
+
     intersected_index = None
     for mod_name, mod_index in obs_names.items():
         if intersected_index is None:
             intersected_index = mod_index
             continue
         intersected_index = intersected_index.intersection(mod_index)
-    
 
-    output_file = Path(par['output'])
-    output_file_uncompressed = output_file.with_name(output_file.stem + "_uncompressed.h5mu")
+    output_file = Path(par["output"])
+    output_file_uncompressed = output_file.with_name(
+        output_file.stem + "_uncompressed.h5mu"
+    )
     output_file_uncompressed.touch()
 
     mdata = mu.MuData({modality: ad.AnnData() for modality in modality_names})
-    mdata.write(output_file_uncompressed, compression=par['output_compression'])
-    
+    mdata.write(output_file_uncompressed, compression=par["output_compression"])
+
     for mod_name in modality_names:
-        modality = mu.read_h5ad(filename=par['input'], mod=mod_name)
+        modality = mu.read_h5ad(filename=par["input"], mod=mod_name)
         intersected_modality = modality[intersected_index]
         mu.write_h5ad(output_file_uncompressed, data=intersected_modality, mod=mod_name)
 
-    if par['output_compression']:
-        compress_h5mu(output_file_uncompressed, output_file, compression=par['output_compression'])
+    if par["output_compression"]:
+        compress_h5mu(
+            output_file_uncompressed, output_file, compression=par["output_compression"]
+        )
         output_file_uncompressed.unlink()
     else:
         shutil.move(output_file_uncompressed, output_file)
-    
+
+
 if __name__ == "__main__":
     main()
 VIASHMAIN

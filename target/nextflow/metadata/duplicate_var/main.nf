@@ -3110,7 +3110,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/duplicate_var",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3196,11 +3196,12 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Read mudata from file")
-mdata = read_h5mu(par['input'])
-adata = mdata.mod[par['modality']]
+mdata = read_h5mu(par["input"])
+adata = mdata.mod[par["modality"]]
 
 
 def duplicate_var(adata, input_key, output_key):
@@ -3212,19 +3213,23 @@ def duplicate_var(adata, input_key, output_key):
         adata.var[output_key] = adata.var.index.copy()
 
 
-if not par["output_var_key"] in adata.var:
+if par["output_var_key"] not in adata.var:
     duplicate_var(adata, par["input_var_key"], par["output_var_key"])
 
 else:
     if not par["overwrite_existing_key"]:
-        raise ValueError(f"--output_var_key already exists: \\`{par['output_var_key']}\\`. Data can not be duplicated.")
+        raise ValueError(
+            f"--output_var_key already exists: \\`{par['output_var_key']}\\`. Data can not be duplicated."
+        )
 
-    logger.warning(f"--output_var_key already exists: \\`{par['output_var_key']}\\`. Data in \\`{par['output_var_key']}\\` .var column will be overwritten.")
+    logger.warning(
+        f"--output_var_key already exists: \\`{par['output_var_key']}\\`. Data in \\`{par['output_var_key']}\\` .var column will be overwritten."
+    )
     duplicate_var(adata, par["input_var_key"], par["output_var_key"])
 
 logger.info("Write output to mudata file")
 
-mdata.write_h5mu(par['output'], compression=par["output_compression"])
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

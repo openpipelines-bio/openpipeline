@@ -3291,7 +3291,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3395,6 +3395,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info(f"Setting device to {'cuda' if torch.cuda.is_available() else 'cpu'}")
@@ -3408,12 +3409,14 @@ input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
 for k, v in {
-        "--obsm_gene_tokens": par["obsm_gene_tokens"],
-        "--obsm_tokenized_values": par["obsm_tokenized_values"],
-        "--obsm_padding_mask": par["obsm_padding_mask"]
-        }.items():
+    "--obsm_gene_tokens": par["obsm_gene_tokens"],
+    "--obsm_tokenized_values": par["obsm_tokenized_values"],
+    "--obsm_padding_mask": par["obsm_padding_mask"],
+}.items():
     if v not in adata.obsm.keys():
-        raise KeyError(f"The parameter '{v}' provided for '{k}' could not be found in adata.obsm")
+        raise KeyError(
+            f"The parameter '{v}' provided for '{k}' could not be found in adata.obsm"
+        )
 
 all_gene_ids = adata.obsm[par["obsm_gene_tokens"]]
 all_values = adata.obsm[par["obsm_tokenized_values"]]
@@ -3421,7 +3424,9 @@ padding_mask = adata.obsm[par["obsm_padding_mask"]]
 
 # Fetch batch ids for domain-specific batch normalization
 if par["dsbn"] and not par["obs_batch_label"]:
-    raise ValueError("When dsbn is set to True, you are required to provide batch labels (input_obs_batch_labels).")
+    raise ValueError(
+        "When dsbn is set to True, you are required to provide batch labels (input_obs_batch_labels)."
+    )
 elif par["dsbn"] and par["obs_batch_label"]:
     logger.info("Fetching batch id's for domain-specific batch normalization")
     batch_id_cats = adata.obs[par["obs_batch_label"]].astype("category")
@@ -3430,7 +3435,9 @@ elif par["dsbn"] and par["obs_batch_label"]:
     batch_ids = np.array(batch_ids)
     num_batch_types = len(set(batch_ids))
 elif not par["dsbn"] and par["obs_batch_label"]:
-    logger.info("Batch labels provided but dsbn is set to False. Batch labels will be ignored and no dsbn will be performed.")
+    logger.info(
+        "Batch labels provided but dsbn is set to False. Batch labels will be ignored and no dsbn will be performed."
+    )
 
 # Set padding specs
 logger.info("Setting padding specs")
@@ -3478,7 +3485,7 @@ model = TransformerModel(
     d_hid=d_hid,
     nlayers=nlayers,
     vocab=vocab,
-    dropout=0.5, # scGPT default, only relevant for fine-tuning applications
+    dropout=0.5,  # scGPT default, only relevant for fine-tuning applications
     pad_token=pad_token,
     pad_value=pad_value,
     nlayers_cls=3,  # only applicable for decoder-based operations
@@ -3486,15 +3493,15 @@ model = TransformerModel(
     do_mvc=False,  # only applicable for decoder-based operations
     ecs_threshold=0.8,  # only applicable for decoder-based operations
     do_dab=False,  # only applicable for decoder-based operations
-    use_batch_labels=False, # only applicable for decoder-based operations
+    use_batch_labels=False,  # only applicable for decoder-based operations
     num_batch_labels=num_batch_types if par["dsbn"] else None,
     domain_spec_batchnorm=par["dsbn"],
     input_emb_style="continuous",  # scGPT default
-    explicit_zero_prob=False,  #TODO: Parametrize when GPU-based machine types are supported
-    use_fast_transformer=False,  #TODO: Parametrize when GPU-based machine types are supported
+    explicit_zero_prob=False,  # TODO: Parametrize when GPU-based machine types are supported
+    use_fast_transformer=False,  # TODO: Parametrize when GPU-based machine types are supported
     # fast_transformer_backend="flash",  #TODO: Parametrize when GPU-based machine types are supported
-    pre_norm=False  #TODO: Parametrize when GPU-based machine types are supported
-    )
+    pre_norm=False,  # TODO: Parametrize when GPU-based machine types are supported
+)
 
 
 logger.info("Loading model")
@@ -3507,14 +3514,12 @@ if finetuned_checkpoints_key:
     try:
         model_dict = model_dict[finetuned_checkpoints_key]
     except KeyError as e:
-        raise ValueError(f"The key '{finetuned_checkpoints_key}' provided for '--finetuned_checkpoints_key' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.") from e
+        raise ValueError(
+            f"The key '{finetuned_checkpoints_key}' provided for '--finetuned_checkpoints_key' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper."
+        ) from e
 
 # Load model
-load_pretrained(
-    model,
-    model_dict,
-    verbose=False
-    )
+load_pretrained(model, model_dict, verbose=False)
 
 # Embed tokenized data
 logger.info("Converting tokenized input data to embeddings")
@@ -3529,7 +3534,7 @@ cell_embeddings = model.encode_batch(
     batch_labels=torch.from_numpy(batch_ids).long() if par["dsbn"] else None,
     output_to_cpu=True,
     time_step=0,
-    return_np=True
+    return_np=True,
 )
 
 cell_embeddings = cell_embeddings / np.linalg.norm(

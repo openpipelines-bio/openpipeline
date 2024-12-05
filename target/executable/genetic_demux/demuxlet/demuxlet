@@ -603,22 +603,23 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 ENTRYPOINT []
+COPY demuxlet.patch /opt/demuxlet.patch
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y autoconf wget git build-essential libcurl4-openssl-dev cmake libbz2-dev libssl-dev liblzma-dev zlib1g-dev r-base && \
   rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/samtools/htslib.git /tmp/htslib && cd /tmp/htslib && git submodule update --init --recursive && autoreconf -i && ./configure --prefix=/usr/local/ && make && make install
-RUN git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
+RUN git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && cd /tmp/popscle && git apply /opt/demuxlet.patch && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
 RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
   Rscript -e 'remotes::install_cran(c("readr", "processx", "dplyr"), repos = "https://cran.rstudio.com")'
 
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux demuxlet"
-LABEL org.opencontainers.image.created="2024-12-05T11:55:05Z"
+LABEL org.opencontainers.image.created="2024-12-05T14:35:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="18fefd36c466d175a95570208623c392c78e1420"
+LABEL org.opencontainers.image.revision="b78f7263182632f2ba3e9947247708397b50a700"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

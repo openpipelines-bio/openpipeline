@@ -3072,7 +3072,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star_to_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3172,21 +3172,25 @@ for input_counts in (input_dir / "per").glob("**/htseq-count.txt"):
         input_counts,
         index_col=0,
         names=["cell_id", input_id],
-        dtype={"cell_id": "U", input_id: "i"}
+        dtype={"cell_id": "U", input_id: "i"},
     )
     data2 = data[~data.index.str.startswith("__")]
 
     with open(input_multiqc, "r") as file:
         qc = json.load(file)
-    
-    qc_star = qc.get("report_saved_raw_data", {}).get("multiqc_star", {}).get(input_id)
-    qc_htseq = qc.get("report_saved_raw_data", {}).get("multiqc_htseq", {}).get("htseq-count")
 
-    per_obs_data.append({
-        "counts": data2.transpose(),
-        "qc_star": pd.DataFrame(qc_star, index=[input_id]),
-        "qc_htseq": pd.DataFrame(qc_htseq, index=[input_id])
-    })
+    qc_star = qc.get("report_saved_raw_data", {}).get("multiqc_star", {}).get(input_id)
+    qc_htseq = (
+        qc.get("report_saved_raw_data", {}).get("multiqc_htseq", {}).get("htseq-count")
+    )
+
+    per_obs_data.append(
+        {
+            "counts": data2.transpose(),
+            "qc_star": pd.DataFrame(qc_star, index=[input_id]),
+            "qc_htseq": pd.DataFrame(qc_htseq, index=[input_id]),
+        }
+    )
 
 
 # combine all counts
@@ -3208,10 +3212,7 @@ var = pd.DataFrame(
 
 print("> construct anndata", flush=True)
 adata = ad.AnnData(
-    X=counts,
-    obsm={"qc_star": qc_star, "qc_htseq": qc_htseq},
-    var=var,
-    dtype=np.int32
+    X=counts, obsm={"qc_star": qc_star, "qc_htseq": qc_htseq}, var=var, dtype=np.int32
 )
 
 print("> convert to mudata", flush=True)

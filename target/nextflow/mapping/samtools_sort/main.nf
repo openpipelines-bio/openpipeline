@@ -3169,7 +3169,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/samtools_sort",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3258,19 +3258,18 @@ dep = {
 
 ## VIASH END
 
+
 def generate_args(par, config):
     # fetch arguments from config
     arguments = [
-        arg
-        for group in config["argument_groups"]
-        for arg in group["arguments"]
+        arg for group in config["argument_groups"] for arg in group["arguments"]
     ]
 
     cmd_args = []
 
     for arg in arguments:
         arg_val = par.get(arg["name"].removeprefix("--"))
-        # The info key is always present (changed in viash 0.7.4) 
+        # The info key is always present (changed in viash 0.7.4)
         # in the parsed config (None if not specified in source config)
         info = arg["info"] or {}
         orig_arg = info.get("orig_arg")
@@ -3290,19 +3289,21 @@ def generate_args(par, config):
 
     return cmd_args
 
+
 # read config arguments
 config = yaml.safe_load(Path(meta["config"]).read_text())
 
 print(">> Constructing command", flush=True)
-cmd_args = [ "samtools", "sort" ] + generate_args(par, config)
+cmd_args = ["samtools", "sort"] + generate_args(par, config)
 
 # manually process cpus parameter
-if 'cpus' in meta and meta['cpus']:
+if "cpus" in meta and meta["cpus"]:
     cmd_args.extend(["--threads", str(meta["cpus"])])
 # add memory
-if 'memory_mb' in meta and meta['memory_mb']:
+if "memory_mb" in meta and meta["memory_mb"]:
     import math
-    mem_per_thread = math.ceil(meta['memory_mb'] * .8 / meta['cpus'])
+
+    mem_per_thread = math.ceil(meta["memory_mb"] * 0.8 / meta["cpus"])
     cmd_args.extend(["-m", f"{mem_per_thread}M"])
 
 with tempfile.TemporaryDirectory(prefix="samtools-", dir=meta["temp_dir"]) as temp_dir:
@@ -3311,13 +3312,13 @@ with tempfile.TemporaryDirectory(prefix="samtools-", dir=meta["temp_dir"]) as te
 
     # run command
     print(">> Running samtools sort with command:", flush=True)
-    print("+ " + ' '.join([str(x) for x in cmd_args]), flush=True)
+    print("+ " + " ".join([str(x) for x in cmd_args]), flush=True)
     subprocess.run(cmd_args, check=True)
 
 if par.get("output_bai"):
     print(">> Running samtools index with command:", flush=True)
     cmd_index_args = ["samtools", "index", "-b", par["output_bam"], par["output_bai"]]
-    print("+ " + ' '.join([str(x) for x in cmd_index_args]), flush=True)
+    print("+ " + " ".join([str(x) for x in cmd_index_args]), flush=True)
     subprocess.run(cmd_index_args, check=True)
 VIASHMAIN
 python -B "$tempscript"

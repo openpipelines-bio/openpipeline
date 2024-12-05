@@ -608,9 +608,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate celltypist"
-LABEL org.opencontainers.image.created="2024-12-05T11:55:08Z"
+LABEL org.opencontainers.image.created="2024-12-05T14:35:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="18fefd36c466d175a95570208623c392c78e1420"
+LABEL org.opencontainers.image.revision="b78f7263182632f2ba3e9947247708397b50a700"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1533,16 +1533,20 @@ from subset_vars import subset_vars
 
 logger = setup_logger()
 
+
 def check_celltypist_format(indata):
-    if np.abs(np.expm1(indata[0]).sum()-10000) > 1:
+    if np.abs(np.expm1(indata[0]).sum() - 10000) > 1:
         return False
     return True
 
 
 def main(par):
-
-    if (not par["model"] and not par["reference"]) or (par["model"] and par["reference"]):
-        raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
+    if (not par["model"] and not par["reference"]) or (
+        par["model"] and par["reference"]
+    ):
+        raise ValueError(
+            "Make sure to provide either 'model' or 'reference', but not both."
+        )
 
     input_mudata = mu.read_h5mu(par["input"])
     input_adata = input_mudata.mod[par["modality"]]
@@ -1555,29 +1559,53 @@ def main(par):
     if par["model"]:
         logger.info("Loading CellTypist model")
         model = celltypist.models.Model.load(par["model"])
-        cross_check_genes(input_modality.var.index, model.features, min_gene_overlap=par["input_reference_gene_overlap"])
+        cross_check_genes(
+            input_modality.var.index,
+            model.features,
+            min_gene_overlap=par["input_reference_gene_overlap"],
+        )
 
     elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
 
         # subset to HVG if required
         if par["reference_var_input"]:
-            reference_modality = subset_vars(reference_modality, par["reference_var_input"])  
+            reference_modality = subset_vars(
+                reference_modality, par["reference_var_input"]
+            )
 
-        # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)  
+        # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
         # CellTypist requires query gene names to be in index
-        reference_modality = set_var_index(reference_modality, par["reference_var_gene_names"])
+        reference_modality = set_var_index(
+            reference_modality, par["reference_var_gene_names"]
+        )
 
         # Ensure enough overlap between genes in query and reference
-        cross_check_genes(input_modality.var.index, reference_modality.var.index, min_gene_overlap=par["input_reference_gene_overlap"])
+        cross_check_genes(
+            input_modality.var.index,
+            reference_modality.var.index,
+            min_gene_overlap=par["input_reference_gene_overlap"],
+        )
 
-        input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X
-        reference_matrix = reference_modality.layers[par["reference_layer"]] if par["reference_layer"] else reference_modality.X
+        input_matrix = (
+            input_modality.layers[par["input_layer"]]
+            if par["input_layer"]
+            else input_modality.X
+        )
+        reference_matrix = (
+            reference_modality.layers[par["reference_layer"]]
+            if par["reference_layer"]
+            else reference_modality.X
+        )
 
         if not check_celltypist_format(input_matrix):
-            logger.warning("Input data is not in the reccommended format for CellTypist.")
+            logger.warning(
+                "Input data is not in the reccommended format for CellTypist."
+            )
         if not check_celltypist_format(reference_matrix):
-            logger.warning("Reference data is not in the reccommended format for CellTypist.")
+            logger.warning(
+                "Reference data is not in the reccommended format for CellTypist."
+            )
 
         labels = reference_modality.obs[par["reference_obs_target"]]
 
@@ -1590,23 +1618,25 @@ def main(par):
             max_iter=par["max_iter"],
             use_SGD=par["use_SGD"],
             feature_selection=par["feature_selection"],
-            check_expression=par["check_expression"]
-            )
+            check_expression=par["check_expression"],
+        )
 
     logger.info("Predicting CellTypist annotations")
     predictions = celltypist.annotate(
-        input_modality,
-        model,
-        majority_voting=par["majority_voting"]
-        )
-    input_adata.obs[par["output_obs_predictions"]] = predictions.predicted_labels["predicted_labels"]
-    input_adata.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(axis=1).values
+        input_modality, model, majority_voting=par["majority_voting"]
+    )
+    input_adata.obs[par["output_obs_predictions"]] = predictions.predicted_labels[
+        "predicted_labels"
+    ]
+    input_adata.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(
+        axis=1
+    ).values
 
     # copy observations back to input data (with full set of features)
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(par)
 VIASHMAIN
 python -B "\$tempscript" &

@@ -3222,7 +3222,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xh5_to_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3310,6 +3310,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading %s.", par["input"])
@@ -3317,37 +3318,38 @@ adata = sc.read_10x_h5(par["input"], gex_only=False)
 
 # set the gene ids as var_names
 logger.info("Renaming var columns")
-adata.var = adata.var\\\\
-    .rename_axis("gene_symbol")\\\\
-    .reset_index()\\\\
-    .set_index("gene_ids")
+adata.var = adata.var.rename_axis("gene_symbol").reset_index().set_index("gene_ids")
 
 # parse metrics summary file and store in .uns
 if par["input_metrics_summary"] and par["uns_metrics"]:
-    logger.info("Reading metrics summary file '%s'", par['input_metrics_summary'])
+    logger.info("Reading metrics summary file '%s'", par["input_metrics_summary"])
 
     def read_percentage(val):
         try:
-            return float(val.strip('%')) / 100
+            return float(val.strip("%")) / 100
         except AttributeError:
             return val
 
-    metrics_summary = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
+    metrics_summary = pd.read_csv(
+        par["input_metrics_summary"], decimal=".", quotechar='"', thousands=","
+    ).applymap(read_percentage)
 
-    logger.info("Storing metrics summary in .uns['%s']", par['uns_metrics'])
+    logger.info("Storing metrics summary in .uns['%s']", par["uns_metrics"])
     adata.uns[par["uns_metrics"]] = metrics_summary
 else:
-    is_none = "input_metrics_summary" if not par["input_metrics_summary"] else "uns_metrics"
+    is_none = (
+        "input_metrics_summary" if not par["input_metrics_summary"] else "uns_metrics"
+    )
     logger.info("Not storing metrics summary because par['%s'] is None", is_none)
 
 # might perform basic filtering to get rid of some data
 # applicable when starting from the raw counts
 if par["min_genes"]:
-    logger.info("Filtering with min_genes=%d", par['min_genes'])
+    logger.info("Filtering with min_genes=%d", par["min_genes"])
     sc.pp.filter_cells(adata, min_genes=par["min_genes"])
 
 if par["min_counts"]:
-    logger.info("Filtering with min_counts=%d", par['min_counts'])
+    logger.info("Filtering with min_counts=%d", par["min_counts"])
     sc.pp.filter_cells(adata, min_counts=par["min_counts"])
 
 # generate output

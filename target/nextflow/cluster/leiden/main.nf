@@ -3121,7 +3121,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3227,51 +3227,66 @@ from compress_h5mu import compress_h5mu
 
 _shared_logger_name = "leiden"
 
-class SharedNumpyMatrix():
-    def __init__(self, shared_memory: shared_memory.SharedMemory, dtype: npt.DTypeLike, shape: tuple[int, int]) -> None:
+
+class SharedNumpyMatrix:
+    def __init__(
+        self,
+        shared_memory: shared_memory.SharedMemory,
+        dtype: npt.DTypeLike,
+        shape: tuple[int, int],
+    ) -> None:
         self._memory = shared_memory
         self._dtype = dtype
         self._shape = shape
-    
+
     @classmethod
-    def from_numpy(cls, memory_manager: managers.SharedMemoryManager, array: npt.ArrayLike):
+    def from_numpy(
+        cls, memory_manager: managers.SharedMemoryManager, array: npt.ArrayLike
+    ):
         shm = memory_manager.SharedMemory(size=array.nbytes)
-        array_in_shared_memory = np.ndarray(array.shape, dtype=array.dtype, buffer=shm.buf)
+        array_in_shared_memory = np.ndarray(
+            array.shape, dtype=array.dtype, buffer=shm.buf
+        )
         # Copy the data into shared memory
         array_in_shared_memory[:] = array[:]
         return cls(shm, array.dtype, array.shape)
 
     def to_numpy(self):
-       return np.ndarray(self._shape, dtype=self._dtype, buffer=self._memory.buf)
-    
+        return np.ndarray(self._shape, dtype=self._dtype, buffer=self._memory.buf)
+
     def close(self):
         self._memory.close()
 
-class SharedCsrMatrix():
-    def __init__(self,
-                 data: SharedNumpyMatrix, 
-                 indices: SharedNumpyMatrix, 
-                 indptr: SharedNumpyMatrix, 
-                 shape: npt.DTypeLike):
+
+class SharedCsrMatrix:
+    def __init__(
+        self,
+        data: SharedNumpyMatrix,
+        indices: SharedNumpyMatrix,
+        indptr: SharedNumpyMatrix,
+        shape: npt.DTypeLike,
+    ):
         self._data = data
         self._indices = indices
         self._indptr = indptr
         self._shape = shape
 
     @classmethod
-    def from_csr_matrix(cls, memory_manager: managers.SharedMemoryManager, csr_matrix_obj: csr_matrix):
+    def from_csr_matrix(
+        cls, memory_manager: managers.SharedMemoryManager, csr_matrix_obj: csr_matrix
+    ):
         return cls(
             SharedNumpyMatrix.from_numpy(memory_manager, csr_matrix_obj.data),
             SharedNumpyMatrix.from_numpy(memory_manager, csr_matrix_obj.indices),
             SharedNumpyMatrix.from_numpy(memory_manager, csr_matrix_obj.indptr),
             csr_matrix_obj.shape,
         )
-    
+
     def to_csr_matrix(self):
         return csr_matrix(
             (self._data.to_numpy(), self._indices.to_numpy(), self._indptr.to_numpy()),
-            shape=self._shape, 
-            copy=False
+            shape=self._shape,
+            copy=False,
         )
 
     def close(self):
@@ -3279,40 +3294,47 @@ class SharedCsrMatrix():
         self._indices.close()
         self._indptr.close()
 
+
 def create_empty_anndata_with_connectivities(connectivities, obs_names):
-    empty_anndata = ad.AnnData(np.zeros((connectivities.shape[0], 1)),
-                               obs=pd.DataFrame(index=list(obs_names)))
-    empty_anndata.obsp['connectivities'] = connectivities
+    empty_anndata = ad.AnnData(
+        np.zeros((connectivities.shape[0], 1)), obs=pd.DataFrame(index=list(obs_names))
+    )
+    empty_anndata.obsp["connectivities"] = connectivities
     return empty_anndata
+
 
 def run_single_resolution(shared_csr_matrix, obs_names, resolution):
     logger = logging.getLogger(_shared_logger_name)
-    logger.info("Process with PID '%s' for resolution '%s' started", os.getpid(), resolution)
+    logger.info(
+        "Process with PID '%s' for resolution '%s' started", os.getpid(), resolution
+    )
     try:
         connectivities = shared_csr_matrix.to_csr_matrix()
         adata = create_empty_anndata_with_connectivities(connectivities, obs_names)
         with warnings.catch_warnings():
             # In the future, the default backend for leiden will be igraph instead of leidenalg.
-            warnings.simplefilter(action='ignore', category=FutureWarning)
+            warnings.simplefilter(action="ignore", category=FutureWarning)
             adata_out = sc.tl.leiden(
                 adata,
                 resolution=resolution,
                 key_added=str(resolution),
                 obsp="connectivities",
-                copy=True
-                )
+                copy=True,
+            )
         logger.info(f"Returning result for resolution {resolution}")
         return adata_out.obs[str(resolution)]
     finally:
         obs_names.shm.close()
-        shared_csr_matrix.close() 
+        shared_csr_matrix.close()
+
 
 def init_worker(parent_process_id, exit_event, log_queue, log_level):
     import os
     import threading
     import time
+
     pid = os.getpid()
-        
+
     logger = logging.getLogger(_shared_logger_name)
     logger.setLevel(log_level)
 
@@ -3320,12 +3342,17 @@ def init_worker(parent_process_id, exit_event, log_queue, log_level):
     logger.addHandler(handler)
 
     logger.info("Initializing process %s", pid)
+
     def exit_if_orphaned():
-        logger.info("Starting orphanned process checker for process %s, parent process %s.", pid, parent_process_id)
+        logger.info(
+            "Starting orphanned process checker for process %s, parent process %s.",
+            pid,
+            parent_process_id,
+        )
         while True:
             # Check if parent process is gone
             try:
-                # If sig is 0, then no signal is sent, but error checking is still performed; 
+                # If sig is 0, then no signal is sent, but error checking is still performed;
                 # this can be used to check for the existence of a process ID
                 os.kill(parent_process_id, 0)
             except ProcessLookupError:
@@ -3337,16 +3364,24 @@ def init_worker(parent_process_id, exit_event, log_queue, log_level):
             try:
                 exit_event_set = exit_event.wait(timeout=1)
             except BrokenPipeError:
-                logger.info("Checking for shutdown resulted in BrokenPipeError, "
-                            "parent process is most likely gone. Shutting down %s", pid) 
-                os.kill(pid, signal.SIGTERM) 
+                logger.info(
+                    "Checking for shutdown resulted in BrokenPipeError, "
+                    "parent process is most likely gone. Shutting down %s",
+                    pid,
+                )
+                os.kill(pid, signal.SIGTERM)
             else:
                 if exit_event_set:
-                    logger.info("Exit event set, shutting down %s", pid)  
+                    logger.info("Exit event set, shutting down %s", pid)
                     os.kill(pid, signal.SIGTERM)
             time.sleep(1)
+
     threading.Thread(target=exit_if_orphaned, daemon=True).start()
-    logger.info("Initialization of process %s is complete, process is now waiting for work.", pid)
+    logger.info(
+        "Initialization of process %s is complete, process is now waiting for work.",
+        pid,
+    )
+
 
 def main():
     with managers.SyncManager() as syncm:
@@ -3358,21 +3393,22 @@ def main():
         log_queue = syncm.Queue()
         log_listener = logging.handlers.QueueListener(log_queue, console_handler)
         log_listener.start()
-        
+
         logger = logging.getLogger(_shared_logger_name)
         logger.setLevel(log_level)
         handler = logging.handlers.QueueHandler(log_queue)
         logger.addHandler(handler)
 
         logger.info("Reading %s.", par["input"])
-        adata = mu.read_h5ad(par["input"], mod=par['modality'], backed='r')
-        logger.info("Processing modality '%s'.", par['modality'])
+        adata = mu.read_h5ad(par["input"], mod=par["modality"], backed="r")
+        logger.info("Processing modality '%s'.", par["modality"])
         try:
-            connectivities = adata.obsp[par['obsp_connectivities']]
+            connectivities = adata.obsp[par["obsp_connectivities"]]
         except KeyError:
-            raise ValueError(f"Could not find .obsp key \\\\"{par['obsp_connectivities']}\\\\" "
-                            "in modality {par['modality']}")
-
+            raise ValueError(
+                f"Could not find .obsp key \\\\"{par['obsp_connectivities']}\\\\" "
+                "in modality {par['modality']}"
+            )
 
         # An event that, when triggered, will kill the child processes that are still running
         exit_early_event = syncm.Event()
@@ -3385,15 +3421,23 @@ def main():
 
             shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
             results = {}
-            n_workers = meta['cpus'] - 2 if (meta['cpus'] and (meta['cpus'] - 2) > 0) else 1
+            n_workers = (
+                meta["cpus"] - 2 if (meta["cpus"] and (meta["cpus"] - 2) > 0) else 1
+            )
             logger.info(f"Requesting {n_workers} workers")
-            executor = ProcessPoolExecutor(max_workers=n_workers,
-                                        max_tasks_per_child=1, 
-                                        mp_context=get_context('spawn'),
-                                        initializer=init_worker,
-                                        initargs=((os.getpid(), exit_early_event, log_queue, log_level)))
-            pending_futures = {executor.submit(run_single_resolution, shared_csr_matrix, obs_names, resolution): resolution
-                               for resolution in par["resolution"]}
+            executor = ProcessPoolExecutor(
+                max_workers=n_workers,
+                max_tasks_per_child=1,
+                mp_context=get_context("spawn"),
+                initializer=init_worker,
+                initargs=((os.getpid(), exit_early_event, log_queue, log_level)),
+            )
+            pending_futures = {
+                executor.submit(
+                    run_single_resolution, shared_csr_matrix, obs_names, resolution
+                ): resolution
+                for resolution in par["resolution"]
+            }
             try:
                 logger.info("All futures sheduled")
                 for done_future in as_completed(pending_futures):
@@ -3428,13 +3472,22 @@ def main():
         adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
 
         output_file = Path(par["output"])
-        logger.info('Writing output to %s.', par['output'])
-        output_file_uncompressed = output_file.with_name(output_file.stem + "_uncompressed.h5mu") \\\\
-            if par["output_compression"] else output_file
-        shutil.copyfile(par['input'], output_file_uncompressed)
-        mu.write_h5ad(filename=output_file_uncompressed, mod=par['modality'], data=adata)
+        logger.info("Writing output to %s.", par["output"])
+        output_file_uncompressed = (
+            output_file.with_name(output_file.stem + "_uncompressed.h5mu")
+            if par["output_compression"]
+            else output_file
+        )
+        shutil.copyfile(par["input"], output_file_uncompressed)
+        mu.write_h5ad(
+            filename=output_file_uncompressed, mod=par["modality"], data=adata
+        )
         if par["output_compression"]:
-            compress_h5mu(output_file_uncompressed, output_file, compression=par["output_compression"])
+            compress_h5mu(
+                output_file_uncompressed,
+                output_file,
+                compression=par["output_compression"],
+            )
             output_file_uncompressed.unlink()
         logger.info("Finished.")
         log_listener.enqueue_sentinel()

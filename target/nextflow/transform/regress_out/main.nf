@@ -3119,7 +3119,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/regress_out",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3208,16 +3208,14 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading input mudata")
 mdata = mu.read_h5mu(par["input"])
 mdata.var_names_make_unique()
 
-if (
-    par["obs_keys"] is not None
-    and len(par["obs_keys"]) > 0
-):
+if par["obs_keys"] is not None and len(par["obs_keys"]) > 0:
     mod = par["modality"]
     data = mdata.mod[mod]
 
@@ -3228,9 +3226,7 @@ if (
 
     logger.info("Regress out variables on modality %s", mod)
     sc.pp.regress_out(
-        sc_data,
-        keys=par["obs_keys"],
-        n_jobs=multiprocessing.cpu_count() - 1
+        sc_data, keys=par["obs_keys"], n_jobs=multiprocessing.cpu_count() - 1
     )
 
     # Copy regressed data back to original input data

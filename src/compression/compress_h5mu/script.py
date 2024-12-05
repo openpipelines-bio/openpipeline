@@ -1,9 +1,10 @@
 import sys
+
 ### VIASH START
 par = {
     "input": "resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
     "output": "test.h5mu",
-    "compression": "gzip"
+    "compression": "gzip",
 }
 meta = {}
 ### VIASH END

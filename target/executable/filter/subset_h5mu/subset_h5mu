@@ -490,9 +490,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component filter subset_h5mu"
-LABEL org.opencontainers.image.created="2024-12-05T11:55:04Z"
+LABEL org.opencontainers.image.created="2024-12-05T14:35:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="18fefd36c466d175a95570208623c392c78e1420"
+LABEL org.opencontainers.image.revision="b78f7263182632f2ba3e9947247708397b50a700"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1117,9 +1117,11 @@ if __name__ == "__main__":
 
     # subset data
     if par["modality"]:
-        data.mod[par["modality"]] = data.mod[par["modality"]][:par["number_of_observations"]]
+        data.mod[par["modality"]] = data.mod[par["modality"]][
+            : par["number_of_observations"]
+        ]
     else:
-        data = data[:par["number_of_observations"]]
+        data = data[: par["number_of_observations"]]
 
     # write data
     data.write_h5mu(par["output"], compression=par["output_compression"])

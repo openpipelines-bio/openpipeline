@@ -8,21 +8,24 @@ from collections import defaultdict
 
 ### VIASH START
 par = {
-  'input': 'harmony_knn/integrated.pynndescent_knn.output',
-  'modality': 'rna',
-  'obs_feature': 'dataset',
-  'output': 'reference_download/sample_split',
-  'drop_obs_nan': "true",
-  'output_compression': None,
-  'output_files': 'reference_download/sample_files.csv',
-  'ensure_unique_filenames': True
+    "input": "harmony_knn/integrated.pynndescent_knn.output",
+    "modality": "rna",
+    "obs_feature": "dataset",
+    "output": "reference_download/sample_split",
+    "drop_obs_nan": "true",
+    "output_compression": None,
+    "output_files": "reference_download/sample_files.csv",
+    "ensure_unique_filenames": True,
 }
 import anndata as ad
-df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"])
+
+df = pd.DataFrame(
+    [[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"]
+)
 var3 = pd.DataFrame(["d", "e", "g"], index=df.columns, columns=["Feat"])
 obs3 = pd.DataFrame(["C C", "C_C"], index=df.index, columns=["Obs"])
 ad3 = ad.AnnData(df, obs=obs3, var=var3)
-mdata = mu.MuData({'rna': ad3})
+mdata = mu.MuData({"rna": ad3})
 mdata.write_h5mu("test_san.h5mu")
 par["input"] = "test_san.h5mu"
 par["obs_feature"] = "Obs"
@@ -30,6 +33,7 @@ par["obs_feature"] = "Obs"
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 
@@ -44,13 +48,15 @@ def main():
     obs_features = adata.obs[par["obs_feature"]].unique().tolist()
 
     # sanitize --obs_feature values
-    obs_features_s = [re.sub(r'[-\s]', "_", str(s).strip()) for s in obs_features]
-    obs_features_s = [re.sub(r'[^A-Za-z0-9_]', "", s) for s in obs_features_s]
+    obs_features_s = [re.sub(r"[-\s]", "_", str(s).strip()) for s in obs_features]
+    obs_features_s = [re.sub(r"[^A-Za-z0-9_]", "", s) for s in obs_features_s]
 
     # ensure that names are unique, if not raise or append number as suffix
     if not len(obs_features_s) == len(set(obs_features_s)):
         if not par["ensure_unique_filenames"]:
-            raise ValueError(f"File names are not unique after sanitizing the --obs_feature {par['obs_feature']} values")
+            raise ValueError(
+                f"File names are not unique after sanitizing the --obs_feature {par['obs_feature']} values"
+            )
 
         logger.info("Ensuring unique names for par['obs_feature']")
         counts = defaultdict(lambda: -1)
@@ -69,7 +75,9 @@ def main():
     obs_files = []
 
     for obs_name, file_name in zip(obs_features, obs_features_s):
-        logger.info(f"Filtering modality '{par['modality']}' observations by .obs['{par['obs_feature']}'] == {obs_name}")
+        logger.info(
+            f"Filtering modality '{par['modality']}' observations by .obs['{par['obs_feature']}'] == {obs_name}"
+        )
         mdata_obs = mdata.copy()
         adata_obs = mdata_obs.mod[par["modality"]]
 
@@ -80,13 +88,17 @@ def main():
 
         # Dropping columns that only have nan values after splitting
         if par["drop_obs_nan"]:
-            logger.info(f"Dropping all .obs columns with NaN values")
-            adata_obs.obs.dropna(axis=1, how='all', inplace=True)
+            logger.info("Dropping all .obs columns with NaN values")
+            adata_obs.obs.dropna(axis=1, how="all", inplace=True)
 
         # replace mdata file with modality adata contianing split samples
-        logger.info(f"Writing h5mu filtered for {par['obs_feature']} {obs_name} to file {output_dir / mdata_obs_name}")
+        logger.info(
+            f"Writing h5mu filtered for {par['obs_feature']} {obs_name} to file {output_dir / mdata_obs_name}"
+        )
         mdata_obs.mod[par["modality"]] = adata_obs
-        mdata_obs.write_h5mu(output_dir / mdata_obs_name, compression=par["output_compression"])
+        mdata_obs.write_h5mu(
+            output_dir / mdata_obs_name, compression=par["output_compression"]
+        )
 
         # avoid keeping files in memory
         del mdata_obs
@@ -98,5 +110,5 @@ def main():
     df.to_csv(par["output_files"], index=False)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

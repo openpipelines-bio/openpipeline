@@ -535,9 +535,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component neighbors bbknn"
-LABEL org.opencontainers.image.created="2024-12-05T11:55:12Z"
+LABEL org.opencontainers.image.created="2024-12-05T14:35:45Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="18fefd36c466d175a95570208623c392c78e1420"
+LABEL org.opencontainers.image.revision="b78f7263182632f2ba3e9947247708397b50a700"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1298,10 +1298,10 @@ tmp_adata = adata.copy()
 bbknn.bbknn(
     tmp_adata,
     use_rep=par["obsm_input"],
-    batch_key = par["obs_batch"],
+    batch_key=par["obs_batch"],
     neighbors_within_batch=par["n_neighbors_within_batch"],
     n_pcs=par["n_pcs"],
-    trim=par["n_trim"]
+    trim=par["n_trim"],
 )
 
 # store output

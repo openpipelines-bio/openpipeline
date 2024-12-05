@@ -3167,7 +3167,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3262,6 +3262,7 @@ if par["seed"]:
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 from subset_vars import subset_vars
+
 logger = setup_logger()
 
 logger.info("Reading in data")
@@ -3274,10 +3275,10 @@ logger.info("Subsetting data based on highly variable gene and/or cross-checked 
 adata = subset_vars(adata, par["var_input"])
 
 logger.info("Converting the input layer into a CSR matrix")
-if not par['input_layer'] or par["input_layer"] == "X":
+if not par["input_layer"] or par["input_layer"] == "X":
     layer_data = adata.X
 else:
-    layer_data = adata.layers[par['input_layer']]
+    layer_data = adata.layers[par["input_layer"]]
 layer_data = csr_matrix(layer_data)
 
 if layer_data.min() < 0:
@@ -3299,7 +3300,9 @@ def _digitize(x: np.ndarray, bins: np.ndarray) -> np.ndarray:
 
     digits = rands * (right_difits - left_digits) + left_digits
     digits = np.ceil(digits)
-    smallest_dtype = np.min_scalar_type(digits.max().astype(np.uint)) # Already checked for non-negative values
+    smallest_dtype = np.min_scalar_type(
+        digits.max().astype(np.uint)
+    )  # Already checked for non-negative values
     digits = digits.astype(smallest_dtype)
 
     return digits
@@ -3308,14 +3311,19 @@ def _digitize(x: np.ndarray, bins: np.ndarray) -> np.ndarray:
 with warnings.catch_warnings():
     # Make sure warnings are displayed once.
     warnings.simplefilter("once")
-    # layer_data.indptr.size is the number of rows in the sparse matrix 
+    # layer_data.indptr.size is the number of rows in the sparse matrix
     binned_rows = []
     bin_edges = []
-    logger.info("Establishing bin edges and digitizing of non-zero values into bins for each row of the count matrix")
-    for row_number in range(layer_data.indptr.size-1):
-        row_start_index, row_end_index = layer_data.indptr[row_number], layer_data.indptr[row_number+1]
+    logger.info(
+        "Establishing bin edges and digitizing of non-zero values into bins for each row of the count matrix"
+    )
+    for row_number in range(layer_data.indptr.size - 1):
+        row_start_index, row_end_index = (
+            layer_data.indptr[row_number],
+            layer_data.indptr[row_number + 1],
+        )
         # These are all non-zero counts in the row
-        non_zero_row = layer_data.data[row_start_index:row_end_index] 
+        non_zero_row = layer_data.data[row_start_index:row_end_index]
         if non_zero_row.max() == 0:
             logger.warning(
                 "The input data contains all zero rows. Please make sure "
@@ -3340,16 +3348,22 @@ with warnings.catch_warnings():
 
 # Create new CSR matrix
 logger.info("Creating a new CSR matrix of the binned count values")
-binned_counts = csr_matrix((np.concatenate(binned_rows, casting="same_kind"), 
-                          layer_data.indices, layer_data.indptr), shape=layer_data.shape)
+binned_counts = csr_matrix(
+    (
+        np.concatenate(binned_rows, casting="same_kind"),
+        layer_data.indices,
+        layer_data.indptr,
+    ),
+    shape=layer_data.shape,
+)
 
 # Set binned values and bin edges layers to adata object
 input_adata.obsm[par["output_obsm_binned_counts"]] = binned_counts
 input_adata.obsm["bin_edges"] = np.stack(bin_edges)
 
-# Write mudata output 
+# Write mudata output
 logger.info("Writing output data")
-mdata. write_h5mu(par["output"], compression=par["output_compression"])
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

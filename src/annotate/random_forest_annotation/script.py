@@ -27,9 +27,8 @@ par = {
     "class_weight": None,
     "max_features": 200,
     "output_compression": "gzip",
-    "reference_layer": None,
     "output_obs_predictions": "random_forest_pred",
-    "output_obs_probability": "random_forest_probability"
+    "output_obs_probability": "random_forest_probability",
 }
 meta = {"resources_dir": "src/utils"}
 ## VIASH END
@@ -54,47 +53,81 @@ def main():
     max_features_conversion = {
         "all": None,
         "sqrt": "sqrt",
-        "log2": "log2",  
+        "log2": "log2",
     }
     try:
-        max_features = max_features_conversion.get(par["max_features"], int(par["max_features"]))
+        max_features = max_features_conversion.get(
+            par["max_features"], int(par["max_features"])
+        )
     except ValueError:
-        raise ValueError(f"Invaldid value {par['max_features']} for --max_features: must either be an integer or one of \'sqrt\', \'log2\' or \'all\'")
+        raise ValueError(
+            f"Invaldid value {par['max_features']} for --max_features: must either be an integer or one of 'sqrt', 'log2' or 'all'"
+        )
 
-    if (not par["model"] and not par["reference"]) or (par["model"] and par["reference"]):
-        raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
+    if (not par["model"] and not par["reference"]) or (
+        par["model"] and par["reference"]
+    ):
+        raise ValueError(
+            "Make sure to provide either 'model' or 'reference', but not both."
+        )
 
     if par["model"]:
         logger.info("Loading a pre-trained model")
         model = pickle.load(open(par["model"], "rb"))
         if hasattr(model, "_feature_names_in"):
-            common_genes = cross_check_genes(input_modality.var.index, model._feature_names_in, par["input_reference_gene_overlap"])
+            common_genes = cross_check_genes(
+                input_modality.var.index,
+                model._feature_names_in,
+                par["input_reference_gene_overlap"],
+            )
             if not len(common_genes) == len(model._feature_names_in):
                 raise ValueError("Input dataset does not contain all model features.")
             input_modality = input_modality[:, common_genes]
-            input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X
+            input_matrix = (
+                input_modality.layers[par["input_layer"]]
+                if par["input_layer"]
+                else input_modality.X
+            )
 
         else:
-            logger.warning("Model does not have feature names saved. Could not check overlap of model's features with query genes.")
+            logger.warning(
+                "Model does not have feature names saved. Could not check overlap of model's features with query genes."
+            )
 
     elif par["reference"]:
         logger.info("Reading reference data")
 
         reference_mudata = mu.read_h5mu(par["reference"])
         reference_modality = reference_mudata.mod[par["modality"]].copy()
-        reference_modality = set_var_index(reference_modality, par["reference_var_gene_names"])
+        reference_modality = set_var_index(
+            reference_modality, par["reference_var_gene_names"]
+        )
 
         # subset to HVG if required
         if par["reference_var_input"]:
-            reference_modality = subset_vars(reference_modality, par["reference_var_input"])
+            reference_modality = subset_vars(
+                reference_modality, par["reference_var_input"]
+            )
 
         # Query and input require the exact same features
-        common_genes = cross_check_genes(input_modality.var.index, reference_modality.var.index, par["input_reference_gene_overlap"])
+        common_genes = cross_check_genes(
+            input_modality.var.index,
+            reference_modality.var.index,
+            par["input_reference_gene_overlap"],
+        )
         reference_modality = reference_modality[:, common_genes]
         input_modality = input_modality[:, common_genes]
 
-        reference_matrix = reference_modality.layers[par["reference_layer"]] if par["reference_layer"] else reference_modality.X
-        input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X
+        reference_matrix = (
+            reference_modality.layers[par["reference_layer"]]
+            if par["reference_layer"]
+            else reference_modality.X
+        )
+        input_matrix = (
+            input_modality.layers[par["input_layer"]]
+            if par["input_layer"]
+            else input_modality.X
+        )
 
         logger.info("Training a model...")
         labels = reference_modality.obs[par["reference_obs_target"]].to_numpy()
@@ -102,8 +135,10 @@ def main():
             n_estimators=par["n_estimators"],
             criterion=par["criterion"],
             max_depth=par["max_depth"],
-            class_weight=par["class_weight"] if not par["class_weight"] == "uniform" else None,
-            max_features=max_features
+            class_weight=par["class_weight"]
+            if not par["class_weight"] == "uniform"
+            else None,
+            max_features=max_features,
         )
         model.fit(reference_matrix, labels)
         model._feature_names_in = reference_modality.var.index

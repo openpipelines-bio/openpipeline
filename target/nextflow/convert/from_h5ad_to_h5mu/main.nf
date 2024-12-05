@@ -3079,7 +3079,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3163,27 +3163,27 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
-assert len(par["input"]) == len(par["modality"]), "Number of input files should be the same length as the number of modalities"
+assert len(par["input"]) == len(
+    par["modality"]
+), "Number of input files should be the same length as the number of modalities"
 
 logger.info("Reading input files")
-data = { key: anndata.read_h5ad(path) for key, path in zip(par["modality"], par["input"]) }
-
-try:
-    data.var_names_make_unique()
-except:
-    pass
+data = {
+    key: anndata.read_h5ad(path) for key, path in zip(par["modality"], par["input"])
+}
 
 logger.info("Converting to mudata")
 mudata = mu.MuData(data)
 
 try:
     mudata.var_names_make_unique()
-except:
+except (TypeError, ValueError):
     pass
 
-logger.info("Writing to %s.", par['output'])
+logger.info("Writing to %s.", par["output"])
 mudata.write_h5mu(par["output"], compression=par["output_compression"])
 
 logger.info("Finished")

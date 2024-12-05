@@ -540,9 +540,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component neighbors find_neighbors"
-LABEL org.opencontainers.image.created="2024-12-05T11:55:12Z"
+LABEL org.opencontainers.image.created="2024-12-05T14:35:46Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="18fefd36c466d175a95570208623c392c78e1420"
+LABEL org.opencontainers.image.revision="b78f7263182632f2ba3e9947247708397b50a700"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1243,9 +1243,10 @@ trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
 import sys
 import numpy as np
-numpy_module = sys.modules['numpy']
+
+numpy_module = sys.modules["numpy"]
 numpy_module.float_ = np.float64
-sys.modules['numpy'] = numpy_module
+sys.modules["numpy"] = numpy_module
 
 import mudata as mu
 import scanpy as sc
@@ -1294,6 +1295,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading input mudata")
@@ -1312,15 +1314,15 @@ neighbors.compute_neighbors(
 )
 
 adata.uns[par["uns_output"]] = {
-    'connectivities_key': par["obsp_connectivities"],
-    'distances_key': par["obsp_distances"],
-    'params': {
-        'n_neighbors': neighbors.n_neighbors,
-        'method': "umap",
-        'random_state': par["seed"],
-        'metric': par["metric"],
-        'use_rep': par["obsm_input"]
-    }
+    "connectivities_key": par["obsp_connectivities"],
+    "distances_key": par["obsp_distances"],
+    "params": {
+        "n_neighbors": neighbors.n_neighbors,
+        "method": "umap",
+        "random_state": par["seed"],
+        "metric": par["metric"],
+        "use_rep": par["obsm_input"],
+    },
 }
 
 adata.obsp[par["obsp_distances"]] = neighbors.distances

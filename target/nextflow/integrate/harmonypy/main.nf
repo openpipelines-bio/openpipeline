@@ -3136,7 +3136,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/harmonypy",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3225,13 +3225,14 @@ dep = {
 
 def main():
     mdata = mudata.read(par["input"].strip())
-    mod_name = par['modality']
+    mod_name = par["modality"]
     mod = mdata.mod[mod_name]
-    pca_embedding = mod.obsm[par['obsm_input']]
+    pca_embedding = mod.obsm[par["obsm_input"]]
     metadata = mod.obs
-    ho = run_harmony(pca_embedding, metadata, par['obs_covariates'], theta=par['theta'])
+    ho = run_harmony(pca_embedding, metadata, par["obs_covariates"], theta=par["theta"])
     mod.obsm[par["obsm_output"]] = ho.Z_corr.T
-    mdata.write_h5mu(par['output'].strip(), compression=par["output_compression"])
+    mdata.write_h5mu(par["output"].strip(), compression=par["output_compression"])
+
 
 if __name__ == "__main__":
     main()

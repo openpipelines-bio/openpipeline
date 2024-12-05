@@ -3321,7 +3321,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cell_type_annotation",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3433,7 +3433,9 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
+
 
 class SeqDataset(Dataset):
     def __init__(self, data: Dict[str, torch.Tensor]):
@@ -3463,7 +3465,9 @@ def main():
 
     # Fetch batch ids for domain-specific batch normalization
     if par["dsbn"] and not par["obs_batch_label"]:
-        raise ValueError("When dsbn is set to True, you are required to provide batch labels (obs_batch_labels).")
+        raise ValueError(
+            "When dsbn is set to True, you are required to provide batch labels (obs_batch_labels)."
+        )
     elif par["dsbn"] and par["obs_batch_label"]:
         logger.info("Fetching batch id's for domain-specific batch normalization")
         batch_id_cats = adata.obs[par["obs_batch_label"]].astype("category")
@@ -3500,11 +3504,13 @@ def main():
     model_file = par["model"]
     model_dict = torch.load(model_file, map_location=device)
     for k, v in {
-            "--finetuned_checkpoints_key": par["finetuned_checkpoints_key"],
-            "--label_mapper_key": par["label_mapper_key"],
-            }.items():
+        "--finetuned_checkpoints_key": par["finetuned_checkpoints_key"],
+        "--label_mapper_key": par["label_mapper_key"],
+    }.items():
         if v not in model_dict.keys():
-            raise KeyError(f"The key '{v}' provided for '{k}' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.")
+            raise KeyError(
+                f"The key '{v}' provided for '{k}' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper."
+            )
     pretrained_dict = model_dict[par["finetuned_checkpoints_key"]]
 
     # Label mapper configuration
@@ -3535,11 +3541,10 @@ def main():
         input_emb_style="continuous",
         n_input_bins=par["n_input_bins"],
         cell_emb_style="cls",  # required for cell-type annotation
-        use_fast_transformer=False,   #TODO: parametrize when GPU is available
-        fast_transformer_backend="flash",  #TODO: parametrize when GPU is available
-        pre_norm=False,  #TODO: parametrize when GPU is available
+        use_fast_transformer=False,  # TODO: parametrize when GPU is available
+        fast_transformer_backend="flash",  # TODO: parametrize when GPU is available
+        pre_norm=False,  # TODO: parametrize when GPU is available
     )
-
 
     # Load model params
     logger.info(f"Loading model params from {model_file}")
@@ -3563,11 +3568,13 @@ def main():
     # Load tokenized gene data
     logger.info("Loading data for inference")
     for k, v in {
-            "--obsm_gene_tokens": par["obsm_gene_tokens"],
-            "--obsm_tokenized_values": par["obsm_tokenized_values"],
-            }.items():
+        "--obsm_gene_tokens": par["obsm_gene_tokens"],
+        "--obsm_tokenized_values": par["obsm_tokenized_values"],
+    }.items():
         if v not in adata.obsm.keys():
-            raise KeyError(f"The parameter '{v}' provided for '{k}' could not be found in adata.obsm")
+            raise KeyError(
+                f"The parameter '{v}' provided for '{k}' could not be found in adata.obsm"
+            )
 
     input_gene_ids = adata.obsm[par["obsm_gene_tokens"]]
     input_values = adata.obsm[par["obsm_tokenized_values"]]
@@ -3622,7 +3629,9 @@ def main():
     # Assign cell type labels to predicted classes
     logger.info("Assigning cell type predictions and probabilities")
     adata.obs["scgpt_class_pred"] = predictions
-    adata.obs[par["output_obs_predictions"]] = adata.obs["scgpt_class_pred"].map(lambda x: cell_type_mapper[x])
+    adata.obs[par["output_obs_predictions"]] = adata.obs["scgpt_class_pred"].map(
+        lambda x: cell_type_mapper[x]
+    )
     adata.obs[par["output_obs_probability"]] = probabilities
 
     # Write output
@@ -3631,7 +3640,7 @@ def main():
     mdata.write(par["output"], compression=par["output_compression"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     freeze_support()
     warnings.filterwarnings("ignore")
     main()

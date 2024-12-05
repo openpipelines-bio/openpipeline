@@ -3209,7 +3209,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cross_check_genes",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3298,6 +3298,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 # Read in data
@@ -3312,7 +3313,9 @@ special_tokens = [pad_token, "<cls>", "<eoc>"]
 if not par["input_var_gene_names"]:
     genes = adata.var.index.astype(str).tolist()
 elif par["input_var_gene_names"] not in adata.var.columns:
-    raise ValueError(f"Gene name column '{par['input_var_gene_names']}' not found in .mod['{par['modality']}'].obs.")
+    raise ValueError(
+        f"Gene name column '{par['input_var_gene_names']}' not found in .mod['{par['modality']}'].obs."
+    )
 else:
     genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
 
@@ -3325,12 +3328,18 @@ vocab = GeneVocab.from_file(vocab_file)
 if par["var_input"]:
     logger.info("Filtering genes based on model vocab and HVG")
     filter_with_hvg = adata.var[par["var_input"]].tolist()
-    gene_filter_mask = [1 if gene in vocab and hvg else 0 for gene, hvg in zip(genes, filter_with_hvg)]
-    logger.info(f"Total number of genes after HVG present in model vocab: {str(sum(gene_filter_mask))}")
+    gene_filter_mask = [
+        1 if gene in vocab and hvg else 0 for gene, hvg in zip(genes, filter_with_hvg)
+    ]
+    logger.info(
+        f"Total number of genes after HVG present in model vocab: {str(sum(gene_filter_mask))}"
+    )
 else:
     logger.info("Filtering genes based on model vocab")
     gene_filter_mask = [1 if gene in vocab else 0 for gene in genes]
-    logger.info(f"Total number of genes present in model vocab: {str(sum(gene_filter_mask))}")
+    logger.info(
+        f"Total number of genes present in model vocab: {str(sum(gene_filter_mask))}"
+    )
 
 logger.info(f"Writing to {par['output']}")
 adata.var[par["output_var_filter"]] = gene_filter_mask

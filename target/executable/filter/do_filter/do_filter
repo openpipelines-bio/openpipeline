@@ -495,9 +495,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component filter do_filter"
-LABEL org.opencontainers.image.created="2024-12-05T11:55:04Z"
+LABEL org.opencontainers.image.created="2024-12-05T14:35:37Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="18fefd36c466d175a95570208623c392c78e1420"
+LABEL org.opencontainers.image.revision="b78f7263182632f2ba3e9947247708397b50a700"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1138,9 +1138,10 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
-logger.info("Reading %s", par['input'])
+logger.info("Reading %s", par["input"])
 mdata = mu.read_h5mu(par["input"])
 
 mod = par["modality"]
@@ -1154,14 +1155,14 @@ par["var_filter"] = par["var_filter"] if par["var_filter"] else []
 
 for obs_name in par["obs_filter"]:
     logger.info("Filtering modality '%s' observations by .obs['%s']", mod, obs_name)
-    if not obs_name in mdata.mod[mod].obs:
+    if obs_name not in mdata.mod[mod].obs:
         raise ValueError(f".mod[{mod}].obs[{obs_name}] does not exist.")
     if obs_name in mdata.mod[mod].obs:
         obs_filt &= mdata.mod[mod].obs[obs_name]
 
 for var_name in par["var_filter"]:
     logger.info("Filtering modality '%s' variables by .var['%s']", mod, var_name)
-    if not var_name in mdata.mod[mod].var:
+    if var_name not in mdata.mod[mod].var:
         raise ValueError(f".mod[{mod}].var[{var_name}] does not exist.")
     if var_name in mdata.mod[mod].var:
         var_filt &= mdata.mod[mod].var[var_name]

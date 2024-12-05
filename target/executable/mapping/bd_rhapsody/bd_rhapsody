@@ -947,9 +947,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component mapping bd_rhapsody"
-LABEL org.opencontainers.image.created="2024-12-05T11:55:11Z"
+LABEL org.opencontainers.image.created="2024-12-05T14:35:44Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="18fefd36c466d175a95570208623c392c78e1420"
+LABEL org.opencontainers.image.revision="b78f7263182632f2ba3e9947247708397b50a700"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -2895,28 +2895,32 @@ dep = {
 
 ## VIASH END
 
+
 def clean_arg(argument):
     argument["clean_name"] = re.sub("^-*", "", argument["name"])
     return argument
 
+
 def read_config(path: str) -> dict[str, Any]:
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         config = yaml.safe_load(f)
-    
+
     config["arguments"] = [
-        clean_arg(arg)
-        for grp in config["argument_groups"]
-        for arg in grp["arguments"]
+        clean_arg(arg) for grp in config["argument_groups"] for arg in grp["arguments"]
     ]
-    
+
     return config
 
+
 def strip_margin(text: str) -> str:
-    return re.sub('(\\n?)[ \\t]*\\|', '\\\\1', text)
+    return re.sub("(\\n?)[ \\t]*\\|", "\\\\1", text)
+
 
 def process_params(par: dict[str, Any], config, temp_dir: str) -> str:
     # check input parameters
-    assert par["reads"] or par["reads_atac"], "Pass at least one set of inputs to --reads or --reads_atac."
+    assert (
+        par["reads"] or par["reads_atac"]
+    ), "Pass at least one set of inputs to --reads or --reads_atac."
 
     # output to temp dir if output_dir was not passed
     if not par["output_dir"]:
@@ -2924,31 +2928,40 @@ def process_params(par: dict[str, Any], config, temp_dir: str) -> str:
 
     # checking sample prefix
     if par["run_name"] and re.match("[^A-Za-z0-9]", par["run_name"]):
-        print("--run_name should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.", flush=True)
+        print(
+            "--run_name should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.",
+            flush=True,
+        )
         par["run_name"] = re.sub("[^A-Za-z0-9\\\\-]", "-", par["run_name"])
 
     # make paths absolute
     for argument in config["arguments"]:
         if par[argument["clean_name"]] and argument["type"] == "file":
             if isinstance(par[argument["clean_name"]], list):
-                par[argument["clean_name"]] = [ os.path.abspath(f) for f in par[argument["clean_name"]] ]
+                par[argument["clean_name"]] = [
+                    os.path.abspath(f) for f in par[argument["clean_name"]]
+                ]
             else:
-                par[argument["clean_name"]] = os.path.abspath(par[argument["clean_name"]])
-    
+                par[argument["clean_name"]] = os.path.abspath(
+                    par[argument["clean_name"]]
+                )
+
     return par
 
+
 def generate_config(par: dict[str, Any], config) -> str:
-    content_list = [strip_margin(f"""\\
+    content_list = [
+        strip_margin("""\\
         |#!/usr/bin/env cwl-runner
         |
         |cwl:tool: rhapsody
-        |""")]
+        |""")
+    ]
 
     for argument in config["arguments"]:
         arg_info = argument.get("info") or {}
         config_key = arg_info.get("config_key")
         if par[argument["clean_name"]] and config_key:
-
             if argument["type"] == "file":
                 str = strip_margin(f"""\\
                     |{config_key}:
@@ -2966,46 +2979,61 @@ def generate_config(par: dict[str, Any], config) -> str:
                         |""")
                 content_list.append(str)
             else:
-                content_list.append(strip_margin(f"""\\
+                content_list.append(
+                    strip_margin(f"""\\
                     |{config_key}: {par[argument["clean_name"]]}
-                    |"""))
+                    |""")
+                )
 
     ## Write config to file
-    return ''.join(content_list)
+    return "".join(content_list)
 
-def generate_config_file(par: dict[str, Any], config: dict[str, Any], temp_dir: str) -> str:
+
+def generate_config_file(
+    par: dict[str, Any], config: dict[str, Any], temp_dir: str
+) -> str:
     config_file = os.path.join(temp_dir, "config.yml")
     config_content = generate_config(par, config)
     with open(config_file, "w") as f:
         f.write(config_content)
     return config_file
 
+
 def generate_cwl_file(meta: dict[str, Any], dir: str) -> str:
     # create cwl file (if need be)
-    orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_pipeline_2.2.1_nodocker.cwl")
+    orig_cwl_file = os.path.join(
+        meta["resources_dir"], "rhapsody_pipeline_2.2.1_nodocker.cwl"
+    )
 
     # Inject computational requirements into pipeline
     if meta["memory_mb"] or meta["cpus"]:
         cwl_file = os.path.join(dir, "pipeline.cwl")
 
         # Read in the file
-        with open(orig_cwl_file, 'r') as file :
+        with open(orig_cwl_file, "r") as file:
             cwl_data = file.read()
 
         # Inject computational requirements into pipeline
         if meta["memory_mb"]:
-            memory = int(meta["memory_mb"]) - 2000 # keep 2gb for OS
-            cwl_data = re.sub('"ramMin": [^\\n]*[^,](,?)\\n', f'"ramMin": {memory}\\\\1\\n', cwl_data)
+            memory = int(meta["memory_mb"]) - 2000  # keep 2gb for OS
+            cwl_data = re.sub(
+                '"ramMin": [^\\n]*[^,](,?)\\n', f'"ramMin": {memory}\\\\1\\n', cwl_data
+            )
         if meta["cpus"]:
-            cwl_data = re.sub('"coresMin": [^\\n]*[^,](,?)\\n', f'"coresMin": {meta["cpus"]}\\\\1\\n', cwl_data)
+            cwl_data = re.sub(
+                '"coresMin": [^\\n]*[^,](,?)\\n',
+                f'"coresMin": {meta["cpus"]}\\\\1\\n',
+                cwl_data,
+            )
 
         # Write the file out again
-        with open(cwl_file, 'w') as file:
+        with open(cwl_file, "w") as file:
             file.write(cwl_data)
     else:
         cwl_file = orig_cwl_file
 
     return cwl_file
+
 
 def copy_outputs(par: dict[str, Any], config: dict[str, Any]):
     for arg in config["arguments"]:
@@ -3014,16 +3042,21 @@ def copy_outputs(par: dict[str, Any], config: dict[str, Any]):
             # example template: '[sample_name]_(assay)_cell_type_experimental.csv'
             template = (arg.get("info") or {}).get("template")
             if template:
-                template_glob = template\\
-                    .replace("sample", par["run_name"])\\
-                    .replace("assay", "*")\\
+                template_glob = (
+                    template.replace("sample", par["run_name"])
+                    .replace("assay", "*")
                     .replace("number", "*")
+                )
                 files = glob.glob(os.path.join(par["output_dir"], template_glob))
                 if len(files) == 0 and arg["required"]:
-                    raise ValueError(f"Expected output file '{template_glob}' not found.")
+                    raise ValueError(
+                        f"Expected output file '{template_glob}' not found."
+                    )
                 elif len(files) > 1 and not arg["multiple"]:
-                    raise ValueError(f"Expected single output file '{template_glob}', but found multiple.")
-                
+                    raise ValueError(
+                        f"Expected single output file '{template_glob}', but found multiple."
+                    )
+
                 if not arg["multiple"]:
                     try:
                         shutil.copy(files[0], par_value)
@@ -3038,7 +3071,7 @@ def copy_outputs(par: dict[str, Any], config: dict[str, Any]):
 
 def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
     config = read_config(meta["config"])
-    
+
     # Preprocess params
     par = process_params(par, config, temp_dir)
 
@@ -3047,7 +3080,8 @@ def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
         "cwl-runner",
         "--no-container",
         "--preserve-entire-environment",
-        "--outdir", par["output_dir"],
+        "--outdir",
+        par["output_dir"],
     ]
 
     if par["parallel"]:
@@ -3063,7 +3097,7 @@ def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
     # Create params file
     config_file = generate_config_file(par, config, temp_dir)
     cmd.append(config_file)
-    
+
     # keep environment variables but set TMPDIR to temp_dir
     env = dict(os.environ)
     env["TMPDIR"] = temp_dir
@@ -3073,19 +3107,17 @@ def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
         os.makedirs(par["output_dir"])
 
     # Run command
-    print("> " + ' '.join(cmd), flush=True)
-    _ = subprocess.check_call(
-        cmd,
-        cwd=os.path.dirname(config_file),
-        env=env
-    )
+    print("> " + " ".join(cmd), flush=True)
+    _ = subprocess.check_call(cmd, cwd=os.path.dirname(config_file), env=env)
 
     # Copy outputs
     copy_outputs(par, config)
 
 
 if __name__ == "__main__":
-    with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody-", dir=meta["temp_dir"]) as temp_dir:
+    with tempfile.TemporaryDirectory(
+        prefix="cwl-bd_rhapsody-", dir=meta["temp_dir"]
+    ) as temp_dir:
         main(par, meta, temp_dir)
 VIASHMAIN
 python -B "\$tempscript" &

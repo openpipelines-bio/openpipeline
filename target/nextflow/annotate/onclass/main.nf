@@ -3284,7 +3284,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/onclass",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3395,7 +3395,9 @@ from subset_vars import subset_vars
 logger = setup_logger()
 
 
-def map_celltype_to_ontology_id(cl_obo_file: str) -> Tuple[Dict[str, str], Dict[str, str]]:
+def map_celltype_to_ontology_id(
+    cl_obo_file: str,
+) -> Tuple[Dict[str, str], Dict[str, str]]:
     """
     Map cell type names to ontology IDs and vice versa.
 
@@ -3418,11 +3420,11 @@ def map_celltype_to_ontology_id(cl_obo_file: str) -> Tuple[Dict[str, str], Dict[
 
 
 def cell_type_prediction(
-        model: OnClassModel,
-        input_matrix: np.array,
-        input_features: List[str],
-        id_to_name: dict
-        ) -> Tuple[List[str], List[float]]:
+    model: OnClassModel,
+    input_matrix: np.array,
+    input_features: List[str],
+    id_to_name: dict,
+) -> Tuple[List[str], List[float]]:
     """
     Predict cell types for input data and save results to Anndata obj.
 
@@ -3449,7 +3451,9 @@ def cell_type_prediction(
         test_genes=input_features,
         log_transform=False,
     )
-    onclass_pred = model.Predict(corr_test_feature, use_normalize=False, refine=True, unseen_ratio=-1.0)
+    onclass_pred = model.Predict(
+        corr_test_feature, use_normalize=False, refine=True, unseen_ratio=-1.0
+    )
     pred_label = [model.i2co[ind] for ind in onclass_pred[2]]
     pred_cell_type_label = [id_to_name[id] for id in pred_label]
     prob_cell_type_label = np.max(onclass_pred[1], axis=1) / onclass_pred[1].sum(1)
@@ -3458,9 +3462,12 @@ def cell_type_prediction(
 
 
 def main():
-
-    if (not par["model"] and not par["reference"]) or (par["model"] and par["reference"]):
-        raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
+    if (not par["model"] and not par["reference"]) or (
+        par["model"] and par["reference"]
+    ):
+        raise ValueError(
+            "Make sure to provide either 'model' or 'reference', but not both."
+        )
 
     logger.info("Reading input data")
     input_mudata = mu.read_h5mu(par["input"])
@@ -3469,45 +3476,68 @@ def main():
 
     # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
     input_modality = set_var_index(input_modality, par["input_var_gene_names"])
-    input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X
+    input_matrix = (
+        input_modality.layers[par["input_layer"]]
+        if par["input_layer"]
+        else input_modality.X
+    )
     # Onclass needs dense matrix format
     input_matrix = input_matrix.toarray()
-    
+
     id_to_name, name_to_id = map_celltype_to_ontology_id(par["cl_obo_file"])
 
     if par["model"]:
         logger.info("Predicting cell types using pre-trained model")
         model = OnClassModel(
             cell_type_nlp_emb_file=par["cl_nlp_emb_file"],
-            cell_type_network_file=par["cl_ontology_file"]
-            )
+            cell_type_network_file=par["cl_ontology_file"],
+        )
 
         model.BuildModel(use_pretrain=par["model"], ngene=None)
-        cross_check_genes(model.genes, input_modality.var.index, par["input_reference_gene_overlap"])
+        cross_check_genes(
+            model.genes, input_modality.var.index, par["input_reference_gene_overlap"]
+        )
 
     elif par["reference"]:
         logger.info("Reading reference data")
-        model = OnClassModel(cell_type_nlp_emb_file=par["cl_nlp_emb_file"],
-                             cell_type_network_file=par["cl_ontology_file"])
+        model = OnClassModel(
+            cell_type_nlp_emb_file=par["cl_nlp_emb_file"],
+            cell_type_network_file=par["cl_ontology_file"],
+        )
 
         reference_mudata = mu.read_h5mu(par["reference"])
         reference_modality = reference_mudata.mod[par["modality"]].copy()
-        reference_modality = set_var_index(reference_modality, par["reference_var_gene_names"])
+        reference_modality = set_var_index(
+            reference_modality, par["reference_var_gene_names"]
+        )
 
         # subset to HVG if required
         if par["reference_var_input"]:
-            reference_modality = subset_vars(reference_modality, par["reference_var_input"])
+            reference_modality = subset_vars(
+                reference_modality, par["reference_var_input"]
+            )
 
-        cross_check_genes(input_modality.var.index, reference_modality.var.index, par["input_reference_gene_overlap"])
+        cross_check_genes(
+            input_modality.var.index,
+            reference_modality.var.index,
+            par["input_reference_gene_overlap"],
+        )
 
-        reference_matrix = reference_modality.layers[par["reference_layer"]] if par["reference_layer"] else reference_modality.X
+        reference_matrix = (
+            reference_modality.layers[par["reference_layer"]]
+            if par["reference_layer"]
+            else reference_modality.X
+        )
         # Onclass needs dense matrix format
         reference_matrix = reference_matrix.toarray()
 
         logger.info("Training a model from reference...")
 
         labels = reference_modality.obs[par["reference_obs_target"]].tolist()
-        labels_cl = [name_to_id[label] if label in name_to_id else par["unknown_celltype"] for label in labels]
+        labels_cl = [
+            name_to_id[label] if label in name_to_id else par["unknown_celltype"]
+            for label in labels
+        ]
 
         _ = model.EmbedCellTypes(labels_cl)
         corr_train_feature, _, corr_train_genes, _ = model.ProcessTrainFeature(
@@ -3517,23 +3547,14 @@ def main():
             test_feature=input_matrix,
             test_genes=input_modality.var.index,
             log_transform=False,
-            )
-        model.BuildModel(
-            ngene=len(corr_train_genes)
-            )
-        model.Train(
-            corr_train_feature,
-            labels_cl,
-            max_iter=par["max_iter"]
-            )
+        )
+        model.BuildModel(ngene=len(corr_train_genes))
+        model.Train(corr_train_feature, labels_cl, max_iter=par["max_iter"])
 
     logger.info("Predicting cell types")
     predictions, probabilities = cell_type_prediction(
-        model,
-        input_matrix,
-        input_modality.var.index,
-        id_to_name
-        )
+        model, input_matrix, input_modality.var.index, id_to_name
+    )
 
     logger.info("Writing output data")
     input_adata.obs[par["output_obs_predictions"]] = predictions

@@ -15,7 +15,7 @@ meta = {
     "resources_dir": "resources_test",
     "executable": "./target/docker/scgpt/integration_embedding/integration_embedding",
     "temp_dir": "tmp",
-    "config": "./target/docker/scgpt/integration_embedding/.config.vsh.yaml"
+    "config": "./target/docker/scgpt/integration_embedding/.config.vsh.yaml",
 }
 ## VIASH END
 
@@ -26,6 +26,7 @@ vocab_file = f"{meta['resources_dir']}/source/vocab.json"
 model_config_file = f"{meta['resources_dir']}/source/args.json"
 input_file = mu.read(input)
 
+
 def scgpt_to_ft_scgpt(scgpt_path, ft_scgpt_path, state_dict_key, mapper_key):
     f_model_dict = torch.load(scgpt_path, map_location="cpu")
     model_dict = {}
@@ -33,13 +34,14 @@ def scgpt_to_ft_scgpt(scgpt_path, ft_scgpt_path, state_dict_key, mapper_key):
     model_dict[mapper_key] = {k: str(k) for k in range(15)}
     torch.save(model_dict, ft_scgpt_path)
 
+
 # Convert foundation model into fine-tuned model architecture:
 # To be able to do a cell type label mapping, the model architecture needs to contain a class to label mapper dictionary
 scgpt_to_ft_scgpt(model_file, ft_model, "model_state_dict", "id_to_class")
 
 
 ## START TEMPORARY WORKAROUND DATA PREPROCESSING
-#TODO: Remove this workaround once full scGPT preprocessing workflow is implemented
+# TODO: Remove this workaround once full scGPT preprocessing workflow is implemented
 # Read in data
 adata = input_file.mod["rna"]
 
@@ -62,8 +64,8 @@ for s in special_tokens:
 # Cross-check genes with pre-trained model
 genes = adata.var["gene_name"].tolist()
 adata.var["id_in_vocab"] = [
-        1 if gene in vocab else -1 for gene in adata.var["gene_name"]
-    ]
+    1 if gene in vocab else -1 for gene in adata.var["gene_name"]
+]
 gene_ids_in_vocab = np.array(adata.var["id_in_vocab"])
 adata = adata[:, adata.var["id_in_vocab"] >= 0]
 
@@ -80,7 +82,7 @@ preprocessor = Preprocessor(
     hvg_flavor="seurat_v3",
     binning=51,
     result_binned_key="X_binned",
-    )
+)
 
 preprocessor(adata, batch_key="str_batch")
 
@@ -103,7 +105,7 @@ n_hvg = adata.var.shape[0]
 tokenized_data = tokenize_and_pad_batch(
     all_counts,
     gene_ids,
-    max_len=n_hvg+1,
+    max_len=n_hvg + 1,
     vocab=vocab,
     pad_token=pad_token,
     pad_value=-2,
@@ -111,8 +113,8 @@ tokenized_data = tokenize_and_pad_batch(
     include_zero_gene=False,
     return_pt=True,
     mod_type=None,
-    vocab_mod=None
-    )
+    vocab_mod=None,
+)
 
 all_gene_ids, all_values = tokenized_data["genes"], tokenized_data["values"]
 padding_mask = all_gene_ids.eq(vocab[pad_token])
@@ -121,7 +123,7 @@ adata.obsm["gene_id_tokens"] = all_gene_ids.numpy()
 adata.obsm["values_tokenized"] = all_values.numpy()
 adata.obsm["padding_mask"] = padding_mask.numpy()
 
-tokenized_data = mu.MuData({'rna': adata})
+tokenized_data = mu.MuData({"rna": adata})
 tokenized_data_path = f"{meta['resources_dir']}/Kim2020_Lung_tokenized.h5mu"
 tokenized_data.write_h5mu(tokenized_data_path)
 
@@ -129,80 +131,126 @@ tokenized_data.write_h5mu(tokenized_data_path)
 
 
 def test_integration_embedding(run_component, tmp_path):
-
     output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
 
-    run_component([
-        "--input", tokenized_data_path,
-        "--modality", "rna",
-        "--model", model_file,
-        "--model_vocab", vocab_file,
-        "--model_config", model_config_file,
-        "--dsbn", "True",
-        "--obs_batch_label", "sample",
-        "--obsm_gene_tokens", "gene_id_tokens",
-        "--obsm_tokenized_values", "values_tokenized",
-        "--obsm_padding_mask", "padding_mask",
-        "--output", output_embedding_file
-    ])
+    run_component(
+        [
+            "--input",
+            tokenized_data_path,
+            "--modality",
+            "rna",
+            "--model",
+            model_file,
+            "--model_vocab",
+            vocab_file,
+            "--model_config",
+            model_config_file,
+            "--dsbn",
+            "True",
+            "--obs_batch_label",
+            "sample",
+            "--obsm_gene_tokens",
+            "gene_id_tokens",
+            "--obsm_tokenized_values",
+            "values_tokenized",
+            "--obsm_padding_mask",
+            "padding_mask",
+            "--output",
+            output_embedding_file,
+        ]
+    )
 
     # Read output file
     output_mdata = mu.read(output_embedding_file)
     output_adata = output_mdata.mod["rna"]
 
     # check that embedding obs is present
-    assert 'X_scGPT' in output_adata.obsm.keys(), "X_scGPT is not present in anndata obsm keys"
+    assert (
+        "X_scGPT" in output_adata.obsm.keys()
+    ), "X_scGPT is not present in anndata obsm keys"
 
     # check embedding size
-    assert output_adata.obsm["X_scGPT"].shape[1] == 512, "Embedding size does not equal 512"
+    assert (
+        output_adata.obsm["X_scGPT"].shape[1] == 512
+    ), "Embedding size does not equal 512"
 
     # check embedding value range
-    assert not all(np.isnan(output_adata.obsm["X_scGPT"][0])), "Embedding values are nan"
-    assert all([all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]), "Range of embedding values is outside of [-1, 1]"
+    assert not all(
+        np.isnan(output_adata.obsm["X_scGPT"][0])
+    ), "Embedding values are nan"
+    assert all(
+        [all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]
+    ), "Range of embedding values is outside of [-1, 1]"
 
     # Run embeddings without dsbn
     output_embedding_file_without_dsbn = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
-    run_component([
-        "--input", tokenized_data_path,
-        "--modality", "rna",
-        "--model", model_file,
-        "--model_vocab", vocab_file,
-        "--model_config", model_config_file,
-        "--dsbn", "False",
-        "--obsm_gene_tokens", "gene_id_tokens",
-        "--obsm_tokenized_values", "values_tokenized",
-        "--obsm_padding_mask", "padding_mask",
-        "--output", output_embedding_file_without_dsbn
-    ])
+    run_component(
+        [
+            "--input",
+            tokenized_data_path,
+            "--modality",
+            "rna",
+            "--model",
+            model_file,
+            "--model_vocab",
+            vocab_file,
+            "--model_config",
+            model_config_file,
+            "--dsbn",
+            "False",
+            "--obsm_gene_tokens",
+            "gene_id_tokens",
+            "--obsm_tokenized_values",
+            "values_tokenized",
+            "--obsm_padding_mask",
+            "padding_mask",
+            "--output",
+            output_embedding_file_without_dsbn,
+        ]
+    )
 
     # Read output file
     output_mdata_no_dsbn = mu.read(output_embedding_file_without_dsbn)
     output_adata_no_dsbn = output_mdata_no_dsbn.mod["rna"]
 
     # Assert that embeddings without dsbn are different
-    assert not (output_adata.obsm["X_scGPT"] == output_adata_no_dsbn.obsm["X_scGPT"]).all(), "Embeddings with and without dsbn are the same"
+    assert not (
+        output_adata.obsm["X_scGPT"] == output_adata_no_dsbn.obsm["X_scGPT"]
+    ).all(), "Embeddings with and without dsbn are the same"
+
 
 def test_integration_embedding_dsbn_without_batch_labels(run_component, tmp_path):
     output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
 
     args = [
-        "--input", tokenized_data_path,
-        "--modality", "rna",
-        "--model", model_file,
-        "--model_vocab", vocab_file,
-        "--model_config", model_config_file,
-        "--dsbn", "True",
-        "--obsm_gene_tokens", "gene_id_tokens",
-        "--obsm_tokenized_values", "values_tokenized",
-        "--obsm_padding_mask", "padding_mask",
-        "--output", output_embedding_file
+        "--input",
+        tokenized_data_path,
+        "--modality",
+        "rna",
+        "--model",
+        model_file,
+        "--model_vocab",
+        vocab_file,
+        "--model_config",
+        model_config_file,
+        "--dsbn",
+        "True",
+        "--obsm_gene_tokens",
+        "gene_id_tokens",
+        "--obsm_tokenized_values",
+        "values_tokenized",
+        "--obsm_padding_mask",
+        "padding_mask",
+        "--output",
+        output_embedding_file,
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
     assert re.search(
         r"ValueError: When dsbn is set to True, you are required to provide batch labels \(input_obs_batch_labels\)\.",
-        err.value.stdout.decode('utf-8'))
+        err.value.stdout.decode("utf-8"),
+    )
 
 
 def test_integration_embedding_non_existing_keys(run_component, tmp_path):
@@ -210,126 +258,196 @@ def test_integration_embedding_non_existing_keys(run_component, tmp_path):
 
     # Test for non-existing gene names key
     args_1 = [
-        "--input", tokenized_data_path,
-        "--modality", "rna",
-        "--model", model_file,
-        "--model_vocab", vocab_file,
-        "--model_config", model_config_file,
-        "--dsbn", "True",
-        "--obs_batch_label", "sample",
-        "--var_gene_names", "dummy_gene_name_key",
-        "--obsm_gene_tokens", "gene_id_tokens",
-        "--obsm_tokenized_values", "values_tokenized",
-        "--obsm_padding_mask", "padding_mask",
-        "--output", output_embedding_file
+        "--input",
+        tokenized_data_path,
+        "--modality",
+        "rna",
+        "--model",
+        model_file,
+        "--model_vocab",
+        vocab_file,
+        "--model_config",
+        model_config_file,
+        "--dsbn",
+        "True",
+        "--obs_batch_label",
+        "sample",
+        "--var_gene_names",
+        "dummy_gene_name_key",
+        "--obsm_gene_tokens",
+        "gene_id_tokens",
+        "--obsm_tokenized_values",
+        "values_tokenized",
+        "--obsm_padding_mask",
+        "padding_mask",
+        "--output",
+        output_embedding_file,
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args_1)
     assert re.search(
-        r"KeyError: \'dummy_gene_name_key\'",
-        err.value.stdout.decode('utf-8'))
+        r"KeyError: \'dummy_gene_name_key\'", err.value.stdout.decode("utf-8")
+    )
 
     # Test for non-existing batch label key
     args_2 = [
-        "--input", tokenized_data_path,
-        "--modality", "rna",
-        "--model", model_file,
-        "--model_vocab", vocab_file,
-        "--model_config", model_config_file,
-        "--dsbn", "True",
-        "--obs_batch_label", "dummy_batch_label_key",
-        "--obsm_gene_tokens", "gene_id_tokens",
-        "--obsm_tokenized_values", "values_tokenized",
-        "--obsm_padding_mask", "padding_mask",
-        "--output", output_embedding_file
+        "--input",
+        tokenized_data_path,
+        "--modality",
+        "rna",
+        "--model",
+        model_file,
+        "--model_vocab",
+        vocab_file,
+        "--model_config",
+        model_config_file,
+        "--dsbn",
+        "True",
+        "--obs_batch_label",
+        "dummy_batch_label_key",
+        "--obsm_gene_tokens",
+        "gene_id_tokens",
+        "--obsm_tokenized_values",
+        "values_tokenized",
+        "--obsm_padding_mask",
+        "padding_mask",
+        "--output",
+        output_embedding_file,
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args_2)
     assert re.search(
-        r"KeyError: \'dummy_batch_label_key\'",
-        err.value.stdout.decode('utf-8'))
+        r"KeyError: \'dummy_batch_label_key\'", err.value.stdout.decode("utf-8")
+    )
 
     # Test for non-existing tokenized values key
     args_3 = [
-        "--input", tokenized_data_path,
-        "--modality", "rna",
-        "--model", model_file,
-        "--model_vocab", vocab_file,
-        "--model_config", model_config_file,
-        "--dsbn", "True",
-        "--obs_batch_label", "sample",
-        "--obsm_gene_tokens", "gene_id_tokens",
-        "--obsm_tokenized_values", "dummy_values_tokenized",
-        "--obsm_padding_mask", "padding_mask",
-        "--output", output_embedding_file
+        "--input",
+        tokenized_data_path,
+        "--modality",
+        "rna",
+        "--model",
+        model_file,
+        "--model_vocab",
+        vocab_file,
+        "--model_config",
+        model_config_file,
+        "--dsbn",
+        "True",
+        "--obs_batch_label",
+        "sample",
+        "--obsm_gene_tokens",
+        "gene_id_tokens",
+        "--obsm_tokenized_values",
+        "dummy_values_tokenized",
+        "--obsm_padding_mask",
+        "padding_mask",
+        "--output",
+        output_embedding_file,
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args_3)
     assert re.search(
         r'KeyError: "The parameter \'dummy_values_tokenized\' provided for \'--obsm_tokenized_values\' could not be found in adata.obsm"',
-        err.value.stdout.decode('utf-8'))
+        err.value.stdout.decode("utf-8"),
+    )
 
 
 def test_finetuned_model(run_component, tmp_path):
     output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
-        
-    run_component([
-        "--input", tokenized_data_path,
-        "--modality", "rna",
-        "--model", ft_model,
-        "--model_vocab", vocab_file,
-        "--model_config", model_config_file,
-        "--dsbn", "True",
-        "--obs_batch_label", "sample",
-        "--obsm_gene_tokens", "gene_id_tokens",
-        "--obsm_tokenized_values", "values_tokenized",
-        "--obsm_padding_mask", "padding_mask",
-        "--finetuned_checkpoints_key", "model_state_dict",
-        "--output", output_embedding_file
-    ])
+
+    run_component(
+        [
+            "--input",
+            tokenized_data_path,
+            "--modality",
+            "rna",
+            "--model",
+            ft_model,
+            "--model_vocab",
+            vocab_file,
+            "--model_config",
+            model_config_file,
+            "--dsbn",
+            "True",
+            "--obs_batch_label",
+            "sample",
+            "--obsm_gene_tokens",
+            "gene_id_tokens",
+            "--obsm_tokenized_values",
+            "values_tokenized",
+            "--obsm_padding_mask",
+            "padding_mask",
+            "--finetuned_checkpoints_key",
+            "model_state_dict",
+            "--output",
+            output_embedding_file,
+        ]
+    )
 
     # Read output file
     output_mdata = mu.read(output_embedding_file)
     output_adata = output_mdata.mod["rna"]
 
     # check that embedding obs is present
-    assert 'X_scGPT' in output_adata.obsm.keys(), "X_scGPT is not present in anndata obsm keys"
+    assert (
+        "X_scGPT" in output_adata.obsm.keys()
+    ), "X_scGPT is not present in anndata obsm keys"
 
     # check embedding size
-    assert output_adata.obsm["X_scGPT"].shape[1] == 512, "Embedding size does not equal 512"
+    assert (
+        output_adata.obsm["X_scGPT"].shape[1] == 512
+    ), "Embedding size does not equal 512"
 
     # check embedding value range
-    assert not all(np.isnan(output_adata.obsm["X_scGPT"][0])), "Embedding values are nan"
-    assert all([all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]), "Range of embedding values is outside of [-1, 1]"
+    assert not all(
+        np.isnan(output_adata.obsm["X_scGPT"][0])
+    ), "Embedding values are nan"
+    assert all(
+        [all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]
+    ), "Range of embedding values is outside of [-1, 1]"
 
 
 def test_finetuned_model_architecture(run_component, tmp_path):
     output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
 
     args = [
-        "--input", tokenized_data_path,
-        "--modality", "rna",
-        "--model", ft_model,
-        "--model_vocab", vocab_file,
-        "--model_config", model_config_file,
-        "--dsbn", "True",
-        "--obs_batch_label", "sample",
-        "--obsm_gene_tokens", "gene_id_tokens",
-        "--obsm_tokenized_values", "values_tokenized",
-        "--obsm_padding_mask", "padding_mask",
-        "--finetuned_checkpoints_key", "dummy_checkpoints_key",
-        "--output", output_embedding_file
+        "--input",
+        tokenized_data_path,
+        "--modality",
+        "rna",
+        "--model",
+        ft_model,
+        "--model_vocab",
+        vocab_file,
+        "--model_config",
+        model_config_file,
+        "--dsbn",
+        "True",
+        "--obs_batch_label",
+        "sample",
+        "--obsm_gene_tokens",
+        "gene_id_tokens",
+        "--obsm_tokenized_values",
+        "values_tokenized",
+        "--obsm_padding_mask",
+        "padding_mask",
+        "--finetuned_checkpoints_key",
+        "dummy_checkpoints_key",
+        "--output",
+        output_embedding_file,
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
     assert re.search(
-        r'ValueError: The key \'dummy_checkpoints_key\' provided for \'--finetuned_checkpoints_key\' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.',
-        err.value.stdout.decode('utf-8'))
+        r"ValueError: The key \'dummy_checkpoints_key\' provided for \'--finetuned_checkpoints_key\' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.",
+        err.value.stdout.decode("utf-8"),
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

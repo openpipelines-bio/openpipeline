@@ -3509,7 +3509,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3622,54 +3622,59 @@ dep = {
 ### VIASH END
 
 import sys
-sys.path.append(meta['resources_dir'])
+
+sys.path.append(meta["resources_dir"])
 
 from subset_vars import subset_vars
 
-#TODO: optionally, move to qa
+
+# TODO: optionally, move to qa
 # https://github.com/openpipelines-bio/openpipeline/issues/435
-def check_validity_anndata(adata, layer, obs_batch,
-                           n_obs_min_count, n_var_min_count):
+def check_validity_anndata(adata, layer, obs_batch, n_obs_min_count, n_var_min_count):
     assert check_nonnegative_integers(
         adata.layers[layer] if layer else adata.X
-    ), f"Make sure input adata contains raw_counts"
+    ), "Make sure input adata contains raw_counts"
 
     assert len(set(adata.var_names)) == len(
         adata.var_names
-    ), f"Dataset contains multiple genes with same gene name."
+    ), "Dataset contains multiple genes with same gene name."
 
     # Ensure every obs_batch category has sufficient observations
-    assert min(adata.obs[[obs_batch]].value_counts()) > n_obs_min_count, \\\\
-        f"Anndata has fewer than {n_obs_min_count} cells."
+    assert (
+        min(adata.obs[[obs_batch]].value_counts()) > n_obs_min_count
+    ), f"Anndata has fewer than {n_obs_min_count} cells."
 
-    assert adata.n_vars > n_var_min_count, \\\\
-        f"Anndata has fewer than {n_var_min_count} genes."
-
+    assert (
+        adata.n_vars > n_var_min_count
+    ), f"Anndata has fewer than {n_var_min_count} genes."
 
 
 def main():
     mdata = mudata.read(par["input"].strip())
-    adata = mdata.mod[par['modality']]
+    adata = mdata.mod[par["modality"]]
 
-    if par['var_input']:
+    if par["var_input"]:
         # Subset to HVG
         adata_subset = subset_vars(adata, subset_col=par["var_input"]).copy()
     else:
         adata_subset = adata.copy()
 
     check_validity_anndata(
-        adata_subset, par['input_layer'], par['obs_batch'],
-        par["n_obs_min_count"], par["n_var_min_count"]
+        adata_subset,
+        par["input_layer"],
+        par["obs_batch"],
+        par["n_obs_min_count"],
+        par["n_var_min_count"],
     )
     # Set up the data
     scvi.model.SCVI.setup_anndata(
         adata_subset,
-        batch_key=par['obs_batch'],
-        layer=par['input_layer'],
-        labels_key=par['obs_labels'],
-        size_factor_key=par['obs_size_factor'],
-        categorical_covariate_keys=par['obs_categorical_covariate'],
-        continuous_covariate_keys=par['obs_continuous_covariate'],
+        batch_key=par["obs_batch"],
+        layer=par["input_layer"],
+        labels_key=par["obs_labels"],
+        size_factor_key=par["obs_size_factor"],
+        categorical_covariate_keys=par["obs_categorical_covariate"],
+        continuous_covariate_keys=par["obs_continuous_covariate"],
     )
 
     # Set up the model
@@ -3683,25 +3688,30 @@ def main():
         gene_likelihood=par["gene_likelihood"],
         use_layer_norm=par["use_layer_normalization"],
         use_batch_norm=par["use_batch_normalization"],
-        encode_covariates=par["encode_covariates"], # Default (True) is for better scArches performance -> maybe don't use this always?
-        deeply_inject_covariates=par["deeply_inject_covariates"], # Default (False) for better scArches performance -> maybe don't use this always?
-        use_observed_lib_size=par["use_observed_lib_size"], # When size_factors are not passed
+        encode_covariates=par[
+            "encode_covariates"
+        ],  # Default (True) is for better scArches performance -> maybe don't use this always?
+        deeply_inject_covariates=par[
+            "deeply_inject_covariates"
+        ],  # Default (False) for better scArches performance -> maybe don't use this always?
+        use_observed_lib_size=par[
+            "use_observed_lib_size"
+        ],  # When size_factors are not passed
     )
 
     plan_kwargs = {
-        "reduce_lr_on_plateau": par['reduce_lr_on_plateau'],
-        "lr_patience": par['lr_patience'],
-        "lr_factor": par['lr_factor'],
+        "reduce_lr_on_plateau": par["reduce_lr_on_plateau"],
+        "lr_patience": par["lr_patience"],
+        "lr_factor": par["lr_factor"],
     }
-
 
     # Train the model
     vae_uns.train(
-        max_epochs=par['max_epochs'],
-        early_stopping=par['early_stopping'],
-        early_stopping_monitor=par['early_stopping_monitor'],
-        early_stopping_patience=par['early_stopping_patience'],
-        early_stopping_min_delta=par['early_stopping_min_delta'],
+        max_epochs=par["max_epochs"],
+        early_stopping=par["early_stopping"],
+        early_stopping_monitor=par["early_stopping_monitor"],
+        early_stopping_patience=par["early_stopping_patience"],
+        early_stopping_min_delta=par["early_stopping_min_delta"],
         plan_kwargs=plan_kwargs,
         check_val_every_n_epoch=1,
         accelerator="auto",
@@ -3709,12 +3719,13 @@ def main():
     # Note: train_size=1.0 should give better results, but then can't do early_stopping on validation set
 
     # Get the latent output
-    adata.obsm[par['obsm_output']] = vae_uns.get_latent_representation()
+    adata.obsm[par["obsm_output"]] = vae_uns.get_latent_representation()
 
-    mdata.mod[par['modality']] = adata
-    mdata.write_h5mu(par['output'].strip(), compression=par["output_compression"])
+    mdata.mod[par["modality"]] = adata
+    mdata.write_h5mu(par["output"].strip(), compression=par["output_compression"])
     if par["output_model"]:
         vae_uns.save(par["output_model"], overwrite=True)
+
 
 if __name__ == "__main__":
     main()

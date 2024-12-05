@@ -3200,7 +3200,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3244,7 +3244,6 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
-
 import mudata as mu
 import numpy as np
 import sys
@@ -3295,6 +3294,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading input data")
@@ -3302,18 +3302,21 @@ mdata = mu.read_h5mu(par["input"])
 
 mdata.var_names_make_unique()
 
-mod = par['modality']
+mod = par["modality"]
 logger.info("Processing modality %s.", mod)
 modality_data = mdata.mod[mod]
 logger.info("\\\\tUnfiltered data: %s", modality_data)
 
 logger.info("Selecting input layer %s", "X" if par["layer"] else par["layer"])
-input_layer = modality_data.X if not par["layer"] else modality_data.layers[par["layer"]]
+input_layer = (
+    modality_data.X if not par["layer"] else modality_data.layers[par["layer"]]
+)
 
 logger.info("\\\\tComputing aggregations.")
 n_counts_per_cell = np.ravel(np.sum(input_layer, axis=1))
 n_cells_per_gene = np.sum(input_layer > 0, axis=0)
 n_genes_per_cell = np.sum(input_layer > 0, axis=1)
+
 
 def apply_filter_to_mask(mask, base, filter, comparator):
     new_filt = np.ravel(comparator(base, filter))
@@ -3321,22 +3324,42 @@ def apply_filter_to_mask(mask, base, filter, comparator):
     mask &= new_filt
     return num_removed, mask
 
+
 # Filter genes
 keep_genes = np.repeat(True, modality_data.n_vars)
 if par["min_cells_per_gene"] is not None:
-    num_removed, keep_genes = apply_filter_to_mask(keep_genes,
-                                                   n_cells_per_gene,
-                                                   par['min_cells_per_gene'],
-                                                   ge)
-    logger.info("\\\\tRemoving %s genes with non-zero values in <%s cells.",
-                num_removed, par['min_cells_per_gene'])
+    num_removed, keep_genes = apply_filter_to_mask(
+        keep_genes, n_cells_per_gene, par["min_cells_per_gene"], ge
+    )
+    logger.info(
+        "\\\\tRemoving %s genes with non-zero values in <%s cells.",
+        num_removed,
+        par["min_cells_per_gene"],
+    )
 
 # Filter cells
-filters = (("min_genes_per_cell", n_genes_per_cell, ge, "\\\\tRemoving %s cells with non-zero values in <%s genes."),
-           ("max_genes_per_cell", n_genes_per_cell, le, "\\\\tRemoving %s cells with non-zero values in >%s genes."),
-           ("min_counts", n_counts_per_cell, ge, "\\\\tRemoving %s cells with <%s total counts."),
-           ("max_counts", n_counts_per_cell, le, "\\\\tRemoving %s cells with >%s total counts."),
-           (0, np.sum(input_layer[:,keep_genes], axis=1), gt, "\\\\tRemoving %s cells with %s counts"))
+filters = (
+    (
+        "min_genes_per_cell",
+        n_genes_per_cell,
+        ge,
+        "\\\\tRemoving %s cells with non-zero values in <%s genes.",
+    ),
+    (
+        "max_genes_per_cell",
+        n_genes_per_cell,
+        le,
+        "\\\\tRemoving %s cells with non-zero values in >%s genes.",
+    ),
+    ("min_counts", n_counts_per_cell, ge, "\\\\tRemoving %s cells with <%s total counts."),
+    ("max_counts", n_counts_per_cell, le, "\\\\tRemoving %s cells with >%s total counts."),
+    (
+        0,
+        np.sum(input_layer[:, keep_genes], axis=1),
+        gt,
+        "\\\\tRemoving %s cells with %s counts",
+    ),
+)
 
 keep_cells = np.repeat(True, modality_data.n_obs)
 for filter_name_or_value, base, comparator, message in filters:
@@ -3345,7 +3368,9 @@ for filter_name_or_value, base, comparator, message in filters:
     except KeyError:
         filter = filter_name_or_value
     if filter is not None:
-        num_removed, keep_cells = apply_filter_to_mask(keep_cells, base, filter, comparator)
+        num_removed, keep_cells = apply_filter_to_mask(
+            keep_cells, base, filter, comparator
+        )
         logger.info(message, num_removed, filter)
 
 if par["obs_name_filter"] is not None:

@@ -480,9 +480,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_10xmtx_to_h5mu"
-LABEL org.opencontainers.image.created="2024-12-05T11:55:08Z"
+LABEL org.opencontainers.image.created="2024-12-05T14:35:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="18fefd36c466d175a95570208623c392c78e1420"
+LABEL org.opencontainers.image.revision="b78f7263182632f2ba3e9947247708397b50a700"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1082,16 +1082,14 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading %s.", par["input"])
 adata = sc.read_10x_mtx(par["input"], gex_only=False)
 
 logger.info("Renaming keys.")
-adata.var = adata.var\\
-  .rename_axis("gene_symbol")\\
-  .reset_index()\\
-  .set_index("gene_ids")
+adata.var = adata.var.rename_axis("gene_symbol").reset_index().set_index("gene_ids")
 
 # generate output
 logger.info("Convert to mudata")

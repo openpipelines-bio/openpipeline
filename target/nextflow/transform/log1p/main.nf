@@ -3124,7 +3124,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p",
     "viash_version" : "0.9.0",
-    "git_commit" : "18fefd36c466d175a95570208623c392c78e1420",
+    "git_commit" : "b78f7263182632f2ba3e9947247708397b50a700",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3212,6 +3212,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading input mudata")
@@ -3223,14 +3224,15 @@ logger.info("Performing log transformation on modality %s", mod)
 data = mdata.mod[mod]
 
 # Make our own copy with not a lot of data
-# this avoid excessive memory usage and accidental overwrites 
-input_layer = data.layers[par["input_layer"]] \\\\
-              if par["input_layer"] else data.X
+# this avoid excessive memory usage and accidental overwrites
+input_layer = data.layers[par["input_layer"]] if par["input_layer"] else data.X
 data_for_scanpy = ad.AnnData(X=input_layer.copy())
-sc.pp.log1p(data_for_scanpy,
-            base=par["base"],
-            layer=None, # use X
-            copy=False) # allow overwrites in the copy that was made
+sc.pp.log1p(
+    data_for_scanpy,
+    base=par["base"],
+    layer=None,  # use X
+    copy=False,
+)  # allow overwrites in the copy that was made
 
 # Scanpy will overwrite the input layer.
 # So fetch input layer from the copy and use it to populate the output slot
@@ -3238,7 +3240,7 @@ if par["output_layer"]:
     data.layers[par["output_layer"]] = data_for_scanpy.X
 else:
     data.X = data_for_scanpy.X
-data.uns['log1p'] = data_for_scanpy.uns['log1p'].copy()
+data.uns["log1p"] = data_for_scanpy.uns["log1p"].copy()
 
 logger.info("Writing to file %s", par["output"])
 mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
