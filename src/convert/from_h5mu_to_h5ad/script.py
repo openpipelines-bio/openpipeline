@@ -12,6 +12,7 @@ par = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 # TODO: Merge modalities into one layer
@@ -22,7 +23,7 @@ dat = mu.read_h5mu(par["input"])
 logger.info("Converting to h5ad")
 adat = dat.mod[par["modality"]]
 
-logger.info("Writing to %s.", par['output'])
+logger.info("Writing to %s.", par["output"])
 adat.write_h5ad(par["output"], compression=par["output_compression"])
 
 logger.info("Finished")
