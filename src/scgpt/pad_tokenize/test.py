@@ -3,7 +3,6 @@ import sys
 import mudata as mu
 import numpy as np
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
-from scgpt.preprocess import Preprocessor
 
 ## VIASH START
 meta = {
@@ -14,69 +13,26 @@ meta = {
 }
 ## VIASH END
 
-input = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_subset.h5mu"
+input_file = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_subset_binned.h5mu"
 vocab_file = f"{meta['resources_dir']}/scgpt/source/vocab.json"
-input_file = mu.read(input)
-
-## START TEMPORARY WORKAROUND DATA PREPROCESSING
-#TODO: Remove this workaround once scGPT preproc modules are implemented
-# Read in data
-adata = input_file.mod["rna"]
-
-# Set tokens for integration
-pad_token = "<pad>"
-special_tokens = [pad_token, "<cls>", "<eoc>"]
-
-# Make batch a category column
-adata.obs["str_batch"] = adata.obs["sample"].astype(str)
-batch_id_labels = adata.obs["str_batch"].astype("category").cat.codes.values
-adata.obs["batch_id"] = batch_id_labels
-adata.var["gene_name"] = adata.var.index.tolist()
-
-# Load model vocab
 vocab = GeneVocab.from_file(vocab_file)
-for s in special_tokens:
-    if s not in vocab:
-        vocab.append_token(s)
-
-# Cross-check genes with pre-trained model
-genes = adata.var["gene_name"].tolist()
-adata.var["id_in_vocab"] = [
-        1 if gene in vocab else -1 for gene in adata.var["gene_name"]
-    ]
-gene_ids_in_vocab = np.array(adata.var["id_in_vocab"])
-adata = adata[:, adata.var["id_in_vocab"] >= 0]
-
-# Preprocess data
-preprocessor = Preprocessor(
-    use_key="X",
-    filter_gene_by_counts=3,
-    filter_cell_by_counts=False,
-    normalize_total=10000,
-    result_normed_key="X_normed",
-    log1p=True,
-    result_log1p_key="X_log1p",
-    subset_hvg=1200,
-    hvg_flavor="seurat_v3",
-    binning=51,
-    result_binned_key="binned",
-    )
-
-preprocessor(adata, batch_key="str_batch")
-
-# copy results to mudata
-input_file.mod["rna"] = adata
-
-## END TEMPORARY WORKAROUND DATA PREPROCESSING
 
 
-def test_integration_pad_tokenize(run_component, tmp_path):
+@pytest.fixture
+def binned_h5mu(random_h5mu_path):
+    binned_h5mu_path = random_h5mu_path()
+    mdata = mu.read(input_file)
+    adata = mdata.mod["rna"]
+    adata.obsm["binned_counts"] = adata.layers["binned"]
+    mdata.write(binned_h5mu_path)
+    return binned_h5mu_path
+
+
+def test_integration_pad_tokenize(run_component, tmp_path, binned_h5mu):
     output = tmp_path / "Kim2020_Lung_tokenized.h5mu"
-    input_preprocessed = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu"
-    input_file.write(input_preprocessed)
 
     run_component([
-        "--input", input_preprocessed,
+        "--input", binned_h5mu,
         "--output", output,
         "--modality", "rna",
         "--obsm_gene_tokens", "gene_id_tokens",
@@ -84,7 +40,7 @@ def test_integration_pad_tokenize(run_component, tmp_path):
         "--obsm_padding_mask", "padding_mask",
         "--pad_token", "<pad>",
         "--pad_value", "-2",
-        "--input_layer", "binned",
+        "--input_obsm_binned_counts", "binned_counts",
         "--model_vocab", vocab_file
     ])
 
@@ -96,7 +52,7 @@ def test_integration_pad_tokenize(run_component, tmp_path):
     padding_mask = output_adata.obsm["padding_mask"]
 
     # check output dimensions
-    ## nr of genes that are tokenized 
+    ## nr of genes that are tokenized
     assert gene_ids.shape[1] <= output_adata.var.shape[0] + 1, "gene_ids shape[1] is higher than adata.var.shape[0] (n_hvg + 1)"
     assert values.shape[1] <= output_adata.var.shape[0] + 1, "values shape[1] is higher than adata.var.shape[0] (n_hvg + 1)"
     assert padding_mask.shape[1] <= output_adata.var.shape[0] + 1, "padding_mask shape[1] is higher than adata.var.shape[0] (n_hvg + 1)"
