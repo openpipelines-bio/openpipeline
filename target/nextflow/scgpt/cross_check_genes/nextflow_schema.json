@@ -70,6 +70,16 @@
             }
     
 
+        ,
+                "var_input": {
+                "type":
+                "string",
+                "description": "Type: `string`. ",
+                "help_text": "Type: `string`. .var column containing highly variable genes. If provided, will only cross-check HVG filtered genes with model vocabulary."
+            
+            }
+    
+
 }
 },
     
@@ -100,6 +110,17 @@
                 "enum": ["gzip", "lzf"]
             
             
+            }
+    
+
+        ,
+                "output_var_filter": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `id_in_vocab`. In which ",
+                "help_text": "Type: `string`, default: `id_in_vocab`. In which .var slot to store a boolean array corresponding to which observations should be filtered out based on HVG and model vocabulary."
+            ,
+                "default":"id_in_vocab"
             }
     
 

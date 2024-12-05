@@ -2,8 +2,9 @@
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 model_vocab: # please fill in - example: "vocab.json"
-input_layer: "binned"
 # var_gene_names: "foo"
+var_input: "id_in_vocab"
+input_obsm_binned_counts: "binned_counts"
 
 # Outputs
 # output: "$id.$key.output.h5mu"

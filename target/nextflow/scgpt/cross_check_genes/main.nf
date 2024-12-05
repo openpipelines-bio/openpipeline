@@ -2943,6 +2943,15 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--var_input",
+          "description" : ".var column containing highly variable genes. If provided, will only cross-check HVG filtered genes with model vocabulary.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -2974,6 +2983,18 @@ meta = [
             "gzip",
             "lzf"
           ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_var_filter",
+          "description" : "In which .var slot to store a boolean array corresponding to which observations should be filtered out based on HVG and model vocabulary.",
+          "default" : [
+            "id_in_vocab"
+          ],
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3023,7 +3044,7 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu"
+      "path" : "/resources_test/scgpt/test_resources/Kim2020_Lung_subset_preprocessed.h5mu"
     },
     {
       "type" : "file",
@@ -3188,7 +3209,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cross_check_genes",
     "viash_version" : "0.9.0",
-    "git_commit" : "50bc4b5cce16d4f436e6ca1fdce39adfe761c579",
+    "git_commit" : "6b07da2acc4025028a9cb9c65317a341036572e5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3234,7 +3255,6 @@ tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import sys
 import mudata as mu
-import numpy as np
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
 
 ## VIASH START
@@ -3244,8 +3264,10 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'vocab_file': $( if [ ! -z ${VIASH_PAR_VOCAB_FILE+x} ]; then echo "r'${VIASH_PAR_VOCAB_FILE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_var_filter': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_FILTER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
@@ -3291,7 +3313,7 @@ if not par["input_var_gene_names"]:
     genes = adata.var.index.astype(str).tolist()
 elif par["input_var_gene_names"] not in adata.var.columns:
     raise ValueError(f"Gene name column '{par['input_var_gene_names']}' not found in .mod['{par['modality']}'].obs.")
-else: 
+else:
     genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
 
 # Cross-check genes with pre-trained model
@@ -3300,19 +3322,20 @@ vocab_file = par["vocab_file"]
 vocab = GeneVocab.from_file(vocab_file)
 [vocab.append_token(s) for s in special_tokens if s not in vocab]
 
-# vocab.append_token([s for s in special_tokens if s not in vocab])
-
-logger.info("Filtering genes based on model vocab")
-adata.var["id_in_vocab"] = [1 if gene in vocab else -1 for gene in genes]
-    
-gene_ids_in_vocab = np.array(adata.var["id_in_vocab"])
-
-logger.info("Subsetting input data based on genes present in model vocab")
-adata = adata[:, adata.var["id_in_vocab"] >= 0]
-
-mudata.mod[par["modality"]] = adata
+if par["var_input"]:
+    logger.info("Filtering genes based on model vocab and HVG")
+    filter_with_hvg = adata.var[par["var_input"]].tolist()
+    gene_filter_mask = [1 if gene in vocab and hvg else 0 for gene, hvg in zip(genes, filter_with_hvg)]
+    logger.info(f"Total number of genes after HVG present in model vocab: {str(sum(gene_filter_mask))}")
+else:
+    logger.info("Filtering genes based on model vocab")
+    gene_filter_mask = [1 if gene in vocab else 0 for gene in genes]
+    logger.info(f"Total number of genes present in model vocab: {str(sum(gene_filter_mask))}")
 
 logger.info(f"Writing to {par['output']}")
+adata.var[par["output_var_filter"]] = gene_filter_mask
+adata.var[par["output_var_filter"]] = adata.var[par["output_var_filter"]].astype("bool")
+mudata.mod[par["modality"]] = adata
 mudata.write_h5mu(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"

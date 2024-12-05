@@ -248,7 +248,7 @@ build_info:
   output: "target/executable/mapping/cellranger_atac_count"
   executable: "target/executable/mapping/cellranger_atac_count/cellranger_atac_count"
   viash_version: "0.9.0"
-  git_commit: "50bc4b5cce16d4f436e6ca1fdce39adfe761c579"
+  git_commit: "6b07da2acc4025028a9cb9c65317a341036572e5"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
