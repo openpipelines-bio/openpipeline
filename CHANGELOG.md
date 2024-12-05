@@ -8,6 +8,8 @@
 
 * `scgpt/cell_type_annotation` component update: Added support for multi-processing (PR #832).
 
+* CI: Use `params.resources_test` in test workflows in order to point to an alternative location (e.g. a cache) (PR #889).
+
 ## MINOR CHANGES
 
 * Several component (cleanup): remove workaround for using being able to use shared utility functions with Nextflow Fusion (PR #920).
