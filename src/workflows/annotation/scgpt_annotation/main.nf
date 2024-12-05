@@ -13,10 +13,10 @@ workflow run_wf {
     // Annotate the mudata object with highly variable genes.
     | highly_variable_features_scanpy.run(
       fromState: [
-          "input": "input",
-          "layer": "input_layer",
-          "modality": "modality",
-          "n_top_features": "n_hvg",
+        "input": "input",
+        "layer": "input_layer",
+        "modality": "modality",
+        "n_top_features": "n_hvg",
       ],
       args: [
         "var_name_filter": "scgpt_filter_with_hvg",
@@ -28,12 +28,12 @@ workflow run_wf {
     // Subsets for genes present in vocab only.
     | cross_check_genes.run(
       fromState: [
-          "input": "input",
-          "modality": "modality",
-          "vocab_file": "model_vocab",
-          "input_var_gene_names": "input_var_gene_names",
-          "output": "output",
-          "pad_token": "pad_token"
+        "input": "input",
+        "modality": "modality",
+        "vocab_file": "model_vocab",
+        "input_var_gene_names": "input_var_gene_names",
+        "output": "output",
+        "pad_token": "pad_token"
       ],
       args: [
         "var_input": "scgpt_filter_with_hvg",
@@ -44,13 +44,13 @@ workflow run_wf {
     // Bins the data into a fixed number of bins.
     | binning.run(
       fromState: [
-          "input": "input",
-          "modality": "modality",
-          "input_layer": "input_layer",
-          "n_input_bins": "n_input_bins",
-          "output": "output",
-          "seed": "seed"
-        ],
+        "input": "input",
+        "modality": "modality",
+        "input_layer": "input_layer",
+        "n_input_bins": "n_input_bins",
+        "output": "output",
+        "seed": "seed"
+      ],
       args: [
         "output_obsm_binned_counts": "binned_counts",
         "var_input": "scgpt_cross_checked_genes"
