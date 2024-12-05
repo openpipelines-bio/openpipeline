@@ -1,7 +1,6 @@
 import sys
 import celltypist
 import mudata as mu
-import re
 import numpy as np
 
 ## VIASH START
@@ -9,15 +8,18 @@ par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix_log_normalized.h5mu",
     "output": "output.h5mu",
     "modality": "rna",
-    "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
-    "model": None,
+    "reference": None,
+    # "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
+    "model": "resources_test/annotation_test_data/celltypist_model_Immune_All_Low.pkl",
+    "input_reference_gene_overlap": 100,
     "reference_obs_target": "cell_ontology_class",
+    "reference_var_input": None,
     "check_expression": False,
     "feature_selection": True,
     "majority_voting": True,
     "output_compression": "gzip",
-    "var_query_gene_names": None,
-    "var_reference_gene_names": "ensemblid",
+    "input_var_gene_names": "gene_symbol",
+    "reference_var_gene_names": "ensemblid",
     "input_layer": None,
     "reference_layer": None,
     "output_obs_predictions": "celltypist_pred",
@@ -25,19 +27,20 @@ par = {
 }
 meta = {}
 ## VIASH END
+
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from cross_check_genes import cross_check_genes
+from set_var_index import set_var_index
+from subset_vars import subset_vars
+
+logger = setup_logger()
 
 
 def check_celltypist_format(indata):
     if np.abs(np.expm1(indata[0]).sum() - 10000) > 1:
         return False
     return True
-
-
-def set_var_index(adata, var_name):
-    adata.var.index = [re.sub("\\.[0-9]+$", "", s) for s in adata.var[var_name]]
-    return adata
 
 
 def main(par):
@@ -48,40 +51,44 @@ def main(par):
             "Make sure to provide either 'model' or 'reference', but not both."
         )
 
-    logger = setup_logger()
-
     input_mudata = mu.read_h5mu(par["input"])
-    input_modality = input_mudata.mod[par["modality"]].copy()
+    input_adata = input_mudata.mod[par["modality"]]
+    input_modality = input_adata.copy()
 
-    # Set var names to the desired gene name format (gene synbol, ensembl id, etc.)
-    # CellTypist requires query gene names to be in the same format as the reference data.
-    input_modality = (
-        set_var_index(input_modality, par["var_query_gene_names"])
-        if par["var_query_gene_names"]
-        else input_modality
-    )
+    # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
+    # CellTypist requires query gene names to be in index
+    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
 
     if par["model"]:
         logger.info("Loading CellTypist model")
         model = celltypist.models.Model.load(par["model"])
+        cross_check_genes(
+            input_modality.var.index,
+            model.features,
+            min_gene_overlap=par["input_reference_gene_overlap"],
+        )
 
     elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
 
-        if par["var_reference_gene_names"]:
-            reference_modality = set_var_index(
-                reference_modality, par["var_reference_gene_names"]
+        # subset to HVG if required
+        if par["reference_var_input"]:
+            reference_modality = subset_vars(
+                reference_modality, par["reference_var_input"]
             )
 
-        logger.info("Detecting common vars")
-        common_ens_ids = reference_modality.var.index.intersection(
-            input_modality.var.index
+        # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
+        # CellTypist requires query gene names to be in index
+        reference_modality = set_var_index(
+            reference_modality, par["reference_var_gene_names"]
         )
 
-        logger.info("  reference n_vars: %i", reference_modality.n_vars)
-        logger.info("  input n_vars: %i", input_modality.n_vars)
-        logger.info("  intersect n_vars: %i", len(common_ens_ids))
-        assert len(common_ens_ids) >= 100, "The intersection of genes is too small."
+        # Ensure enough overlap between genes in query and reference
+        cross_check_genes(
+            input_modality.var.index,
+            reference_modality.var.index,
+            min_gene_overlap=par["input_reference_gene_overlap"],
+        )
 
         input_matrix = (
             input_modality.layers[par["input_layer"]]
@@ -121,14 +128,14 @@ def main(par):
     predictions = celltypist.annotate(
         input_modality, model, majority_voting=par["majority_voting"]
     )
-    input_modality.obs[par["output_obs_predictions"]] = predictions.predicted_labels[
+    input_adata.obs[par["output_obs_predictions"]] = predictions.predicted_labels[
         "predicted_labels"
     ]
-    input_modality.obs[par["output_obs_probability"]] = (
-        predictions.probability_matrix.max(axis=1).values
-    )
+    input_adata.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(
+        axis=1
+    ).values
 
-    input_mudata.mod[par["modality"]] = input_modality
+    # copy observations back to input data (with full set of features)
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
 
 

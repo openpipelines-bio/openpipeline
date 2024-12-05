@@ -1,11 +1,9 @@
 import sys
 import mudata as mu
-import anndata as ad
-import re
 import numpy as np
 from OnClass.OnClassModel import OnClassModel
 import obonet
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 
 ## VIASH START
@@ -15,7 +13,9 @@ par = {
     "modality": "rna",
     "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "model": None,
-    "reference_obs_targets": "cell_ontology_class",
+    # "reference": None,
+    # "model": "resources_test/annotation_test_data/onclass_model/example_file_model",
+    "reference_obs_target": "cell_ontology_class",
     "input_layer": None,
     "reference_layer": None,
     "max_iter": 100,
@@ -25,12 +25,20 @@ par = {
     "cl_ontology_file": "resources_test/annotation_test_data/ontology/cl.ontology",
     "cl_obo_file": "resources_test/annotation_test_data/ontology/cl.obo",
     "output_compression": "gzip",
+    "input_var_gene_names": "gene_symbol",
+    "input_reference_gene_overlap": 100,
+    "reference_var_input": None,
+    "reference_var_gene_names": None,
+    "unkown_celltype": "Unknown",
 }
-meta = {"resources_dir": "src/annotate/onclass"}
+meta = {"resources_dir": "src/utils"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from cross_check_genes import cross_check_genes
+from set_var_index import set_var_index
+from subset_vars import subset_vars
 
 logger = setup_logger()
 
@@ -59,14 +67,12 @@ def map_celltype_to_ontology_id(
     return cl_id_to_name, name_to_cl_id
 
 
-def predict_input_data(
+def cell_type_prediction(
     model: OnClassModel,
     input_matrix: np.array,
-    input_modality: ad.AnnData,
+    input_features: List[str],
     id_to_name: dict,
-    obs_prediction: str,
-    obs_probability: str,
-) -> ad.AnnData:
+) -> Tuple[List[str], List[float]]:
     """
     Predict cell types for input data and save results to Anndata obj.
 
@@ -80,19 +86,17 @@ def predict_input_data(
         The input data Anndata object.
     id_to_name : dict
         Dictionary mapping cell ontology IDs to cell type names.
-    obs_prediction : str
-        The obs key for the predicted cell type.
-    obs_probability : str
-        The obs key for the predicted cell type probability.
 
     Returns
     -------
-    ad.AnnData
-        The input data Anndata object with the predicted cell types saved in obs.
+    predictions: List[str]
+        The predicted cell types.
+    probabilities: List[float]
+        Probabilities of the predicted cell types.
     """
     corr_test_feature = model.ProcessTestFeature(
         test_feature=input_matrix,
-        test_genes=input_modality.var_names,
+        test_genes=input_features,
         log_transform=False,
     )
     onclass_pred = model.Predict(
@@ -100,17 +104,9 @@ def predict_input_data(
     )
     pred_label = [model.i2co[ind] for ind in onclass_pred[2]]
     pred_cell_type_label = [id_to_name[id] for id in pred_label]
+    prob_cell_type_label = np.max(onclass_pred[1], axis=1) / onclass_pred[1].sum(1)
 
-    input_modality.obs[obs_prediction] = pred_cell_type_label
-    input_modality.obs[obs_probability] = np.max(
-        onclass_pred[1], axis=1
-    ) / onclass_pred[1].sum(1)
-    return input_modality
-
-
-def set_var_index(adata, var_name):
-    adata.var.index = [re.sub("\\.[0-9]+$", "", s) for s in adata.var[var_name]]
-    return adata
+    return pred_cell_type_label, prob_cell_type_label
 
 
 def main():
@@ -123,19 +119,18 @@ def main():
 
     logger.info("Reading input data")
     input_mudata = mu.read_h5mu(par["input"])
-    input_modality = input_mudata.mod[par["modality"]].copy()
+    input_adata = input_mudata.mod[par["modality"]]
+    input_modality = input_adata.copy()
 
-    # Set var names to the desired gene name format (gene synbol, ensembl id, etc.)
-    input_modality = (
-        set_var_index(input_modality, par["var_query_gene_names"])
-        if par["var_query_gene_names"]
-        else input_modality
-    )
+    # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
+    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
     input_matrix = (
-        input_modality.layers[par["input_layer"]].toarray()
+        input_modality.layers[par["input_layer"]]
         if par["input_layer"]
-        else input_modality.X.toarray()
+        else input_modality.X
     )
+    # Onclass needs dense matrix format
+    input_matrix = input_matrix.toarray()
 
     id_to_name, name_to_id = map_celltype_to_ontology_id(par["cl_obo_file"])
 
@@ -147,6 +142,9 @@ def main():
         )
 
         model.BuildModel(use_pretrain=par["model"], ngene=None)
+        cross_check_genes(
+            model.genes, input_modality.var.index, par["input_reference_gene_overlap"]
+        )
 
     elif par["reference"]:
         logger.info("Reading reference data")
@@ -157,61 +155,58 @@ def main():
 
         reference_mudata = mu.read_h5mu(par["reference"])
         reference_modality = reference_mudata.mod[par["modality"]].copy()
-
-        reference_modality.var["gene_symbol"] = list(reference_modality.var.index)
-        reference_modality.var.index = [
-            re.sub("\\.[0-9]+$", "", s) for s in reference_modality.var["ensemblid"]
-        ]
-
-        logger.info("Detecting common vars based on ensembl ids")
-        common_ens_ids = list(
-            set(reference_modality.var.index).intersection(
-                set(input_modality.var.index)
-            )
+        reference_modality = set_var_index(
+            reference_modality, par["reference_var_gene_names"]
         )
 
-        logger.info("  reference n_vars: %i", reference_modality.n_vars)
-        logger.info("  input n_vars: %i", input_modality.n_vars)
-        logger.info("  intersect n_vars: %i", len(common_ens_ids))
-        assert len(common_ens_ids) >= 100, "The intersection of genes is too small."
+        # subset to HVG if required
+        if par["reference_var_input"]:
+            reference_modality = subset_vars(
+                reference_modality, par["reference_var_input"]
+            )
+
+        cross_check_genes(
+            input_modality.var.index,
+            reference_modality.var.index,
+            par["input_reference_gene_overlap"],
+        )
 
         reference_matrix = (
-            reference_modality.layers[par["reference_layer"]].toarray()
+            reference_modality.layers[par["reference_layer"]]
             if par["reference_layer"]
-            else reference_modality.X.toarray()
+            else reference_modality.X
         )
+        # Onclass needs dense matrix format
+        reference_matrix = reference_matrix.toarray()
 
         logger.info("Training a model from reference...")
+
         labels = reference_modality.obs[par["reference_obs_target"]].tolist()
-        labels_cl = [name_to_id[label] for label in labels]
+        labels_cl = [
+            name_to_id[label] if label in name_to_id else par["unknown_celltype"]
+            for label in labels
+        ]
+
         _ = model.EmbedCellTypes(labels_cl)
-        (
-            corr_train_feature,
-            _,
-            corr_train_genes,
-            _,
-        ) = model.ProcessTrainFeature(
+        corr_train_feature, _, corr_train_genes, _ = model.ProcessTrainFeature(
             train_feature=reference_matrix,
             train_label=labels_cl,
-            train_genes=reference_modality.var_names,
+            train_genes=reference_modality.var.index,
             test_feature=input_matrix,
-            test_genes=input_modality.var_names,
+            test_genes=input_modality.var.index,
             log_transform=False,
         )
         model.BuildModel(ngene=len(corr_train_genes))
         model.Train(corr_train_feature, labels_cl, max_iter=par["max_iter"])
 
     logger.info("Predicting cell types")
-    input_modality = predict_input_data(
-        model,
-        input_matrix,
-        input_modality,
-        id_to_name,
-        par["output_obs_predictions"],
-        par["output_obs_probability"],
+    predictions, probabilities = cell_type_prediction(
+        model, input_matrix, input_modality.var.index, id_to_name
     )
+
     logger.info("Writing output data")
-    input_mudata.mod[par["modality"]] = input_modality
+    input_adata.obs[par["output_obs_predictions"]] = predictions
+    input_adata.obs[par["output_obs_probability"]] = probabilities
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
 
 

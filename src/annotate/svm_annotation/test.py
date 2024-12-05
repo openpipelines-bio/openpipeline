@@ -11,53 +11,29 @@ import pickle
 
 ## VIASH START
 meta = {"resources_dir": "resources_test"}
+sys.path.append("src/utils")
 ## VIASH END
 
 input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 reference_file = f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5mu"
-# model_file = f"{meta['resources_dir']}/annotation_test_data/onclass_model/example_file_model"
+
+sys.path.append(meta["resources_dir"])
+from cross_check_genes import cross_check_genes
+from set_var_index import set_var_index
 
 
 @pytest.fixture
-def subset_genes(random_h5mu_path):
-    def wrapper(input_mudata_file, reference_mudata_file, modality):
-        input_mudata = mu.read_h5mu(input_mudata_file)
-        input_adata = input_mudata.mod[modality]
-        reference_mudata = mu.read_h5mu(reference_mudata_file)
-        reference_adata = reference_mudata.mod[modality]
+def dummy_model(tmp_path):
+    reference_modality = mu.read_h5mu(reference_file).mod["rna"].copy()
+    reference_modality = set_var_index(reference_modality, "ensemblid")
 
-        reference_mudata.var["gene_symbol"] = list(reference_mudata.var.index)
-        reference_mudata.var.index = [
-            re.sub("\\.[0-9]+$", "", s) for s in reference_mudata.var["ensemblid"]
-        ]
-        reference_adata.var["gene_symbol"] = list(reference_adata.var.index)
-        reference_adata.var.index = [
-            re.sub("\\.[0-9]+$", "", s) for s in reference_adata.var["ensemblid"]
-        ]
-        common_ens_ids = list(
-            set(reference_adata.var.index).intersection(set(input_adata.var.index))
-        )
+    input_modality = mu.read_h5mu(input_file).mod["rna"].copy()
+    input_modality = set_var_index(input_modality, None)
 
-        reference = reference_adata[:, common_ens_ids].copy()
-        query = input_adata[:, common_ens_ids].copy()
-
-        input_mudata.mod[modality] = query
-        reference_mudata.mod[modality] = reference
-
-        subset_input_mudata_file = random_h5mu_path()
-        subset_reference_mudata_file = random_h5mu_path()
-
-        input_mudata.write_h5mu(subset_input_mudata_file)
-        reference_mudata.write_h5mu(subset_reference_mudata_file)
-        return subset_input_mudata_file, subset_reference_mudata_file
-
-    return wrapper
-
-
-@pytest.fixture
-def dummy_model(tmp_path, subset_genes):
-    _, subset_reference_file = subset_genes(input_file, reference_file, "rna")
-    reference_modality = mu.read_h5mu(subset_reference_file).mod["rna"]
+    common_genes = cross_check_genes(
+        input_modality.var.index, reference_modality.var.index
+    )
+    reference_modality = reference_modality[:, common_genes]
 
     labels = reference_modality.obs["cell_ontology_class"].to_numpy()
     model = CalibratedClassifierCV(
@@ -67,6 +43,7 @@ def dummy_model(tmp_path, subset_genes):
         )
     )
     model.fit(reference_modality.X, labels)
+    model._feature_names_in = reference_modality.var.index
 
     model_path = tmp_path / "model.pkl"
     with open(model_path, "wb") as f:
@@ -75,20 +52,19 @@ def dummy_model(tmp_path, subset_genes):
     return model_path
 
 
-def test_simple_execution(run_component, random_h5mu_path, subset_genes):
-    subset_input_file, subset_reference_file = subset_genes(
-        input_file, reference_file, "rna"
-    )
+def test_simple_execution(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
 
     run_component(
         [
             "--input",
-            subset_input_file,
+            input_file,
             "--reference",
-            subset_reference_file,
+            reference_file,
             "--reference_obs_target",
             "cell_ontology_class",
+            "--reference_var_gene_names",
+            "ensemblid",
             "--output",
             output_file,
         ]
@@ -109,18 +85,17 @@ def test_simple_execution(run_component, random_h5mu_path, subset_genes):
     ), "probabilities outside the range [0, 1]"
 
 
-def test_custom_out_obs_model_params(run_component, random_h5mu_path, subset_genes):
-    subset_input_file, subset_reference_file = subset_genes(
-        input_file, reference_file, "rna"
-    )
+def test_custom_out_obs_model_params(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
 
     run_component(
         [
             "--input",
-            subset_input_file,
+            input_file,
             "--reference",
-            subset_reference_file,
+            reference_file,
+            "--reference_var_gene_names",
+            "ensemblid",
             "--reference_obs_target",
             "cell_ontology_class",
             "--output_obs_prediction",
@@ -154,14 +129,13 @@ def test_custom_out_obs_model_params(run_component, random_h5mu_path, subset_gen
     ), "probabilities outside the range [0, 1]"
 
 
-def test_with_model(run_component, random_h5mu_path, dummy_model, subset_genes):
-    subset_input_file, _ = subset_genes(input_file, reference_file, "rna")
+def test_with_model(run_component, random_h5mu_path, dummy_model):
     output_file = random_h5mu_path()
 
     run_component(
         [
             "--input",
-            subset_input_file,
+            input_file,
             "--reference_obs_target",
             "cell_ontology_class",
             "--model",

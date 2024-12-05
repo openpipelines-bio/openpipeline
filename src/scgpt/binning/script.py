@@ -6,21 +6,25 @@ import warnings
 
 ## VIASH START
 par = {
-    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu",
-    "output": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_binned_sparse.h5mu",
+    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_genes_cross_checked.h5mu",
+    "output": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_binned.h5mu",
     "modality": "rna",
     "input_layer": None,
-    "binned_layer": "binned",
+    "output_obsm_binned_counts": "binned_counts",
     "n_input_bins": 51,
     "output_compression": None,
+    "var_input": "id_in_vocab",
     "seed": 0,
 }
+meta = {"resources_dir": "src/utils"}
 ## VIASH END
+
 if par["seed"]:
     np.random.seed(par["seed"])
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from subset_vars import subset_vars
 
 logger = setup_logger()
 
@@ -29,6 +33,9 @@ logger.info("Reading in data")
 mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
+
+logger.info("Subsetting data based on highly variable gene and/or cross-checked genes")
+adata = subset_vars(adata, par["var_input"])
 
 logger.info("Converting the input layer into a CSR matrix")
 if not par["input_layer"] or par["input_layer"] == "X":
@@ -104,7 +111,7 @@ with warnings.catch_warnings():
 
 # Create new CSR matrix
 logger.info("Creating a new CSR matrix of the binned count values")
-binned_layer = csr_matrix(
+binned_counts = csr_matrix(
     (
         np.concatenate(binned_rows, casting="same_kind"),
         layer_data.indices,
@@ -114,10 +121,9 @@ binned_layer = csr_matrix(
 )
 
 # Set binned values and bin edges layers to adata object
-adata.layers[par["binned_layer"]] = binned_layer
-adata.obsm["bin_edges"] = np.stack(bin_edges)
+input_adata.obsm[par["output_obsm_binned_counts"]] = binned_counts
+input_adata.obsm["bin_edges"] = np.stack(bin_edges)
 
 # Write mudata output
 logger.info("Writing output data")
-mdata.mod[par["modality"]] = adata
-mdata.write(par["output"], compression=par["output_compression"])
+mdata.write_h5mu(par["output"], compression=par["output_compression"])

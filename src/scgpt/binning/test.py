@@ -14,7 +14,7 @@ meta = {
 
 
 def test_binning(run_component, tmp_path):
-    input_file_path = f"{meta['resources_dir']}/Kim2020_Lung_subset.h5mu"
+    input_file_path = f"{meta['resources_dir']}/Kim2020_Lung_subset_preprocessed.h5mu"
     output_file_path = tmp_path / "Kim2020_Lung_subset_binned.h5mu"
 
     run_component(
@@ -23,10 +23,12 @@ def test_binning(run_component, tmp_path):
             input_file_path,
             "--modality",
             "rna",
-            "--binned_layer",
-            "binned",
+            "--output_obsm_binned_counts",
+            "binned_counts",
             "--n_input_bins",
             "51",
+            "--var_input",
+            "filter_with_hvg",
             "--output",
             output_file_path,
         ]
@@ -37,8 +39,9 @@ def test_binning(run_component, tmp_path):
     output_adata = output_mdata.mod["rna"]
 
     # Check presence of binning layers
-    assert "bin_edges" in output_adata.obsm.keys()
-    assert "binned" in output_adata.layers.keys()
+    assert {"bin_edges", "binned_counts"}.issubset(
+        output_adata.obsm.keys()
+    ), "Binning obsm fields were not added."
 
     # Check bin edges
     bin_edges = output_adata.obsm["bin_edges"]
@@ -47,9 +50,8 @@ def test_binning(run_component, tmp_path):
     assert all(all(i >= 0) for i in bin_edges)
 
     # Check binned values
-    binned_values = output_adata.layers["binned"]
+    binned_values = output_adata.obsm["binned_counts"]
     assert issparse(binned_values)
-    assert binned_values.shape == output_adata.X.shape
     assert (binned_values.data <= 51).all(axis=None)
 
 

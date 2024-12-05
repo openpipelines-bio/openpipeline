@@ -22,24 +22,6 @@ model_file = (
 )
 
 
-@pytest.fixture
-def swap_gene_symbol(random_h5mu_path):
-    def wrapper(input_mudata_file, modality):
-        input_mudata = mu.read_h5mu(input_mudata_file)
-        input_adata = input_mudata.mod[modality]
-        adata = input_adata.copy()
-        adata.var["ensemblid"] = list(adata.var.index)
-        adata.var.index = [
-            re.sub("\\.[0-9]+$", "", s) for s in adata.var["gene_symbol"]
-        ]
-        input_mudata.mod[modality] = adata
-        swapped_input_mudata_file = random_h5mu_path()
-        input_mudata.write_h5mu(swapped_input_mudata_file)
-        return swapped_input_mudata_file
-
-    return wrapper
-
-
 def test_simple_execution(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
 
@@ -47,6 +29,8 @@ def test_simple_execution(run_component, random_h5mu_path):
         [
             "--input",
             input_file,
+            "--input_var_gene_names",
+            "gene_symbol",
             "--reference",
             reference_file,
             "--reference_obs_target",
@@ -86,6 +70,8 @@ def test_custom_obs(run_component, random_h5mu_path):
         [
             "--input",
             input_file,
+            "--input_var_gene_names",
+            "gene_symbol",
             "--reference",
             reference_file,
             "--reference_obs_target",
@@ -116,12 +102,10 @@ def test_custom_obs(run_component, random_h5mu_path):
 
     assert set(output_mudata.mod["rna"].obs.keys()) == {"dummy_pred_1", "dummy_prob_1"}
 
-    obs_keys = ["dummy_prob_1"]
-    for key in obs_keys:
-        obs_values = output_mudata.mod["rna"].obs[key]
-        assert all(
-            0 <= value <= 1 for value in obs_values
-        ), f".obs at {key} has values outside the range [0, 1]"
+    obs_values = output_mudata.mod["rna"].obs["dummy_prob_1"]
+    assert all(
+        0 <= value <= 1 for value in obs_values
+    ), ".obs at dummy_prob_1 has values outside the range [0, 1]"
 
 
 def test_no_model_no_reference_error(run_component, random_h5mu_path):
@@ -132,6 +116,8 @@ def test_no_model_no_reference_error(run_component, random_h5mu_path):
             [
                 "--input",
                 input_file,
+                "--input_var_gene_names",
+                "gene_symbol",
                 "--output",
                 output_file,
                 "--cl_nlp_emb_file",
@@ -150,14 +136,15 @@ def test_no_model_no_reference_error(run_component, random_h5mu_path):
     )
 
 
-def test_pretrained_model(run_component, random_h5mu_path, swap_gene_symbol):
+def test_pretrained_model(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
-    swapped_input_file = swap_gene_symbol(input_file, "rna")
 
     run_component(
         [
             "--input",
-            swapped_input_file,
+            input_file,
+            "--input_var_gene_names",
+            "gene_symbol",
             "--cl_nlp_emb_file",
             cl_nlp_emb_file,
             "--cl_ontology_file",

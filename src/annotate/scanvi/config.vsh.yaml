@@ -27,6 +27,12 @@ argument_groups:
         description: .var field containing the gene names, if the .var index is not to be used.
         type: string
         required: false
+      - name: "--input_reference_gene_overlap"
+        type: integer
+        default: 100
+        min: 1
+        description: | 
+          The minimum number of genes present in both the reference and query datasets.
 
   - name: Reference model
     description: Arguments related to the reference model.
@@ -189,7 +195,9 @@ resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
-  - path: /src/annotate/utils/query_reference_allignment.py
+  - path: /src/utils/cross_check_genes.py
+  - path: /src/utils/subset_vars.py
+  - path: /src/utils/set_var_index.py
 
 test_resources:
   - type: python_script
