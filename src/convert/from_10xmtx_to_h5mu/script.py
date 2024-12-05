@@ -11,16 +11,14 @@ par = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading %s.", par["input"])
 adata = sc.read_10x_mtx(par["input"], gex_only=False)
 
 logger.info("Renaming keys.")
-adata.var = adata.var\
-  .rename_axis("gene_symbol")\
-  .reset_index()\
-  .set_index("gene_ids")
+adata.var = adata.var.rename_axis("gene_symbol").reset_index().set_index("gene_ids")
 
 # generate output
 logger.info("Convert to mudata")

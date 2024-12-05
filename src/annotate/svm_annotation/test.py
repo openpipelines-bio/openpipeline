@@ -5,15 +5,12 @@ import subprocess
 import re
 import mudata as mu
 from openpipelinetestutils.asserters import assert_annotation_objects_equal
-import os
 from sklearn import svm
 from sklearn.calibration import CalibratedClassifierCV
 import pickle
 
 ## VIASH START
-meta = {
-    "resources_dir": "resources_test"
-}
+meta = {"resources_dir": "resources_test"}
 sys.path.append("src/utils")
 ## VIASH END
 
@@ -33,14 +30,18 @@ def dummy_model(tmp_path):
     input_modality = mu.read_h5mu(input_file).mod["rna"].copy()
     input_modality = set_var_index(input_modality, None)
 
-    common_genes = cross_check_genes(input_modality.var.index, reference_modality.var.index)
+    common_genes = cross_check_genes(
+        input_modality.var.index, reference_modality.var.index
+    )
     reference_modality = reference_modality[:, common_genes]
 
     labels = reference_modality.obs["cell_ontology_class"].to_numpy()
-    model = CalibratedClassifierCV(svm.LinearSVC(
-        max_iter=10,
-        dual="auto",
-    ))
+    model = CalibratedClassifierCV(
+        svm.LinearSVC(
+            max_iter=10,
+            dual="auto",
+        )
+    )
     model.fit(reference_modality.X, labels)
     model._feature_names_in = reference_modality.var.index
 
@@ -54,13 +55,20 @@ def dummy_model(tmp_path):
 def test_simple_execution(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
 
-    run_component([
-        "--input", input_file,
-        "--reference", reference_file,
-        "--reference_obs_target", "cell_ontology_class",
-        "--reference_var_gene_names", "ensemblid",
-        "--output", output_file
-    ])
+    run_component(
+        [
+            "--input",
+            input_file,
+            "--reference",
+            reference_file,
+            "--reference_obs_target",
+            "cell_ontology_class",
+            "--reference_var_gene_names",
+            "ensemblid",
+            "--output",
+            output_file,
+        ]
+    )
 
     assert os.path.exists(output_file), "Output file does not exist"
 
@@ -69,26 +77,39 @@ def test_simple_execution(run_component, random_h5mu_path):
 
     assert_annotation_objects_equal(input_mudata.mod["prot"], output_mudata.mod["prot"])
 
-    assert list(output_mudata.mod["rna"].obs.keys()) == ['svm_pred', 'svm_probability']
+    assert list(output_mudata.mod["rna"].obs.keys()) == ["svm_pred", "svm_probability"]
 
     obs_values = output_mudata.mod["rna"].obs["svm_probability"]
-    assert all(0 <= value <= 1 for value in obs_values), "probabilities outside the range [0, 1]"
+    assert all(
+        0 <= value <= 1 for value in obs_values
+    ), "probabilities outside the range [0, 1]"
 
 
 def test_custom_out_obs_model_params(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
 
-    run_component([
-        "--input", input_file,
-        "--reference", reference_file,
-        "--reference_var_gene_names", "ensemblid",
-        "--reference_obs_target", "cell_ontology_class",
-        "--output_obs_prediction", "dummy_pred",
-        "--output_obs_probability", "dummy_probability",
-        "--max_iter", "1000",
-        "--c_reg", "0.1",
-        "--output", output_file
-    ])
+    run_component(
+        [
+            "--input",
+            input_file,
+            "--reference",
+            reference_file,
+            "--reference_var_gene_names",
+            "ensemblid",
+            "--reference_obs_target",
+            "cell_ontology_class",
+            "--output_obs_prediction",
+            "dummy_pred",
+            "--output_obs_probability",
+            "dummy_probability",
+            "--max_iter",
+            "1000",
+            "--c_reg",
+            "0.1",
+            "--output",
+            output_file,
+        ]
+    )
 
     assert os.path.exists(output_file), "Output file does not exist"
 
@@ -97,21 +118,32 @@ def test_custom_out_obs_model_params(run_component, random_h5mu_path):
 
     assert_annotation_objects_equal(input_mudata.mod["prot"], output_mudata.mod["prot"])
 
-    assert list(output_mudata.mod["rna"].obs.keys()) == ['dummy_pred', 'dummy_probability']
+    assert list(output_mudata.mod["rna"].obs.keys()) == [
+        "dummy_pred",
+        "dummy_probability",
+    ]
 
     obs_values = output_mudata.mod["rna"].obs["dummy_probability"]
-    assert all(0 <= value <= 1 for value in obs_values), "probabilities outside the range [0, 1]"
+    assert all(
+        0 <= value <= 1 for value in obs_values
+    ), "probabilities outside the range [0, 1]"
 
 
 def test_with_model(run_component, random_h5mu_path, dummy_model):
     output_file = random_h5mu_path()
 
-    run_component([
-        "--input", input_file,
-        "--reference_obs_target", "cell_ontology_class",
-        "--model", dummy_model,
-        "--output", output_file
-    ])
+    run_component(
+        [
+            "--input",
+            input_file,
+            "--reference_obs_target",
+            "cell_ontology_class",
+            "--model",
+            dummy_model,
+            "--output",
+            output_file,
+        ]
+    )
 
     assert os.path.exists(output_file), "Output file does not exist"
 
@@ -120,27 +152,33 @@ def test_with_model(run_component, random_h5mu_path, dummy_model):
 
     assert_annotation_objects_equal(input_mudata.mod["prot"], output_mudata.mod["prot"])
 
-    assert list(output_mudata.mod["rna"].obs.keys()) == ['svm_pred',
-                                                         'svm_probability']
+    assert list(output_mudata.mod["rna"].obs.keys()) == ["svm_pred", "svm_probability"]
 
     obs_values = output_mudata.mod["rna"].obs["svm_probability"]
-    assert all(0 <= value <= 1 for value in obs_values), "probabilities outside the range [0, 1]"
+    assert all(
+        0 <= value <= 1 for value in obs_values
+    ), "probabilities outside the range [0, 1]"
 
 
 def test_no_model_no_reference_error(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
 
     with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component([
-            "--input", input_file,
-            "--reference_obs_target", "cell_ontology_class",
-            "--output", output_file,
-        ])
+        run_component(
+            [
+                "--input",
+                input_file,
+                "--reference_obs_target",
+                "cell_ontology_class",
+                "--output",
+                output_file,
+            ]
+        )
     assert re.search(
         r"ValueError: Make sure to provide either 'model' or 'reference', but not both.",
-         err.value.stdout.decode('utf-8')
-         )
+        err.value.stdout.decode("utf-8"),
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

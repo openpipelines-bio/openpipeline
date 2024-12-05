@@ -4,11 +4,11 @@ import mudata as md
 
 ## VIASH START
 meta = {
-  "name": "bd_rhapsody",
-  "executable": "target/docker/mapping/bd_rhapsody/bd_rhapsody",
-  "resources_dir": "src/mapping/bd_rhapsody",
-  "cpus": 8,
-  "memory_mb": 4096,
+    "name": "bd_rhapsody",
+    "executable": "target/docker/mapping/bd_rhapsody/bd_rhapsody",
+    "resources_dir": "src/mapping/bd_rhapsody",
+    "cpus": 8,
+    "memory_mb": 4096,
 }
 
 # bdabseq_panel_fa = "resources_test/bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"
@@ -25,21 +25,23 @@ bdabseq_panel_fa = f"{meta['resources_dir']}/raw/BDAbSeq_ImmuneDiscoveryPanel.fa
 # Run executable
 print(f">> Run {meta['name']}", flush=True)
 output_dir = Path("output")
-subprocess.run([
-  meta['executable'],
-  f"--reads={wta_reads}",
-  f"--reads={abc_reads}",
-  f"--reference_archive={reference_file}",
-  f"--abseq_reference={bdabseq_panel_fa}",
-  "--output_dir=output",
-  "--exact_cell_count=4900",
-  "---cpus=2",
-  "---memory=10gb",
-  "--output_seurat=seurat.rds",
-  "--output_mudata=mudata.h5mu",
-  "--metrics_summary=metrics_summary.csv",
-  "--pipeline_report=pipeline_report.html",
-])
+subprocess.run(
+    [
+        meta["executable"],
+        f"--reads={wta_reads}",
+        f"--reads={abc_reads}",
+        f"--reference_archive={reference_file}",
+        f"--abseq_reference={bdabseq_panel_fa}",
+        "--output_dir=output",
+        "--exact_cell_count=4900",
+        "---cpus=2",
+        "---memory=10gb",
+        "--output_seurat=seurat.rds",
+        "--output_mudata=mudata.h5mu",
+        "--metrics_summary=metrics_summary.csv",
+        "--pipeline_report=pipeline_report.html",
+    ]
+)
 
 
 # Check if output exists

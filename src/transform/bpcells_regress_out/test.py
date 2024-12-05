@@ -34,13 +34,16 @@ def output_h5mu_path(tmp_path):
 
 
 def test_regress_out(run_component, input_h5mu_path, output_h5mu_path):
-
     # execute command
     cmd_pars = [
-        "--input", input_h5mu_path,
-        "--output", output_h5mu_path,
-        "--obs_keys", "var",
-        "--output_compression", "gzip"
+        "--input",
+        input_h5mu_path,
+        "--output",
+        output_h5mu_path,
+        "--obs_keys",
+        "var",
+        "--output_compression",
+        "gzip",
     ]
     run_component(cmd_pars)
 
@@ -61,16 +64,22 @@ def test_regress_out(run_component, input_h5mu_path, output_h5mu_path):
     assert prot_in.shape == prot_out.shape, "Should have same shape as before"
 
     assert np.mean(rna_in.X) != np.mean(rna_out.X), "RNA expression should have changed"
-    assert np.mean(prot_in.X) == np.mean(prot_out.X), "Protein expression should remain the same"
+    assert np.mean(prot_in.X) == np.mean(
+        prot_out.X
+    ), "Protein expression should remain the same"
 
 
-def test_no_regress_out_without_obs_keys(run_component, input_h5mu_path, output_h5mu_path):
-
+def test_no_regress_out_without_obs_keys(
+    run_component, input_h5mu_path, output_h5mu_path
+):
     # execute command
     cmd_pars = [
-        "--input", input_h5mu_path,
-        "--output", output_h5mu_path,
-        "--output_compression", "gzip"
+        "--input",
+        input_h5mu_path,
+        "--output",
+        output_h5mu_path,
+        "--output_compression",
+        "gzip",
     ]
     run_component(cmd_pars)
 
@@ -80,19 +89,26 @@ def test_no_regress_out_without_obs_keys(run_component, input_h5mu_path, output_
     rna_in = mu_input.mod["rna"]
     rna_out = mu_output.mod["rna"]
 
-    assert np.mean(rna_in.X) == np.mean(rna_out.X), "RNA expression should remain the same"
+    assert np.mean(rna_in.X) == np.mean(
+        rna_out.X
+    ), "RNA expression should remain the same"
 
 
 def test_regress_out_with_layers(run_component, input_h5mu_path, output_h5mu_path):
-
     # execute command
     cmd_pars = [
-        "--input", input_h5mu_path,
-        "--output", output_h5mu_path,
-        "--obs_keys", "var",
-        "--input_layer", "input",
-        "--output_layer", "output",
-        "--output_compression", "gzip"
+        "--input",
+        input_h5mu_path,
+        "--output",
+        output_h5mu_path,
+        "--obs_keys",
+        "var",
+        "--input_layer",
+        "input",
+        "--output_layer",
+        "output",
+        "--output_compression",
+        "gzip",
     ]
     run_component(cmd_pars)
 
@@ -102,8 +118,10 @@ def test_regress_out_with_layers(run_component, input_h5mu_path, output_h5mu_pat
     rna_in = mu_input.mod["rna"]
     rna_out = mu_output.mod["rna"]
 
-    assert np.mean(rna_in.layers["input"]) != np.mean(rna_out.layers["output"]), "RNA expression should have changed"
+    assert np.mean(rna_in.layers["input"]) != np.mean(
+        rna_out.layers["output"]
+    ), "RNA expression should have changed"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

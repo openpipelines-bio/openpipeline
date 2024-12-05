@@ -13,13 +13,14 @@ par = {
     "output_compression": "gzip",
     "log_idf": True,
     "log_tf": True,
-    "log_tfidf": False
+    "log_tfidf": False,
 }
 meta = {"name": "tfidf"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading input mudata")

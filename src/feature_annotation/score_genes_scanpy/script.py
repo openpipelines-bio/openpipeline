@@ -22,9 +22,7 @@ par = {
     "output_compression": "gzip",
     "allow_missing_genes": False,
 }
-meta = {
-    "resources_dir": "src/feature_annotation/score_genes_scanpy"
-}
+meta = {"resources_dir": "src/feature_annotation/score_genes_scanpy"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -34,7 +32,11 @@ from helper import read_gene_list
 mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 
-gene_names_index = input_adata.var[par["var_gene_names"]] if par["var_gene_names"] else input_adata.var_names
+gene_names_index = (
+    input_adata.var[par["var_gene_names"]]
+    if par["var_gene_names"]
+    else input_adata.var_names
+)
 gene_names = pd.Series(input_adata.var_names, index=gene_names_index)
 
 # check if var index is unique
@@ -44,7 +46,9 @@ if not input_adata.var.index.is_unique:
 
 # read gene list
 gene_list = read_gene_list(par, gene_names.index, "gene_list", "gene_list_file")
-gene_pool = read_gene_list(par, gene_names.index, "gene_pool", "gene_pool_file", required=False)
+gene_pool = read_gene_list(
+    par, gene_names.index, "gene_pool", "gene_pool_file", required=False
+)
 
 # find matching index names for given genes
 gene_list_index = gene_names.loc[gene_list].tolist()
@@ -58,7 +62,7 @@ else:
 adata_scanpy = ad.AnnData(
     X=layer_data,
     obs=pd.DataFrame(index=input_adata.obs.index),
-    var=pd.DataFrame(index=input_adata.var.index)
+    var=pd.DataFrame(index=input_adata.var.index),
 )
 
 # run score_genes
@@ -68,11 +72,13 @@ sc.tl.score_genes(
     gene_pool=gene_pool_index,
     ctrl_size=par["ctrl_size"],
     n_bins=par["n_bins"],
-    random_state=par["random_state"]
+    random_state=par["random_state"],
 )
 
 # copy results to mudata
-assert all(adata_scanpy.obs.index == input_adata.obs.index), "index mismatch between input adata and scanpy output adata"
+assert all(
+    adata_scanpy.obs.index == input_adata.obs.index
+), "index mismatch between input adata and scanpy output adata"
 input_adata.obs[par["obs_score"]] = adata_scanpy.obs["score"]
 
 # write output to mudata
