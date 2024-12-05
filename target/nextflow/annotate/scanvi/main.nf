@@ -2891,6 +2891,19 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--input_reference_gene_overlap",
+          "description" : "The minimum number of genes present in both the reference and query datasets.\n",
+          "default" : [
+            100
+          ],
+          "required" : false,
+          "min" : 1,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3250,7 +3263,15 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/src/annotate/utils/query_reference_allignment.py"
+      "path" : "/src/utils/cross_check_genes.py"
+    },
+    {
+      "type" : "file",
+      "path" : "/src/utils/subset_vars.py"
+    },
+    {
+      "type" : "file",
+      "path" : "/src/utils/set_var_index.py"
     },
     {
       "type" : "file",
@@ -3437,7 +3458,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/scanvi",
     "viash_version" : "0.9.0",
-    "git_commit" : "fb12381e291a18d9841840b234490518e094ba41",
+    "git_commit" : "50bc4b5cce16d4f436e6ca1fdce39adfe761c579",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3492,6 +3513,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_input_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_INPUT_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'scvi_reference_model': $( if [ ! -z ${VIASH_PAR_SCVI_REFERENCE_MODEL+x} ]; then echo "r'${VIASH_PAR_SCVI_REFERENCE_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'scanvi_reference_model': $( if [ ! -z ${VIASH_PAR_SCANVI_REFERENCE_MODEL+x} ]; then echo "r'${VIASH_PAR_SCANVI_REFERENCE_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_train_size': $( if [ ! -z ${VIASH_PAR_REFERENCE_TRAIN_SIZE+x} ]; then echo "float(r'${VIASH_PAR_REFERENCE_TRAIN_SIZE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -3545,9 +3567,9 @@ dep = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-from query_reference_allignment import set_var_index, cross_check_genes
-
 from setup_logger import setup_logger
+from cross_check_genes import cross_check_genes
+from set_var_index import set_var_index
 logger = setup_logger()
 
 if (not par["scvi_reference_model"]) and not (par["scanvi_reference_model"]) or (par["scvi_reference_model"] and par["scanvi_reference_model"]):
@@ -3557,8 +3579,9 @@ if (not par["scvi_reference_model"]) and not (par["scanvi_reference_model"]) or 
 def main():
     logger.info("Reading the query data")
     # Read in data
-    input_data = mu.read_h5mu(par["input"])
-    input_modality = input_data.mod[par["modality"]].copy()
+    input_mdata = mu.read_h5mu(par["input"])
+    input_adata = input_mdata.mod[par["modality"]]
+    input_modality = input_adata.copy()
     # scANVI requires query and reference gene names to be equivalent 
     input_modality = set_var_index(input_modality, par["var_input_gene_names"])
 
@@ -3578,12 +3601,11 @@ def main():
         scvi_reference_model = scvi.model.SCVI.load(par["scvi_reference_model"])
         reference = scvi_reference_model.adata
 
-
         logger.info("Alligning genes in reference and query dataset")
         # scANVI requires query and reference gene names to be equivalent 
         reference = set_var_index(reference)
         # Subset query dataset based on genes present in reference
-        common_ens_ids = cross_check_genes(input_modality, reference)
+        common_ens_ids = cross_check_genes(input_modality.var.index, reference.var.index, min_gene_overlap=par["input_reference_gene_overlap"])
         input_modality = input_modality[:, common_ens_ids]
 
         logger.info("Instantiating scANVI model from the scVI model")
@@ -3635,15 +3657,14 @@ def main():
     )
 
     logger.info("Adding latent representation to query data")
-    input_modality.obsm[par["output_obsm_scanvi_embedding"]] = scanvi_query.get_latent_representation()
+    input_adata.obsm[par["output_obsm_scanvi_embedding"]] = scanvi_query.get_latent_representation()
 
     logger.info("Running predictions on query data")
-    input_modality.obs[par["output_obs_predictions"]] = scanvi_query.predict(input_modality)
-    input_modality.obs[par["output_obs_probability"]] = np.max(scanvi_query.predict(input_modality, soft=True), axis=1)
+    input_adata.obs[par["output_obs_predictions"]] = scanvi_query.predict(input_modality)
+    input_adata.obs[par["output_obs_probability"]] = np.max(scanvi_query.predict(input_modality, soft=True), axis=1)
 
     logger.info("Saving output and model")
-    input_data.mod[par["modality"]] = input_modality
-    input_data.write_h5mu(par["output"], compression=par["output_compression"])
+    input_mdata.write_h5mu(par["output"], compression=par["output_compression"])
 
     if par["output_model"]:
         scanvi_query.save(par["output_model"], overwrite=True)
