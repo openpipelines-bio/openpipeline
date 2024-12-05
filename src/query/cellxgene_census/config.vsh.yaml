@@ -128,6 +128,7 @@ engines:
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
           - cellxgene-census
+          - tiledbsoma==1.15.0rc4
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]

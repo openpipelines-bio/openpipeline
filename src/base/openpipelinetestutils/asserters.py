@@ -132,6 +132,14 @@ def _assert_layer_equal(left, right):
             raise AssertionError("Layers format differ:"
                                  f"\n[left]:{left.getformat()}\n[right]: {right.getformat()}")
         assert np.all(left.indices == right.indices), "Layers differ: indices are not the same"
+        assert (left.indices.dtype == left.indptr.dtype), \
+            "Problem with layer from 'left': dtype of sparce array 'inptr' and 'indices' are not the same"
+        assert (right.indices.dtype == right.indptr.dtype), \
+            "Problem with layer from 'right': dtype of sparce array 'inptr' and 'indices' are not the same"
+        assert (left.indices.dtype == right.indices.dtype), \
+            "Layers differ: dtype of sparce matrix 'indices' are different."
+        assert (left.indptr.dtype == right.indptr.dtype), \
+            "Layers differ: dtype of sparce matrix 'indptr' are different."
         assert np.all(left.indptr == right.indptr), "Layers differ: index pointers are not the same"
         np.testing.assert_allclose(left.data, right.data, rtol=1e-5,
                                   err_msg="Layers data differs.", equal_nan=True)
