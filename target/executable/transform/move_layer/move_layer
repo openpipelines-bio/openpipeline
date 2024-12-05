@@ -488,9 +488,9 @@ RUN pip install --upgrade pip && \
   python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 LABEL org.opencontainers.image.description="Companion container for running component transform move_layer"
-LABEL org.opencontainers.image.created="2024-12-05T02:57:44Z"
+LABEL org.opencontainers.image.created="2024-12-05T15:30:52Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="116f60244d8fba0787a0857701793adb751ebef8"
+LABEL org.opencontainers.image.revision="54601494ddf1f03a6573d9820ac6ed047eed5d4d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1136,6 +1136,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Read mudata from file")
@@ -1144,7 +1145,9 @@ mdata = read_h5mu(input_file)
 mod_data = mdata.mod[modality]
 
 
-logger.info("Using input layer '%s'", "X" if not par["input_layer"] else par["input_layer"])
+logger.info(
+    "Using input layer '%s'", "X" if not par["input_layer"] else par["input_layer"]
+)
 if par["input_layer"]:
     data_to_write = mod_data.layers[par["input_layer"]].copy()
     del mod_data.layers[par["input_layer"]]
@@ -1152,15 +1155,15 @@ else:
     data_to_write = mod_data.X
     mod_data.X = None
 
-output_layer_setter = partial(setattr, mod_data, "X") \\
-                        if not par["output_layer"] \\
-                        else partial(setitem, mod_data.layers, par["output_layer"])
+output_layer_setter = (
+    partial(setattr, mod_data, "X")
+    if not par["output_layer"]
+    else partial(setitem, mod_data.layers, par["output_layer"])
+)
 output_layer_setter(data_to_write)
 
 logger.info("Write output to mudata file")
-mdata.write_h5mu(par['output'], compression=par["output_compression"])
-
-        
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "\$tempscript" &
 wait "\$!"

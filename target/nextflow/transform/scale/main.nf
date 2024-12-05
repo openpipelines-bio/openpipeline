@@ -3116,12 +3116,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/scale",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3206,7 +3205,9 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
+
 
 def main():
     logger.info(f'Reading .h5mu file: {par["input"]}')
@@ -3214,19 +3215,27 @@ def main():
     mod = par["modality"]
     data = mudata.mod[mod]
     logger.info("Scaling modality: %s", mod)
-    scanpy_output = scanpy.pp.scale(data,
-                                    layer=par["input_layer"],
-                                    zero_center=par["zero_center"],
-                                    max_value=par["max_value"],
-                                    copy=True)
-    output_layer_setter = partial(setattr, data, "X") \\\\
-                          if not par["output_layer"] \\\\
-                          else partial(setitem, data.layers, par["output_layer"])
-    output_layer_setter(scanpy_output.X if not par["input_layer"] 
-                        else scanpy_output.layers[par["input_layer"]])
+    scanpy_output = scanpy.pp.scale(
+        data,
+        layer=par["input_layer"],
+        zero_center=par["zero_center"],
+        max_value=par["max_value"],
+        copy=True,
+    )
+    output_layer_setter = (
+        partial(setattr, data, "X")
+        if not par["output_layer"]
+        else partial(setitem, data.layers, par["output_layer"])
+    )
+    output_layer_setter(
+        scanpy_output.X
+        if not par["input_layer"]
+        else scanpy_output.layers[par["input_layer"]]
+    )
     logger.info("Writing to %s", par["output"])
     mudata.write_h5mu(filename=par["output"], compression=par["output_compression"])
     logger.info("Finished")
+
 
 if __name__ == "__main__":
     main()

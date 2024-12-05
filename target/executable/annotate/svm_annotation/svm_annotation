@@ -196,6 +196,18 @@ function ViashHelp {
   echo "        The layer in the input data to be used for cell type annotation if .X is"
   echo "        not to be used."
   echo ""
+  echo "    --input_var_gene_names"
+  echo "        type: string"
+  echo "        The name of the adata var column in the input data containing gene"
+  echo "        names; when no gene_name_layer is provided, the var index will be used."
+  echo ""
+  echo "    --input_reference_gene_overlap"
+  echo "        type: integer"
+  echo "        default: 100"
+  echo "        min: 1"
+  echo "        The minimum number of genes present in both the reference and query"
+  echo "        datasets."
+  echo ""
   echo "Reference:"
   echo "    Arguments related to the reference dataset."
   echo ""
@@ -213,6 +225,16 @@ function ViashHelp {
   echo ""
   echo "    --reference_obs_target"
   echo "        type: string, required parameter"
+  echo ""
+  echo "    --reference_var_gene_names"
+  echo "        type: string"
+  echo "        The name of the adata var column in the reference data containing gene"
+  echo "        names; when no gene_name_layer is provided, the var index will be used."
+  echo ""
+  echo "    --reference_var_input"
+  echo "        type: string"
+  echo "        .var column containing highly variable genes. By default, do not subset"
+  echo "        genes."
   echo ""
   echo "Outputs:"
   echo "    Output arguments."
@@ -563,9 +585,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component annotate svm_annotation"
-LABEL org.opencontainers.image.created="2024-12-05T02:57:44Z"
+LABEL org.opencontainers.image.created="2024-12-05T15:30:58Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="116f60244d8fba0787a0857701793adb751ebef8"
+LABEL org.opencontainers.image.revision="54601494ddf1f03a6573d9820ac6ed047eed5d4d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -738,6 +760,28 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_INPUT_LAYER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --input_var_gene_names)
+            [ -n "$VIASH_PAR_INPUT_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--input_var_gene_names\': \'$VIASH_PAR_INPUT_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_VAR_GENE_NAMES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_var_gene_names. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --input_var_gene_names=*)
+            [ -n "$VIASH_PAR_INPUT_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--input_var_gene_names=*\': \'$VIASH_PAR_INPUT_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --input_reference_gene_overlap)
+            [ -n "$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP" ] && ViashError Bad arguments for option \'--input_reference_gene_overlap\': \'$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_reference_gene_overlap. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --input_reference_gene_overlap=*)
+            [ -n "$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP" ] && ViashError Bad arguments for option \'--input_reference_gene_overlap=*\': \'$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --reference)
             [ -n "$VIASH_PAR_REFERENCE" ] && ViashError Bad arguments for option \'--reference\': \'$VIASH_PAR_REFERENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_REFERENCE="$2"
@@ -769,6 +813,28 @@ while [[ $# -gt 0 ]]; do
         --reference_obs_target=*)
             [ -n "$VIASH_PAR_REFERENCE_OBS_TARGET" ] && ViashError Bad arguments for option \'--reference_obs_target=*\': \'$VIASH_PAR_REFERENCE_OBS_TARGET\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_REFERENCE_OBS_TARGET=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --reference_var_gene_names)
+            [ -n "$VIASH_PAR_REFERENCE_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--reference_var_gene_names\': \'$VIASH_PAR_REFERENCE_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REFERENCE_VAR_GENE_NAMES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_var_gene_names. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --reference_var_gene_names=*)
+            [ -n "$VIASH_PAR_REFERENCE_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--reference_var_gene_names=*\': \'$VIASH_PAR_REFERENCE_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REFERENCE_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --reference_var_input)
+            [ -n "$VIASH_PAR_REFERENCE_VAR_INPUT" ] && ViashError Bad arguments for option \'--reference_var_input\': \'$VIASH_PAR_REFERENCE_VAR_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REFERENCE_VAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_var_input. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --reference_var_input=*)
+            [ -n "$VIASH_PAR_REFERENCE_VAR_INPUT" ] && ViashError Bad arguments for option \'--reference_var_input=*\': \'$VIASH_PAR_REFERENCE_VAR_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REFERENCE_VAR_INPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -1077,6 +1143,9 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
+if [ -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then
+  VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP="100"
+fi
 if [ -z ${VIASH_PAR_OUTPUT_OBS_PREDICTION+x} ]; then
   VIASH_PAR_OUTPUT_OBS_PREDICTION="svm_pred"
 fi
@@ -1111,6 +1180,16 @@ if [ ! -z "$VIASH_PAR_MODEL" ] && [ ! -e "$VIASH_PAR_MODEL" ]; then
 fi
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP" ]]; then
+  if ! [[ "$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--input_reference_gene_overlap' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if [[ $VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP -lt 1 ]]; then
+    ViashError '--input_reference_gene_overlap' has be more than or equal to 1. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_PAR_FEATURE_SELECTION" ]]; then
   if ! [[ "$VIASH_PAR_FEATURE_SELECTION" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
     ViashError '--feature_selection' has to be a boolean. Use "--help" to get more information on the parameters.
@@ -1337,14 +1416,11 @@ trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
 import sys
-import logging
 import mudata as mu
 import numpy as np
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn import svm
 import pickle
-import re
-
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
@@ -1352,9 +1428,13 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_layer': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_obs_target': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGET//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'reference_var_gene_names': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'reference_var_input': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_obs_prediction': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PREDICTION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1393,52 +1473,108 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from cross_check_genes import cross_check_genes
+from subset_vars import subset_vars
+from set_var_index import set_var_index
 
 logger = setup_logger()
 
+
 def main():
-    
-    if (not par["model"] and not par["reference"]) or (par["model"] and par["reference"]):
-        raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
-    
+    if (not par["model"] and not par["reference"]) or (
+        par["model"] and par["reference"]
+    ):
+        raise ValueError(
+            "Make sure to provide either 'model' or 'reference', but not both."
+        )
     logger.info("Reading input data")
     input_mudata = mu.read_h5mu(par["input"])
-    input_modality = input_mudata.mod[par["modality"]].copy()
-    
-    input_matrix = input_modality.layers[par["input_layer"]] if par["input_layer"] else input_modality.X 
-    
+    input_adata = input_mudata.mod[par["modality"]]
+    input_modality = input_adata.copy()
+    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
+
     if par["model"]:
         logger.info("Loading a pre-trained model")
         model = pickle.load(open(par["model"], "rb"))
+        if hasattr(model, "_feature_names_in"):
+            common_genes = cross_check_genes(
+                input_modality.var.index,
+                model._feature_names_in,
+                par["input_reference_gene_overlap"],
+            )
+            if not len(common_genes) == len(model._feature_names_in):
+                raise ValueError("Input dataset does not contain all model features.")
+            input_modality = input_modality[:, common_genes]
+            input_matrix = (
+                input_modality.layers[par["input_layer"]]
+                if par["input_layer"]
+                else input_modality.X
+            )
+
+        else:
+            logger.warning(
+                "Model does not have feature names saved. Could not check overlap of model's features with query genes."
+            )
 
     elif par["reference"]:
         logger.info("Reading reference data")
-        
+
         reference_mudata = mu.read_h5mu(par["reference"])
         reference_modality = reference_mudata.mod[par["modality"]].copy()
-    
-        reference_matrix = reference_modality.layers[par["reference_layer"]] if par["reference_layer"] else reference_modality.X
+        reference_modality = set_var_index(
+            reference_modality, par["reference_var_gene_names"]
+        )
+
+        # subset to HVG if required
+        if par["reference_var_input"]:
+            reference_modality = subset_vars(
+                reference_modality, par["reference_var_input"]
+            )
+
+        # Query and input require the exact same features
+        common_genes = cross_check_genes(
+            input_modality.var.index,
+            reference_modality.var.index,
+            par["input_reference_gene_overlap"],
+        )
+        reference_modality = reference_modality[:, common_genes]
+        input_modality = input_modality[:, common_genes]
+
+        reference_matrix = (
+            reference_modality.layers[par["reference_layer"]]
+            if par["reference_layer"]
+            else reference_modality.X
+        )
+        input_matrix = (
+            input_modality.layers[par["input_layer"]]
+            if par["input_layer"]
+            else input_modality.X
+        )
 
         logger.info("Training a model...")
         labels = reference_modality.obs[par["reference_obs_target"]].to_numpy()
-        model = CalibratedClassifierCV(svm.LinearSVC(
-            C=par["c_reg"],
-            max_iter=par["max_iter"],
-            class_weight=par["class_weight"] if not par["class_weight"]=="uniform" else None,
-            dual="auto",
-        ))
+        model = CalibratedClassifierCV(
+            svm.LinearSVC(
+                C=par["c_reg"],
+                max_iter=par["max_iter"],
+                class_weight=par["class_weight"]
+                if not par["class_weight"] == "uniform"
+                else None,
+                dual="auto",
+            )
+        )
         model.fit(reference_matrix, labels)
-    
+        model._feature_names_in = reference_modality.var.index
+
     logger.info("Running predictions...")
     predictions = model.predict(input_matrix)
     probabilities = np.max(model.predict_proba(input_matrix), axis=1)
-    
-    input_modality.obs[par["output_obs_prediction"]] = predictions
-    input_modality.obs[par["output_obs_probability"]] = probabilities
 
     logger.info("Writing output data")
-    input_mudata.mod[par["modality"]] = input_modality
+    input_adata.obs[par["output_obs_prediction"]] = predictions
+    input_adata.obs[par["output_obs_probability"]] = probabilities
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
+
 
 if __name__ == "__main__":
     main()

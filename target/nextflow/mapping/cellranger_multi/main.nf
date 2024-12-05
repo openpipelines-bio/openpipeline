@@ -3801,12 +3801,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3939,6 +3938,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 # Tested with cellranger 7.0:
@@ -3947,7 +3947,7 @@ logger = setup_logger()
 # - replacing \\`.fastq.\\` for \\`.fq.\\` is NOT allowed
 # - omitting \\`.gz\\` is allowed
 
-fastq_regex = r'^([A-Za-z0-9\\\\-_\\\\.]+)_S(\\\\d+)_(L(\\\\d+)_)?[RI](\\\\d+)_(\\\\d+)\\\\.fastq(\\\\.gz)?\\$'
+fastq_regex = r"^([A-Za-z0-9\\\\-_\\\\.]+)_S(\\\\d+)_(L(\\\\d+)_)?[RI](\\\\d+)_(\\\\d+)\\\\.fastq(\\\\.gz)?\\$"
 # assert re.match(fastq_regex, "5k_human_GEX_1_subset_S1_L001_R1_001.fastq.gz") is not None
 # assert re.match(fastq_regex, "5k_human_GEX_1_subset_S1_R1_001.fastq") is not None
 # assert re.match(fastq_regex, "5k_human_GEX_1_subset_S1_R1_001.fastq.gz.txt") is None
@@ -3985,11 +3985,12 @@ FEATURE_CONFIG_KEYS = {
     "min_crispr_umi": "min-crispr-umi",
 }
 
-VDJ_CONFIG_KEYS = {"vdj_reference": "reference",
-                   "vdj_inner_enrichment_primers": "inner-enrichment-primers",
-                   "vdj_r1_length": "r1-length",
-                   "vdj_r2_length": "r2-length",
-                  }
+VDJ_CONFIG_KEYS = {
+    "vdj_reference": "reference",
+    "vdj_inner_enrichment_primers": "inner-enrichment-primers",
+    "vdj_r1_length": "r1-length",
+    "vdj_r2_length": "r2-length",
+}
 
 
 ANTIGEN_SPECIFICITY_CONFIG_KEYS = {
@@ -4005,60 +4006,65 @@ REFERENCE_SECTIONS = {
     "antigen-specificity": (ANTIGEN_SPECIFICITY_CONFIG_KEYS, "columns"),
 }
 
-LIBRARY_CONFIG_KEYS = {'library_id': 'fastq_id',
-                       'library_type': 'feature_types',
-                       'library_subsample': 'subsample_rate',
-                       'library_lanes': 'lanes',
-                       'library_chemistry': 'chemistry',
-                       }
+LIBRARY_CONFIG_KEYS = {
+    "library_id": "fastq_id",
+    "library_type": "feature_types",
+    "library_subsample": "subsample_rate",
+    "library_lanes": "lanes",
+    "library_chemistry": "chemistry",
+}
 
 
-SAMPLE_PARAMS_CONFIG_KEYS = {'sample_ids': 'sample_id',
-                             'cell_multiplex_oligo_ids': 'cmo_ids',
-                             'sample_description': 'description',
-                             'probe_barcode_ids': 'probe_barcode_ids',
-                             'sample_expect_cells': 'expect_cells',
-                             'sample_force_cells': 'force_cells'}
+SAMPLE_PARAMS_CONFIG_KEYS = {
+    "sample_ids": "sample_id",
+    "cell_multiplex_oligo_ids": "cmo_ids",
+    "sample_description": "description",
+    "probe_barcode_ids": "probe_barcode_ids",
+    "sample_expect_cells": "expect_cells",
+    "sample_force_cells": "force_cells",
+}
 
 
 # These are derived from the dictionaries above
-REFERENCES = tuple(reference_param for reference_param, cellranger_param
-                   in chain(GEX_CONFIG_KEYS.items(), FEATURE_CONFIG_KEYS.items(), VDJ_CONFIG_KEYS.items())
-                   if cellranger_param == "reference")
+REFERENCES = tuple(
+    reference_param
+    for reference_param, cellranger_param in chain(
+        GEX_CONFIG_KEYS.items(), FEATURE_CONFIG_KEYS.items(), VDJ_CONFIG_KEYS.items()
+    )
+    if cellranger_param == "reference"
+)
 LIBRARY_PARAMS = tuple(LIBRARY_CONFIG_KEYS.keys())
 SAMPLE_PARAMS = tuple(SAMPLE_PARAMS_CONFIG_KEYS.keys())
 HELPER_INPUT = {
-    'gex_input': 'Gene Expression',
-    'abc_input': 'Antibody Capture',
-    'cgc_input': 'CRISPR Guide Capture',
-    'mux_input': 'Multiplexing Capture',
-    'vdj_input': 'VDJ',
-    'vdj_t_input': 'VDJ-T',
-    'vdj_t_gd_input': 'VDJ-T-GD',
-    'vdj_b_input': 'VDJ-B',
-    'agc_input': 'Antigen Capture'
+    "gex_input": "Gene Expression",
+    "abc_input": "Antibody Capture",
+    "cgc_input": "CRISPR Guide Capture",
+    "mux_input": "Multiplexing Capture",
+    "vdj_input": "VDJ",
+    "vdj_t_input": "VDJ-T",
+    "vdj_t_gd_input": "VDJ-T-GD",
+    "vdj_b_input": "VDJ-B",
+    "agc_input": "Antigen Capture",
 }
 
 
 def infer_library_id_from_path(input_path: str) -> str:
     match = re.match(fastq_regex, input_path)
-    assert match is not None, \\\\
-        f"File name of '{input_path}' should match regex {fastq_regex}."
+    assert (
+        match is not None
+    ), f"File name of '{input_path}' should match regex {fastq_regex}."
     return match.group(1)
 
+
 def transform_helper_inputs(par: dict[str, Any]) -> dict[str, Any]:
-    helper_input = {
-        "input": [],
-        "library_id": [],
-        "library_type": []
-    }
+    helper_input = {"input": [], "library_id": [], "library_type": []}
     for input_type, library_type in HELPER_INPUT.items():
         if par[input_type]:
             par[input_type] = resolve_input_directories_to_fastq_paths(par[input_type])
 
             library_ids = [
                 infer_library_id_from_path(path.name) for path in par[input_type]
-                ]
+            ]
 
             library_id_dict = {}
             for fastq, library_id in zip(par[input_type], library_ids):
@@ -4069,49 +4075,71 @@ def transform_helper_inputs(par: dict[str, Any]) -> dict[str, Any]:
                 helper_input["library_id"].append(library_id)
                 helper_input["library_type"].append(library_type)
 
-    assert len(helper_input["library_id"]) == len(set(helper_input["library_id"])), "File names passed to feature type-specific inputs must be unique"
+    assert len(helper_input["library_id"]) == len(
+        set(helper_input["library_id"])
+    ), "File names passed to feature type-specific inputs must be unique"
 
     return helper_input
 
+
 def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
-    return {key: len(li) for key, li in dic.items()
-            if li is not None and isinstance(li, (list, tuple, set))}
+    return {
+        key: len(li)
+        for key, li in dic.items()
+        if li is not None and isinstance(li, (list, tuple, set))
+    }
+
 
 def strip_margin(text: str) -> str:
-    return re.sub('(\\\\n?)[ \\\\t]*\\\\|', '\\\\\\\\1', text)
+    return re.sub("(\\\\n?)[ \\\\t]*\\\\|", "\\\\\\\\1", text)
 
-def subset_dict(dictionary: dict[str, str],
-                keys: Union[dict[str, str], list[str]]) -> dict[str, str]:
+
+def subset_dict(
+    dictionary: dict[str, str], keys: Union[dict[str, str], list[str]]
+) -> dict[str, str]:
     if isinstance(keys, (list, tuple)):
         keys = {key: key for key in keys}
-    return {dest_key: dictionary[orig_key]
-            for orig_key, dest_key in keys.items()
-            if dictionary[orig_key] is not None}
+    return {
+        dest_key: dictionary[orig_key]
+        for orig_key, dest_key in keys.items()
+        if dictionary[orig_key] is not None
+    }
 
-def check_subset_dict_equal_length(group_name: str,
-                                   dictionary: dict[str, list[str]]) -> None:
+
+def check_subset_dict_equal_length(
+    group_name: str, dictionary: dict[str, list[str]]
+) -> None:
     lens = lengths_gt1(dictionary)
-    assert len(set(lens.values())) <= 1, f"The number of values passed to {group_name} "\\\\
-                                         f"arguments must be 0, 1 or all the same. Offenders: {lens}"
+    assert len(set(lens.values())) <= 1, (
+        f"The number of values passed to {group_name} "
+        f"arguments must be 0, 1 or all the same. Offenders: {lens}"
+    )
+
 
 def resolve_input_directories_to_fastq_paths(input_paths: list[str]) -> list[Path]:
-
     input_paths = [Path(fastq) for fastq in input_paths]
     if len(input_paths) == 1 and input_paths[0].is_dir():
-        logger.info("Detected a directory in input paths, "
-                    "traversing to see if we can detect any FASTQ files.")
-        input_paths = [input_path for input_path in input_paths[0].rglob('*')
-                        if re.match(fastq_regex, input_path.name) ]
+        logger.info(
+            "Detected a directory in input paths, "
+            "traversing to see if we can detect any FASTQ files."
+        )
+        input_paths = [
+            input_path
+            for input_path in input_paths[0].rglob("*")
+            if re.match(fastq_regex, input_path.name)
+        ]
 
     # check input fastq files
     for input_path in input_paths:
-        assert re.match(fastq_regex, input_path.name) is not None, \\\\
-            f"File name of --input '{input_path}' should match regex {fastq_regex}."
+        assert (
+            re.match(fastq_regex, input_path.name) is not None
+        ), f"File name of --input '{input_path}' should match regex {fastq_regex}."
 
     return input_paths
 
+
 def make_paths_absolute(par: dict[str, Any], config: Path | str):
-    with open(config, 'r', encoding="utf-8") as open_viash_config:
+    with open(config, "r", encoding="utf-8") as open_viash_config:
         config = yaml.safe_load(open_viash_config)
 
     arguments = {
@@ -4124,19 +4152,25 @@ def make_paths_absolute(par: dict[str, Any], config: Path | str):
             continue
         par_value, is_multiple = par[arg_name], arg["multiple"]
         assert is_multiple in (True, False)
+
         def make_path_absolute(file: str | Path) -> Path:
-            logger.info('Making path %s absolute', file)
+            logger.info("Making path %s absolute", file)
             return Path(file).resolve()
-        
-        new_arg = [make_path_absolute(file) for file in par_value] if is_multiple else make_path_absolute(par_value)
+
+        new_arg = (
+            [make_path_absolute(file) for file in par_value]
+            if is_multiple
+            else make_path_absolute(par_value)
+        )
         par[arg_name] = new_arg
     return par
+
 
 def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> str:
     """
     Allow to use \\`-1\\` to define a 'not set' value for arguments of \\`type: integer\\` with \\`multiple: true\\`.
     """
-    with open(viash_config, 'r', encoding="utf-8") as open_viash_config:
+    with open(viash_config, "r", encoding="utf-8") as open_viash_config:
         config = yaml.safe_load(open_viash_config)
 
     arguments = {
@@ -4155,18 +4189,24 @@ def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> st
 
         def replace_notset_values(integer_value: int) -> int | None:
             return None if integer_value == -1 else integer_value
-        
+
         # Use an extension array to handle "None" values, otherwise int + NA
         # values would be converted to a "float" dtype
-        new_arg = pd.array([replace_notset_values(value) for value in par_value], dtype="Int64")
+        new_arg = pd.array(
+            [replace_notset_values(value) for value in par_value], dtype="Int64"
+        )
         par[arg_name] = new_arg
     return par
 
-def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
 
+def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
     if par["input"]:
-        assert len(par["library_type"]) > 0, "--library_type must be defined when passing input to --input"
-        assert len(par["library_id"]) > 0, "--library_id must be defined when passing input to --input"
+        assert (
+            len(par["library_type"]) > 0
+        ), "--library_type must be defined when passing input to --input"
+        assert (
+            len(par["library_id"]) > 0
+        ), "--library_id must be defined when passing input to --input"
 
         # if par["input"] is a directory, look for fastq files
         par["input"] = resolve_input_directories_to_fastq_paths(par["input"])
@@ -4174,9 +4214,11 @@ def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
     # add helper input
     helper_input = transform_helper_inputs(par)
     for key in ["input", "library_id", "library_type"]:
-      par[key] = (par[key] if par[key] else []) + helper_input[key]
+        par[key] = (par[key] if par[key] else []) + helper_input[key]
 
-      assert len(par[key]) > 0, f"Either --{key} or feature type-specific input (e.g. --gex_input, --abc_input, ...) must be defined"
+        assert (
+            len(par[key]) > 0
+        ), f"Either --{key} or feature type-specific input (e.g. --gex_input, --abc_input, ...) must be defined"
 
     # check lengths of libraries metadata
     library_dict = subset_dict(par, LIBRARY_PARAMS)
@@ -4197,9 +4239,9 @@ def generate_csv_category(name: str, args: dict[str, str], orient: str) -> list[
     assert orient in ("index", "columns")
     if not args:
         return []
-    title = [ f'[{name}]' ]
+    title = [f"[{name}]"]
     # Which index to include in csv section is based on orientation
-    to_csv_args = {"index": (orient=="index"), "header": (orient=="columns")}
+    to_csv_args = {"index": (orient == "index"), "header": (orient == "columns")}
     values = [pd.DataFrame.from_dict(args, orient=orient).to_csv(**to_csv_args).strip()]
     return title + values + [""]
 
@@ -4208,49 +4250,66 @@ def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
     content_list = []
     par["fastqs"] = fastq_dir
     libraries = dict(LIBRARY_CONFIG_KEYS, **{"fastqs": "fastqs"})
-    #TODO: use the union (|) operator when python is updated to 3.9
-    all_sections = REFERENCE_SECTIONS | {"libraries": (libraries, "columns"), 
-                                         "samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns")}
+    # TODO: use the union (|) operator when python is updated to 3.9
+    all_sections = REFERENCE_SECTIONS | {
+        "libraries": (libraries, "columns"),
+        "samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns"),
+    }
     for section_name, (section_params, orientation) in all_sections.items():
         reference_pars = subset_dict(par, section_params)
-        content_list += generate_csv_category(section_name, reference_pars, orient=orientation)
+        content_list += generate_csv_category(
+            section_name, reference_pars, orient=orientation
+        )
 
-    return '\\\\n'.join(content_list)
+    return "\\\\n".join(content_list)
+
 
 def main(par: dict[str, Any], meta: dict[str, Any]):
     logger.info("  Processing params")
-    par = process_params(par, meta['config'])
+    par = process_params(par, meta["config"])
     logger.info(par)
 
     # TODO: throw error or else Cell Ranger will
-    with tempfile.TemporaryDirectory(prefix="cellranger_multi-",
-                                     dir=meta["temp_dir"]) as temp_dir:
+    with tempfile.TemporaryDirectory(
+        prefix="cellranger_multi-", dir=meta["temp_dir"]
+    ) as temp_dir:
         temp_dir_path = Path(temp_dir)
         for reference_par_name in REFERENCES:
             reference = par[reference_par_name]
-            logger.info('Looking at %s to check if it needs decompressing', reference)
-            if reference and Path(reference).is_file() and tarfile.is_tarfile(reference):
-                extaction_dir_name = Path(reference.stem).stem # Remove two extensions (if they exist)
+            logger.info("Looking at %s to check if it needs decompressing", reference)
+            if (
+                reference
+                and Path(reference).is_file()
+                and tarfile.is_tarfile(reference)
+            ):
+                extaction_dir_name = Path(
+                    reference.stem
+                ).stem  # Remove two extensions (if they exist)
                 unpacked_directory = temp_dir_path / extaction_dir_name
-                logger.info('Extracting %s to %s', reference, unpacked_directory)
+                logger.info("Extracting %s to %s", reference, unpacked_directory)
 
-                with tarfile.open(reference, 'r') as open_tar:
+                with tarfile.open(reference, "r") as open_tar:
                     members = open_tar.getmembers()
-                    root_dirs = [member for member in members if member.isdir()
-                                 and member.name != '.' and '/' not in member.name]
+                    root_dirs = [
+                        member
+                        for member in members
+                        if member.isdir()
+                        and member.name != "."
+                        and "/" not in member.name
+                    ]
                     # if there is only one root_dir (and there are files in that directory)
                     # strip that directory name from the destination folder
                     if len(root_dirs) == 1:
                         for mem in members:
                             mem.path = Path(*Path(mem.path).parts[1:])
-                    members_to_move = [mem for mem in members if mem.path != Path('.')]
+                    members_to_move = [mem for mem in members if mem.path != Path(".")]
                     open_tar.extractall(unpacked_directory, members=members_to_move)
                 par[reference_par_name] = unpacked_directory
 
         # Creating symlinks of fastq files to tempdir
         input_symlinks_dir = temp_dir_path / "input_symlinks"
         input_symlinks_dir.mkdir()
-        for fastq in par['input']:
+        for fastq in par["input"]:
             destination = input_symlinks_dir / fastq.name
             destination.symlink_to(fastq)
 
@@ -4258,12 +4317,12 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         config_content = generate_config(par, input_symlinks_dir)
 
         logger.info("  Creating Cell Ranger argument")
-        temp_id="run"
-        proc_pars=["--disable-ui", "--id", temp_id]
+        temp_id = "run"
+        proc_pars = ["--disable-ui", "--id", temp_id]
 
         command_line_parameters = {
-            "--localcores": meta['cpus'],
-            "--localmem": int(meta['memory_gb']) - 2 if meta['memory_gb'] else None,
+            "--localcores": meta["cpus"],
+            "--localmem": int(meta["memory_gb"]) - 2 if meta["memory_gb"] else None,
         }
         for param, param_value in command_line_parameters.items():
             if param_value:
@@ -4271,17 +4330,17 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
 
         ## Run pipeline
         if par["dryrun"]:
-            par['output'].mkdir(parents=True, exist_ok=True)
+            par["output"].mkdir(parents=True, exist_ok=True)
 
             # write config file
-            config_file = par['output'] / "config.csv"
+            config_file = par["output"] / "config.csv"
             with open(config_file, "w") as f:
                 f.write(config_content)
             proc_pars.append(f"--csv={config_file}")
 
             # display command that would've been used
             cmd = ["cellranger multi"] + proc_pars + ["--csv=config.csv"]
-            logger.info("> " + ' '.join(cmd))
+            logger.info("> " + " ".join(cmd))
         else:
             # write config file to execution directory
             config_file = temp_dir_path / "config.csv"
@@ -4290,27 +4349,24 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             proc_pars.append(f"--csv={config_file}")
 
             # Already copy config file to output directory
-            par['output'].mkdir(parents=True, exist_ok=True)
-            with (par['output'] / "config.csv").open('w') as open_config:
+            par["output"].mkdir(parents=True, exist_ok=True)
+            with (par["output"] / "config.csv").open("w") as open_config:
                 open_config.write(config_content)
 
             # run process
             cmd = ["cellranger", "multi"] + proc_pars
-            logger.info("> " + ' '.join(cmd))
+            logger.info("> " + " ".join(cmd))
             process_output = subprocess.run(
-                cmd,
-                cwd=temp_dir,
-                check=False,
-                capture_output=True
+                cmd, cwd=temp_dir, check=False, capture_output=True
             )
 
-            with (par["output"] / "cellranger_multi.log").open('w') as open_log:
-                open_log.write(process_output.stdout.decode('utf-8'))
+            with (par["output"] / "cellranger_multi.log").open("w") as open_log:
+                open_log.write(process_output.stdout.decode("utf-8"))
             try:
                 process_output.check_returncode()
             except subprocess.CalledProcessError as e:
-                logger.error(e.output.decode('utf-8'))
-                print(e.output.decode('utf-8'), flush=True)
+                logger.error(e.output.decode("utf-8"))
+                print(e.output.decode("utf-8"), flush=True)
                 raise e
 
             # look for output dir file
@@ -4325,9 +4381,10 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
                 if not type_func(output_path):
                     raise ValueError(f"Could not find expected '{output_path}'")
 
-            for output_path in tmp_output_dir.rglob('*'):
-                if output_path.name != "config.csv": # Already created
-                    shutil.move(str(output_path), par['output'])
+            for output_path in tmp_output_dir.rglob("*"):
+                if output_path.name != "config.csv":  # Already created
+                    shutil.move(str(output_path), par["output"])
+
 
 if __name__ == "__main__":
     main(par, meta)

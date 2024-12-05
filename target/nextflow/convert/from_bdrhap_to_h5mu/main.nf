@@ -3086,12 +3086,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3173,29 +3172,31 @@ mdata = mu.read_h5mu(par["input"])
 modalities = list(mdata.mod.keys())
 assert len(modalities) > 0, "No modalities found in input data"
 
+
 def process_modality_inline(adata, modality):
     adata.obs["library_id"] = " & ".join(adata.uns["Pipeline_Inputs"]["Libraries"])
     adata.obs["cell_id"] = adata.obs.index
     adata.obs["run_id"] = par["id"]
-    
+
     adata.obs.rename(
-        columns={
-            "Sample_Tag": "sample_tag",
-            "Sample_Name": "sample_id"},
-        inplace=True)
+        columns={"Sample_Tag": "sample_tag", "Sample_Name": "sample_id"}, inplace=True
+    )
 
     adata.var["gene_ids"] = adata.var.index
     adata.var["gene_name"] = adata.var.index
-    
+
     if modality == "rna":
         adata.var["feature_type"] = "Gene Expression"
         adata.var["reference_file"] = adata.uns["Pipeline_Inputs"]["Reference_Archive"]
-        
+
     elif modality == "prot":
         adata.var["feature_type"] = "Antibody Capture"
-        adata.var["reference_file"] = " & ".join(adata.uns["Pipeline_Inputs"]["AbSeq_Reference"])
-    
+        adata.var["reference_file"] = " & ".join(
+            adata.uns["Pipeline_Inputs"]["AbSeq_Reference"]
+        )
+
     # TODO: add other modalities
+
 
 for key, value in mdata.mod.items():
     print(">> Processing modality:", key, flush=True)

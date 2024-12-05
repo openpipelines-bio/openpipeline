@@ -530,9 +530,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Sarah Ouologuem, Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component dimred lsi"
-LABEL org.opencontainers.image.created="2024-12-05T02:57:43Z"
+LABEL org.opencontainers.image.created="2024-12-05T15:30:50Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="116f60244d8fba0787a0857701793adb751ebef8"
+LABEL org.opencontainers.image.revision="54601494ddf1f03a6573d9820ac6ed047eed5d4d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1293,67 +1293,88 @@ from subset_vars import subset_vars
 
 
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 
-#1.read in mudata
+# 1.read in mudata
 logger.info("Reading %s.", par["input"])
 mdata = md.read_h5mu(par["input"])
 
-#2. subset on modality
+# 2. subset on modality
 if par["modality"] not in mdata.mod:
-    raise ValueError(f"Modality '{par['modality']}' was not found in mudata {par['input']}.")
-adata = mdata.mod[par['modality']]
+    raise ValueError(
+        f"Modality '{par['modality']}' was not found in mudata {par['input']}."
+    )
+adata = mdata.mod[par["modality"]]
 
 
-#3. Specify layer
-if par['layer'] and par["layer"] not in adata.layers:
-    raise ValueError(f"Layer '{par['layer']}' was not found in modality '{par['modality']}'.")
-layer = adata.X if not par['layer'] else adata.layers[par['layer']]
+# 3. Specify layer
+if par["layer"] and par["layer"] not in adata.layers:
+    raise ValueError(
+        f"Layer '{par['layer']}' was not found in modality '{par['modality']}'."
+    )
+layer = adata.X if not par["layer"] else adata.layers[par["layer"]]
 adata_input_layer = AnnData(layer, var=adata.var)
 
 
 if not par["layer"]:
-    logger.info("Using modality '%s' and adata.X for LSI computation", par['modality'])
+    logger.info("Using modality '%s' and adata.X for LSI computation", par["modality"])
 else:
-    logger.info("Using modality '%s' and layer '%s' for LSI computation", par['modality'], par["layer"])
+    logger.info(
+        "Using modality '%s' and layer '%s' for LSI computation",
+        par["modality"],
+        par["layer"],
+    )
 
 
-#4. Subset on highly variable features if applicable
+# 4. Subset on highly variable features if applicable
 if par["var_input"]:
     adata_input_layer = subset_vars(adata_input_layer, par["var_input"])
 
 
+# 5. Run LSI
+logger.info(
+    "Computing %s LSI components on %s features",
+    par["num_components"],
+    adata_input_layer.X.shape[1],
+)
+mu.atac.tl.lsi(
+    adata_input_layer,
+    scale_embeddings=par["scale_embeddings"],
+    n_comps=par["num_components"],
+)
 
-#5. Run LSI
-logger.info("Computing %s LSI components on %s features", par["num_components"], adata_input_layer.X.shape[1])
-mu.atac.tl.lsi(adata_input_layer, scale_embeddings = par["scale_embeddings"], n_comps = par["num_components"])
 
-
-
-#6. Store output in object
+# 6. Store output in object
 check_exist_dict = {
     "obsm_output": ("obsm"),
     "varm_output": ("varm"),
-    "uns_output": ("uns")
+    "uns_output": ("uns"),
 }
 for parameter_name, field in check_exist_dict.items():
     if par[parameter_name] in getattr(adata, field):
         if not par["overwrite"]:
-            raise ValueError(f"Requested to create field {par[parameter_name]} in .{field} "
-                            f"for modality {par['modality']}, but field already exists.")
+            raise ValueError(
+                f"Requested to create field {par[parameter_name]} in .{field} "
+                f"for modality {par['modality']}, but field already exists."
+            )
         del getattr(adata, field)[par[parameter_name]]
 
-adata.obsm[par["obsm_output"]] = adata_input_layer.obsm['X_lsi']
-adata.uns[par["uns_output"]] = adata_input_layer.uns['lsi']
+adata.obsm[par["obsm_output"]] = adata_input_layer.obsm["X_lsi"]
+adata.uns[par["uns_output"]] = adata_input_layer.uns["lsi"]
 if par["var_input"]:
-    adata.varm[par["varm_output"]] = np.zeros(shape=(adata.n_vars, adata_input_layer.varm["LSI"].shape[1]))
-    adata.varm[par["varm_output"]][adata.var[par["var_input"]]] = adata_input_layer.varm['LSI']
+    adata.varm[par["varm_output"]] = np.zeros(
+        shape=(adata.n_vars, adata_input_layer.varm["LSI"].shape[1])
+    )
+    adata.varm[par["varm_output"]][adata.var[par["var_input"]]] = (
+        adata_input_layer.varm["LSI"]
+    )
 else:
-    adata.varm[par["varm_output"]] = adata_input_layer.varm['LSI']
+    adata.varm[par["varm_output"]] = adata_input_layer.varm["LSI"]
 
 logger.info("Writing to %s.", par["output"])
-mdata.write(filename = par["output"], compression=par["output_compression"])
+mdata.write(filename=par["output"], compression=par["output_compression"])
 
 logger.info("Finished")
 VIASHMAIN

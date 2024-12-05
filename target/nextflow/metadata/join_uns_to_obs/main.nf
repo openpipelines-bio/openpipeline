@@ -3058,12 +3058,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/join_uns_to_obs",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3143,15 +3142,16 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Read mudata from file")
-mdata = read_h5mu(par['input'])
-mod_data = mdata.mod[par['modality']]
+mdata = read_h5mu(par["input"])
+mod_data = mdata.mod[par["modality"]]
 
 logger.info("Joining uns to obs")
 # get data frame
-uns_df = mod_data.uns[par['uns_key']]
+uns_df = mod_data.uns[par["uns_key"]]
 
 # check for overlapping colnames
 intersect_keys = uns_df.keys().intersection(mod_data.obs.keys())
@@ -3165,9 +3165,7 @@ uns_df_rep.index = mod_data.obs_names
 mod_data.obs = pd.concat([obs_drop, uns_df_rep], axis=1)
 
 logger.info("Write output to mudata file")
-mdata.write_h5mu(par['output'], compression=par["output_compression"])
-
-        
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

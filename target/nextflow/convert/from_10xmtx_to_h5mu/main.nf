@@ -3075,12 +3075,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xmtx_to_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3158,16 +3157,14 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading %s.", par["input"])
 adata = sc.read_10x_mtx(par["input"], gex_only=False)
 
 logger.info("Renaming keys.")
-adata.var = adata.var\\\\
-  .rename_axis("gene_symbol")\\\\
-  .reset_index()\\\\
-  .set_index("gene_ids")
+adata.var = adata.var.rename_axis("gene_symbol").reset_index().set_index("gene_ids")
 
 # generate output
 logger.info("Convert to mudata")

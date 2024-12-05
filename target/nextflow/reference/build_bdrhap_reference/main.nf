@@ -3143,12 +3143,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3233,47 +3232,58 @@ dep = {
 
 ## VIASH END
 
+
 def clean_arg(argument):
     argument["clean_name"] = re.sub("^-*", "", argument["name"])
     return argument
 
+
 def read_config(path: str) -> dict[str, Any]:
     with open(path, "r") as f:
         config = yaml.safe_load(f)
-    
+
     config["arguments"] = [
-        clean_arg(arg)
-        for grp in config["argument_groups"]
-        for arg in grp["arguments"]
+        clean_arg(arg) for grp in config["argument_groups"] for arg in grp["arguments"]
     ]
-    
+
     return config
+
 
 def strip_margin(text: str) -> str:
     return re.sub("(\\\\n?)[ \\\\t]*\\\\|", "\\\\\\\\1", text)
+
 
 def process_params(par: dict[str, Any], config) -> str:
     # check input parameters
     assert par["genome_fasta"], "Pass at least one set of inputs to --genome_fasta."
     assert par["gtf"], "Pass at least one set of inputs to --gtf."
-    assert par["reference_archive"].endswith(".gz"), "Output reference_archive must end with .tar.gz."
+    assert par["reference_archive"].endswith(
+        ".gz"
+    ), "Output reference_archive must end with .tar.gz."
 
     # make paths absolute
     for argument in config["arguments"]:
         if par[argument["clean_name"]] and argument["type"] == "file":
             if isinstance(par[argument["clean_name"]], list):
-                par[argument["clean_name"]] = [ os.path.abspath(f) for f in par[argument["clean_name"]] ]
+                par[argument["clean_name"]] = [
+                    os.path.abspath(f) for f in par[argument["clean_name"]]
+                ]
             else:
-                par[argument["clean_name"]] = os.path.abspath(par[argument["clean_name"]])
-    
+                par[argument["clean_name"]] = os.path.abspath(
+                    par[argument["clean_name"]]
+                )
+
     return par
 
+
 def generate_config(par: dict[str, Any], meta, config) -> str:
-    content_list = [strip_margin(f"""\\\\
+    content_list = [
+        strip_margin("""\\\\
 #!/usr/bin/env cwl-runner
 
-""")]
-        
+""")
+    ]
+
     config_key_value_pairs = []
     for argument in config["arguments"]:
         config_key = (argument.get("info") or {}).get("config_key")
@@ -3305,23 +3315,28 @@ def generate_config(par: dict[str, Any], meta, config) -> str:
 """)
             content_list.append(str)
         else:
-            content_list.append(strip_margin(f"""\\\\
+            content_list.append(
+                strip_margin(f"""\\\\
 {config_key}: {par_value}
-"""))
-            
+""")
+            )
+
     ## Write config to file
     return "".join(content_list)
 
+
 def get_cwl_file(meta: dict[str, Any]) -> str:
     # create cwl file (if need be)
-    cwl_file=os.path.join(meta["resources_dir"], "make_rhap_reference_2.2.1_nodocker.cwl")
+    cwl_file = os.path.join(
+        meta["resources_dir"], "make_rhap_reference_2.2.1_nodocker.cwl"
+    )
 
     return os.path.abspath(cwl_file)
 
+
 def main(par: dict[str, Any], meta: dict[str, Any]):
-    
     config = read_config(meta["config"])
-        
+
     # Preprocess params
     par = process_params(par, config)
 
@@ -3334,7 +3349,9 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         os.makedirs(outdir)
 
     ## Run pipeline
-    with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
+    with tempfile.TemporaryDirectory(
+        prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]
+    ) as temp_dir:
         # Create params file
         config_file = os.path.join(temp_dir, "config.yml")
         config_content = generate_config(par, meta, config)
@@ -3348,20 +3365,19 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             "--outdir",
             temp_dir,
             cwl_file,
-            config_file
+            config_file,
         ]
 
         env = dict(os.environ)
         env["TMPDIR"] = temp_dir
 
         print("> " + " ".join(cmd), flush=True)
-        _ = subprocess.check_call(
-            cmd,
-            cwd=os.path.dirname(config_file),
-            env=env
+        _ = subprocess.check_call(cmd, cwd=os.path.dirname(config_file), env=env)
+
+        shutil.move(
+            os.path.join(temp_dir, "Rhap_reference.tar.gz"), par["reference_archive"]
         )
 
-        shutil.move(os.path.join(temp_dir, "Rhap_reference.tar.gz"), par["reference_archive"])
 
 if __name__ == "__main__":
     main(par, meta)

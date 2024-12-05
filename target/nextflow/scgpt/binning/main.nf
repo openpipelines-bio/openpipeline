@@ -2905,6 +2905,18 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "string",
+          "name" : "--var_input",
+          "description" : "The name of the adata.var column containing boolean mask for vocabulary-cross checked and/or highly variable genes.\n",
+          "default" : [
+            "id_in_vocab"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "integer",
           "name" : "--n_input_bins",
           "description" : "The number of bins to discretize the data into. When no value is provided, data won't be binned.\n",
@@ -2954,10 +2966,10 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--binned_layer",
+          "name" : "--output_obsm_binned_counts",
           "description" : "The name of the adata layer to write the binned data to.\n",
           "default" : [
-            "binned"
+            "binned_counts"
           ],
           "required" : false,
           "direction" : "input",
@@ -2988,6 +3000,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/subset_vars.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3001,7 +3017,7 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu"
+      "path" : "/resources_test/scgpt/test_resources/Kim2020_Lung_subset_preprocessed.h5mu"
     },
     {
       "type" : "file",
@@ -3121,6 +3137,20 @@ meta = [
       ],
       "test_setup" : [
         {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
@@ -3137,12 +3167,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3193,10 +3222,11 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'n_input_bins': $( if [ ! -z ${VIASH_PAR_N_INPUT_BINS+x} ]; then echo "int(r'${VIASH_PAR_N_INPUT_BINS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'binned_layer': $( if [ ! -z ${VIASH_PAR_BINNED_LAYER+x} ]; then echo "r'${VIASH_PAR_BINNED_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_obsm_binned_counts': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBSM_BINNED_COUNTS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBSM_BINNED_COUNTS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int(r'${VIASH_PAR_SEED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
 meta = {
@@ -3224,11 +3254,14 @@ dep = {
 }
 
 ## VIASH END
+
 if par["seed"]:
     np.random.seed(par["seed"])
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from subset_vars import subset_vars
+
 logger = setup_logger()
 
 logger.info("Reading in data")
@@ -3237,18 +3270,21 @@ mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
+logger.info("Subsetting data based on highly variable gene and/or cross-checked genes")
+adata = subset_vars(adata, par["var_input"])
+
 logger.info("Converting the input layer into a CSR matrix")
-if not par['input_layer'] or par["input_layer"] == "X":
+if not par["input_layer"] or par["input_layer"] == "X":
     layer_data = adata.X
 else:
-    layer_data = adata.layers[par['input_layer']]
+    layer_data = adata.layers[par["input_layer"]]
 layer_data = csr_matrix(layer_data)
 
 if layer_data.min() < 0:
     raise ValueError(
         f"Assuming non-negative data, but got min value {layer_data.min()}."
     )
-    
+
 n_bins = par["n_input_bins"]  # NOTE: the first bin is always a spectial for zero
 logger.info(f"Binning data into {par['n_input_bins']} bins.")
 
@@ -3263,58 +3299,70 @@ def _digitize(x: np.ndarray, bins: np.ndarray) -> np.ndarray:
 
     digits = rands * (right_difits - left_digits) + left_digits
     digits = np.ceil(digits)
-    smallest_dtype = np.min_scalar_type(digits.max().astype(np.uint)) # Already checked for non-negative values
+    smallest_dtype = np.min_scalar_type(
+        digits.max().astype(np.uint)
+    )  # Already checked for non-negative values
     digits = digits.astype(smallest_dtype)
-    
+
     return digits
 
 
 with warnings.catch_warnings():
     # Make sure warnings are displayed once.
     warnings.simplefilter("once")
-    # layer_data.indptr.size is the number of rows in the sparse matrix 
+    # layer_data.indptr.size is the number of rows in the sparse matrix
     binned_rows = []
     bin_edges = []
-    logger.info("Establishing bin edges and digitizing of non-zero values into bins for each row of the count matrix")
-    for row_number in range(layer_data.indptr.size-1):
-        row_start_index, row_end_index = layer_data.indptr[row_number], layer_data.indptr[row_number+1]
+    logger.info(
+        "Establishing bin edges and digitizing of non-zero values into bins for each row of the count matrix"
+    )
+    for row_number in range(layer_data.indptr.size - 1):
+        row_start_index, row_end_index = (
+            layer_data.indptr[row_number],
+            layer_data.indptr[row_number + 1],
+        )
         # These are all non-zero counts in the row
-        non_zero_row = layer_data.data[row_start_index:row_end_index] 
+        non_zero_row = layer_data.data[row_start_index:row_end_index]
         if non_zero_row.max() == 0:
             logger.warning(
                 "The input data contains all zero rows. Please make sure "
                 "this is expected. You can use the \\`filter_cell_by_counts\\` "
                 "arg to filter out all zero rows."
             )
-            
+
             # Add binned_rows and bin_edges as all 0
             # np.stack will upcast the dtype later
             binned_rows.append(np.zeros_like(non_zero_row, dtype=np.int8))
             bin_edges.append(np.array([0] * n_bins))
             continue
-        
+
         # Binning of non-zero values
         bins = np.quantile(non_zero_row, np.linspace(0, 1, n_bins - 1))
         non_zero_digits = _digitize(non_zero_row, bins)
         assert non_zero_digits.min() >= 1
         assert non_zero_digits.max() <= n_bins - 1
         binned_rows.append(non_zero_digits)
-        
+
         bin_edges.append(np.concatenate([[0], bins]))
 
 # Create new CSR matrix
 logger.info("Creating a new CSR matrix of the binned count values")
-binned_layer = csr_matrix((np.concatenate(binned_rows, casting="same_kind"), 
-                          layer_data.indices, layer_data.indptr), shape=layer_data.shape)
+binned_counts = csr_matrix(
+    (
+        np.concatenate(binned_rows, casting="same_kind"),
+        layer_data.indices,
+        layer_data.indptr,
+    ),
+    shape=layer_data.shape,
+)
 
 # Set binned values and bin edges layers to adata object
-adata.layers[par["binned_layer"]] = binned_layer 
-adata.obsm["bin_edges"] = np.stack(bin_edges)
-      
-# Write mudata output 
+input_adata.obsm[par["output_obsm_binned_counts"]] = binned_counts
+input_adata.obsm["bin_edges"] = np.stack(bin_edges)
+
+# Write mudata output
 logger.info("Writing output data")
-mdata.mod[par["modality"]] = adata
-mdata.write(par["output"], compression=par["output_compression"]) 
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

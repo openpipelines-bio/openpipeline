@@ -3221,12 +3221,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3320,73 +3319,78 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 mdata = mu.read_h5mu(par["input"])
 mdata.var_names_make_unique()
 
-mod = par['modality']
-logger.info(f"Processing modality '%s'", mod)
+mod = par["modality"]
+logger.info("Processing modality '%s'", mod)
 data = mdata.mod[mod]
 
-if par["layer"] and not par['layer'] in data.layers:
-    raise ValueError(f"Layer '{par['layer']}' not found in layers for modality '{mod}'. "
-                     f"Found layers are: {','.join(data.layers)}")
+if par["layer"] and par["layer"] not in data.layers:
+    raise ValueError(
+        f"Layer '{par['layer']}' not found in layers for modality '{mod}'. "
+        f"Found layers are: {','.join(data.layers)}"
+    )
 
-# input layer argument does not work when batch_key is specified because 
+# input layer argument does not work when batch_key is specified because
 # it still uses .X to filter out genes with 0 counts, even if .X might not exist.
 # So create a custom anndata as input that always uses .X
 input_layer = data.X if not par["layer"] else data.layers[par["layer"]]
 obs = pd.DataFrame(index=data.obs_names.copy())
 var = pd.DataFrame(index=data.var_names.copy())
 if par["obs_batch_key"]:
-    obs = data.obs.loc[:,par["obs_batch_key"]].to_frame()
+    obs = data.obs.loc[:, par["obs_batch_key"]].to_frame()
 input_anndata = ad.AnnData(X=input_layer.copy(), obs=obs, var=var)
-if 'log1p' in data.uns:
-    input_anndata.uns['log1p'] = data.uns['log1p']
+if "log1p" in data.uns:
+    input_anndata.uns["log1p"] = data.uns["log1p"]
 
 # Workaround for issue
 # https://github.com/scverse/scanpy/issues/2239
 # https://github.com/scverse/scanpy/issues/2181
-if par['flavor'] != "seurat_v3":
+if par["flavor"] != "seurat_v3":
     # This component requires log normalized data when flavor is not seurat_v3
     # We assume that the data is correctly normalized but scanpy will look at
     # .uns to check the transformations performed on the data.
     # To prevent scanpy from automatically tranforming the counts when they are
     # already transformed, we set the appropriate values to .uns.
-    if 'log1p' not in input_anndata.uns:
-        logger.warning("When flavor is not set to 'seurat_v3', "
-                       "the input data for this component must be log-transformed. "
-                       "However, the 'log1p' dictionairy in .uns has not been set. "
-                       "This is fine if you did not log transform your data with scanpy."
-                       "Otherwise, please check if you are providing log transformed "
-                       "data using --layer.")
-        input_anndata.uns['log1p'] = {'base': None}
-    elif 'log1p' in input_anndata.uns and 'base' not in input_anndata.uns['log1p']:
-        input_anndata.uns['log1p']['base'] = None
+    if "log1p" not in input_anndata.uns:
+        logger.warning(
+            "When flavor is not set to 'seurat_v3', "
+            "the input data for this component must be log-transformed. "
+            "However, the 'log1p' dictionairy in .uns has not been set. "
+            "This is fine if you did not log transform your data with scanpy."
+            "Otherwise, please check if you are providing log transformed "
+            "data using --layer."
+        )
+        input_anndata.uns["log1p"] = {"base": None}
+    elif "log1p" in input_anndata.uns and "base" not in input_anndata.uns["log1p"]:
+        input_anndata.uns["log1p"]["base"] = None
 
 logger.info("\\\\tUnfiltered data: %s", data)
 
 logger.info("\\\\tComputing hvg")
 # construct arguments
 hvg_args = {
-    'adata': input_anndata,
-    'n_top_genes': par["n_top_features"],
-    'min_mean': par["min_mean"],
-    'max_mean': par["max_mean"],
-    'min_disp': par["min_disp"],
-    'span': par["span"],
-    'n_bins': par["n_bins"],
-    'flavor': par["flavor"],
-    'subset': False,
-    'inplace': False,
-    'layer': None, # Always uses .X because the input layer was already handled
+    "adata": input_anndata,
+    "n_top_genes": par["n_top_features"],
+    "min_mean": par["min_mean"],
+    "max_mean": par["max_mean"],
+    "min_disp": par["min_disp"],
+    "span": par["span"],
+    "n_bins": par["n_bins"],
+    "flavor": par["flavor"],
+    "subset": False,
+    "inplace": False,
+    "layer": None,  # Always uses .X because the input layer was already handled
 }
 
 optional_parameters = {
     "max_disp": "max_disp",
     "obs_batch_key": "batch_key",
-    "n_top_genes": "n_top_features"
+    "n_top_genes": "n_top_features",
 }
 # only add parameter if it's passed
 for par_name, dest_name in optional_parameters.items():
@@ -3394,23 +3398,31 @@ for par_name, dest_name in optional_parameters.items():
         hvg_args[dest_name] = par[par_name]
 
 # scanpy does not do this check, although it is stated in the documentation
-if par['flavor'] == "seurat_v3" and not par['n_top_features']:
-    raise ValueError("When flavor is set to 'seurat_v3', you are required to set 'n_top_features'.")
+if par["flavor"] == "seurat_v3" and not par["n_top_features"]:
+    raise ValueError(
+        "When flavor is set to 'seurat_v3', you are required to set 'n_top_features'."
+    )
 
 # call function
 try:
     out = sc.pp.highly_variable_genes(**hvg_args)
-    if par['obs_batch_key'] is not None:
+    if par["obs_batch_key"] is not None:
         out = out.reindex(index=data.var.index, method=None)
-        assert (out.index == data.var.index).all(), "Expected output index values to be equivalent to the input index"
+        assert (
+            out.index == data.var.index
+        ).all(), "Expected output index values to be equivalent to the input index"
 except ValueError as err:
     if str(err) == "cannot specify integer \\`bins\\` when input data contains infinity":
-        err.args = ("Cannot specify integer \\`bins\\` when input data contains infinity. "
-                    "Perhaps input data has not been log normalized?",)
+        err.args = (
+            "Cannot specify integer \\`bins\\` when input data contains infinity. "
+            "Perhaps input data has not been log normalized?",
+        )
     if re.search("Bin edges must be unique:", str(err)):
-        raise RuntimeError("Scanpy failed to calculate hvg. The error "
-                           "returned by scanpy (see above) could be the "
-                           "result from trying to use this component on unfiltered data.") from err
+        raise RuntimeError(
+            "Scanpy failed to calculate hvg. The error "
+            "returned by scanpy (see above) could be the "
+            "result from trying to use this component on unfiltered data."
+        ) from err
     raise err
 
 out.index = data.var.index
@@ -3418,7 +3430,7 @@ logger.info("\\\\tStoring output into .var")
 if par.get("var_name_filter", None) is not None:
     data.var[par["var_name_filter"]] = out["highly_variable"]
 
-if par.get("varm_name", None) is not None and 'mean_bin' in out:
+if par.get("varm_name", None) is not None and "mean_bin" in out:
     # drop mean_bin as mudata/anndata doesn't support tuples
     data.varm[par["varm_name"]] = out.drop("mean_bin", axis=1)
 

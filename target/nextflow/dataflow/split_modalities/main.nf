@@ -3108,12 +3108,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_modalities",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3155,7 +3154,6 @@ cat > "$tempscript" << VIASHMAIN
 from __future__ import annotations
 import sys
 import mudata as md
-from sys import stdout
 from pathlib import Path
 import pandas as pd
 
@@ -3195,7 +3193,9 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
+
 
 def main() -> None:
     output_dir = Path(par["output"])
@@ -3204,30 +3204,39 @@ def main() -> None:
         logger.info("Creating %s", output_dir)
         output_dir.mkdir(parents=True)
 
-    logger.info("Reading input file '%s'", par['input'])
+    logger.info("Reading input file '%s'", par["input"])
     input_file = Path(par["input"].strip())
     sample = md.read_h5mu(input_file)
-    
-    logger.info('Creating output types CSV.')
+
+    logger.info("Creating output types CSV.")
     modalities = list(sample.mod.keys())
 
     logger.info("Found the following modalities:\\\\n%s", "\\\\n".join(modalities))
-    names = {mod_name: f"{input_file.stem}_{mod_name}.h5mu"
-             for mod_name in modalities}
+    names = {mod_name: f"{input_file.stem}_{mod_name}.h5mu" for mod_name in modalities}
     output_files = list(names.values())
-    logger.info("Will be creating the following output .h5mu files:\\\\n%s", "\\\\n".join(output_files))
+    logger.info(
+        "Will be creating the following output .h5mu files:\\\\n%s",
+        "\\\\n".join(output_files),
+    )
     df = pd.DataFrame({"name": modalities, "filename": output_files})
     logger.info("Writing output_types CSV file to '%s'.", par["output_types"])
     df.to_csv(par["output_types"], index=False)
 
-    logger.info('Splitting input file into unimodal output files.')
+    logger.info("Splitting input file into unimodal output files.")
     for mod_name, mod in sample.mod.items():
         logger.info("Processing modality '%s'", mod_name)
         new_sample = md.MuData({mod_name: mod})
-        logger.info("Writing to '%s', with compression '%s'", names[mod_name], par["output_compression"])
-        new_sample.write_h5mu(output_dir / names[mod_name], compression=par["output_compression"])
+        logger.info(
+            "Writing to '%s', with compression '%s'",
+            names[mod_name],
+            par["output_compression"],
+        )
+        new_sample.write_h5mu(
+            output_dir / names[mod_name], compression=par["output_compression"]
+        )
         logger.info("Done writing output file.")
     logger.info("Finished")
+
 
 if __name__ == "__main__":
     main()

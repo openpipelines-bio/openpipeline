@@ -522,9 +522,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component dimred pca"
-LABEL org.opencontainers.image.created="2024-12-05T02:57:43Z"
+LABEL org.opencontainers.image.created="2024-12-05T15:30:50Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="116f60244d8fba0787a0857701793adb751ebef8"
+LABEL org.opencontainers.image.revision="54601494ddf1f03a6573d9820ac6ed047eed5d4d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1248,34 +1248,37 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading %s.", par["input"])
 mdata = mu.read_h5mu(par["input"])
 
-logger.info("Computing PCA components for modality '%s'", par['modality'])
-data = mdata.mod[par['modality']]
-if par['layer'] and par['layer'] not in data.layers:
+logger.info("Computing PCA components for modality '%s'", par["modality"])
+data = mdata.mod[par["modality"]]
+if par["layer"] and par["layer"] not in data.layers:
     raise ValueError(f"{par['layer']} was not found in modality {par['modality']}.")
-layer = data.X if not par['layer'] else data.layers[par['layer']]
+layer = data.X if not par["layer"] else data.layers[par["layer"]]
 adata_input_layer = AnnData(layer)
 adata_input_layer.var.index = data.var.index
 
 use_highly_variable = False
 if par["var_input"]:
-    if not par["var_input"] in data.var.columns:
-        raise ValueError(f"Requested to use .var column {par['var_input']} "
-                         "as a selection of genes to run the PCA on, "
-                         f"but the column is not available for modality {par['modality']}")
+    if par["var_input"] not in data.var.columns:
+        raise ValueError(
+            f"Requested to use .var column {par['var_input']} "
+            "as a selection of genes to run the PCA on, "
+            f"but the column is not available for modality {par['modality']}"
+        )
     use_highly_variable = True
-    adata_input_layer.var['highly_variable'] = data.var[par["var_input"]]
+    adata_input_layer.var["highly_variable"] = data.var[par["var_input"]]
 
 # run pca
 output_adata = sc.tl.pca(
     adata_input_layer,
     n_comps=par["num_components"],
     copy=True,
-    use_highly_variable=use_highly_variable
+    use_highly_variable=use_highly_variable,
 )
 
 # store output in specific objects
@@ -1283,19 +1286,23 @@ output_adata = sc.tl.pca(
 check_exist_dict = {
     "obsm_output": ("obs"),
     "varm_output": ("varm"),
-    "uns_output": ("uns")
+    "uns_output": ("uns"),
 }
 for parameter_name, field in check_exist_dict.items():
     if par[parameter_name] in getattr(data, field):
         if not par["overwrite"]:
-            raise ValueError(f"Requested to create field {par[parameter_name]} in .{field} "
-                            f"for modality {par['modality']}, but field already exists.")
+            raise ValueError(
+                f"Requested to create field {par[parameter_name]} in .{field} "
+                f"for modality {par['modality']}, but field already exists."
+            )
         del getattr(data, field)[par[parameter_name]]
 
-data.obsm[par["obsm_output"]] = output_adata.obsm['X_pca']
-data.varm[par["varm_output"]] = output_adata.varm['PCs']
-data.uns[par["uns_output"]] = { "variance": output_adata.uns['pca']['variance'],
-                                "variance_ratio": output_adata.uns['pca']['variance_ratio'] }
+data.obsm[par["obsm_output"]] = output_adata.obsm["X_pca"]
+data.varm[par["varm_output"]] = output_adata.varm["PCs"]
+data.uns[par["uns_output"]] = {
+    "variance": output_adata.uns["pca"]["variance"],
+    "variance_ratio": output_adata.uns["pca"]["variance_ratio"],
+}
 
 
 logger.info("Writing to %s.", par["output"])

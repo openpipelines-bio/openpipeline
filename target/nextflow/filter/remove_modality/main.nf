@@ -3054,12 +3054,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/remove_modality",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3136,10 +3135,12 @@ dep = {
 ### VIASH END
 
 
-input_mudata = read_h5mu(par['input'])
-new_mods = {mod_name: mod for mod_name, mod
-            in input_mudata.mod.items()
-            if mod_name not in par['modality']}
+input_mudata = read_h5mu(par["input"])
+new_mods = {
+    mod_name: mod
+    for mod_name, mod in input_mudata.mod.items()
+    if mod_name not in par["modality"]
+}
 
 new_mudata = MuData(new_mods)
 new_mudata.write_h5mu(filename=par["output"], compression=par["output_compression"])

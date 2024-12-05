@@ -2877,6 +2877,34 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "string",
+          "name" : "--input_var_gene_names",
+          "description" : "The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--input_reference_gene_overlap",
+          "description" : "The minimum number of genes present in both the reference and query datasets.\n",
+          "default" : [
+            100
+          ],
+          "required" : false,
+          "min" : 1,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Ongoloty",
+      "description" : "Ontology input files",
+      "arguments" : [
+        {
           "type" : "file",
           "name" : "--cl_nlp_emb_file",
           "description" : "The .nlp.emb file with the cell type embeddings.",
@@ -2905,15 +2933,6 @@ meta = [
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--var_query_gene_names",
-          "description" : "The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used.\n",
-          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -2955,6 +2974,36 @@ meta = [
             "cell_ontology_class"
           ],
           "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--reference_var_gene_names",
+          "description" : "The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--reference_var_input",
+          "description" : ".var column containing highly variable genes. By default, do not subset genes.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--unknown_celltype",
+          "description" : "Label for unknown cell types.\n",
+          "default" : [
+            "Unknown"
+          ],
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3057,6 +3106,18 @@ meta = [
     {
       "type" : "file",
       "path" : "/src/utils/setup_logger.py"
+    },
+    {
+      "type" : "file",
+      "path" : "/src/utils/cross_check_genes.py"
+    },
+    {
+      "type" : "file",
+      "path" : "/src/utils/subset_vars.py"
+    },
+    {
+      "type" : "file",
+      "path" : "/src/utils/set_var_index.py"
     },
     {
       "type" : "file",
@@ -3223,12 +3284,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/onclass",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3268,14 +3328,11 @@ def innerWorkflowFactory(args) {
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import sys
-import logging
 import mudata as mu
-import anndata as ad
-import re
 import numpy as np
 from OnClass.OnClassModel import OnClassModel
 import obonet
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 
 ## VIASH START
@@ -3284,13 +3341,17 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'cl_nlp_emb_file': $( if [ ! -z ${VIASH_PAR_CL_NLP_EMB_FILE+x} ]; then echo "r'${VIASH_PAR_CL_NLP_EMB_FILE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'cl_ontology_file': $( if [ ! -z ${VIASH_PAR_CL_ONTOLOGY_FILE+x} ]; then echo "r'${VIASH_PAR_CL_ONTOLOGY_FILE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'cl_obo_file': $( if [ ! -z ${VIASH_PAR_CL_OBO_FILE+x} ]; then echo "r'${VIASH_PAR_CL_OBO_FILE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'var_query_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_QUERY_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_QUERY_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_layer': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obs_target': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGET//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'reference_var_gene_names': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'reference_var_input': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'unknown_celltype': $( if [ ! -z ${VIASH_PAR_UNKNOWN_CELLTYPE+x} ]; then echo "r'${VIASH_PAR_UNKNOWN_CELLTYPE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_obs_predictions': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PREDICTIONS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3326,18 +3387,24 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from cross_check_genes import cross_check_genes
+from set_var_index import set_var_index
+from subset_vars import subset_vars
 
 logger = setup_logger()
 
-def map_celltype_to_ontology_id(cl_obo_file: str) -> Tuple[Dict[str, str], Dict[str, str]]:
+
+def map_celltype_to_ontology_id(
+    cl_obo_file: str,
+) -> Tuple[Dict[str, str], Dict[str, str]]:
     """
     Map cell type names to ontology IDs and vice versa.
-    
+
     Parameters
     ----------
     cl_obo_file : str
         Path to the cell ontology file.
-        
+
     Returns
     -------
     Tuple[Dict[str, str], Dict[str, str]]
@@ -3350,15 +3417,16 @@ def map_celltype_to_ontology_id(cl_obo_file: str) -> Tuple[Dict[str, str], Dict[
     name_to_cl_id = {v: k for k, v in cl_id_to_name.items()}
     return cl_id_to_name, name_to_cl_id
 
-def predict_input_data(model: OnClassModel,
-                       input_matrix: np.array,
-                       input_modality: ad.AnnData,
-                       id_to_name: dict,
-                       obs_prediction: str,
-                       obs_probability: str) -> ad.AnnData:
+
+def cell_type_prediction(
+    model: OnClassModel,
+    input_matrix: np.array,
+    input_features: List[str],
+    id_to_name: dict,
+) -> Tuple[List[str], List[float]]:
     """
     Predict cell types for input data and save results to Anndata obj.
-    
+
     Parameters
     ----------
     model : OnClassModel
@@ -3369,112 +3437,130 @@ def predict_input_data(model: OnClassModel,
         The input data Anndata object.
     id_to_name : dict
         Dictionary mapping cell ontology IDs to cell type names.
-    obs_prediction : str
-        The obs key for the predicted cell type.
-    obs_probability : str
-        The obs key for the predicted cell type probability.
-        
+
     Returns
     -------
-    ad.AnnData
-        The input data Anndata object with the predicted cell types saved in obs.
+    predictions: List[str]
+        The predicted cell types.
+    probabilities: List[float]
+        Probabilities of the predicted cell types.
     """
     corr_test_feature = model.ProcessTestFeature(
         test_feature=input_matrix,
-        test_genes=input_modality.var_names,
+        test_genes=input_features,
         log_transform=False,
     )
-    onclass_pred = model.Predict(corr_test_feature, use_normalize=False, refine=True, unseen_ratio=-1.0)
+    onclass_pred = model.Predict(
+        corr_test_feature, use_normalize=False, refine=True, unseen_ratio=-1.0
+    )
     pred_label = [model.i2co[ind] for ind in onclass_pred[2]]
     pred_cell_type_label = [id_to_name[id] for id in pred_label]
-    
-    input_modality.obs[obs_prediction] = pred_cell_type_label
-    input_modality.obs[obs_probability] = np.max(onclass_pred[1], axis=1) / onclass_pred[1].sum(1)
-    return input_modality
+    prob_cell_type_label = np.max(onclass_pred[1], axis=1) / onclass_pred[1].sum(1)
 
-def set_var_index(adata, var_name):
-    adata.var.index = [re.sub("\\\\\\\\.[0-9]+\\$", "", s) for s in adata.var[var_name]]
-    return adata
+    return pred_cell_type_label, prob_cell_type_label
+
 
 def main():
-    
-    if (not par["model"] and not par["reference"]) or (par["model"] and par["reference"]):
-        raise ValueError("Make sure to provide either 'model' or 'reference', but not both.")
-    
+    if (not par["model"] and not par["reference"]) or (
+        par["model"] and par["reference"]
+    ):
+        raise ValueError(
+            "Make sure to provide either 'model' or 'reference', but not both."
+        )
+
     logger.info("Reading input data")
     input_mudata = mu.read_h5mu(par["input"])
-    input_modality = input_mudata.mod[par["modality"]].copy()
-    
-    # Set var names to the desired gene name format (gene synbol, ensembl id, etc.)
-    input_modality = set_var_index(input_modality, par["var_query_gene_names"]) if par["var_query_gene_names"] else input_modality
-    input_matrix = input_modality.layers[par["input_layer"]].toarray() if par["input_layer"] else input_modality.X.toarray()
+    input_adata = input_mudata.mod[par["modality"]]
+    input_modality = input_adata.copy()
+
+    # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
+    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
+    input_matrix = (
+        input_modality.layers[par["input_layer"]]
+        if par["input_layer"]
+        else input_modality.X
+    )
+    # Onclass needs dense matrix format
+    input_matrix = input_matrix.toarray()
 
     id_to_name, name_to_id = map_celltype_to_ontology_id(par["cl_obo_file"])
-    
 
     if par["model"]:
         logger.info("Predicting cell types using pre-trained model")
-        model = OnClassModel(cell_type_nlp_emb_file=par["cl_nlp_emb_file"],
-                             cell_type_network_file=par["cl_ontology_file"])
-        
+        model = OnClassModel(
+            cell_type_nlp_emb_file=par["cl_nlp_emb_file"],
+            cell_type_network_file=par["cl_ontology_file"],
+        )
+
         model.BuildModel(use_pretrain=par["model"], ngene=None)
-    
-    
+        cross_check_genes(
+            model.genes, input_modality.var.index, par["input_reference_gene_overlap"]
+        )
+
     elif par["reference"]:
         logger.info("Reading reference data")
-        model = OnClassModel(cell_type_nlp_emb_file=par["cl_nlp_emb_file"],
-                             cell_type_network_file=par["cl_ontology_file"])
-        
+        model = OnClassModel(
+            cell_type_nlp_emb_file=par["cl_nlp_emb_file"],
+            cell_type_network_file=par["cl_ontology_file"],
+        )
+
         reference_mudata = mu.read_h5mu(par["reference"])
         reference_modality = reference_mudata.mod[par["modality"]].copy()
+        reference_modality = set_var_index(
+            reference_modality, par["reference_var_gene_names"]
+        )
 
-        reference_modality.var["gene_symbol"] = list(reference_modality.var.index)
-        reference_modality.var.index = [re.sub("\\\\\\\\.[0-9]+\\$", "", s) for s in reference_modality.var["ensemblid"]]
+        # subset to HVG if required
+        if par["reference_var_input"]:
+            reference_modality = subset_vars(
+                reference_modality, par["reference_var_input"]
+            )
 
-        logger.info("Detecting common vars based on ensembl ids")
-        common_ens_ids = list(set(reference_modality.var.index).intersection(set(input_modality.var.index)))
+        cross_check_genes(
+            input_modality.var.index,
+            reference_modality.var.index,
+            par["input_reference_gene_overlap"],
+        )
 
-        logger.info("  reference n_vars: %i", reference_modality.n_vars)
-        logger.info("  input n_vars: %i", input_modality.n_vars)
-        logger.info("  intersect n_vars: %i", len(common_ens_ids))
-        assert len(common_ens_ids) >= 100, "The intersection of genes is too small."
-
-        reference_matrix = reference_modality.layers[par["reference_layer"]].toarray() if par["reference_layer"] else reference_modality.X.toarray()
+        reference_matrix = (
+            reference_modality.layers[par["reference_layer"]]
+            if par["reference_layer"]
+            else reference_modality.X
+        )
+        # Onclass needs dense matrix format
+        reference_matrix = reference_matrix.toarray()
 
         logger.info("Training a model from reference...")
+
         labels = reference_modality.obs[par["reference_obs_target"]].tolist()
-        labels_cl = [name_to_id[label] for label in labels]
+        labels_cl = [
+            name_to_id[label] if label in name_to_id else par["unknown_celltype"]
+            for label in labels
+        ]
+
         _ = model.EmbedCellTypes(labels_cl)
-        (
-            corr_train_feature,
-            _,
-            corr_train_genes,
-            _,
-        ) = model.ProcessTrainFeature(
+        corr_train_feature, _, corr_train_genes, _ = model.ProcessTrainFeature(
             train_feature=reference_matrix,
             train_label=labels_cl,
-            train_genes=reference_modality.var_names,
+            train_genes=reference_modality.var.index,
             test_feature=input_matrix,
-            test_genes=input_modality.var_names,
+            test_genes=input_modality.var.index,
             log_transform=False,
         )
         model.BuildModel(ngene=len(corr_train_genes))
-        model.Train(corr_train_feature,
-                    labels_cl,
-                    max_iter=par["max_iter"])
-        
-    
-    logger.info(f"Predicting cell types")
-    input_modality = predict_input_data(model,
-                                        input_matrix,
-                                        input_modality,
-                                        id_to_name,
-                                        par["output_obs_predictions"],
-                                        par["output_obs_probability"])
+        model.Train(corr_train_feature, labels_cl, max_iter=par["max_iter"])
+
+    logger.info("Predicting cell types")
+    predictions, probabilities = cell_type_prediction(
+        model, input_matrix, input_modality.var.index, id_to_name
+    )
+
     logger.info("Writing output data")
-    input_mudata.mod[par["modality"]] = input_modality
+    input_adata.obs[par["output_obs_predictions"]] = predictions
+    input_adata.obs[par["output_obs_probability"]] = probabilities
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
-    
+
+
 if __name__ == "__main__":
     main()
 VIASHMAIN

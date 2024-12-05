@@ -3191,12 +3191,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3286,40 +3285,36 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading %s", par["input"])
 mdata = mu.read_h5mu(par["input"])
 
-logger.info("Computing UMAP for modality '%s'", par['modality'])
-data = mdata.mod[par['modality']]
+logger.info("Computing UMAP for modality '%s'", par["modality"])
+data = mdata.mod[par["modality"]]
 
-if par['uns_neighbors'] not in data.uns:
-    raise ValueError(f"'{par['uns_neighbors']}' was not found in .mod['{par['modality']}'].uns.")
+if par["uns_neighbors"] not in data.uns:
+    raise ValueError(
+        f"'{par['uns_neighbors']}' was not found in .mod['{par['modality']}'].uns."
+    )
 
 # create temporary AnnData
 # ... because sc.tl.umap doesn't allow to choose
 # the obsm output slot
 # ... also we can see scanpy is a data format dependency hell
 neigh_key = par["uns_neighbors"]
-temp_uns = { neigh_key: data.uns[neigh_key] }
-conn_key = temp_uns[neigh_key]['connectivities_key']
-dist_key = temp_uns[neigh_key]['distances_key']
+temp_uns = {neigh_key: data.uns[neigh_key]}
+conn_key = temp_uns[neigh_key]["connectivities_key"]
+dist_key = temp_uns[neigh_key]["distances_key"]
 temp_obsp = {
-  conn_key: data.obsp[conn_key],
-  dist_key: data.obsp[dist_key],
+    conn_key: data.obsp[conn_key],
+    dist_key: data.obsp[dist_key],
 }
-pca_key = temp_uns[neigh_key]['params']['use_rep']
-temp_obsm = {
-  pca_key: data.obsm[pca_key]
-}
+pca_key = temp_uns[neigh_key]["params"]["use_rep"]
+temp_obsm = {pca_key: data.obsm[pca_key]}
 
-temp_adata = ad.AnnData(
-  obsm=temp_obsm,
-  obsp=temp_obsp,
-  uns=temp_uns,
-  shape=data.shape
-)
+temp_adata = ad.AnnData(obsm=temp_obsm, obsp=temp_obsp, uns=temp_uns, shape=data.shape)
 
 sc.tl.umap(
     temp_adata,
@@ -3331,10 +3326,10 @@ sc.tl.umap(
     gamma=par["gamma"],
     negative_sample_rate=par["negative_sample_rate"],
     init_pos=par["init_pos"],
-    neighbors_key=neigh_key
+    neighbors_key=neigh_key,
 )
 
-data.obsm[par['obsm_output']] = temp_adata.obsm['X_umap']
+data.obsm[par["obsm_output"]] = temp_adata.obsm["X_umap"]
 
 logger.info("Writing to %s.", par["output"])
 mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])

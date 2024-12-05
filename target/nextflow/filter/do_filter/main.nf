@@ -3091,12 +3091,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3177,9 +3176,10 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
-logger.info("Reading %s", par['input'])
+logger.info("Reading %s", par["input"])
 mdata = mu.read_h5mu(par["input"])
 
 mod = par["modality"]
@@ -3193,14 +3193,14 @@ par["var_filter"] = par["var_filter"] if par["var_filter"] else []
 
 for obs_name in par["obs_filter"]:
     logger.info("Filtering modality '%s' observations by .obs['%s']", mod, obs_name)
-    if not obs_name in mdata.mod[mod].obs:
+    if obs_name not in mdata.mod[mod].obs:
         raise ValueError(f".mod[{mod}].obs[{obs_name}] does not exist.")
     if obs_name in mdata.mod[mod].obs:
         obs_filt &= mdata.mod[mod].obs[obs_name]
 
 for var_name in par["var_filter"]:
     logger.info("Filtering modality '%s' variables by .var['%s']", mod, var_name)
-    if not var_name in mdata.mod[mod].var:
+    if var_name not in mdata.mod[mod].var:
         raise ValueError(f".mod[{mod}].var[{var_name}] does not exist.")
     if var_name in mdata.mod[mod].var:
         var_filt &= mdata.mod[mod].var[var_name]

@@ -3178,12 +3178,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/bbknn",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3275,10 +3274,10 @@ tmp_adata = adata.copy()
 bbknn.bbknn(
     tmp_adata,
     use_rep=par["obsm_input"],
-    batch_key = par["obs_batch"],
+    batch_key=par["obs_batch"],
     neighbors_within_batch=par["n_neighbors_within_batch"],
     n_pcs=par["n_pcs"],
-    trim=par["n_trim"]
+    trim=par["n_trim"],
 )
 
 # store output

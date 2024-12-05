@@ -61,6 +61,17 @@
     
 
         ,
+                "var_input": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `id_in_vocab`. The name of the adata",
+                "help_text": "Type: `string`, default: `id_in_vocab`. The name of the adata.var column containing boolean mask for vocabulary-cross checked and/or highly variable genes.\n"
+            ,
+                "default":"id_in_vocab"
+            }
+    
+
+        ,
                 "n_input_bins": {
                 "type":
                 "integer",
@@ -105,13 +116,13 @@
     
 
         ,
-                "binned_layer": {
+                "output_obsm_binned_counts": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `binned`. The name of the adata layer to write the binned data to",
-                "help_text": "Type: `string`, default: `binned`. The name of the adata layer to write the binned data to.\n"
+                "description": "Type: `string`, default: `binned_counts`. The name of the adata layer to write the binned data to",
+                "help_text": "Type: `string`, default: `binned_counts`. The name of the adata layer to write the binned data to.\n"
             ,
-                "default":"binned"
+                "default":"binned_counts"
             }
     
 

@@ -3111,12 +3111,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3203,6 +3202,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 
@@ -3217,13 +3217,15 @@ def main():
     obs_features = adata.obs[par["obs_feature"]].unique().tolist()
 
     # sanitize --obs_feature values
-    obs_features_s = [re.sub(r'[-\\\\s]', "_", str(s).strip()) for s in obs_features]
-    obs_features_s = [re.sub(r'[^A-Za-z0-9_]', "", s) for s in obs_features_s]
+    obs_features_s = [re.sub(r"[-\\\\s]", "_", str(s).strip()) for s in obs_features]
+    obs_features_s = [re.sub(r"[^A-Za-z0-9_]", "", s) for s in obs_features_s]
 
     # ensure that names are unique, if not raise or append number as suffix
     if not len(obs_features_s) == len(set(obs_features_s)):
         if not par["ensure_unique_filenames"]:
-            raise ValueError(f"File names are not unique after sanitizing the --obs_feature {par['obs_feature']} values")
+            raise ValueError(
+                f"File names are not unique after sanitizing the --obs_feature {par['obs_feature']} values"
+            )
 
         logger.info("Ensuring unique names for par['obs_feature']")
         counts = defaultdict(lambda: -1)
@@ -3242,7 +3244,9 @@ def main():
     obs_files = []
 
     for obs_name, file_name in zip(obs_features, obs_features_s):
-        logger.info(f"Filtering modality '{par['modality']}' observations by .obs['{par['obs_feature']}'] == {obs_name}")
+        logger.info(
+            f"Filtering modality '{par['modality']}' observations by .obs['{par['obs_feature']}'] == {obs_name}"
+        )
         mdata_obs = mdata.copy()
         adata_obs = mdata_obs.mod[par["modality"]]
 
@@ -3253,13 +3257,17 @@ def main():
 
         # Dropping columns that only have nan values after splitting
         if par["drop_obs_nan"]:
-            logger.info(f"Dropping all .obs columns with NaN values")
-            adata_obs.obs.dropna(axis=1, how='all', inplace=True)
+            logger.info("Dropping all .obs columns with NaN values")
+            adata_obs.obs.dropna(axis=1, how="all", inplace=True)
 
         # replace mdata file with modality adata contianing split samples
-        logger.info(f"Writing h5mu filtered for {par['obs_feature']} {obs_name} to file {output_dir / mdata_obs_name}")
+        logger.info(
+            f"Writing h5mu filtered for {par['obs_feature']} {obs_name} to file {output_dir / mdata_obs_name}"
+        )
         mdata_obs.mod[par["modality"]] = adata_obs
-        mdata_obs.write_h5mu(output_dir / mdata_obs_name, compression=par["output_compression"])
+        mdata_obs.write_h5mu(
+            output_dir / mdata_obs_name, compression=par["output_compression"]
+        )
 
         # avoid keeping files in memory
         del mdata_obs
@@ -3271,7 +3279,7 @@ def main():
     df.to_csv(par["output_files"], index=False)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 VIASHMAIN
 python -B "$tempscript"

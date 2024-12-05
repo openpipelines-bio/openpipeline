@@ -484,9 +484,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component filter remove_modality"
-LABEL org.opencontainers.image.created="2024-12-05T02:57:39Z"
+LABEL org.opencontainers.image.created="2024-12-05T15:30:47Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="116f60244d8fba0787a0857701793adb751ebef8"
+LABEL org.opencontainers.image.revision="54601494ddf1f03a6573d9820ac6ed047eed5d4d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1094,10 +1094,12 @@ dep = {
 ### VIASH END
 
 
-input_mudata = read_h5mu(par['input'])
-new_mods = {mod_name: mod for mod_name, mod
-            in input_mudata.mod.items()
-            if mod_name not in par['modality']}
+input_mudata = read_h5mu(par["input"])
+new_mods = {
+    mod_name: mod
+    for mod_name, mod in input_mudata.mod.items()
+    if mod_name not in par["modality"]
+}
 
 new_mudata = MuData(new_mods)
 new_mudata.write_h5mu(filename=par["output"], compression=par["output_compression"])

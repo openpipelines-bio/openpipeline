@@ -2911,10 +2911,19 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--input_layer",
-          "description" : "The name of the layer to be padded and tokenized.\n",
+          "name" : "--var_gene_names",
+          "description" : "The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--var_input",
+          "description" : "The name of the adata.var column containing boolean mask for vocabulary-cross checked and/or highly variable genes.\n",
           "default" : [
-            "binned"
+            "id_in_vocab"
           ],
           "required" : false,
           "direction" : "input",
@@ -2923,8 +2932,11 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--var_gene_names",
-          "description" : "The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n",
+          "name" : "--input_obsm_binned_counts",
+          "description" : "The name of the .obsm field containing the binned counts to be padded and tokenized.\n",
+          "default" : [
+            "binned_counts"
+          ],
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3054,6 +3066,10 @@ meta = [
     {
       "type" : "file",
       "path" : "/src/utils/setup_logger.py"
+    },
+    {
+      "type" : "file",
+      "path" : "/src/utils/subset_vars.py"
     },
     {
       "type" : "file",
@@ -3193,6 +3209,20 @@ meta = [
       ],
       "test_setup" : [
         {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
@@ -3209,12 +3239,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3267,8 +3296,9 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'model_vocab': $( if [ ! -z ${VIASH_PAR_MODEL_VOCAB+x} ]; then echo "r'${VIASH_PAR_MODEL_VOCAB//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_obsm_binned_counts': $( if [ ! -z ${VIASH_PAR_INPUT_OBSM_BINNED_COUNTS+x} ]; then echo "r'${VIASH_PAR_INPUT_OBSM_BINNED_COUNTS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_gene_tokens': $( if [ ! -z ${VIASH_PAR_OBSM_GENE_TOKENS+x} ]; then echo "r'${VIASH_PAR_OBSM_GENE_TOKENS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3306,6 +3336,8 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from subset_vars import subset_vars
+
 logger = setup_logger()
 
 logger.info("Reading in data")
@@ -3315,6 +3347,8 @@ mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
+adata = subset_vars(adata, par["var_input"])
+
 # Set padding specs
 pad_token = par["pad_token"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
@@ -3323,9 +3357,9 @@ pad_value = -2
 logger.info("Fetching counts and gene names")
 # Fetch counts
 all_counts = (
-    adata.layers[par["input_layer"]].A
-    if issparse(adata.layers[par["input_layer"]])
-    else adata.layers[par["input_layer"]]
+    adata.obsm[par["input_obsm_binned_counts"]].toarray()
+    if issparse(adata.obsm[par["input_obsm_binned_counts"]])
+    else adata.obsm[par["input_obsm_binned_counts"]]
 )
 
 # Fetching gene names
@@ -3353,7 +3387,9 @@ else:
     max_seq_len = par["max_seq_len"]
 
 # Tokenize and pad data
-logger.info(f"Padding and tokenizing data with max length of {max_seq_len}, padding token {pad_token} and pad value {pad_value}.")
+logger.info(
+    f"Padding and tokenizing data with max length of {max_seq_len}, padding token {pad_token} and pad value {pad_value}."
+)
 tokenized_data = tokenize_and_pad_batch(
     all_counts,
     gene_ids,
@@ -3365,18 +3401,17 @@ tokenized_data = tokenize_and_pad_batch(
     include_zero_gene=False,
     return_pt=True,
     mod_type=None,
-    vocab_mod=None
-    )
+    vocab_mod=None,
+)
 
 all_gene_ids, all_values = tokenized_data["genes"], tokenized_data["values"]
 padding_mask = all_gene_ids.eq(vocab[pad_token])
 
 logger.info("Writing output data")
-adata.obsm[par["obsm_gene_tokens"]] = all_gene_ids.numpy()
-adata.obsm[par["obsm_tokenized_values"]] = all_values.numpy()
-adata.obsm[par["obsm_padding_mask"]] = padding_mask.numpy()
+input_adata.obsm[par["obsm_gene_tokens"]] = all_gene_ids.numpy()
+input_adata.obsm[par["obsm_tokenized_values"]] = all_values.numpy()
+input_adata.obsm[par["obsm_padding_mask"]] = padding_mask.numpy()
 
-mdata.mod[par["modality"]] = adata
 mdata.write(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"

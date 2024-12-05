@@ -61,11 +61,23 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--var_query_gene_names"
+    name: "--input_var_gene_names"
     description: "The name of the adata var column in the input data containing gene\
       \ names; when no gene_name_layer is provided, the var index will be used.\n"
     info: null
     required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--input_reference_gene_overlap"
+    description: "The minimum number of genes present in both the reference and query\
+      \ datasets.\n"
+    info: null
+    default:
+    - 100
+    required: false
+    min: 1
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -114,9 +126,18 @@ argument_groups:
     info: null
     direction: "input"
   - type: "string"
-    name: "--var_reference_gene_names"
+    name: "--reference_var_gene_names"
     description: "The name of the adata var column in the reference data containing\
       \ gene names; when no gene_name_layer is provided, the var index will be used.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--reference_var_input"
+    description: ".var column containing highly variable genes. By default, do not\
+      \ subset genes.\n"
     info: null
     required: false
     direction: "input"
@@ -251,6 +272,12 @@ resources:
   is_executable: true
 - type: "file"
   path: "setup_logger.py"
+- type: "file"
+  path: "cross_check_genes.py"
+- type: "file"
+  path: "subset_vars.py"
+- type: "file"
+  path: "set_var_index.py"
 - type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
@@ -394,11 +421,10 @@ build_info:
   output: "target/executable/annotate/celltypist"
   executable: "target/executable/annotate/celltypist/celltypist"
   viash_version: "0.9.0"
-  git_commit: "116f60244d8fba0787a0857701793adb751ebef8"
+  git_commit: "54601494ddf1f03a6573d9820ac6ed047eed5d4d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
-  version: "dev"
   info:
     test_resources:
     - type: "s3"

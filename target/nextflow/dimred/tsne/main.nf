@@ -3196,12 +3196,11 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/tsne",
     "viash_version" : "0.9.0",
-    "git_commit" : "116f60244d8fba0787a0857701793adb751ebef8",
+    "git_commit" : "54601494ddf1f03a6573d9820ac6ed047eed5d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
-    "version" : "dev",
     "info" : {
       "test_resources" : [
         {
@@ -3290,22 +3289,22 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("Reading %s", par["input"])
 mdata = mu.read_h5mu(par["input"])
 
-logger.info("Computing tSNE for modality '%s'", par['modality'])
-data = mdata.mod[par['modality']]
+logger.info("Computing tSNE for modality '%s'", par["modality"])
+data = mdata.mod[par["modality"]]
 
-if par['use_rep'] not in data.obsm.keys():
-    raise ValueError(f"'{par['use_rep']}' was not found in .mod['{par['modality']}'].obsm. No precomputed PCA provided. Please run PCA first.")
+if par["use_rep"] not in data.obsm.keys():
+    raise ValueError(
+        f"'{par['use_rep']}' was not found in .mod['{par['modality']}'].obsm. No precomputed PCA provided. Please run PCA first."
+    )
 temp_obsm = {par["use_rep"]: data.obsm[par["use_rep"]]}
 
-temp_adata = ad.AnnData(
-    obsm=temp_obsm,
-    shape=data.shape
-)
+temp_adata = ad.AnnData(obsm=temp_obsm, shape=data.shape)
 
 sc.tl.tsne(
     adata=temp_adata,
@@ -3316,14 +3315,16 @@ sc.tl.tsne(
     early_exaggeration=par["early_exaggeration"],
     learning_rate=par["learning_rate"],
     random_state=par["random_state"],
-    n_jobs=meta["cpus"]
+    n_jobs=meta["cpus"],
 )
 
-logger.info(f"Writing tSNE embeddings to .mod[{par['modality']}].obsm[{par['obsm_output']}]")
-data.obsm[par['obsm_output']] = temp_adata.obsm['X_tsne']
+logger.info(
+    f"Writing tSNE embeddings to .mod[{par['modality']}].obsm[{par['obsm_output']}]"
+)
+data.obsm[par["obsm_output"]] = temp_adata.obsm["X_tsne"]
 
 logger.info(f"Writing tSNE metadata to .mod[{par['modality']}].uns['tsne']")
-data.uns['tsne'] = temp_adata.uns['tsne']
+data.uns["tsne"] = temp_adata.uns["tsne"]
 
 logger.info("Writing to %s.", par["output"])
 mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
