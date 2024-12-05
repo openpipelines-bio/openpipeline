@@ -133,7 +133,8 @@ test_resources:
   - type: python_script
     path: test.py
   - path: /resources_test/scgpt/source
-  - path: /resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu
+  - path: /resources_test/scgpt/fine_tuned_model
+  - path: /resources_test/scgpt/test_resources/Kim2020_Lung_subset_tokenized.h5mu
 
 engines:
   - type: docker
