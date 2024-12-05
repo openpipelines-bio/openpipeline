@@ -22,63 +22,21 @@ par = {
     "output_compression": "gzip",
     "allow_missing_genes": False,
 }
-meta = {
-    "resources_dir": "src/feature_annotation/score_genes_scanpy"
-}
+meta = {"resources_dir": "src/feature_annotation/score_genes_scanpy"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-
-# START TEMPORARY WORKAROUND read_gene_list
-# reason: resources aren't available when using Nextflow fusion
-
-# from helper import read_gene_list
-from typing import List, Dict, Any, Optional
-
-def read_gene_list(
-        par: Dict[str, Any],
-        gene_names: List[str],
-        list_key: str,
-        file_key: str,
-        required: bool = True) -> Optional[List[str]]:
-    """
-    Reads a gene list from the parameters and returns it as a list of strings.
-    """
-
-    # check whether one or the other was provided, if required
-    if required and not par[list_key] and not par[file_key]:
-        raise ValueError(f"Either --{list_key} or --{file_key} must be set")
-
-    # read gene list from parameters
-    list_of_genes = par[list_key] if par[list_key] else []
-
-    # read gene list from file
-    if par[file_key]:
-        with open(par[file_key]) as file:
-            file_genes = [x.strip() for x in file]
-        list_of_genes.extend(file_genes)
-
-    # check for missing genes
-    if not par["allow_missing_genes"] and list_of_genes:
-        missing = set(list(list_of_genes)).difference(gene_names)
-        if missing:
-            raise ValueError(f"The follow genes are missing from the input dataset: {missing}")
-
-    # return gene list
-    if list_of_genes:
-        return list_of_genes
-    elif required:
-        raise ValueError(f"No genes detected in --{list_key} or --{file_key}")
-    else:
-        return None
-
-# END TEMPORARY WORKAROUND read_gene_list
+from helper import read_gene_list
 
 # read data
 mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 
-gene_names_index = input_adata.var[par["var_gene_names"]] if par["var_gene_names"] else input_adata.var_names
+gene_names_index = (
+    input_adata.var[par["var_gene_names"]]
+    if par["var_gene_names"]
+    else input_adata.var_names
+)
 gene_names = pd.Series(input_adata.var_names, index=gene_names_index)
 
 # check if var index is unique
@@ -88,7 +46,9 @@ if not input_adata.var.index.is_unique:
 
 # read gene list
 gene_list = read_gene_list(par, gene_names.index, "gene_list", "gene_list_file")
-gene_pool = read_gene_list(par, gene_names.index, "gene_pool", "gene_pool_file", required=False)
+gene_pool = read_gene_list(
+    par, gene_names.index, "gene_pool", "gene_pool_file", required=False
+)
 
 # find matching index names for given genes
 gene_list_index = gene_names.loc[gene_list].tolist()
@@ -102,7 +62,7 @@ else:
 adata_scanpy = ad.AnnData(
     X=layer_data,
     obs=pd.DataFrame(index=input_adata.obs.index),
-    var=pd.DataFrame(index=input_adata.var.index)
+    var=pd.DataFrame(index=input_adata.var.index),
 )
 
 # run score_genes
@@ -112,11 +72,13 @@ sc.tl.score_genes(
     gene_pool=gene_pool_index,
     ctrl_size=par["ctrl_size"],
     n_bins=par["n_bins"],
-    random_state=par["random_state"]
+    random_state=par["random_state"],
 )
 
 # copy results to mudata
-assert all(adata_scanpy.obs.index == input_adata.obs.index), "index mismatch between input adata and scanpy output adata"
+assert all(
+    adata_scanpy.obs.index == input_adata.obs.index
+), "index mismatch between input adata and scanpy output adata"
 input_adata.obs[par["obs_score"]] = adata_scanpy.obs["score"]
 
 # write output to mudata
