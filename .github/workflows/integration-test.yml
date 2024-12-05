@@ -72,7 +72,7 @@ jobs:
 
     - uses: viash-io/viash-actions/setup@v6
 
-    - uses: nf-core/setup-nextflow@v2.0.0
+    - uses: nf-core/setup-nextflow@v2.1.4
 
     # use cache
     - name: Cache resources data
