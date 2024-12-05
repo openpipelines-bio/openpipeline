@@ -2,6 +2,7 @@ import mudata as mu
 import sys
 from pathlib import Path
 import pytest
+import numpy as np
 
 ## VIASH START
 meta = {
@@ -149,7 +150,7 @@ def test_filter_cells_without_counts(run_component, input_h5mu, tmp_path):
     )
     assert Path("output-3.h5mu").is_file()
     mu_out = mu.read_h5mu("output-3.h5mu")
-    assert mu_out.mod["rna"].obs.at[obs_to_remove, "filter_with_counts"] is False
+    assert mu_out.mod["rna"].obs.at[obs_to_remove, "filter_with_counts"] is np.False_
     assert "mitochondrial" not in mu_out.mod["rna"].var
 
 

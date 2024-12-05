@@ -28,11 +28,6 @@ data = {
     key: anndata.read_h5ad(path) for key, path in zip(par["modality"], par["input"])
 }
 
-try:
-    data.var_names_make_unique()
-except (TypeError, ValueError):
-    pass
-
 logger.info("Converting to mudata")
 mudata = mu.MuData(data)
 

@@ -73,7 +73,7 @@ def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
     for exp_obs in expected_obs:
         assert exp_obs in obs.columns, f"Expected column '{exp_obs}' not found in .obs"
 
-    assert np.all(obs["is_primary_data"] is True)
+    assert np.all(np.isin(obs["is_primary_data"], [True]))
 
     ## check var
     var = mdata.mod["rna"].var
