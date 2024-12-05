@@ -2,8 +2,11 @@ nextflow.enable.dsl=2
 
 include { harmony_leiden } from params.rootDir + "/target/nextflow/workflows/integration/harmony_leiden/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = 
     Channel.fromList([
@@ -52,7 +55,8 @@ workflow test_wf {
 
 
 workflow test_wf2 {
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = 
     Channel.fromList([
