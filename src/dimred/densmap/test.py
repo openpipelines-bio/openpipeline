@@ -22,8 +22,6 @@ def test_densmap(run_component, random_h5mu_path):
         "--output",  output_path,
         "--modality", "rna",
         "--obsm_pca", "X_pca",
-        "--obsm_knn_indices", "knn_indices",
-        "--obsm_knn_distances", "knn_distances",
         "--output_compression", "gzip"
     ]
     run_component(args)
@@ -46,8 +44,6 @@ def test_densmap_custom_obsm_output(run_component, random_h5mu_path):
         "--output",  output_path,
         "--modality", "rna",
         "--obsm_pca", "X_pca",
-        "--obsm_knn_indices", "knn_indices",
-        "--obsm_knn_distances", "knn_distances",
         "--output_compression", "gzip",
         "--obsm_output", "X_custom_densmap"
     ]
@@ -70,8 +66,6 @@ def test_densmap_no_neighbors_raise(run_component, random_h5mu_path):
         "--input", input_path,
         "--output",  output_path,
         "--obsm_pca", "X_pca",
-        "--obsm_knn_indices", "knn_indices",
-        "--obsm_knn_distances", "knn_distances",
         "--modality", "prot",
         "--output_compression", "gzip"
     ]

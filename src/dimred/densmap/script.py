@@ -16,22 +16,7 @@ par = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
+from setup_logger import setup_logger
 logger = setup_logger()
 
 logger.info("Reading %s", par["input"])
@@ -69,10 +54,6 @@ X_densmap = UMAP(
   dens_lambda=par["lambda"],
   dens_frac=par["fraction"],
   dens_var_shift=par["var_shift"],
-  precomputed_knn=(
-    data.obsm[par["obsm_knn_indices"]],
-    data.obsm[par["obsm_knn_distances"]],
-  )
 ).fit_transform(data.obsm[par["obsm_pca"]])
 
 logger.info(f"Writing densMAP embeddings to .mod[{par['modality']}].obsm[{par['obsm_output']}]")
@@ -94,8 +75,6 @@ data.uns['densmap'] = {
     'dens_lambda': par["lambda"],
     'dens_frac': par["fraction"],
     'dens_var_shift': par["var_shift"],
-    'knn_indices_key': par["obsm_knn_indices"],
-    'knn_distances_key': par["obsm_knn_distances"],
   }
 }
 

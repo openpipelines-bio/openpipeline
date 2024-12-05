@@ -8,6 +8,8 @@ authors:
     roles: [ author ]
   - __merge__: /src/authors/weiwei_schultz.yaml
     roles: [ contributor ]
+info:
+  test_dependencies:
 argument_groups:
   - name: "Inputs"
     arguments:

@@ -1,8 +1,40 @@
-# openpipelines 2.x.x (Unreleased)
+# openpipelines x.x.x
 
 ## BREAKING CHANGES
 
-* Added cell multiplexing support to the `from_cellranger_multi_to_h5mu` component and the `cellranger_multi` workflow. These components now output multiple .h5mu files. The `output` and `output_h5mu` arguments respectively now require a value containing a wildcard character `*`, which will be replaced by the sample ID to form the final output file names . Additionally, a `sample_csv` argument is added to the `from_cellragner_multi_to_h5mu` component which describes the sample name per output file (PR #803).
+* Several components under `src/scgpt` (`cross_check_genes`, `tokenize_pad`, `binning`) now processes the input (query) datasets differently. Instead of subsetting datasets based on genes in the model vocabulary and/or highly variable genes, these components require an input .var column with a boolean mask specifying this information. The results are written back to the original input data, preserving the dataset structure (PR #832).
+
+## NEW FUNCTIONALITY
+
+* `scgpt/cell_type_annotation` component update: Added support for multi-processing (PR #832).
+
+## MINOR CHANGES
+
+* Several component (cleanup): remove workaround for using being able to use shared utility functions with Nextflow Fusion (PR #920).
+
+* `workflows/annotation/scgpt_annotation` workflow: Added a scGPT transformer-based cell type annotation workflow (PR #832).
+
+* `scgpt/cross_check_genes` component update: Highly variable genes are now cross-checked based on the boolean mask in `var_input`. The filtering information is stored in the `--output_var_filter` .var field instead of subsetting the dataset (PR #832).
+
+* `scgpt/binning` component update: This component now requires the `--var_input` parameter to provide gene filtering information. Binned data is written to the `--output_obsm_binned_counts` .obsm field in the original input data (PR #832).
+
+* `scgpt/pad_tokenize` component update: Genes are padded and tokenized based on filtering information in `--var_input` and `--input_obsm_binned_counts` (PR #832).
+
+# openpipelines 2.0.0-rc.2
+
+## BUG FIXES
+
+* `annotate/popv`: fix popv raising `ValueError` when an accelerator (e.g. GPU) is unavailable (PR #915).
+
+## MINOR CHANGES
+
+* `dataflow/split_h5mu`: Optimize resource usage of the component (PR #913).
+
+# openpipelines 2.0.0-rc.1
+
+## BREAKING CHANGES
+
+* Added cell multiplexing support to the `from_cellranger_multi_to_h5mu` component and the `cellranger_multi` workflow. For the `from_cellranger_multi_to_h5mu` component, the `output` argument now requires a value containing a wildcard character `*`, which will be replaced by the sample ID to form the final output file names. Additionally, a `sample_csv` argument is added to the `from_cellragner_multi_to_h5mu` component which describes the sample name per output file. No change is required for the `output_h5mu` argument from the `cellranger_multi` workflow, the workflow will just emit multiple events in case of a multiplexed run, one for each sample. The id of the events (and default output file names) are set by `--sample_ids` (in case of cell multiplexing), or (as before) by the user provided `id` for the input (PR #803 and PR #902).
 
 * `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
 
@@ -141,11 +173,6 @@
 * Several components: bump python version (PR #901).
 
 * `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
-
-* `neighbors/find_neighbors` component: Modified to include results of KNN in the output file (PR #748).
-  2 new optional arguments added to set .obsm slots to save KNN results into:
-  - `obsm_knn_indices`
-  - `obsm_knn_distances`
 
 * `cellbender_remove_background_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
 

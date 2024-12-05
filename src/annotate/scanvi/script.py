@@ -7,9 +7,9 @@ import numpy as np
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
-    "var_query_gene_names": None,
-    "scvi_reference_model": "resources_test/annotation_test_data/scvi_model",
-    "scanvi_reference_model": None,
+    "var_input_gene_names": None,
+    "scvi_reference_model": None,
+    "scanvi_reference_model": "resources_test/annotation_test_data/scanvi_model",
     "unknown_celltype": "Unkown",
     "output": "output.h5mu",
     "output_obsm_scanvi_embedding": "scanvi_embedding",
@@ -38,24 +38,9 @@ meta = {"resources_dir": "src/annotate/utils"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-from query_reference_allignment import set_var_index, cross_check_genes
-
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
+from setup_logger import setup_logger
+from cross_check_genes import cross_check_genes
+from set_var_index import set_var_index
 logger = setup_logger()
 
 if (not par["scvi_reference_model"]) and not (par["scanvi_reference_model"]) or (par["scvi_reference_model"] and par["scanvi_reference_model"]):
@@ -65,8 +50,9 @@ if (not par["scvi_reference_model"]) and not (par["scanvi_reference_model"]) or 
 def main():
     logger.info("Reading the query data")
     # Read in data
-    input_data = mu.read_h5mu(par["input"])
-    input_modality = input_data.mod[par["modality"]].copy()
+    input_mdata = mu.read_h5mu(par["input"])
+    input_adata = input_mdata.mod[par["modality"]]
+    input_modality = input_adata.copy()
     # scANVI requires query and reference gene names to be equivalent 
     input_modality = set_var_index(input_modality, par["var_input_gene_names"])
 
@@ -86,12 +72,11 @@ def main():
         scvi_reference_model = scvi.model.SCVI.load(par["scvi_reference_model"])
         reference = scvi_reference_model.adata
 
-
         logger.info("Alligning genes in reference and query dataset")
         # scANVI requires query and reference gene names to be equivalent 
         reference = set_var_index(reference)
         # Subset query dataset based on genes present in reference
-        common_ens_ids = cross_check_genes(input_modality, reference)
+        common_ens_ids = cross_check_genes(input_modality.var.index, reference.var.index, min_gene_overlap=par["input_reference_gene_overlap"])
         input_modality = input_modality[:, common_ens_ids]
 
         logger.info("Instantiating scANVI model from the scVI model")
@@ -143,15 +128,14 @@ def main():
     )
 
     logger.info("Adding latent representation to query data")
-    input_modality.obsm[par["output_obsm_scanvi_embedding"]] = scanvi_query.get_latent_representation()
+    input_adata.obsm[par["output_obsm_scanvi_embedding"]] = scanvi_query.get_latent_representation()
 
     logger.info("Running predictions on query data")
-    input_modality.obs[par["output_obs_predictions"]] = scanvi_query.predict(input_modality)
-    input_modality.obs[par["output_obs_probability"]] = np.max(scanvi_query.predict(input_modality, soft=True), axis=1)
+    input_adata.obs[par["output_obs_predictions"]] = scanvi_query.predict(input_modality)
+    input_adata.obs[par["output_obs_probability"]] = np.max(scanvi_query.predict(input_modality, soft=True), axis=1)
 
     logger.info("Saving output and model")
-    input_data.mod[par["modality"]] = input_modality
-    input_data.write_h5mu(par["output"], compression=par["output_compression"])
+    input_mdata.write_h5mu(par["output"], compression=par["output_compression"])
 
     if par["output_model"]:
         scanvi_query.save(par["output_model"], overwrite=True)

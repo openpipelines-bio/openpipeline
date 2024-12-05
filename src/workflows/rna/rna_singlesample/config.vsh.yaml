@@ -3,6 +3,7 @@ namespace: "workflows/rna"
 description: "Processing unimodal single-sample RNA transcriptomics data."
 info:
   image: /images/concepts/fig_workflow_multiomics_rna_singlesample.svg
+  test_dependencies:
 authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
     roles: [ author ]
