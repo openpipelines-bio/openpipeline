@@ -219,9 +219,8 @@ out2 %>%
 argument_groups <- map(unique(out2$group_name), function(group_name) {
   args <- out2 %>%
     filter(group_name == !!group_name) %>%
-    pmap(function(
-        viash_arg, viash_type, multiple,
-        viash_default, description, required, ...) {
+    pmap(function(viash_arg, viash_type, multiple,
+                  viash_default, description, required, ...) {
       li <- lst(
         name = viash_arg,
         type = viash_type,
