@@ -1,5 +1,4 @@
 from mudata import read_h5mu
-import numpy as np
 import shutil
 import os
 import sys
