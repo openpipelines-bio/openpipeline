@@ -44,7 +44,7 @@ jobs:
           LINTR_ERROR_ON_LINT: true
 
       - name: Style
-        run: styler::style_dir()
+        run: styler::style_dir(dry = "off")
         shell: Rscript {0}
         
 
