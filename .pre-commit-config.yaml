@@ -5,3 +5,8 @@ repos:
   hooks:
     - id: ruff
     - id: ruff-format
+- repo: https://github.com/lorenzwalthert/precommit
+  rev: v0.4.3
+  hooks:
+    - id: style-files
+    - id: lintr
