@@ -62,7 +62,7 @@ def test_marker_peaks(run_component, request, mudata, tmp_path):
 
     marker_peaks = pd.read_csv(tmp_path / "marker_peaks.tsv", sep="\t")
     assert marker_peaks.shape[0] > 0
-    assert "pvals_adj" in marker_peaks.columns
+    assert "0_pvals_adj" in marker_peaks.columns
 
 
 if __name__ == "__main__":
