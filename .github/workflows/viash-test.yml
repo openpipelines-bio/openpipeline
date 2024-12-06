@@ -38,13 +38,13 @@ jobs:
           needs: lint, styler
 
       - name: Lint
-        run: lintr::lint_package()
+        run: lintr::lint_dir(path = ".")
         shell: Rscript {0}
         env:
           LINTR_ERROR_ON_LINT: true
 
       - name: Style
-        run: styler::style_pkg(dry = "fail")
+        run: styler::style_dir(dry = "fail")
         shell: Rscript {0}
         
 
