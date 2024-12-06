@@ -8,6 +8,11 @@ authors:
     roles: [ author ]
   - __merge__: /src/authors/weiwei_schultz.yaml
     roles: [ contributor ]
+info:
+  name: "scGPT Annotation"
+  test_dependencies:
+    - name: scgpt_annotation_test
+      namespace: test_workflows/annotation
 
 argument_groups:
   - name: Query Input

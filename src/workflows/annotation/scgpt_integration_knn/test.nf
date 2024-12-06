@@ -43,7 +43,9 @@ workflow test_wf {
       ]
     ])
     | map{ state -> [state.id, state] }
-    | scgpt_integration_knn 
+    | scgpt_integration_knn.run(
+      toState: { id, output, state -> output + [orig_input: state.input] }
+    )
     | view { output ->
       assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
 
@@ -62,7 +64,8 @@ workflow test_wf {
     }
     | scgpt_integration_knn_test.run(
         fromState: [
-          "input": "output"
+          "input": "output",
+          "orig_input": "orig_input"
         ],
         args: [
           "n_hvg": 500
