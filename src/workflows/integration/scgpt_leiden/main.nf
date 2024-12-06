@@ -113,11 +113,11 @@ workflow run_wf {
     | leiden.run(
       runIf: {id, state -> state.leiden_resolution},
       fromState: {id, state -> [
-        "input": state.input,
-        "obsp_connectivities": "scGPT_integration_connectivities",
-        "obsm_name": "scGPT_integration_leiden",
-        "resolution": state.leiden_resolution,
-        "modality": state.modality,
+          "input": state.input,
+          "obsp_connectivities": "scGPT_integration_connectivities",
+          "obsm_name": "scGPT_integration_leiden",
+          "resolution": state.leiden_resolution,
+          "modality": state.modality,
         ]
       },
       toState: ["input": "output"]
