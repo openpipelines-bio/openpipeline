@@ -1,0 +1,118 @@
+name: calculate_atac_qc_metrics
+namespace: "qc"
+description: |
+  Add basic ATAC quality control metrics to an .h5mu file.
+
+  The metrics are comparable to what scanpy.pp.calculate_qc_metrics output,
+  although they have slightly different names:
+
+  Obs metrics (name in this component -> name in scanpy):
+    - n_features_per_cell -> n_genes_by_counts
+    - total_fragment_counts -> total_counts
+      
+authors:
+  - __merge__: /src/authors/vladimir_shitov.yaml
+    roles: [ author ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        description: Input h5mu file
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--fragments_path"
+        type: file
+        description: |
+          Path to the fragments file. If not provided and not present in the input h5mu file,
+          the nucleosome signal and TSS enrichment score will not be calculated.
+        direction: input
+        required: false
+        example: fragments.tsv.gz
+      - name: "--modality"
+        type: string
+        default: "atac"
+        required: false
+      - name: "--layer"
+        description: |
+          Layer at `.layers` to use for the calculation. If not provided, `.X` is used.
+        type: string
+        example: "raw_counts"
+        required: false
+      - name: "--n_fragments_for_nucleosome_signal"
+        type: integer
+        description: |
+          Number of fragments to use per cell for nucleosome signal calculation.
+          Takes very long to calculate, for a test run lower value (e.g. 10e3) is recommended.
+          See https://www.sc-best-practices.org/chromatin_accessibility/quality_control.html#nucleosome-signal
+          for more information
+        default: 10e4
+        required: false
+      - name: "--nuc_signal_threshold"
+        type: double
+        description: |
+          Threshold for nucleosome signal. Cells with nucleosome signal above this threshold
+          will be marked as low quality ("NS_FAIL"), otherwise they will be marked "NS_PASS".
+        default: 2
+        required: false
+      - name: "--n_tss"
+        type: integer
+        description: |
+          Number of the transcription start sites to calculate TSS enrichment score.
+          See https://www.sc-best-practices.org/chromatin_accessibility/quality_control.html#tss-enrichment
+          for more information
+        default: 3000
+        required: false
+      - name: "--tss_threshold"
+        type: double
+        description: |
+          Threshold for TSS enrichment score. Cells with TSS enrichment score below this threshold
+          will be marked as low quality ("TSS_FAIL") otherwise they will be marked as "TSS_PASS".
+        default: 1.5
+        required: false
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        type: file
+        description: Output h5mu file.
+        direction: output
+        example: output.h5mu
+      - name: "--output_compression"
+        type: string
+        description: The compression format to be used on the output h5mu object.
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/cellranger_atac_tiny_bcl/counts/
+engines:
+  - type: docker
+    image: python:3.11-slim
+    setup:
+      - type: apt
+        packages: 
+          - procps
+          - pkg-config  # Otherwise h5py installation fails, which is required for scanpy
+          - libhdf5-dev
+          - gcc
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        __merge__: [ /src/base/requirements/scanpy.yaml, .]
+        packages:
+          - muon~=0.1.5
+          - pysam~=0.22.0
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [singlecpu, midmem]
