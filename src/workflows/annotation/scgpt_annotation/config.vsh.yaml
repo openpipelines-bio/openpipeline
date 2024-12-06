@@ -9,6 +9,12 @@ description: |
     - padding and tokenizing of genes
     - transformer-based cell type prediction
   Note that cell-type prediction using scGPT is only possible using a fine-tuned scGPT model.
+info:
+  name: "scGPT Annotation"
+  test_dependencies:
+    - name: scgpt_annotation_test
+      namespace: test_workflows/annotation
+
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]
