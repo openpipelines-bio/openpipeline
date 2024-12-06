@@ -27,8 +27,8 @@ fi
 
 # install torch if necessary
 # Check whether torch is available
-if ! command -v torch &> /dev/null; then
-    echo "This script requires torch. Please make sure the binary is added to your PATH."
+if ! python -c "import torch"; then
+    echo "This script requires torch. Please make sure it is available in your python environment."
     exit 1
 fi
 
@@ -77,12 +77,13 @@ input_mdata.write_h5mu("${test_resources_dir}/Kim2020_Lung.h5mu")
 HEREDOC
 
 echo "> Subsetting datasets"
-viash run src/filter/subset_h5mu/config.vsh.yaml -p docker -- \
+viash run src/filter/subset_h5mu/config.vsh.yaml --engine docker -- \
   --input "${test_resources_dir}/Kim2020_Lung.h5mu" \
   --output "${test_resources_dir}/Kim2020_Lung_subset.h5mu" \
   --number_of_observations 4000
 
 rm "${test_resources_dir}/Kim2020_Lung.h5ad"
+rm "${test_resources_dir}/Kim2020_Lung.h5mu"
 
 echo "> Preprocessing datasets"
 nextflow \
@@ -95,46 +96,38 @@ nextflow \
   --publish_dir "${test_resources_dir}"
 
 echo "> Filtering highly variable features"
-viash run src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml -p docker -- \
-  --input "${test_resources_dir}/iKim2020_Lung_subset_preprocessed.h5mu" \
+viash run src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml --engine docker -- \
+  --input "${test_resources_dir}/Kim2020_Lung_subset_preprocessed.h5mu" \
   --output "${test_resources_dir}/Kim2020_Lung_subset_hvg.h5mu" \
   --layer "log_normalized" \
-  --var_name_filter "filter_with_hvg" \
+  --var_name_filter "scgpt_filter_with_hvg" \
   --n_top_features 1200 \
   --flavor "seurat_v3"
-
-viash run src/filter/do_filter/config.vsh.yaml -p docker -- \
-  --input "${test_resources_dir}/Kim2020_Lung_subset_hvg.h5mu" \
-  --output "${test_resources_dir}/Kim2020_Lung_subset_hvg_filtered.h5mu" \
-  --var_filter "filter_with_hvg"
   
 echo "> Running scGPT cross check genes"
-viash run src/scgpt/cross_check_genes/config.vsh.yaml -p docker -- \
-  --input "${test_resources_dir}/Kim2020_Lung_subset_hvg_filtered.h5mu" \
+viash run src/scgpt/cross_check_genes/config.vsh.yaml --engine docker -- \
+  --input "${test_resources_dir}/Kim2020_Lung_subset_hvg.h5mu" \
   --output "${test_resources_dir}/Kim2020_Lung_subset_genes_cross_checked.h5mu" \
-  --vocab_file "${foundation_model_dir}/vocab.json"
+  --vocab_file "${foundation_model_dir}/vocab.json" \
+  --var_input "scgpt_filter_with_hvg" \
+  --output_var_filter "scgpt_cross_checked_genes"
 
 echo "> Running scGPT binning"
-viash run src/scgpt/binning/config.vsh.yaml -p docker -- \
+viash run src/scgpt/binning/config.vsh.yaml --engine docker -- \
   --input "${test_resources_dir}/Kim2020_Lung_subset_genes_cross_checked.h5mu" \
   --input_layer "log_normalized" \
-  --output "${test_resources_dir}/Kim2020_Lung_subset_binned.h5mu"
+  --output "${test_resources_dir}/Kim2020_Lung_subset_binned.h5mu" \
+  --output_obsm_binned_counts "binned_counts" \
+  --var_input "scgpt_cross_checked_genes"
 
 echo "> Running scGPT tokenizing"
-viash run src/scgpt/pad_tokenize/config.vsh.yaml -p docker -- \
+viash run src/scgpt/pad_tokenize/config.vsh.yaml --engine docker -- \
   --input "${test_resources_dir}/Kim2020_Lung_subset_binned.h5mu" \
-  --input_layer "binned" \
+  --input_obsm_binned_counts "binned_counts" \
   --output "${test_resources_dir}/Kim2020_Lung_subset_tokenized.h5mu" \
-  --model_vocab "${foundation_model_dir}/vocab.json"
-
-echo "> Running scGPT integration"
-viash run src/scgpt/embedding/config.vsh.yaml -p docker -- \
-  --input "${test_resources_dir}/Kim2020_Lung_subset_tokenized.h5mu" \
-  --output "${test_resources_dir}/Kim2020_Lung_subset_scgpt_integrated.h5mu" \
-  --model "${foundation_model_dir}/best_model.pt" \
   --model_vocab "${foundation_model_dir}/vocab.json" \
-  --model_config "${foundation_model_dir}/args.json" \
-  --obs_batch_label "sample"
+  --var_input "scgpt_cross_checked_genes" \
+
 
 echo "> Removing unnecessary files in test resources dir"
 find "${test_resources_dir}" -type f \( ! -name "Kim2020_*" -o ! -name "*.h5mu" \) -delete

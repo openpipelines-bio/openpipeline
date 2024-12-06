@@ -26,6 +26,8 @@
 
 * `scgpt/pad_tokenize` component update: Genes are padded and tokenized based on filtering information in `--var_input` and `--input_obsm_binned_counts` (PR #832).
 
+* `resources_test_scripts/scGPT.sh`: Update scGPT test resources to avoid subsetting of datasets (PR #926).
+
 # openpipelines 2.0.0-rc.2
 
 ## BUG FIXES

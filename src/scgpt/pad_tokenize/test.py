@@ -19,43 +19,22 @@ vocab_file = f"{meta['resources_dir']}/scgpt/source/vocab.json"
 vocab = GeneVocab.from_file(vocab_file)
 
 
-@pytest.fixture
-def binned_h5mu(random_h5mu_path):
-    binned_h5mu_path = random_h5mu_path()
-    mdata = mu.read(input_file)
-    adata = mdata.mod["rna"]
-    adata.obsm["binned_counts"] = adata.layers["binned"]
-    mdata.write(binned_h5mu_path)
-    return binned_h5mu_path
-
-
-def test_integration_pad_tokenize(run_component, tmp_path, binned_h5mu):
+def test_integration_pad_tokenize(run_component, tmp_path):
     output = tmp_path / "Kim2020_Lung_tokenized.h5mu"
 
-    run_component(
-        [
-            "--input",
-            binned_h5mu,
-            "--output",
-            output,
-            "--modality",
-            "rna",
-            "--obsm_gene_tokens",
-            "gene_id_tokens",
-            "--obsm_tokenized_values",
-            "values_tokenized",
-            "--obsm_padding_mask",
-            "padding_mask",
-            "--pad_token",
-            "<pad>",
-            "--pad_value",
-            "-2",
-            "--input_obsm_binned_counts",
-            "binned_counts",
-            "--model_vocab",
-            vocab_file,
-        ]
-    )
+    run_component([
+        "--input", input_file,
+        "--output", output,
+        "--modality", "rna",
+        "--var_input", "scgpt_cross_checked_genes",
+        "--obsm_gene_tokens", "gene_id_tokens",
+        "--obsm_tokenized_values", "values_tokenized",
+        "--obsm_padding_mask", "padding_mask",
+        "--pad_token", "<pad>",
+        "--pad_value", "-2",
+        "--input_obsm_binned_counts", "binned_counts",
+        "--model_vocab", vocab_file
+    ])
 
     output_file = mu.read(output)
     output_adata = output_file.mod["rna"]

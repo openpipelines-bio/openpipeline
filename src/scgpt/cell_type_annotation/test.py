@@ -1,29 +1,14 @@
 import pytest
 from mudata import read_h5mu
 import sys
-import torch
 import subprocess
 import re
 
 
 input_path = f'{meta["resources_dir"]}/Kim2020_Lung_subset_tokenized.h5mu'
-model = f'{meta["resources_dir"]}/best_model.pt'
-ft_model = f'{meta["resources_dir"]}/ft_best_model.pt'
+ft_model = f'{meta["resources_dir"]}/best_model.pt'
 model_config = f'{meta["resources_dir"]}/args.json'
 model_vocab = f'{meta["resources_dir"]}/vocab.json'
-
-
-def scgpt_to_ft_scgpt(scgpt_path, ft_scgpt_path, state_dict_key, mapper_key):
-    f_model_dict = torch.load(scgpt_path, map_location="cpu")
-    model_dict = {}
-    model_dict[state_dict_key] = f_model_dict
-    model_dict[mapper_key] = {k: str(k) for k in range(15)}
-    torch.save(model_dict, ft_scgpt_path)
-
-
-# Convert foundation model into fine-tuned model architecture:
-# To be able to do a cell type label mapping, the model architecture needs to contain a class to label mapper dictionary
-scgpt_to_ft_scgpt(model, ft_model, "model_state_dict", "id_to_class")
 
 
 def test_cell_type_inference(run_component, tmp_path):
