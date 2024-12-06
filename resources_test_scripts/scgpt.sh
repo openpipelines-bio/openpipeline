@@ -27,8 +27,8 @@ fi
 
 # install torch if necessary
 # Check whether torch is available
-if ! command -v torch &> /dev/null; then
-    echo "This script requires torch. Please make sure the binary is added to your PATH."
+if ! python -c "import torch"; then
+    echo "This script requires torch. Please make sure it is available in your python environment."
     exit 1
 fi
 
