@@ -3216,6 +3216,15 @@ meta = [
       "dest" : "openpipelinetestutils"
     }
   ],
+  "info" : {
+    "name" : "scGPT Annotation",
+    "test_dependencies" : [
+      {
+        "name" : "scgpt_annotation_test",
+        "namespace" : "test_workflows/annotation"
+      }
+    ]
+  },
   "status" : "enabled",
   "dependencies" : [
     {
@@ -3344,7 +3353,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_annotation",
     "viash_version" : "0.9.0",
-    "git_commit" : "9cb15aff4c1e5c36fe7dc7ac7192fbbda7957a38",
+    "git_commit" : "0cbba73bd4337ff8b817d1259294ba85b3cf14be",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
