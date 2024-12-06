@@ -203,7 +203,8 @@ argument_groups:
   arguments:
   - type: "integer"
     name: "--max_seq_len"
-    description: "The maximum sequence length of the tokenized data.\n"
+    description: "The maximum sequence length of the tokenized data. Defaults to the\
+      \ number of features if not provided.\n"
     info: null
     required: false
     direction: "input"
@@ -398,7 +399,7 @@ build_info:
   output: "target/nextflow/workflows/integration/scgpt_leiden"
   executable: "target/nextflow/workflows/integration/scgpt_leiden/main.nf"
   viash_version: "0.9.0"
-  git_commit: "3f4df9f42c8c133e8b36e805752d531c35ee6a36"
+  git_commit: "e5427fb94af70cc5d2360629b544ba1c85ec7f2d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/scgpt/cross_check_genes"

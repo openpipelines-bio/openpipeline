@@ -516,9 +516,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Elizabeth Mlynarski, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt binning"
-LABEL org.opencontainers.image.created="2024-12-06T02:56:45Z"
+LABEL org.opencontainers.image.created="2024-12-06T19:31:16Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3f4df9f42c8c133e8b36e805752d531c35ee6a36"
+LABEL org.opencontainers.image.revision="e5427fb94af70cc5d2360629b544ba1c85ec7f2d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1280,7 +1280,7 @@ with warnings.catch_warnings():
         )
         # These are all non-zero counts in the row
         non_zero_row = layer_data.data[row_start_index:row_end_index]
-        if non_zero_row.max() == 0:
+        if len(non_zero_row) == 0:
             logger.warning(
                 "The input data contains all zero rows. Please make sure "
                 "this is expected. You can use the \`filter_cell_by_counts\` "
