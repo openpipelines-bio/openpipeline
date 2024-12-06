@@ -67,10 +67,10 @@ workflow test_wf2 {
   output_ch = Channel.fromList([
       [
         id: "test_output_arg",
-        input: resources_test.resolve("test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
-        model: resources_test.resolve("source/best_model.pt"),
-        model_config: resources_test.resolve("source/args.json"),
-        model_vocab: resources_test.resolve("source/vocab.json"),
+        input: resources_test.resolve("scgpt/test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
+        model: resources_test.resolve("scgpt/source/best_model.pt"),
+        model_config: resources_test.resolve("scgpt/source/args.json"),
+        model_vocab: resources_test.resolve("scgpt/source/vocab.json"),
         input_layer: "log_normalized",
         obs_batch_label: "sample",
         n_hvg: 400,
