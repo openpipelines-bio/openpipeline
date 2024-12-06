@@ -34,7 +34,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          packages: any::lintr, local::., any::styler, any::roxygen2
+          packages: any::lintr, any::styler, any::roxygen2
           needs: lint, styler
 
       - name: Lint
