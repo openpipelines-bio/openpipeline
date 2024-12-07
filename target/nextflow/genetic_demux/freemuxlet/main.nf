@@ -3257,7 +3257,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/freemuxlet",
     "viash_version" : "0.9.0",
-    "git_commit" : "e5427fb94af70cc5d2360629b544ba1c85ec7f2d",
+    "git_commit" : "8bc1121cde40e06f8dab73192decc75ceec47d8e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3396,10 +3396,14 @@ argmap <- c(
 
 for (arg in names(argmap)) {
   if (!is.null(par[[arg]])) {
-    if (arg %in% c("aux_files", "keep_init_missing", "randomize_singlet_score")) {
-      if (toupper(par[[arg]]) == TRUE)
+    if (arg %in% c(
+      "aux_files", "keep_init_missing",
+      "randomize_singlet_score"
+    )) {
+      if (toupper(par[[arg]]) == TRUE) {
         cmd <- c(cmd, argmap[[arg]])
-    }else {
+      }
+    } else {
       cmd <- c(cmd, argmap[[arg]], par[[arg]])
     }
   }

@@ -8,17 +8,13 @@
 
 ## NEW FUNCTIONALITY
 
-* `workflows/annotation/scgpt_annotation` workflow: Added a scGPT transformer-based cell type annotation workflow (PR #832).
-
-* `workflows/annotation/scgpt_integration_knn` workflow: Cell-type annotation based on scGPT integration with KNN label transfer (PR #875).
+* `scgpt/cell_type_annotation` component update: Added support for multi-processing (PR #832).
 
 * CI: Use `params.resources_test` in test workflows in order to point to an alternative location (e.g. a cache) (PR #889).
 
 ## MINOR CHANGES
 
 * Several component (cleanup): remove workaround for using being able to use shared utility functions with Nextflow Fusion (PR #920).
-
-* `scgpt/cell_type_annotation` component update: Added support for multi-processing (PR #832).
 
 * Several annotation (`src/annotate/`) components (`onclass`, `celltypist`, `random_forest_annotation`, `scanvi`, `svm_annotation`): Updated input parameteres to ensure uniformity across components, implemented functionality to cross-check the overlap of genes between query and reference (model) datasets and implemented logic to allow for subsetting of genes (PR #919). 
 
@@ -29,8 +25,6 @@
 * `scgpt/binning` component update: This component now requires the `--var_input` parameter to provide gene filtering information. Binned data is written to the `--output_obsm_binned_counts` .obsm field in the original input data (PR #832).
 
 * `scgpt/pad_tokenize` component update: Genes are padded and tokenized based on filtering information in `--var_input` and `--input_obsm_binned_counts` (PR #832).
-
-* `workflows/integration/scgpt_leiden` workflow update: Update workflow such that input dataset is not subsetted for HVG but uses boolean masks in .var field instead (PR #875).
 
 # openpipelines 2.0.0-rc.2
 

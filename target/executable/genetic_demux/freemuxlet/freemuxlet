@@ -577,9 +577,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux freemuxlet"
-LABEL org.opencontainers.image.created="2024-12-06T19:31:12Z"
+LABEL org.opencontainers.image.created="2024-12-07T02:55:10Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e5427fb94af70cc5d2360629b544ba1c85ec7f2d"
+LABEL org.opencontainers.image.revision="8bc1121cde40e06f8dab73192decc75ceec47d8e"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1539,10 +1539,14 @@ argmap <- c(
 
 for (arg in names(argmap)) {
   if (!is.null(par[[arg]])) {
-    if (arg %in% c("aux_files", "keep_init_missing", "randomize_singlet_score")) {
-      if (toupper(par[[arg]]) == TRUE)
+    if (arg %in% c(
+      "aux_files", "keep_init_missing",
+      "randomize_singlet_score"
+    )) {
+      if (toupper(par[[arg]]) == TRUE) {
         cmd <- c(cmd, argmap[[arg]])
-    }else {
+      }
+    } else {
       cmd <- c(cmd, argmap[[arg]], par[[arg]])
     }
   }

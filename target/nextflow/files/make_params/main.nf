@@ -3104,7 +3104,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/files/make_params",
     "viash_version" : "0.9.0",
-    "git_commit" : "e5427fb94af70cc5d2360629b544ba1c85ec7f2d",
+    "git_commit" : "8bc1121cde40e06f8dab73192decc75ceec47d8e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3214,7 +3214,9 @@ paths <- gsub("^/viash_automount", "", paths)
 
 cat("> Checking whether basenames are unique\\\\n")
 i <- par\\$n_basename_id
-maxi <- strsplit(paths, "/") %>% map_int(length) %>% max
+maxi <- strsplit(paths, "/") %>%
+  map_int(length) %>%
+  max()
 
 regex <- paste0(".*/(", paste(rep("[^/]+/", i), collapse = ""), "[^/]*)\\$")
 ids <- gsub("/", "_", gsub(regex, "\\\\\\\\1", paths))
@@ -3225,10 +3227,13 @@ cat("\\\\n")
 
 while (i < maxi && any(duplicated(ids))) {
   i <- i + 1
-  cat("Duplicated ids detected, combining with ", i, " dirnames in an attempt to get unique ids.\\\\n")
+  cat(
+    "Duplicated ids detected, combining with ", i,
+    " dirnames in an attempt to get unique ids.\\\\n"
+  )
   regex <- paste0(".*/(", paste(rep("[^/]+/", i), collapse = ""), "[^/]*)\\$")
   ids <- gsub("/", "_", gsub(regex, "\\\\\\\\1", paths))
-  
+
   cat("> Printing first five rows\\\\n")
   print(tibble(id = ids, path = paths) %>% head(5))
   cat("\\\\n")

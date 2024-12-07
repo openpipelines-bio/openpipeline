@@ -3167,7 +3167,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning",
     "viash_version" : "0.9.0",
-    "git_commit" : "e5427fb94af70cc5d2360629b544ba1c85ec7f2d",
+    "git_commit" : "8bc1121cde40e06f8dab73192decc75ceec47d8e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3323,7 +3323,7 @@ with warnings.catch_warnings():
         )
         # These are all non-zero counts in the row
         non_zero_row = layer_data.data[row_start_index:row_end_index]
-        if len(non_zero_row) == 0:
+        if non_zero_row.max() == 0:
             logger.warning(
                 "The input data contains all zero rows. Please make sure "
                 "this is expected. You can use the \\`filter_cell_by_counts\\` "

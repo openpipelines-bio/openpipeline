@@ -3081,7 +3081,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/process_10xh5/filter_10xh5",
     "viash_version" : "0.9.0",
-    "git_commit" : "e5427fb94af70cc5d2360629b544ba1c85ec7f2d",
+    "git_commit" : "8bc1121cde40e06f8dab73192decc75ceec47d8e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3196,13 +3196,27 @@ mat <- Matrix::sparseMatrix(
   )
 )
 
-if (par\\$verbose) cat("Filtering out cells with library size < ", par\\$min_library_size, "\\\\n", sep = "")
+if (par\\$verbose) {
+  cat("Filtering out cells with library size < ",
+    par\\$min_library_size, "\\\\n",
+    sep = ""
+  )
+}
 library_size <- Matrix::colSums(mat)
 mat2 <- mat[, library_size >= par\\$min_library_size, drop = FALSE]
 
-if (par\\$verbose) cat("Filtering genes with num cells < ", par\\$min_cells_per_gene, "\\\\n", sep = "")
+if (par\\$verbose) {
+  cat("Filtering genes with num cells < ",
+    par\\$min_cells_per_gene, "\\\\n",
+    sep = ""
+  )
+}
 num_cells <- Matrix::rowSums(mat2 > 0)
-mat3 <- mat2[num_cells >= par\\$min_cells_per_gene | features\\$feature_type %in% par\\$keep_feature_types, , drop = FALSE]
+mat3 <- mat2[
+  num_cells >= par\\$min_cells_per_gene |
+    features\\$feature_type %in% par\\$keep_feature_types, ,
+  drop = FALSE
+]
 features2 <- features[match(rownames(mat3), features\\$id), , drop = FALSE]
 
 # helper fun
