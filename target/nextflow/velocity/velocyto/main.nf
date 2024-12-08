@@ -3116,7 +3116,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/velocyto",
     "viash_version" : "0.9.0",
-    "git_commit" : "8bc1121cde40e06f8dab73192decc75ceec47d8e",
+    "git_commit" : "ce52692d4291203635580a5ed823a1079e3e5ac0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
