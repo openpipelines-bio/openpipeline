@@ -48,7 +48,7 @@ def test_integration_embedding(run_component, tmp_path):
             "--output",
             output_embedding_file,
             "--batch_size",
-            "16",
+            "4",
         ]
     )
 
@@ -100,7 +100,7 @@ def test_integration_embedding(run_component, tmp_path):
             "--output",
             output_embedding_file_without_dsbn,
             "--batch_size",
-            "16",
+            "4",
         ]
     )
 
