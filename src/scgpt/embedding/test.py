@@ -12,7 +12,7 @@ meta = {
 }
 ## VIASH END
 
-full_input = f"{meta['resources_dir']}/Kim2020_Lung_subset_tokenized.h5mu"
+input = f"{meta['resources_dir']}/Kim2020_Lung_subset_tokenized.h5mu"
 model_file = f"{meta['resources_dir']}/source/best_model.pt"
 ft_model_file = f'{meta["resources_dir"]}/finetuned_model/best_model.pt'
 vocab_file = f"{meta['resources_dir']}/source/vocab.json"
