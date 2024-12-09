@@ -22,7 +22,7 @@ workflow test_wf {
         reference_obs_batch_label: "donor_assay",
         reference_var_gen_names: "feature_name",
         reference_obs_targets: "cell_type",
-        n_hvg: 500,
+        n_hvg: 100,
         leiden_resolution: [1.0, 0.25]
       ],
       [
@@ -38,7 +38,7 @@ workflow test_wf {
         reference_obs_batch_label: "donor_assay",
         reference_var_gen_names: "feature_name",
         reference_obs_targets: "cell_type",
-        n_hvg: 500,
+        n_hvg: 100,
         leiden_resolution: []
       ]
     ])
@@ -68,7 +68,7 @@ workflow test_wf {
           "orig_input": "orig_input"
         ],
         args: [
-          "n_hvg": 500
+          "n_hvg": 100
         ]
     )
     | toSortedList({a, b -> a[0] <=> b[0]})
