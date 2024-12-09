@@ -19,9 +19,8 @@ obsm_embeddings: "X_scGPT"
 # Arguments
 pad_token: "<pad>"
 pad_value: -2
-dbsn: true
-batch_size: 64
 dsbn: true
+batch_size: 64
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

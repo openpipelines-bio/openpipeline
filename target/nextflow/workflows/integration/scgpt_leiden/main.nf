@@ -3078,7 +3078,7 @@ meta = [
         {
           "type" : "integer",
           "name" : "--max_seq_len",
-          "description" : "The maximum sequence length of the tokenized data.\n",
+          "description" : "The maximum sequence length of the tokenized data. Defaults to the number of features if not provided.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3348,7 +3348,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scgpt_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "1fa2eaed7fa715f9c455fdd5a95fd15b9bda9376",
+    "git_commit" : "09b1d25eb73ede94f0a0ced7ad25e43f6164b4c3",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3415,71 +3415,61 @@ workflow run_wf {
           "input": state.input,
           "layer": state.input_layer,
           "modality": state.modality,
-          "var_name_filter": "filter_with_hvg",
+          "var_name_filter": "scgpt_filter_with_hvg",
           "n_top_features": state.n_hvg,
           "flavor": "seurat_v3"
         ]
       },
       toState: ["input": "output"]
     )
-    | do_filter.run(
-      fromState: {id, state ->
-        // do_filter does not need a layer argument because it filters all layers
-        // from a modality.
-        // filters the mudata object based on the HVG
-        [
-          "input": state.input,
-          "modality": state.modality,
-          "var_filter": "filter_with_hvg"
-        ]
-      },
-      toState: ["input": "output"]
-    )
     | cross_check_genes.run(
-      fromState: { id, state ->
-      // Check whether the genes are part of the provided vocabulary. Subsets for genes present in vocab only.
-        [
+      fromState: { id, state -> [
+      // Check whether the genes are part of the provided vocabulary.
           "input": state.input,
           "modality": state.modality,
           "vocab_file": state.model_vocab,
-          "var_gene_names": state.var_gene_names,
+          "input_var_gene_names": state.var_gene_names,
           "output": state.output,
-          "pad_token": state.pad_token
+          "pad_token": state.pad_token,
+          "var_input": "scgpt_filter_with_hvg",
+          "output_var_filter": "scgpt_cross_checked_genes"
         ]
       },
       toState: ["input": "output"]
     )
     | binning.run(
       // Bins the data into a fixed number of bins.
-        fromState: {id, state -> [
-            "input": state.input,
-            "modality": state.modality,
-            "input_layer": state.input_layer,
-            "n_input_bins": state.n_input_bins,
-            "binned_layer": "binned",
-            "output": state.output
-          ]
-        },
-        toState: ["input": "output"]
+      fromState: {id, state -> [
+          "input": state.input,
+          "modality": state.modality,
+          "input_layer": state.input_layer,
+          "n_input_bins": state.n_input_bins,
+          "output_obsm_binned_counts": "binned_counts",
+          "var_input": "scgpt_cross_checked_genes",
+          "output": state.output
+        ]
+      },
+      toState: ["input": "output"]
     )
     | pad_tokenize.run(
       // Padding and tokenization of gene count values.
-       fromState: {id, state -> [
-            "input": state.input,
-            "modality": state.modality,
-            "model_vocab": state.model_vocab,
-            "input_layer": "binned",
-            "var_gene_names": state.var_gene_names,
-            "pad_token": state.pad_token,
-            "pad_value": state.pad_value,
-            "max_seq_len": state.max_seq_len,
-            "obsm_gene_tokens": "gene_id_tokens",
-            "obsm_tokenized_values": "values_tokenized",
-            "obsm_padding_mask": "padding_mask",
-            "output": state.output
-          ]
-        },
-        toState: ["input": "output"]
+      fromState: {id, state -> [
+          "input": state.input,
+          "modality": state.modality,
+          "model_vocab": state.model_vocab,
+          "input_obsm_binned_counts": "binned_counts",
+          "var_input": "scgpt_cross_checked_genes",
+          "var_gene_names": state.var_gene_names,
+          "pad_token": state.pad_token,
+          "pad_value": state.pad_value,
+          "max_seq_len": state.max_seq_len,
+          "obsm_gene_tokens": "gene_id_tokens",
+          "obsm_tokenized_values": "values_tokenized",
+          "obsm_padding_mask": "padding_mask",
+          "output": state.output
+        ]
+      },
+      toState: ["input": "output"]
     )
     | embedding.run(
       // Generation of cell embedings from the tokenized gene counts values.
@@ -3496,7 +3486,7 @@ workflow run_wf {
           "obs_batch_label": state.obs_batch_label,
           "pad_token": state.pad_token,
           "pad_value": state.pad_value,
-          "DSBN": state.DSBN,
+          "dsbn": state.dsbn,
           "batch_size": state.batch_size,
           "obsm_embeddings": state.obsm_integrated,
           "finetuned_checkpoints_key": state.finetuned_checkpoints_key,

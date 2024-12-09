@@ -509,9 +509,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Robrecht Cannoodt, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component transform bpcells_regress_out"
-LABEL org.opencontainers.image.created="2024-12-09T02:59:47Z"
+LABEL org.opencontainers.image.created="2024-12-09T12:29:34Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1fa2eaed7fa715f9c455fdd5a95fd15b9bda9376"
+LABEL org.opencontainers.image.revision="09b1d25eb73ede94f0a0ced7ad25e43f6164b4c3"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1182,10 +1182,7 @@ mdata <- mudata\$read_h5mu(par\$input)
 
 # Regress out
 if (!is.null(par\$obs_keys) && length(par\$obs_keys) > 0) {
-  cat("Regress out variables ", par\$obs_keys, " on modality ",
-    par\$modality, "\\n",
-    sep = ""
-  )
+  cat("Regress out variables ", par\$obs_keys, " on modality ", par\$modality, "\\n", sep = "")
 
   # Fetch modality AnnData and convert to an iterable matrix
   adata <- mdata\$mod[[par\$modality]]
@@ -1220,6 +1217,7 @@ if (!is.null(par\$obs_keys) && length(par\$obs_keys) > 0) {
     cat("Using .layers ", par\$output_layer, " as output layer\\n", sep = "")
     adata\$layers[[par\$output_layer]] <- rmat
   }
+
 } else {
   cat("No obs_keys provided, skipping regression\\n")
 }

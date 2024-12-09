@@ -1,9 +1,6 @@
 ## VIASH START
 par <- list(
-  input = paste0(
-    "resources_test/pbmc_1k_protein_v3/",
-    "pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5"
-  ),
+  input = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5",
   output = "output.h5",
   min_library_size = 1000,
   min_cells_per_gene = 300,
@@ -40,27 +37,13 @@ mat <- Matrix::sparseMatrix(
   )
 )
 
-if (par$verbose) {
-  cat("Filtering out cells with library size < ",
-    par$min_library_size, "\n",
-    sep = ""
-  )
-}
+if (par$verbose) cat("Filtering out cells with library size < ", par$min_library_size, "\n", sep = "")
 library_size <- Matrix::colSums(mat)
 mat2 <- mat[, library_size >= par$min_library_size, drop = FALSE]
 
-if (par$verbose) {
-  cat("Filtering genes with num cells < ",
-    par$min_cells_per_gene, "\n",
-    sep = ""
-  )
-}
+if (par$verbose) cat("Filtering genes with num cells < ", par$min_cells_per_gene, "\n", sep = "")
 num_cells <- Matrix::rowSums(mat2 > 0)
-mat3 <- mat2[
-  num_cells >= par$min_cells_per_gene |
-    features$feature_type %in% par$keep_feature_types, ,
-  drop = FALSE
-]
+mat3 <- mat2[num_cells >= par$min_cells_per_gene | features$feature_type %in% par$keep_feature_types, , drop = FALSE]
 features2 <- features[match(rownames(mat3), features$id), , drop = FALSE]
 
 # helper fun

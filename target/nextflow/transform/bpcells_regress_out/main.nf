@@ -3168,7 +3168,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/bpcells_regress_out",
     "viash_version" : "0.9.0",
-    "git_commit" : "1fa2eaed7fa715f9c455fdd5a95fd15b9bda9376",
+    "git_commit" : "09b1d25eb73ede94f0a0ced7ad25e43f6164b4c3",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3268,10 +3268,7 @@ mdata <- mudata\\$read_h5mu(par\\$input)
 
 # Regress out
 if (!is.null(par\\$obs_keys) && length(par\\$obs_keys) > 0) {
-  cat("Regress out variables ", par\\$obs_keys, " on modality ",
-    par\\$modality, "\\\\n",
-    sep = ""
-  )
+  cat("Regress out variables ", par\\$obs_keys, " on modality ", par\\$modality, "\\\\n", sep = "")
 
   # Fetch modality AnnData and convert to an iterable matrix
   adata <- mdata\\$mod[[par\\$modality]]
@@ -3306,6 +3303,7 @@ if (!is.null(par\\$obs_keys) && length(par\\$obs_keys) > 0) {
     cat("Using .layers ", par\\$output_layer, " as output layer\\\\n", sep = "")
     adata\\$layers[[par\\$output_layer]] <- rmat
   }
+
 } else {
   cat("No obs_keys provided, skipping regression\\\\n")
 }

@@ -45,14 +45,10 @@ argmap <- c(
 
 for (arg in names(argmap)) {
   if (!is.null(par[[arg]])) {
-    if (arg %in% c(
-      "aux_files", "keep_init_missing",
-      "randomize_singlet_score"
-    )) {
-      if (toupper(par[[arg]]) == TRUE) {
+    if (arg %in% c("aux_files", "keep_init_missing", "randomize_singlet_score")) {
+      if (toupper(par[[arg]]) == TRUE)
         cmd <- c(cmd, argmap[[arg]])
-      }
-    } else {
+    }else {
       cmd <- c(cmd, argmap[[arg]], par[[arg]])
     }
   }

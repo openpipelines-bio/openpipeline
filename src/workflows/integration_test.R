@@ -1,8 +1,6 @@
 library(tidyverse)
 
-workflows <- yaml::yaml.load(
-  system("viash ns list -q '^workflows/(?!test_workflows)'", intern = TRUE)
-)
+workflows <- yaml::yaml.load(system("viash ns list -q '^workflows/(?!test_workflows)'", intern = TRUE))
 
 outs <- map_df(workflows, function(wf) {
   cat("Running ", wf$namespace, "/", wf$name, "\n", sep = "")
@@ -24,9 +22,8 @@ outs <- map_df(workflows, function(wf) {
     map_df(
       tests,
       function(test) {
-        if (file.exists(paste0(dir, "/graph.dot"))) {
-          file.remove(paste0(dir, "/graph.dot"))
-        }
+        if (file.exists(paste0(dir, "/graph.dot"))) file.remove(paste0(dir, "/graph.dot"))
+        
         args <- c(
           "run", ".",
           "-main-script", paste0(dir, "/", test$path),
@@ -46,9 +43,7 @@ outs <- map_df(workflows, function(wf) {
           env = c("current", NXF_VER = "24.04.4")
         )
         stop_time <- Sys.time()
-        duration <- ceiling(
-          as.numeric(difftime(stop_time, start_time, unit = "sec"))
-        )
+        duration <- ceiling(as.numeric(difftime(stop_time, start_time, unit = "sec")))
         result <- if (out$status > 0) "FAILED" else "SUCCESS"
         if (out$status > 0) {
           cat(
