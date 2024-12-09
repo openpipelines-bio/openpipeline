@@ -20,27 +20,13 @@ model_config_file = f"{meta['resources_dir']}/source/args.json"
 input_file = mu.read(input)
 
 
-@pytest.fixture
-def reduced_input(tmp_path):
-    red_input_path = tmp_path / "Kim2020_Lung_subset_tokenized_red.h5mu"
-
-    mdata = mu.read(input)
-    adata = mdata.mod["rna"]
-    adata_subset = adata[:, adata.var["scgpt_cross_checked_genes"]]
-    adata_subset = adata[:, :100]
-    adata_subset.obsm["binned_counts"] = adata_subset.obsm["binned_counts"][:, :100]
-    mdata_subset = mu.MuData({"rna": adata_subset})
-    mdata_subset.write(red_input_path)
-    return red_input_path
-
-
-def test_integration_embedding(run_component, tmp_path, reduced_input):
+def test_integration_embedding(run_component, tmp_path):
     output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
 
     run_component(
         [
             "--input",
-            reduced_input,
+            input,
             "--modality",
             "rna",
             "--model",
@@ -265,13 +251,13 @@ def test_integration_embedding_non_existing_keys(run_component, tmp_path):
     )
 
 
-def test_finetuned_model(run_component, tmp_path, reduced_input):
+def test_finetuned_model(run_component, tmp_path):
     output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
 
     run_component(
         [
             "--input",
-            reduced_input,
+            input,
             "--modality",
             "rna",
             "--model",
@@ -294,6 +280,8 @@ def test_finetuned_model(run_component, tmp_path, reduced_input):
             "model_state_dict",
             "--output",
             output_embedding_file,
+            "--batch_size",
+            "4",
         ]
     )
 
