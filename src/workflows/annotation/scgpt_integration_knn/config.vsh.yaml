@@ -11,7 +11,7 @@ authors:
 info:
   name: "scGPT Annotation"
   test_dependencies:
-    - name: scgpt_annotation_test
+    - name: scgpt_integration_knn_test
       namespace: test_workflows/annotation
 
 argument_groups:
