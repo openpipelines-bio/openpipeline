@@ -12,7 +12,7 @@ meta = {
 }
 ## VIASH END
 
-input = f"{meta['resources_dir']}/Kim2020_Lung_subset_tokenized.h5mu"
+full_input = f"{meta['resources_dir']}/Kim2020_Lung_subset_tokenized.h5mu"
 model_file = f"{meta['resources_dir']}/source/best_model.pt"
 ft_model_file = f'{meta["resources_dir"]}/finetuned_model/best_model.pt'
 vocab_file = f"{meta['resources_dir']}/source/vocab.json"
@@ -47,6 +47,8 @@ def test_integration_embedding(run_component, tmp_path):
             "padding_mask",
             "--output",
             output_embedding_file,
+            "--batch_size",
+            "16",
         ]
     )
 
@@ -97,6 +99,8 @@ def test_integration_embedding(run_component, tmp_path):
             "padding_mask",
             "--output",
             output_embedding_file_without_dsbn,
+            "--batch_size",
+            "16",
         ]
     )
 
