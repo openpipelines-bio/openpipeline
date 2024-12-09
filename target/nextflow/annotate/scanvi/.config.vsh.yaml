@@ -507,7 +507,7 @@ build_info:
   output: "target/nextflow/annotate/scanvi"
   executable: "target/nextflow/annotate/scanvi/main.nf"
   viash_version: "0.9.0"
-  git_commit: "4f56e7279b91bd2cdc78a1cc46af0a0d29ed306a"
+  git_commit: "4a303160c36537c71a6c172b23084f16907127c9"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
