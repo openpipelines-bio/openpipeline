@@ -39,7 +39,7 @@ workflow run_wf {
                 toState: ["reference": "output"])
         // Make sure that query and reference dataset have batch information in the same .obs column
         // By copying the respective .obs columns to the obs column "batch_label"
-        | copy_obs.run(
+        | duplicate_obs.run(
             fromState: [
                 "input": "input",
                 "modality": "modality",
@@ -143,7 +143,7 @@ workflow run_wf {
             }
         | view {"After splitting query: $it"}
         // Perform KNN label transfer from integrated reference to integrated query
-        | pynndescent_knn.run(
+        | knn.run(
             fromState: [
                 "input": "integrated_query",
                 "modality": "modality",
