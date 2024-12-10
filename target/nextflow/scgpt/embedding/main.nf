@@ -3084,7 +3084,7 @@ meta = [
         },
         {
           "type" : "boolean",
-          "name" : "--dsbn",
+          "name" : "--dbsn",
           "description" : "Whether to apply domain-specific batch normalization for generating embeddings. When set to True, 'obs_batch_labels' must be set as well.\n",
           "default" : [
             true
@@ -3100,6 +3100,18 @@ meta = [
           "description" : "The batch size to be used for inference\n",
           "default" : [
             64
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--dsbn",
+          "description" : "Whether to apply domain-specific batch normalization for generating embeddings. When set to True, 'obs_batch_labels' must be set as well.\n",
+          "default" : [
+            true
           ],
           "required" : false,
           "direction" : "input",
@@ -3279,7 +3291,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding",
     "viash_version" : "0.9.0",
-    "git_commit" : "e421f3c776a63da1559c69b87a0a865c3c2c3f97",
+    "git_commit" : "8396f6d234a003d71e9dfd018a3a0a3aa371f7f3",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3350,8 +3362,9 @@ par = {
   'obsm_embeddings': $( if [ ! -z ${VIASH_PAR_OBSM_EMBEDDINGS+x} ]; then echo "r'${VIASH_PAR_OBSM_EMBEDDINGS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'pad_value': $( if [ ! -z ${VIASH_PAR_PAD_VALUE+x} ]; then echo "int(r'${VIASH_PAR_PAD_VALUE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'dsbn': $( if [ ! -z ${VIASH_PAR_DSBN+x} ]; then echo "r'${VIASH_PAR_DSBN//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'batch_size': $( if [ ! -z ${VIASH_PAR_BATCH_SIZE+x} ]; then echo "int(r'${VIASH_PAR_BATCH_SIZE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+  'dbsn': $( if [ ! -z ${VIASH_PAR_DBSN+x} ]; then echo "r'${VIASH_PAR_DBSN//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'batch_size': $( if [ ! -z ${VIASH_PAR_BATCH_SIZE+x} ]; then echo "int(r'${VIASH_PAR_BATCH_SIZE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'dsbn': $( if [ ! -z ${VIASH_PAR_DSBN+x} ]; then echo "r'${VIASH_PAR_DSBN//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),

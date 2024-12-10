@@ -3048,7 +3048,7 @@ meta = [
         {
           "type" : "integer",
           "name" : "--max_seq_len",
-          "description" : "The maximum sequence length of the tokenized data. Defaults to the number of features if not provided.\n",
+          "description" : "The maximum sequence length of the tokenized data.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3239,7 +3239,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize",
     "viash_version" : "0.9.0",
-    "git_commit" : "e421f3c776a63da1559c69b87a0a865c3c2c3f97",
+    "git_commit" : "8396f6d234a003d71e9dfd018a3a0a3aa371f7f3",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

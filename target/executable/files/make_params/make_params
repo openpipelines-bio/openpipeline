@@ -499,9 +499,9 @@ FROM ghcr.io/data-intuitive/randpy:r4.0
 ENTRYPOINT []
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component files make_params"
-LABEL org.opencontainers.image.created="2024-12-09T18:47:10Z"
+LABEL org.opencontainers.image.created="2024-12-10T02:59:06Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e421f3c776a63da1559c69b87a0a865c3c2c3f97"
+LABEL org.opencontainers.image.revision="8396f6d234a003d71e9dfd018a3a0a3aa371f7f3"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1193,7 +1193,9 @@ paths <- gsub("^/viash_automount", "", paths)
 
 cat("> Checking whether basenames are unique\\n")
 i <- par\$n_basename_id
-maxi <- strsplit(paths, "/") %>% map_int(length) %>% max
+maxi <- strsplit(paths, "/") %>%
+  map_int(length) %>%
+  max()
 
 regex <- paste0(".*/(", paste(rep("[^/]+/", i), collapse = ""), "[^/]*)\$")
 ids <- gsub("/", "_", gsub(regex, "\\\\1", paths))
@@ -1204,10 +1206,13 @@ cat("\\n")
 
 while (i < maxi && any(duplicated(ids))) {
   i <- i + 1
-  cat("Duplicated ids detected, combining with ", i, " dirnames in an attempt to get unique ids.\\n")
+  cat(
+    "Duplicated ids detected, combining with ", i,
+    " dirnames in an attempt to get unique ids.\\n"
+  )
   regex <- paste0(".*/(", paste(rep("[^/]+/", i), collapse = ""), "[^/]*)\$")
   ids <- gsub("/", "_", gsub(regex, "\\\\1", paths))
-  
+
   cat("> Printing first five rows\\n")
   print(tibble(id = ids, path = paths) %>% head(5))
   cat("\\n")

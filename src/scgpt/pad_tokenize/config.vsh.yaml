@@ -97,7 +97,7 @@ argument_groups:
       - name: "--max_seq_len"
         type: integer
         description: |
-          The maximum sequence length of the tokenized data. Defaults to the number of features if not provided.
+          The maximum sequence length of the tokenized data.
 
 resources:
   - type: python_script
