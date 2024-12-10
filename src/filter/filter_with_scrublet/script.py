@@ -44,6 +44,11 @@ data = mdata.mod[mod]
 logger.info("Using layer '%s'.", "X" if not par["layer"] else par["layer"])
 input_layer = data.X if not par["layer"] else data.layers[par["layer"]]
 
+if 0 in input_layer.shape:
+    raise ValueError(
+        f"Modality {mod} of input Mudata " f"{par['input']} appears to be empty."
+    )
+
 logger.info("\tRunning scrublet")
 scrub = scr.Scrublet(input_layer)
 

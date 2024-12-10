@@ -7,113 +7,35 @@ import mudata as mu
 import numpy as np
 import pandas as pd
 import anndata as ad
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix, csr_array
 
 ## VIASH START
 meta = {
     "name": "foo",
     "resources_dir": "resources_test/",
     "executable": "target/executable/filter/filter_with_scrublet/filter_with_scrublet",
+    "config": "./src/filter/filter_with_scrublet/config.vsh.yaml",
 }
-# def run_component(args_as_list):
-#     try:
-#         subprocess_args = [meta['executable']] + args_as_list
-#         print(" ".join(subprocess_args), flush=True)
-#         subprocess.check_output(subprocess_args, stderr=subprocess.STDOUT)
-#     except subprocess.CalledProcessError as e:
-#         print(e.stdout.decode("utf-8"), flush=True)
-#         raise e
 ## VIASH END
 
 # read input file
-input_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
-input_mu = mu.read_h5mu(input_path)
-orig_obs = input_mu.mod["rna"].n_obs
-orig_vars = input_mu.mod["rna"].n_vars
-orig_prot_obs = input_mu.mod["prot"].n_obs
-orig_prot_vars = input_mu.mod["prot"].n_vars
 
 
-def test_filter_a_little_bit(run_component):
-    output_mu = "output-1.h5mu"
-
-    run_component(
-        [
-            "--input",
-            input_path,
-            "--output",
-            output_mu,
-            "--min_counts",
-            "3",
-            "--output_compression",
-            "gzip",
-        ]
-    )
-    assert Path(output_mu).is_file(), "Output file not found"
-
-    mu_out = mu.read_h5mu(output_mu)
-    assert "filter_with_scrublet" in mu_out.mod["rna"].obs
-
-    new_obs = mu_out.mod["rna"].n_obs
-    new_vars = mu_out.mod["rna"].n_vars
-    assert new_obs == orig_obs, "No RNA obs should have been filtered"
-    assert new_vars == orig_vars, "No RNA vars should have been filtered"
-    assert (
-        mu_out.mod["prot"].n_obs == orig_prot_obs
-    ), "No prot obs should have been filtered"
-    assert (
-        mu_out.mod["prot"].n_vars == orig_prot_vars
-    ), "No prot vars should have been filtered"
-    assert list(mu_out.mod["rna"].var["feature_types"].cat.categories) == [
-        "Gene Expression"
-    ], "Feature types of RNA modality should be Gene Expression"
-    assert list(mu_out.mod["prot"].var["feature_types"].cat.categories) == [
-        "Antibody Capture"
-    ], "Feature types of prot modality should be Antibody Capture"
+@pytest.fixture
+def input_mudata_path():
+    return f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
 
-def test_filtering_a_lot(run_component):
-    output_mu = "output-2.h5mu"
-
-    run_component(
-        [
-            "--input",
-            input_path,
-            "--output",
-            output_mu,
-            "--modality",
-            "rna",
-            "--min_counts",
-            "10",
-            "--num_pca_components",
-            "10",
-            "--do_subset",
-        ]
-    )
-    assert Path(output_mu).is_file(), "Output file not found"
-
-    mu_out = mu.read_h5mu(output_mu)
-    new_obs = mu_out.mod["rna"].n_obs
-    new_vars = mu_out.mod["rna"].n_vars
-    assert new_obs < orig_obs, "Some cells should have been filtered"
-    assert new_vars == orig_vars, "No genes should have been filtered"
-    assert mu_out.mod["prot"].n_obs == orig_obs, "No prot obs should have been filtered"
-    assert (
-        mu_out.mod["prot"].n_vars == orig_prot_vars
-    ), "No prot vars should have been filtered"
-    assert list(mu_out.mod["rna"].var["feature_types"].cat.categories) == [
-        "Gene Expression"
-    ], "Feature types of RNA modality should be Gene Expression"
-    assert list(mu_out.mod["prot"].var["feature_types"].cat.categories) == [
-        "Antibody Capture"
-    ], "Feature types of prot modality should be Antibody Capture"
+@pytest.fixture
+def input_mudata(input_mudata_path):
+    return mu.read_h5mu(input_mudata_path)
 
 
-@pytest.fixture(scope="module")
-def input_with_failed_run():
-    new_mudata_path = "pbmc-perturbed.h5mu"
+@pytest.fixture
+def input_with_failed_run(random_h5mu_path, input_mudata_path):
+    new_mudata_path = random_h5mu_path()
 
-    mudata_in = mu.read_h5mu(input_path)
+    mudata_in = mu.read_h5mu(input_mudata_path)
 
     # Make test reproducable
     np.random.seed(4)
@@ -144,14 +66,131 @@ def input_with_failed_run():
     return new_mudata_path
 
 
+def test_filter_a_little_bit(
+    run_component, random_h5mu_path, input_mudata_path, input_mudata
+):
+    output_mu = random_h5mu_path()
+
+    run_component(
+        [
+            "--input",
+            input_mudata_path,
+            "--output",
+            output_mu,
+            "--min_counts",
+            "3",
+            "--output_compression",
+            "gzip",
+        ]
+    )
+    assert Path(output_mu).is_file(), "Output file not found"
+
+    mu_out = mu.read_h5mu(output_mu)
+    assert "filter_with_scrublet" in mu_out.mod["rna"].obs
+
+    new_obs = mu_out.mod["rna"].n_obs
+    new_vars = mu_out.mod["rna"].n_vars
+    assert (
+        new_obs == input_mudata.mod["rna"].n_obs
+    ), "No RNA obs should have been filtered"
+    assert (
+        new_vars == input_mudata.mod["rna"].n_vars
+    ), "No RNA vars should have been filtered"
+    assert (
+        mu_out.mod["prot"].n_obs == input_mudata.mod["prot"].n_obs
+    ), "No prot obs should have been filtered"
+    assert (
+        mu_out.mod["prot"].n_vars == input_mudata.mod["prot"].n_vars
+    ), "No prot vars should have been filtered"
+    assert list(mu_out.mod["rna"].var["feature_types"].cat.categories) == [
+        "Gene Expression"
+    ], "Feature types of RNA modality should be Gene Expression"
+    assert list(mu_out.mod["prot"].var["feature_types"].cat.categories) == [
+        "Antibody Capture"
+    ], "Feature types of prot modality should be Antibody Capture"
+
+
+def test_filtering_a_lot(
+    run_component, random_h5mu_path, input_mudata_path, input_mudata
+):
+    output_mu = random_h5mu_path()
+
+    run_component(
+        [
+            "--input",
+            input_mudata_path,
+            "--output",
+            output_mu,
+            "--modality",
+            "rna",
+            "--min_counts",
+            "10",
+            "--num_pca_components",
+            "10",
+            "--do_subset",
+        ]
+    )
+    assert Path(output_mu).is_file(), "Output file not found"
+
+    mu_out = mu.read_h5mu(output_mu)
+    new_obs = mu_out.mod["rna"].n_obs
+    new_vars = mu_out.mod["rna"].n_vars
+    assert (
+        new_obs < input_mudata.mod["rna"].n_obs
+    ), "Some cells should have been filtered"
+    assert (
+        new_vars == input_mudata.mod["rna"].n_vars
+    ), "No genes should have been filtered"
+    assert (
+        mu_out.mod["prot"].n_obs == input_mudata.mod["prot"].n_obs
+    ), "No prot obs should have been filtered"
+    assert (
+        mu_out.mod["prot"].n_vars == input_mudata.mod["prot"].n_vars
+    ), "No prot vars should have been filtered"
+    assert list(mu_out.mod["rna"].var["feature_types"].cat.categories) == [
+        "Gene Expression"
+    ], "Feature types of RNA modality should be Gene Expression"
+    assert list(mu_out.mod["prot"].var["feature_types"].cat.categories) == [
+        "Antibody Capture"
+    ], "Feature types of prot modality should be Antibody Capture"
+
+
+def test_empty_mudata(run_component, random_h5mu_path):
+    output_mu = random_h5mu_path()
+    empty_mudata_path = random_h5mu_path()
+    empty_mudata = mu.MuData(
+        {
+            modality: ad.AnnData(csr_array((5, 0), dtype=np.int8))
+            for modality in ("rna",)
+        }
+    )
+
+    empty_mudata.write(empty_mudata_path)
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                empty_mudata_path,
+                "--output",
+                output_mu,
+                "--output_compression",
+                "gzip",
+            ]
+        )
+    assert re.search(
+        "ValueError: Modality rna of input Mudata .* appears to be empty",
+        err.value.stdout.decode("utf-8"),
+    )
+
+
 @pytest.mark.xfail(strict=False)
 def test_doublet_automatic_threshold_detection_fails(
-    run_component, input_with_failed_run
+    run_component, input_with_failed_run, random_h5mu_path
 ):
     """
     Test if the component fails if doublet score threshold could not automatically be set
     """
-    output_mu = "output-4.h5mu"
+    output_mu = random_h5mu_path()
 
     with pytest.raises(subprocess.CalledProcessError) as e_info:
         run_component(
@@ -217,9 +256,11 @@ def test_doublet_automatic_threshold_detection_fails_recovery(
     assert mu_out.mod["rna"].obs["filter_with_scrublet"].isna().all()
 
 
-def test_selecting_input_layer(run_component, tmp_path):
-    output_mu = "output-2.h5mu"
-    input_data = mu.read_h5mu(input_path)
+def test_selecting_input_layer(
+    run_component, tmp_path, random_h5mu_path, input_mudata, input_mudata_path
+):
+    output_mu = random_h5mu_path()
+    input_data = mu.read_h5mu(input_mudata_path)
     input_data.mod["rna"].layers["test_layer"] = input_data.mod["rna"].X
     input_data.mod["rna"].X = None
 
@@ -248,11 +289,17 @@ def test_selecting_input_layer(run_component, tmp_path):
     mu_out = mu.read_h5mu(output_mu)
     new_obs = mu_out.mod["rna"].n_obs
     new_vars = mu_out.mod["rna"].n_vars
-    assert new_obs < orig_obs, "Some cells should have been filtered"
-    assert new_vars == orig_vars, "No genes should have been filtered"
-    assert mu_out.mod["prot"].n_obs == orig_obs, "No prot obs should have been filtered"
     assert (
-        mu_out.mod["prot"].n_vars == orig_prot_vars
+        new_obs < input_mudata.mod["rna"].n_obs
+    ), "Some cells should have been filtered"
+    assert (
+        new_vars == input_mudata.mod["rna"].n_vars
+    ), "No genes should have been filtered"
+    assert (
+        mu_out.mod["prot"].n_obs == input_mudata.mod["prot"].n_obs
+    ), "No prot obs should have been filtered"
+    assert (
+        mu_out.mod["prot"].n_vars == input_mudata.mod["prot"].n_vars
     ), "No prot vars should have been filtered"
     assert list(mu_out.mod["rna"].var["feature_types"].cat.categories) == [
         "Gene Expression"
