@@ -34,6 +34,13 @@ sys.path.append(meta["resources_dir"])
 
 from subset_vars import subset_vars
 
+sys.path.append(meta["resources_dir"])
+# from setup_logger import setup_logger
+# from cross_check_genes import cross_check_genes
+# from set_var_index import set_var_index
+
+# logger = setup_logger()
+
 
 # TODO: optionally, move to qa
 # https://github.com/openpipelines-bio/openpipeline/issues/435
