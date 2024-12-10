@@ -5,11 +5,12 @@ include { process_batches } from targetDir + "/workflows/multiomics/process_batc
 include { workflow_test } from targetDir + "/test_workflows/multiomics/process_batches/workflow_test/main.nf"
 include { workflow_test2 } from targetDir + "/test_workflows/multiomics/process_batches/workflow_test2/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
 
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
-  
+  resources_test = file(params.resources_test)
+
   input_ch = Channel.fromList([
       [
           id: "test",
@@ -53,8 +54,8 @@ workflow test_wf {
 }
 
 workflow test_wf2 {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   input_ch = Channel.fromList([
       [

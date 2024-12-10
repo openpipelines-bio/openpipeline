@@ -3,10 +3,11 @@ nextflow.enable.dsl=2
 include { qc } from params.rootDir + "/target/nextflow/workflows/qc/qc/main.nf"
 include { qc_test } from params.rootDir + "/target/nextflow/test_workflows/qc/qc_test/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = 
     Channel.fromList([
