@@ -275,7 +275,7 @@ build_info:
   output: "target/executable/dataflow/concatenate_h5mu"
   executable: "target/executable/dataflow/concatenate_h5mu/concatenate_h5mu"
   viash_version: "0.9.0"
-  git_commit: "8396f6d234a003d71e9dfd018a3a0a3aa371f7f3"
+  git_commit: "20c41a9aa862c5688e786b1417d73dec63346498"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

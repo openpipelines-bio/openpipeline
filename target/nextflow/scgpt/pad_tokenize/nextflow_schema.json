@@ -195,7 +195,7 @@
                 "type":
                 "integer",
                 "description": "Type: `integer`. The maximum sequence length of the tokenized data",
-                "help_text": "Type: `integer`. The maximum sequence length of the tokenized data.\n"
+                "help_text": "Type: `integer`. The maximum sequence length of the tokenized data. Defaults to the number of features if not provided.\n"
             
             }
     

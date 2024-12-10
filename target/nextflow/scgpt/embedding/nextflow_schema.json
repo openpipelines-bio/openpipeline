@@ -220,7 +220,7 @@
     
 
         ,
-                "dbsn": {
+                "dsbn": {
                 "type":
                 "boolean",
                 "description": "Type: `boolean`, default: `true`. Whether to apply domain-specific batch normalization for generating embeddings",
@@ -238,17 +238,6 @@
                 "help_text": "Type: `integer`, default: `64`. The batch size to be used for inference\n"
             ,
                 "default":64
-            }
-    
-
-        ,
-                "dsbn": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean`, default: `true`. Whether to apply domain-specific batch normalization for generating embeddings",
-                "help_text": "Type: `boolean`, default: `true`. Whether to apply domain-specific batch normalization for generating embeddings. When set to True, \u0027obs_batch_labels\u0027 must be set as well.\n"
-            ,
-                "default":true
             }
     
 

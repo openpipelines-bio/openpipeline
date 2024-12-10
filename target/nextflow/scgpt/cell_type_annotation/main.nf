@@ -3153,15 +3153,15 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/resources_test/scgpt/source/best_model.pt"
-    },
-    {
-      "type" : "file",
       "path" : "/resources_test/scgpt/source/args.json"
     },
     {
       "type" : "file",
       "path" : "/resources_test/scgpt/source/vocab.json"
+    },
+    {
+      "type" : "file",
+      "path" : "/resources_test/scgpt/finetuned_model/best_model.pt"
     },
     {
       "type" : "file",
@@ -3321,7 +3321,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cell_type_annotation",
     "viash_version" : "0.9.0",
-    "git_commit" : "8396f6d234a003d71e9dfd018a3a0a3aa371f7f3",
+    "git_commit" : "20c41a9aa862c5688e786b1417d73dec63346498",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
