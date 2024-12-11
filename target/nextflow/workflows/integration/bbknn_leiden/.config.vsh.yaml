@@ -331,7 +331,7 @@ build_info:
   output: "target/nextflow/workflows/integration/bbknn_leiden"
   executable: "target/nextflow/workflows/integration/bbknn_leiden/main.nf"
   viash_version: "0.9.0"
-  git_commit: "20c41a9aa862c5688e786b1417d73dec63346498"
+  git_commit: "f4cfe24ed4b310e7688471d5e43031a2e8a4b644"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/cluster/leiden"
