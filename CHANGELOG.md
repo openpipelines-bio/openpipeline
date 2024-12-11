@@ -14,6 +14,8 @@
 
 ## MINOR CHANGES
 
+* Pin `scikit-learn` for `labels_transfer/xgboost` to `<1.6` (PR #931).
+
 * Several component (cleanup): remove workaround for using being able to use shared utility functions with Nextflow Fusion (PR #920).
 
 * Several annotation (`src/annotate/`) components (`onclass`, `celltypist`, `random_forest_annotation`, `scanvi`, `svm_annotation`): Updated input parameteres to ensure uniformity across components, implemented functionality to cross-check the overlap of genes between query and reference (model) datasets and implemented logic to allow for subsetting of genes (PR #919). 
