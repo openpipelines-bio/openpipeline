@@ -30,9 +30,15 @@
 
 * `scgpt/pad_tokenize` component update: Genes are padded and tokenized based on filtering information in `--var_input` and `--input_obsm_binned_counts` (PR #832).
 
-* `resources_test_scripts/scGPT.sh`: Update scGPT test resources to avoid subsetting of datasets (PR #926).
+* `resources_test_scripts/scgpt.sh`: Update scGPT test resources to avoid subsetting of datasets (PR #926).
 
 * `workflows/integration/scgpt_leiden` workflow update: Update workflow such that input dataset is not subsetted for HVG but uses boolean masks in .var field instead (PR #875).
+
+## BUG FIXES
+
+* `scgpt/embedding`: remove unused argument `dbsn` (PR #875).
+
+* `scgpt/binning`: update handling of empty rows in sparse matrices (PR #875).
 
 # openpipelines 2.0.0-rc.2
 
