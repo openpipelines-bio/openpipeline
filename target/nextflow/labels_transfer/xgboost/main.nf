@@ -3503,7 +3503,8 @@ meta = [
           "user" : false,
           "packages" : [
             "scanpy~=1.10.4",
-            "xgboost~=2.0.3"
+            "xgboost~=2.1.3",
+            "scikit-learn<1.6"
           ],
           "upgrade" : true
         }
@@ -3526,7 +3527,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/xgboost",
     "viash_version" : "0.9.0",
-    "git_commit" : "b8df8ab57b2976437a6aff4301767ad01887947d",
+    "git_commit" : "4baaf7833434461b9ffe5247a093b86c3a4fa6e5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

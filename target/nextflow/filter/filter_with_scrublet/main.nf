@@ -3175,7 +3175,7 @@ meta = [
             "mudata~=0.3.1",
             "scanpy~=1.10.4",
             "scrublet",
-            "annoy==1.16.3"
+            "annoy==1.17.3"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import awkward\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  exit(1)\\")"
@@ -3184,6 +3184,20 @@ meta = [
         }
       ],
       "test_setup" : [
+        {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
         {
           "type" : "python",
           "user" : false,
@@ -3201,7 +3215,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.9.0",
-    "git_commit" : "b8df8ab57b2976437a6aff4301767ad01887947d",
+    "git_commit" : "4baaf7833434461b9ffe5247a093b86c3a4fa6e5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3308,6 +3322,12 @@ data = mdata.mod[mod]
 
 logger.info("Using layer '%s'.", "X" if not par["layer"] else par["layer"])
 input_layer = data.X if not par["layer"] else data.layers[par["layer"]]
+
+if 0 in input_layer.shape:
+    raise ValueError(
+        f"Modality {mod} of input Mudata {par['input']} appears "
+        f"to be empty (shape: {input_layer.shape})."
+    )
 
 logger.info("\\\\tRunning scrublet")
 scrub = scr.Scrublet(input_layer)

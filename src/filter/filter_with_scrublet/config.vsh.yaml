@@ -131,10 +131,8 @@ engines:
       __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       packages:
         - scrublet
-        - annoy==1.16.3
-  test_setup:
-    - type: python
-      __merge__: [ /src/base/requirements/viashpy.yaml, .]
+        - annoy==1.17.3
+  __merge__: [/src/base/requirements/python_test_setup.yaml, .]
 
 runners:
 - type: executable
