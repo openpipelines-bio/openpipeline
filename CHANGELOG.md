@@ -16,6 +16,8 @@
 
 ## MINOR CHANGES
 
+* Pin `scikit-learn` for `labels_transfer/xgboost` to `<1.6` (PR #931).
+
 * `filter/filter_with_scrublet`: provide cleaner error message when running scrublet on an empty modality (PR #929).
 
 * Several component (cleanup): remove workaround for using being able to use shared utility functions with Nextflow Fusion (PR #920).
