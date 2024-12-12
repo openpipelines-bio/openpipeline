@@ -556,14 +556,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4" "scrublet" "annoy==1.16.3" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4" "scrublet" "annoy==1.17.3" && \
   python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_scrublet"
-LABEL org.opencontainers.image.created="2024-12-11T02:56:44Z"
+LABEL org.opencontainers.image.created="2024-12-12T02:56:46Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f4cfe24ed4b310e7688471d5e43031a2e8a4b644"
+LABEL org.opencontainers.image.revision="10b7ebc457f263d2b719bc2b6e775c845c5b59d0"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1353,6 +1353,12 @@ data = mdata.mod[mod]
 
 logger.info("Using layer '%s'.", "X" if not par["layer"] else par["layer"])
 input_layer = data.X if not par["layer"] else data.layers[par["layer"]]
+
+if 0 in input_layer.shape:
+    raise ValueError(
+        f"Modality {mod} of input Mudata {par['input']} appears "
+        f"to be empty (shape: {input_layer.shape})."
+    )
 
 logger.info("\\tRunning scrublet")
 scrub = scr.Scrublet(input_layer)

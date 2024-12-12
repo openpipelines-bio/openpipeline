@@ -3086,7 +3086,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/delete_layer",
     "viash_version" : "0.9.0",
-    "git_commit" : "f4cfe24ed4b310e7688471d5e43031a2e8a4b644",
+    "git_commit" : "10b7ebc457f263d2b719bc2b6e775c845c5b59d0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
