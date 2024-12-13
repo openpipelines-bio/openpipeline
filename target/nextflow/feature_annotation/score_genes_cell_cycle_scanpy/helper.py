@@ -1,11 +1,13 @@
 from typing import List, Dict, Any, Optional
 
+
 def read_gene_list(
-        par: Dict[str, Any],
-        gene_names: List[str],
-        list_key: str,
-        file_key: str,
-        required: bool = True) -> Optional[List[str]]:
+    par: Dict[str, Any],
+    gene_names: List[str],
+    list_key: str,
+    file_key: str,
+    required: bool = True,
+) -> Optional[List[str]]:
     """
     Reads a gene list from the parameters and returns it as a list of strings.
     """
@@ -27,7 +29,9 @@ def read_gene_list(
     if not par["allow_missing_genes"] and list_of_genes:
         missing = set(list_of_genes).difference(gene_names)
         if missing:
-            raise ValueError(f"The follow genes are missing from the input dataset: {missing}")
+            raise ValueError(
+                f"The follow genes are missing from the input dataset: {missing}"
+            )
 
     # return gene list
     if list_of_genes:

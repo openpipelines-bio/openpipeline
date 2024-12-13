@@ -2,12 +2,13 @@
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # input_layer: "foo"
+var_input: "id_in_vocab"
 n_input_bins: 51
 
 # Outputs
 # output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
-binned_layer: "binned"
+output_obsm_binned_counts: "binned_counts"
 # seed: 123
 
 # Nextflow input-output arguments

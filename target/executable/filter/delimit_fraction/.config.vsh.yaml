@@ -1,6 +1,6 @@
 name: "delimit_fraction"
 namespace: "filter"
-version: "2.0.0-rc.1"
+version: "2.0.0"
 authors:
 - name: "Dries Schaumont"
   roles:
@@ -222,7 +222,7 @@ engines:
 - type: "docker"
   id: "docker"
   image: "python:3.12-slim"
-  target_tag: "2.0.0-rc.1"
+  target_tag: "2.0.0"
   namespace_separator: "/"
   setup:
   - type: "apt"
@@ -261,12 +261,11 @@ build_info:
   output: "target/executable/filter/delimit_fraction"
   executable: "target/executable/filter/delimit_fraction/delimit_fraction"
   viash_version: "0.9.0"
-  git_commit: "f060d75d1633b6f25a83be2c483b393e08662673"
+  git_commit: "da29d8c81641660d66af2ef036f580e6784d7e49"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "1.0.0-7-gf060d75d16"
+  git_tag: "2.0.0-rc.1"
 package_config:
   name: "openpipeline"
-  version: "dev"
   info:
     test_resources:
     - type: "s3"
@@ -280,8 +279,8 @@ package_config:
     .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
-  - ".version := \"2.0.0-rc.1\""
-  - ".engines[.type == 'docker'].target_tag := '2.0.0-rc.1'"
+  - ".version := \"2.0.0\""
+  - ".engines[.type == 'docker'].target_tag := '2.0.0'"
   organization: "openpipelines-bio"
   links:
     repository: "https://github.com/openpipelines-bio/openpipeline"

@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. The modality key of the MuData object containing the RNA AnnData object",
                 "help_text": "Type: `string`, default: `rna`. The modality key of the MuData object containing the RNA AnnData object.\n"
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -70,6 +70,16 @@
             }
     
 
+        ,
+                "var_input": {
+                "type":
+                "string",
+                "description": "Type: `string`. ",
+                "help_text": "Type: `string`. .var column containing highly variable genes. If provided, will only cross-check HVG filtered genes with model vocabulary."
+            
+            }
+    
+
 }
 },
     
@@ -87,7 +97,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output cross-checked anndata file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output cross-checked anndata file.\n"
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -100,6 +110,17 @@
                 "enum": ["gzip", "lzf"]
             
             
+            }
+    
+
+        ,
+                "output_var_filter": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `id_in_vocab`. In which ",
+                "help_text": "Type: `string`, default: `id_in_vocab`. In which .var slot to store a boolean array corresponding to which observations should be filtered out based on HVG and model vocabulary."
+            ,
+                "default":"id_in_vocab"
             }
     
 
@@ -120,7 +141,7 @@
                 "description": "Type: `string`, default: `\u003cpad\u003e`. The padding token used in the model",
                 "help_text": "Type: `string`, default: `\u003cpad\u003e`. The padding token used in the model.\n"
             ,
-                "default": "<pad>"
+                "default":"<pad>"
             }
     
 

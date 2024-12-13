@@ -3,18 +3,18 @@ import bbknn
 
 ### VIASH START
 par = {
-    'input': 'resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu',
-    'modality': 'rna',
-    'obs_batch': 'sample_id',
-    'obsm_input': 'X_pca',
-    'n_neighbors_within_batch': 3,
-    'n_trim': None,
-    'n_pcs': 50,
-    'output': 'output.h5mu',
-    'output_compression': 'gzip',
-    'obsp_connectivities': 'my_connectivities',
-    'obsp_distances': 'my_distances',
-    'uns_output': 'my_neighbors'
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+    "modality": "rna",
+    "obs_batch": "sample_id",
+    "obsm_input": "X_pca",
+    "n_neighbors_within_batch": 3,
+    "n_trim": None,
+    "n_pcs": 50,
+    "output": "output.h5mu",
+    "output_compression": "gzip",
+    "obsp_connectivities": "my_connectivities",
+    "obsp_distances": "my_distances",
+    "uns_output": "my_neighbors",
 }
 ### VIASH END
 
@@ -26,10 +26,10 @@ tmp_adata = adata.copy()
 bbknn.bbknn(
     tmp_adata,
     use_rep=par["obsm_input"],
-    batch_key = par["obs_batch"],
+    batch_key=par["obs_batch"],
     neighbors_within_batch=par["n_neighbors_within_batch"],
     n_pcs=par["n_pcs"],
-    trim=par["n_trim"]
+    trim=par["n_trim"],
 )
 
 # store output

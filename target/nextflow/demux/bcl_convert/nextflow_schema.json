@@ -56,7 +56,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `fastq_dir`. Output directory containig fastq files",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `fastq_dir`. Output directory containig fastq files"
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `file`, default: `$id.$key.reports.reports`, example: `reports_dir`. Reports directory",
                 "help_text": "Type: `file`, default: `$id.$key.reports.reports`, example: `reports_dir`. Reports directory"
             ,
-                "default": "$id.$key.reports.reports"
+                "default":"$id.$key.reports.reports"
             }
     
 
@@ -78,7 +78,7 @@
                 "description": "Type: `boolean`, default: `false`. Should bcl-convert be run in test mode (using --first-tile-only)?",
                 "help_text": "Type: `boolean`, default: `false`. Should bcl-convert be run in test mode (using --first-tile-only)?"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -89,7 +89,7 @@
                 "description": "Type: `boolean`, default: `false`. Abort if any files are missing",
                 "help_text": "Type: `boolean`, default: `false`. Abort if any files are missing."
             ,
-                "default": "False"
+                "default":false
             }
     
 

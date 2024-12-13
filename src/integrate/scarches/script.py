@@ -2,6 +2,7 @@ import sys
 import mudata
 import scvi
 from torch.cuda import is_available as cuda_is_available
+
 try:
     from torch.backends.mps import is_available as mps_is_available
 except ModuleNotFoundError:
@@ -9,6 +10,7 @@ except ModuleNotFoundError:
     # MacOS GPUs
     def mps_is_available():
         return False
+
 
 ### VIASH START
 par = {
@@ -24,27 +26,15 @@ par = {
     "early_stopping_monitor": "elbo_validation",
     "early_stopping_patience": 45,
     "early_stopping_min_delta": 0,
-    "max_epochs": 500}
+    "max_epochs": 500,
+}
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
+from setup_logger import setup_logger
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
+
 
 def _read_model_name_from_registry(model_path) -> str:
     """Read registry with information about the model, return the model name"""
@@ -68,13 +58,13 @@ def _detect_base_model(model_path):
         "AmortizedLDA": scvi.model.AmortizedLDA,
         "JaxSCVI": scvi.model.JaxSCVI,
     }
-    
+
     return names_to_models_map[_read_model_name_from_registry(model_path)]
 
 
 def extract_file_name(file_path):
     """Return the name of the file from path to this file
-    
+
     Examples
     --------
     >>> extract_file_name("resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu")
@@ -83,7 +73,7 @@ def extract_file_name(file_path):
     slash_position = file_path.rfind("/")
     dot_position = file_path.rfind(".")
 
-    return file_path[slash_position + 1: dot_position]
+    return file_path[slash_position + 1 : dot_position]
 
 
 def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1):
@@ -93,7 +83,7 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
     Input:
         * adata_query: An AnnData object with the query
         * model_path: The reference model directory
-    
+
     Output:
         * vae_query: the trained scvi_tools model
         * adata_query: The AnnData object with the query preprocessed for the mapping to the reference
@@ -103,26 +93,24 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
     try:
         model.prepare_query_anndata(adata_query, model_path)
     except ValueError:
-        logger.warning("ValueError thrown when preparing adata for mapping. Clearing .varm field to prevent it")
+        logger.warning(
+            "ValueError thrown when preparing adata for mapping. Clearing .varm field to prevent it"
+        )
         adata_query.varm.clear()
         model.prepare_query_anndata(adata_query, model_path)
 
     # Load query data into the model
-    vae_query = model.load_query_data(
-            adata_query,
-            model_path,
-            freeze_dropout=True
-    )
+    vae_query = model.load_query_data(adata_query, model_path, freeze_dropout=True)
 
     # Train scArches model for query mapping
     vae_query.train(
-            max_epochs=par["max_epochs"],
-            early_stopping=par['early_stopping'],
-            early_stopping_monitor=par['early_stopping_monitor'],
-            early_stopping_patience=par['early_stopping_patience'],
-            early_stopping_min_delta=par['early_stopping_min_delta'],
-            check_val_every_n_epoch=check_val_every_n_epoch,
-            use_gpu=(cuda_is_available() or mps_is_available())
+        max_epochs=par["max_epochs"],
+        early_stopping=par["early_stopping"],
+        early_stopping_monitor=par["early_stopping_monitor"],
+        early_stopping_patience=par["early_stopping_patience"],
+        early_stopping_min_delta=par["early_stopping_min_delta"],
+        check_val_every_n_epoch=check_val_every_n_epoch,
+        use_gpu=(cuda_is_available() or mps_is_available()),
     )
 
     return vae_query, adata_query
@@ -130,12 +118,13 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
 
 def _convert_object_dtypes_to_strings(adata):
     """Convert object dtypes in .var and .obs to string to prevent error when saving file"""
+
     def convert_cols(df):
         object_cols = df.columns[df.dtypes == "object"]
         for col in object_cols:
-            df[col] = df[col].astype(str) 
-        return df 
-    
+            df[col] = df[col].astype(str)
+        return df
+
     adata.var = convert_cols(adata.var)
     adata.obs = convert_cols(adata.obs)
 
@@ -144,12 +133,12 @@ def _convert_object_dtypes_to_strings(adata):
 
 def _get_model_path(model_path: str):
     """Obtain path to the directory with reference model. If the proposed `model_path` is a .zip archive, unzip it. If nesessary, convert model to the new format
-    
+
     Parameters
     ----------
     model_path : str
         Path to a directory, where to search for the model or to a zip file containing the model
-    
+
     Returns
     -------
     Path to a directory with reference model in format of scvi-tools>=0.15
@@ -162,7 +151,7 @@ def _get_model_path(model_path: str):
     if os.path.isdir(model_path) and "model.pt" in os.listdir(model_path):
         # Probably, the `model_path` already contains model in the output format of scvi-tools>=0.15
         return model_path
-    
+
     # The model either has old format or is a zip file downloaded from Zenodo
     new_directory = Path(tempfile.TemporaryDirectory().name)
 
@@ -185,13 +174,14 @@ def _get_model_path(model_path: str):
     elif "model.pt" in os.listdir(model_dir):
         # Archive contained model in the new format, so just return the directory
         return model_dir
-    
+
     else:
-        raise ValueError("Cannot find model in the provided reference path. Please, provide a path or a link to the directory with reference model. For HLCA use https://zenodo.org/record/6337966/files/HLCA_reference_model.zip")
+        raise ValueError(
+            "Cannot find model in the provided reference path. Please, provide a path or a link to the directory with reference model. For HLCA use https://zenodo.org/record/6337966/files/HLCA_reference_model.zip"
+        )
 
 
 def main():
-
     mdata_query = mudata.read(par["input"].strip())
     adata_query = mdata_query.mod[par["modality"]].copy()
 
@@ -205,7 +195,9 @@ def main():
         adata_query.obs["dataset"] = par["dataset_name"]
 
     model_path = _get_model_path(par["reference"])
-    vae_query, adata_query = map_to_existing_reference(adata_query, model_path=model_path)
+    vae_query, adata_query = map_to_existing_reference(
+        adata_query, model_path=model_path
+    )
     model_name = _read_model_name_from_registry(model_path)
 
     # Save info about the used model
@@ -213,10 +205,14 @@ def main():
 
     logger.info("Trying to write latent representation")
     output_key = par["obsm_output"].format(model_name=model_name)
-    mdata_query.mod[par["modality"]].obsm[output_key] = vae_query.get_latent_representation()
+    mdata_query.mod[par["modality"]].obsm[output_key] = (
+        vae_query.get_latent_representation()
+    )
 
     logger.info("Converting dtypes")
-    mdata_query.mod[par["modality"]] = _convert_object_dtypes_to_strings(mdata_query.mod[par["modality"]])
+    mdata_query.mod[par["modality"]] = _convert_object_dtypes_to_strings(
+        mdata_query.mod[par["modality"]]
+    )
 
     logger.info("Updating mudata")
     try:
@@ -224,13 +220,16 @@ def main():
     except KeyError:
         # Sometimes this error is thrown, but then everything is magically fixed, and the file gets saved normally
         # This is discussed here a bit: https://github.com/scverse/mudata/issues/27
-        logger.warning("KeyError was thrown during updating mudata. Probably, the file is fixed after that, but be careful")
+        logger.warning(
+            "KeyError was thrown during updating mudata. Probably, the file is fixed after that, but be careful"
+        )
 
     logger.info("Saving h5mu file")
     mdata_query.write_h5mu(par["output"].strip(), compression=par["output_compression"])
 
     logger.info("Saving model")
     vae_query.save(par["model_output"], overwrite=True)
+
 
 if __name__ == "__main__":
     main()

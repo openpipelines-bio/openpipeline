@@ -4,27 +4,35 @@ import mudata as mu
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/graph/neighbors/find_neighbors',
-    'name': 'find_neighbors',
-    'resources_dir': 'resources_test/'
+    "executable": "./target/docker/graph/neighbors/find_neighbors",
+    "name": "find_neighbors",
+    "resources_dir": "resources_test/",
 }
 ## VIASH END
 
 input = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 output = "output.h5mu"
 
-def test_run(run_component, tmp_path): 
+
+def test_run(run_component, tmp_path):
     output = tmp_path / "output.h5mu"
 
     cmd_pars = [
         meta["executable"],
-        "--input", input,
-        "--output", str(output),
-        "--obsm_input", "X_pca",
-        "--uns_output", "foo_neigh",
-        "--obsp_distances", "bar_dist",
-        "--obsp_connectivities", "baz_conn",
-        "--output_compression", "gzip"
+        "--input",
+        input,
+        "--output",
+        str(output),
+        "--obsm_input",
+        "X_pca",
+        "--uns_output",
+        "foo_neigh",
+        "--obsp_distances",
+        "bar_dist",
+        "--obsp_connectivities",
+        "baz_conn",
+        "--output_compression",
+        "gzip",
     ]
     run_component(cmd_pars)
 
@@ -51,5 +59,6 @@ def test_run(run_component, tmp_path):
     assert "baz_conn" not in rna_in.obsp, "Input should not have .obsp['baz_conn']"
     assert "bar_dist" not in rna_in.obsp, "Input should not have .obsp['bar_dist']"
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

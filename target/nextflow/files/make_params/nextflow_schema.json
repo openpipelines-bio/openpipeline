@@ -56,7 +56,7 @@
                 "description": "Type: `integer`, default: `0`. For every matched file, the parent directory will be traversed N times",
                 "help_text": "Type: `integer`, default: `0`. For every matched file, the parent directory will be traversed N times."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `integer`, default: `0`. The unique identifiers will consist of at least N dirnames",
                 "help_text": "Type: `integer`, default: `0`. The unique identifiers will consist of at least N dirnames."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -78,7 +78,7 @@
                 "description": "Type: `string`, default: `id`. The name for storing the identifier field in the yaml",
                 "help_text": "Type: `string`, default: `id`. The name for storing the identifier field in the yaml."
             ,
-                "default": "id"
+                "default":"id"
             }
     
 
@@ -89,7 +89,7 @@
                 "description": "Type: `string`, default: `path`. The name for storing the path field in the yaml",
                 "help_text": "Type: `string`, default: `path`. The name for storing the path field in the yaml."
             ,
-                "default": "path"
+                "default":"path"
             }
     
 
@@ -110,7 +110,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.yaml`, example: `params.yaml`. Output YAML file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.yaml`, example: `params.yaml`. Output YAML file."
             ,
-                "default": "$id.$key.output.yaml"
+                "default":"$id.$key.output.yaml"
             }
     
 

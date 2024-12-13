@@ -24,31 +24,17 @@ par = {
     "layer": None,
 }
 meta = {
-    'name': 'scrublet',
-    'resources_dir': '.',
+    "name": "scrublet",
+    "resources_dir": ".",
 }
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
+from setup_logger import setup_logger
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-logger.info("Reading %s.", par['input'])
+logger.info("Reading %s.", par["input"])
 mdata = mu.read_h5mu(par["input"])
 
 mod = par["modality"]
@@ -57,6 +43,12 @@ data = mdata.mod[mod]
 
 logger.info("Using layer '%s'.", "X" if not par["layer"] else par["layer"])
 input_layer = data.X if not par["layer"] else data.layers[par["layer"]]
+
+if 0 in input_layer.shape:
+    raise ValueError(
+        f"Modality {mod} of input Mudata {par['input']} appears "
+        f"to be empty (shape: {input_layer.shape})."
+    )
 
 logger.info("\tRunning scrublet")
 scrub = scr.Scrublet(input_layer)
@@ -67,34 +59,42 @@ doublet_scores, predicted_doublets = scrub.scrub_doublets(
     min_gene_variability_pctl=par["min_gene_variablity_percent"],
     n_prin_comps=par["num_pca_components"],
     distance_metric=par["distance_metric"],
-    use_approx_neighbors=False
+    use_approx_neighbors=False,
 )
 
 try:
     keep_cells = np.invert(predicted_doublets)
 except TypeError:
-    if par['allow_automatic_threshold_detection_fail']:
+    if par["allow_automatic_threshold_detection_fail"]:
         # Scrublet might not throw an error and return None if it fails to detect doublets...
-        logger.info("\tScrublet could not automatically detect the doublet score threshold. Setting output columns to NA.")
+        logger.info(
+            "\tScrublet could not automatically detect the doublet score threshold. Setting output columns to NA."
+        )
         keep_cells = np.nan
         doublet_scores = np.nan
     else:
-        raise RuntimeError("Scrublet could not automatically detect the doublet score threshold. "
-                           "--allow_automatic_threshold_detection_fail can be used to ignore this failure "
-                           "and set the corresponding output columns to NA.")
+        raise RuntimeError(
+            "Scrublet could not automatically detect the doublet score threshold. "
+            "--allow_automatic_threshold_detection_fail can be used to ignore this failure "
+            "and set the corresponding output columns to NA."
+        )
 
 logger.info("\tStoring output into .obs")
 if par["obs_name_doublet_score"] is not None:
     data.obs[par["obs_name_doublet_score"]] = doublet_scores
-    data.obs[par["obs_name_doublet_score"]] = data.obs[par["obs_name_doublet_score"]].astype("float64")
+    data.obs[par["obs_name_doublet_score"]] = data.obs[
+        par["obs_name_doublet_score"]
+    ].astype("float64")
 if par["obs_name_filter"] is not None:
     data.obs[par["obs_name_filter"]] = keep_cells
-    data.obs[par["obs_name_filter"]] = data.obs[par["obs_name_filter"]].astype(pd.BooleanDtype())
+    data.obs[par["obs_name_filter"]] = data.obs[par["obs_name_filter"]].astype(
+        pd.BooleanDtype()
+    )
 
 if par["do_subset"]:
     if pd.api.types.is_scalar(keep_cells) and pd.isna(keep_cells):
         logger.warning("Not subsetting beacuse doublets were not predicted")
-    else: 
+    else:
         mdata.mod[mod] = data[keep_cells, :]
 
 logger.info("Writing h5mu to %s", par["output"])

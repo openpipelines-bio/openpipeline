@@ -33,9 +33,62 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: `file`, required. Velocyto loom file",
-                "help_text": "Type: `file`, required. Velocyto loom file."
+                "description": "Type: `file`, required. Input MuData file",
+                "help_text": "Type: `file`, required. Input MuData file"
             
+            }
+    
+
+        ,
+                "counts_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Name of the counts layer, if not specified, X is used",
+                "help_text": "Type: `string`. Name of the counts layer, if not specified, X is used."
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, required. Input modality",
+                "help_text": "Type: `string`, required. Input modality"
+            
+            }
+    
+
+        ,
+                "layer_spliced": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `spliced`. ",
+                "help_text": "Type: `string`, default: `spliced`. "
+            ,
+                "default":"spliced"
+            }
+    
+
+        ,
+                "layer_unspliced": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `unspliced`. ",
+                "help_text": "Type: `string`, default: `unspliced`. "
+            ,
+                "default":"unspliced"
+            }
+    
+
+        ,
+                "layer_ambiguous": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `ambiguous`. ",
+                "help_text": "Type: `string`, default: `ambiguous`. "
+            ,
+                "default":"ambiguous"
             }
     
 
@@ -56,7 +109,18 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`. Output directory",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Output directory. If it does not exist, will be created."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
+            }
+    
+
+        ,
+                "output_h5mu": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output_h5mu.output_h5mu`. Output mudata file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_h5mu.output_h5mu`. Output mudata file."
+            ,
+                "default":"$id.$key.output_h5mu.output_h5mu"
             }
     
 
@@ -159,7 +223,7 @@
                 "description": "Type: `boolean`, default: `true`. Do not log transform counts",
                 "help_text": "Type: `boolean`, default: `true`. Do not log transform counts."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -190,7 +254,7 @@
                 "description": "Type: `integer`, default: `30`. Number of neighbors to use",
                 "help_text": "Type: `integer`, default: `30`. Number of neighbors to use. First/second-order moments are computed for each\ncell across its nearest neighbors, where the neighbor graph is obtained from\neuclidean distances in PCA space.\n"
             ,
-                "default": "30"
+                "default":30
             }
     
 

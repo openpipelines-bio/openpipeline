@@ -84,11 +84,9 @@
                 "type":
                 "string",
                 "description": "Type: List of `string`, default: `star`, multiple_sep: `\";\"`, choices: ``cellranger`, `cellranger_arc`, `bd_rhapsody`, `star``. Which reference indices to generate",
-                "help_text": "Type: List of `string`, default: `star`, multiple_sep: `\";\"`, choices: ``cellranger`, `cellranger_arc`, `bd_rhapsody`, `star``. Which reference indices to generate.",
-                "enum": ["cellranger", "cellranger_arc", "bd_rhapsody", "star"]
-            
+                "help_text": "Type: List of `string`, default: `star`, multiple_sep: `\";\"`, choices: ``cellranger`, `cellranger_arc`, `bd_rhapsody`, `star``. Which reference indices to generate."
             ,
-                "default": "star"
+                "default":"star"
             }
     
 
@@ -99,7 +97,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_fasta.gz`, example: `genome_sequence.fa.gz`. Output genome sequence fasta",
                 "help_text": "Type: `file`, default: `$id.$key.output_fasta.gz`, example: `genome_sequence.fa.gz`. Output genome sequence fasta."
             ,
-                "default": "$id.$key.output_fasta.gz"
+                "default":"$id.$key.output_fasta.gz"
             }
     
 
@@ -110,7 +108,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_gtf.gz`, example: `transcriptome_annotation.gtf.gz`. Output transcriptome annotation gtf",
                 "help_text": "Type: `file`, default: `$id.$key.output_gtf.gz`, example: `transcriptome_annotation.gtf.gz`. Output transcriptome annotation gtf."
             ,
-                "default": "$id.$key.output_gtf.gz"
+                "default":"$id.$key.output_gtf.gz"
             }
     
 
@@ -121,7 +119,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_cellranger.gz`, example: `cellranger_index.tar.gz`. Output index",
                 "help_text": "Type: `file`, default: `$id.$key.output_cellranger.gz`, example: `cellranger_index.tar.gz`. Output index"
             ,
-                "default": "$id.$key.output_cellranger.gz"
+                "default":"$id.$key.output_cellranger.gz"
             }
     
 
@@ -132,7 +130,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_cellranger_arc.gz`, example: `cellranger_index_arc.tar.gz`. Output index",
                 "help_text": "Type: `file`, default: `$id.$key.output_cellranger_arc.gz`, example: `cellranger_index_arc.tar.gz`. Output index"
             ,
-                "default": "$id.$key.output_cellranger_arc.gz"
+                "default":"$id.$key.output_cellranger_arc.gz"
             }
     
 
@@ -143,7 +141,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_bd_rhapsody.gz`, example: `bdrhap_index.tar.gz`. Output index",
                 "help_text": "Type: `file`, default: `$id.$key.output_bd_rhapsody.gz`, example: `bdrhap_index.tar.gz`. Output index"
             ,
-                "default": "$id.$key.output_bd_rhapsody.gz"
+                "default":"$id.$key.output_bd_rhapsody.gz"
             }
     
 
@@ -154,7 +152,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_star.gz`, example: `star_index.tar.gz`. Output index",
                 "help_text": "Type: `file`, default: `$id.$key.output_star.gz`, example: `star_index.tar.gz`. Output index"
             ,
-                "default": "$id.$key.output_star.gz"
+                "default":"$id.$key.output_star.gz"
             }
     
 
@@ -195,7 +193,7 @@
                 "description": "Type: `integer`, default: `14`. Length (bases) of the SA pre-indexing string",
                 "help_text": "Type: `integer`, default: `14`. Length (bases) of the SA pre-indexing string. Typically between 10 and 15.\nLonger strings will use much more memory, but allow faster searches. For small\ngenomes, the parameter {genomeSAindexNbases must be scaled down to\nmin(14, log2(GenomeLength)/2 - 1).\n"
             ,
-                "default": "14"
+                "default":14
             }
     
 
@@ -216,7 +214,7 @@
                 "description": "Type: List of `string`, default: `chrM;chrMT;M;MT`, multiple_sep: `\";\"`. Names of the Mitochondrial contigs in the provided Reference Genome",
                 "help_text": "Type: List of `string`, default: `chrM;chrMT;M;MT`, multiple_sep: `\";\"`. Names of the Mitochondrial contigs in the provided Reference Genome. Fragments originating from contigs other than these are\nidentified as \u0027nuclear fragments\u0027 in the ATACseq analysis pipeline.\n"
             ,
-                "default": "chrM;chrMT;M;MT"
+                "default":"chrM;chrMT;M;MT"
             }
     
 
@@ -227,7 +225,7 @@
                 "description": "Type: `boolean_true`, default: `false`. By default the input Transcript Annotation files are filtered based on the gene_type/gene_biotype attribute",
                 "help_text": "Type: `boolean_true`, default: `false`. By default the input Transcript Annotation files are filtered based on the gene_type/gene_biotype attribute. Only features \nhaving the following attribute values are kept:\n\n  - protein_coding\n  - lncRNA \n  - IG_LV_gene\n  - IG_V_gene\n  - IG_V_pseudogene\n  - IG_D_gene\n  - IG_J_gene\n  - IG_J_pseudogene\n  - IG_C_gene\n  - IG_C_pseudogene\n  - TR_V_gene\n  - TR_V_pseudogene\n  - TR_D_gene\n  - TR_J_gene\n  - TR_J_pseudogene\n  - TR_C_gene\n\n  If you have already pre-filtered the input Annotation files and/or wish to turn-off the filtering, please set this option to True.\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -238,7 +236,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Build a WTA only index, otherwise builds a WTA + ATAC index",
                 "help_text": "Type: `boolean_true`, default: `false`. Build a WTA only index, otherwise builds a WTA + ATAC index."
             ,
-                "default": "False"
+                "default":false
             }
     
 

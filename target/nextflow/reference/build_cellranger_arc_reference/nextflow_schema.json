@@ -66,7 +66,7 @@
                 "description": "Type: List of `string`, default: `chrM`, example: `chrM`, multiple_sep: `\";\"`. Name(s) of contig(s) that do not have any chromatin structure, for example, mitochondria or plastids",
                 "help_text": "Type: List of `string`, default: `chrM`, example: `chrM`, multiple_sep: `\";\"`. Name(s) of contig(s) that do not have any chromatin structure, for example, mitochondria or plastids. These contigs are excluded from peak calling since the entire contig will be \"open\" due to a lack of chromatin structure. Leave empty if there are no such contigs."
             ,
-                "default": "chrM"
+                "default":"chrM"
             }
     
 
@@ -77,7 +77,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `cellranger_reference`. Output folder",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `cellranger_reference`. Output folder"
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -88,7 +88,7 @@
                 "description": "Type: `string`, required, default: `output`, example: `GRCh38`. Name of the genome",
                 "help_text": "Type: `string`, required, default: `output`, example: `GRCh38`. Name of the genome. This will be the name of the intermediate output folder"
             ,
-                "default": "output"
+                "default":"output"
             }
     
 

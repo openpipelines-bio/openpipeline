@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to process",
                 "help_text": "Type: `string`, default: `rna`. Which modality to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -57,6 +57,27 @@
                 "description": "Type: `string`. The layer in the input data to be used for cell type annotation if ",
                 "help_text": "Type: `string`. The layer in the input data to be used for cell type annotation if .X is not to be used."
             
+            }
+    
+
+        ,
+                "input_var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`. The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used",
+                "help_text": "Type: `string`. The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used.\n"
+            
+            }
+    
+
+        ,
+                "input_reference_gene_overlap": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `100`. The minimum number of genes present in both the reference and query datasets",
+                "help_text": "Type: `integer`, default: `100`. The minimum number of genes present in both the reference and query datasets.\n"
+            ,
+                "default":100
             }
     
 
@@ -77,7 +98,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -100,7 +121,7 @@
                 "description": "Type: `string`, default: `svm_pred`. In which `",
                 "help_text": "Type: `string`, default: `svm_pred`. In which `.obs` slots to store the predicted information.\n"
             ,
-                "default": "svm_pred"
+                "default":"svm_pred"
             }
     
 
@@ -111,7 +132,7 @@
                 "description": "Type: `string`, default: `svm_probability`. In which `",
                 "help_text": "Type: `string`, default: `svm_probability`. In which `.obs` slots to store the probability of the predictions.\n"
             ,
-                "default": "svm_probability"
+                "default":"svm_probability"
             }
     
 
@@ -155,6 +176,26 @@
             }
     
 
+        ,
+                "reference_var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`. The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used",
+                "help_text": "Type: `string`. The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.\n"
+            
+            }
+    
+
+        ,
+                "reference_var_input": {
+                "type":
+                "string",
+                "description": "Type: `string`. ",
+                "help_text": "Type: `string`. .var column containing highly variable genes. By default, do not subset genes.\n"
+            
+            }
+    
+
 }
 },
     
@@ -182,7 +223,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether to perform feature selection",
                 "help_text": "Type: `boolean`, default: `true`. Whether to perform feature selection."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -193,7 +234,7 @@
                 "description": "Type: `integer`, default: `5000`. Maximum number of iterations for the SVM",
                 "help_text": "Type: `integer`, default: `5000`. Maximum number of iterations for the SVM."
             ,
-                "default": "5000"
+                "default":5000
             }
     
 
@@ -204,7 +245,7 @@
                 "description": "Type: `double`, default: `1.0`. Regularization parameter for the SVM",
                 "help_text": "Type: `double`, default: `1.0`. Regularization parameter for the SVM."
             ,
-                "default": "1.0"
+                "default":1.0
             }
     
 
@@ -217,7 +258,7 @@
                 "enum": ["balanced", "uniform"]
             
             ,
-                "default": "balanced"
+                "default":"balanced"
             }
     
 

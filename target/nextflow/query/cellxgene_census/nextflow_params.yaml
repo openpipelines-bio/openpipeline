@@ -21,6 +21,7 @@ gene_filter_min_counts: 0
 # output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
 output_modality: "rna"
+# output_layer_counts: "foo"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

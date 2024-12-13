@@ -2,14 +2,16 @@
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # input_layer: "foo"
-# var_query_gene_names: "foo"
+# input_var_gene_names: "foo"
+input_reference_gene_overlap: 100
 
 # Reference
 # reference: "reference.h5mu"
 # reference_layer: "foo"
 reference_obs_target: "cell_ontology_class"
 check_expression: false
-# var_reference_gene_names: "foo"
+# reference_var_gene_names: "foo"
+# reference_var_input: "foo"
 
 # Model arguments
 # model: "pretrained_model.pkl"

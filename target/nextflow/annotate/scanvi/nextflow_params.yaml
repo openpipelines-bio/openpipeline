@@ -2,6 +2,7 @@
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # var_input_gene_names: "foo"
+input_reference_gene_overlap: 100
 
 # Reference model
 # scvi_reference_model: "scvi_model.pt"

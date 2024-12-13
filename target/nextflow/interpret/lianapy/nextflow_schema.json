@@ -46,7 +46,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -59,7 +59,7 @@
                 "enum": ["gzip", "lzf"]
             
             ,
-                "default": "gzip"
+                "default":"gzip"
             }
     
 
@@ -70,7 +70,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -103,7 +103,7 @@
                 "enum": ["baccin2019", "cellcall", "cellchatdb", "cellinker", "cellphonedb", "celltalkdb", "connectomedb2020", "consensus", "embrace", "guide2pharma", "hpmr", "icellnet", "italk", "kirouac2010", "lrdb", "mouseconsensus", "ramilowski2015"]
             
             ,
-                "default": "consensus"
+                "default":"consensus"
             }
     
 
@@ -114,7 +114,7 @@
                 "description": "Type: `string`, default: `gene_symbol`. Column name in var DataFrame in which gene symbol are stored",
                 "help_text": "Type: `string`, default: `gene_symbol`. Column name in var DataFrame in which gene symbol are stored."
             ,
-                "default": "gene_symbol"
+                "default":"gene_symbol"
             }
     
 
@@ -125,7 +125,7 @@
                 "description": "Type: `double`, default: `0.1`. Minimum expression proportion for the ligands/receptors (and their subunits) in the corresponding cell identities",
                 "help_text": "Type: `double`, default: `0.1`. Minimum expression proportion for the ligands/receptors (and their subunits) in the corresponding cell identities. Set to \u00270\u0027, to return unfiltered results."
             ,
-                "default": "0.1"
+                "default":0.1
             }
     
 
@@ -136,7 +136,7 @@
                 "description": "Type: `integer`, default: `5`. Minimum cells per cell identity (\u0027groupby\u0027) to be considered for downstream analysis",
                 "help_text": "Type: `integer`, default: `5`. Minimum cells per cell identity (\u0027groupby\u0027) to be considered for downstream analysis."
             ,
-                "default": "5"
+                "default":5
             }
     
 
@@ -149,7 +149,7 @@
                 "enum": ["mean", "rra"]
             
             ,
-                "default": "rra"
+                "default":"rra"
             }
     
 
@@ -160,7 +160,7 @@
                 "description": "Type: `boolean`, default: `false`. Bool whether to return all LRs, or only those that surpass the \u0027expr_prop\u0027 threshold",
                 "help_text": "Type: `boolean`, default: `false`. Bool whether to return all LRs, or only those that surpass the \u0027expr_prop\u0027 threshold. Those interactions that do not pass the \u0027expr_prop\u0027 threshold will be assigned to the *worst* score of the ones that do. \u0027False\u0027 by default."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -171,7 +171,7 @@
                 "description": "Type: `integer`, default: `100`. Number of permutations for the permutation test",
                 "help_text": "Type: `integer`, default: `100`. Number of permutations for the permutation test. Note that this is relevant only for permutation-based methods - e.g. \u0027CellPhoneDB"
             ,
-                "default": "100"
+                "default":100
             }
     
 

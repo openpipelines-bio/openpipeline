@@ -46,7 +46,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `output_folder`. Folder to restore file(s) to",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `output_folder`. Folder to restore file(s) to."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 

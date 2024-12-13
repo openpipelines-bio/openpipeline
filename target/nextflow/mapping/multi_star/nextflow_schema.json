@@ -86,7 +86,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `/path/to/foo`. Path to output directory",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `/path/to/foo`. Path to output directory. Corresponds to the --outFileNamePrefix argument in the STAR command."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -107,7 +107,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether or not to also run htseq-count after STAR",
                 "help_text": "Type: `boolean`, default: `true`. Whether or not to also run htseq-count after STAR."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -118,7 +118,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether or not to also run MultiQC at the end",
                 "help_text": "Type: `boolean`, default: `true`. Whether or not to also run MultiQC at the end."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -129,7 +129,7 @@
                 "description": "Type: `double`, default: `0.5`. Fail when the success rate is below this threshold",
                 "help_text": "Type: `double`, default: `0.5`. Fail when the success rate is below this threshold."
             ,
-                "default": "0.5"
+                "default":0.5
             }
     
 
@@ -2122,7 +2122,7 @@
                 "enum": ["yes", "no", "reverse"]
             
             ,
-                "default": "yes"
+                "default":"yes"
             }
     
 
@@ -2133,7 +2133,7 @@
                 "description": "Type: `integer`, default: `10`. Skip all reads with MAPQ alignment quality lower than the given minimum value",
                 "help_text": "Type: `integer`, default: `10`. Skip all reads with MAPQ alignment quality lower than the given minimum value. \nMAPQ is the 5th column of a SAM/BAM file and its usage depends on the software \nused to map the reads.\n"
             ,
-                "default": "10"
+                "default":10
             }
     
 
@@ -2174,7 +2174,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Store information about the chromosome of each feature as an additional attribute\n(e",
                 "help_text": "Type: `boolean_true`, default: `false`. Store information about the chromosome of each feature as an additional attribute\n(e.g. colunm in the TSV output file).\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -2187,7 +2187,7 @@
                 "enum": ["union", "intersection-strict", "intersection-nonempty"]
             
             ,
-                "default": "union"
+                "default":"union"
             }
     
 
@@ -2200,7 +2200,7 @@
                 "enum": ["none", "all", "fraction", "random"]
             
             ,
-                "default": "none"
+                "default":"none"
             }
     
 
@@ -2235,7 +2235,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Store the counts as a sparse matrix (mtx, h5ad, loom)",
                 "help_text": "Type: `boolean_true`, default: `false`. Store the counts as a sparse matrix (mtx, h5ad, loom)."
             ,
-                "default": "False"
+                "default":false
             }
     
 

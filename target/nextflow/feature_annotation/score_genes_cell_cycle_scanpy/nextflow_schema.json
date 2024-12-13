@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -87,7 +87,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output_file.h5mu`. Output h5mu file\n",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output_file.h5mu`. Output h5mu file\n"
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -110,7 +110,7 @@
                 "description": "Type: `string`, default: `phase`. The name of the column in the obs attribute of the adata object that will store the cell cycle phase annotation",
                 "help_text": "Type: `string`, default: `phase`. The name of the column in the obs attribute of the adata object that will store the cell cycle phase annotation.\n"
             ,
-                "default": "phase"
+                "default":"phase"
             }
     
 
@@ -121,7 +121,7 @@
                 "description": "Type: `string`, default: `S_score`. The name of the column in the obs attribute of the adata object that will store the s phase score",
                 "help_text": "Type: `string`, default: `S_score`. The name of the column in the obs attribute of the adata object that will store the s phase score.\n"
             ,
-                "default": "S_score"
+                "default":"S_score"
             }
     
 
@@ -132,7 +132,7 @@
                 "description": "Type: `string`, default: `G2M_score`. The name of the column in the obs attribute of the adata object that will store the g2m phase score",
                 "help_text": "Type: `string`, default: `G2M_score`. The name of the column in the obs attribute of the adata object that will store the g2m phase score.\n"
             ,
-                "default": "G2M_score"
+                "default":"G2M_score"
             }
     
 
@@ -153,7 +153,7 @@
                 "description": "Type: `integer`, default: `25`. Number of expression level bins for sampling",
                 "help_text": "Type: `integer`, default: `25`. Number of expression level bins for sampling.\n"
             ,
-                "default": "25"
+                "default":25
             }
     
 
@@ -164,7 +164,7 @@
                 "description": "Type: `integer`, default: `0`. The random seed for sampling",
                 "help_text": "Type: `integer`, default: `0`. The random seed for sampling.\n"
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -175,7 +175,7 @@
                 "description": "Type: `boolean`, default: `false`. If true, missing genes in the gene list will be ignored",
                 "help_text": "Type: `boolean`, default: `false`. If true, missing genes in the gene list will be ignored.\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 

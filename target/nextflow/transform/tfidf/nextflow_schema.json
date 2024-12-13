@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `atac`. ",
                 "help_text": "Type: `string`, default: `atac`. "
             ,
-                "default": "atac"
+                "default":"atac"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -90,7 +90,7 @@
                 "description": "Type: `string`, default: `tfidf`. Output layer to use",
                 "help_text": "Type: `string`, default: `tfidf`. Output layer to use."
             ,
-                "default": "tfidf"
+                "default":"tfidf"
             }
     
 
@@ -101,7 +101,7 @@
                 "description": "Type: `integer`, default: `10000`. Scale factor to multiply the TF-IDF matrix by",
                 "help_text": "Type: `integer`, default: `10000`. Scale factor to multiply the TF-IDF matrix by."
             ,
-                "default": "10000"
+                "default":10000
             }
     
 
@@ -112,7 +112,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether to log-transform IDF term",
                 "help_text": "Type: `boolean`, default: `true`. Whether to log-transform IDF term."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -123,7 +123,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether to log-transform TF term",
                 "help_text": "Type: `boolean`, default: `true`. Whether to log-transform TF term."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -134,7 +134,7 @@
                 "description": "Type: `boolean`, default: `false`. Whether to log-transform TF*IDF term (False by default)",
                 "help_text": "Type: `boolean`, default: `false`. Whether to log-transform TF*IDF term (False by default). Can only be used when log_tf and log_idf are False."
             ,
-                "default": "False"
+                "default":false
             }
     
 

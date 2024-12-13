@@ -46,7 +46,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.rds`, example: `output.rds`. Output Seurat file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.rds`, example: `output.rds`. Output Seurat file"
             ,
-                "default": "$id.$key.output.rds"
+                "default":"$id.$key.output.rds"
             }
     
 

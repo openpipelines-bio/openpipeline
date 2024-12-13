@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to process",
                 "help_text": "Type: `string`, default: `rna`. Which modality to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output_train.h5mu`, example: `output_train.h5mu`. The output training data in mudata format",
                 "help_text": "Type: `file`, required, default: `$id.$key.output_train.h5mu`, example: `output_train.h5mu`. The output training data in mudata format."
             ,
-                "default": "$id.$key.output_train.h5mu"
+                "default":"$id.$key.output_train.h5mu"
             }
     
 
@@ -78,7 +78,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output_test.h5mu`, example: `output_test.h5mu`. The output testing data in mudata format",
                 "help_text": "Type: `file`, required, default: `$id.$key.output_test.h5mu`, example: `output_test.h5mu`. The output testing data in mudata format."
             ,
-                "default": "$id.$key.output_test.h5mu"
+                "default":"$id.$key.output_test.h5mu"
             }
     
 
@@ -89,7 +89,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_val.h5mu`, example: `output_val.h5mu`. The output validation data in mudata format",
                 "help_text": "Type: `file`, default: `$id.$key.output_val.h5mu`, example: `output_val.h5mu`. The output validation data in mudata format."
             ,
-                "default": "$id.$key.output_val.h5mu"
+                "default":"$id.$key.output_val.h5mu"
             }
     
 
@@ -122,7 +122,7 @@
                 "description": "Type: `double`, default: `0.2`. The proportion of the dataset to include in the test split",
                 "help_text": "Type: `double`, default: `0.2`. The proportion of the dataset to include in the test split."
             ,
-                "default": "0.2"
+                "default":0.2
             }
     
 
@@ -143,7 +143,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Whether or not to shuffle the data before splitting",
                 "help_text": "Type: `boolean_true`, default: `false`. Whether or not to shuffle the data before splitting."
             ,
-                "default": "False"
+                "default":false
             }
     
 
