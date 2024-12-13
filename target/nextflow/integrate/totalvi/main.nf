@@ -3242,7 +3242,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi",
     "viash_version" : "0.9.0",
-    "git_commit" : "b0bb0b18d75b41a071e9cea41e08539823888459",
+    "git_commit" : "6cb13e51af1aadfaa9caf41ab883eb43ddda3e4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
