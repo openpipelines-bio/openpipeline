@@ -8,6 +8,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `qc/calculate_atac_qc_metrics`: new component for calculating ATAC QC metrics (PR #868).
+
 * `workflows/annotation/scgpt_annotation` workflow: Added a scGPT transformer-based cell type annotation workflow (PR #832).
 
 * `workflows/annotation/scgpt_integration_knn` workflow: Cell-type annotation based on scGPT integration with KNN label transfer (PR #875).
@@ -172,8 +174,6 @@
 * `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
 
 * `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
-
-* `qc/calculate_atac_qc_metrics`: new component for calculating ATAC QC metrics (PR #868).
 
 * Added `transform/tfidf` component: normalize ATAC data with TF-IDF (PR #870).
 
