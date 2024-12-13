@@ -8,6 +8,9 @@
 
 * Several components under `src/scgpt` (`cross_check_genes`, `tokenize_pad`, `binning`) now processes the input (query) datasets differently. Instead of subsetting datasets based on genes in the model vocabulary and/or highly variable genes, these components require an input .var column with a boolean mask specifying this information. The results are written back to the original input data, preserving the dataset structure (PR #832).
 
+* `query/cellxgene_census`: The default output layer has been changed from `.layers["counts"]` to `.X` to be more aligned with the standard OpenPipelines format (PR #933).
+  Use argument `--output_layer_counts counts` to revert the behaviour to the previous default.
+
 ## NEW FUNCTIONALITY
 
 * `velocyto_to_h5mu`: now writes counts to `.X` (PR #932)

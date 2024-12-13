@@ -3292,6 +3292,15 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_layer_counts",
+          "description" : "Which layer to store the raw counts in. If not provided, the .X layer will be used.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     }
@@ -3452,7 +3461,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/query/cellxgene_census",
     "viash_version" : "0.9.0",
-    "git_commit" : "c5146fba3aed3c30d7b0bbf21e877f2c45458f10",
+    "git_commit" : "b0bb0b18d75b41a071e9cea41e08539823888459",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3516,7 +3525,8 @@ par = {
   'gene_filter_min_counts': $( if [ ! -z ${VIASH_PAR_GENE_FILTER_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_GENE_FILTER_MIN_COUNTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_modality': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODALITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'output_modality': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODALITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_layer_counts': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER_COUNTS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER_COUNTS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3641,9 +3651,9 @@ def filter_by_counts(adata, par):
     )
 
 
-def move_x_to_layers(adata):
-    logger.info("Move .X to .layers['counts']")
-    adata.layers["counts"] = adata.X
+def move_x_to_layers(adata, layer_name):
+    logger.info(f"Move .X to .layers['{layer_name}']")
+    adata.layers[layer_name] = adata.X
     adata.X = None
 
 
@@ -3703,7 +3713,8 @@ def main(par, meta):
     adata.var_names = adata.var["feature_id"]
 
     # move .X to .layers["counts"]
-    move_x_to_layers(adata)
+    if par["output_layer_counts"]:
+        move_x_to_layers(adata, par["output_layer_counts"])
 
     # print summary
     print_summary(adata)

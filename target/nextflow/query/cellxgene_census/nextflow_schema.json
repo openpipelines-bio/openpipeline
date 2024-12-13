@@ -63,6 +63,16 @@
             }
     
 
+        ,
+                "output_layer_counts": {
+                "type":
+                "string",
+                "description": "Type: `string`. Which layer to store the raw counts in",
+                "help_text": "Type: `string`. Which layer to store the raw counts in. If not provided, the .X layer will be used."
+            
+            }
+    
+
 }
 },
     
