@@ -51,11 +51,10 @@ def main():
             atac.obs.drop(col, axis=1, inplace=True)
     
     logger.info("Calculating QC metrics")
-    qc_metrics = sc.pp.calculate_qc_metrics(atac, percent_top=None, log1p=False, inplace=False, layer=par["layer"])
+    sc.pp.calculate_qc_metrics(atac, percent_top=None, log1p=False, inplace=True, layer=par["layer"])
 
     logger.debug("Putting QC columns to ATAC adata")
-    atac.obs["n_features_per_cell"] = qc_metrics["n_genes_by_counts"]
-    atac.obs["total_fragment_counts"] = qc_metrics["total_counts"]
+    atac.obs.rename(columns={"n_genes_by_counts": "n_features_per_cell", "total_counts": "total_fragment_counts"}, inplace=True)
 
     logger.debug("Adding log-transformed total fragment counts")
     # log-transform total counts and add as column
