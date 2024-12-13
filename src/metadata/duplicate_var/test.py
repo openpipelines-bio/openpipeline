@@ -11,14 +11,16 @@ import pytest
 @pytest.fixture
 def input_h5mu():
     # generate data
-    df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"])
+    df = pd.DataFrame(
+        [[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"]
+    )
     obs = pd.DataFrame([["A"], ["B"]], index=df.index, columns=["Obs"])
     var = pd.DataFrame([["a"], ["b"], ["c"]], index=df.columns, columns=["Feat"])
     ad1 = ad.AnnData(df, obs=obs, var=var)
     var2 = pd.DataFrame(["d", "e", "g"], index=df.columns, columns=["Feat"])
     obs2 = pd.DataFrame(["C", "D"], index=df.index, columns=["Obs"])
     ad2 = ad.AnnData(df, obs=obs2, var=var2)
-    tmp_mudata = mu.MuData({'mod1': ad1, 'mod2': ad2})
+    tmp_mudata = mu.MuData({"mod1": ad1, "mod2": ad2})
     return tmp_mudata
 
 
@@ -31,11 +33,16 @@ def test_copy_var(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
     output_h5mu_path = random_h5mu_path()
 
     args = [
-        "--input", input_h5mu_path,
-        "--output", output_h5mu_path,
-        "--modality", "mod1",
-        "--input_var_key", "Feat",
-        "--output_var_key", "Feat_copy"
+        "--input",
+        input_h5mu_path,
+        "--output",
+        output_h5mu_path,
+        "--modality",
+        "mod1",
+        "--input_var_key",
+        "Feat",
+        "--output_var_key",
+        "Feat_copy",
     ]
 
     run_component(args)
@@ -45,18 +52,29 @@ def test_copy_var(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
     output_h5mu = mu.read_h5mu(output_h5mu_path)
 
     assert "Feat_copy" in output_h5mu.mod["mod1"].var, "var key was not copied in mod1"
-    assert "Feat_copy" not in output_h5mu.mod["mod2"].var, "var key should not have been copied in mod2"
-    assert "Feat_copy" not in input_h5mu.mod["mod1"].var, "var key should not have been copied in input file"
-    assert np.all(output_h5mu.mod["mod1"].var["Feat"] == output_h5mu.mod["mod1"].var["Feat_copy"]), "copied var column should be identical to original var column"
+    assert (
+        "Feat_copy" not in output_h5mu.mod["mod2"].var
+    ), "var key should not have been copied in mod2"
+    assert (
+        "Feat_copy" not in input_h5mu.mod["mod1"].var
+    ), "var key should not have been copied in input file"
+    assert np.all(
+        output_h5mu.mod["mod1"].var["Feat"] == output_h5mu.mod["mod1"].var["Feat_copy"]
+    ), "copied var column should be identical to original var column"
+
 
 def test_copy_index(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
     output_h5mu_path = random_h5mu_path()
 
     args = [
-        "--input", input_h5mu_path,
-        "--output", output_h5mu_path,
-        "--modality", "mod1",
-        "--output_var_key", "Index_copy"
+        "--input",
+        input_h5mu_path,
+        "--output",
+        output_h5mu_path,
+        "--modality",
+        "mod1",
+        "--output_var_key",
+        "Index_copy",
     ]
 
     run_component(args)
@@ -65,36 +83,55 @@ def test_copy_index(run_component, random_h5mu_path, input_h5mu, input_h5mu_path
 
     output_h5mu = mu.read_h5mu(output_h5mu_path)
 
-    assert "Index_copy" in output_h5mu.mod["mod1"].var, "var index was not copied in mod1"
-    assert "Index_copy" not in output_h5mu.mod["mod2"].var, "var index should not have been copied in mod2"
-    assert "Index_copy" not in input_h5mu.mod["mod1"].var, "var index should not have been copied in input file"
-    assert np.all(output_h5mu.mod["mod1"].var.index == output_h5mu.mod["mod1"].var["Index_copy"]), "copied var index should be identical to original var index"
+    assert (
+        "Index_copy" in output_h5mu.mod["mod1"].var
+    ), "var index was not copied in mod1"
+    assert (
+        "Index_copy" not in output_h5mu.mod["mod2"].var
+    ), "var index should not have been copied in mod2"
+    assert (
+        "Index_copy" not in input_h5mu.mod["mod1"].var
+    ), "var index should not have been copied in input file"
+    assert np.all(
+        output_h5mu.mod["mod1"].var.index == output_h5mu.mod["mod1"].var["Index_copy"]
+    ), "copied var index should be identical to original var index"
 
-def test_raise_identical_keys(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
+
+def test_overwrite_keys(run_component, random_h5mu_path, input_h5mu, input_h5mu_path):
     output_h5mu_path = random_h5mu_path()
 
     args = [
-        "--input", input_h5mu_path,
-        "--output", output_h5mu_path,
-        "--modality", "mod1",
-        "--input_var_key", "Feat",
-        "--output_var_key", "Feat"
+        "--input",
+        input_h5mu_path,
+        "--output",
+        output_h5mu_path,
+        "--modality",
+        "mod1",
+        "--input_var_key",
+        "Feat",
+        "--output_var_key",
+        "Feat",
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
     assert re.search(
-        r'ValueError: --input_var_key and --output_var_key are the same: \`Feat\`.',
-        err.value.stdout.decode('utf-8'))
+        r"ValueError: --output_var_key already exists: \`Feat\`. Data can not be duplicated.",
+        err.value.stdout.decode("utf-8"),
+    )
 
     disable_raise_args = [
-
-        "--input", input_h5mu_path,
-        "--output", output_h5mu_path,
-        "--modality", "mod1",
-        "--disable_raise_on_identical_keys",
-        "--input_var_key", "Feat",
-        "--output_var_key", "Feat"
+        "--input",
+        input_h5mu_path,
+        "--output",
+        output_h5mu_path,
+        "--modality",
+        "mod1",
+        "--overwrite_existing_key",
+        "--input_var_key",
+        "Feat",
+        "--output_var_key",
+        "Feat",
     ]
 
     run_component(disable_raise_args)

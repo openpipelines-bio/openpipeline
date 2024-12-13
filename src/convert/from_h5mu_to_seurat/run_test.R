@@ -10,7 +10,10 @@ meta <- list(
 
 cat("> Checking whether output is correct\n")
 
-in_h5mu <- paste0(meta[["resources_dir"]], "/10x_5k_anticmv/5k_human_antiCMV_T_TBNK_connect_mms.h5mu")
+in_h5mu <- paste0(
+  meta[["resources_dir"]],
+  "/10x_5k_anticmv/5k_human_antiCMV_T_TBNK_connect_mms.h5mu"
+)
 out_rds <- "output.rds"
 
 cat("> Running ", meta[["name"]], "\n", sep = "")

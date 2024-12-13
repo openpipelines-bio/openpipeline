@@ -3,6 +3,9 @@ namespace: "workflows/ingestion"
 description: "A pipeline for running Cell Ranger mapping."
 info:
   name: Cell Ranger mapping
+  test_dependencies:
+    - name: cellranger_mapping_test
+      namespace: test_workflows/ingestion
 authors:
   - __merge__: /src/authors/angela_pisco.yaml
     roles: [ author ]

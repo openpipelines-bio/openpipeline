@@ -4,9 +4,11 @@ include { cellranger_postprocessing } from params.rootDir + "/target/nextflow/wo
 include { from_10xh5_to_h5mu } from params.rootDir + "/target/nextflow/convert/from_10xh5_to_h5mu/main.nf"
 include { cellranger_postprocessing_test } from params.rootDir + "/target/nextflow/test_workflows/ingestion/cellranger_postprocessing_test/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList([
       [
@@ -55,9 +57,8 @@ workflow test_wf {
 }
 
 workflow test_wf2 {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
 
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList([
       [

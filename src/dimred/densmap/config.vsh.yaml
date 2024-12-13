@@ -31,18 +31,6 @@ argument_groups:
         description: |
           The slot in `.obsm` where the PCA results are stored.
         required: true
-
-      - name: "--obsm_knn_indices"
-        type: string
-        description: |
-          The slot in `.obsm` where the kNN indices are stored.
-        required: true
-
-      - name: "--obsm_knn_distances"
-        type: string
-        description: |
-          The slot in `.obsm` where the kNN distances are stored.
-        required: true
     
   - name: Outputs
     arguments:

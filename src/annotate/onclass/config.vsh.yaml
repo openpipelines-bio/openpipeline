@@ -1,0 +1,167 @@
+name: onclass
+namespace: annotate
+description: |
+  OnClass is a python package for single-cell cell type annotation. It uses the Cell Ontology to capture the cell type similarity. 
+  These similarities enable OnClass to annotate cell types that are never seen in the training data.
+authors:
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    description: Input dataset (query) arguments
+    arguments:
+      - name: "--input"
+        alternatives: [-i]
+        type: file
+        description: The input (query) data to be labeled. Should be a .h5mu file.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--input_layer"
+        type: string
+        description: The layer in the input data to be used for cell type annotation if .X is not to be used.
+        required: false
+      - name: "--input_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used.
+      - name: "--input_reference_gene_overlap"
+        type: integer
+        default: 100
+        min: 1
+        description: | 
+          The minimum number of genes present in both the reference and query datasets.
+
+  - name: Ongoloty
+    description: Ontology input files
+    arguments:
+      - name: "--cl_nlp_emb_file"
+        type: file
+        description: The .nlp.emb file with the cell type embeddings.
+        required: true
+      - name: "--cl_ontology_file"
+        type: file
+        description: The .ontology file with the cell type ontology.
+        required: true
+      - name: "--cl_obo_file"
+        type: file
+        description: The .obo file with the cell type ontology.
+        required: true
+
+  - name: Reference
+    description: Arguments related to the reference dataset.
+    arguments:
+      - name: "--reference"
+        type: file
+        description: "The reference data to train the CellTypist classifiers on. Only required if a pre-trained --model is not provided."
+        example: reference.h5mu
+        direction: input
+        required: false
+      - name: "--reference_layer"
+        type: string
+        description: The layer in the reference data to be used for cell type annotation if .X is not to be used.
+        required: false
+      - name: "--reference_obs_target"
+        type: string
+        description: The name of the adata obs column in the reference data containing cell type annotations.
+        example: "cell_ontology_class"
+        required: true
+      - name:  "--reference_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
+      - name: "--reference_var_input"
+        type: string
+        required: false
+        description: |
+          .var column containing highly variable genes. By default, do not subset genes.
+      - name: "--unknown_celltype"
+        type: string
+        default: "Unknown"
+        required: false
+        description: |
+          Label for unknown cell types.
+
+  - name: Outputs
+    description: Output arguments.
+    arguments:
+      - name: "--output"
+        type: file
+        description: Output h5mu file.
+        direction: output
+        example: output.h5mu
+      - name: "--output_compression"
+        type: string
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
+      - name: "--output_obs_predictions"
+        type: string
+        default: onclass_pred
+        required: false
+        description: |
+          In which `.obs` slots to store the predicted information.
+      - name: "--output_obs_probability"
+        type: string
+        default: onclass_prob 
+        required: false
+        description: |
+          In which `.obs` slots to store the probability of the predictions.
+
+  - name: Model arguments
+    description: Model arguments
+    arguments:
+      - name: "--model"
+        type: string
+        description: | 
+          "Pretrained model path without a file extension. If not provided, the model will be trained 
+          on the reference data and --reference should be provided. The path namespace should contain:
+            - a .npz or .pkl file
+            - a .data file
+            - a .meta file
+            - a .index file
+          e.g. /path/to/model/pretrained_model_target1 as saved by OnClass."
+        required: false
+        direction: input
+      - name: "--max_iter"
+        type: integer
+        default: 30
+        required: false
+        description: Maximum number of iterations for training the model.
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/cross_check_genes.py
+  - path: /src/utils/subset_vars.py
+  - path: /src/utils/set_var_index.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/annotation_test_data/
+  - path: /resources_test/pbmc_1k_protein_v3/
+
+engines:
+  - type: docker
+    image: python:3.11
+    setup:
+      - type: python
+        packages:
+          - OnClass~=1.3
+          - tensorflow
+          - obonet
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow

@@ -1,5 +1,12 @@
+import sys
 import anndata as ad
 import mudata as mu
+import numpy as np
+
+numpy_module = sys.modules["numpy"]
+numpy_module.string_ = np.bytes_
+numpy_module.unicode_ = np.str_
+sys.modules["numpy"] = numpy_module
 
 ## VIASH START
 par = {
@@ -9,7 +16,7 @@ par = {
     "output": "output.h5mu",
     "layer_spliced": "velo_spliced",
     "layer_unspliced": "velo_unspliced",
-    "layer_ambiguous": "velo_ambiguous"
+    "layer_ambiguous": "velo_ambiguous",
 }
 ## VIASH END
 
@@ -26,8 +33,8 @@ adata = ad.AnnData(
     layers={
         par["layer_spliced"]: adata_in.layers["spliced"],
         par["layer_unspliced"]: adata_in.layers["unspliced"],
-        par["layer_ambiguous"]: adata_in.layers["ambiguous"]
-    }
+        par["layer_ambiguous"]: adata_in.layers["ambiguous"],
+    },
 )
 
 if par["input_h5mu"]:
