@@ -29,7 +29,7 @@ jobs:
   sync_s3:
     env:
       s3_bucket: s3://openpipelines-data/
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest, macos-latest]
 
     outputs:
       cache_key: ${{ steps.cache.outputs.cache_key }}
@@ -45,7 +45,7 @@ jobs:
 
   # phase 3
   integration_test:
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest, macos-latest]
     needs: [ build, sync_s3 ]
     if: "${{ needs.build.outputs.workflow_matrix != '[]' }}"
 
