@@ -2,11 +2,15 @@
 
 ## BREAKING CHANGES
 
+* `velocity/scvelo`: update `scvelo` to `0.3.3`, which also removes support for using `loom` input files. The component now uses a `MuData` object as input. Several arguments were added to support selecting different inputs from the MuData file: `counts_layer`, `modality`, `layer_spliced`, `layer_unspliced`, `layer_ambiguous`. An `output_h5mu` argument was has been added (PR #932). 
+
 * `src/annotate/onclass` and `src/annotate/celltypist`: Input parameter for gene name layers of input datasets has been updated to `--input_var_gene_names` and `reference_var_gene_names` (PR #919).
 
 * Several components under `src/scgpt` (`cross_check_genes`, `tokenize_pad`, `binning`) now processes the input (query) datasets differently. Instead of subsetting datasets based on genes in the model vocabulary and/or highly variable genes, these components require an input .var column with a boolean mask specifying this information. The results are written back to the original input data, preserving the dataset structure (PR #832).
 
 ## NEW FUNCTIONALITY
+
+* `velocyto_to_h5mu`: now writes counts to `.X` (PR #932)
 
 * `qc/calculate_atac_qc_metrics`: new component for calculating ATAC QC metrics (PR #868).
 

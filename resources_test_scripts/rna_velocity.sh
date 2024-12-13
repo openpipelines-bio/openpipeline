@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -eo pipefail
-
 # ensure that the command below is run from the root of the repository
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
@@ -19,7 +17,7 @@ mkdir -p "$velocyto_dir"
 # Create a compatible BAM file from BD Rhapsody Output #
 ########################################################
 
-bd_rhap_wta_bam="resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw/sample_final.BAM"
+bd_rhap_wta_bam="resources_test/bdrhap_5kjrt/processed/output_raw/Combined_sample_Bioproduct.bam"
 
 if [[ ! -f "$bd_rhap_wta_bam" ]]; then
     echo "$bd_rhap_wta_bam does not exist. Please generate BD Rhapsody test data first."
@@ -52,3 +50,11 @@ viash run src/velocity/velocyto/config.vsh.yaml -- \
   -i "$bam" \
   -o "$OUT/velocyto_processed/cellranger_tiny.loom" \
   --transcriptome "$gtf"
+
+echo "> Converting loom file to MuData object"
+viash run src/velocity/velocyto_to_h5mu/config.vsh.yaml -- \
+  --input_loom "$OUT/velocyto_processed/cellranger_tiny.loom" \
+  --input_h5mu "resources_test/cellranger_tiny_fastq/raw_dataset.h5mu" \
+  --modality velocyto \
+  --output_compression "gzip" \
+  --output "$OUT/velocyto_processed/velocyto.h5mu"
