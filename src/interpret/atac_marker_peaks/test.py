@@ -4,7 +4,6 @@ import os
 import pytest
 
 import mudata as md
-import scanpy as sc
 import muon as mu
 import numpy as np
 import pandas as pd
