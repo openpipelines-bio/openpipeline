@@ -18,7 +18,7 @@ def main():
     mdata = mudata.read(par["input"].strip())
     mod = mdata.mod[par["modality"]]
 
-    if not "peak_annotation" in mod.uns["atac"]:
+    if "peak_annotation" not in mod.uns["atac"]:
         raise ValueError("Peak annotation not found. Please run `muon.atac.tl.add_peak_annotation` first.")
 
     mu.atac.tl.rank_peaks_groups(mod, par["groupby"], method=par["method"])
