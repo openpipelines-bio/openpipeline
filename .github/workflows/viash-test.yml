@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   linting:
-    runs-on: [ubuntu-latest, macos-latest]
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -52,7 +52,7 @@ jobs:
   list:
     env:
       s3_bucket: s3://openpipelines-data/
-    runs-on: [ubuntu-latest, macos-latest]
+    runs-on: ubuntu-latest
 
     outputs:
       matrix: ${{ steps.detect_changed_components.outputs.output_matrix }}

@@ -80,7 +80,7 @@ jobs:
   # phase 1
   build_and_deploy_target_folder:
     name: "Build and push target folder"
-    runs-on: [ubuntu-latest, macos-latest]
+    runs-on: ubuntu-latest
 
     outputs:
       component_matrix: ${{ steps.set_matrix.outputs.components }}
