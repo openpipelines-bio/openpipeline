@@ -1,3 +1,9 @@
+# openpipelines 1.0.4
+
+## BUG FIXES
+
+* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (backported from PR #936 and PR #938). 
+
 # openpipelines 1.0.3
 
 ## BUG FIXES
