@@ -3301,7 +3301,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scvi_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "6cb13e51af1aadfaa9caf41ab883eb43ddda3e4d",
+    "git_commit" : "8cefbc108e7d083076528d83df09fd8ecca90ea7",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3370,7 +3370,8 @@ workflow run_wf {
           "lr_factor": state.lr_factor,
           "lr_patience": state.lr_patience,
           "output_model": state.output_model,
-          "modality": state.modality
+          "modality": state.modality,
+          "input_layer": state.layer,
        ]
       },
     // use map when viash 0.7.6 is released

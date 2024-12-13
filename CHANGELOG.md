@@ -1,4 +1,4 @@
-# openpipelines x.x.x
+# openpipelines 2.0.0
 
 ## BREAKING CHANGES
 
@@ -48,6 +48,8 @@
 * `workflows/integration/scgpt_leiden` workflow update: Update workflow such that input dataset is not subsetted for HVG but uses boolean masks in .var field instead (PR #875).
 
 ## BUG FIXES
+
+* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (PR #936). 
 
 * `scgpt/embedding`: remove unused argument `dbsn` (PR #875).
 
