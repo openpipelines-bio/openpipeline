@@ -3161,7 +3161,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/velocyto_to_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "4baaf7833434461b9ffe5247a093b86c3a4fa6e5",
+    "git_commit" : "c5146fba3aed3c30d7b0bbf21e877f2c45458f10",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3260,6 +3260,7 @@ adata_in.var_names = adata_in.var["Accession"]
 
 print("Creating clean AnnData", flush=True)
 adata = ad.AnnData(
+    X=adata_in.X,
     obs=adata_in.obs[[]],
     var=adata_in.var[[]],
     layers={

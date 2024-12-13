@@ -1,24 +1,11 @@
 import sys
 import mudata
+import anndata
+import tempfile
+import shutil
 from contextlib import redirect_stdout
 from pathlib import Path
 import matplotlib as mpl
-
-# Backwards compatibility for numpy 2.0
-import numpy
-
-numpy_module = sys.modules["numpy"]
-numpy_module.float_ = numpy.float64
-sys.modules["numpy"] = numpy_module
-
-# Backwards compatibility for scipy
-import scipy  # noqa: F401
-
-scipy_module = sys.modules["scipy"]
-scipy_module.sparse._base._spbase.A = property(lambda self: self.toarray())
-
-sys.modules["scipy"] = scipy_module
-
 import scvelo
 
 ## VIASH START
@@ -32,16 +19,24 @@ def none_factory():
 par = defaultdict(
     none_factory,
     {
-        "input": "./resources_test/rna_velocity/velocyto_processed/cellranger_tiny.loom",
+        "input": "resources_test/rna_velocity/velocyto_processed/velocyto.h5mu",
+        "modality": "velocyto",
         "output": "./foo",
+        "output_h5mu": "output.h5mu",
         "log_transform": True,
         "n_neighbors": 30,
+        "layer_spliced": "velo_spliced",
+        "layer_unspliced": "velo_unspliced",
+        "layer_ambiguous": "velo_ambiguous",
     },
 )
+
+meta = {"resources_dir": "src/utils", "temp_dir": "/tmp/"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import compress_h5mu
 
 logger = setup_logger()
 
@@ -56,12 +51,32 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
     scvelo.settings.figdir = str(output_dir)
 
+    # Load the input data
+    adata_in = mudata.read_h5ad(par["input"], mod=par["modality"])
+
+    # Create a copy of the data as input
+    # as many scvelo functions do not take input layer arguments
+    layers_mapping = {
+        "spliced": par["layer_spliced"],
+        "unspliced": par["layer_unspliced"],
+        "ambiguous": par["layer_ambiguous"],
+    }
+    layer_data = {
+        default: (adata_in.layers.get(arg_val) if arg_val else adata_in.layers[default])
+        for default, arg_val in layers_mapping.items()
+    }
+    adata = anndata.AnnData(
+        X=adata_in.X
+        if not par["counts_layer"]
+        else adata_in.layers[par["counts_layer"]],
+        layers=layer_data,
+    )
+
     # Calculate the sample name
-    sample_name = par["output"].removesuffix(".loom")
+    sample_name = par["output"].removesuffix(".h5mu")
     sample_name = Path(sample_name).name
 
     # Read the input data
-    adata = scvelo.read(par["input"])
 
     # Save spliced vs unspliced proportions to file
     with (output_dir / "proportions.txt").open("w") as target:
@@ -107,11 +122,55 @@ def main():
         adata, save=str(output_dir / "scvelo_embedding.pdf"), show=False
     )
 
-    # Create output
-    ouput_data = mudata.MuData({"rna_velocity": adata})
-    ouput_data.write_h5mu(
-        output_dir / f"{sample_name}.h5mu", compression=par["output_compression"]
-    )
+    # Copy over slots to output
+    for slot in ("obs", "var"):
+        setattr(
+            adata_in,
+            slot,
+            getattr(adata_in, slot)
+            .assign(**getattr(adata, slot).to_dict())
+            .convert_dtypes(),
+        )
+    items_per_slot = {
+        "uns": (
+            "recover_dynamics",
+            "velocity_params",
+            "velocity_graph",
+            "velocity_graph_neg",
+        ),
+        "varm": ("loss",),
+        "obsm": ("velocity_pca",),
+        "layers": (
+            "Ms",
+            "Mu",
+            "fit_t",
+            "fit_tau",
+            "fit_tau_",
+            "velocity",
+            "velocity_u",
+        ),
+    }
+    for dict_slot, dict_items in items_per_slot.items():
+        setattr(
+            adata_in,
+            dict_slot,
+            dict(
+                getattr(adata_in, dict_slot),
+                **{key_: getattr(adata, dict_slot)[key_] for key_ in dict_items},
+            ),
+        )
+    with tempfile.NamedTemporaryFile(
+        suffix=".h5mu", delete_on_close=False
+    ) as temp_h5mu:
+        shutil.copyfile(par["input"], temp_h5mu.name)
+        # Create output
+        mudata.write_h5ad(temp_h5mu.name, mod=par["modality"], data=adata_in)
+        compression = par["output_compression"]
+
+        if compression:
+            compress_h5mu(temp_h5mu.name, par["output_h5mu"], compression=compression)
+        else:
+            shutil.move(temp_h5mu.name, par["output_h5mu"])
 
 
 if __name__ == "__main__":

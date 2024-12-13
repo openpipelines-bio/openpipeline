@@ -179,12 +179,36 @@ function ViashHelp {
   echo "Inputs:"
   echo "    --input"
   echo "        type: file, required parameter, file must exist"
-  echo "        Velocyto loom file."
+  echo "        Input MuData file"
+  echo ""
+  echo "    --counts_layer"
+  echo "        type: string"
+  echo "        Name of the counts layer, if not specified, X is used."
+  echo ""
+  echo "    --modality"
+  echo "        type: string, required parameter"
+  echo "        Input modality"
+  echo ""
+  echo "    --layer_spliced"
+  echo "        type: string"
+  echo "        default: spliced"
+  echo ""
+  echo "    --layer_unspliced"
+  echo "        type: string"
+  echo "        default: unspliced"
+  echo ""
+  echo "    --layer_ambiguous"
+  echo "        type: string"
+  echo "        default: ambiguous"
   echo ""
   echo "Outputs:"
   echo "    --output"
   echo "        type: file, required parameter, output, file must exist"
   echo "        Output directory. If it does not exist, will be created."
+  echo ""
+  echo "    --output_h5mu"
+  echo "        type: file, required parameter, output, file must exist"
+  echo "        Output mudata file."
   echo ""
   echo "    --output_compression"
   echo "        type: string"
@@ -531,14 +555,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scvelo[vi]~=0.3.2" "scipy~=1.14.1" "scanpy~=1.9.8" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4" "scvelo~=0.3.3" "scipy~=1.14.1" && \
   python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component velocity scvelo"
-LABEL org.opencontainers.image.created="2024-12-11T13:10:42Z"
+LABEL org.opencontainers.image.created="2024-12-13T10:08:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4baaf7833434461b9ffe5247a093b86c3a4fa6e5"
+LABEL org.opencontainers.image.revision="c5146fba3aed3c30d7b0bbf21e877f2c45458f10"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -689,6 +713,61 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_INPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --counts_layer)
+            [ -n "$VIASH_PAR_COUNTS_LAYER" ] && ViashError Bad arguments for option \'--counts_layer\': \'$VIASH_PAR_COUNTS_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_COUNTS_LAYER="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --counts_layer. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --counts_layer=*)
+            [ -n "$VIASH_PAR_COUNTS_LAYER" ] && ViashError Bad arguments for option \'--counts_layer=*\': \'$VIASH_PAR_COUNTS_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_COUNTS_LAYER=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --modality)
+            [ -n "$VIASH_PAR_MODALITY" ] && ViashError Bad arguments for option \'--modality\': \'$VIASH_PAR_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MODALITY="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --modality. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --modality=*)
+            [ -n "$VIASH_PAR_MODALITY" ] && ViashError Bad arguments for option \'--modality=*\': \'$VIASH_PAR_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MODALITY=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --layer_spliced)
+            [ -n "$VIASH_PAR_LAYER_SPLICED" ] && ViashError Bad arguments for option \'--layer_spliced\': \'$VIASH_PAR_LAYER_SPLICED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LAYER_SPLICED="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --layer_spliced. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --layer_spliced=*)
+            [ -n "$VIASH_PAR_LAYER_SPLICED" ] && ViashError Bad arguments for option \'--layer_spliced=*\': \'$VIASH_PAR_LAYER_SPLICED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LAYER_SPLICED=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --layer_unspliced)
+            [ -n "$VIASH_PAR_LAYER_UNSPLICED" ] && ViashError Bad arguments for option \'--layer_unspliced\': \'$VIASH_PAR_LAYER_UNSPLICED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LAYER_UNSPLICED="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --layer_unspliced. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --layer_unspliced=*)
+            [ -n "$VIASH_PAR_LAYER_UNSPLICED" ] && ViashError Bad arguments for option \'--layer_unspliced=*\': \'$VIASH_PAR_LAYER_UNSPLICED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LAYER_UNSPLICED=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --layer_ambiguous)
+            [ -n "$VIASH_PAR_LAYER_AMBIGUOUS" ] && ViashError Bad arguments for option \'--layer_ambiguous\': \'$VIASH_PAR_LAYER_AMBIGUOUS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LAYER_AMBIGUOUS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --layer_ambiguous. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --layer_ambiguous=*)
+            [ -n "$VIASH_PAR_LAYER_AMBIGUOUS" ] && ViashError Bad arguments for option \'--layer_ambiguous=*\': \'$VIASH_PAR_LAYER_AMBIGUOUS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LAYER_AMBIGUOUS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --output)
             [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT="$2"
@@ -698,6 +777,17 @@ while [[ $# -gt 0 ]]; do
         --output=*)
             [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output=*\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_h5mu)
+            [ -n "$VIASH_PAR_OUTPUT_H5MU" ] && ViashError Bad arguments for option \'--output_h5mu\': \'$VIASH_PAR_OUTPUT_H5MU\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_H5MU="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_h5mu. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_h5mu=*)
+            [ -n "$VIASH_PAR_OUTPUT_H5MU" ] && ViashError Bad arguments for option \'--output_h5mu=*\': \'$VIASH_PAR_OUTPUT_H5MU\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_H5MU=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output_compression)
@@ -995,8 +1085,16 @@ if [ -z ${VIASH_PAR_INPUT+x} ]; then
   ViashError '--input' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
+if [ -z ${VIASH_PAR_MODALITY+x} ]; then
+  ViashError '--modality' is a required argument. Use "--help" to get more information on the parameters.
+  exit 1
+fi
 if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
   ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
+  exit 1
+fi
+if [ -z ${VIASH_PAR_OUTPUT_H5MU+x} ]; then
+  ViashError '--output_h5mu' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
 if [ -z ${VIASH_META_NAME+x} ]; then
@@ -1025,6 +1123,15 @@ if [ -z ${VIASH_META_TEMP_DIR+x} ]; then
 fi
 
 # filling in defaults
+if [ -z ${VIASH_PAR_LAYER_SPLICED+x} ]; then
+  VIASH_PAR_LAYER_SPLICED="spliced"
+fi
+if [ -z ${VIASH_PAR_LAYER_UNSPLICED+x} ]; then
+  VIASH_PAR_LAYER_UNSPLICED="unspliced"
+fi
+if [ -z ${VIASH_PAR_LAYER_AMBIGUOUS+x} ]; then
+  VIASH_PAR_LAYER_AMBIGUOUS="ambiguous"
+fi
 if [ -z ${VIASH_PAR_LOG_TRANSFORM+x} ]; then
   VIASH_PAR_LOG_TRANSFORM="true"
 fi
@@ -1189,6 +1296,9 @@ fi
 if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT")" ]; then
   mkdir -p "$(dirname "$VIASH_PAR_OUTPUT")"
 fi
+if [ ! -z "$VIASH_PAR_OUTPUT_H5MU" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_H5MU")" ]; then
+  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_H5MU")"
+fi
 
 if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
   # detect volumes from file arguments
@@ -1201,6 +1311,11 @@ if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
   VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_OUTPUT")" )
   VIASH_PAR_OUTPUT=$(ViashDockerAutodetectMount "$VIASH_PAR_OUTPUT")
   VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT" )
+fi
+if [ ! -z "$VIASH_PAR_OUTPUT_H5MU" ]; then
+  VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_OUTPUT_H5MU")" )
+  VIASH_PAR_OUTPUT_H5MU=$(ViashDockerAutodetectMount "$VIASH_PAR_OUTPUT_H5MU")
+  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT_H5MU" )
 fi
 if [ ! -z "$VIASH_META_RESOURCES_DIR" ]; then
   VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_META_RESOURCES_DIR")" )
@@ -1271,32 +1386,25 @@ trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
 import sys
 import mudata
+import anndata
+import tempfile
+import shutil
 from contextlib import redirect_stdout
 from pathlib import Path
 import matplotlib as mpl
-
-# Backwards compatibility for numpy 2.0
-import numpy
-
-numpy_module = sys.modules["numpy"]
-numpy_module.float_ = numpy.float64
-sys.modules["numpy"] = numpy_module
-
-# Backwards compatibility for scipy
-import scipy  # noqa: F401
-
-scipy_module = sys.modules["scipy"]
-scipy_module.sparse._base._spbase.A = property(lambda self: self.toarray())
-
-sys.modules["scipy"] = scipy_module
-
 import scvelo
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'counts_layer': $( if [ ! -z ${VIASH_PAR_COUNTS_LAYER+x} ]; then echo "r'${VIASH_PAR_COUNTS_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'layer_spliced': $( if [ ! -z ${VIASH_PAR_LAYER_SPLICED+x} ]; then echo "r'${VIASH_PAR_LAYER_SPLICED//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'layer_unspliced': $( if [ ! -z ${VIASH_PAR_LAYER_UNSPLICED+x} ]; then echo "r'${VIASH_PAR_LAYER_UNSPLICED//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'layer_ambiguous': $( if [ ! -z ${VIASH_PAR_LAYER_AMBIGUOUS+x} ]; then echo "r'${VIASH_PAR_LAYER_AMBIGUOUS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_h5mu': $( if [ ! -z ${VIASH_PAR_OUTPUT_H5MU+x} ]; then echo "r'${VIASH_PAR_OUTPUT_H5MU//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'min_counts': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'min_counts_u': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS_U+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS_U//\'/\'\"\'\"r\'}')"; else echo None; fi ),
@@ -1337,6 +1445,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import compress_h5mu
 
 logger = setup_logger()
 
@@ -1351,12 +1460,32 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
     scvelo.settings.figdir = str(output_dir)
 
+    # Load the input data
+    adata_in = mudata.read_h5ad(par["input"], mod=par["modality"])
+
+    # Create a copy of the data as input
+    # as many scvelo functions do not take input layer arguments
+    layers_mapping = {
+        "spliced": par["layer_spliced"],
+        "unspliced": par["layer_unspliced"],
+        "ambiguous": par["layer_ambiguous"],
+    }
+    layer_data = {
+        default: (adata_in.layers.get(arg_val) if arg_val else adata_in.layers[default])
+        for default, arg_val in layers_mapping.items()
+    }
+    adata = anndata.AnnData(
+        X=adata_in.X
+        if not par["counts_layer"]
+        else adata_in.layers[par["counts_layer"]],
+        layers=layer_data,
+    )
+
     # Calculate the sample name
-    sample_name = par["output"].removesuffix(".loom")
+    sample_name = par["output"].removesuffix(".h5mu")
     sample_name = Path(sample_name).name
 
     # Read the input data
-    adata = scvelo.read(par["input"])
 
     # Save spliced vs unspliced proportions to file
     with (output_dir / "proportions.txt").open("w") as target:
@@ -1402,11 +1531,55 @@ def main():
         adata, save=str(output_dir / "scvelo_embedding.pdf"), show=False
     )
 
-    # Create output
-    ouput_data = mudata.MuData({"rna_velocity": adata})
-    ouput_data.write_h5mu(
-        output_dir / f"{sample_name}.h5mu", compression=par["output_compression"]
-    )
+    # Copy over slots to output
+    for slot in ("obs", "var"):
+        setattr(
+            adata_in,
+            slot,
+            getattr(adata_in, slot)
+            .assign(**getattr(adata, slot).to_dict())
+            .convert_dtypes(),
+        )
+    items_per_slot = {
+        "uns": (
+            "recover_dynamics",
+            "velocity_params",
+            "velocity_graph",
+            "velocity_graph_neg",
+        ),
+        "varm": ("loss",),
+        "obsm": ("velocity_pca",),
+        "layers": (
+            "Ms",
+            "Mu",
+            "fit_t",
+            "fit_tau",
+            "fit_tau_",
+            "velocity",
+            "velocity_u",
+        ),
+    }
+    for dict_slot, dict_items in items_per_slot.items():
+        setattr(
+            adata_in,
+            dict_slot,
+            dict(
+                getattr(adata_in, dict_slot),
+                **{key_: getattr(adata, dict_slot)[key_] for key_ in dict_items},
+            ),
+        )
+    with tempfile.NamedTemporaryFile(
+        suffix=".h5mu", delete_on_close=False
+    ) as temp_h5mu:
+        shutil.copyfile(par["input"], temp_h5mu.name)
+        # Create output
+        mudata.write_h5ad(temp_h5mu.name, mod=par["modality"], data=adata_in)
+        compression = par["output_compression"]
+
+        if compression:
+            compress_h5mu(temp_h5mu.name, par["output_h5mu"], compression=compression)
+        else:
+            shutil.move(temp_h5mu.name, par["output_h5mu"])
 
 
 if __name__ == "__main__":
@@ -1427,6 +1600,9 @@ if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
   if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
     VIASH_PAR_OUTPUT=$(ViashDockerStripAutomount "$VIASH_PAR_OUTPUT")
   fi
+  if [ ! -z "$VIASH_PAR_OUTPUT_H5MU" ]; then
+    VIASH_PAR_OUTPUT_H5MU=$(ViashDockerStripAutomount "$VIASH_PAR_OUTPUT_H5MU")
+  fi
   if [ ! -z "$VIASH_META_RESOURCES_DIR" ]; then
     VIASH_META_RESOURCES_DIR=$(ViashDockerStripAutomount "$VIASH_META_RESOURCES_DIR")
   fi
@@ -1445,6 +1621,10 @@ fi
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -e "$VIASH_PAR_OUTPUT" ]; then
   ViashError "Output file '$VIASH_PAR_OUTPUT' does not exist."
+  exit 1
+fi
+if [ ! -z "$VIASH_PAR_OUTPUT_H5MU" ] && [ ! -e "$VIASH_PAR_OUTPUT_H5MU" ]; then
+  ViashError "Output file '$VIASH_PAR_OUTPUT_H5MU' does not exist."
   exit 1
 fi
 

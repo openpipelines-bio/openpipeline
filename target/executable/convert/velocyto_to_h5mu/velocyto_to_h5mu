@@ -512,9 +512,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Robrecht Cannoodt, Angela Oliveira Pisco"
 LABEL org.opencontainers.image.description="Companion container for running component convert velocyto_to_h5mu"
-LABEL org.opencontainers.image.created="2024-12-11T13:10:42Z"
+LABEL org.opencontainers.image.created="2024-12-13T10:08:37Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4baaf7833434461b9ffe5247a093b86c3a4fa6e5"
+LABEL org.opencontainers.image.revision="c5146fba3aed3c30d7b0bbf21e877f2c45458f10"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1196,6 +1196,7 @@ adata_in.var_names = adata_in.var["Accession"]
 
 print("Creating clean AnnData", flush=True)
 adata = ad.AnnData(
+    X=adata_in.X,
     obs=adata_in.obs[[]],
     var=adata_in.var[[]],
     layers={
