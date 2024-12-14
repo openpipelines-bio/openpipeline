@@ -19,7 +19,6 @@ functionality:
           description: Path to the sample.
           example: dataset.h5mu
         - name: "--layer"
-          default: "log_normalized"
           type: string
           description: use specified layer for expression values instead of the .X object from the modality.
           required: false
