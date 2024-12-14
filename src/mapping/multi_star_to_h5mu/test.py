@@ -3,9 +3,7 @@ from pathlib import Path
 import mudata as md
 
 ## VIASH START
-meta = {
-    "resources_dir": "resources_test"
-}
+meta = {"resources_dir": "resources_test"}
 ## VIASH END
 
 print("> Running command with folder", flush=True)
@@ -14,10 +12,14 @@ output = "test_output.h5mu"
 
 cmd_pars = [
     meta["executable"],
-    "--input", str(input),
-    "--output", output,
-    "---cpus", "2",
-    "--output_compression", "gzip"
+    "--input",
+    str(input),
+    "--output",
+    output,
+    "---cpus",
+    "2",
+    "--output_compression",
+    "gzip",
 ]
 subprocess.run(cmd_pars, check=True)
 

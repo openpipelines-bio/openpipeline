@@ -60,6 +60,17 @@
             }
     
 
+        ,
+                "input_reference_gene_overlap": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `100`. The minimum number of genes present in both the reference and query datasets",
+                "help_text": "Type: `integer`, default: `100`. The minimum number of genes present in both the reference and query datasets.\n"
+            ,
+                "default":100
+            }
+    
+
 }
 },
     

@@ -2,9 +2,11 @@ nextflow.enable.dsl=2
 
 include { rna_singlesample } from params.rootDir + "/target/nextflow/workflows/rna/rna_singlesample/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList([
       [
@@ -52,8 +54,8 @@ workflow test_wf {
 }
 
 workflow test_wf2 {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList([
       [

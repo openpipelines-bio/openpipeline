@@ -61,23 +61,34 @@
     
 
         ,
-                "input_layer": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `binned`. The name of the layer to be padded and tokenized",
-                "help_text": "Type: `string`, default: `binned`. The name of the layer to be padded and tokenized.\n"
-            ,
-                "default":"binned"
-            }
-    
-
-        ,
                 "var_gene_names": {
                 "type":
                 "string",
                 "description": "Type: `string`. The name of the ",
                 "help_text": "Type: `string`. The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n"
             
+            }
+    
+
+        ,
+                "var_input": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `id_in_vocab`. The name of the adata",
+                "help_text": "Type: `string`, default: `id_in_vocab`. The name of the adata.var column containing boolean mask for vocabulary-cross checked and/or highly variable genes.\n"
+            ,
+                "default":"id_in_vocab"
+            }
+    
+
+        ,
+                "input_obsm_binned_counts": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `binned_counts`. The name of the ",
+                "help_text": "Type: `string`, default: `binned_counts`. The name of the .obsm field containing the binned counts to be padded and tokenized.\n"
+            ,
+                "default":"binned_counts"
             }
     
 
@@ -184,7 +195,7 @@
                 "type":
                 "integer",
                 "description": "Type: `integer`. The maximum sequence length of the tokenized data",
-                "help_text": "Type: `integer`. The maximum sequence length of the tokenized data.\n"
+                "help_text": "Type: `integer`. The maximum sequence length of the tokenized data. Defaults to the number of features if not provided.\n"
             
             }
     

@@ -2,20 +2,21 @@ import sys
 import anndata as ad
 import mudata as mu
 import numpy as np
-numpy_module = sys.modules['numpy']
+
+numpy_module = sys.modules["numpy"]
 numpy_module.string_ = np.bytes_
 numpy_module.unicode_ = np.str_
-sys.modules['numpy'] = numpy_module
+sys.modules["numpy"] = numpy_module
 
 ## VIASH START
 par = {
     "input_loom": "resources_test/rna_velocity/velocyto_processed/cellranger_tiny.loom",
-    "input_h5mu": "/home/rcannood/workspace/openpipelines-bio/openpipeline/resources_test/cellranger_tiny_fastq/raw_dataset.h5mu",
+    "input_h5mu": "resources_test/cellranger_tiny_fastq/raw_dataset.h5mu",
     "modality": "rna_velocity",
     "output": "output.h5mu",
     "layer_spliced": "velo_spliced",
     "layer_unspliced": "velo_unspliced",
-    "layer_ambiguous": "velo_ambiguous"
+    "layer_ambiguous": "velo_ambiguous",
 }
 ## VIASH END
 
@@ -27,13 +28,14 @@ adata_in.var_names = adata_in.var["Accession"]
 
 print("Creating clean AnnData", flush=True)
 adata = ad.AnnData(
+    X=adata_in.X,
     obs=adata_in.obs[[]],
     var=adata_in.var[[]],
     layers={
         par["layer_spliced"]: adata_in.layers["spliced"],
         par["layer_unspliced"]: adata_in.layers["unspliced"],
-        par["layer_ambiguous"]: adata_in.layers["ambiguous"]
-    }
+        par["layer_ambiguous"]: adata_in.layers["ambiguous"],
+    },
 )
 
 if par["input_h5mu"]:

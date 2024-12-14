@@ -111,7 +111,7 @@ argument_groups:
         type: integer
         required: false
         description: |
-          The maximum sequence length of the tokenized data.
+          The maximum sequence length of the tokenized data. Defaults to the number of features if not provided.
   - name: "Embedding arguments"
     arguments:
       - name: --dsbn
