@@ -49,7 +49,7 @@
 
 ## BUG FIXES
 
-* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (PR #936). 
+* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (PR #936 and PR #938). 
 
 * `scgpt/embedding`: remove unused argument `dbsn` (PR #875).
 
