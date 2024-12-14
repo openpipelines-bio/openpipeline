@@ -94,12 +94,13 @@ jobs:
   viash_test:
     needs: list
     if: ${{ needs.list.outputs.matrix != '[]' && needs.list.outputs.matrix != '' }}
-    runs-on: [ubuntu-latest, macos-latest]
+    runs-on: [ "${{ matrix.os }}" ]
 
     strategy:
       fail-fast: false
       matrix:
         component: ${{ fromJson(needs.list.outputs.matrix) }}
+        os: [ ubuntu-latest, macos-latest ]
 
     steps:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
