@@ -2841,10 +2841,61 @@ meta = [
         {
           "type" : "file",
           "name" : "--input",
-          "description" : "Velocyto loom file.",
+          "description" : "Input MuData file",
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--counts_layer",
+          "description" : "Name of the counts layer, if not specified, X is used.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--modality",
+          "description" : "Input modality",
+          "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--layer_spliced",
+          "default" : [
+            "spliced"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--layer_unspliced",
+          "default" : [
+            "unspliced"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--layer_ambiguous",
+          "default" : [
+            "ambiguous"
+          ],
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -2858,6 +2909,17 @@ meta = [
           "type" : "file",
           "name" : "--output",
           "description" : "Output directory. If it does not exist, will be created.",
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : true,
+          "direction" : "output",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "file",
+          "name" : "--output_h5mu",
+          "description" : "Output mudata file.",
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
@@ -3004,6 +3066,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/compress_h5mu.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3016,7 +3082,7 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/resources_test/rna_velocity/velocyto_processed/cellranger_tiny.loom"
+      "path" : "/resources_test/rna_velocity/velocyto_processed/velocyto.h5mu"
     },
     {
       "type" : "file",
@@ -3132,9 +3198,9 @@ meta = [
           "packages" : [
             "anndata~=0.11.1",
             "mudata~=0.3.1",
-            "scvelo[vi]~=0.3.2",
-            "scipy~=1.14.1",
-            "scanpy~=1.9.8"
+            "scanpy~=1.10.4",
+            "scvelo~=0.3.3",
+            "scipy~=1.14.1"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import awkward\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  exit(1)\\")"
@@ -3143,6 +3209,20 @@ meta = [
         }
       ],
       "test_setup" : [
+        {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
         {
           "type" : "python",
           "user" : false,
@@ -3160,7 +3240,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/scvelo",
     "viash_version" : "0.9.0",
-    "git_commit" : "8efd4a6c43f4b197b120b2af79f8a963a79fdd77",
+    "git_commit" : "b4ad2b4ef2b1c3d1e7e67081f60079443efd3f3c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3205,32 +3285,25 @@ tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import sys
 import mudata
+import anndata
+import tempfile
+import shutil
 from contextlib import redirect_stdout
 from pathlib import Path
 import matplotlib as mpl
-
-# Backwards compatibility for numpy 2.0
-import numpy
-
-numpy_module = sys.modules["numpy"]
-numpy_module.float_ = numpy.float64
-sys.modules["numpy"] = numpy_module
-
-# Backwards compatibility for scipy
-import scipy  # noqa: F401
-
-scipy_module = sys.modules["scipy"]
-scipy_module.sparse._base._spbase.A = property(lambda self: self.toarray())
-
-sys.modules["scipy"] = scipy_module
-
 import scvelo
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'counts_layer': $( if [ ! -z ${VIASH_PAR_COUNTS_LAYER+x} ]; then echo "r'${VIASH_PAR_COUNTS_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'layer_spliced': $( if [ ! -z ${VIASH_PAR_LAYER_SPLICED+x} ]; then echo "r'${VIASH_PAR_LAYER_SPLICED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'layer_unspliced': $( if [ ! -z ${VIASH_PAR_LAYER_UNSPLICED+x} ]; then echo "r'${VIASH_PAR_LAYER_UNSPLICED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'layer_ambiguous': $( if [ ! -z ${VIASH_PAR_LAYER_AMBIGUOUS+x} ]; then echo "r'${VIASH_PAR_LAYER_AMBIGUOUS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_h5mu': $( if [ ! -z ${VIASH_PAR_OUTPUT_H5MU+x} ]; then echo "r'${VIASH_PAR_OUTPUT_H5MU//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'min_counts': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_counts_u': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS_U+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS_U//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -3271,6 +3344,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import compress_h5mu
 
 logger = setup_logger()
 
@@ -3285,12 +3359,32 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
     scvelo.settings.figdir = str(output_dir)
 
+    # Load the input data
+    adata_in = mudata.read_h5ad(par["input"], mod=par["modality"])
+
+    # Create a copy of the data as input
+    # as many scvelo functions do not take input layer arguments
+    layers_mapping = {
+        "spliced": par["layer_spliced"],
+        "unspliced": par["layer_unspliced"],
+        "ambiguous": par["layer_ambiguous"],
+    }
+    layer_data = {
+        default: (adata_in.layers.get(arg_val) if arg_val else adata_in.layers[default])
+        for default, arg_val in layers_mapping.items()
+    }
+    adata = anndata.AnnData(
+        X=adata_in.X
+        if not par["counts_layer"]
+        else adata_in.layers[par["counts_layer"]],
+        layers=layer_data,
+    )
+
     # Calculate the sample name
-    sample_name = par["output"].removesuffix(".loom")
+    sample_name = par["output"].removesuffix(".h5mu")
     sample_name = Path(sample_name).name
 
     # Read the input data
-    adata = scvelo.read(par["input"])
 
     # Save spliced vs unspliced proportions to file
     with (output_dir / "proportions.txt").open("w") as target:
@@ -3336,11 +3430,55 @@ def main():
         adata, save=str(output_dir / "scvelo_embedding.pdf"), show=False
     )
 
-    # Create output
-    ouput_data = mudata.MuData({"rna_velocity": adata})
-    ouput_data.write_h5mu(
-        output_dir / f"{sample_name}.h5mu", compression=par["output_compression"]
-    )
+    # Copy over slots to output
+    for slot in ("obs", "var"):
+        setattr(
+            adata_in,
+            slot,
+            getattr(adata_in, slot)
+            .assign(**getattr(adata, slot).to_dict())
+            .convert_dtypes(),
+        )
+    items_per_slot = {
+        "uns": (
+            "recover_dynamics",
+            "velocity_params",
+            "velocity_graph",
+            "velocity_graph_neg",
+        ),
+        "varm": ("loss",),
+        "obsm": ("velocity_pca",),
+        "layers": (
+            "Ms",
+            "Mu",
+            "fit_t",
+            "fit_tau",
+            "fit_tau_",
+            "velocity",
+            "velocity_u",
+        ),
+    }
+    for dict_slot, dict_items in items_per_slot.items():
+        setattr(
+            adata_in,
+            dict_slot,
+            dict(
+                getattr(adata_in, dict_slot),
+                **{key_: getattr(adata, dict_slot)[key_] for key_ in dict_items},
+            ),
+        )
+    with tempfile.NamedTemporaryFile(
+        suffix=".h5mu", delete_on_close=False
+    ) as temp_h5mu:
+        shutil.copyfile(par["input"], temp_h5mu.name)
+        # Create output
+        mudata.write_h5ad(temp_h5mu.name, mod=par["modality"], data=adata_in)
+        compression = par["output_compression"]
+
+        if compression:
+            compress_h5mu(temp_h5mu.name, par["output_h5mu"], compression=compression)
+        else:
+            shutil.move(temp_h5mu.name, par["output_h5mu"])
 
 
 if __name__ == "__main__":

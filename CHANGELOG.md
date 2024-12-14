@@ -1,12 +1,21 @@
-# openpipelines x.x.x
+# openpipelines 2.0.0
 
 ## BREAKING CHANGES
+
+* `velocity/scvelo`: update `scvelo` to `0.3.3`, which also removes support for using `loom` input files. The component now uses a `MuData` object as input. Several arguments were added to support selecting different inputs from the MuData file: `counts_layer`, `modality`, `layer_spliced`, `layer_unspliced`, `layer_ambiguous`. An `output_h5mu` argument was has been added (PR #932). 
 
 * `src/annotate/onclass` and `src/annotate/celltypist`: Input parameter for gene name layers of input datasets has been updated to `--input_var_gene_names` and `reference_var_gene_names` (PR #919).
 
 * Several components under `src/scgpt` (`cross_check_genes`, `tokenize_pad`, `binning`) now processes the input (query) datasets differently. Instead of subsetting datasets based on genes in the model vocabulary and/or highly variable genes, these components require an input .var column with a boolean mask specifying this information. The results are written back to the original input data, preserving the dataset structure (PR #832).
 
+* `query/cellxgene_census`: The default output layer has been changed from `.layers["counts"]` to `.X` to be more aligned with the standard OpenPipelines format (PR #933).
+  Use argument `--output_layer_counts counts` to revert the behaviour to the previous default.
+
 ## NEW FUNCTIONALITY
+
+* `velocyto_to_h5mu`: now writes counts to `.X` (PR #932)
+
+* `qc/calculate_atac_qc_metrics`: new component for calculating ATAC QC metrics (PR #868).
 
 * `workflows/annotation/scgpt_annotation` workflow: Added a scGPT transformer-based cell type annotation workflow (PR #832).
 
@@ -39,6 +48,8 @@
 * `workflows/integration/scgpt_leiden` workflow update: Update workflow such that input dataset is not subsetted for HVG but uses boolean masks in .var field instead (PR #875).
 
 ## BUG FIXES
+
+* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (PR #936). 
 
 * `scgpt/embedding`: remove unused argument `dbsn` (PR #875).
 

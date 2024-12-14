@@ -281,6 +281,11 @@ function ViashHelp {
   echo "        type: string"
   echo "        default: rna"
   echo "        Which modality to store the output in."
+  echo ""
+  echo "    --output_layer_counts"
+  echo "        type: string"
+  echo "        Which layer to store the raw counts in. If not provided, the .X layer"
+  echo "        will be used."
 }
 
 # initialise variables
@@ -564,9 +569,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Matthias Beyens, Dries De Maeyer, Robrecht Cannoodt, Kai Waldrant"
 LABEL org.opencontainers.image.description="Companion container for running component query cellxgene_census"
-LABEL org.opencontainers.image.created="2024-12-13T02:58:11Z"
+LABEL org.opencontainers.image.created="2024-12-14T02:53:05Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="8efd4a6c43f4b197b120b2af79f8a963a79fdd77"
+LABEL org.opencontainers.image.revision="b4ad2b4ef2b1c3d1e7e67081f60079443efd3f3c"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -858,6 +863,17 @@ while [[ $# -gt 0 ]]; do
         --output_modality=*)
             [ -n "$VIASH_PAR_OUTPUT_MODALITY" ] && ViashError Bad arguments for option \'--output_modality=*\': \'$VIASH_PAR_OUTPUT_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_MODALITY=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_layer_counts)
+            [ -n "$VIASH_PAR_OUTPUT_LAYER_COUNTS" ] && ViashError Bad arguments for option \'--output_layer_counts\': \'$VIASH_PAR_OUTPUT_LAYER_COUNTS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_LAYER_COUNTS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_layer_counts. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_layer_counts=*)
+            [ -n "$VIASH_PAR_OUTPUT_LAYER_COUNTS" ] && ViashError Bad arguments for option \'--output_layer_counts=*\': \'$VIASH_PAR_OUTPUT_LAYER_COUNTS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_LAYER_COUNTS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---engine)
@@ -1311,7 +1327,8 @@ par = {
   'gene_filter_min_counts': $( if [ ! -z ${VIASH_PAR_GENE_FILTER_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_GENE_FILTER_MIN_COUNTS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_modality': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODALITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi )
+  'output_modality': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODALITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_layer_counts': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER_COUNTS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER_COUNTS//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1436,9 +1453,9 @@ def filter_by_counts(adata, par):
     )
 
 
-def move_x_to_layers(adata):
-    logger.info("Move .X to .layers['counts']")
-    adata.layers["counts"] = adata.X
+def move_x_to_layers(adata, layer_name):
+    logger.info(f"Move .X to .layers['{layer_name}']")
+    adata.layers[layer_name] = adata.X
     adata.X = None
 
 
@@ -1498,7 +1515,8 @@ def main(par, meta):
     adata.var_names = adata.var["feature_id"]
 
     # move .X to .layers["counts"]
-    move_x_to_layers(adata)
+    if par["output_layer_counts"]:
+        move_x_to_layers(adata, par["output_layer_counts"])
 
     # print summary
     print_summary(adata)
