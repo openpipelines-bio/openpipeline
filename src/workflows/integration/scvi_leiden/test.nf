@@ -12,7 +12,7 @@ workflow test_wf {
       [
         id: "simple_execution_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        layer: "log_normalized",
+        layer: null,
         obs_batch: "sample_id",
         max_epochs: 1,
         output_model: "simple_execution_test_model/"
@@ -20,7 +20,7 @@ workflow test_wf {
       [
         id: "no_leiden_resolutions_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        layer: "log_normalized",
+        layer: null,
         obs_batch: "sample_id",
         output_model: "no_leiden_resolutions_test_model/",
         max_epochs: 1,
