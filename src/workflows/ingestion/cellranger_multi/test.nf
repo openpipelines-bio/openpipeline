@@ -3,23 +3,36 @@ nextflow.enable.dsl=2
 include { cellranger_multi } from params.rootDir + "/target/nextflow/workflows/ingestion/cellranger_multi/main.nf"
 include { cellranger_multi_test } from params.rootDir + "/target/nextflow/test_workflows/ingestion/cellranger_multi_test/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList([
       [
         id: "foo",
-        input:[resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz"),
-               resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz"),
-               resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz"),
-               resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz"),
-               resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz"),
-               resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz")],
+        input:[
+          resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz"),
+          resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz"),
+          resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz"),
+          resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz"),
+          resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz"),
+          resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz")
+        ],
         gex_reference: resources_test.resolve("reference_gencodev41_chr1/reference_cellranger.tar.gz"),
         vdj_reference: resources_test.resolve("10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz"),
         feature_reference: resources_test.resolve("10x_5k_anticmv/raw/feature_reference.csv"),
-        library_id: ["5k_human_antiCMV_T_TBNK_connect_GEX_1_subset", "5k_human_antiCMV_T_TBNK_connect_AB_subset", "5k_human_antiCMV_T_TBNK_connect_VDJ_subset"],
-        library_type: ["Gene Expression", "Antibody Capture", "VDJ"]
+        library_id: [
+          "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset",
+          "5k_human_antiCMV_T_TBNK_connect_AB_subset",
+          "5k_human_antiCMV_T_TBNK_connect_VDJ_subset"
+        ],
+        library_type: [
+          "Gene Expression",
+          "Antibody Capture",
+          "VDJ"
+        ]
       ]
     ])
     | map{ state -> [state.id, state] }
@@ -43,8 +56,9 @@ workflow test_wf {
 }
 
 workflow test_wf2 {
-  // Test cell multiplexing
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
+
   output_ch = Channel.fromList([
       [
         id: "foo",

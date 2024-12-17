@@ -8,9 +8,12 @@ from scipy.sparse import csr_matrix
 
 ## VIASH START
 import muon
-file_raw = "./resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+
+file_raw = (
+    "./resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+)
 mdat = muon.read_10x_h5(file_raw)
-mdat = mdat[0:100000,] # subsample to reduce computational time
+mdat = mdat[0:100000,]  # subsample to reduce computational time
 file_input = "cellbender_remove_background_input.h5mu"
 mdat.write_h5mu(file_input)
 
@@ -44,31 +47,17 @@ par = {
     "empty_drop_training_fraction": 0.5,
     "expected_cells_from_qc": True,
     "output_compression": "gzip",
-    "obsm_latent_gene_encoding": "cellbender_latent_gene_encoding"
+    "obsm_latent_gene_encoding": "cellbender_latent_gene_encoding",
 }
 meta = {
-    'temp_dir': os.getenv("VIASH_TEMP"),
-    'resources_dir': 'src/correction/cellbender_remove_background'
+    "temp_dir": os.getenv("VIASH_TEMP"),
+    "resources_dir": "src/correction/cellbender_remove_background",
 }
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
+from setup_logger import setup_logger
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
 from helper import anndata_from_h5
@@ -82,7 +71,9 @@ data = mdata.mod[mod]
 
 # with pathlib.Path(meta["temp_dir"]) / "cellbender" as temp_dir:
 #     os.mkdir(temp_dir)
-with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as temp_dir:
+with tempfile.TemporaryDirectory(
+    prefix="cellbender-", dir=meta["temp_dir"]
+) as temp_dir:
     # construct paths within tempdir
     input_file = os.path.join(temp_dir, "input.h5ad")
     output_file = os.path.join(temp_dir, "output.h5")
@@ -92,9 +83,12 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
 
     logger.info("Constructing CellBender command")
     cmd_pars = [
-        "cellbender", "remove-background",
-        "--input", input_file,
-        "--output", output_file
+        "cellbender",
+        "remove-background",
+        "--input",
+        input_file,
+        "--output",
+        output_file,
     ]
 
     extra_args = [
@@ -111,22 +105,37 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
         ("--learning-rate", "learning_rate", True),
         ("--empty-drop-training-fraction", "empty_drop_training_fraction", True),
     ]
-    for (flag, name, is_kwarg) in extra_args:
+    for flag, name, is_kwarg in extra_args:
         if par[name]:
             values = par[name] if isinstance(par[name], list) else [par[name]]
             cmd_pars += [flag] + [str(val) for val in values] if is_kwarg else [flag]
 
     if par["expected_cells_from_qc"] and "metrics_cellranger" in data.uns:
-        assert par["expected_cells"] is None, "If min_counts is defined, expected_cells should be undefined"
-        assert par["total_droplets_included"] is None, "If min_counts is defined, expected_cells should be undefined"
+        assert (
+            par["expected_cells"] is None
+        ), "If min_counts is defined, expected_cells should be undefined"
+        assert (
+            par["total_droplets_included"] is None
+        ), "If min_counts is defined, expected_cells should be undefined"
         met = data.uns["metrics_cellranger"]
         col_name = "Estimated Number of Cells"
-        assert col_name in met.columns, "%s should be a column in .obs[metrics_cellranger]"
+        assert (
+            col_name in met.columns
+        ), "%s should be a column in .obs[metrics_cellranger]"
         est_cells = met[col_name].values[0]
-        logger.info("Selecting --expected-cells %d and --total-droplets-included %d", est_cells, est_cells * 5)
-        cmd_pars += ["--expected-cells", str(est_cells), "--total-droplets-included", str(5*est_cells)]
+        logger.info(
+            "Selecting --expected-cells %d and --total-droplets-included %d",
+            est_cells,
+            est_cells * 5,
+        )
+        cmd_pars += [
+            "--expected-cells",
+            str(est_cells),
+            "--total-droplets-included",
+            str(5 * est_cells),
+        ]
 
-    logger.info("Running CellBender: '%s'", ' '.join(cmd_pars))
+    logger.info("Running CellBender: '%s'", " ".join(cmd_pars))
     out = subprocess.check_output(cmd_pars).decode("utf-8")
 
     logger.info("Reading CellBender 10xh5 output file: '%s'", output_file)
@@ -142,41 +151,56 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
     obs_store = {
         "obs_latent_rt_efficiency": "latent_RT_efficiency",
         "obs_latent_cell_probability": "latent_cell_probability",
-        "obs_latent_scale": "latent_scale"
+        "obs_latent_scale": "latent_scale",
     }
     for to_name, from_name in obs_store.items():
         if par[to_name]:
             if from_name in adata_out.obs:
                 data.obs[par[to_name]] = adata_out.obs[from_name]
             # when using unfiltered data, the values will be in uns instead of obs
-            elif from_name in adata_out.uns and 'barcode_indices_for_latents' in adata_out.uns:
+            elif (
+                from_name in adata_out.uns
+                and "barcode_indices_for_latents" in adata_out.uns
+            ):
                 vec = np.zeros(data.n_obs)
-                vec[adata_out.uns['barcode_indices_for_latents']] = adata_out.uns[from_name]
+                vec[adata_out.uns["barcode_indices_for_latents"]] = adata_out.uns[
+                    from_name
+                ]
                 data.obs[par[to_name]] = vec
 
     logger.info("Copying .var output to MuData")
-    var_store = { "var_ambient_expression": "ambient_expression" }
+    var_store = {"var_ambient_expression": "ambient_expression"}
     for to_name, from_name in var_store.items():
         if par[to_name]:
             data.var[par[to_name]] = adata_out.var[from_name]
 
     logger.info("Copying obsm_latent_gene_encoding output to MuData")
-    obsm_store = { "obsm_latent_gene_encoding": "latent_gene_encoding" }
+    obsm_store = {"obsm_latent_gene_encoding": "latent_gene_encoding"}
     for to_name, from_name in obsm_store.items():
         if par[to_name]:
             if from_name in adata_out.obsm:
-                 data.obsm[par[to_name]] = adata_out.obsm[from_name]
-            elif from_name in adata_out.uns and 'barcode_indices_for_latents' in adata_out.uns:
+                data.obsm[par[to_name]] = adata_out.obsm[from_name]
+            elif (
+                from_name in adata_out.uns
+                and "barcode_indices_for_latents" in adata_out.uns
+            ):
                 matrix_to_store = adata_out.uns[from_name]
                 number_of_obs = data.X.shape[0]
-                latent_space_sparse = csr_matrix((number_of_obs, par['z_dim']),
-                                                 dtype=adata_out.uns[from_name].dtype)
-                obs_rows_in_space_representation = adata_out.uns['barcode_indices_for_latents']
-                latent_space_sparse[obs_rows_in_space_representation] = adata_out.uns[from_name]
+                latent_space_sparse = csr_matrix(
+                    (number_of_obs, par["z_dim"]), dtype=adata_out.uns[from_name].dtype
+                )
+                obs_rows_in_space_representation = adata_out.uns[
+                    "barcode_indices_for_latents"
+                ]
+                latent_space_sparse[obs_rows_in_space_representation] = adata_out.uns[
+                    from_name
+                ]
                 data.obsm[par[to_name]] = latent_space_sparse
             else:
-                raise RuntimeError("Requested to save latent gene encoding, but the data is either missing "
-                                   "from cellbender output or in an incorrect format.")
+                raise RuntimeError(
+                    "Requested to save latent gene encoding, but the data is either missing "
+                    "from cellbender output or in an incorrect format."
+                )
 
 
 logger.info("Writing to file %s", par["output"])

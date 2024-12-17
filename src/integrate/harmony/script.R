@@ -34,4 +34,4 @@ harmony_embedding <- HarmonyMatrix(
 rna_data$obsm[[par$obsm_output]] <- harmony_embedding
 
 ## Save as h5mu
-data$write(par$output, compression=par$output_compression)
+data$write(par$output, compression = par$output_compression)

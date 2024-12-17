@@ -1,3 +1,60 @@
+# openpipelines 2.0.0
+
+## BREAKING CHANGES
+
+* `velocity/scvelo`: update `scvelo` to `0.3.3`, which also removes support for using `loom` input files. The component now uses a `MuData` object as input. Several arguments were added to support selecting different inputs from the MuData file: `counts_layer`, `modality`, `layer_spliced`, `layer_unspliced`, `layer_ambiguous`. An `output_h5mu` argument was has been added (PR #932). 
+
+* `src/annotate/onclass` and `src/annotate/celltypist`: Input parameter for gene name layers of input datasets has been updated to `--input_var_gene_names` and `reference_var_gene_names` (PR #919).
+
+* Several components under `src/scgpt` (`cross_check_genes`, `tokenize_pad`, `binning`) now processes the input (query) datasets differently. Instead of subsetting datasets based on genes in the model vocabulary and/or highly variable genes, these components require an input .var column with a boolean mask specifying this information. The results are written back to the original input data, preserving the dataset structure (PR #832).
+
+* `query/cellxgene_census`: The default output layer has been changed from `.layers["counts"]` to `.X` to be more aligned with the standard OpenPipelines format (PR #933).
+  Use argument `--output_layer_counts counts` to revert the behaviour to the previous default.
+
+## NEW FUNCTIONALITY
+
+* `velocyto_to_h5mu`: now writes counts to `.X` (PR #932)
+
+* `qc/calculate_atac_qc_metrics`: new component for calculating ATAC QC metrics (PR #868).
+
+* `workflows/annotation/scgpt_annotation` workflow: Added a scGPT transformer-based cell type annotation workflow (PR #832).
+
+* `workflows/annotation/scgpt_integration_knn` workflow: Cell-type annotation based on scGPT integration with KNN label transfer (PR #875).
+
+* CI: Use `params.resources_test` in test workflows in order to point to an alternative location (e.g. a cache) (PR #889).
+
+## MINOR CHANGES
+
+* Pin `scikit-learn` for `labels_transfer/xgboost` to `<1.6` (PR #931).
+
+* `filter/filter_with_scrublet`: provide cleaner error message when running scrublet on an empty modality (PR #929).
+
+* Several component (cleanup): remove workaround for using being able to use shared utility functions with Nextflow Fusion (PR #920).
+
+* `scgpt/cell_type_annotation` component update: Added support for multi-processing (PR #832).
+
+* Several annotation (`src/annotate/`) components (`onclass`, `celltypist`, `random_forest_annotation`, `scanvi`, `svm_annotation`): Updated input parameteres to ensure uniformity across components, implemented functionality to cross-check the overlap of genes between query and reference (model) datasets and implemented logic to allow for subsetting of genes (PR #919). 
+
+* `workflows/annotation/scgpt_annotation` workflow: Added a scGPT transformer-based cell type annotation workflow (PR #832).
+
+* `scgpt/cross_check_genes` component update: Highly variable genes are now cross-checked based on the boolean mask in `var_input`. The filtering information is stored in the `--output_var_filter` .var field instead of subsetting the dataset (PR #832).
+
+* `scgpt/binning` component update: This component now requires the `--var_input` parameter to provide gene filtering information. Binned data is written to the `--output_obsm_binned_counts` .obsm field in the original input data (PR #832).
+
+* `scgpt/pad_tokenize` component update: Genes are padded and tokenized based on filtering information in `--var_input` and `--input_obsm_binned_counts` (PR #832).
+
+* `resources_test_scripts/scgpt.sh`: Update scGPT test resources to avoid subsetting of datasets (PR #926).
+
+* `workflows/integration/scgpt_leiden` workflow update: Update workflow such that input dataset is not subsetted for HVG but uses boolean masks in .var field instead (PR #875).
+
+## BUG FIXES
+
+* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (PR #936 and PR #938). 
+
+* `scgpt/embedding`: remove unused argument `dbsn` (PR #875).
+
+* `scgpt/binning`: update handling of empty rows in sparse matrices (PR #875).
+
 # openpipelines 2.0.0-rc.2
 
 ## BUG FIXES
@@ -184,6 +241,12 @@
 ## DOCUMENTATION
 
 * Update authorship of components (PR #835).
+
+# openpipelines 1.0.4
+
+## BUG FIXES
+
+* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (PR #939, backported from PR #936 and PR #938). 
 
 # openpipelines 1.0.3
 

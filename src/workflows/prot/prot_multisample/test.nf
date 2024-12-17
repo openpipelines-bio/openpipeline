@@ -2,9 +2,11 @@ nextflow.enable.dsl=2
 
 include { prot_multisample } from params.rootDir + "/target/nextflow/workflows/prot/prot_multisample/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList([
       [

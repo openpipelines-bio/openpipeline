@@ -3,24 +3,31 @@ from pathlib import Path
 import mudata as md
 
 ## VIASH START
-meta = {
-    "resources_dir": "resources_test"
-}
+meta = {"resources_dir": "resources_test"}
 ## VIASH END
 
 print("> Running command with folder", flush=True)
 input = meta["resources_dir"] + "/cellranger_tiny_fastq/htseq_counts.tsv"
-reference = meta["resources_dir"] + "/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz"
+reference = (
+    meta["resources_dir"]
+    + "/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz"
+)
 output = "test_output.h5mu"
 
 cmd_pars = [
     meta["executable"],
-    "--input_id", "foo;bar",
-    "--input_counts", f"{input};{input}",
-    "--reference", reference,
-    "--output", output,
-    "---cpus", "2",
-    "--output_compression", "gzip"
+    "--input_id",
+    "foo;bar",
+    "--input_counts",
+    f"{input};{input}",
+    "--reference",
+    reference,
+    "--output",
+    output,
+    "---cpus",
+    "2",
+    "--output_compression",
+    "gzip",
 ]
 subprocess.run(cmd_pars, check=True)
 

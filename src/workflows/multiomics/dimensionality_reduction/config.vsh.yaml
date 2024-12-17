@@ -96,6 +96,6 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf
-  - path: ..//resources_test/concat_test_data
+  - path: /resources_test/concat_test_data
 runners:
   - type: nextflow

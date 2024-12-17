@@ -4,7 +4,10 @@ requireNamespace("reticulate", quietly = TRUE)
 library(anndata)
 
 cat("Run command\n")
-input <- paste0(meta$resources_dir, "/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5")
+input <- paste0(
+  meta$resources_dir,
+  "/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5"
+)
 output <- "out.h5"
 
 system(paste0(
