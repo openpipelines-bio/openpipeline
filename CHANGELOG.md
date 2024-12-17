@@ -2,13 +2,13 @@
 
 ## BUG FIXES
 
-* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (backported from PR #936 and PR #938). 
+* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (PR #939, backported from PR #936 and PR #938). 
 
 # openpipelines 1.0.3
 
 ## BUG FIXES
 
-* `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR # , backported from PR #852).
+* `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR #853 , backported from PR #852).
 
 # openpipelines 1.0.2
 
