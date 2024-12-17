@@ -3155,7 +3155,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl_convert",
     "viash_version" : "0.9.0",
-    "git_commit" : "9c0ec5cdd4c71e0f51be03f8d69e7d5f23a0ae2d",
+    "git_commit" : "a2d5691118208e8c23292031a3c3bf1c0d1fbd02",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
