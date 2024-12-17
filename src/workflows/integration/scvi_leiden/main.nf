@@ -24,7 +24,8 @@ workflow run_wf {
           "lr_factor": state.lr_factor,
           "lr_patience": state.lr_patience,
           "output_model": state.output_model,
-          "modality": state.modality
+          "modality": state.modality,
+          "input_layer": state.layer,
        ]
       },
     // use map when viash 0.7.6 is released

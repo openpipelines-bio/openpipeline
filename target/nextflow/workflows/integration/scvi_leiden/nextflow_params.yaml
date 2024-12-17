@@ -1,7 +1,7 @@
 # Inputs
 id: # please fill in - example: "foo"
 input: # please fill in - example: "dataset.h5mu"
-layer: "log_normalized"
+# layer: "foo"
 modality: "rna"
 
 # Outputs
