@@ -27,6 +27,9 @@ par = {
     "dsbn": True,
     "n_input_bins": 51,
 }
+meta = {
+    "resources_dir": "src/utils",
+}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])

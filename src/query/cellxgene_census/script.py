@@ -115,9 +115,9 @@ def filter_by_counts(adata, par):
     )
 
 
-def move_x_to_layers(adata):
-    logger.info("Move .X to .layers['counts']")
-    adata.layers["counts"] = adata.X
+def move_x_to_layers(adata, layer_name):
+    logger.info(f"Move .X to .layers['{layer_name}']")
+    adata.layers[layer_name] = adata.X
     adata.X = None
 
 
@@ -177,7 +177,8 @@ def main(par, meta):
     adata.var_names = adata.var["feature_id"]
 
     # move .X to .layers["counts"]
-    move_x_to_layers(adata)
+    if par["output_layer_counts"]:
+        move_x_to_layers(adata, par["output_layer_counts"])
 
     # print summary
     print_summary(adata)
