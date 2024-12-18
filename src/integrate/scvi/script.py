@@ -115,6 +115,13 @@ def align_query_with_reference(query, par, reference_registry):
 
 
 def main():
+    if (not par["scvi_reference_model"] and not par["reference"]) or (
+        par["model"] and par["reference"]
+    ):
+        raise ValueError(
+            "Make sure to provide either 'scvi_reference_model' or 'reference', but not both."
+        )
+
     mdata = mudata.read(par["input"].strip())
     adata = mdata.mod[par["modality"]]
     input_modality = adata.copy()
