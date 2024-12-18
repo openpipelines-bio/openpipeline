@@ -28,6 +28,27 @@ argument_groups:
         type: string
         default: "rna"
         required: false
+      - name: "--var_input_gene_names"
+        description: .var field containing the gene names, if the .var index is not to be used.
+        type: string
+        required: false
+      - name: "--unknown_celltype"
+        type: string
+        default: "Unknown"
+        required: false
+        description: |
+          Label to be used for unknown cell types.
+
+  - name: "Reference"
+    arguments:
+      - name: "--scvi_reference_model"
+        type: file
+        description: |
+          Path to a pretrained scVI reference model. 
+          Model will be updated with the --input query data for integration.         example: scvi
+        direction: input
+        required: false
+  
   - name: "Outputs"
     arguments:
       - name: "--output"
