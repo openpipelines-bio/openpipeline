@@ -42,7 +42,6 @@ par = {
     "var_input_gene_names": None,
     "scvi_reference_model": "scvi",
     "unknown_celltype": "Unknown",
-    "input_reference_gene_overlap": 100,
 }
 
 meta = {"resources_dir": "src/utils"}
