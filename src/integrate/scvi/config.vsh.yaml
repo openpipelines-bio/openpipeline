@@ -77,7 +77,7 @@ argument_groups:
           used for biologically-relevant factors that you do _not_ want to correct for.
       - name: "--scvi_reference_model"
         type: file
-        description: "Path to a pretrained SCVI reference model to initialize the SCANVI model with. The model needs to include the AnnData object used to trained the model stored. "
+        description: "Path to a pretrained SCVI reference model to initialize the SCANVI model with."
         example: scvi
         direction: input
         required: false
