@@ -214,8 +214,7 @@ def main():
         early_stopping_min_delta=par["early_stopping_min_delta"],
         plan_kwargs=plan_kwargs,
         check_val_every_n_epoch=1,
-        accelerator="cpu",
-        devices="auto",
+        accelerator="auto",
     )
     # Note: train_size=1.0 should give better results, but then can't do early_stopping on validation set
 
