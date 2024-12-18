@@ -33,7 +33,7 @@ argument_groups:
       - name: "--obs_batch"
         type: string
         default: "sample_id"
-        required: false
+        required: true
         description: Column name discriminating between your batches.
       - name: "--var_input"
         type: string
@@ -251,7 +251,6 @@ test_resources:
   - type: python_script
     path: test.py
   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
-  - path: /resources_test/annotation_test_data/scvi_model
   - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
 
 engines:
