@@ -28,7 +28,7 @@
 
 * `resources_test_scripts/scGPT.sh`: Update scGPT test resources to avoid subsetting of datasets (PR #926).
 
-* `dataflow/split_h5mu`: Update memory label from `lowmem` to `highmem` (PR #930).
+* `dataflow/split_h5mu`: Update memory label from `lowmem` to `highmem` and cpu label from `singlecpu` to `lowcpu` (PR #930).
 
 # openpipelines 2.0.0-rc.2
 
