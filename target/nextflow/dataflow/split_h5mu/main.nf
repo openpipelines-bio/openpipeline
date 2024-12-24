@@ -2981,8 +2981,8 @@ meta = [
       "id" : "nextflow",
       "directives" : {
         "label" : [
-          "singlecpu",
-          "lowmem"
+          "lowcpu",
+          "highmem"
         ],
         "tag" : "$id"
       },
@@ -3111,7 +3111,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "2efcbff9685ba2120f463ac772df02aaa2e43ae7",
+    "git_commit" : "e4fd490eba6303ba414f796e9ebc15be4808e6d1",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3645,8 +3645,8 @@ meta["defaults"] = [
     "tag" : "main_build"
   },
   "label" : [
-    "singlecpu",
-    "lowmem"
+    "lowcpu",
+    "highmem"
   ],
   "tag" : "$id"
 }'''),
