@@ -55,6 +55,8 @@
 
 * `scgpt/binning`: update handling of empty rows in sparse matrices (PR #875).
 
+* `dataflow/split_h5mu`: Update memory label from `lowmem` to `highmem` and cpu label from `singlecpu` to `lowcpu` (PR #930).
+
 # openpipelines 2.0.0-rc.2
 
 ## BUG FIXES
