@@ -181,7 +181,6 @@ dependencies:
   - name: integrate/totalvi
   - name: dimred/umap
   - name: neighbors/find_neighbors
-  - name: transfer/publish
 resources:
   - type: nextflow_script
     path: main.nf
