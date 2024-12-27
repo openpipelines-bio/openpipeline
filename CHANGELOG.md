@@ -1,9 +1,3 @@
-# openpipelines 2.1.0
-
-# MAJOR CHANGES
-
-* The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
-
 # openpipelines 2.0.0
 
 ## BREAKING CHANGES
