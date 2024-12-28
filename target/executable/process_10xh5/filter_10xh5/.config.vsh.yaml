@@ -215,7 +215,7 @@ build_info:
   output: "target/executable/process_10xh5/filter_10xh5"
   executable: "target/executable/process_10xh5/filter_10xh5/filter_10xh5"
   viash_version: "0.9.0"
-  git_commit: "5badd2db02ad76b3ce9a6218499c25e6f8d84b0c"
+  git_commit: "2e0859619095b996715d2f6e88c0b7c9305d3665"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
