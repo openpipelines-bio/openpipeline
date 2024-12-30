@@ -1,6 +1,6 @@
-name: "harmony_leiden"
-namespace: "workflows/integration"
-description: "Run harmony integration followed by neighbour calculations, leiden clustering and run umap on the result."
+name: "neighbors_leiden_umap"
+namespace: "workflows/multiomics"
+description: "Performs neighborhood search, leiden clustering and run umap on an integrated embedding."
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author ]
@@ -9,21 +9,15 @@ info:
 argument_groups:
   - name: "Inputs"
     arguments:
-      - name: "--id"
-        required: true
-        type: string
-        description: ID of the sample.
-        example: foo
       - name: "--input"
         required: true
         type: file
         description: Path to the sample.
         example: dataset.h5mu
-      - name: "--layer"
-        default: "log_normalized"
+      - name: "--obsm_input"
         type: string
-        description: use specified layer for expression values instead of the .X object from the modality.
-        required: false
+        required: true
+        description: The key of the embedding to use as input.
       - name: "--modality"
         description: Which modality to process.
         type: string
@@ -41,50 +35,25 @@ argument_groups:
     arguments:
       - name: "--uns_neighbors"
         type: string
-        default: harmonypy_integration_neighbors
+        required: true
         description: In which .uns slot to store various neighbor output objects.
       - name: "--obsp_neighbor_distances"
         type: string
-        default: "harmonypy_integration_distances"
+        required: true
         description: "In which .obsp slot to store the distance matrix between the resulting neighbors."
       - name: "--obsp_neighbor_connectivities"
         type: string
-        default: "harmonypy_integration_connectivities"
-        description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
-  - name: Harmony integration options
-    arguments:
-      - name: "--embedding"
-        default: "X_pca"
-        type: string
-        description: "Embedding to use as input"
-      - name: "--obsm_integrated"
-        type: string
-        default: "X_pca_integrated"
-        required: false
-        description: "In which .obsm slot to store the resulting integrated embedding."
-      - name: "--obs_covariates"
-        type: string
-        description: "The .obs field(s) that define the covariate(s) to regress out."
-        example: ["batch", "sample"]
-        multiple: true
         required: true
-      - name: "--theta"
-        type: double
-        description: |
-          Diversity clustering penalty parameter. Specify for each variable in group.by.vars. 
-          theta=0 does not encourage any diversity. Larger values of theta
-          result in more diverse clusters."
-        default: 2
-        multiple: true
+        description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
   - name: Clustering options
     arguments:
       - name: "--obs_cluster"
         type: string
+        required: false
         description: |
           Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will 
           be created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions
           resolutions specified in '--leiden_resolution'.
-        default: "harmony_integration_leiden"
       - name: "--leiden_resolution"
         type: double
         description: Control the coarseness of the clustering. Higher values lead to more clusters.
@@ -94,12 +63,15 @@ argument_groups:
     arguments:
       - name: "--obsm_umap"
         type: string
-        default: "X_leiden_harmony_umap"
         required: false
-        description: "In which .obsm slot to store the resulting UMAP embedding."
+        description: |
+          In which .obsm slot to store the resulting UMAP embedding.
+          When not specified, UMAP will not be executed.
 dependencies:
-  - name: integrate/harmonypy
-  - name: workflows/multiomics/neighbors_leiden_umap
+  - name: cluster/leiden
+  - name: dimred/umap
+  - name: neighbors/find_neighbors
+  - name: metadata/move_obsm_to_obs
 resources:
   - type: nextflow_script
     path: main.nf

@@ -44,6 +44,21 @@ workflow run_wf {
         "input": "output"
       ]
     )
+    | neighbors_leiden_umap.run(
+      fromState: [
+        "input": "input",
+        "modality": "modality",
+        "obsm_input": "obsm_integrated",
+        "output": "workflow_output",
+        "uns_neighbors": "uns_neighbors",
+        "obsp_neighbor_distances": "obsp_neighbor_distances",
+        "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
+        "leiden_resolution": "leiden_resolution",
+        "obs_cluster": "obs_cluster",
+        "obsm_umap": "obsm_umap",
+      ],
+      toState: ["output": "output"]
+    )
   with_leiden_ch = bbknn_ch
     | filter{id, state -> state.leiden_resolution}
     // run leiden on the bbknn graph
