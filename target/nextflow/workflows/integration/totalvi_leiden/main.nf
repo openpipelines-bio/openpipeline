@@ -2868,9 +2868,6 @@ meta = [
           "type" : "string",
           "name" : "--layer",
           "description" : "use specified layer for expression values instead of the .X object from the modality.",
-          "default" : [
-            "log_normalized"
-          ],
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3284,37 +3281,13 @@ meta = [
   "status" : "enabled",
   "dependencies" : [
     {
-      "name" : "cluster/leiden",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "metadata/move_obsm_to_obs",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
       "name" : "integrate/totalvi",
       "repository" : {
         "type" : "local"
       }
     },
     {
-      "name" : "dimred/umap",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "neighbors/find_neighbors",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "transfer/publish",
+      "name" : "workflows/multiomics/neighbors_leiden_umap",
       "repository" : {
         "type" : "local"
       }
@@ -3408,7 +3381,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/totalvi_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "0c505312119f917904e98d7aeab1abfafb793293",
+    "git_commit" : "a90f986e9844cbb3b014c36536111f34f03bb63e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3443,72 +3416,11 @@ meta = [
 
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
-include { leiden } from "${meta.resources_dir}/../../../../nextflow/cluster/leiden/main.nf"
-include { move_obsm_to_obs } from "${meta.resources_dir}/../../../../nextflow/metadata/move_obsm_to_obs/main.nf"
 include { totalvi } from "${meta.resources_dir}/../../../../nextflow/integrate/totalvi/main.nf"
-include { umap } from "${meta.resources_dir}/../../../../nextflow/dimred/umap/main.nf"
-include { find_neighbors } from "${meta.resources_dir}/../../../../nextflow/neighbors/find_neighbors/main.nf"
-include { publish } from "${meta.resources_dir}/../../../../nextflow/transfer/publish/main.nf"
+include { neighbors_leiden_umap } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/neighbors_leiden_umap/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
-workflow neighbors_leiden_umap {
-  take:
-  integrated_ch
-
-  main:
-  neighbors_ch = integrated_ch
-    | find_neighbors.run(
-      fromState: [
-        "input": "input",
-        "uns_output": "uns_neighbors",
-        "obsp_distances": "obsp_neighbor_distances",
-        "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obsm_input": "obsm_output", // use output from scvi as input for neighbors,
-        "query_modality": "modality"
-      ],
-      toState: ["input": "output"]
-    )
-
-  with_leiden_ch = neighbors_ch
-    | filter{list -> list[1].leiden_resolution}
-    | leiden.run(
-      fromState: [
-        "input": "input",
-        "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obsm_name": "obs_cluster",
-        "resolution": "leiden_resolution",
-        "query_modality": "modality",
-      ],
-      toState: ["input": "output"]
-    )
-    | move_obsm_to_obs.run(
-      fromState: [
-        "input": "input",
-        "obsm_key": "obs_cluster",
-        "query_modality": "modality",
-      ],
-      toState: ["input": "output"]
-    )
-
-  without_leiden_ch = neighbors_ch
-    | filter{list -> !list[1].leiden_resolution}
-
-  output_ch = with_leiden_ch.mix(without_leiden_ch)
-    | umap.run(
-      fromState: [
-          "input": "input",
-          "uns_neighbors": "uns_neighbors",
-          "obsm_output": "obsm_umap",
-          "query_modality": "modality",
-        ],
-      toState: ["output": "output"]
-    )
-
-  emit:
-  output_ch
-}
-
 workflow run_wf {
   take:
   input_ch
@@ -3523,11 +3435,12 @@ workflow run_wf {
     | totalvi.run(
       fromState: [
         "input": "input",
-        "layer": "layer",
+        "input_layer": "layer",
         "obs_batch": "obs_batch",
         "query_modality": "modality",
         "query_proteins_modality": "prot_modality",
         "query_model_path": "query_model_path",
+        "reference_model_path": "reference_model_path",
         "obsm_normalized_rna_output": "rna_obsm_output",
         "obsm_normalized_protein_output": "prot_obsm_output",
         "reference_model_path": "reference_model_path",
@@ -3546,54 +3459,38 @@ workflow run_wf {
         "reference_model_path": "reference_model_path",
       ]
     )
-    | map { id, state -> // for gene expression
-      stateMapping = [
+    | neighbors_leiden_umap.run( // For gene expression
+      key: "rna_neighbors_leiden_umap",
+      fromState: [
         "input": "input",
+        "modality": "modality",
+        "obsm_input": "rna_obsm_output",
         "uns_neighbors": "rna_uns_neighbors",
         "obsp_neighbor_distances": "rna_obsp_neighbor_distances",
         "obsp_neighbor_connectivities": "rna_obsp_neighbor_connectivities",
-        "obsm_output": "rna_obsm_output",
         "obs_cluster": "rna_obs_cluster",
         "leiden_resolution": "rna_leiden_resolution",
         "uns_neighbors": "rna_uns_neighbors",
         "obsm_umap": "obsm_umap",
-        "modality": "modality"
-      ]
-      def new_state = stateMapping.collectEntries{newKey, origKey ->
-        [newKey, state[origKey]]
-      }
-      [id, new_state, state]
-    }
-    | neighbors_leiden_umap
-    | map { id, state, orig_state -> // for ADT
-      stateMapping = [
+      ],
+      toState: ["input": "output"],
+    )
+    | neighbors_leiden_umap.run( // For ADT
+      key: "adt_neighbors_leiden_umap",
+      fromState: [
+        "input": "input",
+        "modality": "prot_modality",
+        "obsm_input": "prot_obsm_output",
         "uns_neighbors": "prot_uns_neighbors",
         "obsp_neighbor_distances": "prot_obsp_neighbor_distances",
         "obsp_neighbor_connectivities": "prot_obsp_neighbor_connectivities",
-        "obsm_output": "prot_obsm_output",
         "obs_cluster": "prot_obs_cluster",
         "leiden_resolution": "prot_leiden_resolution",
         "uns_neighbors": "prot_uns_neighbors",
         "obsm_umap": "obsm_umap",
-        "modality": "prot_modality",
-        "workflow_output": "workflow_output",
-        "query_model_path": "query_model_path",
-        "reference_model_path": "reference_model_path"
-      ]
-      def new_state = stateMapping.collectEntries{newKey, origKey ->
-        [newKey, orig_state[origKey]]
-      }
-      [id, new_state + ["input": state.output]]
-    }
-    | neighbors_leiden_umap
-    | publish.run(
-      fromState: { id, state -> [
-          "input": state.output,
-          "output": state.workflow_output,
-          "compression": "gzip"
-        ]
-      },
-      toState: ["output", "output"]
+        "output": "workflow_output",
+      ],
+      toState: ["output": "output"],
     )
     | setState(["output", "reference_model_path", "query_model_path"])
   emit:

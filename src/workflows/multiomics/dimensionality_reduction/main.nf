@@ -21,30 +21,21 @@ workflow run_wf {
       ],
       toState: ["input": "output"]
     )
-    | find_neighbors.run(
+    | neighbors_leiden_umap.run(
       fromState: [
         "input": "input",
         "obsm_input": "obsm_pca",
-        "uns_output": "uns_neighbors",
-        "obsp_distances": "obsp_neighbor_distances",
-        "obsp_connectivities": "obsp_neighbor_connectivities",
         "modality": "modality",
-        "layer": "layer",
+        "uns_neighbors": "uns_neighbors",
+        "obsp_neighbor_distances": "obsp_neighbor_distances",
+        "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
+        "output": "workflow_output",
+        "obsm_umap": "obsm_umap",
       ],
-      toState: ["input": "output"]
-    )
-    | umap.run(
-      fromState: {id, state ->
-        [
-          "input": state.input,
-          "uns_neighbors": state.uns_neighbors,
-          "output": state.workflow_output,
-          "obsm_output": state.obsm_umap,
-          "modality": state.modality,
-          "output_compression": "gzip"
-        ]
-      },
-      toState: ["output": "output"]
+      toState: ["output": "output"],
+      args: [
+        "leiden_resolution": [] // disable leiden
+      ]
     )
     | setState(["output"])
 

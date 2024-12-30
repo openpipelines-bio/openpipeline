@@ -20,7 +20,6 @@ argument_groups:
         description: Path to the sample.
         example: dataset.h5mu
       - name: "--layer"
-        default: "log_normalized"
         type: string
         description: use specified layer for expression values instead of the .X object from the modality.
         required: false
@@ -176,12 +175,8 @@ argument_groups:
         required: false
         description: "In which .obsm slot to store the resulting UMAP embedding."
 dependencies:
-  - name: cluster/leiden
-  - name: metadata/move_obsm_to_obs
   - name: integrate/totalvi
-  - name: dimred/umap
-  - name: neighbors/find_neighbors
-  - name: transfer/publish
+  - name: workflows/multiomics/neighbors_leiden_umap
 resources:
   - type: nextflow_script
     path: main.nf
