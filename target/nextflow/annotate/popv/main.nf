@@ -3257,7 +3257,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv",
     "viash_version" : "0.9.0",
-    "git_commit" : "a90f986e9844cbb3b014c36536111f34f03bb63e",
+    "git_commit" : "9aa77ce32017e0ea30949e99934a16d9050ad5db",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -46,6 +46,8 @@ argument_groups:
     description: "use specified layer for expression values instead of the .X object\
       \ from the modality."
     info: null
+    default:
+    - "log_normalized"
     required: false
     direction: "input"
     multiple: false
@@ -378,10 +380,22 @@ test_resources:
 info: null
 status: "enabled"
 dependencies:
+- name: "cluster/leiden"
+  repository:
+    type: "local"
+- name: "metadata/move_obsm_to_obs"
+  repository:
+    type: "local"
 - name: "integrate/totalvi"
   repository:
     type: "local"
-- name: "workflows/multiomics/neighbors_leiden_umap"
+- name: "dimred/umap"
+  repository:
+    type: "local"
+- name: "neighbors/find_neighbors"
+  repository:
+    type: "local"
+- name: "transfer/publish"
   repository:
     type: "local"
 links:
@@ -458,11 +472,15 @@ build_info:
   output: "target/nextflow/workflows/integration/totalvi_leiden"
   executable: "target/nextflow/workflows/integration/totalvi_leiden/main.nf"
   viash_version: "0.9.0"
-  git_commit: "a90f986e9844cbb3b014c36536111f34f03bb63e"
+  git_commit: "9aa77ce32017e0ea30949e99934a16d9050ad5db"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
+  - "target/nextflow/cluster/leiden"
+  - "target/nextflow/metadata/move_obsm_to_obs"
   - "target/nextflow/integrate/totalvi"
-  - "target/nextflow/workflows/multiomics/neighbors_leiden_umap"
+  - "target/nextflow/dimred/umap"
+  - "target/nextflow/neighbors/find_neighbors"
+  - "target/nextflow/transfer/publish"
 package_config:
   name: "openpipeline"
   info:

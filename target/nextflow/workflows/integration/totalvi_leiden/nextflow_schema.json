@@ -53,9 +53,10 @@
                 "layer": {
                 "type":
                 "string",
-                "description": "Type: `string`. use specified layer for expression values instead of the ",
-                "help_text": "Type: `string`. use specified layer for expression values instead of the .X object from the modality."
-            
+                "description": "Type: `string`, default: `log_normalized`. use specified layer for expression values instead of the ",
+                "help_text": "Type: `string`, default: `log_normalized`. use specified layer for expression values instead of the .X object from the modality."
+            ,
+                "default":"log_normalized"
             }
     
 

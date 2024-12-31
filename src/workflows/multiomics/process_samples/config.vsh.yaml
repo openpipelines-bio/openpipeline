@@ -277,6 +277,7 @@ dependencies:
     alias: split_modalities_workflow
   - name: dataflow/merge
   - name: dataflow/concatenate_h5mu
+  - name: transfer/publish
   - name: workflows/rna/rna_singlesample
   - name: workflows/prot/prot_singlesample
   - name: workflows/gdo/gdo_singlesample

@@ -510,9 +510,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Toni Verbeiren, Marijke Van Moerbeke, Weiwei Schultz, Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component demux bcl_convert"
-LABEL org.opencontainers.image.created="2024-12-30T13:24:43Z"
+LABEL org.opencontainers.image.created="2024-12-31T02:49:45Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a90f986e9844cbb3b014c36536111f34f03bb63e"
+LABEL org.opencontainers.image.revision="9aa77ce32017e0ea30949e99934a16d9050ad5db"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

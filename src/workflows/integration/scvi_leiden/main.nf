@@ -3,7 +3,7 @@ workflow run_wf {
   input_ch
 
   main:
-  output_ch = input_ch
+  neighbors_ch = input_ch
     | map {id, state -> 
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
@@ -51,20 +51,55 @@ workflow run_wf {
         "output_model": "output_model"
       ],
     )
-    | neighbors_leiden_umap.run(
+    | find_neighbors.run(
       fromState: [
         "input": "input",
-        "modality": "modality",
-        "obsm_input": "obsm_output",
-        "output": "workflow_output",
-        "uns_neighbors": "uns_neighbors",
-        "obsp_neighbor_distances": "obsp_neighbor_distances",
-        "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
-        "leiden_resolution": "leiden_resolution",
-        "obs_cluster": "obs_cluster",
-        "obsm_umap": "obsm_umap",
+        "uns_output": "uns_neighbors",
+        "obsp_distances": "obsp_neighbor_distances",
+        "obsp_connectivities": "obsp_neighbor_connectivities",
+        "obsm_input": "obsm_output", // use output from scvi as input for neighbors,
+        "modality": "modality"
       ],
-      toState: ["output": "output"]
+      toState: ["input": "output"]
+    )
+
+  with_leiden_ch = neighbors_ch
+    | filter{id, state -> state.leiden_resolution}
+    | leiden.run(
+      fromState: [
+        "input": "input",
+        "obsp_connectivities": "obsp_neighbor_connectivities",
+        "obsm_name": "obs_cluster",
+        "resolution": "leiden_resolution",
+        "modality": "modality",
+      ],
+      toState: ["input": "output"]
+    )
+    | move_obsm_to_obs.run(
+      fromState: [
+          "input": "input",
+          "obsm_key": "obs_cluster",
+          "modality": "modality",
+      ],
+      toState: ["input": "output"]
+    )
+
+
+  without_leiden_ch = neighbors_ch
+    | filter{id, state -> !state.leiden_resolution}
+
+  output_ch = with_leiden_ch.mix(without_leiden_ch)
+    | umap.run(
+      fromState: {id, state -> [
+        "input": state.input,
+        "uns_neighbors": state.uns_neighbors,
+        "obsm_output": state.obsm_umap,
+        "modality": state.modality,
+        "output": state.workflow_output,
+        "output_compression": "gzip"
+        ]
+      },
+      toState: ["output": "output"] 
     )
     | setState(["output", "output_model"])
 
