@@ -3124,7 +3124,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p",
     "viash_version" : "0.9.0",
-    "git_commit" : "9aa77ce32017e0ea30949e99934a16d9050ad5db",
+    "git_commit" : "1bf5a3707c60c48ad8d521beb2598d3b48915cea",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
