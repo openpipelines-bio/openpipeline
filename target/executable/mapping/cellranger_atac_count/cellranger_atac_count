@@ -516,9 +516,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt update \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_atac_count"
-LABEL org.opencontainers.image.created="2025-01-01T02:52:28Z"
+LABEL org.opencontainers.image.created="2025-01-02T02:49:51Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1bf5a3707c60c48ad8d521beb2598d3b48915cea"
+LABEL org.opencontainers.image.revision="e6f706915d17a6b8670fb604c7a9ac80e9d0a984"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
