@@ -3129,7 +3129,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/normalize_total",
     "viash_version" : "0.9.0",
-    "git_commit" : "e6f706915d17a6b8670fb604c7a9ac80e9d0a984",
+    "git_commit" : "f8531427d41f8192607ca6678a11897790b0a15f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
