@@ -572,9 +572,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component labels_transfer knn"
-LABEL org.opencontainers.image.created="2025-01-05T02:51:41Z"
+LABEL org.opencontainers.image.created="2025-01-06T02:51:29Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f663c0687c2ea5be1314db6bd052d56007d4d32f"
+LABEL org.opencontainers.image.revision="fd3726bf6ae2e5a3cc899496822b49025c80a3e8"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
