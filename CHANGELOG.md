@@ -1,3 +1,9 @@
+# openpipelines 2.1.0
+
+## MINOR CHANGES
+
+* `popv`: Pin numpy<2 after new release of scvi-tools
+
 # openpipelines 2.0.0
 
 ## BREAKING CHANGES
