@@ -1,5 +1,5 @@
 import sys
-from mudata import read_h5mu
+from mudata import read_h5ad
 from scipy.sparse import issparse, csr_array
 import numpy as np
 
@@ -23,6 +23,7 @@ meta = {"resources_dir": "."}
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
@@ -43,8 +44,7 @@ def count_nonzero(layer, axis):
 
 
 def main():
-    input_data = read_h5mu(par["input"])
-    modality_data = input_data.mod[par["modality"]]
+    modality_data = read_h5ad(par["input"], mod=par["modality"])
     var = modality_data.var
     layer = modality_data.X if not par["layer"] else modality_data.layers[par["layer"]]
     if not issparse(layer):
@@ -141,8 +141,13 @@ def main():
             }
 
     modality_data.obs = modality_data.obs.assign(**obs_columns_to_add)
-
-    input_data.write(par["output"], compression=par["output_compression"])
+    write_h5ad_to_h5mu_with_compression(
+        par["output"],
+        par["input"],
+        par["modality"],
+        modality_data,
+        par["output_compression"],
+    )
 
 
 def get_top_from_csr_matrix(array, top_n_genes):

@@ -46,7 +46,7 @@ input_layer = data.X if not par["layer"] else data.layers[par["layer"]]
 
 if 0 in input_layer.shape:
     raise ValueError(
-        f"Modality {mod} of input Mudata {par['input']} appears "
+        f"Modality {par['modality']} of input Mudata {par['input']} appears "
         f"to be empty (shape: {input_layer.shape})."
     )
 
