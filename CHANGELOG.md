@@ -1,3 +1,9 @@
+# openpipelines 2.1.0
+
+# MINOR CNANGES
+
+* Compatibility for SciPy.
+
 # openpipelines 2.0.0
 
 ## BREAKING CHANGES
