@@ -2,7 +2,7 @@
 
 # MINOR CNANGES
 
-* Compatibility for SciPy.
+* Compatibility for SciPy (PR #945).
 
 # openpipelines 2.0.0
 
