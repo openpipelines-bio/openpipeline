@@ -1,8 +1,8 @@
 # openpipelines 2.1.0
 
-# MINOR CNANGES
-
 * `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
+
+* `popv`: Pin numpy<2 after new release of scvi-tools (PR #946).
 
 # openpipelines 2.0.0
 
