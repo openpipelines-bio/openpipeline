@@ -1,3 +1,4 @@
+import sys
 import liana
 import mudata
 
@@ -23,11 +24,13 @@ par = {
 }
 ### VIASH END
 
+sys.path.append(meta["resources_dir"])
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
+
 
 def main():
     # Get input data
-    mdata = mudata.read(par["input"].strip())
-    mod = mdata.mod[par["modality"]]
+    mod = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
 
     # Add dummy grouping labels when they do not exist
     if par["groupby"] not in mod.obs:
@@ -66,8 +69,9 @@ def main():
     # Undo modifications to groupby column
     mod.obs[par["groupby"]] = original_groupby_col
 
-    # TODO: make sure compression is needed
-    mdata.write_h5mu(par["output"].strip(), compression=par["output_compression"])
+    write_h5ad_to_h5mu_with_compression(
+        par["output"], par["input"], par["modality"], mod, par["output_compression"]
+    )
 
 
 if __name__ == "__main__":

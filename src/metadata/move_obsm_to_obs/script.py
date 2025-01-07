@@ -1,7 +1,7 @@
 import sys
 from functools import partial
 from pandas.errors import MergeError
-from mudata import read_h5mu
+from mudata import read_h5ad
 
 ## VIASH START
 par = {
@@ -15,13 +15,13 @@ par = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Read mudata from file")
-mdata = read_h5mu(par["input"])
+logger.info("Reading modality %s from file %s", par["modality"], par["input"])
 try:
-    mod_data = mdata.mod[par["modality"]]
+    mod_data = read_h5ad(par["input"], mod=par["modality"])
 except KeyError:
     raise ValueError(f"Modality {par['modality']} does not exist.")
 
@@ -63,5 +63,9 @@ except MergeError:
     )
 del mod_data.obsm[par["obsm_key"]]
 
-logger.info("Write output to mudata file")
-mdata.write_h5mu(par["output"], compression=par["output_compression"])
+logger.info(
+    "Write output to %s with compression %s", par["output"], par["output_compression"]
+)
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], mod_data, par["output_compression"]
+)

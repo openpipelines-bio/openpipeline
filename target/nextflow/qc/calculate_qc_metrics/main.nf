@@ -3036,6 +3036,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/compress_h5mu.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3212,7 +3216,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.9.0",
-    "git_commit" : "c01ef19cbd7453426f61c1b0c2143b3b56d95865",
+    "git_commit" : "fd35b99e29d370ce02f0a065cd54f96060b61a1e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3256,7 +3260,7 @@ def innerWorkflowFactory(args) {
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import sys
-from mudata import read_h5mu
+from mudata import read_h5ad
 from scipy.sparse import issparse, csr_array
 import numpy as np
 
@@ -3306,6 +3310,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
@@ -3326,8 +3331,7 @@ def count_nonzero(layer, axis):
 
 
 def main():
-    input_data = read_h5mu(par["input"])
-    modality_data = input_data.mod[par["modality"]]
+    modality_data = read_h5ad(par["input"], mod=par["modality"])
     var = modality_data.var
     layer = modality_data.X if not par["layer"] else modality_data.layers[par["layer"]]
     if not issparse(layer):
@@ -3424,8 +3428,13 @@ def main():
             }
 
     modality_data.obs = modality_data.obs.assign(**obs_columns_to_add)
-
-    input_data.write(par["output"], compression=par["output_compression"])
+    write_h5ad_to_h5mu_with_compression(
+        par["output"],
+        par["input"],
+        par["modality"],
+        modality_data,
+        par["output_compression"],
+    )
 
 
 def get_top_from_csr_matrix(array, top_n_genes):

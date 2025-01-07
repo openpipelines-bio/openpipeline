@@ -572,9 +572,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component labels_transfer knn"
-LABEL org.opencontainers.image.created="2025-01-07T11:36:33Z"
+LABEL org.opencontainers.image.created="2025-01-07T14:51:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c01ef19cbd7453426f61c1b0c2143b3b56d95865"
+LABEL org.opencontainers.image.revision="fd35b99e29d370ce02f0a065cd54f96060b61a1e"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1362,6 +1362,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from helper import check_arguments, get_reference_features, get_query_features
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 
 def setup_logger():
@@ -1406,11 +1407,8 @@ logger = setup_logger()
 logger.info(
     f"Reading in query dataset {par['input']} and reference datasets {par['reference']}"
 )
-q_mdata = mu.read_h5mu(par["input"])
-q_adata = q_mdata.mod[par["modality"]]
-
-r_mdata = mu.read_h5mu(par["reference"])
-r_adata = r_mdata.mod[par["modality"]]
+q_adata = mu.read_h5ad(par["input"], mod=par["modality"])
+r_adata = mu.read_h5ad(par["reference"], mod=par["modality"])
 
 # check arguments
 logger.info("Checking arguments")
@@ -1503,8 +1501,9 @@ for obs_tar, obs_pred, obs_proba in zip(
     q_adata.obs[obs_proba] = probabilities
 
 logger.info(f"Saving output data to {par['output']}")
-q_mdata.mod[par["modality"]] = q_adata
-q_mdata.write_h5mu(par["output"], compression=par["output_compression"])
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], q_adata, par["output_compression"]
+)
 VIASHMAIN
 python -B "\$tempscript" &
 wait "\$!"

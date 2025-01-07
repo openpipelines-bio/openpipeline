@@ -3070,6 +3070,20 @@ meta = [
       ],
       "test_setup" : [
         {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
@@ -3086,7 +3100,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/delete_layer",
     "viash_version" : "0.9.0",
-    "git_commit" : "c01ef19cbd7453426f61c1b0c2143b3b56d95865",
+    "git_commit" : "fd35b99e29d370ce02f0a065cd54f96060b61a1e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3130,8 +3144,7 @@ def innerWorkflowFactory(args) {
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import sys
-from mudata import read_h5ad, write_h5ad
-import shutil
+from mudata import read_h5ad
 from pathlib import Path
 
 ## VIASH START
@@ -3172,7 +3185,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
-from compress_h5mu import compress_h5mu
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
@@ -3195,18 +3208,10 @@ def main():
         del mod.layers[layer]
 
     logger.info("Writing output to %s.", par["output"])
-    output_file_uncompressed = (
-        output_file.with_name(output_file.stem + "_uncompressed.h5mu")
-        if par["output_compression"]
-        else output_file
+
+    write_h5ad_to_h5mu_with_compression(
+        output_file, input_file, mod_name, mod, par["output_compression"]
     )
-    shutil.copyfile(par["input"], output_file_uncompressed)
-    write_h5ad(filename=output_file_uncompressed, mod=mod_name, data=mod)
-    if par["output_compression"]:
-        compress_h5mu(
-            output_file_uncompressed, output_file, compression=par["output_compression"]
-        )
-        output_file_uncompressed.unlink()
 
     logger.info("Finished.")
 

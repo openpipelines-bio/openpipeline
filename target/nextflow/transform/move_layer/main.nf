@@ -2903,6 +2903,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/compress_h5mu.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3010,7 +3014,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.10-slim",
+      "image" : "python:3.12-slim",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3036,6 +3040,20 @@ meta = [
       ],
       "test_setup" : [
         {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
@@ -3052,7 +3070,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/move_layer",
     "viash_version" : "0.9.0",
-    "git_commit" : "c01ef19cbd7453426f61c1b0c2143b3b56d95865",
+    "git_commit" : "fd35b99e29d370ce02f0a065cd54f96060b61a1e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3096,7 +3114,7 @@ def innerWorkflowFactory(args) {
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import sys
-from mudata import read_h5mu
+from mudata import read_h5ad
 from functools import partial
 from operator import setitem
 
@@ -3138,13 +3156,12 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Read mudata from file")
-input_file, modality = par["input"], par["modality"]
-mdata = read_h5mu(input_file)
-mod_data = mdata.mod[modality]
+logger.info("Reading modality %s mudata from file %s", par["input"])
+mod_data = read_h5ad(par["input"], mod=par["modality"])
 
 
 logger.info(
@@ -3164,8 +3181,15 @@ output_layer_setter = (
 )
 output_layer_setter(data_to_write)
 
-logger.info("Write output to mudata file")
-mdata.write_h5mu(par["output"], compression=par["output_compression"])
+logger.info(
+    "Writing output to file %s with compression %s",
+    par["output"],
+    par["output_compression"],
+)
+
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], mod_data, par["output_compression"]
+)
 VIASHMAIN
 python -B "$tempscript"
 '''

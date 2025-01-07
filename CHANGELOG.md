@@ -1,6 +1,10 @@
 # openpipelines 2.1.0
 
-# MINOR CHANGES
+## MAJOR CHANGES
+
+* Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
+
+## MINOR CHANGES
 
 * `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
 

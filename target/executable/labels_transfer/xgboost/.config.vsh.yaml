@@ -455,6 +455,8 @@ resources:
 - type: "file"
   path: "setup_logger.py"
 - type: "file"
+  path: "compress_h5mu.py"
+- type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
 description: "Performs label transfer from reference to query using XGBoost classifier"
@@ -595,7 +597,7 @@ build_info:
   output: "target/executable/labels_transfer/xgboost"
   executable: "target/executable/labels_transfer/xgboost/xgboost"
   viash_version: "0.9.0"
-  git_commit: "c01ef19cbd7453426f61c1b0c2143b3b56d95865"
+  git_commit: "fd35b99e29d370ce02f0a065cd54f96060b61a1e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

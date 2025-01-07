@@ -527,9 +527,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component metadata grep_annotation_column"
-LABEL org.opencontainers.image.created="2025-01-07T11:36:38Z"
+LABEL org.opencontainers.image.created="2025-01-07T14:52:01Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c01ef19cbd7453426f61c1b0c2143b3b56d95865"
+LABEL org.opencontainers.image.revision="fd35b99e29d370ce02f0a065cd54f96060b61a1e"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1242,6 +1242,7 @@ dep = {
 ### VIASH END
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
@@ -1286,8 +1287,7 @@ def main(par):
             )
     logger.info("Reading input file %s, modality %s.", input_file, mod_name)
 
-    mudata = mu.read_h5mu(input_file)
-    modality_data = mudata[mod_name]
+    modality_data = mu.read_h5ad(input_file, mod=mod_name)
     logger.info("Reading input file done.")
     logger.info("Using annotation dataframe '%s'.", par["matrix"])
     annotation_matrix = getattr(modality_data, par["matrix"])
@@ -1363,7 +1363,9 @@ def main(par):
         output_file,
         par["output_compression"],
     )
-    mudata.write(output_file, compression=par["output_compression"])
+    write_h5ad_to_h5mu_with_compression(
+        output_file, par["input"], mod_name, modality_data, par["output_compression"]
+    )
 
 
 if __name__ == "__main__":

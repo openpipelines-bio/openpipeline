@@ -92,6 +92,7 @@ resources:
   - type: python_script
     path: script.py
   - path: ../../utils/subset_vars.py
+  - path: /src/utils/compress_h5mu.py
   - path: /src/utils/setup_logger.py
 test_resources:
   - type: python_script

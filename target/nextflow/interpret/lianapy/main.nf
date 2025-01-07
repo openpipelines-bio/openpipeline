@@ -3049,6 +3049,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/compress_h5mu.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3204,7 +3208,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/interpret/lianapy",
     "viash_version" : "0.9.0",
-    "git_commit" : "c01ef19cbd7453426f61c1b0c2143b3b56d95865",
+    "git_commit" : "fd35b99e29d370ce02f0a065cd54f96060b61a1e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3247,6 +3251,7 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
+import sys
 import liana
 import mudata
 
@@ -3297,11 +3302,13 @@ dep = {
 
 ### VIASH END
 
+sys.path.append(meta["resources_dir"])
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
+
 
 def main():
     # Get input data
-    mdata = mudata.read(par["input"].strip())
-    mod = mdata.mod[par["modality"]]
+    mod = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
 
     # Add dummy grouping labels when they do not exist
     if par["groupby"] not in mod.obs:
@@ -3340,8 +3347,9 @@ def main():
     # Undo modifications to groupby column
     mod.obs[par["groupby"]] = original_groupby_col
 
-    # TODO: make sure compression is needed
-    mdata.write_h5mu(par["output"].strip(), compression=par["output_compression"])
+    write_h5ad_to_h5mu_with_compression(
+        par["output"], par["input"], par["modality"], mod, par["output_compression"]
+    )
 
 
 if __name__ == "__main__":
