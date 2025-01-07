@@ -2,7 +2,7 @@
 
 # MINOR CNANGES
 
-* `grep_annotation_column`: Fix compatibility for SciPy (PR #945).
+* `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
 
 # openpipelines 2.0.0
 
