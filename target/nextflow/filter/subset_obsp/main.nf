@@ -3116,7 +3116,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/subset_obsp",
     "viash_version" : "0.9.0",
-    "git_commit" : "ae3c709c2e76322b8a8bb5fa5e09ad4ff74792c9",
+    "git_commit" : "6a715e96165bd536b76e2773b4fc496fe2ff1988",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3217,6 +3217,11 @@ def main():
     # the index dimensions remain unaltered, but .obsp columns will be subset
     obsp = adata.obsp[par["input_obsp_key"]]
     idx = adata.obs[par["input_obs_key"]].astype(str) == par["input_obs_value"]
+    # A Series object cannot be used as an indexer for a scipy sparse array
+    # when the data type is a pandas boolean extension array because
+    # extension arrays do not define .nonzero()
+    # See https://github.com/pandas-dev/pandas/issues/46025
+    idx = idx.to_numpy(dtype="bool", na_value=False)
     obsm_subset = obsp[:, idx]
 
     logger.info(f"Writing subset obsp matrix to .obsm {par['output_obsm_key']}")
