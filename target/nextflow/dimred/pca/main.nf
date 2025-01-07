@@ -3142,7 +3142,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/pca",
     "viash_version" : "0.9.0",
-    "git_commit" : "e4fd490eba6303ba414f796e9ebc15be4808e6d1",
+    "git_commit" : "ae3c709c2e76322b8a8bb5fa5e09ad4ff74792c9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
