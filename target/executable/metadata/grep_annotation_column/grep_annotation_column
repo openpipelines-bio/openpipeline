@@ -527,9 +527,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component metadata grep_annotation_column"
-LABEL org.opencontainers.image.created="2025-01-07T02:50:46Z"
+LABEL org.opencontainers.image.created="2025-01-07T11:36:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4ce285eecfde8cf0ac9d6fc46c68f6355b2c83dc"
+LABEL org.opencontainers.image.revision="c01ef19cbd7453426f61c1b0c2143b3b56d95865"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1308,6 +1308,11 @@ def main(par):
     logger.info("Applying regex search.")
     grep_result = annotation_column.str.contains(par["regex_pattern"], regex=True)
     logger.info("Search results: %s", grep_result.value_counts())
+    # A Series object cannot be used as an indexer for a scipy sparse array
+    # when the data type is a pandas boolean extension array because
+    # extension arrays do not define .nonzero()
+    # See https://github.com/pandas-dev/pandas/issues/46025
+    grep_result = grep_result.to_numpy(dtype="bool", na_value=False)
 
     other_axis_attribute = {"var": "obs", "obs": "var"}
     if par["output_fraction_column"]:
