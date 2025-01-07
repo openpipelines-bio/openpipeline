@@ -23,17 +23,13 @@ meta = {"name": "filter_on_counts", "resources_dir": "."}
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Reading input data")
-mdata = mu.read_h5mu(par["input"])
+logger.info("Reading input data from %s, modality %s", par["input"], par["modality"])
+modality_data = mu.read_h5ad(par["input"], mod=par["modality"])
 
-mdata.var_names_make_unique()
-
-mod = par["modality"]
-logger.info("Processing modality %s.", mod)
-modality_data = mdata.mod[mod]
 logger.info("\tUnfiltered data: %s", modality_data)
 
 logger.info("Selecting input layer %s", "X" if par["layer"] else par["layer"])
@@ -108,10 +104,21 @@ if par["var_name_filter"] is not None:
     modality_data.var[par["var_name_filter"]] = keep_genes
 
 if par["do_subset"]:
-    mdata.mod[mod] = modality_data[keep_cells, keep_genes]
+    modality_data = modality_data[keep_cells, keep_genes]
 
 logger.info("\tFiltered data: %s", modality_data)
-logger.info("Writing output data to %s", par["output"])
-mdata.write_h5mu(par["output"], compression=par["output_compression"])
+logger.info(
+    "Writing output data to %s with compression %s",
+    par["output"],
+    par["output_compression"],
+)
+write_h5ad_to_h5mu_with_compression(
+    par["output"],
+    par["input"],
+    par["modality"],
+    modality_data,
+    par["output_compression"],
+)
+
 
 logger.info("Finished")

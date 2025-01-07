@@ -25,6 +25,7 @@ meta = {"resources_dir": "src/labels_transfer/utils"}
 
 sys.path.append(meta["resources_dir"])
 from helper import check_arguments, get_reference_features, get_query_features
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 
 def setup_logger():
@@ -69,11 +70,8 @@ logger = setup_logger()
 logger.info(
     f"Reading in query dataset {par['input']} and reference datasets {par['reference']}"
 )
-q_mdata = mu.read_h5mu(par["input"])
-q_adata = q_mdata.mod[par["modality"]]
-
-r_mdata = mu.read_h5mu(par["reference"])
-r_adata = r_mdata.mod[par["modality"]]
+q_adata = mu.read_h5ad(par["input"], mod=par["modality"])
+r_adata = mu.read_h5mu(par["reference"], mod=par["modality"])
 
 # check arguments
 logger.info("Checking arguments")
@@ -166,5 +164,6 @@ for obs_tar, obs_pred, obs_proba in zip(
     q_adata.obs[obs_proba] = probabilities
 
 logger.info(f"Saving output data to {par['output']}")
-q_mdata.mod[par["modality"]] = q_adata
-q_mdata.write_h5mu(par["output"], compression=par["output_compression"])
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], q_adata, par["output_compression"]
+)
