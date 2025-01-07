@@ -55,7 +55,7 @@ argument_groups:
 resources:
   - type: python_script
     path: script.py
-  - path: utils/helper.py
+  - path: /src/labels_transfer/utils/helper.py
   - path: /src/utils/compress_h5mu.py
 
 test_resources:
