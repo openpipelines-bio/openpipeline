@@ -3477,7 +3477,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_integration_knn",
     "viash_version" : "0.9.0",
-    "git_commit" : "fd3726bf6ae2e5a3cc899496822b49025c80a3e8",
+    "git_commit" : "4ce285eecfde8cf0ac9d6fc46c68f6355b2c83dc",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
