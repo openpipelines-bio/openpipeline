@@ -71,7 +71,7 @@ logger.info(
     f"Reading in query dataset {par['input']} and reference datasets {par['reference']}"
 )
 q_adata = mu.read_h5ad(par["input"], mod=par["modality"])
-r_adata = mu.read_h5mu(par["reference"], mod=par["modality"])
+r_adata = mu.read_h5ad(par["reference"], mod=par["modality"])
 
 # check arguments
 logger.info("Checking arguments")
