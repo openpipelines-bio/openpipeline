@@ -2970,10 +2970,6 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/src/utils/compress_h5mu.py"
-    },
-    {
-      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3128,7 +3124,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p",
     "viash_version" : "0.9.0",
-    "git_commit" : "fd35b99e29d370ce02f0a065cd54f96060b61a1e",
+    "git_commit" : "bf9a2bcb4a2883a824aee18f71926fb3e0296e9f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3215,15 +3211,17 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Reading modality %s from input mudata", par["modality"])
-data = mu.read_h5ad(par["input"], mod=par["modality"])
-assert data.var_names.is_unique, "Expected var_names to be unique."
+logger.info("Reading input mudata")
+mdata = mu.read_h5mu(par["input"])
+mdata.var_names_make_unique()
 
-logger.info("Performing log transformation")
+mod = par["modality"]
+logger.info("Performing log transformation on modality %s", mod)
+data = mdata.mod[mod]
+
 # Make our own copy with not a lot of data
 # this avoid excessive memory usage and accidental overwrites
 input_layer = data.layers[par["input_layer"]] if par["input_layer"] else data.X
@@ -3244,9 +3242,7 @@ else:
 data.uns["log1p"] = data_for_scanpy.uns["log1p"].copy()
 
 logger.info("Writing to file %s", par["output"])
-write_h5ad_to_h5mu_with_compression(
-    par["output"], par["input"], par["modality"], data, par["output_compression"]
-)
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

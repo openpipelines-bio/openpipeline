@@ -3163,31 +3163,13 @@ meta = [
   "status" : "enabled",
   "dependencies" : [
     {
-      "name" : "cluster/leiden",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
       "name" : "integrate/scanorama",
       "repository" : {
         "type" : "local"
       }
     },
     {
-      "name" : "dimred/umap",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "metadata/move_obsm_to_obs",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "neighbors/find_neighbors",
+      "name" : "workflows/multiomics/neighbors_leiden_umap",
       "repository" : {
         "type" : "local"
       }
@@ -3281,7 +3263,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scanorama_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "fd35b99e29d370ce02f0a065cd54f96060b61a1e",
+    "git_commit" : "bf9a2bcb4a2883a824aee18f71926fb3e0296e9f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3316,11 +3298,8 @@ meta = [
 
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
-include { leiden } from "${meta.resources_dir}/../../../../nextflow/cluster/leiden/main.nf"
 include { scanorama } from "${meta.resources_dir}/../../../../nextflow/integrate/scanorama/main.nf"
-include { umap } from "${meta.resources_dir}/../../../../nextflow/dimred/umap/main.nf"
-include { move_obsm_to_obs } from "${meta.resources_dir}/../../../../nextflow/metadata/move_obsm_to_obs/main.nf"
-include { find_neighbors } from "${meta.resources_dir}/../../../../nextflow/neighbors/find_neighbors/main.nf"
+include { neighbors_leiden_umap } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/neighbors_leiden_umap/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
@@ -3329,7 +3308,7 @@ workflow run_wf {
   input_ch
 
   main:
-  neighbors_ch = input_ch
+  output_ch = input_ch
     // Make sure there is not conflict between the output from this workflow
     // And the output from any of the components
     | map {id, state ->
@@ -3351,55 +3330,19 @@ workflow run_wf {
       ],
       toState: ["input": "output"]
     )
-    | find_neighbors.run(
+    | neighbors_leiden_umap.run(
       fromState: [
         "input": "input",
-        "uns_output": "uns_neighbors",
-        "obsp_distances": "obsp_neighbor_distances",
-        "obsp_connectivities": "obsp_neighbor_connectivities",
+        "modality": "modality",
         "obsm_input": "obsm_output",
-        "modality": "modality"
+        "output": "workflow_output",
+        "uns_neighbors": "uns_neighbors",
+        "obsp_neighbor_distances": "obsp_neighbor_distances",
+        "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
+        "leiden_resolution": "leiden_resolution",
+        "obs_cluster": "obs_cluster",
+        "obsm_umap": "obsm_umap",
       ],
-      toState: ["input": "output"]
-    )
-
-  with_leiden_ch = neighbors_ch
-    | filter{id, state -> state.leiden_resolution}
-    | leiden.run(
-      fromState: [
-        "input": "input",
-        "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obsm_name": "obs_cluster",
-        "resolution": "leiden_resolution",
-        "modality": "modality"
-      ],
-      toState: ["input": "output"]
-    )
-    | move_obsm_to_obs.run(
-      fromState:
-        [
-          "input": "input",
-          "obsm_key": "obs_cluster",
-          "modality": "modality",
-        ],
-      toState: ["input": "output"]
-    )
-
-  without_leiden_ch = neighbors_ch
-    | filter{id, state -> !state.leiden_resolution}
-
-  output_ch = with_leiden_ch.mix(without_leiden_ch)
-    | umap.run(
-      fromState: { id, state ->
-        [
-          "input": state.input,
-          "uns_neighbors": state.uns_neighbors,
-          "obsm_output": state.obsm_umap,
-          "modality": state.modality,
-          "output": state.output,
-          "output_compression": "gzip"
-        ]
-      },
       toState: ["output": "output"]
     )
     | setState(["output"])

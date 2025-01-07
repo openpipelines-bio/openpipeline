@@ -1,6 +1,5 @@
-import sys
+from mudata import read_h5mu
 import bbknn
-from mudata import read_h5ad
 
 ### VIASH START
 par = {
@@ -19,10 +18,8 @@ par = {
 }
 ### VIASH END
 
-sys.path.append(meta["resources_dir"])
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
-
-adata = read_h5ad(par["input"], mod=par["modality"])
+mudata = read_h5mu(par["input"])
+adata = mudata.mod[par["modality"]]
 
 # copy data
 tmp_adata = adata.copy()
@@ -43,6 +40,4 @@ adata.uns[par["uns_output"]]["distances_key"] = par["obsp_distances"]
 adata.uns[par["uns_output"]]["connectivities_key"] = par["obsp_connectivities"]
 
 # write to file
-write_h5ad_to_h5mu_with_compression(
-    par["output"], par["input"], par["modality"], adata, par["output_compression"]
-)
+mudata.write_h5mu(par["output"], compression=par["output_compression"])

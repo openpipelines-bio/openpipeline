@@ -2944,10 +2944,6 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/src/utils/compress_h5mu.py"
-    },
-    {
-      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3103,7 +3099,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr",
     "viash_version" : "0.9.0",
-    "git_commit" : "fd35b99e29d370ce02f0a065cd54f96060b61a1e",
+    "git_commit" : "bf9a2bcb4a2883a824aee18f71926fb3e0296e9f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3146,9 +3142,8 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
-import sys
 from muon import prot as pt
-from mudata import read_h5ad
+from mudata import read_h5mu
 from anndata import AnnData
 from functools import partial
 from operator import setitem
@@ -3191,12 +3186,10 @@ dep = {
 ## VIASH END
 
 
-sys.path.append(meta["resources_dir"])
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
-
-
 def main():
-    input_data = read_h5ad(par["input"], mod=par["modality"])
+    input_h5mu = read_h5mu(par["input"])
+    modality = input_h5mu[par["modality"]]
+    input_data = modality
     if par["input_layer"]:
         input_data = AnnData(X=input_data.layers[par["input_layer"]])
     # CLR always normalizes the .X layer, so we have to create an AnnData file with
@@ -3206,18 +3199,12 @@ def main():
         raise RuntimeError("CLR failed to return the requested output layer")
 
     output_layer_setter = (
-        partial(setattr, input_data, "X")
+        partial(setattr, modality, "X")
         if not par["output_layer"]
-        else partial(setitem, input_data.layers, par["output_layer"])
+        else partial(setitem, modality.layers, par["output_layer"])
     )
     output_layer_setter(normalized_counts.X)
-    write_h5ad_to_h5mu_with_compression(
-        par["output"],
-        par["input"],
-        par["modality"],
-        input_data,
-        par["output_compression"],
-    )
+    input_h5mu.write_h5mu(par["output"], compression=par["output_compression"])
 
 
 if __name__ == "__main__":

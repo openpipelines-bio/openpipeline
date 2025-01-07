@@ -1,14 +1,12 @@
 # openpipelines 2.1.0
 
-## MAJOR CHANGES
+# MAJOR CHANGES
 
-* Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
+* The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
 
-## MINOR CHANGES
+# MINOR CHANGES
 
-* `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
-
-* `popv`: Pin numpy<2 after new release of scvi-tools (PR #946).
+* Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942). 
 
 # openpipelines 2.0.0
 

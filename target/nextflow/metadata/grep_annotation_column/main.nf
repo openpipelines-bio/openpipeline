@@ -2991,10 +2991,6 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/src/utils/compress_h5mu.py"
-    },
-    {
-      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3162,7 +3158,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/grep_annotation_column",
     "viash_version" : "0.9.0",
-    "git_commit" : "fd35b99e29d370ce02f0a065cd54f96060b61a1e",
+    "git_commit" : "bf9a2bcb4a2883a824aee18f71926fb3e0296e9f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3256,7 +3252,6 @@ dep = {
 ### VIASH END
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
@@ -3301,7 +3296,8 @@ def main(par):
             )
     logger.info("Reading input file %s, modality %s.", input_file, mod_name)
 
-    modality_data = mu.read_h5ad(input_file, mod=mod_name)
+    mudata = mu.read_h5mu(input_file)
+    modality_data = mudata[mod_name]
     logger.info("Reading input file done.")
     logger.info("Using annotation dataframe '%s'.", par["matrix"])
     annotation_matrix = getattr(modality_data, par["matrix"])
@@ -3322,11 +3318,6 @@ def main(par):
     logger.info("Applying regex search.")
     grep_result = annotation_column.str.contains(par["regex_pattern"], regex=True)
     logger.info("Search results: %s", grep_result.value_counts())
-    # A Series object cannot be used as an indexer for a scipy sparse array
-    # when the data type is a pandas boolean extension array because
-    # extension arrays do not define .nonzero()
-    # See https://github.com/pandas-dev/pandas/issues/46025
-    grep_result = grep_result.to_numpy(dtype="bool", na_value=False)
 
     other_axis_attribute = {"var": "obs", "obs": "var"}
     if par["output_fraction_column"]:
@@ -3377,9 +3368,7 @@ def main(par):
         output_file,
         par["output_compression"],
     )
-    write_h5ad_to_h5mu_with_compression(
-        output_file, par["input"], mod_name, modality_data, par["output_compression"]
-    )
+    mudata.write(output_file, compression=par["output_compression"])
 
 
 if __name__ == "__main__":

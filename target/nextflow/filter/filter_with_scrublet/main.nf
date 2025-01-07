@@ -3041,10 +3041,6 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/src/utils/compress_h5mu.py"
-    },
-    {
-      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3219,7 +3215,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.9.0",
-    "git_commit" : "fd35b99e29d370ce02f0a065cd54f96060b61a1e",
+    "git_commit" : "bf9a2bcb4a2883a824aee18f71926fb3e0296e9f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3314,20 +3310,22 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
-
 
 logger = setup_logger()
 
-logger.info("Reading %s, modality %s", par["input"], par["modality"])
-data = mu.read_h5ad(par["input"], mod=par["modality"])
+logger.info("Reading %s.", par["input"])
+mdata = mu.read_h5mu(par["input"])
+
+mod = par["modality"]
+logger.info("Processing modality '%s'.", mod)
+data = mdata.mod[mod]
 
 logger.info("Using layer '%s'.", "X" if not par["layer"] else par["layer"])
 input_layer = data.X if not par["layer"] else data.layers[par["layer"]]
 
 if 0 in input_layer.shape:
     raise ValueError(
-        f"Modality {par['modality']} of input Mudata {par['input']} appears "
+        f"Modality {mod} of input Mudata {par['input']} appears "
         f"to be empty (shape: {input_layer.shape})."
     )
 
@@ -3376,14 +3374,10 @@ if par["do_subset"]:
     if pd.api.types.is_scalar(keep_cells) and pd.isna(keep_cells):
         logger.warning("Not subsetting beacuse doublets were not predicted")
     else:
-        data = data[keep_cells, :]
+        mdata.mod[mod] = data[keep_cells, :]
 
-logger.info(
-    "Writing h5mu to %s, with compression %s", par["output"], par["output_compression"]
-)
-write_h5ad_to_h5mu_with_compression(
-    par["output"], par["input"], par["modality"], data, par["output_compression"]
-)
+logger.info("Writing h5mu to %s", par["output"])
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

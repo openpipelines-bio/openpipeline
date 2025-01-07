@@ -143,8 +143,6 @@ engines:
       - type: python
         packages:
           - popv~=0.4.2
-          # Previously, scvi-tools < 1.2.2 pinned numpy to <2. We want to keep it pinned here
-          - numpy<2
           - setuptools
       # These need to be updated AFTER popv is installed.
       # See https://github.com/YosefLab/PopV/issues/30

@@ -17,8 +17,11 @@ logger = setup_logger()
 
 # TODO: Merge modalities into one layer
 
-logger.info("Reading input h5mu file %s, modality %s", par["input"], par["modality"])
-adat = mu.read_h5ad(par["input"], mod=par["modality"])
+logger.info("Reading input h5mu file")
+dat = mu.read_h5mu(par["input"])
+
+logger.info("Converting to h5ad")
+adat = dat.mod[par["modality"]]
 
 logger.info("Writing to %s.", par["output"])
 adat.write_h5ad(par["output"], compression=par["output_compression"])

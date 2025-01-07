@@ -2938,10 +2938,6 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/src/utils/compress_h5mu.py"
-    },
-    {
-      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3095,7 +3091,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter",
     "viash_version" : "0.9.0",
-    "git_commit" : "fd35b99e29d370ce02f0a065cd54f96060b61a1e",
+    "git_commit" : "bf9a2bcb4a2883a824aee18f71926fb3e0296e9f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3180,47 +3176,39 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Reading %s, modality: %s", par["input"], par["modality"])
-adata = mu.read_h5ad(par["input"], mod=par["modality"])
+logger.info("Reading %s", par["input"])
+mdata = mu.read_h5mu(par["input"])
 
-obs_filt = np.repeat(True, adata.n_obs)
-var_filt = np.repeat(True, adata.n_vars)
+mod = par["modality"]
+logger.info("Processing modality '%s'", mod)
+
+obs_filt = np.repeat(True, mdata.mod[mod].n_obs)
+var_filt = np.repeat(True, mdata.mod[mod].n_vars)
 
 par["obs_filter"] = par["obs_filter"] if par["obs_filter"] else []
 par["var_filter"] = par["var_filter"] if par["var_filter"] else []
 
 for obs_name in par["obs_filter"]:
-    logger.info(
-        "Filtering modality '%s' observations by .obs['%s']", par["modality"], obs_name
-    )
-    if obs_name not in adata.obs:
-        raise ValueError(f".mod[{par['modality']}].obs[{obs_name}] does not exist.")
-    if obs_name in adata.obs:
-        obs_filt &= adata.obs[obs_name]
+    logger.info("Filtering modality '%s' observations by .obs['%s']", mod, obs_name)
+    if obs_name not in mdata.mod[mod].obs:
+        raise ValueError(f".mod[{mod}].obs[{obs_name}] does not exist.")
+    if obs_name in mdata.mod[mod].obs:
+        obs_filt &= mdata.mod[mod].obs[obs_name]
 
 for var_name in par["var_filter"]:
-    logger.info(
-        "Filtering modality '%s' variables by .var['%s']", par["modality"], var_name
-    )
-    if var_name not in adata.var:
-        raise ValueError(f".mod[{par['modality']}].var[{var_name}] does not exist.")
-    if var_name in adata.var:
-        var_filt &= adata.var[var_name]
+    logger.info("Filtering modality '%s' variables by .var['%s']", mod, var_name)
+    if var_name not in mdata.mod[mod].var:
+        raise ValueError(f".mod[{mod}].var[{var_name}] does not exist.")
+    if var_name in mdata.mod[mod].var:
+        var_filt &= mdata.mod[mod].var[var_name]
 
-adata_filtered = adata[obs_filt, var_filt]
+mdata.mod[mod] = mdata.mod[mod][obs_filt, var_filt].copy()
 
 logger.info("Writing h5mu to file %s.", par["output"])
-write_h5ad_to_h5mu_with_compression(
-    par["output"],
-    par["input"],
-    par["modality"],
-    adata_filtered,
-    par["output_compression"],
-)
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

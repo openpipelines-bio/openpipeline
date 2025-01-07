@@ -59,7 +59,6 @@ meta = {
 sys.path.append(meta["resources_dir"])
 from helper import check_arguments, get_reference_features, get_query_features
 from setup_logger import setup_logger
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
@@ -367,8 +366,11 @@ def main(par):
     logger.info("Checking arguments")
     par = check_arguments(par)
 
-    adata_query = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
-    adata_reference = mudata.read_h5ad(par["reference"], mod=par["modality"])
+    mdata_query = mudata.read(par["input"].strip())
+    adata_query = mdata_query.mod[par["modality"]]
+
+    mdata_reference = mudata.read(par["reference"])
+    adata_reference = mdata_reference.mod[par["modality"]]
 
     # If classifiers for targets are in the model_output directory, simply open them and run (unless `retrain` != True)
     # If some classifiers are missing, train and save them first
@@ -428,10 +430,12 @@ def main(par):
 
     adata_query.uns[par["output_uns_parameters"]] = output_uns_parameters
 
-    logger.info("Writing output to %s", par["output"])
-    write_h5ad_to_h5mu_with_compression(
-        par["output"], par["input"], par["modality"], adata_query, None
-    )
+    logger.info("Updating mdata")
+    mdata_query.mod[par["modality"]] = adata_query
+    mdata_query.update()
+
+    logger.info("Writing output")
+    mdata_query.write_h5mu(par["output"].strip())
 
 
 if __name__ == "__main__":
