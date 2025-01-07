@@ -11,6 +11,7 @@ import numpy as np
 ### VIASH START
 par = {
     "input": "./resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
+    "input_layer": None,
     "modality": "rna",
     "matrix": "var",
     "input_column": "gene_symbol",
@@ -21,6 +22,8 @@ par = {
     "output_fraction_column": "fraction_test",
     "output_compression": "gzip",
 }
+
+meta = {"resources_dir": "src/utils"}
 ### VIASH END
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
@@ -90,6 +93,11 @@ def main(par):
     logger.info("Applying regex search.")
     grep_result = annotation_column.str.contains(par["regex_pattern"], regex=True)
     logger.info("Search results: %s", grep_result.value_counts())
+    # A Series object cannot be used as an indexer for a scipy sparse array
+    # when the data type is a pandas boolean extension array because
+    # extension arrays do not define .nonzero()
+    # See https://github.com/pandas-dev/pandas/issues/46025
+    grep_result = grep_result.to_numpy(dtype="bool", na_value=False)
 
     other_axis_attribute = {"var": "obs", "obs": "var"}
     if par["output_fraction_column"]:
