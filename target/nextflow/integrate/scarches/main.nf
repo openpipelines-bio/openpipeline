@@ -3071,6 +3071,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/compress_h5mu.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3224,7 +3228,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scarches",
     "viash_version" : "0.9.0",
-    "git_commit" : "f1b256e7564703b9a1218b85ebad2bd82f8b8c16",
+    "git_commit" : "14f6701d1cd214ea82b4da1de620289963a58f31",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3329,6 +3333,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
@@ -3479,8 +3484,9 @@ def _get_model_path(model_path: str):
 
 
 def main():
-    mdata_query = mudata.read(par["input"].strip())
-    adata_query = mdata_query.mod[par["modality"]].copy()
+    logger.info("Reading %s, modality %s", par["input"], par["modality"])
+    adata = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
+    adata_query = adata.copy()
 
     if "dataset" not in adata_query.obs.columns:
         # Write name of the dataset as batch variable
@@ -3498,31 +3504,23 @@ def main():
     model_name = _read_model_name_from_registry(model_path)
 
     # Save info about the used model
-    mdata_query.mod[par["modality"]].uns["integration_method"] = model_name
+    adata.uns["integration_method"] = model_name
 
     logger.info("Trying to write latent representation")
     output_key = par["obsm_output"].format(model_name=model_name)
-    mdata_query.mod[par["modality"]].obsm[output_key] = (
-        vae_query.get_latent_representation()
-    )
+    adata.obsm[output_key] = vae_query.get_latent_representation()
 
     logger.info("Converting dtypes")
-    mdata_query.mod[par["modality"]] = _convert_object_dtypes_to_strings(
-        mdata_query.mod[par["modality"]]
+    adata = _convert_object_dtypes_to_strings(adata)
+
+    logger.info(
+        "Saving h5mu file to %s with compression %s",
+        par["output"],
+        par["output_compression"],
     )
-
-    logger.info("Updating mudata")
-    try:
-        mdata_query.update()  # Without that error might be thrown during file saving
-    except KeyError:
-        # Sometimes this error is thrown, but then everything is magically fixed, and the file gets saved normally
-        # This is discussed here a bit: https://github.com/scverse/mudata/issues/27
-        logger.warning(
-            "KeyError was thrown during updating mudata. Probably, the file is fixed after that, but be careful"
-        )
-
-    logger.info("Saving h5mu file")
-    mdata_query.write_h5mu(par["output"].strip(), compression=par["output_compression"])
+    write_h5ad_to_h5mu_with_compression(
+        par["output"], par["input"], par["modality"], adata, par["output_compression"]
+    )
 
     logger.info("Saving model")
     vae_query.save(par["model_output"], overwrite=True)

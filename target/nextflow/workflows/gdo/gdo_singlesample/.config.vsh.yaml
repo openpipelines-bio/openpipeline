@@ -221,7 +221,7 @@ build_info:
   output: "target/nextflow/workflows/gdo/gdo_singlesample"
   executable: "target/nextflow/workflows/gdo/gdo_singlesample/main.nf"
   viash_version: "0.9.0"
-  git_commit: "f1b256e7564703b9a1218b85ebad2bd82f8b8c16"
+  git_commit: "14f6701d1cd214ea82b4da1de620289963a58f31"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/filter/filter_with_counts"

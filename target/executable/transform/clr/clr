@@ -501,9 +501,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform clr"
-LABEL org.opencontainers.image.created="2025-01-08T02:50:12Z"
+LABEL org.opencontainers.image.created="2025-01-08T14:24:27Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f1b256e7564703b9a1218b85ebad2bd82f8b8c16"
+LABEL org.opencontainers.image.revision="14f6701d1cd214ea82b4da1de620289963a58f31"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1138,8 +1138,9 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
+import sys
 from muon import prot as pt
-from mudata import read_h5mu
+from mudata import read_h5ad
 from anndata import AnnData
 from functools import partial
 from operator import setitem
@@ -1182,10 +1183,12 @@ dep = {
 ## VIASH END
 
 
+sys.path.append(meta["resources_dir"])
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
+
+
 def main():
-    input_h5mu = read_h5mu(par["input"])
-    modality = input_h5mu[par["modality"]]
-    input_data = modality
+    input_data = read_h5ad(par["input"], mod=par["modality"])
     if par["input_layer"]:
         input_data = AnnData(X=input_data.layers[par["input_layer"]])
     # CLR always normalizes the .X layer, so we have to create an AnnData file with
@@ -1195,12 +1198,18 @@ def main():
         raise RuntimeError("CLR failed to return the requested output layer")
 
     output_layer_setter = (
-        partial(setattr, modality, "X")
+        partial(setattr, input_data, "X")
         if not par["output_layer"]
-        else partial(setitem, modality.layers, par["output_layer"])
+        else partial(setitem, input_data.layers, par["output_layer"])
     )
     output_layer_setter(normalized_counts.X)
-    input_h5mu.write_h5mu(par["output"], compression=par["output_compression"])
+    write_h5ad_to_h5mu_with_compression(
+        par["output"],
+        par["input"],
+        par["modality"],
+        input_data,
+        par["output_compression"],
+    )
 
 
 if __name__ == "__main__":

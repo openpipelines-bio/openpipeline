@@ -1,3 +1,6 @@
+import shutil
+from anndata import AnnData
+from mudata import write_h5ad
 from h5py import File as H5File
 from h5py import Group, Dataset
 from pathlib import Path
@@ -59,3 +62,26 @@ def compress_h5mu(
     with open(output_path, "br+") as f:
         nbytes = f.write(starting_metadata)
         f.write(b"\0" * (512 - nbytes))
+
+
+def write_h5ad_to_h5mu_with_compression(
+    output_file: Union[str, Path],
+    h5mu: Union[str, Path],
+    modality_name: str,
+    modality_data: AnnData,
+    output_compression=None,
+):
+    output_file = Path(output_file)
+    h5mu = Path(h5mu)
+    output_file_uncompressed = (
+        output_file.with_name(output_file.stem + "_uncompressed.h5mu")
+        if output_compression
+        else output_file
+    )
+    shutil.copyfile(h5mu, output_file_uncompressed)
+    write_h5ad(filename=output_file_uncompressed, mod=modality_name, data=modality_data)
+    if output_compression:
+        compress_h5mu(
+            output_file_uncompressed, output_file, compression=output_compression
+        )
+        output_file_uncompressed.unlink()

@@ -1,6 +1,5 @@
 import sys
-from mudata import read_h5ad, write_h5ad
-import shutil
+from mudata import read_h5ad
 from pathlib import Path
 
 ## VIASH START
@@ -17,7 +16,7 @@ meta = {"name": "delete_layer", "resources_dir": "resources_test"}
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
-from compress_h5mu import compress_h5mu
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
@@ -40,18 +39,10 @@ def main():
         del mod.layers[layer]
 
     logger.info("Writing output to %s.", par["output"])
-    output_file_uncompressed = (
-        output_file.with_name(output_file.stem + "_uncompressed.h5mu")
-        if par["output_compression"]
-        else output_file
+
+    write_h5ad_to_h5mu_with_compression(
+        output_file, input_file, mod_name, mod, par["output_compression"]
     )
-    shutil.copyfile(par["input"], output_file_uncompressed)
-    write_h5ad(filename=output_file_uncompressed, mod=mod_name, data=mod)
-    if par["output_compression"]:
-        compress_h5mu(
-            output_file_uncompressed, output_file, compression=par["output_compression"]
-        )
-        output_file_uncompressed.unlink()
 
     logger.info("Finished.")
 
