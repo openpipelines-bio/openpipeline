@@ -97,27 +97,52 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
-    
-    | neighbors_leiden_umap.run(
-      fromState: [
-        "input": "input",
-        "obsm_input": "obsm_integrated",
-        "modality": "modality",
-        "uns_neighbors": "uns_neighbors",
-        "obsp_neighbor_distances": "obsp_neighbor_distances",
-        "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
-        "output": "workflow_output",
-        "leiden_resolution": "leiden_resolution",
-        "obsm_umap": "obsm_integrated",
-      ],
-      toState: ["output": "output"],
-      args: [
-        "uns_neighbors": "scGPT_integration_neighbors",
-        "obsp_neighbor_distances": "scGPT_integration_distances",
-        "obsp_neighbor_connectivities": "scGPT_integration_connectivities",
-        "obs_cluster": "scGPT_integration_leiden",
-        "obsm_umap": "X_scGPT_umap",
-      ]
+
+    | find_neighbors.run(
+      fromState: {id, state -> [
+          "input": state.input,
+          "uns_output": "scGPT_integration_neighbors",
+          "obsp_distances": "scGPT_integration_distances",
+          "obsp_connectivities": "scGPT_integration_connectivities",
+          "obsm_input": state.obsm_integrated,
+          "modality": state.modality
+        ]
+      },
+      toState: ["input": "output"]
+    )
+    | leiden.run(
+      runIf: {id, state -> state.leiden_resolution},
+      fromState: {id, state -> [
+        "input": state.input,
+        "obsp_connectivities": "scGPT_integration_connectivities",
+        "obsm_name": "scGPT_integration_leiden",
+        "resolution": state.leiden_resolution,
+        "modality": state.modality,
+        ]
+      },
+      toState: ["input": "output"]
+    )
+    | move_obsm_to_obs.run(
+      runIf: {id, state -> state.leiden_resolution},
+      fromState: {id, state -> [
+          "input": state.input,
+          "obsm_key": "scGPT_integration_leiden",
+          "modality": state.modality,
+        ]
+      },
+      toState: ["input": "output"]
+    )
+    | umap.run(
+      fromState: {id, state -> [
+          "input": state.input,
+          "uns_neighbors": "scGPT_integration_neighbors",
+          "obsm_output": "X_scGPT_umap",
+          "modality": state.modality,
+          "output_compression": state.output_compression,
+          "output": state.workflow_output
+        ]
+      },
+      toState: ["output": "output"]
     )
     | setState(["output"])
   

@@ -197,7 +197,10 @@ dependencies:
 - name: "dimred/pca"
   repository:
     type: "local"
-- name: "workflows/multiomics/neighbors_leiden_umap"
+- name: "neighbors/find_neighbors"
+  repository:
+    type: "local"
+- name: "dimred/umap"
   repository:
     type: "local"
 links:
@@ -274,11 +277,12 @@ build_info:
   output: "target/nextflow/workflows/multiomics/dimensionality_reduction"
   executable: "target/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
   viash_version: "0.9.0"
-  git_commit: "bf9a2bcb4a2883a824aee18f71926fb3e0296e9f"
+  git_commit: "f1b256e7564703b9a1218b85ebad2bd82f8b8c16"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/dimred/pca"
-  - "target/nextflow/workflows/multiomics/neighbors_leiden_umap"
+  - "target/nextflow/neighbors/find_neighbors"
+  - "target/nextflow/dimred/umap"
 package_config:
   name: "openpipeline"
   info:

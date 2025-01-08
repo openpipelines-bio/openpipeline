@@ -3514,6 +3514,12 @@ meta = [
       }
     },
     {
+      "name" : "transfer/publish",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
       "name" : "workflows/rna/rna_singlesample",
       "repository" : {
         "type" : "local"
@@ -3626,7 +3632,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.9.0",
-    "git_commit" : "bf9a2bcb4a2883a824aee18f71926fb3e0296e9f",
+    "git_commit" : "f1b256e7564703b9a1218b85ebad2bd82f8b8c16",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3666,6 +3672,7 @@ include { split_modalities as split_modalities_workflow_viashalias } from "${met
 split_modalities_workflow = split_modalities_workflow_viashalias.run(key: "split_modalities_workflow")
 include { merge } from "${meta.resources_dir}/../../../../nextflow/dataflow/merge/main.nf"
 include { concatenate_h5mu } from "${meta.resources_dir}/../../../../nextflow/dataflow/concatenate_h5mu/main.nf"
+include { publish } from "${meta.resources_dir}/../../../../nextflow/transfer/publish/main.nf"
 include { rna_singlesample } from "${meta.resources_dir}/../../../../nextflow/workflows/rna/rna_singlesample/main.nf"
 include { prot_singlesample } from "${meta.resources_dir}/../../../../nextflow/workflows/prot/prot_singlesample/main.nf"
 include { gdo_singlesample } from "${meta.resources_dir}/../../../../nextflow/workflows/gdo/gdo_singlesample/main.nf"

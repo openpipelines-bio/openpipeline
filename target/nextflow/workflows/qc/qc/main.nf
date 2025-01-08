@@ -3115,6 +3115,12 @@ meta = [
   "status" : "enabled",
   "dependencies" : [
     {
+      "name" : "transfer/publish",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
       "name" : "metadata/grep_annotation_column",
       "repository" : {
         "type" : "local"
@@ -3215,7 +3221,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc",
     "viash_version" : "0.9.0",
-    "git_commit" : "bf9a2bcb4a2883a824aee18f71926fb3e0296e9f",
+    "git_commit" : "f1b256e7564703b9a1218b85ebad2bd82f8b8c16",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3250,6 +3256,7 @@ meta = [
 
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
+include { publish } from "${meta.resources_dir}/../../../../nextflow/transfer/publish/main.nf"
 include { grep_annotation_column } from "${meta.resources_dir}/../../../../nextflow/metadata/grep_annotation_column/main.nf"
 include { calculate_qc_metrics } from "${meta.resources_dir}/../../../../nextflow/qc/calculate_qc_metrics/main.nf"
 
@@ -3320,17 +3327,22 @@ workflow run_wf {
             "output_var_num_nonzero_obs": state.output_var_num_nonzero_obs,
             "output_var_total_counts_obs": state.output_var_total_counts_obs,
             "output_var_obs_mean": state.output_var_obs_mean,
-            "output_var_pct_dropout": state.output_var_pct_dropout,
-            "output": state.workflow_output,
-            "compression": "gzip"
+            "output_var_pct_dropout": state.output_var_pct_dropout
           ]
           if (state.var_qc_metrics) {
             newState += ["var_qc_metrics": state.var_qc_metrics]
           }
         return newState
         },
-        // use map when viash 0.7.6 is released
-        // related to https://github.com/viash-io/viash/pull/515
+        toState: ["input": "output"]
+      )
+      | publish.run(
+        fromState: { id, state -> [
+            "input": state.input,
+            "output": state.workflow_output,
+            "compression": "gzip"
+          ]
+        },
         toState: ["output": "output"]
       )
       | setState(["output"]) 

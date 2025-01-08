@@ -110,8 +110,11 @@ argument_groups:
         required: false
         description: "In which .obsm slot to store the resulting UMAP embedding."
 dependencies:
-  - name: integrate/scanorama
-  - name: workflows/multiomics/neighbors_leiden_umap
+  - name: "cluster/leiden"
+  - name: "integrate/scanorama"
+  - name: "dimred/umap"
+  - name: "metadata/move_obsm_to_obs"
+  - name: "neighbors/find_neighbors"
 resources:
   - type: nextflow_script
     path: main.nf

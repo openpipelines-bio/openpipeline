@@ -3158,7 +3158,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/grep_annotation_column",
     "viash_version" : "0.9.0",
-    "git_commit" : "bf9a2bcb4a2883a824aee18f71926fb3e0296e9f",
+    "git_commit" : "f1b256e7564703b9a1218b85ebad2bd82f8b8c16",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3318,6 +3318,11 @@ def main(par):
     logger.info("Applying regex search.")
     grep_result = annotation_column.str.contains(par["regex_pattern"], regex=True)
     logger.info("Search results: %s", grep_result.value_counts())
+    # A Series object cannot be used as an indexer for a scipy sparse array
+    # when the data type is a pandas boolean extension array because
+    # extension arrays do not define .nonzero()
+    # See https://github.com/pandas-dev/pandas/issues/46025
+    grep_result = grep_result.to_numpy(dtype="bool", na_value=False)
 
     other_axis_attribute = {"var": "obs", "obs": "var"}
     if par["output_fraction_column"]:

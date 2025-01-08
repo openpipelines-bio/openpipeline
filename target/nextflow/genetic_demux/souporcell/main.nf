@@ -3145,7 +3145,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/souporcell",
     "viash_version" : "0.9.0",
-    "git_commit" : "bf9a2bcb4a2883a824aee18f71926fb3e0296e9f",
+    "git_commit" : "f1b256e7564703b9a1218b85ebad2bd82f8b8c16",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

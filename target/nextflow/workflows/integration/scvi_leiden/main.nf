@@ -3180,13 +3180,31 @@ meta = [
   "status" : "enabled",
   "dependencies" : [
     {
+      "name" : "cluster/leiden",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
+      "name" : "metadata/move_obsm_to_obs",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
       "name" : "integrate/scvi",
       "repository" : {
         "type" : "local"
       }
     },
     {
-      "name" : "workflows/multiomics/neighbors_leiden_umap",
+      "name" : "dimred/umap",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
+      "name" : "neighbors/find_neighbors",
       "repository" : {
         "type" : "local"
       }
@@ -3280,7 +3298,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scvi_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "bf9a2bcb4a2883a824aee18f71926fb3e0296e9f",
+    "git_commit" : "f1b256e7564703b9a1218b85ebad2bd82f8b8c16",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3315,8 +3333,11 @@ meta = [
 
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
+include { leiden } from "${meta.resources_dir}/../../../../nextflow/cluster/leiden/main.nf"
+include { move_obsm_to_obs } from "${meta.resources_dir}/../../../../nextflow/metadata/move_obsm_to_obs/main.nf"
 include { scvi } from "${meta.resources_dir}/../../../../nextflow/integrate/scvi/main.nf"
-include { neighbors_leiden_umap } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/neighbors_leiden_umap/main.nf"
+include { umap } from "${meta.resources_dir}/../../../../nextflow/dimred/umap/main.nf"
+include { find_neighbors } from "${meta.resources_dir}/../../../../nextflow/neighbors/find_neighbors/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
@@ -3325,68 +3346,83 @@ workflow run_wf {
   input_ch
 
   main:
-  output_ch = input_ch
+  neighbors_ch = input_ch
     | map {id, state -> 
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
     | scvi.run(
-      fromState: {id, state ->
-        [
-          "input": state.input,
-          "obs_batch": state.obs_batch,
-          "obsm_output": state.obsm_output,
-          "var_input": state.var_input,
-          "early_stopping": state.early_stopping,
-          "early_stopping_monitor": state.early_stopping_monitor,
-          "early_stopping_patience": state.early_stopping_patience,
-          "early_stopping_min_delta": state.early_stopping_min_delta,
-          "max_epochs": state.max_epochs,
-          "reduce_lr_on_plateau": state.reduce_lr_on_plateau,
-          "lr_factor": state.lr_factor,
-          "lr_patience": state.lr_patience,
-          "output_model": state.output_model,
-          "modality": state.modality,
-          "input_layer": state.layer,
-       ]
-      },
-    // use map when viash 0.7.6 is released
-    // related to https://github.com/viash-io/viash/pull/515
-    //   fromState: [
-    //     "input": "input",
-    //     "obs_batch": "obs_batch",
-    //     "obsm_output": "obsm_output",
-    //     "var_input": "var_input",
-    //     "early_stopping": "early_stopping",
-    //     "early_stopping_monitor": "early_stopping_monitor",
-    //     "early_stopping_patience": "early_stopping_patience",
-    //     "early_stopping_min_delta": "early_stopping_min_delta",
-    //     "max_epochs": "max_epochs",
-    //     "reduce_lr_on_plateau": "reduce_lr_on_plateau",
-    //     "lr_factor": "lr_factor",
-    //     "lr_patience": "lr_patience",
-    //     "output_model": "output_model",
-    //     "modality": "modality"
-    //   ],
+      fromState: [
+        "input": "input",
+        "obs_batch": "obs_batch",
+        "obsm_output": "obsm_output",
+        "var_input": "var_input",
+        "early_stopping": "early_stopping",
+        "early_stopping_monitor": "early_stopping_monitor",
+        "early_stopping_patience": "early_stopping_patience",
+        "early_stopping_min_delta": "early_stopping_min_delta",
+        "max_epochs": "max_epochs",
+        "reduce_lr_on_plateau": "reduce_lr_on_plateau",
+        "lr_factor": "lr_factor",
+        "lr_patience": "lr_patience",
+        "output_model": "output_model",
+        "modality": "modality",
+        "input_layer": "layer",
+      ],
       toState: [
         "input": "output", 
         "output_model": "output_model"
       ],
     )
-    | neighbors_leiden_umap.run(
+    | find_neighbors.run(
       fromState: [
         "input": "input",
-        "modality": "modality",
-        "obsm_input": "obsm_output",
-        "output": "workflow_output",
-        "uns_neighbors": "uns_neighbors",
-        "obsp_neighbor_distances": "obsp_neighbor_distances",
-        "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
-        "leiden_resolution": "leiden_resolution",
-        "obs_cluster": "obs_cluster",
-        "obsm_umap": "obsm_umap",
+        "uns_output": "uns_neighbors",
+        "obsp_distances": "obsp_neighbor_distances",
+        "obsp_connectivities": "obsp_neighbor_connectivities",
+        "obsm_input": "obsm_output", // use output from scvi as input for neighbors,
+        "modality": "modality"
       ],
-      toState: ["output": "output"]
+      toState: ["input": "output"]
+    )
+
+  with_leiden_ch = neighbors_ch
+    | filter{id, state -> state.leiden_resolution}
+    | leiden.run(
+      fromState: [
+        "input": "input",
+        "obsp_connectivities": "obsp_neighbor_connectivities",
+        "obsm_name": "obs_cluster",
+        "resolution": "leiden_resolution",
+        "modality": "modality",
+      ],
+      toState: ["input": "output"]
+    )
+    | move_obsm_to_obs.run(
+      fromState: [
+          "input": "input",
+          "obsm_key": "obs_cluster",
+          "modality": "modality",
+      ],
+      toState: ["input": "output"]
+    )
+
+
+  without_leiden_ch = neighbors_ch
+    | filter{id, state -> !state.leiden_resolution}
+
+  output_ch = with_leiden_ch.mix(without_leiden_ch)
+    | umap.run(
+      fromState: {id, state -> [
+        "input": state.input,
+        "uns_neighbors": state.uns_neighbors,
+        "obsm_output": state.obsm_umap,
+        "modality": state.modality,
+        "output": state.workflow_output,
+        "output_compression": "gzip"
+        ]
+      },
+      toState: ["output": "output"] 
     )
     | setState(["output", "output_model"])
 

@@ -3231,7 +3231,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/bbknn_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "bf9a2bcb4a2883a824aee18f71926fb3e0296e9f",
+    "git_commit" : "f1b256e7564703b9a1218b85ebad2bd82f8b8c16",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3287,34 +3287,18 @@ workflow run_wf {
     }
     // compute bbknn graph
     | bbknn.run(
-      fromState: { id, state ->
-        [
-          input: state.input,
-          modality: state.modality,
-          obsm_input: state.obsm_input,
-          obs_batch: state.obs_batch,
-          uns_output: state.uns_output,
-          obsp_distances: state.obsp_distances,
-          obsp_connectivities: state.obsp_connectivities,
-          n_neighbors_within_batch: state.n_neighbors_within_batch,
-          n_pcs: state.n_pcs,
-          n_trim: state.n_trim
-        ]
-      },
-      // use map when viash 0.7.6 is released
-      // related to https://github.com/viash-io/viash/pull/515
-      // fromState: [
-      //   "input": "input",
-      //   "obsm_input": "obsm_input",
-      //   "obs_batch": "obs_batch",
-      //   "modality": "modality",
-      //   "uns_output": "uns_output",
-      //   "obsp_distances": "obsp_distances",
-      //   "obsp_connectivities": "obsp_connectivities",
-      //   "n_neighbors_within_batch": "n_neighbors_within_batch",
-      //   "n_pcs": "n_pcs",
-      //   "n_trim": "n_trim"
-      // ],
+      fromState: [
+        "input": "input",
+        "modality": "modality",
+        "obsm_input": "obsm_input",
+        "obs_batch": "obs_batch",
+        "uns_output": "uns_output",
+        "obsp_distances": "obsp_distances",
+        "obsp_connectivities": "obsp_connectivities",
+        "n_neighbors_within_batch": "n_neighbors_within_batch",
+        "n_pcs": "n_pcs",
+        "n_trim": "n_trim",
+      ],
       toState: [
         "input": "output"
       ]
