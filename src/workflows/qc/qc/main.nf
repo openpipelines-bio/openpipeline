@@ -72,8 +72,6 @@ workflow run_wf {
           }
         return newState
         },
-        // use map when viash 0.7.6 is released
-        // related to https://github.com/viash-io/viash/pull/515
         toState: ["output": "output"]
       )
       | setState(["output"]) 

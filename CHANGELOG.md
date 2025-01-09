@@ -4,6 +4,12 @@
 
 * The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
 
+# MINOR CHANGES
+
+* `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
+
+* `popv`: Pin numpy<2 after new release of scvi-tools (PR #946).
+
 # openpipelines 2.0.0
 
 ## BREAKING CHANGES
