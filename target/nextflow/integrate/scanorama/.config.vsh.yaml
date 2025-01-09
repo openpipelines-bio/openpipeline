@@ -169,10 +169,6 @@ resources:
   path: "script.py"
   is_executable: true
 - type: "file"
-  path: "setup_logger.py"
-- type: "file"
-  path: "compress_h5mu.py"
-- type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
 description: "Use Scanorama to integrate different experiments.\n"
@@ -284,14 +280,6 @@ engines:
       nelse:  exit(1)\")"
     upgrade: true
   test_setup:
-  - type: "docker"
-    copy:
-    - "openpipelinetestutils /opt/openpipelinetestutils"
-  - type: "python"
-    user: false
-    packages:
-    - "/opt/openpipelinetestutils"
-    upgrade: true
   - type: "python"
     user: false
     packages:
@@ -306,7 +294,7 @@ build_info:
   output: "target/nextflow/integrate/scanorama"
   executable: "target/nextflow/integrate/scanorama/main.nf"
   viash_version: "0.9.0"
-  git_commit: "14f6701d1cd214ea82b4da1de620289963a58f31"
+  git_commit: "6d4c5e4974ba774b837b9f7dc70be79f38ba28fe"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

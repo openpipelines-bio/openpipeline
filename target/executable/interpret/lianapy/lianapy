@@ -541,9 +541,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Mauro Saporita, Povilas Gibas"
 LABEL org.opencontainers.image.description="Companion container for running component interpret lianapy"
-LABEL org.opencontainers.image.created="2025-01-08T14:24:25Z"
+LABEL org.opencontainers.image.created="2025-01-09T03:05:17Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="14f6701d1cd214ea82b4da1de620289963a58f31"
+LABEL org.opencontainers.image.revision="6d4c5e4974ba774b837b9f7dc70be79f38ba28fe"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1299,7 +1299,6 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
-import sys
 import liana
 import mudata
 
@@ -1350,13 +1349,11 @@ dep = {
 
 ### VIASH END
 
-sys.path.append(meta["resources_dir"])
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
-
 
 def main():
     # Get input data
-    mod = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
+    mdata = mudata.read(par["input"].strip())
+    mod = mdata.mod[par["modality"]]
 
     # Add dummy grouping labels when they do not exist
     if par["groupby"] not in mod.obs:
@@ -1395,9 +1392,8 @@ def main():
     # Undo modifications to groupby column
     mod.obs[par["groupby"]] = original_groupby_col
 
-    write_h5ad_to_h5mu_with_compression(
-        par["output"], par["input"], par["modality"], mod, par["output_compression"]
-    )
+    # TODO: make sure compression is needed
+    mdata.write_h5mu(par["output"].strip(), compression=par["output_compression"])
 
 
 if __name__ == "__main__":

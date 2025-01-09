@@ -2979,10 +2979,6 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/src/utils/compress_h5mu.py"
-    },
-    {
-      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3150,7 +3146,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/delimit_fraction",
     "viash_version" : "0.9.0",
-    "git_commit" : "14f6701d1cd214ea82b4da1de620289963a58f31",
+    "git_commit" : "6d4c5e4974ba774b837b9f7dc70be79f38ba28fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3241,18 +3237,20 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Reading modality %s from %s", par["modality"], par["input"])
-data = mu.read_h5ad(par["input"], mod=par["modality"])
+logger.info("Reading input data")
+mdata = mu.read_h5mu(par["input"])
 
-assert (
-    data.var_names.is_unique
-), "The var_names of the input modality must be be unique."
+mdata.var_names_make_unique()
+
+mod = par["modality"]
+logger.info("Processing modality %s.", mod)
+data = mdata.mod[mod]
 
 logger.info("\\\\tUnfiltered data: %s", data)
+
 logger.info("\\\\tComputing aggregations.")
 
 
@@ -3309,9 +3307,7 @@ data.obs[par["obs_name_filter"]] = keep_cells
 
 logger.info("\\\\tFiltered data: %s", data)
 logger.info("Writing output data to %s", par["output"])
-write_h5ad_to_h5mu_with_compression(
-    par["output"], par["input"], par["modality"], data, par["output_compression"]
-)
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 
 logger.info("Finished")
 VIASHMAIN

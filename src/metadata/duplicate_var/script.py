@@ -1,5 +1,5 @@
 import sys
-from mudata import read_h5ad
+from mudata import read_h5mu
 
 ## VIASH START
 par = {
@@ -16,12 +16,12 @@ meta = {"resources_dir": "src/metadata/copy_var"}
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
 logger.info("Read mudata from file")
-adata = read_h5ad(par["input"], mod=par["modality"])
+mdata = read_h5mu(par["input"])
+adata = mdata.mod[par["modality"]]
 
 
 def duplicate_var(adata, input_key, output_key):
@@ -48,6 +48,5 @@ else:
     duplicate_var(adata, par["input_var_key"], par["output_var_key"])
 
 logger.info("Write output to mudata file")
-write_h5ad_to_h5mu_with_compression(
-    par["output"], par["input"], par["modality"], adata, None
-)
+
+mdata.write_h5mu(par["output"], compression=par["output_compression"])

@@ -2974,10 +2974,6 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/src/utils/compress_h5mu.py"
-    },
-    {
-      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3089,13 +3085,14 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.12-slim",
+      "image" : "python:3.10-slim-bullseye",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
         {
           "type" : "apt",
           "packages" : [
+            "libhdf5-dev",
             "procps"
           ],
           "interactive" : false
@@ -3116,20 +3113,6 @@ meta = [
       ],
       "test_setup" : [
         {
-          "type" : "docker",
-          "copy" : [
-            "openpipelinetestutils /opt/openpipelinetestutils"
-          ]
-        },
-        {
-          "type" : "python",
-          "user" : false,
-          "packages" : [
-            "/opt/openpipelinetestutils"
-          ],
-          "upgrade" : true
-        },
-        {
           "type" : "python",
           "user" : false,
           "packages" : [
@@ -3146,7 +3129,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/normalize_total",
     "viash_version" : "0.9.0",
-    "git_commit" : "14f6701d1cd214ea82b4da1de620289963a58f31",
+    "git_commit" : "6d4c5e4974ba774b837b9f7dc70be79f38ba28fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3233,19 +3216,20 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Reading modality %s from %s", par["modality"], par["input"])
-dat = mu.read_h5ad(par["input"], mod=par["modality"])
-assert dat.var_names.is_unique, "The var_names of the input modality must be be unique."
+logger.info("Reading input mudata")
+mdata = mu.read_h5mu(par["input"])
+mdata.var_names_make_unique()
 
 logger.info(par)
 
-logger.info("Performing total normalization.")
+mod = par["modality"]
+logger.info("Performing total normalization on modality %s", mod)
+dat = mdata.mod[mod]
 if par["input_layer"] and par["input_layer"] not in dat.layers.keys():
-    raise ValueError(f"Input layer {par['input_layer']} not found in {par['modality']}")
+    raise ValueError(f"Input layer {par['input_layer']} not found in {mod}")
 output_data = sc.pp.normalize_total(
     dat,
     layer=par["input_layer"],
@@ -3261,14 +3245,8 @@ if output_data:
     )
     dat.layers[par["output_layer"]] = result
 
-logger.info(
-    "Writing to file to %s with compression %s",
-    par["output"],
-    par["output_compression"],
-)
-write_h5ad_to_h5mu_with_compression(
-    par["output"], par["input"], par["modality"], dat, par["output_compression"]
-)
+logger.info("Writing to file")
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

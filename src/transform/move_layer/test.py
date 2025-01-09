@@ -13,7 +13,7 @@ meta = {
 
 
 @pytest.fixture
-def test_mudata(random_h5mu_path):
+def test_mudata(tmp_path):
     df = pd.DataFrame(
         [[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"]
     )
@@ -35,24 +35,24 @@ def test_mudata(random_h5mu_path):
     obs2 = pd.DataFrame(["C", "D"], index=df.index, columns=["Obs"])
     ad2 = AnnData(df, obs=obs2, var=var2)
 
-    test_h5mu = random_h5mu_path()
+    test_h5mu = tmp_path / "input.h5mu"
     mudata = MuData({"mod1": ad1, "mod2": ad2})
     mudata.write_h5mu(test_h5mu)
     return test_h5mu
 
 
-def test_move_layer(test_mudata, run_component, random_h5mu_path):
-    output_file = random_h5mu_path()
+def test_move_layer(test_mudata, run_component, tmp_path):
+    output_file = tmp_path / "output.h5mu"
     run_component(
         [
             "--input",
-            test_mudata,
+            str(test_mudata),
             "--modality",
             "mod1",
             "--output_layer",
             "test_layer",
             "--output",
-            output_file,
+            str(output_file),
         ]
     )
     assert output_file.is_file()
@@ -61,25 +61,25 @@ def test_move_layer(test_mudata, run_component, random_h5mu_path):
     assert output_mudata.mod["mod1"].X is None
 
 
-def test_move_layer_select_input_layer(test_mudata, run_component, random_h5mu_path):
-    output_file = random_h5mu_path()
+def test_move_layer_select_input_layer(test_mudata, run_component, tmp_path):
+    output_file = tmp_path / "output.h5mu"
     run_component(
         [
             "--input",
-            test_mudata,
+            str(test_mudata),
             "--modality",
             "mod1",
             "--output_layer",
             "test_layer",
             "--output",
-            output_file,
+            str(output_file),
         ]
     )
-    output_file_2 = random_h5mu_path()
+    output_file_2 = tmp_path / "output2.h5mu"
     run_component(
         [
             "--input",
-            output_file,
+            str(output_file),
             "--modality",
             "mod1",
             "--input_layer",
@@ -87,7 +87,7 @@ def test_move_layer_select_input_layer(test_mudata, run_component, random_h5mu_p
             "--output_layer",
             "test_layer2",
             "--output",
-            output_file_2,
+            str(output_file_2),
         ]
     )
     assert output_file_2.is_file()

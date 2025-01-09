@@ -3183,11 +3183,7 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/src/labels_transfer/utils/helper.py"
-    },
-    {
-      "type" : "file",
-      "path" : "/src/utils/compress_h5mu.py"
+      "path" : "../utils/helper.py"
     },
     {
       "type" : "file",
@@ -3373,7 +3369,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/knn",
     "viash_version" : "0.9.0",
-    "git_commit" : "14f6701d1cd214ea82b4da1de620289963a58f31",
+    "git_commit" : "6d4c5e4974ba774b837b9f7dc70be79f38ba28fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3468,7 +3464,6 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from helper import check_arguments, get_reference_features, get_query_features
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 
 def setup_logger():
@@ -3513,8 +3508,11 @@ logger = setup_logger()
 logger.info(
     f"Reading in query dataset {par['input']} and reference datasets {par['reference']}"
 )
-q_adata = mu.read_h5ad(par["input"], mod=par["modality"])
-r_adata = mu.read_h5ad(par["reference"], mod=par["modality"])
+q_mdata = mu.read_h5mu(par["input"])
+q_adata = q_mdata.mod[par["modality"]]
+
+r_mdata = mu.read_h5mu(par["reference"])
+r_adata = r_mdata.mod[par["modality"]]
 
 # check arguments
 logger.info("Checking arguments")
@@ -3607,9 +3605,8 @@ for obs_tar, obs_pred, obs_proba in zip(
     q_adata.obs[obs_proba] = probabilities
 
 logger.info(f"Saving output data to {par['output']}")
-write_h5ad_to_h5mu_with_compression(
-    par["output"], par["input"], par["modality"], q_adata, par["output_compression"]
-)
+q_mdata.mod[par["modality"]] = q_adata
+q_mdata.write_h5mu(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

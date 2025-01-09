@@ -3335,11 +3335,7 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/src/utils/subset_vars.py"
-    },
-    {
-      "type" : "file",
-      "path" : "/src/utils/compress_h5mu.py"
+      "path" : "../../utils/subset_vars.py"
     },
     {
       "type" : "file",
@@ -3353,6 +3349,10 @@ meta = [
       "type" : "python_script",
       "path" : "test.py",
       "is_executable" : true
+    },
+    {
+      "type" : "file",
+      "path" : "../../utils/subset_vars.py"
     },
     {
       "type" : "file",
@@ -3509,7 +3509,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.9.0",
-    "git_commit" : "14f6701d1cd214ea82b4da1de620289963a58f31",
+    "git_commit" : "6d4c5e4974ba774b837b9f7dc70be79f38ba28fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3625,7 +3625,6 @@ import sys
 sys.path.append(meta["resources_dir"])
 
 from subset_vars import subset_vars
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 
 # TODO: optionally, move to qa
@@ -3650,7 +3649,8 @@ def check_validity_anndata(adata, layer, obs_batch, n_obs_min_count, n_var_min_c
 
 
 def main():
-    adata = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
+    mdata = mudata.read(par["input"].strip())
+    adata = mdata.mod[par["modality"]]
 
     if par["var_input"]:
         # Subset to HVG
@@ -3720,9 +3720,8 @@ def main():
     # Get the latent output
     adata.obsm[par["obsm_output"]] = vae_uns.get_latent_representation()
 
-    write_h5ad_to_h5mu_with_compression(
-        par["output"], par["input"], par["modality"], adata, par["output_compression"]
-    )
+    mdata.mod[par["modality"]] = adata
+    mdata.write_h5mu(par["output"].strip(), compression=par["output_compression"])
     if par["output_model"]:
         vae_uns.save(par["output_model"], overwrite=True)
 
