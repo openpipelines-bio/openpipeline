@@ -3070,13 +3070,7 @@ meta = [
       }
     },
     {
-      "name" : "neighbors/find_neighbors",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "dimred/umap",
+      "name" : "workflows/multiomics/neighbors_leiden_umap",
       "repository" : {
         "type" : "local"
       }
@@ -3170,7 +3164,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction",
     "viash_version" : "0.9.0",
-    "git_commit" : "6d4c5e4974ba774b837b9f7dc70be79f38ba28fe",
+    "git_commit" : "0ebac01465b7f70622c0c5115a76ceebf3f15980",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3206,8 +3200,7 @@ meta = [
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
 include { pca } from "${meta.resources_dir}/../../../../nextflow/dimred/pca/main.nf"
-include { find_neighbors } from "${meta.resources_dir}/../../../../nextflow/neighbors/find_neighbors/main.nf"
-include { umap } from "${meta.resources_dir}/../../../../nextflow/dimred/umap/main.nf"
+include { neighbors_leiden_umap } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/neighbors_leiden_umap/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
@@ -3234,30 +3227,21 @@ workflow run_wf {
       ],
       toState: ["input": "output"]
     )
-    | find_neighbors.run(
+    | neighbors_leiden_umap.run(
       fromState: [
         "input": "input",
         "obsm_input": "obsm_pca",
-        "uns_output": "uns_neighbors",
-        "obsp_distances": "obsp_neighbor_distances",
-        "obsp_connectivities": "obsp_neighbor_connectivities",
         "modality": "modality",
-        "layer": "layer",
+        "uns_neighbors": "uns_neighbors",
+        "obsp_neighbor_distances": "obsp_neighbor_distances",
+        "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
+        "output": "workflow_output",
+        "obsm_umap": "obsm_umap",
       ],
-      toState: ["input": "output"]
-    )
-    | umap.run(
-      fromState: {id, state ->
-        [
-          "input": state.input,
-          "uns_neighbors": state.uns_neighbors,
-          "output": state.workflow_output,
-          "obsm_output": state.obsm_umap,
-          "modality": state.modality,
-          "output_compression": "gzip"
-        ]
-      },
-      toState: ["output": "output"]
+      toState: ["output": "output"],
+      args: [
+        "leiden_resolution": [] // disable leiden
+      ]
     )
     | setState(["output"])
 

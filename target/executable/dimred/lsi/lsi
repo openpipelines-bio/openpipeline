@@ -530,9 +530,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Sarah Ouologuem, Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component dimred lsi"
-LABEL org.opencontainers.image.created="2025-01-09T03:05:20Z"
+LABEL org.opencontainers.image.created="2025-01-09T08:53:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6d4c5e4974ba774b837b9f7dc70be79f38ba28fe"
+LABEL org.opencontainers.image.revision="0ebac01465b7f70622c0c5115a76ceebf3f15980"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
