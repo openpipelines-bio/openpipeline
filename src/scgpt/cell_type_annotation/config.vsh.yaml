@@ -163,5 +163,5 @@ engines:
 runners:
   - type: executable
   - type: nextflow
-      directives:
-      - label: [ highcpu, highmem, gpu ]
+    directives:
+      label: [ highmem, highcpu, gpu ]
