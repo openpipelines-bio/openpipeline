@@ -1,3 +1,11 @@
+# openpipelines 2.1.0
+
+# MINOR CHANGES
+
+* `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
+
+* `popv`: Pin numpy<2 after new release of scvi-tools (PR #946).
+
 # openpipelines 2.0.0
 
 ## BREAKING CHANGES
@@ -54,6 +62,8 @@
 * `scgpt/embedding`: remove unused argument `dbsn` (PR #875).
 
 * `scgpt/binning`: update handling of empty rows in sparse matrices (PR #875).
+
+* `dataflow/split_h5mu`: Update memory label from `lowmem` to `highmem` and cpu label from `singlecpu` to `lowcpu` (PR #930).
 
 # openpipelines 2.0.0-rc.2
 
