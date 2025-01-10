@@ -3184,6 +3184,11 @@ meta = [
       "type" : "nextflow",
       "id" : "nextflow",
       "directives" : {
+        "label" : [
+          "highmem",
+          "highcpu",
+          "gpu"
+        ],
         "tag" : "$id"
       },
       "auto" : {
@@ -3321,7 +3326,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cell_type_annotation",
     "viash_version" : "0.9.0",
-    "git_commit" : "e46163fd1b4e6ee06cd6424d4f007965cd3829d1",
+    "git_commit" : "880f530250a7a99ecccb659dbbd9d40007ed86df",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -4006,6 +4011,11 @@ meta["defaults"] = [
     "image" : "openpipelines-bio/openpipeline/scgpt/cell_type_annotation",
     "tag" : "main_build"
   },
+  "label" : [
+    "highmem",
+    "highcpu",
+    "gpu"
+  ],
   "tag" : "$id"
 }'''),
 
