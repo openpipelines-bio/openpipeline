@@ -176,7 +176,6 @@ workflow run_wf {
                     "modality": "rna",
                     "var_pca_feature_selection": state.highly_variable_features_var_output, // run PCA on highly variable genes only
                     "pca_overwrite": state.pca_overwrite,
-                    "output": state.workflow_output,
                   ],
                 "dimensionality_reduction_scaling_rna":
                   [
@@ -195,7 +194,6 @@ workflow run_wf {
                     "uns_neighbors": "neighbors_scaled",
                     "obsp_neighbor_connectivities": "connectivities_scaled",
                     "obsp_neighbor_distances": "distances_scaled",
-                    "output": state.workflow_output,
                   ],
                 "dimensionality_reduction_prot":
                   [
@@ -203,8 +201,7 @@ workflow run_wf {
                     "input": state.input,
                     "layer": "clr",
                     "modality": "prot",
-                    "pca_overwrite": state.pca_overwrite,
-                    "output": state.workflow_output,
+                    "pca_overwrite": state.pca_overwrite
                   ]
               ]
               return stateMappings[component.name]
@@ -212,12 +209,16 @@ workflow run_wf {
             toState: ["input": "output"]
           )
       }
-      // At the end of the reduce statement,
-      // the `toState` closure put the output back into
-      // into the 'input' slot
-      | map {id, state ->
-        [id, ["output": state.input]]
-      }
+      | publish.run(
+        fromState: { id, state -> [
+            "input": state.input,
+            "output": state.workflow_output,
+          ]
+        },
+        toState: ["output": "output"]
+      )
+      | setState(["output"])
+
 
   emit:
   output_ch

@@ -152,6 +152,7 @@ dependencies:
     alias: dimensionality_reduction_rna
   - name: workflows/multiomics/dimensionality_reduction
     alias: dimensionality_reduction_prot
+  - name: transfer/publish
   - name: workflows/multiomics/dimensionality_reduction
     alias: dimensionality_reduction_scaling_rna 
 resources:

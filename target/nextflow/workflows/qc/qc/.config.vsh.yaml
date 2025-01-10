@@ -249,6 +249,9 @@ info:
     namespace: "test_workflows/qc"
 status: "enabled"
 dependencies:
+- name: "transfer/publish"
+  repository:
+    type: "local"
 - name: "metadata/grep_annotation_column"
   repository:
     type: "local"
@@ -329,9 +332,10 @@ build_info:
   output: "target/nextflow/workflows/qc/qc"
   executable: "target/nextflow/workflows/qc/qc/main.nf"
   viash_version: "0.9.0"
-  git_commit: "b5407bc88da40368a4ea3d6366d2c1a3d52e41ad"
+  git_commit: "d3ddc63de4d41f2ee83f1f76700c1e1e54e37873"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
+  - "target/nextflow/transfer/publish"
   - "target/nextflow/metadata/grep_annotation_column"
   - "target/nextflow/qc/calculate_qc_metrics"
 package_config:

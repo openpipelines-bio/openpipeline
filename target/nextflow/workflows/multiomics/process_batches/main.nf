@@ -3192,6 +3192,12 @@ meta = [
       }
     },
     {
+      "name" : "transfer/publish",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
       "name" : "workflows/multiomics/dimensionality_reduction",
       "alias" : "dimensionality_reduction_scaling_rna",
       "repository" : {
@@ -3287,7 +3293,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.9.0",
-    "git_commit" : "b5407bc88da40368a4ea3d6366d2c1a3d52e41ad",
+    "git_commit" : "d3ddc63de4d41f2ee83f1f76700c1e1e54e37873",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3331,6 +3337,7 @@ include { dimensionality_reduction as dimensionality_reduction_rna_viashalias } 
 dimensionality_reduction_rna = dimensionality_reduction_rna_viashalias.run(key: "dimensionality_reduction_rna")
 include { dimensionality_reduction as dimensionality_reduction_prot_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
 dimensionality_reduction_prot = dimensionality_reduction_prot_viashalias.run(key: "dimensionality_reduction_prot")
+include { publish } from "${meta.resources_dir}/../../../../nextflow/transfer/publish/main.nf"
 include { dimensionality_reduction as dimensionality_reduction_scaling_rna_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
 dimensionality_reduction_scaling_rna = dimensionality_reduction_scaling_rna_viashalias.run(key: "dimensionality_reduction_scaling_rna")
 
@@ -3514,7 +3521,6 @@ workflow run_wf {
                     "modality": "rna",
                     "var_pca_feature_selection": state.highly_variable_features_var_output, // run PCA on highly variable genes only
                     "pca_overwrite": state.pca_overwrite,
-                    "output": state.workflow_output,
                   ],
                 "dimensionality_reduction_scaling_rna":
                   [
@@ -3533,7 +3539,6 @@ workflow run_wf {
                     "uns_neighbors": "neighbors_scaled",
                     "obsp_neighbor_connectivities": "connectivities_scaled",
                     "obsp_neighbor_distances": "distances_scaled",
-                    "output": state.workflow_output,
                   ],
                 "dimensionality_reduction_prot":
                   [
@@ -3541,8 +3546,7 @@ workflow run_wf {
                     "input": state.input,
                     "layer": "clr",
                     "modality": "prot",
-                    "pca_overwrite": state.pca_overwrite,
-                    "output": state.workflow_output,
+                    "pca_overwrite": state.pca_overwrite
                   ]
               ]
               return stateMappings[component.name]
@@ -3550,12 +3554,16 @@ workflow run_wf {
             toState: ["input": "output"]
           )
       }
-      // At the end of the reduce statement,
-      // the `toState` closure put the output back into
-      // into the 'input' slot
-      | map {id, state ->
-        [id, ["output": state.input]]
-      }
+      | publish.run(
+        fromState: { id, state -> [
+            "input": state.input,
+            "output": state.workflow_output,
+          ]
+        },
+        toState: ["output": "output"]
+      )
+      | setState(["output"])
+
 
   emit:
   output_ch

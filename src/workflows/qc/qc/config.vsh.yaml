@@ -134,6 +134,7 @@ argument_groups:
         description: Destination path to the output.
         example: output.h5mu
 dependencies:
+  - name: transfer/publish
   - name: metadata/grep_annotation_column
   - name: qc/calculate_qc_metrics
 resources:
