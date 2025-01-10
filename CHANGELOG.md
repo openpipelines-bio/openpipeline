@@ -4,7 +4,9 @@
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
 
-## MINOR CHANGES
+* The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
+
+# MINOR CHANGES
 
 * `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
 
