@@ -91,3 +91,5 @@ engines:
 runners:
   - type: executable
   - type: nextflow
+    directives:
+      - label: [ midcpu, midmem ]
