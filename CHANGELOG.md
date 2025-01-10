@@ -55,6 +55,8 @@
 
 * `workflows/integration/scgpt_leiden` workflow update: Update workflow such that input dataset is not subsetted for HVG but uses boolean masks in .var field instead (PR #875).
 
+* Various scGPT components (`scgpt`): Add resource labels (PR #947).
+
 ## BUG FIXES
 
 * `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (PR #936 and PR #938). 
