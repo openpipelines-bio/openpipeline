@@ -17,7 +17,6 @@ workflow run_wf {
         "query_modality": "modality",
         "query_proteins_modality": "prot_modality",
         "query_model_path": "query_model_path",
-        "reference_model_path": "reference_model_path",
         "obsm_normalized_rna_output": "rna_obsm_output",
         "obsm_normalized_protein_output": "prot_obsm_output",
         "reference_model_path": "reference_model_path",
