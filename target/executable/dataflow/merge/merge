@@ -481,9 +481,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow merge"
-LABEL org.opencontainers.image.created="2025-01-10T02:51:18Z"
+LABEL org.opencontainers.image.created="2025-01-11T02:50:14Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d3ddc63de4d41f2ee83f1f76700c1e1e54e37873"
+LABEL org.opencontainers.image.revision="7ecdcfe414602425e846898baadf164841453e29"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

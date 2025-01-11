@@ -3312,12 +3312,6 @@ meta = [
       "repository" : {
         "type" : "local"
       }
-    },
-    {
-      "name" : "transfer/publish",
-      "repository" : {
-        "type" : "local"
-      }
     }
   ],
   "links" : {
@@ -3408,7 +3402,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/totalvi_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "d3ddc63de4d41f2ee83f1f76700c1e1e54e37873",
+    "git_commit" : "7ecdcfe414602425e846898baadf164841453e29",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3448,7 +3442,6 @@ include { move_obsm_to_obs } from "${meta.resources_dir}/../../../../nextflow/me
 include { totalvi } from "${meta.resources_dir}/../../../../nextflow/integrate/totalvi/main.nf"
 include { umap } from "${meta.resources_dir}/../../../../nextflow/dimred/umap/main.nf"
 include { find_neighbors } from "${meta.resources_dir}/../../../../nextflow/neighbors/find_neighbors/main.nf"
-include { publish } from "${meta.resources_dir}/../../../../nextflow/transfer/publish/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
@@ -3498,10 +3491,12 @@ workflow neighbors_leiden_umap {
     | umap.run(
       fromState: [
           "input": "input",
+          "output": "workflow_output",
           "uns_neighbors": "uns_neighbors",
           "obsm_output": "obsm_umap",
           "query_modality": "modality",
         ],
+      args: ["output_compression": "gzip"]
       toState: ["output": "output"]
     )
 
@@ -3564,7 +3559,9 @@ workflow run_wf {
       }
       [id, new_state, state]
     }
-    | neighbors_leiden_umap
+    // neighbors_leiden_umap is not a subworkflow or module, but a 
+    // workflow defined in this script, so not .run functionality is available
+    | neighbors_leiden_umap 
     | map { id, state, orig_state -> // for ADT
       stateMapping = [
         "uns_neighbors": "prot_uns_neighbors",
@@ -3585,16 +3582,9 @@ workflow run_wf {
       }
       [id, new_state + ["input": state.output]]
     }
+    // neighbors_leiden_umap is not a subworkflow or module, but a 
+    // workflow defined in this script, so not .run functionality is available
     | neighbors_leiden_umap
-    | publish.run(
-      fromState: { id, state -> [
-          "input": state.output,
-          "output": state.workflow_output,
-          "compression": "gzip"
-        ]
-      },
-      toState: ["output", "output"]
-    )
     | setState(["output", "reference_model_path", "query_model_path"])
   emit:
   output_ch

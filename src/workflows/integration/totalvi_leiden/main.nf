@@ -44,10 +44,12 @@ workflow neighbors_leiden_umap {
     | umap.run(
       fromState: [
           "input": "input",
+          "output": "workflow_output",
           "uns_neighbors": "uns_neighbors",
           "obsm_output": "obsm_umap",
           "query_modality": "modality",
         ],
+      args: ["output_compression": "gzip"]
       toState: ["output": "output"]
     )
 
@@ -110,7 +112,9 @@ workflow run_wf {
       }
       [id, new_state, state]
     }
-    | neighbors_leiden_umap
+    // neighbors_leiden_umap is not a subworkflow or module, but a 
+    // workflow defined in this script, so not .run functionality is available
+    | neighbors_leiden_umap 
     | map { id, state, orig_state -> // for ADT
       stateMapping = [
         "uns_neighbors": "prot_uns_neighbors",
@@ -131,16 +135,9 @@ workflow run_wf {
       }
       [id, new_state + ["input": state.output]]
     }
+    // neighbors_leiden_umap is not a subworkflow or module, but a 
+    // workflow defined in this script, so not .run functionality is available
     | neighbors_leiden_umap
-    | publish.run(
-      fromState: { id, state -> [
-          "input": state.output,
-          "output": state.workflow_output,
-          "compression": "gzip"
-        ]
-      },
-      toState: ["output", "output"]
-    )
     | setState(["output", "reference_model_path", "query_model_path"])
   emit:
   output_ch
