@@ -469,7 +469,7 @@ build_info:
   output: "target/nextflow/workflows/integration/totalvi_leiden"
   executable: "target/nextflow/workflows/integration/totalvi_leiden/main.nf"
   viash_version: "0.9.0"
-  git_commit: "7ecdcfe414602425e846898baadf164841453e29"
+  git_commit: "94c412d7939cacf2fdea07af33beeaec4bab82ed"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/cluster/leiden"
