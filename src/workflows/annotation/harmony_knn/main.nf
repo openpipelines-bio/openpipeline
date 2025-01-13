@@ -7,13 +7,13 @@ workflow run_wf {
     output_ch = input_ch
         // Set aside the output for this workflow to avoid conflicts
         | map {id, state -> 
-        def new_state = state + ["workflow_output": state.output]
-        [id, new_state]
+            def new_state = state + ["workflow_output": state.output]
+            [id, new_state]
         }
         // add id as _meta join id to be able to merge with source channel and end of workflow
         | map{ id, state -> 
-        def new_state = state + ["_meta": ["join_id": id]]
-        [id, new_state]
+            def new_state = state + ["_meta": ["join_id": id]]
+            [id, new_state]
         }
         | view {"After adding join_id: $it"}
         // Add 'query' id to .obs columns of query dataset
