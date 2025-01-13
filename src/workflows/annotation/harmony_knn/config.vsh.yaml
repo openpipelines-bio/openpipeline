@@ -1,6 +1,11 @@
 name: "harmony_knn"
 namespace: "workflows/annotation"
 description: "Cell type annotation workflow by performing harmony integration of reference and query dataset followed by KNN label transfer."
+info:
+  name: "Harmony integration followed by KNN label transfer"
+  test_dependencies:
+    - name: harmony_knn_test
+      namespace: test_workflows/annotation
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]
@@ -62,8 +67,7 @@ argument_groups:
       - name: "--theta"
         type: double
         description: |
-          Diversity clustering penalty parameter. Specify for each variable in group.by.vars. 
-          A value of theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
+          Diversity clustering penalty parameter. A value of theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
         min: 0
         default: [2]
         multiple: true
@@ -90,6 +94,7 @@ argument_groups:
       - name: "--n_neighbors"
         type: integer
         default: 15
+        min: 5
         required: false
         description: |
           The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. 

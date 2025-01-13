@@ -71,8 +71,7 @@ argument_groups:
       - name: "--theta"
         type: double
         description: |
-          Diversity clustering penalty parameter. Specify for each variable in group.by.vars. 
-          theta=0 does not encourage any diversity. Larger values of theta
+          Diversity clustering penalty parameter. theta=0 does not encourage any diversity. Larger values of theta
           result in more diverse clusters."
         default: 2
         multiple: true

@@ -41,7 +41,7 @@ arguments:
     required: false
     description: "In which .obsm slot to store the resulting integrated embedding."
   - name: "--theta"
-    description: "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
+    description: "Diversity clustering penalty parameter.theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
     type: double
     default: 2
     multiple: true
