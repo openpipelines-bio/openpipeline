@@ -31,6 +31,8 @@
 
 * CI: Use `params.resources_test` in test workflows in order to point to an alternative location (e.g. a cache) (PR #889).
 
+* `src/metadata/query_reference_alignment`: Added a component to align a query and reference dataset (PR #948).
+
 ## MINOR CHANGES
 
 * Pin `scikit-learn` for `labels_transfer/xgboost` to `<1.6` (PR #931).
