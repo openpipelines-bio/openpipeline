@@ -10,7 +10,7 @@
 
 # MINOR CHANGES
 
-* Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942). 
+* Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942 and PR #949). 
 
 * `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
 

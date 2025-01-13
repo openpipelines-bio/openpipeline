@@ -3167,7 +3167,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning",
     "viash_version" : "0.9.0",
-    "git_commit" : "c27f3577f23a95a18ae74d3e5e9db0d06794cc7c",
+    "git_commit" : "84120c987046ae5ea1bc49c65ac20a3f564c9860",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
