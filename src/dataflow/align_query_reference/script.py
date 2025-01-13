@@ -1,5 +1,6 @@
 import sys
 import mudata as mu
+import re
 
 
 ## VIASH START
@@ -37,18 +38,19 @@ logger = setup_logger()
 
 
 def copy_layer(adata, input_layer, output_layer, overwrite=False):
-    if output_layer not in adata.layers.keys():
-        logger.info(f"Copying {input_layer} to {output_layer}")
-        adata.layers[output_layer] = (
-            adata.layers[input_layer].copy() if input_layer else adata.X.copy()
-        )
+    if output_layer not in adata.layers.keys() and input_layer:
+        logger.info(f"Copying {input_layer} layer to {output_layer}")
+        adata.layers[output_layer] = adata.layers[output_layer].copy()
+
+    elif output_layer not in adata.layers.keys() and input_layer:
+        logger.info(f"Copying .X layer to {output_layer}")
+        adata.layers[output_layer] = adata.X.copy()
 
     else:
         if not overwrite:
             raise ValueError(
                 f"Layer {output_layer} already exists. Data can not be copied."
             )
-
         logger.warning(f"Layer {output_layer} already exists. Overwriting data.")
         adata.layers[output_layer] = (
             adata.layers[input_layer].copy() if input_layer else adata.X.copy()
@@ -58,8 +60,8 @@ def copy_layer(adata, input_layer, output_layer, overwrite=False):
 
 
 def copy_obs(adata, input_obs_key, output_obs_key, overwrite=False, fill_value=None):
-    if output_obs_key not in adata.layers.keys():
-        logger.info(f"Copying {input_obs_key} to {output_obs_key}")
+    if output_obs_key not in adata.obs.keys():
+        logger.info(f"Copying {input_obs_key} .obs key to {output_obs_key}")
         adata.layers[output_obs_key] = (
             adata.layers[input_obs_key].copy() if input_obs_key else fill_value
         )
@@ -67,10 +69,10 @@ def copy_obs(adata, input_obs_key, output_obs_key, overwrite=False, fill_value=N
     else:
         if not overwrite:
             raise ValueError(
-                f"Layer {output_obs_key} already exists. Data can not be copied."
+                f".obs key {output_obs_key} already exists. Data can not be copied."
             )
 
-        logger.warning(f"Layer {output_obs_key} already exists. Overwriting data.")
+        logger.warning(f".obs key {output_obs_key} already exists. Overwriting data.")
         adata.layers[output_obs_key] = (
             adata.layers[input_obs_key].copy() if input_obs_key else fill_value
         )
@@ -81,7 +83,29 @@ def copy_obs(adata, input_obs_key, output_obs_key, overwrite=False, fill_value=N
 def copy_and_sanitize_var_gene_names(
     adata, input_var_key, output_var_key, overwrite=False
 ):
-    pass
+    if output_var_key not in adata.var.keys() and input_var_key:
+        logger.info(f"Copying {input_var_key} .var key to {output_var_key}")
+        adata.var[output_var_key] = [
+            re.sub("\\.[0-9]+$", "", s) for s in adata.var[input_var_key]
+        ]
+    if output_var_key not in adata.var.keys() and input_var_key:
+        logger.info(f"Copying {input_var_key} .var key to {output_var_key}")
+        adata.var[output_var_key] = [
+            re.sub("\\.[0-9]+$", "", s) for s in adata.var.index
+        ]
+
+    else:
+        if not overwrite:
+            raise ValueError(
+                f".var key {output_var_key} already exists. Data can not be copied."
+            )
+
+        logger.warning(f".var key {output_var_key} already exists. Overwriting data.")
+        adata.var[output_var_key] = [
+            re.sub("\\.[0-9]+$", "", s) for s in adata.var[input_var_key]
+        ]
+
+    return adata
 
 
 def main():
@@ -94,6 +118,7 @@ def main():
     reference_adata = reference_mudata.mod[par["modality"]]
     reference_modality = reference_adata.copy()
 
+    # Aligning layers
     logger.info("Aligning layers")
     input_modality = copy_layer(
         input_modality,
@@ -108,6 +133,7 @@ def main():
         overwrite=par["overwrite_existing_key"],
     )
 
+    # Aligning batch labels
     logger.info("Aligning batch labels")
     input_modality = copy_obs(
         input_modality,
@@ -124,6 +150,7 @@ def main():
         fill_value=None,
     )
 
+    # Aligning cell type labels
     logger.info("Aligning cell type labels")
     input_modality = copy_obs(
         input_modality,
@@ -140,6 +167,7 @@ def main():
         fill_vallue=par["unkown_celltype_label"],
     )
 
+    # Aligning and sanitizing gene names
     logger.info("Aligning and sanitizing gene names")
     input_modality = copy_and_sanitize_var_gene_names(
         input_modality,
@@ -154,8 +182,14 @@ def main():
         overwrite=par["overwrite_existing_key"],
     )
 
-    cross_check_genes()
+    # Cross check genes
+    cross_check_genes(
+        input_modality.var["output_var_gene_names"],
+        reference_modality.var["output_var_gene_names"],
+        min_gene_overlap=par["input_reference_gene_overlap"],
+    )
 
+    # Writing output data
     logger.info("Writing output data")
     input_mudata.mod[par["modality"]] = input_modality
     input_mudata.write_h5mu(par["output_query"], compression=par["output_compression"])
