@@ -10,6 +10,8 @@
 
 # MINOR CHANGES
 
+* Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942). 
+
 * `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
 
 * `popv`: Pin numpy<2 after new release of scvi-tools (PR #946).
