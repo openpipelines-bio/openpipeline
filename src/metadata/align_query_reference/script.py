@@ -5,16 +5,16 @@ import re
 
 ## VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
     "input_layer": None,
     "input_var_gene_names": None,
     "input_obs_batch": "sample_id",
-    "input_obs_labels": None,
+    "input_obs_label": None,
     "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "reference_layer": None,
     "reference_var_gene_names": "ensemblid",
-    "reference_obs_batch": "sample_id",
+    "reference_obs_batch": "donor_id",
     "reference_obs_label": "cell_ontology_class",
     "output_query": "pbmc_1k_protein_v3_filtered_feature_bc_matrix_aligned.h5mu",
     "output_reference": "TS_Blood_filtered_aligned.h5mu",
@@ -40,9 +40,9 @@ logger = setup_logger()
 def copy_layer(adata, input_layer, output_layer, overwrite=False):
     if output_layer not in adata.layers.keys() and input_layer:
         logger.info(f"Copying {input_layer} layer to {output_layer}")
-        adata.layers[output_layer] = adata.layers[output_layer].copy()
+        adata.layers[output_layer] = adata.layers[input_layer].copy()
 
-    elif output_layer not in adata.layers.keys() and input_layer:
+    elif output_layer not in adata.layers.keys() and not input_layer:
         logger.info(f"Copying .X layer to {output_layer}")
         adata.layers[output_layer] = adata.X.copy()
 
@@ -60,11 +60,13 @@ def copy_layer(adata, input_layer, output_layer, overwrite=False):
 
 
 def copy_obs(adata, input_obs_key, output_obs_key, overwrite=False, fill_value=None):
-    if output_obs_key not in adata.obs.keys():
+    if output_obs_key not in adata.obs.keys() and input_obs_key:
         logger.info(f"Copying {input_obs_key} .obs key to {output_obs_key}")
-        adata.layers[output_obs_key] = (
-            adata.layers[input_obs_key].copy() if input_obs_key else fill_value
-        )
+        adata.obs[output_obs_key] = adata.obs[input_obs_key].copy()
+
+    elif output_obs_key not in adata.obs.keys() and not input_obs_key:
+        logger.info(f"Assigning fill value label to .obs {output_obs_key}")
+        adata.obs[output_obs_key] = fill_value
 
     else:
         if not overwrite:
@@ -73,8 +75,8 @@ def copy_obs(adata, input_obs_key, output_obs_key, overwrite=False, fill_value=N
             )
 
         logger.warning(f".obs key {output_obs_key} already exists. Overwriting data.")
-        adata.layers[output_obs_key] = (
-            adata.layers[input_obs_key].copy() if input_obs_key else fill_value
+        adata.obs[output_obs_key] = (
+            adata.obs[input_obs_key].copy() if input_obs_key else fill_value
         )
 
     return adata
@@ -88,8 +90,8 @@ def copy_and_sanitize_var_gene_names(
         adata.var[output_var_key] = [
             re.sub("\\.[0-9]+$", "", s) for s in adata.var[input_var_key]
         ]
-    if output_var_key not in adata.var.keys() and input_var_key:
-        logger.info(f"Copying {input_var_key} .var key to {output_var_key}")
+    elif output_var_key not in adata.var.keys() and not input_var_key:
+        logger.info(f"Copying .var index to {output_var_key}")
         adata.var[output_var_key] = [
             re.sub("\\.[0-9]+$", "", s) for s in adata.var.index
         ]
@@ -154,17 +156,17 @@ def main():
     logger.info("Aligning cell type labels")
     input_modality = copy_obs(
         input_modality,
-        par["input_obs_celltype_label"],
-        par["output_obs_celltype_label"],
+        par["input_obs_label"],
+        par["output_obs_label"],
         par["overwrite_existing_key"],
-        fill_vallue=par["unkown_celltype_label"],
+        fill_value=par["unkown_celltype_label"],
     )
     reference_modality = copy_obs(
         reference_modality,
-        par["reference_obs_celltype_label"],
-        par["output_obs_celltype_label"],
+        par["reference_obs_label"],
+        par["output_obs_label"],
         overwrite=par["overwrite_existing_key"],
-        fill_vallue=par["unkown_celltype_label"],
+        fill_value=par["unkown_celltype_label"],
     )
 
     # Aligning and sanitizing gene names
@@ -183,9 +185,10 @@ def main():
     )
 
     # Cross check genes
+    logger.info("Cross checking genes")
     cross_check_genes(
-        input_modality.var["output_var_gene_names"],
-        reference_modality.var["output_var_gene_names"],
+        input_modality.var[par["output_var_gene_names"]],
+        reference_modality.var[par["output_var_gene_names"]],
         min_gene_overlap=par["input_reference_gene_overlap"],
     )
 
@@ -198,3 +201,7 @@ def main():
     reference_mudata.write_h5mu(
         par["output_reference"], compression=par["output_compression"]
     )
+
+
+if __name__ == "__main__":
+    main()

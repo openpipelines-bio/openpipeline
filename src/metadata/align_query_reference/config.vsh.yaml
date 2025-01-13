@@ -1,5 +1,5 @@
 name: align_query_reference
-namespace: "dataflow"
+namespace: metadata
 description: |
   Alignment of a query and reference dataset by:
   * Harmonization of .var field name for gene names
@@ -29,6 +29,7 @@ argument_groups:
         required: false
       - name: "--input_layer"
         type: string
+        required: false
         description: The layer in the input (query) data to be used for cell type annotation if .X is not to be used. 
       - name: "--input_var_gene_names"
         type: string
@@ -134,11 +135,13 @@ resources:
   - path: /src/utils/setup_logger.py
   - path: /src/utils/cross_check_genes.py
   - path: /src/utils/set_var_index.py
+
 test_resources:
   - type: python_script
     path: test.py
-  - path: resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
-  - path: resources_test/annotation_test_data/TS_Blood_filtered.h5mu
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+  - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
+
 engines:
   - type: docker
     image: python:3.12-slim
