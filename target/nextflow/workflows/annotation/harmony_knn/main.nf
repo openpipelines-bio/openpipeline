@@ -3131,7 +3131,11 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/resources_test/scgpt"
+      "path" : "/resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+    },
+    {
+      "type" : "file",
+      "path" : "/resources_test/annotation_test_data/TS_Blood_filtered.h5mu"
     },
     {
       "type" : "file",
@@ -3276,7 +3280,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/harmony_knn",
     "viash_version" : "0.9.0",
-    "git_commit" : "84120c987046ae5ea1bc49c65ac20a3f564c9860",
+    "git_commit" : "0b9bd80ec0ae2db241d6ede581ba1ed0c97e8d9e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
