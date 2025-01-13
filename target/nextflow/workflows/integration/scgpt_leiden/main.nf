@@ -3236,25 +3236,7 @@ meta = [
       }
     },
     {
-      "name" : "dimred/umap",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "neighbors/find_neighbors",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "cluster/leiden",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "metadata/move_obsm_to_obs",
+      "name" : "workflows/multiomics/neighbors_leiden_umap",
       "repository" : {
         "type" : "local"
       }
@@ -3348,7 +3330,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scgpt_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "880f530250a7a99ecccb659dbbd9d40007ed86df",
+    "git_commit" : "8eab2eaed75ddb6ac32cc3ea5d0ab37f3ae1ce26",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3389,10 +3371,7 @@ include { highly_variable_features_scanpy } from "${meta.resources_dir}/../../..
 include { do_filter } from "${meta.resources_dir}/../../../../nextflow/filter/do_filter/main.nf"
 include { pad_tokenize } from "${meta.resources_dir}/../../../../nextflow/scgpt/pad_tokenize/main.nf"
 include { embedding } from "${meta.resources_dir}/../../../../nextflow/scgpt/embedding/main.nf"
-include { umap } from "${meta.resources_dir}/../../../../nextflow/dimred/umap/main.nf"
-include { find_neighbors } from "${meta.resources_dir}/../../../../nextflow/neighbors/find_neighbors/main.nf"
-include { leiden } from "${meta.resources_dir}/../../../../nextflow/cluster/leiden/main.nf"
-include { move_obsm_to_obs } from "${meta.resources_dir}/../../../../nextflow/metadata/move_obsm_to_obs/main.nf"
+include { neighbors_leiden_umap } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/neighbors_leiden_umap/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
@@ -3495,52 +3474,27 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
-
-    | find_neighbors.run(
-      fromState: {id, state -> [
-          "input": state.input,
-          "uns_output": "scGPT_integration_neighbors",
-          "obsp_distances": "scGPT_integration_distances",
-          "obsp_connectivities": "scGPT_integration_connectivities",
-          "obsm_input": state.obsm_integrated,
-          "modality": state.modality
-        ]
-      },
-      toState: ["input": "output"]
-    )
-    | leiden.run(
-      runIf: {id, state -> state.leiden_resolution},
-      fromState: {id, state -> [
-        "input": state.input,
-        "obsp_connectivities": "scGPT_integration_connectivities",
-        "obsm_name": "scGPT_integration_leiden",
-        "resolution": state.leiden_resolution,
-        "modality": state.modality,
-        ]
-      },
-      toState: ["input": "output"]
-    )
-    | move_obsm_to_obs.run(
-      runIf: {id, state -> state.leiden_resolution},
-      fromState: {id, state -> [
-          "input": state.input,
-          "obsm_key": "scGPT_integration_leiden",
-          "modality": state.modality,
-        ]
-      },
-      toState: ["input": "output"]
-    )
-    | umap.run(
-      fromState: {id, state -> [
-          "input": state.input,
-          "uns_neighbors": "scGPT_integration_neighbors",
-          "obsm_output": "X_scGPT_umap",
-          "modality": state.modality,
-          "output_compression": state.output_compression,
-          "output": state.workflow_output
-        ]
-      },
-      toState: ["output": "output"]
+    
+    | neighbors_leiden_umap.run(
+      fromState: [
+        "input": "input",
+        "obsm_input": "obsm_integrated",
+        "modality": "modality",
+        "uns_neighbors": "uns_neighbors",
+        "obsp_neighbor_distances": "obsp_neighbor_distances",
+        "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
+        "output": "workflow_output",
+        "leiden_resolution": "leiden_resolution",
+        "obsm_umap": "obsm_integrated",
+      ],
+      toState: ["output": "output"],
+      args: [
+        "uns_neighbors": "scGPT_integration_neighbors",
+        "obsp_neighbor_distances": "scGPT_integration_distances",
+        "obsp_neighbor_connectivities": "scGPT_integration_connectivities",
+        "obs_cluster": "scGPT_integration_leiden",
+        "obsm_umap": "X_scGPT_umap",
+      ]
     )
     | setState(["output"])
   
