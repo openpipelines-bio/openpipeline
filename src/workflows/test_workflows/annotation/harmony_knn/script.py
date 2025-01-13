@@ -25,8 +25,8 @@ def test_run():
         key in list(input_mudata.mod["rna"].obs) for key in expected_obs
     ), f"Input mod['rna'] obs columns should be: {expected_obs}, found: {input_mudata.mod['rna'].obs.keys()}."
 
-    assert input_mudata.mod["rna"].obs["cell_type_pred"] == "category"
-    assert input_mudata.mod["rna"].obs["cell_type_probability"] == "float64"
+    assert input_mudata.mod["rna"].obs["cell_type_pred"].dtype == "category"
+    assert input_mudata.mod["rna"].obs["cell_type_probability"].dtype == "float64"
 
 
 if __name__ == "__main__":

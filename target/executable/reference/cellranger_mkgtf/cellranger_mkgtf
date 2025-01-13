@@ -476,9 +476,9 @@ apt upgrade -y && apt install -y pigz procps && rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component reference cellranger_mkgtf"
-LABEL org.opencontainers.image.created="2025-01-13T14:46:37Z"
+LABEL org.opencontainers.image.created="2025-01-13T17:22:31Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0b9bd80ec0ae2db241d6ede581ba1ed0c97e8d9e"
+LABEL org.opencontainers.image.revision="e60a0350016717e2baaa89e299fb7beed99b42ef"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
