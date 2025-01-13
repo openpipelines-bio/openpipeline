@@ -10,14 +10,9 @@ workflow run_wf {
             def new_state = state + ["workflow_output": state.output]
             [id, new_state]
         }
-        // add id as _meta join id to be able to merge with source channel and end of workflow
-        | map{ id, state -> 
-            def new_state = state + ["_meta": ["join_id": id]]
-            [id, new_state]
-        }
-        | view {"After adding join_id: $it"}
         // Add 'query' id to .obs columns of query dataset
         | add_id.run(
+            key: "add_query_id",
             fromState: [
                 "input": "input",
             ],
@@ -29,6 +24,7 @@ workflow run_wf {
         )
         // Add 'reference'id to .obs columns of reference dataset
         | add_id.run(
+            key: "add_reference_id",
             fromState:[
                 "input": "reference",
             ],
@@ -41,6 +37,7 @@ workflow run_wf {
         // Make sure that query and reference dataset have batch information in the same .obs column
         // By copying the respective .obs columns to the obs column "batch_label"
         | duplicate_obs.run(
+            key: "duplicate_query_batch_label",
             fromState: [
                 "input": "input",
                 "modality": "modality",
@@ -55,6 +52,7 @@ workflow run_wf {
             ]
         )
         | duplicate_obs.run(
+            key: "duplicate_reference_batch_label",
             fromState: [
                 "input": "reference",
                 "modality": "modality",
