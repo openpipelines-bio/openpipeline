@@ -8,6 +8,8 @@
 
 # MINOR CHANGES
 
+* Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942). 
+
 * `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
 
 * `popv`: Pin numpy<2 after new release of scvi-tools (PR #946).
@@ -60,6 +62,8 @@
 * `resources_test_scripts/scgpt.sh`: Update scGPT test resources to avoid subsetting of datasets (PR #926).
 
 * `workflows/integration/scgpt_leiden` workflow update: Update workflow such that input dataset is not subsetted for HVG but uses boolean masks in .var field instead (PR #875).
+
+* Various scGPT components (`scgpt`): Add resource labels (PR #947).
 
 ## BUG FIXES
 
