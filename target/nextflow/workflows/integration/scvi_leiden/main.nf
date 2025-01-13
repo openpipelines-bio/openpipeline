@@ -3180,31 +3180,13 @@ meta = [
   "status" : "enabled",
   "dependencies" : [
     {
-      "name" : "cluster/leiden",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "metadata/move_obsm_to_obs",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
       "name" : "integrate/scvi",
       "repository" : {
         "type" : "local"
       }
     },
     {
-      "name" : "dimred/umap",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "neighbors/find_neighbors",
+      "name" : "workflows/multiomics/neighbors_leiden_umap",
       "repository" : {
         "type" : "local"
       }
@@ -3298,7 +3280,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scvi_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "d67b0c383e679345d6276fe1f0e1a705bb9a7f50",
+    "git_commit" : "c27f3577f23a95a18ae74d3e5e9db0d06794cc7c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3333,11 +3315,8 @@ meta = [
 
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
-include { leiden } from "${meta.resources_dir}/../../../../nextflow/cluster/leiden/main.nf"
-include { move_obsm_to_obs } from "${meta.resources_dir}/../../../../nextflow/metadata/move_obsm_to_obs/main.nf"
 include { scvi } from "${meta.resources_dir}/../../../../nextflow/integrate/scvi/main.nf"
-include { umap } from "${meta.resources_dir}/../../../../nextflow/dimred/umap/main.nf"
-include { find_neighbors } from "${meta.resources_dir}/../../../../nextflow/neighbors/find_neighbors/main.nf"
+include { neighbors_leiden_umap } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/neighbors_leiden_umap/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
@@ -3346,7 +3325,7 @@ workflow run_wf {
   input_ch
 
   main:
-  neighbors_ch = input_ch
+  output_ch = input_ch
     | map {id, state -> 
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
@@ -3374,55 +3353,20 @@ workflow run_wf {
         "output_model": "output_model"
       ],
     )
-    | find_neighbors.run(
+    | neighbors_leiden_umap.run(
       fromState: [
         "input": "input",
-        "uns_output": "uns_neighbors",
-        "obsp_distances": "obsp_neighbor_distances",
-        "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obsm_input": "obsm_output", // use output from scvi as input for neighbors,
-        "modality": "modality"
-      ],
-      toState: ["input": "output"]
-    )
-
-  with_leiden_ch = neighbors_ch
-    | filter{id, state -> state.leiden_resolution}
-    | leiden.run(
-      fromState: [
-        "input": "input",
-        "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obsm_name": "obs_cluster",
-        "resolution": "leiden_resolution",
         "modality": "modality",
+        "obsm_input": "obsm_output",
+        "output": "workflow_output",
+        "uns_neighbors": "uns_neighbors",
+        "obsp_neighbor_distances": "obsp_neighbor_distances",
+        "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
+        "leiden_resolution": "leiden_resolution",
+        "obs_cluster": "obs_cluster",
+        "obsm_umap": "obsm_umap",
       ],
-      toState: ["input": "output"]
-    )
-    | move_obsm_to_obs.run(
-      fromState: [
-          "input": "input",
-          "obsm_key": "obs_cluster",
-          "modality": "modality",
-      ],
-      toState: ["input": "output"]
-    )
-
-
-  without_leiden_ch = neighbors_ch
-    | filter{id, state -> !state.leiden_resolution}
-
-  output_ch = with_leiden_ch.mix(without_leiden_ch)
-    | umap.run(
-      fromState: {id, state -> [
-        "input": state.input,
-        "uns_neighbors": state.uns_neighbors,
-        "obsm_output": state.obsm_umap,
-        "modality": state.modality,
-        "output": state.workflow_output,
-        "output_compression": "gzip"
-        ]
-      },
-      toState: ["output": "output"] 
+      toState: ["output": "output"]
     )
     | setState(["output", "output_model"])
 

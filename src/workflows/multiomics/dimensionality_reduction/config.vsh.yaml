@@ -84,8 +84,7 @@ argument_groups:
         description: "In which .obsm slot to store the resulting UMAP embedding."
 dependencies:
   - name: dimred/pca
-  - name: neighbors/find_neighbors
-  - name: dimred/umap
+  - name: workflows/multiomics/neighbors_leiden_umap
 resources:
   - type: nextflow_script
     path: main.nf

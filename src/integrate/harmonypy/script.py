@@ -11,7 +11,7 @@ par = {
     "obsm_input": "X_pca",
     "obsm_output": "X_pca_harmonypy",
     "theta": 2,
-    "obs_covariates": ["batch"],
+    "obs_covariates": ["sample_id"],
 }
 ### VIASH END
 

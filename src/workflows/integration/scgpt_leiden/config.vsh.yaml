@@ -160,10 +160,7 @@ dependencies:
   - name: filter/do_filter
   - name: scgpt/pad_tokenize
   - name: scgpt/embedding
-  - name: dimred/umap
-  - name: neighbors/find_neighbors
-  - name: cluster/leiden
-  - name: metadata/move_obsm_to_obs
+  - name: workflows/multiomics/neighbors_leiden_umap
 
 test_resources:
   - type: nextflow_script

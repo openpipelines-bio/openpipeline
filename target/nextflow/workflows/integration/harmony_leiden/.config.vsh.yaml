@@ -145,9 +145,10 @@ argument_groups:
     multiple_sep: ";"
   - type: "double"
     name: "--theta"
-    description: "Diversity clustering penalty parameter. Specify for each variable\
-      \ in group.by.vars. \ntheta=0 does not encourage any diversity. Larger values\
-      \ of theta\nresult in more diverse clusters.\"\n"
+    description: "Diversity clustering penalty parameter. Can be set as a single value\
+      \ for all batch observations or as multiple values, one for each observation\
+      \ in the batches defined by --obs_covariates. theta=0 does not encourage any\
+      \ diversity. Larger values of theta\nresult in more diverse clusters.\"\n"
     info: null
     default:
     - 2.0
@@ -222,19 +223,10 @@ test_resources:
 info: null
 status: "enabled"
 dependencies:
-- name: "cluster/leiden"
-  repository:
-    type: "local"
 - name: "integrate/harmonypy"
   repository:
     type: "local"
-- name: "dimred/umap"
-  repository:
-    type: "local"
-- name: "neighbors/find_neighbors"
-  repository:
-    type: "local"
-- name: "metadata/move_obsm_to_obs"
+- name: "workflows/multiomics/neighbors_leiden_umap"
   repository:
     type: "local"
 links:
@@ -311,14 +303,11 @@ build_info:
   output: "target/nextflow/workflows/integration/harmony_leiden"
   executable: "target/nextflow/workflows/integration/harmony_leiden/main.nf"
   viash_version: "0.9.0"
-  git_commit: "d67b0c383e679345d6276fe1f0e1a705bb9a7f50"
+  git_commit: "c27f3577f23a95a18ae74d3e5e9db0d06794cc7c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
-  - "target/nextflow/cluster/leiden"
   - "target/nextflow/integrate/harmonypy"
-  - "target/nextflow/dimred/umap"
-  - "target/nextflow/neighbors/find_neighbors"
-  - "target/nextflow/metadata/move_obsm_to_obs"
+  - "target/nextflow/workflows/multiomics/neighbors_leiden_umap"
 package_config:
   name: "openpipeline"
   info:
