@@ -71,7 +71,7 @@ argument_groups:
       - name: "--theta"
         type: double
         description: |
-          Diversity clustering penalty parameter. Can be specified as a single value for all batches or as one value for each observation defined in --obs_covariates. theta=0 does not encourage any diversity. Larger values of theta
+          Diversity clustering penalty parameter. Can be set as a single value for all batch observations or as multiple values, one for each observation in the batches defined by --obs_covariates. theta=0 does not encourage any diversity. Larger values of theta
           result in more diverse clusters."
         default: 2
         multiple: true
