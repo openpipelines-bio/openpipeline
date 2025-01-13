@@ -131,11 +131,8 @@ argument_groups:
         required: false
         description: "In which .obsm slot to store the resulting UMAP embedding."
 dependencies:
-  - name: cluster/leiden
-  - name: metadata/move_obsm_to_obs
   - name: integrate/scvi
-  - name: dimred/umap
-  - name: neighbors/find_neighbors
+  - name: workflows/multiomics/neighbors_leiden_umap
 resources:
   - type: nextflow_script
     path: main.nf
