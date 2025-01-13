@@ -3,7 +3,7 @@ workflow run_wf {
   input_ch
 
   main:
-  neighbors_ch = input_ch
+  output_ch = input_ch
     | map {id, state ->
       assert (state.leiden_resolution.isEmpty() || state.obs_cluster?.trim()):
         "When leiden_resolution is set, obs_cluster must also be defined."
