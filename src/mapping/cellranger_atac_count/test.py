@@ -1,28 +1,33 @@
 import subprocess
 from os import path
 import sys
-from itertools import zip_longest, chain
+from itertools import chain
 
 ## VIASH START
-meta = {
-    "name": "cellranger_atac_count",
-    "resources_dir": "resources_test"
-}
+meta = {"name": "cellranger_atac_count", "resources_dir": "resources_test"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 logger.info("> Running command with folder")
-input = meta["resources_dir"] + "/cellranger_atac_tiny_bcl/fastqs/HJN3KBCX2/test_sample/"
-reference = meta["resources_dir"] + "/reference_gencodev41_chr1/reference_cellranger.tar.gz"
+input = (
+    meta["resources_dir"] + "/cellranger_atac_tiny_bcl/fastqs/HJN3KBCX2/test_sample/"
+)
+reference = (
+    meta["resources_dir"] + "/reference_gencodev41_chr1/reference_cellranger.tar.gz"
+)
 output = "test_output"
 cmd_pars = [
     meta["executable"],
-    "--input", input,
-    "--reference", reference,
-    "--output", output
+    "--input",
+    input,
+    "--reference",
+    reference,
+    "--output",
+    output,
 ]
 if meta.get("cpus"):
     cmd_pars.extend(["---cpus", str(meta["cpus"])])
@@ -44,7 +49,7 @@ input_files = [
     input + "test_sample_S1_L001_I1_001.fastq.gz",
     input + "test_sample_S1_L001_R1_001.fastq.gz",
     input + "test_sample_S1_L001_R2_001.fastq.gz",
-    input + "test_sample_S1_L001_R3_001.fastq.gz",    
+    input + "test_sample_S1_L001_R3_001.fastq.gz",
 ]
 output = "test_output2"
 
@@ -52,8 +57,10 @@ output = "test_output2"
 cmd_pars = [
     meta["executable"],
     *chain.from_iterable([("--input", input_file) for input_file in input_files]),
-    "--reference", reference,
-    "--output", output
+    "--reference",
+    reference,
+    "--output",
+    output,
 ]
 if meta.get("cpus"):
     cmd_pars.extend(["---cpus", str(meta["cpus"])])

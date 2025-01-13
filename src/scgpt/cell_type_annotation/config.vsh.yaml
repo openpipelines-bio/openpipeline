@@ -143,9 +143,9 @@ test_resources:
   - type: python_script
     path: test.py
   - path: /resources_test/scgpt/test_resources/Kim2020_Lung_subset_tokenized.h5mu
-  - path: /resources_test/scgpt/source/best_model.pt
   - path: /resources_test/scgpt/source/args.json
   - path: /resources_test/scgpt/source/vocab.json
+  - path: /resources_test/scgpt/finetuned_model/best_model.pt
 
 engines:
   - type: docker
@@ -163,3 +163,5 @@ engines:
 runners:
   - type: executable
   - type: nextflow
+    directives:
+      label: [ highmem, highcpu, gpu ]

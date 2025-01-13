@@ -60,7 +60,7 @@ jobs:
 
     - uses: viash-io/viash-actions/setup@v6
 
-    - uses: nf-core/setup-nextflow@v2.0.0
+    - uses: nf-core/setup-nextflow@v2.1.4
 
     # use cache
     - name: Cache resources data
@@ -186,13 +186,13 @@ jobs:
         password: ${{ secrets.GTHB_PAT }}
 
     - name: Test component
-      timeout-minutes: 30
+      timeout-minutes: 40
       run: |
         viash test \
           "${{ matrix.component.config }}" \
           --config_mod ".engines[.type == 'docker'].image := 'ghcr.io/openpipelines-bio/openpipeline/${{ matrix.component.namespace }}${{matrix.component.namespace_separator}}${{ matrix.component.name }}:${{ github.event.inputs.version_tag }}'" \
           --config_mod ".engines[.type == 'docker'].setup := []" \
           --cpus 4 \
-          --memory "12gb" \
+          --memory "14gb" \
           --engine docker \
           --runner executable
