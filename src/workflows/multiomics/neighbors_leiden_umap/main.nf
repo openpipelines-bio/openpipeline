@@ -5,11 +5,11 @@ workflow run_wf {
   main:
   neighbors_ch = input_ch
     | map {id, state ->
-      assert (state.leiden_resolution.isEmpty() || state.obs_cluster?.trim()): 
+      assert (state.leiden_resolution.isEmpty() || state.obs_cluster?.trim()):
         "When leiden_resolution is set, obs_cluster must also be defined."
       [id, state]
     }
-    | map {id, state -> 
+    | map {id, state ->
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
@@ -25,10 +25,8 @@ workflow run_wf {
       ],
       toState: ["input": "output"]
     )
-
-  with_leiden_ch = neighbors_ch
-    | filter{list -> list[1].leiden_resolution}
     | leiden.run(
+      runIf: {id, state -> state.leiden_resolution},
       fromState: [
         "input": "input",
         "obsp_connectivities": "obsp_neighbor_connectivities",
@@ -39,6 +37,7 @@ workflow run_wf {
       toState: ["input": "output"]
     )
     | move_obsm_to_obs.run(
+      runIf: {id, state -> state.leiden_resolution},
       fromState: [
         "input": "input",
         "output": "workflow_output",
@@ -48,11 +47,6 @@ workflow run_wf {
       args: ["output_compression": "gzip"],
       toState: ["input": "output"]
     )
-
-  without_leiden_ch = neighbors_ch
-    | filter{list -> !list[1].leiden_resolution}
-
-  output_ch = with_leiden_ch.mix(without_leiden_ch)
     | umap.run(
       runIf: {id, state -> !state.obsm_umap?.trim()?.isEmpty()},
       fromState: [
