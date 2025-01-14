@@ -8,7 +8,13 @@
 
 * `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948).
 
-## MINOR CHANGES
+# MAJOR CHANGES
+
+* The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
+
+# MINOR CHANGES
+
+* Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942 and PR #949). 
 
 * `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
 
@@ -62,6 +68,8 @@
 * `resources_test_scripts/scgpt.sh`: Update scGPT test resources to avoid subsetting of datasets (PR #926).
 
 * `workflows/integration/scgpt_leiden` workflow update: Update workflow such that input dataset is not subsetted for HVG but uses boolean masks in .var field instead (PR #875).
+
+* Various scGPT components (`scgpt`): Add resource labels (PR #947).
 
 ## BUG FIXES
 
