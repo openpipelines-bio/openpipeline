@@ -92,7 +92,7 @@ argument_groups:
         type: file
         description: Aligned reference data.
         direction: output
-        example: output_query.h5mu
+        example: output_reference.h5mu
       - name: "--output_compression"
         type: string
         choices: ["gzip", "lzf"]
