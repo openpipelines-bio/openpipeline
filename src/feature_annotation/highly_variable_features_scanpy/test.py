@@ -6,7 +6,7 @@ import sys
 import pytest
 import re
 import pandas as pd
-
+from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
@@ -17,9 +17,6 @@ meta = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-from setup_logger import setup_logger
-
-logger = setup_logger()
 
 
 @pytest.fixture
@@ -88,6 +85,14 @@ def test_filter_with_hvg(run_component, lognormed_test_data_path):
     assert os.path.exists("output.h5mu")
     data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in data.mod["rna"].var.columns
+    # Put the output data back into its original shape
+    # so that we can compare it to the input
+    data.mod["rna"].var = data.mod["rna"].var.drop(
+        columns=["filter_with_hvg"], errors="raise"
+    )
+    data.var = data.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
+    del data["rna"].varm["hvg"]
+    assert_annotation_objects_equal(lognormed_test_data_path, data)
 
 
 def test_filter_with_hvg_batch_with_batch(
@@ -130,6 +135,15 @@ def test_filter_with_hvg_batch_with_batch(
         output_data.mod["rna"].var["filter_with_hvg"],
         check_names=False,
     )
+    # Put the output data back into its original shape
+    # so that we can compare it to the input
+    output_data.mod["rna"].var = output_data.mod["rna"].var.drop(
+        columns=["filter_with_hvg"], errors="raise"
+    )
+    output_data.var = output_data.var.drop(
+        columns=["rna:filter_with_hvg"], errors="raise"
+    )
+    assert_annotation_objects_equal(lognormed_batch_test_data_path, output_data)
 
 
 def test_filter_with_hvg_seurat_v3_requires_n_top_features(run_component, input_path):
@@ -166,6 +180,13 @@ def test_filter_with_hvg_seurat_v3(run_component, input_path):
     assert os.path.exists("output.h5mu")
     data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in data.mod["rna"].var.columns
+    # Put the output data back into its original shape
+    # so that we can compare it to the input
+    data.mod["rna"].var = data.mod["rna"].var.drop(
+        columns=["filter_with_hvg"], errors="raise"
+    )
+    data.var = data.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
+    assert_annotation_objects_equal(input_path, data)
 
 
 def test_filter_with_hvg_cell_ranger(run_component, filter_data_path):
@@ -182,6 +203,14 @@ def test_filter_with_hvg_cell_ranger(run_component, filter_data_path):
     assert os.path.exists("output.h5mu")
     data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in data.mod["rna"].var.columns
+    # Put the output data back into its original shape
+    # so that we can compare it to the input
+    data.mod["rna"].var = data.mod["rna"].var.drop(
+        columns=["filter_with_hvg"], errors="raise"
+    )
+    data.var = data.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
+    del data["rna"].varm["hvg"]
+    assert_annotation_objects_equal(filter_data_path, data)
 
 
 def test_filter_with_hvg_cell_ranger_unfiltered_data_change_error_message(
