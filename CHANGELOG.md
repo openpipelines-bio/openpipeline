@@ -1,14 +1,12 @@
 # openpipelines 2.1.0
 
-## BREAKING CHANGES
-
-* Removed the components `metadata/duplicate_obs` and `metadata/duplicate_var`, since their functionality is now covered by the `feature_annotation/aling_query_reference` component (PR #948).
-
 ## NEW FUNCTIONALITY
 
 * `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948).
 
-# MAJOR CHANGES
+## MAJOR CHANGES
+
+* Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
 
 * The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
 

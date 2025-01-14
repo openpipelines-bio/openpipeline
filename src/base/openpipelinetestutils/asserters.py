@@ -145,26 +145,34 @@ def assert_annotation_frame_equal(
         getattr(left, annotation_attr),
         getattr(right, annotation_attr),
     )
-    _assert_frame_equal(
-        left_frame,
-        right_frame,
-        sort=sort,
-        promote_precicion=promote_precicion,
-        *args,
-        **kwargs,
-    )
-    if isinstance(left, MuData):
-        assert_mudata_modality_keys_equal(left, right)
-        for mod_name, modality in left.mod.items():
-            assert_annotation_frame_equal(
-                annotation_attr,
-                modality,
-                right[mod_name],
-                sort=sort,
-                promote_precicion=promote_precicion,
-                *args,
-                **kwargs,
-            )
+    try:
+        _assert_frame_equal(
+            left_frame,
+            right_frame,
+            sort=sort,
+            promote_precicion=promote_precicion,
+            *args,
+            **kwargs,
+        )
+    except AssertionError as e:
+        e.add_note(f"Global {annotation_attr} is different")
+        raise
+    try:
+        if isinstance(left, MuData):
+            assert_mudata_modality_keys_equal(left, right)
+            for mod_name, modality in left.mod.items():
+                assert_annotation_frame_equal(
+                    annotation_attr,
+                    modality,
+                    right[mod_name],
+                    sort=sort,
+                    promote_precicion=promote_precicion,
+                    *args,
+                    **kwargs,
+                )
+    except AssertionError as e:
+        e.add_note(f"{annotation_attr} for modality {mod_name} is different")
+        raise
 
 
 def _assert_layer_equal(left, right):
@@ -213,16 +221,16 @@ def assert_layers_equal(
             raise AssertionError(
                 "Layer .raw differs: " f"\n[left]:{left.raw}\n[right]:{right}"
             )
-    if left.X is not None:
+    if left.X is not None or right.X is not None:
         try:
             _assert_layer_equal(left.X, right.X)
         except AssertionError as e:
             e.add_note("X is different.")
             raise
-    if left.layers:
-        assert right.layers and (left.layers.keys() == right.layers.keys()), (
-            "Avaiable layers differ:" f"\n[left]:{left.layers}\n[right]{right.layers}"
-        )
+    if left.layers or right.layers:
+        assert (right.layers is None and left.layers is None) or (
+            left.layers.keys() == right.layers.keys()
+        ), "Available layers differ:" f"\n[left]:{left.layers}\n[right]:{right.layers}"
         for layer_name, layer in left.layers.items():
             try:
                 _assert_layer_equal(layer, right.layers[layer_name])

@@ -62,4 +62,4 @@ runners:
   - type: executable
   - type: nextflow
     directives:
-      label: [ veryhighmem, highcpu ]
+      label: [ veryhighmem, highcpu, middisk ]
