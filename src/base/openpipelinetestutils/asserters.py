@@ -230,7 +230,7 @@ def assert_layers_equal(
     if left.layers or right.layers:
         assert (right.layers is None and left.layers is None) or (
             left.layers.keys() == right.layers.keys()
-        ), "Avaiable layers differ:" f"\n[left]:{left.layers}\n[right]:{right.layers}"
+        ), "Available layers differ:" f"\n[left]:{left.layers}\n[right]:{right.layers}"
         for layer_name, layer in left.layers.items():
             try:
                 _assert_layer_equal(layer, right.layers[layer_name])
