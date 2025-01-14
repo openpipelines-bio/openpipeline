@@ -9,11 +9,6 @@ workflow run_wf {
         def new_state = state + ["workflow_output": state.output]
         [id, new_state]
       }
-      // add id as _meta join id to be able to merge with source channel and end of workflow
-      | map{ id, state -> 
-        def new_state = state + ["_meta": ["join_id": id]]
-        [id, new_state]
-      }
       | view {"After adding join_id: $it"}
       // Allign query and reference datasets
       | align_query_reference.run(
@@ -22,9 +17,11 @@ workflow run_wf {
           "modality": "modality",
           "input_layer": "input_layer",
           "input_obs_batch": "input_obs_batch_label",
+          "input_var_gene_names": "input_var_gene_names",
           "reference": "reference",
           "reference_layer": "reference_layer",
           "reference_obs_batch": "reference_obs_batch_label",
+          "reference_var_gene_names": "reference_var_gene_names",
           "input_reference_gene_overlap": "input_reference_gene_overlap",
           "overwrite_existing_key": "overwrite_existing_key"
         ],
@@ -80,9 +77,9 @@ workflow run_wf {
               "obsp_neighbor_connectivities": "scvi_integration_connectivities",
               "obs_cluster": "scvi_integration_leiden",
               "obsm_umap": "X_leiden_scvi_umap",
-              "obs_batch": "batch_label",
-              "obs_labels": "_cell_type",
-              "layer": "_counts"
+              "obs_batch": "_sample_id",
+              "layer": "_counts",
+              "var_gene_names": "_gene_names"
           ],
           toState: ["input": "output"]
       )
@@ -138,7 +135,7 @@ workflow run_wf {
         args:[
           "output_compression": "gzip"
         ]
-        toState: {id, output, state -> ["output": output.output]},
+        toState: {id, output, state -> ["output": output.output]}
       )
     
   emit:

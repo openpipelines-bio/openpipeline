@@ -16,6 +16,7 @@ workflow test_wf {
         obsm_embedding: "X_pca",
         input_obs_batch_label: "sample_id",
         reference_obs_batch_label: "donor_assay",
+        reference_var_gene_names: "ensemblid",
         reference_obs_targets: "cell_type",
         leiden_resolution: [1.0, 0.25]
       ],
@@ -26,6 +27,7 @@ workflow test_wf {
         obsm_embedding: "X_pca",
         input_obs_batch_label: "sample_id",
         reference_obs_batch_label: "donor_assay",
+        reference_var_gene_names: "ensemblid",
         reference_obs_targets: "cell_type",
         leiden_resolution: []
       ]

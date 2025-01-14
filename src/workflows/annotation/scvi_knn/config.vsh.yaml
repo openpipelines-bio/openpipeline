@@ -43,6 +43,11 @@ argument_groups:
         description: "The .obs field in the input (query) dataset containing the batch labels."
         example: "sample"
         required: true
+      - name: "--input_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The .var field in the input (query) dataset containing gene names; if not provided, the .var index will be used.
       - name: "--input_reference_gene_overlap"
         type: integer
         default: 100
@@ -70,6 +75,11 @@ argument_groups:
         required: true
         multiple: true
         description: The `.obs` key(s) of the target labels to transfer.
+      - name: "--reference_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The .var field in the reference dataset containing gene names; if not provided, the .var index will be used.
       - name: "--reference_obs_batch_label"
         type: string
         description:  "The .obs field in the reference dataset containing the batch labels."
