@@ -1,0 +1,2 @@
+oneOf:
+  - $ref: "defs_common.yaml#/definitions/Config"
