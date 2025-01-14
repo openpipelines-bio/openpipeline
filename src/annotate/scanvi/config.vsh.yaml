@@ -224,4 +224,4 @@ runners:
   - type: executable
   - type: nextflow
     directives:
-      label: [highcpu, highmem, gpu]
+      label: [highcpu, highmem, highdisk, gpu]
