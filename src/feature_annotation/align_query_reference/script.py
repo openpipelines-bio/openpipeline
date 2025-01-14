@@ -227,7 +227,7 @@ def main():
 
     write_h5ad_to_h5mu_with_compression(
         par["output_reference"],
-        par["input"],
+        par["reference"],
         par["modality"],
         reference_modality,
         par["output_compression"],
