@@ -1,5 +1,9 @@
 # openpipelines 2.1.0
 
+## BREAKING CHANGES
+
+* Removal of `metadata/duplicate_obs` and `metadata/duplicate_var` components. This functionality is now covered in `feature_annotation/align_query_reference` (PR #952).
+
 ## NEW FUNCTIONALITY
 
 * `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948).
