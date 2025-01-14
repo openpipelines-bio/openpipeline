@@ -2948,7 +2948,7 @@ meta = [
         {
           "type" : "double",
           "name" : "--theta",
-          "description" : "Diversity clustering penalty parameter. Can be set as a single value for all batch observations or as multiple values, one for each observation in the batches defined by --obs_covariates. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters.",
+          "description" : "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters.",
           "default" : [
             2.0
           ],
@@ -3136,7 +3136,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/harmonypy",
     "viash_version" : "0.9.0",
-    "git_commit" : "e60a0350016717e2baaa89e299fb7beed99b42ef",
+    "git_commit" : "0661fee9a572849ef8edc8cf0ceaf6c849e3d10c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
