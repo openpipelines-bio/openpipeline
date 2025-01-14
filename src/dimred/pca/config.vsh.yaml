@@ -100,3 +100,4 @@ runners:
     label: 
       - highcpu
       - highmem
+      - middisk
