@@ -216,11 +216,11 @@ argument_groups:
 resources:
   - type: python_script
     path: script.py
-  - path: ../../utils/subset_vars.py
+  - path: /src/utils/subset_vars.py
+  - path: /src/utils/compress_h5mu.py
 test_resources:
   - type: python_script
     path: test.py
-  - path: ../../utils/subset_vars.py
   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 
 engines:
