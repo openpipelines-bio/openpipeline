@@ -1,6 +1,12 @@
 # openpipelines 2.1.0
 
+# MAJOR CHANGES
+
+* The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
+
 # MINOR CHANGES
+
+* Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942 and PR #949). 
 
 * `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
 

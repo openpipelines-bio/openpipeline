@@ -3,9 +3,19 @@ workflow run_wf {
   input_ch
 
   main:
-  // perform correction if so desired
-
   output_ch = input_ch
+    | map{id, state ->
+      assert (state.perform_correction || state.min_genes != null || state.min_counts != null):
+        "Either perform_correct, min_genes or min_counts should be specified!"
+      [id, state]
+    }
+    // Make sure there is not conflict between the output from this workflow
+    // And the output from any of the components
+    | map {id, state ->
+      def new_state = state + ["workflow_output": state.output]
+      [id, new_state]
+    }
+    // perform correction if so desired
     | cellbender_remove_background.run(
       runIf: {id, state -> state.perform_correction},
       fromState: { id, state ->
@@ -13,7 +23,8 @@ workflow run_wf {
           input: state.input,
           epochs: state.cellbender_epochs,
           output_layer: "cellbender_corrected",
-          output_compression: "gzip"
+          output_compression: "gzip",
+          output: state.workflow_output,
         ]
       },
       toState: { id, output, state -> 
@@ -31,19 +42,19 @@ workflow run_wf {
           min_counts: state.min_counts,
           layer: state.layer,
           output_compression: "gzip",
-          do_subset: true
+          do_subset: true,
+          output: state.workflow_output,
         ]
       },
       toState: [input: "output"]
     )
     // Make sure to use the correct ouput file names, 
-    // irrespective wether or not any of the above 
-    // components were run
-    | publish.run(
-      fromState: [ input: "input", output: "output" ],
-      toState: ["output": "output"]
-    )
-    | setState(["output"])
+    // irrespective of which component(s) (or combinations of then)
+    // were run. The above components
+    // should put their output into 'input'
+    | map {id, state -> 
+      [id, ["output": state.input]]
+    }
 
   emit:
   output_ch
