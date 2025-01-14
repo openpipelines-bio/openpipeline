@@ -1,6 +1,14 @@
 # openpipelines 2.1.0
 
-# MINOR CHANGES
+## BREAKING CHANGES
+
+* Removed the components `metadata/duplicate_obs` and `metadata/duplicate_var`, since their functionality is now covered by the `feature_annotation/aling_query_reference` component (PR #948).
+
+## NEW FUNCTIONALITY
+
+* `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948).
+
+## MINOR CHANGES
 
 * `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
 
@@ -30,8 +38,6 @@
 * `workflows/annotation/scgpt_integration_knn` workflow: Cell-type annotation based on scGPT integration with KNN label transfer (PR #875).
 
 * CI: Use `params.resources_test` in test workflows in order to point to an alternative location (e.g. a cache) (PR #889).
-
-* `src/metadata/query_reference_alignment`: Added a component to align a query and reference dataset (PR #948).
 
 ## MINOR CHANGES
 
