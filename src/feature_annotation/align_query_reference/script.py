@@ -1,7 +1,5 @@
 import sys
 import mudata as mu
-import re
-
 
 ## VIASH START
 par = {
@@ -36,6 +34,7 @@ meta = {"resources_dir": "src/utils"}
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 from cross_check_genes import cross_check_genes
 
 logger = setup_logger()
@@ -91,14 +90,15 @@ def copy_and_sanitize_var_gene_names(
 ):
     if output_var_key not in adata.var.keys() and input_var_key:
         logger.info(f"Copying .var field from `{input_var_key}` to `{output_var_key}`")
-        adata.var[output_var_key] = [
-            re.sub("\\.[0-9]+$", "", s) for s in adata.var[input_var_key]
-        ]
+        adata.var[output_var_key] = adata.var[input_var_key].str.replace(
+            "\\.[0-9]+$", "", regex=True
+        )
+
     elif output_var_key not in adata.var.keys() and not input_var_key:
         logger.info(f"Copying .var index to `{output_var_key}`")
-        adata.var[output_var_key] = [
-            re.sub("\\.[0-9]+$", "", s) for s in adata.var.index
-        ]
+        adata.var[output_var_key] = adata.var.index.str.replace(
+            "\\.[0-9]+$", "", regex=True
+        )
 
     else:
         if not overwrite:
@@ -107,21 +107,21 @@ def copy_and_sanitize_var_gene_names(
             )
 
         logger.warning(f".var key `{output_var_key}` already exists. Overwriting data.")
-        adata.var[output_var_key] = [
-            re.sub("\\.[0-9]+$", "", s) for s in adata.var[input_var_key]
-        ]
+        adata.var[output_var_key] = (
+            adata.var[input_var_key].str.replace("\\.[0-9]+$", "", regex=True)
+            if input_var_key
+            else adata.var.index.str.replace("\\.[0-9]+$", "", regex=True)
+        )
 
     return adata
 
 
 def main():
     logger.info("Reading query and reference data")
-    input_mudata = mu.read_h5mu(par["input"])
-    input_adata = input_mudata.mod[par["modality"]]
+    input_adata = mu.read_h5ad(par["input"], mod=par["modality"])
     input_modality = input_adata.copy()
 
-    reference_mudata = mu.read_h5mu(par["reference"])
-    reference_adata = reference_mudata.mod[par["modality"]]
+    reference_adata = mu.read_h5ad(par["reference"], mod=par["modality"])
     reference_modality = reference_adata.copy()
 
     # Aligning layers
@@ -217,12 +217,20 @@ def main():
 
     # Writing output data
     logger.info("Writing output data")
-    input_mudata.mod[par["modality"]] = input_modality
-    input_mudata.write_h5mu(par["output_query"], compression=par["output_compression"])
+    write_h5ad_to_h5mu_with_compression(
+        par["output_query"],
+        par["input"],
+        par["modality"],
+        input_modality,
+        par["output_compression"],
+    )
 
-    reference_mudata.mod[par["modality"]] = reference_modality
-    reference_mudata.write_h5mu(
-        par["output_reference"], compression=par["output_compression"]
+    write_h5ad_to_h5mu_with_compression(
+        par["output_reference"],
+        par["input"],
+        par["modality"],
+        reference_modality,
+        par["output_compression"],
     )
 
 
