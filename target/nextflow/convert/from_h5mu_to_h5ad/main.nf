@@ -3086,7 +3086,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_to_h5ad",
     "viash_version" : "0.9.0",
-    "git_commit" : "0661fee9a572849ef8edc8cf0ceaf6c849e3d10c",
+    "git_commit" : "fcceb745384f9fa3aee53682b3fc6c93e1a5a7ed",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3173,11 +3173,8 @@ logger = setup_logger()
 
 # TODO: Merge modalities into one layer
 
-logger.info("Reading input h5mu file")
-dat = mu.read_h5mu(par["input"])
-
-logger.info("Converting to h5ad")
-adat = dat.mod[par["modality"]]
+logger.info("Reading input h5mu file %s, modality %s", par["input"], par["modality"])
+adat = mu.read_h5ad(par["input"], mod=par["modality"])
 
 logger.info("Writing to %s.", par["output"])
 adat.write_h5ad(par["output"], compression=par["output_compression"])

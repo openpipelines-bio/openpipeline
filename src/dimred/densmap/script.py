@@ -16,17 +16,19 @@ par = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Reading %s", par["input"])
-mdata = mu.read_h5mu(par["input"])
-
-if par["modality"] not in mdata.mod:
-    raise ValueError(f"Modality '{par['modality']}' not found in the input data.")
+logger.info("Reading %s, modality %s", par["input"], par["modality"])
+try:
+    data = mu.read_h5ad(par["input"], mod=par["modality"])
+except KeyError as e:
+    raise ValueError(
+        f"Modality '{par['modality']}' not found in the input data."
+    ) from e
 
 logger.info("Computing densMAP for modality '%s'", par["modality"])
-data = mdata.mod[par["modality"]]
 
 neigh_key = par["uns_neighbors"]
 
@@ -85,6 +87,8 @@ data.uns["densmap"] = {
 }
 
 logger.info("Writing to %s.", par["output"])
-mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], data, par["output_compression"]
+)
 
 logger.info("Finished")

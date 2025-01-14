@@ -33,6 +33,7 @@ import sys
 sys.path.append(meta["resources_dir"])
 
 from subset_vars import subset_vars
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 
 # TODO: optionally, move to qa
@@ -57,8 +58,7 @@ def check_validity_anndata(adata, layer, obs_batch, n_obs_min_count, n_var_min_c
 
 
 def main():
-    mdata = mudata.read(par["input"].strip())
-    adata = mdata.mod[par["modality"]]
+    adata = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
 
     if par["var_input"]:
         # Subset to HVG
@@ -128,8 +128,9 @@ def main():
     # Get the latent output
     adata.obsm[par["obsm_output"]] = vae_uns.get_latent_representation()
 
-    mdata.mod[par["modality"]] = adata
-    mdata.write_h5mu(par["output"].strip(), compression=par["output_compression"])
+    write_h5ad_to_h5mu_with_compression(
+        par["output"], par["input"], par["modality"], adata, par["output_compression"]
+    )
     if par["output_model"]:
         vae_uns.save(par["output_model"], overwrite=True)
 

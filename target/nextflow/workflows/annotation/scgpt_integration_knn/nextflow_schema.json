@@ -128,8 +128,8 @@
                 "input_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`. Mudata layer (key from layers) to use as input data for scGPT integration; if not specified, X is used",
-                "help_text": "Type: `string`. Mudata layer (key from layers) to use as input data for scGPT integration; if not specified, X is used. Should match the layer name of the reference dataset.\n"
+                "description": "Type: `string`. The layer in the input data to be used for cell type annotation if ",
+                "help_text": "Type: `string`. The layer in the input data to be used for cell type annotation if .X is not to be used."
             
             }
     
@@ -151,6 +151,17 @@
                 "description": "Type: `string`, required, example: `sample`. The ",
                 "help_text": "Type: `string`, required, example: `sample`. The .obs field in the input (query) dataset containing the batch labels."
             
+            }
+    
+
+        ,
+                "input_reference_gene_overlap": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `100`. The minimum number of genes present in both the reference and query datasets",
+                "help_text": "Type: `integer`, default: `100`. The minimum number of genes present in both the reference and query datasets.\n"
+            ,
+                "default":100
             }
     
 
@@ -181,6 +192,16 @@
                 "string",
                 "description": "Type: `file`, required, example: `reference.h5mu`. Reference dataset consisting of observations with cell type labels present in the ",
                 "help_text": "Type: `file`, required, example: `reference.h5mu`. Reference dataset consisting of observations with cell type labels present in the .obs --reference_obs_batch_label column to train the classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset(s)."
+            
+            }
+    
+
+        ,
+                "reference_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. The layer in the reference data to be used for cell type annotation if ",
+                "help_text": "Type: `string`. The layer in the reference data to be used for cell type annotation if .X is not to be used."
             
             }
     

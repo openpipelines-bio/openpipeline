@@ -3050,6 +3050,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/compress_h5mu.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3088,7 +3092,8 @@ meta = [
       "directives" : {
         "label" : [
           "lowcpu",
-          "midmem"
+          "midmem",
+          "middisk"
         ],
         "tag" : "$id"
       },
@@ -3218,7 +3223,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors",
     "viash_version" : "0.9.0",
-    "git_commit" : "0661fee9a572849ef8edc8cf0ceaf6c849e3d10c",
+    "git_commit" : "fcceb745384f9fa3aee53682b3fc6c93e1a5a7ed",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3315,15 +3320,14 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Reading input mudata")
-mdata = mu.read_h5mu(par["input"])
+logger.info("Reading input modality %s from %s", par["modality"], par["input"])
+adata = mu.read_h5ad(par["input"], mod=par["modality"])
 
-mod = par["modality"]
-logger.info("Computing a neighborhood graph on modality %s", mod)
-adata = mdata.mod[mod]
+logger.info("Computing a neighborhood graph.")
 neighbors = sc.Neighbors(adata)
 neighbors.compute_neighbors(
     n_neighbors=par["num_neighbors"],
@@ -3350,7 +3354,9 @@ adata.obsp[par["obsp_connectivities"]] = neighbors.connectivities
 
 
 logger.info("Writing to %s", par["output"])
-mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], adata, par["output_compression"]
+)
 VIASHMAIN
 python -B "$tempscript"
 '''
@@ -3716,7 +3722,8 @@ meta["defaults"] = [
   },
   "label" : [
     "lowcpu",
-    "midmem"
+    "midmem",
+    "middisk"
   ],
   "tag" : "$id"
 }'''),

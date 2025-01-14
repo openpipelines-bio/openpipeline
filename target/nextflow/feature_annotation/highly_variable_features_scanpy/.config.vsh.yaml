@@ -222,6 +222,8 @@ resources:
 - type: "file"
   path: "setup_logger.py"
 - type: "file"
+  path: "compress_h5mu.py"
+- type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
 description: "Annotate highly variable features [Satija15] [Zheng17] [Stuart19].\n\
@@ -340,6 +342,14 @@ engines:
       nelse:  exit(1)\")"
     upgrade: true
   test_setup:
+  - type: "docker"
+    copy:
+    - "openpipelinetestutils /opt/openpipelinetestutils"
+  - type: "python"
+    user: false
+    packages:
+    - "/opt/openpipelinetestutils"
+    upgrade: true
   - type: "python"
     user: false
     packages:
@@ -354,7 +364,7 @@ build_info:
   output: "target/nextflow/feature_annotation/highly_variable_features_scanpy"
   executable: "target/nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
   viash_version: "0.9.0"
-  git_commit: "0661fee9a572849ef8edc8cf0ceaf6c849e3d10c"
+  git_commit: "fcceb745384f9fa3aee53682b3fc6c93e1a5a7ed"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

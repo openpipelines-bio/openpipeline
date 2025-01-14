@@ -1,0 +1,35 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# input_layer: "foo"
+# input_var_gene_names: "foo"
+input_obs_batch: # please fill in - example: "sample_id"
+# input_obs_label: "cell_type"
+input_id: "query"
+
+# Reference
+# reference: "reference.h5mu"
+# reference_layer: "foo"
+# reference_var_gene_names: "foo"
+reference_obs_batch: # please fill in - example: "sample_id"
+# reference_obs_label: "cell_type"
+reference_id: "reference"
+
+# Outputs
+# output_query: "$id.$key.output_query.h5mu"
+# output_reference: "$id.$key.output_reference.h5mu"
+# output_compression: "gzip"
+output_layer: "_counts"
+output_var_gene_names: "_gene_names"
+output_obs_batch: "_sample_id"
+output_obs_label: "_cell_type"
+output_obs_id: "_dataset"
+
+# Arguments
+input_reference_gene_overlap: 100
+unkown_celltype_label: "Unknown"
+overwrite_existing_key: false
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

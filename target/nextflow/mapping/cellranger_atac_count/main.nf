@@ -3022,7 +3022,8 @@ meta = [
       "directives" : {
         "label" : [
           "highmem",
-          "highcpu"
+          "highcpu",
+          "middisk"
         ],
         "tag" : "$id"
       },
@@ -3114,7 +3115,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_atac_count",
     "viash_version" : "0.9.0",
-    "git_commit" : "0661fee9a572849ef8edc8cf0ceaf6c849e3d10c",
+    "git_commit" : "fcceb745384f9fa3aee53682b3fc6c93e1a5a7ed",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3628,7 +3629,8 @@ meta["defaults"] = [
   },
   "label" : [
     "highmem",
-    "highcpu"
+    "highcpu",
+    "middisk"
   ],
   "tag" : "$id"
 }'''),

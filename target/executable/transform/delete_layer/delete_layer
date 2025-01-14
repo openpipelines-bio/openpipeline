@@ -493,9 +493,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform delete_layer"
-LABEL org.opencontainers.image.created="2025-01-14T02:48:39Z"
+LABEL org.opencontainers.image.created="2025-01-14T13:51:13Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0661fee9a572849ef8edc8cf0ceaf6c849e3d10c"
+LABEL org.opencontainers.image.revision="fcceb745384f9fa3aee53682b3fc6c93e1a5a7ed"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1112,8 +1112,7 @@ trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
 import sys
-from mudata import read_h5ad, write_h5ad
-import shutil
+from mudata import read_h5ad
 from pathlib import Path
 
 ## VIASH START
@@ -1154,7 +1153,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
-from compress_h5mu import compress_h5mu
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
@@ -1177,18 +1176,10 @@ def main():
         del mod.layers[layer]
 
     logger.info("Writing output to %s.", par["output"])
-    output_file_uncompressed = (
-        output_file.with_name(output_file.stem + "_uncompressed.h5mu")
-        if par["output_compression"]
-        else output_file
+
+    write_h5ad_to_h5mu_with_compression(
+        output_file, input_file, mod_name, mod, par["output_compression"]
     )
-    shutil.copyfile(par["input"], output_file_uncompressed)
-    write_h5ad(filename=output_file_uncompressed, mod=mod_name, data=mod)
-    if par["output_compression"]:
-        compress_h5mu(
-            output_file_uncompressed, output_file, compression=par["output_compression"]
-        )
-        output_file_uncompressed.unlink()
 
     logger.info("Finished.")
 

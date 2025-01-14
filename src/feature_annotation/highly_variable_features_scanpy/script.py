@@ -44,19 +44,18 @@ par["input"] = temp_h5mu
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
+modality_name = par["modality"]
+data = mu.read_h5ad(par["input"], mod=modality_name)
+assert data.var_names.is_unique, "Expected var_names of input modality to be unique."
 
-mdata = mu.read_h5mu(par["input"])
-mdata.var_names_make_unique()
-
-mod = par["modality"]
-logger.info("Processing modality '%s'", mod)
-data = mdata.mod[mod]
+logger.info("Processing modality '%s'", modality_name)
 
 if par["layer"] and par["layer"] not in data.layers:
     raise ValueError(
-        f"Layer '{par['layer']}' not found in layers for modality '{mod}'. "
+        f"Layer '{par['layer']}' not found in layers for modality '{modality_name}'. "
         f"Found layers are: {','.join(data.layers)}"
     )
 
@@ -160,4 +159,6 @@ if par.get("varm_name", None) is not None and "mean_bin" in out:
     data.varm[par["varm_name"]] = out.drop("mean_bin", axis=1)
 
 logger.info("Writing h5mu to file")
-mdata.write_h5mu(par["output"], compression=par["output_compression"])
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], modality_name, data, par["output_compression"]
+)

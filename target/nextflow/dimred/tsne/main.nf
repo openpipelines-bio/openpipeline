@@ -3028,6 +3028,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/compress_h5mu.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3066,7 +3070,8 @@ meta = [
       "directives" : {
         "label" : [
           "highcpu",
-          "midmem"
+          "midmem",
+          "middisk"
         ],
         "tag" : "$id"
       },
@@ -3196,7 +3201,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/tsne",
     "viash_version" : "0.9.0",
-    "git_commit" : "0661fee9a572849ef8edc8cf0ceaf6c849e3d10c",
+    "git_commit" : "fcceb745384f9fa3aee53682b3fc6c93e1a5a7ed",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3289,15 +3294,14 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Reading %s", par["input"])
-mdata = mu.read_h5mu(par["input"])
+logger.info("Reading %s, modality %s", par["input"], par["modality"])
+data = mu.read_h5ad(par["input"], mod=par["modality"])
 
 logger.info("Computing tSNE for modality '%s'", par["modality"])
-data = mdata.mod[par["modality"]]
-
 if par["use_rep"] not in data.obsm.keys():
     raise ValueError(
         f"'{par['use_rep']}' was not found in .mod['{par['modality']}'].obsm. No precomputed PCA provided. Please run PCA first."
@@ -3326,8 +3330,12 @@ data.obsm[par["obsm_output"]] = temp_adata.obsm["X_tsne"]
 logger.info(f"Writing tSNE metadata to .mod[{par['modality']}].uns['tsne']")
 data.uns["tsne"] = temp_adata.uns["tsne"]
 
-logger.info("Writing to %s.", par["output"])
-mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
+logger.info(
+    "Writing to %s with compression %s.", par["output"], par["output_compression"]
+)
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], data, par["output_compression"]
+)
 
 logger.info("Finished")
 VIASHMAIN
@@ -3695,7 +3703,8 @@ meta["defaults"] = [
   },
   "label" : [
     "highcpu",
-    "midmem"
+    "midmem",
+    "middisk"
   ],
   "tag" : "$id"
 }'''),
