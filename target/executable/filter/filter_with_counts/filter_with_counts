@@ -535,9 +535,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_counts"
-LABEL org.opencontainers.image.created="2025-01-13T12:22:25Z"
+LABEL org.opencontainers.image.created="2025-01-14T11:30:17Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7616de201e7155db2d1211a33e641e2ce0e0c57b"
+LABEL org.opencontainers.image.revision="2e214d5c2b46a646409f08b9abc4558dcf2fe2e5"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1290,17 +1290,13 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Reading input data")
-mdata = mu.read_h5mu(par["input"])
+logger.info("Reading input data from %s, modality %s", par["input"], par["modality"])
+modality_data = mu.read_h5ad(par["input"], mod=par["modality"])
 
-mdata.var_names_make_unique()
-
-mod = par["modality"]
-logger.info("Processing modality %s.", mod)
-modality_data = mdata.mod[mod]
 logger.info("\\tUnfiltered data: %s", modality_data)
 
 logger.info("Selecting input layer %s", "X" if par["layer"] else par["layer"])
@@ -1375,11 +1371,22 @@ if par["var_name_filter"] is not None:
     modality_data.var[par["var_name_filter"]] = keep_genes
 
 if par["do_subset"]:
-    mdata.mod[mod] = modality_data[keep_cells, keep_genes]
+    modality_data = modality_data[keep_cells, keep_genes]
 
 logger.info("\\tFiltered data: %s", modality_data)
-logger.info("Writing output data to %s", par["output"])
-mdata.write_h5mu(par["output"], compression=par["output_compression"])
+logger.info(
+    "Writing output data to %s with compression %s",
+    par["output"],
+    par["output_compression"],
+)
+write_h5ad_to_h5mu_with_compression(
+    par["output"],
+    par["input"],
+    par["modality"],
+    modality_data,
+    par["output_compression"],
+)
+
 
 logger.info("Finished")
 VIASHMAIN

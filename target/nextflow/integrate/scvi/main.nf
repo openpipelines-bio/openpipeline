@@ -3335,7 +3335,11 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "../../utils/subset_vars.py"
+      "path" : "/src/utils/subset_vars.py"
+    },
+    {
+      "type" : "file",
+      "path" : "/src/utils/compress_h5mu.py"
     },
     {
       "type" : "file",
@@ -3349,10 +3353,6 @@ meta = [
       "type" : "python_script",
       "path" : "test.py",
       "is_executable" : true
-    },
-    {
-      "type" : "file",
-      "path" : "../../utils/subset_vars.py"
     },
     {
       "type" : "file",
@@ -3382,7 +3382,8 @@ meta = [
         "label" : [
           "midcpu",
           "midmem",
-          "gpu"
+          "gpu",
+          "highdisk"
         ],
         "tag" : "$id"
       },
@@ -3509,7 +3510,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.9.0",
-    "git_commit" : "7616de201e7155db2d1211a33e641e2ce0e0c57b",
+    "git_commit" : "2e214d5c2b46a646409f08b9abc4558dcf2fe2e5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3625,6 +3626,7 @@ import sys
 sys.path.append(meta["resources_dir"])
 
 from subset_vars import subset_vars
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 
 # TODO: optionally, move to qa
@@ -3649,8 +3651,7 @@ def check_validity_anndata(adata, layer, obs_batch, n_obs_min_count, n_var_min_c
 
 
 def main():
-    mdata = mudata.read(par["input"].strip())
-    adata = mdata.mod[par["modality"]]
+    adata = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
 
     if par["var_input"]:
         # Subset to HVG
@@ -3720,8 +3721,9 @@ def main():
     # Get the latent output
     adata.obsm[par["obsm_output"]] = vae_uns.get_latent_representation()
 
-    mdata.mod[par["modality"]] = adata
-    mdata.write_h5mu(par["output"].strip(), compression=par["output_compression"])
+    write_h5ad_to_h5mu_with_compression(
+        par["output"], par["input"], par["modality"], adata, par["output_compression"]
+    )
     if par["output_model"]:
         vae_uns.save(par["output_model"], overwrite=True)
 
@@ -4094,7 +4096,8 @@ meta["defaults"] = [
   "label" : [
     "midcpu",
     "midmem",
-    "gpu"
+    "gpu",
+    "highdisk"
   ],
   "tag" : "$id"
 }'''),

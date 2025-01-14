@@ -1,5 +1,5 @@
 import sys
-from mudata import read_h5mu
+from mudata import read_h5ad
 
 ## VIASH START
 par = {
@@ -16,12 +16,12 @@ meta = {"resources_dir": "src/metadata/copy_obs"}
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Read mudata from file")
-mdata = read_h5mu(par["input"])
-adata = mdata.mod[par["modality"]]
+logger.info("Reading from %s, modality %s", par["input"], par["modality"])
+adata = read_h5ad(par["input"], mod=par["modality"])
 
 
 def duplicate_obs(adata, input_key, output_key):
@@ -49,4 +49,6 @@ else:
 
 
 logger.info("Write output to mudata file")
-mdata.write_h5mu(par["output"], compression=par["output_compression"])
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], adata, None
+)

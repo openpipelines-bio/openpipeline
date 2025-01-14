@@ -2990,7 +2990,8 @@ meta = [
       "directives" : {
         "label" : [
           "highcpu",
-          "midmem"
+          "midmem",
+          "middisk"
         ],
         "tag" : "$id"
       },
@@ -3121,7 +3122,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "7616de201e7155db2d1211a33e641e2ce0e0c57b",
+    "git_commit" : "2e214d5c2b46a646409f08b9abc4558dcf2fe2e5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3860,7 +3861,8 @@ meta["defaults"] = [
   },
   "label" : [
     "highcpu",
-    "midmem"
+    "midmem",
+    "middisk"
   ],
   "tag" : "$id"
 }'''),

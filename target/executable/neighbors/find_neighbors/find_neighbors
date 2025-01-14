@@ -540,9 +540,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component neighbors find_neighbors"
-LABEL org.opencontainers.image.created="2025-01-13T12:22:29Z"
+LABEL org.opencontainers.image.created="2025-01-14T11:30:21Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7616de201e7155db2d1211a33e641e2ce0e0c57b"
+LABEL org.opencontainers.image.revision="2e214d5c2b46a646409f08b9abc4558dcf2fe2e5"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1295,15 +1295,14 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Reading input mudata")
-mdata = mu.read_h5mu(par["input"])
+logger.info("Reading input modality %s from %s", par["modality"], par["input"])
+adata = mu.read_h5ad(par["input"], mod=par["modality"])
 
-mod = par["modality"]
-logger.info("Computing a neighborhood graph on modality %s", mod)
-adata = mdata.mod[mod]
+logger.info("Computing a neighborhood graph.")
 neighbors = sc.Neighbors(adata)
 neighbors.compute_neighbors(
     n_neighbors=par["num_neighbors"],
@@ -1330,7 +1329,9 @@ adata.obsp[par["obsp_connectivities"]] = neighbors.connectivities
 
 
 logger.info("Writing to %s", par["output"])
-mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], adata, par["output_compression"]
+)
 VIASHMAIN
 python -B "\$tempscript" &
 wait "\$!"

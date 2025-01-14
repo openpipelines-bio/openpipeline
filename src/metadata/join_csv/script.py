@@ -1,6 +1,6 @@
 import sys
 import pandas as pd
-from mudata import read_h5mu
+from mudata import read_h5ad
 
 ### VIASH START
 par = {
@@ -16,6 +16,7 @@ par = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
@@ -28,9 +29,8 @@ logger.info("Read metadata csv from file")
 metadata = pd.read_csv(par["input_csv"], sep=",", header=0, index_col=par["csv_key"])
 metadata.fillna("", inplace=True)
 
-logger.info("Read mudata from file")
-mdata = read_h5mu(par["input"])
-mod_data = mdata.mod[par["modality"]]
+logger.info("Read modality %s from file %s", par["modality"], par["input"])
+mod_data = read_h5ad(par["input"], mod=par["modality"])
 
 logger.info("Joining csv to mudata")
 matrix = "var" if par["var_key"] else "obs"
@@ -52,4 +52,6 @@ new_matrix = pd.concat(
 setattr(mod_data, matrix, new_matrix)
 
 logger.info("Write output to mudata file")
-mdata.write_h5mu(par["output"], compression=par["output_compression"])
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], mod_data, par["output_compression"]
+)

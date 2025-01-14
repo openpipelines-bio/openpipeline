@@ -1,6 +1,8 @@
 # openpipelines 2.1.0
 
-# MAJOR CHANGES
+## MAJOR CHANGES
+
+* Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
 
 * The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
 

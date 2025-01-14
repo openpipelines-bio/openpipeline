@@ -3073,6 +3073,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/compress_h5mu.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3205,6 +3209,20 @@ meta = [
       ],
       "test_setup" : [
         {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
@@ -3221,7 +3239,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.9.0",
-    "git_commit" : "7616de201e7155db2d1211a33e641e2ce0e0c57b",
+    "git_commit" : "2e214d5c2b46a646409f08b9abc4558dcf2fe2e5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3319,19 +3337,18 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
+modality_name = par["modality"]
+data = mu.read_h5ad(par["input"], mod=modality_name)
+assert data.var_names.is_unique, "Expected var_names of input modality to be unique."
 
-mdata = mu.read_h5mu(par["input"])
-mdata.var_names_make_unique()
-
-mod = par["modality"]
-logger.info("Processing modality '%s'", mod)
-data = mdata.mod[mod]
+logger.info("Processing modality '%s'", modality_name)
 
 if par["layer"] and par["layer"] not in data.layers:
     raise ValueError(
-        f"Layer '{par['layer']}' not found in layers for modality '{mod}'. "
+        f"Layer '{par['layer']}' not found in layers for modality '{modality_name}'. "
         f"Found layers are: {','.join(data.layers)}"
     )
 
@@ -3435,7 +3452,9 @@ if par.get("varm_name", None) is not None and "mean_bin" in out:
     data.varm[par["varm_name"]] = out.drop("mean_bin", axis=1)
 
 logger.info("Writing h5mu to file")
-mdata.write_h5mu(par["output"], compression=par["output_compression"])
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], modality_name, data, par["output_compression"]
+)
 VIASHMAIN
 python -B "$tempscript"
 '''

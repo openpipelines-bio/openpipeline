@@ -3031,6 +3031,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/compress_h5mu.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/utils/setup_logger.py"
     },
     {
@@ -3077,7 +3081,8 @@ meta = [
       "directives" : {
         "label" : [
           "highcpu",
-          "highmem"
+          "highmem",
+          "middisk"
         ],
         "tag" : "$id"
       },
@@ -3210,7 +3215,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/lsi",
     "viash_version" : "0.9.0",
-    "git_commit" : "7616de201e7155db2d1211a33e641e2ce0e0c57b",
+    "git_commit" : "2e214d5c2b46a646409f08b9abc4558dcf2fe2e5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3306,23 +3311,20 @@ dep = {
 sys.path.append(meta["resources_dir"])
 from subset_vars import subset_vars
 
-
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 from setup_logger import setup_logger
 
 logger = setup_logger()
 
 
-# 1.read in mudata
+# 1.read in adata
 logger.info("Reading %s.", par["input"])
-mdata = md.read_h5mu(par["input"])
-
-# 2. subset on modality
-if par["modality"] not in mdata.mod:
+try:
+    adata = md.read_h5ad(par["input"], mod=par["modality"])
+except KeyError as e:
     raise ValueError(
         f"Modality '{par['modality']}' was not found in mudata {par['input']}."
-    )
-adata = mdata.mod[par["modality"]]
-
+    ) from e
 
 # 3. Specify layer
 if par["layer"] and par["layer"] not in adata.layers:
@@ -3388,8 +3390,12 @@ if par["var_input"]:
 else:
     adata.varm[par["varm_output"]] = adata_input_layer.varm["LSI"]
 
-logger.info("Writing to %s.", par["output"])
-mdata.write(filename=par["output"], compression=par["output_compression"])
+logger.info(
+    "Writing to %s with compression %s.", par["output"], par["output_compression"]
+)
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], adata, par["output_compression"]
+)
 
 logger.info("Finished")
 VIASHMAIN
@@ -3757,7 +3763,8 @@ meta["defaults"] = [
   },
   "label" : [
     "highcpu",
-    "highmem"
+    "highmem",
+    "middisk"
   ],
   "tag" : "$id"
 }'''),
