@@ -89,7 +89,7 @@ def test_simple_execution(run_component, random_h5mu_path):
 
     expected_layers = ["_counts"]
     expected_var = ["_gene_names"]
-    expected_obs = ["_sample_id", "_cell_type"]
+    expected_obs = ["_sample_id", "_cell_type", "_dataset"]
 
     # Evaluate presence of obs, var, layers
     assert all(
@@ -122,8 +122,11 @@ def test_simple_execution(run_component, random_h5mu_path):
         query_adata.obs["_sample_id"] == query_adata.obs["sample_id"]
     ), "Query .obs _sample_id should be equal to query .obs sample_id"
     assert np.all(
-        query_adata.obs["_cell_type"] == "unknown"
+        query_adata.obs["_cell_type"] == "Unknown"
     ), "Query .obs _cell_type should have value Unkown"
+    assert np.all(
+        query_adata.obs["_dataset"] == "query"
+    ), "Query .obs _dataset should have value query"
 
     assert np.all(
         reference_adata.var["_gene_names"]
@@ -135,6 +138,9 @@ def test_simple_execution(run_component, random_h5mu_path):
     assert np.all(
         reference_adata.obs["_cell_type"] == reference_adata.obs["cell_ontology_class"]
     ), "Reference .obs _cell_type should be equal to reference .obs cell_ontology_class"
+    assert np.all(
+        reference_adata.obs["_dataset"] == "reference"
+    ), "Reference .obs _dataset should have value reference"
 
 
 def test_copy_layer(run_component, random_h5mu_path, copy_layer):
@@ -199,7 +205,7 @@ def test_copy_layer(run_component, random_h5mu_path, copy_layer):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args_existing_layer)
     assert re.search(
-        r"ValueError: Layer copied_counts already exists. Data can not be copied.",
+        r"ValueError: Layer `copied_counts` already exists. Data can not be copied.",
         err.value.stdout.decode("utf-8"),
     )
 
@@ -263,7 +269,7 @@ def test_overwrite_obs(run_component, random_h5mu_path, add_obs):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
     assert re.search(
-        r"ValueError: .obs key Obs already exists. Data can not be copied.",
+        r"ValueError: .obs key `Obs` already exists. Data can not be copied.",
         err.value.stdout.decode("utf-8"),
     )
 
@@ -326,7 +332,7 @@ def test_overwrite_var(run_component, random_h5mu_path, add_var):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
     assert re.search(
-        r"ValueError: .var key Var already exists. Data can not be copied.",
+        r"ValueError: .var key `Var` already exists. Data can not be copied.",
         err.value.stdout.decode("utf-8"),
     )
 

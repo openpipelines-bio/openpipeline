@@ -2,11 +2,12 @@ name: align_query_reference
 namespace: metadata
 description: |
   Alignment of a query and reference dataset by:
+  * Alignment of layers
+  * Harmonization of .obs field names for batch and cell type labels
   * Harmonization of .var field name for gene names
   * Sanitation of gene names
   * Cross-checking of genes
-  * Harmonization of .obs field names for batch and cell type labels
-  * Alignment of layers
+  * Assignment of an id to the query and reference datasets
 
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
@@ -48,6 +49,12 @@ argument_groups:
         example: cell_type
         description: |
           The name of the .obs column in the input (query) data containing cell type labels. If not provided, the --unkown_celltype_label will be assigned to all observations.
+      - name: "--input_id"
+        type: string
+        required: false
+        default: "query"
+        description: |
+          Meta id value to be assigned to the --output_obs_id .obs field of the aligned input (query) data.
 
   - name: Reference
     description: Arguments related to the reference dataset.
@@ -79,6 +86,12 @@ argument_groups:
         example: cell_type
         description: |
           The name of the .obs column in the reference data containing cell type labels. If not provided, the --unkown_celltype_label will be assigned to all observations.
+      - name: "--reference_id"
+        type: string
+        required: false
+        default: "reference"
+        description: |
+          Meta id value to be assigned to the --output_obs_id .obs field of the aligned reference data.
 
   - name: Outputs
     description: Output arguments.
@@ -101,15 +114,23 @@ argument_groups:
       - name: "--output_layer"
         type: string
         default: "_counts"
+        description: Name of the aligned layer in the output query and reference datasets.
       - name: "--output_var_gene_names"
         type: string
         default: "_gene_names"
+        description: Name of the .var column in the output query and reference datasets containing the gene names.
       - name: "--output_obs_batch"  
         type: string
         default: "_sample_id"
+        description: Name of the .obs column in the output query and reference datasets containing the batch information.
       - name: "--output_obs_label"
         type: string
         default: "_cell_type"
+        description: Name of the .obs column in the output query and reference datasets containing the cell type labels.
+      - name: "--output_obs_id"
+        type: string
+        default: "_dataset"
+        description: Name of the .obs column in the output query and reference datasets containing the dataset id.
 
   - name: Arguments
     description: Arguments related to the alignment of the input and reference datasets.
@@ -122,7 +143,7 @@ argument_groups:
           The minimum number of genes present in both the reference and query datasets.
       - name: "--unkown_celltype_label"
         type: string
-        default: "unknown"
+        default: "Unknown"
         description: |
           The label to assign to cells with an unknown cell type.
       - name: "--overwrite_existing_key"
