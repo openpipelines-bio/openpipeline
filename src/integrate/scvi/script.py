@@ -64,12 +64,10 @@ def main():
 
     if par["var_input"]:
         # Subset to HVG
-        adata_subset = subset_vars(input_modality, subset_col=par["var_input"]).copy()
-    else:
-        adata_subset = adata.copy()
+        input_modality = subset_vars(input_modality, subset_col=par["var_input"]).copy()
 
     check_validity_anndata(
-        adata_subset,
+        input_modality,
         par["input_layer"],
         par["obs_batch"],
         par["n_obs_min_count"],
@@ -77,7 +75,7 @@ def main():
     )
     # Set up the data
     scvi.model.SCVI.setup_anndata(
-        adata_subset,
+        input_modality,
         batch_key=par["obs_batch"],
         layer=par["input_layer"],
         labels_key=par["obs_labels"],
@@ -88,7 +86,7 @@ def main():
 
     # Set up the model
     vae_uns = scvi.model.SCVI(
-        adata_subset,
+        input_modality,
         n_hidden=par["n_hidden_nodes"],
         n_latent=par["n_dimensions_latent_space"],
         n_layers=par["n_hidden_layers"],
