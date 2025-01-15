@@ -71,8 +71,9 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--input_layer"
-    description: "The layer in the input data to be used for cell type annotation\
-      \ if .X is not to be used."
+    description: "Mudata layer (key from layers) to use as input data for scGPT integration;\
+      \ if not specified, X is used. Should match the layer name of the reference\
+      \ dataset.\n"
     info: null
     required: false
     direction: "input"
@@ -98,18 +99,6 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "integer"
-    name: "--input_reference_gene_overlap"
-    description: "The minimum number of genes present in both the reference and query\
-      \ datasets.\n"
-    info: null
-    default:
-    - 100
-    required: false
-    min: 1
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
   - type: "boolean_true"
     name: "--overwrite_existing_key"
     description: "If provided, will overwrite existing fields in the input dataset\
@@ -130,15 +119,6 @@ argument_groups:
     must_exist: true
     create_parent: true
     required: true
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--reference_layer"
-    description: "The layer in the reference data to be used for cell type annotation\
-      \ if .X is not to be used."
-    info: null
-    required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -463,7 +443,13 @@ dependencies:
 - name: "dataflow/concatenate_h5mu"
   repository:
     type: "local"
-- name: "feature_annotation/align_query_reference"
+- name: "metadata/add_id"
+  repository:
+    type: "local"
+- name: "metadata/duplicate_obs"
+  repository:
+    type: "local"
+- name: "metadata/duplicate_var"
   repository:
     type: "local"
 links:
@@ -540,14 +526,16 @@ build_info:
   output: "target/nextflow/workflows/annotation/scgpt_integration_knn"
   executable: "target/nextflow/workflows/annotation/scgpt_integration_knn/main.nf"
   viash_version: "0.9.0"
-  git_commit: "fcceb745384f9fa3aee53682b3fc6c93e1a5a7ed"
+  git_commit: "6c485fdab970eaba8e012f16977eb0f04e11a4bb"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/workflows/integration/scgpt_leiden"
   - "target/nextflow/labels_transfer/knn"
   - "target/nextflow/dataflow/split_h5mu"
   - "target/nextflow/dataflow/concatenate_h5mu"
-  - "target/nextflow/feature_annotation/align_query_reference"
+  - "target/nextflow/metadata/add_id"
+  - "target/nextflow/metadata/duplicate_obs"
+  - "target/nextflow/metadata/duplicate_var"
 package_config:
   name: "openpipeline"
   info:

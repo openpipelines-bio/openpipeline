@@ -3251,7 +3251,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample",
     "viash_version" : "0.9.0",
-    "git_commit" : "fcceb745384f9fa3aee53682b3fc6c93e1a5a7ed",
+    "git_commit" : "6c485fdab970eaba8e012f16977eb0f04e11a4bb",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
