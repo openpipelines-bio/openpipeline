@@ -4,6 +4,8 @@
 
 * `feature_annotation/aling_query_reference`: Added a component to align a query and reference dataset (PR #948).
 
+* `workflows/annotation/scvi_knn` workflow: Cell-type annotation based on scVI integration followed by KNN label transfer (PR #954).
+
 ## MAJOR CHANGES
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
