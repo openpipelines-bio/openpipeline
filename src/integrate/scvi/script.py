@@ -33,7 +33,6 @@ import sys
 sys.path.append(meta["resources_dir"])
 
 from subset_vars import subset_vars
-from set_var_index import set_var_index
 from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 
@@ -60,14 +59,15 @@ def check_validity_anndata(adata, layer, obs_batch, n_obs_min_count, n_var_min_c
 
 def main():
     adata = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
-    input_modality = set_var_index(adata, par["var_gene_names"])
 
     if par["var_input"]:
         # Subset to HVG
-        input_modality = subset_vars(input_modality, subset_col=par["var_input"]).copy()
+        adata_subset = subset_vars(adata, subset_col=par["var_input"]).copy()
+    else:
+        adata_subset = adata.copy()
 
     check_validity_anndata(
-        input_modality,
+        adata_subset,
         par["input_layer"],
         par["obs_batch"],
         par["n_obs_min_count"],
@@ -75,7 +75,7 @@ def main():
     )
     # Set up the data
     scvi.model.SCVI.setup_anndata(
-        input_modality,
+        adata_subset,
         batch_key=par["obs_batch"],
         layer=par["input_layer"],
         labels_key=par["obs_labels"],
@@ -86,7 +86,7 @@ def main():
 
     # Set up the model
     vae_uns = scvi.model.SCVI(
-        input_modality,
+        adata_subset,
         n_hidden=par["n_hidden_nodes"],
         n_latent=par["n_dimensions_latent_space"],
         n_layers=par["n_hidden_layers"],
