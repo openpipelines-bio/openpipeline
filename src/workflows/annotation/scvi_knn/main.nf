@@ -78,8 +78,7 @@ workflow run_wf {
               "obs_cluster": "scvi_integration_leiden",
               "obsm_umap": "X_leiden_scvi_umap",
               "obs_batch": "_sample_id",
-              "layer": "_counts",
-              "var_gene_names": "_gene_names"
+              "layer": "_counts"
           ],
           toState: ["input": "output"]
       )
@@ -134,7 +133,7 @@ workflow run_wf {
         ],
         args:[
           "output_compression": "gzip"
-        ]
+        ],
         toState: {id, output, state -> ["output": output.output]}
       )
     
