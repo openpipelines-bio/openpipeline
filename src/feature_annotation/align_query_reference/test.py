@@ -88,7 +88,7 @@ def test_simple_execution(run_component, random_h5mu_path):
     reference_adata = mu.read_h5mu(output_reference_file).mod["rna"]
 
     expected_layers = ["_counts"]
-    expected_var = ["_gene_names"]
+    expected_var = ["_gene_names", "ori_var_index"]
     expected_obs = ["_sample_id", "_cell_type", "_dataset"]
 
     # Evaluate presence of obs, var, layers
@@ -129,9 +129,26 @@ def test_simple_execution(run_component, random_h5mu_path):
     ), "Query .obs _dataset should have value query"
 
     assert np.all(
-        reference_adata.var["_gene_names"]
+        reference_adata.var["_gene_names"] == reference_adata.var.index
+    ), "Reference .var _gene_names should be equal to query .var index"
+
+    assert np.all(
+        reference_adata.var.index != reference_adata.var["ensemblid"]
+    ), "Reference .var index should not be equal to reference .var ensemblid"
+
+    assert np.all(
+        reference_adata.var.index
         == [re.sub("\\.[0-9]+$", "", s) for s in reference_adata.var["ensemblid"]]
-    ), "Reference .var _gene_names should be equal to query .var ensemblid"
+    ), "Reference .var index should be equal to sanitized reference .var ensemblid "
+
+    assert np.any(
+        reference_adata.var["ori_var_index"] != reference_adata.var["ensemblid"]
+    ), "Reference .var ori_var_index should not be all equal to reference .var ensemblid"
+
+    assert np.all(
+        reference_adata.var["ori_var_index"] != reference_adata.var.index
+    ), "Reference .var ori_var_index should be equal to reference .var index"
+
     assert np.all(
         reference_adata.obs["_sample_id"] == reference_adata.obs["donor_id"]
     ), "Reference .obs _sample_id should be equal to query .obs sample_id"
@@ -362,6 +379,52 @@ def test_overwrite_var(run_component, random_h5mu_path, add_var):
     ]
 
     run_component(disable_raise_args)
+
+
+def test_preserve_var_index(run_component, random_h5mu_path):
+    output_query_file = random_h5mu_path()
+    output_reference_file = random_h5mu_path()
+    # input_file_transformed = copy_layer(input_file, "copied_counts")
+
+    run_component(
+        [
+            "--input",
+            input_file,
+            "--modality",
+            "rna",
+            "--input_obs_batch",
+            "sample_id",
+            "--reference",
+            reference_file,
+            "--reference_obs_batch",
+            "donor_id",
+            "--reference_obs_label",
+            "cell_ontology_class",
+            "--reference_var_gene_names",
+            "ensemblid",
+            "--output_query",
+            output_query_file,
+            "--output_reference",
+            output_reference_file,
+            "--preserve_var_index",
+        ]
+    )
+
+    ori_query_adata = mu.read_h5mu(input_file).mod["rna"]
+    ori_reference_adata = mu.read_h5mu(reference_file).mod["rna"]
+    query_adata = mu.read_h5mu(output_query_file).mod["rna"]
+    reference_adata = mu.read_h5mu(output_reference_file).mod["rna"]
+
+    assert "ori_var_index" not in query_adata.var.keys()
+    assert "ori_var_index" not in reference_adata.var.keys()
+
+    assert np.all(
+        ori_query_adata.var.index == query_adata.var.index
+    ), "Query .var index should be preserved"
+
+    assert np.all(
+        ori_reference_adata.var.index == reference_adata.var.index
+    ), "Reference .var index should be preserved"
 
 
 if __name__ == "__main__":

@@ -27,6 +27,8 @@ par = {
     "unkown_celltype_label": "Unknown",
     "overwrite_existing_key": False,
     "output_compression": None,
+    "preserve_var_index": False,
+    "output_var_index": "ori_var_index",
 }
 
 meta = {"resources_dir": "src/utils"}
@@ -86,7 +88,12 @@ def copy_obs(adata, input_obs_key, output_obs_key, overwrite=False, fill_value=N
 
 
 def copy_and_sanitize_var_gene_names(
-    adata, input_var_key, output_var_key, overwrite=False
+    adata,
+    input_var_key,
+    output_var_key,
+    overwrite=False,
+    preserve_index=False,
+    var_index_field="ori_var_index",
 ):
     if output_var_key not in adata.var.keys() and input_var_key:
         logger.info(f"Copying .var field from `{input_var_key}` to `{output_var_key}`")
@@ -112,6 +119,11 @@ def copy_and_sanitize_var_gene_names(
             if input_var_key
             else adata.var.index.str.replace("\\.[0-9]+$", "", regex=True)
         )
+
+    if not preserve_index:
+        logger.info("Replacing .var index with sanitized gene names...")
+        adata.var[var_index_field] = adata.var.index
+        adata.var.index = adata.var[output_var_key]
 
     return adata
 
@@ -187,6 +199,8 @@ def main():
         par["input_var_gene_names"],
         par["output_var_gene_names"],
         overwrite=par["overwrite_existing_key"],
+        preserve_index=par["preserve_var_index"],
+        var_index_field=par["output_var_index"],
     )
     logger.info("## Copying reference .var gene names field...")
     reference_modality = copy_and_sanitize_var_gene_names(
@@ -194,6 +208,8 @@ def main():
         par["reference_var_gene_names"],
         par["output_var_gene_names"],
         overwrite=par["overwrite_existing_key"],
+        preserve_index=par["preserve_var_index"],
+        var_index_field=par["output_var_index"],
     )
 
     # Cross check genes
