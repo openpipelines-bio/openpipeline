@@ -29,6 +29,9 @@ def test_run():
         key in list(input_mudata.mod["rna"].obsp) for key in expected_obsp
     ), f"Input mod['rna'] obsp columns should be: {expected_obsp}, found: {input_mudata.mod['rna'].obsp.keys()}."
 
+    assert input_mudata.mod["rna"].obs["cell_type_pred"].dtype == "category"
+    assert input_mudata.mod["rna"].obs["cell_type_probability"].dtype == "float64"
+
 
 if __name__ == "__main__":
     HERE_DIR = Path(__file__).resolve().parent
