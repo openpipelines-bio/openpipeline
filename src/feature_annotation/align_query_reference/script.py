@@ -123,7 +123,7 @@ def copy_and_sanitize_var_gene_names(
     if not preserve_index:
         logger.info("Replacing .var index with sanitized gene names...")
         adata.var[var_index_field] = adata.var.index
-        adata.var.index = adata.var[output_var_key]
+        adata.var.index = list(adata.var[output_var_key])
 
     return adata
 
