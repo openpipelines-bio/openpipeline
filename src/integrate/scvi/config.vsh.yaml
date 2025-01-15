@@ -30,11 +30,6 @@ argument_groups:
         default: "sample_id"
         required: false
         description: Column name discriminating between your batches.
-      - name: "--var_gene_names"
-        type: string
-        required: false
-        description: |
-          The name of the .var column containing gene names; if not provided, the var index will be used.
       - name: "--var_input"
         type: string
         required: false

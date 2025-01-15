@@ -14,7 +14,6 @@ workflow run_wf {
         "obs_batch": "obs_batch",
         "obsm_output": "obsm_output",
         "var_input": "var_input",
-        "var_gene_names": "var_gene_names",
         "early_stopping": "early_stopping",
         "early_stopping_monitor": "early_stopping_monitor",
         "early_stopping_patience": "early_stopping_patience",
