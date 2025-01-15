@@ -53,34 +53,32 @@ workflow run_wf {
       | view {"After concatenation: $it"}
       // Run scvi integration with leiden clustering
       | scvi_leiden_workflow.run(
-          fromState: { id, state ->
-            [
-              "id": id,
-              "input": state.input,
-              "modality": state.modality,
-              "obsm_output": state.output_obsm_integrated,
-              "leiden_resolution": state.leiden_resolution,
-              "var_input": state.var_hvg,
-              "early_stopping": state.early_stopping,
-              "early_stopping_monitor": state.early_stopping_monitor,
-              "early_stoping_patience": state.early_stoping_patience,
-              "early_stopping_min_delta": state.early_stopping_min_delta,
-              "max_epochs": state.max_epochs,
-              "reduce_lr_on_plateau": state.reduce_lr_on_plateau,
-              "lr_factor": state.lr_factor,
-              "lr_patience": state.lr_patience
-            ]
-          },
-          args: [
-              "uns_neighbors": "scvi_integration_neighbors",
-              "obsp_neighbor_distances": "scvi_integration_distances",
-              "obsp_neighbor_connectivities": "scvi_integration_connectivities",
-              "obs_cluster": "scvi_integration_leiden",
-              "obsm_umap": "X_leiden_scvi_umap",
-              "obs_batch": "_sample_id",
-              "layer": "_counts"
-          ],
-          toState: ["input": "output"]
+        fromState: { id, state -> [
+          "id": id,
+          "input": state.input,
+          "modality": state.modality,
+          "obsm_output": state.output_obsm_integrated,
+          "leiden_resolution": state.leiden_resolution,
+          "var_input": state.var_hvg,
+          "early_stopping": state.early_stopping,
+          "early_stopping_monitor": state.early_stopping_monitor,
+          "early_stoping_patience": state.early_stoping_patience,
+          "early_stopping_min_delta": state.early_stopping_min_delta,
+          "max_epochs": state.max_epochs,
+          "reduce_lr_on_plateau": state.reduce_lr_on_plateau,
+          "lr_factor": state.lr_factor,
+          "lr_patience": state.lr_patience
+        ]},
+        args: [
+          "uns_neighbors": "scvi_integration_neighbors",
+          "obsp_neighbor_distances": "scvi_integration_distances",
+          "obsp_neighbor_connectivities": "scvi_integration_connectivities",
+          "obs_cluster": "scvi_integration_leiden",
+          "obsm_umap": "X_leiden_scvi_umap",
+          "obs_batch": "_sample_id",
+          "layer": "_counts"
+        ],
+        toState: ["input": "output"]
       )
             
       | view {"After integration: $it"}

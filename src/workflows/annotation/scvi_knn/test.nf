@@ -51,9 +51,9 @@ workflow test_wf {
     "Output: $output"
     }
     | scvi_knn_test.run(
-        fromState: [
-          "input": "output"
-        ]
+      fromState: [
+        "input": "output"
+      ]
     )
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
