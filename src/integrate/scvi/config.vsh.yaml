@@ -217,7 +217,6 @@ resources:
   - type: python_script
     path: script.py
   - path: /src/utils/subset_vars.py
-  - path: /src/utils/set_var_index.py
   - path: /src/utils/compress_h5mu.py
 test_resources:
   - type: python_script
