@@ -1,5 +1,9 @@
 # openpipelines 2.1.0
 
+## NEW FUNCTIONALITY
+
+* `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948).
+
 ## MAJOR CHANGES
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
