@@ -10,7 +10,7 @@ import scipy
 import uuid
 from pandas.testing import assert_series_equal
 from itertools import product
-
+from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
@@ -79,13 +79,14 @@ def mudata_with_boolean_column(tmp_path, input_mudata, request):
     return new_input_path
 
 
-def test_add_qc(run_component, input_path):
+def test_add_qc(run_component, input_path, random_h5mu_path):
+    output_path = random_h5mu_path()
     run_component(
         [
             "--input",
             input_path,
             "--output",
-            "foo.h5mu",
+            output_path,
             "--modality",
             "rna",
             "--top_n_vars",
@@ -95,28 +96,41 @@ def test_add_qc(run_component, input_path):
         ]
     )
 
-    assert Path("foo.h5mu").is_file()
-    data_with_qc = md.read("foo.h5mu")
-    var, obs = data_with_qc.mod["rna"].var, data_with_qc.mod["rna"].obs
-    for top_n_vars in ("10", "20", "90"):
-        assert f"pct_of_counts_in_top_{top_n_vars}_vars" in obs
-    assert "total_counts" in obs
-    assert "num_nonzero_vars" in obs
-    assert "pct_dropout" in var
-    assert "num_nonzero_obs" in var
-    assert "obs_mean" in var
-    assert "total_counts" in var
+    assert output_path.is_file()
+    data_with_qc = md.read(output_path)
+    expected_obs_columns = [
+        f"pct_of_counts_in_top_{top_n_var}_vars" for top_n_var in ("10", "20", "90")
+    ] + ["total_counts", "num_nonzero_vars"]
+    expected_var_columns = [
+        "pct_dropout",
+        "num_nonzero_obs",
+        "obs_mean",
+        "total_counts",
+    ]
+    data_with_qc.mod["rna"].var = data_with_qc.mod["rna"].var.drop(
+        columns=expected_var_columns, errors="raise"
+    )
+    data_with_qc.var = data_with_qc.var.drop(
+        columns=list(map("rna:{}".format, expected_var_columns)), errors="errors"
+    )
+    data_with_qc.mod["rna"].obs = data_with_qc.mod["rna"].obs.drop(
+        columns=expected_obs_columns, errors="raise"
+    )
+    data_with_qc.obs = data_with_qc.obs.drop(
+        columns=list(map("rna:{}".format, expected_obs_columns)), errors="errors"
+    )
+    assert_annotation_objects_equal(input_path, data_with_qc)
 
 
 @pytest.mark.parametrize(
-    "optional_parameter,annotation_matrix,arg_value,expected_name",
+    "optional_parameter,annotation_matrix,arg_value",
     [
-        ("--output_obs_num_nonzero_vars", "obs", "lorem", "lorem"),
-        ("--output_obs_total_counts_vars", "obs", "ipsum", "ipsum"),
-        ("--output_var_num_nonzero_obs", "var", "dolor", "dolor"),
-        ("--output_var_total_counts_obs", "var", "amet", "amet"),
-        ("--output_var_obs_mean", "var", "sit", "sit"),
-        ("--output_var_pct_dropout", "var", "elit", "elit"),
+        ("--output_obs_num_nonzero_vars", "obs", "lorem"),
+        ("--output_obs_total_counts_vars", "obs", "ipsum"),
+        ("--output_var_num_nonzero_obs", "var", "dolor"),
+        ("--output_var_total_counts_obs", "var", "amet"),
+        ("--output_var_obs_mean", "var", "sit"),
+        ("--output_var_pct_dropout", "var", "elit"),
     ],
 )
 def test_qc_metrics_set_output_column(
@@ -125,13 +139,14 @@ def test_qc_metrics_set_output_column(
     optional_parameter,
     annotation_matrix,
     arg_value,
-    expected_name,
+    random_h5mu_path,
 ):
+    output_h5mu = random_h5mu_path()
     args = [
         "--input",
         input_mudata_path,
         "--output",
-        "foo.h5mu",
+        output_h5mu,
         "--modality",
         "rna",
         "--output_compression",
@@ -141,10 +156,39 @@ def test_qc_metrics_set_output_column(
     ]
 
     run_component(args)
-    assert Path("foo.h5mu").is_file()
-    data_with_qc = md.read("foo.h5mu")
-    matrix = getattr(data_with_qc.mod["rna"], annotation_matrix)
-    assert not matrix.filter(regex=expected_name, axis=1).empty
+    default_obs_columns = {
+        "output_obs_num_nonzero_vars": "num_nonzero_vars",
+        "output_obs_total_counts_vars": "total_counts",
+    }
+    default_var_columns = {
+        "output_var_num_nonzero_obs": "num_nonzero_obs",
+        "output_var_total_counts_obs": "total_counts",
+        "output_var_obs_mean": "obs_mean",
+        "output_var_pct_dropout": "pct_dropout",
+    }
+    defaults = {"var": default_var_columns, "obs": default_obs_columns}
+    defaults[annotation_matrix].update({optional_parameter.strip("-"): arg_value})
+    assert output_h5mu.is_file()
+    data_with_qc = md.read(output_h5mu)
+    for attribute_name in ("var", "obs"):
+        setattr(
+            data_with_qc.mod["rna"],
+            attribute_name,
+            getattr(data_with_qc.mod["rna"], attribute_name).drop(
+                columns=list(defaults[attribute_name].values()), errors="raise"
+            ),
+        )
+        setattr(
+            data_with_qc,
+            attribute_name,
+            getattr(data_with_qc, attribute_name).drop(
+                columns=list(
+                    map("rna:{}".format, list(defaults[attribute_name].values()))
+                ),
+                errors="raise",
+            ),
+        )
+    assert_annotation_objects_equal(input_mudata_path, data_with_qc)
 
 
 @pytest.mark.parametrize(
@@ -188,9 +232,9 @@ def test_qc_metrics_optional(
 
 
 def test_calculcate_qc_var_qc_metrics(
-    run_component, mudata_with_boolean_column, tmp_path
+    run_component, mudata_with_boolean_column, random_h5mu_path
 ):
-    output_path = tmp_path / "foo.h5mu"
+    output_path = random_h5mu_path()
     input_data = md.read_h5mu(mudata_with_boolean_column)
     args = [
         "--input",
@@ -230,9 +274,9 @@ def test_calculcate_qc_var_qc_metrics(
 
 
 def test_compare_scanpy(
-    run_component, mudata_with_boolean_column, input_mudata, tmp_path
+    run_component, mudata_with_boolean_column, input_mudata, random_h5mu_path
 ):
-    output_path = tmp_path / "foo.h5mu"
+    output_path = random_h5mu_path()
 
     run_component(
         [

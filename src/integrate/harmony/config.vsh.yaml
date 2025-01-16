@@ -75,4 +75,4 @@ runners:
 - type: executable
 - type: nextflow
   directives:
-    label: [highmem, highcpu]
+    label: [highmem, highcpu, highdisk]

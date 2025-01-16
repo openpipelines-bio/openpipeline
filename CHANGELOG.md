@@ -1,6 +1,12 @@
 # openpipelines 2.1.0
 
-# MAJOR CHANGES
+## NEW FUNCTIONALITY
+
+* `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948).
+
+## MAJOR CHANGES
+
+* Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
 
 * The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
 
@@ -15,6 +21,8 @@
 * `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
 
 * `popv`: Pin numpy<2 after new release of scvi-tools (PR #946).
+
+* Various  components (`scgpt` and `annotate`): Add resource labels (PR #947, PR #950).
 
 # openpipelines 2.0.0
 
@@ -64,8 +72,6 @@
 * `resources_test_scripts/scgpt.sh`: Update scGPT test resources to avoid subsetting of datasets (PR #926).
 
 * `workflows/integration/scgpt_leiden` workflow update: Update workflow such that input dataset is not subsetted for HVG but uses boolean masks in .var field instead (PR #875).
-
-* Various scGPT components (`scgpt`): Add resource labels (PR #947).
 
 ## BUG FIXES
 

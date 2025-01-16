@@ -2,21 +2,27 @@ import sys
 import pytest
 import mudata as mu
 import numpy as np
+from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
-meta = {"name": "lognorm", "resources_dir": "resources_test/"}
+meta = {
+    "name": "lognorm",
+    "resources_dir": "resources_test/",
+    "config": "src/transform/normalize_total/config.vsh.yaml",
+    "executable": "target/docker/transform/normalize_total/normalize_total",
+}
 ## VIASH END
 
 input = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
 
-def test_run(run_component, tmp_path):
-    output = tmp_path / "output.h5mu"
+def test_run(run_component, random_h5mu_path):
+    output = random_h5mu_path()
     cmd_pars = [
         "--input",
         input,
         "--output",
-        str(output),
+        output,
         "--output_compression",
         "gzip",
     ]
@@ -27,17 +33,12 @@ def test_run(run_component, tmp_path):
     mu_input = mu.read_h5mu(input)
     mu_output = mu.read_h5mu(output)
 
-    assert "rna" in mu_output.mod, 'Output should contain data.mod["prot"].'
-    assert "prot" in mu_output.mod, 'Output should contain data.mod["prot"].'
+    assert "rna" in mu_output.mod, 'Output should contain data.mod["rna"].'
 
     rna_in = mu_input.mod["rna"]
     rna_out = mu_output.mod["rna"]
-    prot_in = mu_input.mod["prot"]
-    prot_out = mu_output.mod["prot"]
 
     assert rna_in.shape == rna_out.shape, "Should have same shape as before"
-    assert prot_in.shape == prot_out.shape, "Should have same shape as before"
-
     assert np.mean(rna_in.X) != np.mean(rna_out.X), "Expression should have changed"
 
     nz_row, nz_col = rna_in.X.nonzero()
@@ -52,14 +53,18 @@ def test_run(run_component, tmp_path):
     assert row_corr > 0.1
     assert col_corr > 0.1
 
+    # Copy over X so that the rest of the objects can be compared
+    mu_input["rna"].X = mu_output["rna"].X
+    assert_annotation_objects_equal(mu_input, mu_output)
 
-def test_target_sum(run_component, tmp_path):
-    output = tmp_path / "output.h5mu"
+
+def test_target_sum(run_component, random_h5mu_path):
+    output = random_h5mu_path()
     cmd_pars = [
         "--input",
         input,
         "--output",
-        str(output),
+        output,
         "--output_compression",
         "gzip",
         "--target_sum",
@@ -70,11 +75,16 @@ def test_target_sum(run_component, tmp_path):
     assert output.is_file(), "No output was created."
 
     mu_output = mu.read_h5mu(output)
+    mu_input = mu.read_h5mu(input)
     rna_out = mu_output.mod["rna"]
 
     assert np.all(
         np.abs(rna_out.X.sum(axis=1) - 10000) < 1
     ), "Expression should have changed"
+
+    # Copy over X so that the rest of the object can be compared
+    mu_input["rna"].X = mu_output["rna"].X
+    assert_annotation_objects_equal(mu_input, mu_output)
 
 
 if __name__ == "__main__":

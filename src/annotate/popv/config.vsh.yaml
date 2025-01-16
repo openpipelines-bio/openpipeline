@@ -163,4 +163,4 @@ runners:
   - type: nextflow
     directives:
       # TODO: should add new label highmem-single-gpu and lowmem-single-gpu
-      label: [highmem, highcpu]
+      label: [highmem, highcpu, highdisk]

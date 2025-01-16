@@ -19,20 +19,18 @@ par = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Reading input data")
-mdata = mu.read_h5mu(par["input"])
+logger.info("Reading modality %s from %s", par["modality"], par["input"])
+data = mu.read_h5ad(par["input"], mod=par["modality"])
 
-mdata.var_names_make_unique()
-
-mod = par["modality"]
-logger.info("Processing modality %s.", mod)
-data = mdata.mod[mod]
+assert (
+    data.var_names.is_unique
+), "The var_names of the input modality must be be unique."
 
 logger.info("\tUnfiltered data: %s", data)
-
 logger.info("\tComputing aggregations.")
 
 
@@ -89,6 +87,8 @@ data.obs[par["obs_name_filter"]] = keep_cells
 
 logger.info("\tFiltered data: %s", data)
 logger.info("Writing output data to %s", par["output"])
-mdata.write_h5mu(par["output"], compression=par["output_compression"])
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], data, par["output_compression"]
+)
 
 logger.info("Finished")
