@@ -20,6 +20,8 @@
 
 * `popv`: Pin numpy<2 after new release of scvi-tools (PR #946).
 
+* Various  components (`scgpt` and `annotate`): Add resource labels (PR #947, PR #950).
+
 # openpipelines 2.0.0
 
 ## BREAKING CHANGES
@@ -68,8 +70,6 @@
 * `resources_test_scripts/scgpt.sh`: Update scGPT test resources to avoid subsetting of datasets (PR #926).
 
 * `workflows/integration/scgpt_leiden` workflow update: Update workflow such that input dataset is not subsetted for HVG but uses boolean masks in .var field instead (PR #875).
-
-* Various scGPT components (`scgpt`): Add resource labels (PR #947).
 
 ## BUG FIXES
 
