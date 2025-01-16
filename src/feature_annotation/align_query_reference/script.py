@@ -91,8 +91,8 @@ def copy_and_sanitize_var_gene_names(
     adata,
     input_var_key,
     output_var_key,
-    overwrite=False,
-    preserve_index=False,
+    overwrite=par["overwrite_existing_key"],
+    preserve_index=par["preserve_var_index"],
     var_index_field="ori_var_index",
 ):
     if output_var_key not in adata.var.keys() and input_var_key:

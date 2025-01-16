@@ -157,7 +157,7 @@ argument_groups:
         type: boolean_true
         description: | 
           If set to true, the .var index of the --input and --reference datasets will be preserved.
-          If set to false (default behavior), the original .var index will stored in the --output_var_index .var column and the .var index will be replaced with the sanitized & aligned gene names.
+          If set to false (default behavior), the original .var index will be stored in the --output_var_index .var column and the .var index will be replaced with the sanitized & aligned gene names.
 
 resources:
   - type: python_script
