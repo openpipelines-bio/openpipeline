@@ -242,7 +242,7 @@ build_info:
   output: "target/executable/reference/build_cellranger_arc_reference"
   executable: "target/executable/reference/build_cellranger_arc_reference/build_cellranger_arc_reference"
   viash_version: "0.9.0"
-  git_commit: "6c485fdab970eaba8e012f16977eb0f04e11a4bb"
+  git_commit: "4f1e977fb1ce85c7a1f45ffa9e59a80364f27fc2"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
