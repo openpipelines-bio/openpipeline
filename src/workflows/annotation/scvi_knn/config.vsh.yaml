@@ -1,6 +1,6 @@
 name: "scvi_knn"
 namespace: "workflows/annotation"
-description: "Cell type annotation workflow that performs scVI integration of reference and query dataset followed by KNN label transfer."
+description: "Cell type annotation workflow that performs scVI integration of reference and query dataset followed by KNN label transfer. The query and reference datasets are expected to be pre-processed in the same way."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]
@@ -23,7 +23,7 @@ argument_groups:
       - name: "--input"
         required: true
         type: file
-        description: Input dataset consisting of the (unlabeled) query observations. The dataset is expected to be pre-processed in the same way as --reference.
+        description: Input dataset consisting of the (unlabeled) query observations. 
         example: input.h5mu
       - name: "--modality"
         description: Which modality to process. Should match the modality of the --reference dataset.
@@ -33,11 +33,11 @@ argument_groups:
       - name: "--var_hvg"
         type: string
         required: false
-        description: ".var column containing highly variable genes. If not provided, genes will not be subset. Should match the .var column name of the --reference dataset."
+        description: The .var column containing highly variable genes. If not provided, genes will not be subset. Should match the .var column name of the --reference dataset.
       - name: "--input_layer"
         type: string
         example: log_normalized
-        description: Which layer of the input dataset to use for integration if .X is not to be used.
+        description: The layer of the input dataset to use for integration if .X is not to be used.
       - name: "--input_obs_batch_label"
         type: string
         description: "The .obs field in the input (query) dataset containing the batch labels."
@@ -63,12 +63,12 @@ argument_groups:
       - name: "--reference"
         required: true
         type: file
-        description: Reference dataset consisting of the labeled observations to train the KNN classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset.
+        description: Reference dataset consisting of the labeled observations.
         example: reference.h5mu
       - name: "--reference_layer"
         type: string
         example: log_normalized
-        description: Which layer of the reference dataset to use for integration if .X is not to be used.
+        description: The layer of the reference dataset to use for integration if .X is not to be used.
       - name: "--reference_obs_targets"
         type: string
         example: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
@@ -148,6 +148,7 @@ argument_groups:
       - name: "--n_neighbors"
         type: integer
         default: 15
+        min: 5
         required: false
         description: |
           The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. 
