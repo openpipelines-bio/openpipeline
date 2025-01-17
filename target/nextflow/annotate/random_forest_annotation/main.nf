@@ -3164,6 +3164,11 @@ meta = [
       "type" : "nextflow",
       "id" : "nextflow",
       "directives" : {
+        "label" : [
+          "highcpu",
+          "highmem",
+          "highdisk"
+        ],
         "tag" : "$id"
       },
       "auto" : {
@@ -3300,7 +3305,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/random_forest_annotation",
     "viash_version" : "0.9.0",
-    "git_commit" : "4f1e977fb1ce85c7a1f45ffa9e59a80364f27fc2",
+    "git_commit" : "9b8c64703a8522c5156ba46e8aa33b96f7765c94",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3886,6 +3891,11 @@ meta["defaults"] = [
     "image" : "openpipelines-bio/openpipeline/annotate/random_forest_annotation",
     "tag" : "integration_build"
   },
+  "label" : [
+    "highcpu",
+    "highmem",
+    "highdisk"
+  ],
   "tag" : "$id"
 }'''),
 

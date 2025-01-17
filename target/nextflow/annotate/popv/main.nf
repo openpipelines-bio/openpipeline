@@ -3118,7 +3118,8 @@ meta = [
       "directives" : {
         "label" : [
           "highmem",
-          "highcpu"
+          "highcpu",
+          "highdisk"
         ],
         "tag" : "$id"
       },
@@ -3258,7 +3259,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv",
     "viash_version" : "0.9.0",
-    "git_commit" : "4f1e977fb1ce85c7a1f45ffa9e59a80364f27fc2",
+    "git_commit" : "9b8c64703a8522c5156ba46e8aa33b96f7765c94",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3906,7 +3907,8 @@ meta["defaults"] = [
   },
   "label" : [
     "highmem",
-    "highcpu"
+    "highcpu",
+    "highdisk"
   ],
   "tag" : "$id"
 }'''),
