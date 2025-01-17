@@ -30,15 +30,26 @@ argument_groups:
         type: string
         default: "rna"
         required: false
-      - name: "--input_obsm_embedding"
-        example: "X_pca"
+      - name: "--var_hvg"
         type: string
-        description: Embedding .obsm column to use as input for integration. Should match the embedding .obsm columng of the --reference dataset.
+        required: false
+        description: The .var column containing highly variable genes. If not provided, genes will not be subset. Should match the .var column name of the --reference dataset.
       - name: "--input_obs_batch_label"
         type: string
         description: "The .obs field in the input (query) dataset containing the batch labels."
         example: "sample"
         required: true
+      - name: "--input_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The .var field in the input (query) dataset containing gene names; if not provided, the .var index will be used.
+      - name: "--input_reference_gene_overlap"
+        type: integer
+        default: 100
+        min: 1
+        description: | 
+          The minimum number of genes present in both the reference and query datasets.
       - name: "--overwrite_existing_key"
         type: boolean_true
         description: If provided, will overwrite existing fields in the input dataset when data are copied during the reference alignment process.
@@ -56,11 +67,23 @@ argument_groups:
         required: true
         multiple: true
         description: The `.obs` key(s) of the target labels to transfer.
+      - name: "--reference_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The .var field in the reference dataset containing gene names; if not provided, the .var index will be used.
       - name: "--reference_obs_batch_label"
         type: string
         description:  "The .obs field in the reference dataset containing the batch labels."
         example: "sample"
         required: true
+  
+  - name: PCA options
+    arguments:
+      - name: "--num_components"
+        type: integer
+        example: 25
+        description: Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.
 
   - name: Harmony integration options
     arguments:
@@ -143,8 +166,8 @@ dependencies:
   - name: labels_transfer/knn
   - name: dataflow/split_h5mu
   - name: dataflow/concatenate_h5mu
-  - name: metadata/add_id
-  - name: metadata/duplicate_obs
+  - name: dimred/pca
+  - name: feature_annotation/align_query_reference
 
 resources:
   - type: nextflow_script

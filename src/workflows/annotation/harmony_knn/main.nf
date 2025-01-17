@@ -10,60 +10,31 @@ workflow run_wf {
             def new_state = state + ["workflow_output": state.output]
             [id, new_state]
         }
-        // Add 'query' id to .obs columns of query dataset
-        | add_id.run(
-            key: "add_query_id",
+        // Align query and reference datasets
+        | align_query_reference.run(
             fromState: [
-                "input": "input",
-            ],
-            args:[
-                "input_id": "query",
-                "obs_output": "dataset",
-            ],
-            toState: ["input": "output"]
-        )
-        // Add 'reference'id to .obs columns of reference dataset
-        | add_id.run(
-            key: "add_reference_id",
-            fromState:[
-                "input": "reference",
-            ],
-            args:[
-                "input_id": "reference",
-                "obs_output": "dataset"
-            ],
-            toState: ["reference": "output"]
-        )
-        // Make sure that query and reference dataset have batch information in the same .obs column
-        // By copying the respective .obs columns to the obs column "batch_label"
-        | duplicate_obs.run(
-            key: "duplicate_query_batch_label",
-            fromState: [
-                "input": "input",
-                "modality": "modality",
-                "input_obs_key": "input_obs_batch_label",
-                "overwrite_existing_key": "overwrite_existing_key"
+            "input": "input",
+            "modality": "modality",
+            "input_obs_batch": "input_obs_batch_label",
+            "input_var_gene_names": "input_var_gene_names",
+            "reference": "reference",
+            "reference_obs_batch": "reference_obs_batch_label",
+            "reference_var_gene_names": "reference_var_gene_names",
+            "input_reference_gene_overlap": "input_reference_gene_overlap",
+            "overwrite_existing_key": "overwrite_existing_key"
             ],
             args: [
-                "output_obs_key": "batch_label"
+            "input_id": "query",
+            "reference_id": "reference",
+            "output_layer": "_counts",
+            "output_var_gene_names": "_gene_names",
+            "output_obs_batch": "_sample_id",
+            "output_obs_label": "_cell_type",
+            "output_obs_id": "_dataset"
             ],
             toState: [
-                "input": "output"
-            ]
-        )
-        | duplicate_obs.run(
-            key: "duplicate_reference_batch_label",
-            fromState: [
-                "input": "reference",
-                "modality": "modality",
-                "input_obs_key": "reference_obs_batch_label",
-                "overwrite_existing_key": "overwrite_existing_key"
-            ],
-            args: [
-                "output_obs_key": "batch_label"
-            ],
-            toState: [
-                "reference": "output"
+            "input": "output_query",
+            "reference": "output_reference"
             ]
         )
         // Concatenate query and reference datasets prior to integration
@@ -79,6 +50,24 @@ workflow run_wf {
             toState: ["input": "output"]
         )
         | view {"After concatenation: $it"}
+        | pca.run(
+            fromState: [
+                "input": "input",
+                "modality": "modality",
+                "var_input": "var_hvg",
+                "overwrite": "overwrite_existing_key",
+                "num_compontents": "num_components"
+            ],
+            args: [
+                "layer": "_counts",
+                "obsm_output": "X_pca_harmony",
+                "varm_output": "pca_loadings_harmony",
+                "uns_output": "pca_variance_harmony",
+            ],
+            toState: [
+                "input": "output"
+            ]
+        )
         // Run harmony integration with leiden clustering
         | harmony_leiden_workflow.run(
             fromState: { id, state ->
@@ -86,19 +75,19 @@ workflow run_wf {
                 "id": id,
                 "input": state.input,
                 "modality": state.modality,
-                "embedding": state.obsm_embedding,
                 "obsm_integrated": state.output_obsm_integrated,
                 "theta": state.theta,
                 "leiden_resolution": state.leiden_resolution,
                 ]
             },
             args: [
+                "embedding": "X_pca_harmony",
                 "uns_neighbors": "harmonypy_integration_neighbors",
                 "obsp_neighbor_distances": "harmonypy_integration_distances",
                 "obsp_neighbor_connectivities": "harmonypy_integration_connectivities",
                 "obs_cluster": "harmony_integration_leiden",
                 "obsm_umap": "X_leiden_harmony_umap",
-                "obs_covariates": "batch_label"
+                "obs_covariates": "_sample_id"
             ],
             toState: ["input": "output"]
         )
@@ -110,7 +99,7 @@ workflow run_wf {
                 "modality": "modality"
             ],
             args: [
-                "obs_feature": "dataset",
+                "obs_feature": "_dataset",
                 "output_files": "sample_files.csv",
                 "drop_obs_nan": "true",
                 "output": "ref_query"
