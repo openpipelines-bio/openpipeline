@@ -108,13 +108,13 @@ def test_filter_with_hvg(run_component, lognormed_test_data_path):
     assert_annotation_objects_equal(lognormed_test_data_path, data)
 
 
-def test_filter_with_hvg_var_input(run_component, lognormed_test_data_path):
+def test_filter_with_hvg_var_input(run_component, common_vars_data_path):
     run_component(
         [
             "--flavor",
             "seurat",
             "--input",
-            lognormed_test_data_path,
+            common_vars_data_path,
             "--output",
             "output.h5mu",
             "--layer",
@@ -129,7 +129,7 @@ def test_filter_with_hvg_var_input(run_component, lognormed_test_data_path):
             "--flavor",
             "seurat",
             "--input",
-            lognormed_test_data_path,
+            common_vars_data_path,
             "--output",
             "common_vars.h5mu",
             "--layer",
