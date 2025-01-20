@@ -28,7 +28,8 @@ par = {
     "overwrite_existing_key": False,
     "output_compression": None,
     "preserve_var_index": False,
-    "output_var_index": "ori_var_index",
+    "output_var_index": "_ori_var_index",
+    "output_var_common_genes": "_common_vars",
 }
 
 meta = {"resources_dir": "src/utils"}
