@@ -88,7 +88,7 @@ def test_simple_execution(run_component, random_h5mu_path):
     reference_adata = mu.read_h5mu(output_reference_file).mod["rna"]
 
     expected_layers = ["_counts"]
-    expected_var = ["_gene_names", "ori_var_index"]
+    expected_var = ["_gene_names", "_ori_var_index", "_common_vars"]
     expected_obs = ["_sample_id", "_cell_type", "_dataset"]
 
     # Evaluate presence of obs, var, layers
@@ -142,12 +142,12 @@ def test_simple_execution(run_component, random_h5mu_path):
     ), "Reference .var index should be equal to sanitized reference .var ensemblid "
 
     assert np.any(
-        reference_adata.var["ori_var_index"] != reference_adata.var["ensemblid"]
-    ), "Reference .var ori_var_index should not be all equal to reference .var ensemblid"
+        reference_adata.var["_ori_var_index"] != reference_adata.var["ensemblid"]
+    ), "Reference .var _ori_var_index should not be all equal to reference .var ensemblid"
 
     assert np.all(
-        reference_adata.var["ori_var_index"] != reference_adata.var.index
-    ), "Reference .var ori_var_index should be equal to reference .var index"
+        reference_adata.var["_ori_var_index"] != reference_adata.var.index
+    ), "Reference .var _ori_var_index should be equal to reference .var index"
 
     assert np.all(
         reference_adata.obs["_sample_id"] == reference_adata.obs["donor_id"]
@@ -415,8 +415,8 @@ def test_preserve_var_index(run_component, random_h5mu_path):
     query_adata = mu.read_h5mu(output_query_file).mod["rna"]
     reference_adata = mu.read_h5mu(output_reference_file).mod["rna"]
 
-    assert "ori_var_index" not in query_adata.var.keys()
-    assert "ori_var_index" not in reference_adata.var.keys()
+    assert "_ori_var_index" not in query_adata.var.keys()
+    assert "_ori_var_index" not in reference_adata.var.keys()
 
     assert np.all(
         ori_query_adata.var.index == query_adata.var.index
