@@ -1,5 +1,6 @@
 import os
 import subprocess
+import numpy as np
 import scanpy as sc
 import mudata as mu
 import sys
@@ -67,6 +68,16 @@ def filter_data_path(tmp_path, input_data):
     return temp_h5mu
 
 
+@pytest.fixture()
+def common_vars_data_path(tmp_path, lognormed_test_data):
+    temp_h5mu = tmp_path / "lognormed_batch.h5mu"
+    rna_mod = lognormed_test_data.mod["rna"]
+    rna_mod.var["common_vars"] = False
+    rna_mod.var["common_vars"][:10000] = True
+    lognormed_test_data.write_h5mu(temp_h5mu)
+    return temp_h5mu
+
+
 def test_filter_with_hvg(run_component, lognormed_test_data_path):
     run_component(
         [
@@ -93,6 +104,72 @@ def test_filter_with_hvg(run_component, lognormed_test_data_path):
     data.var = data.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
     del data["rna"].varm["hvg"]
     assert_annotation_objects_equal(lognormed_test_data_path, data)
+
+
+def test_filter_with_hvg_var_input(
+    run_component, common_vars_data_path, lognormed_test_data_path
+):
+    run_component(
+        [
+            "--flavor",
+            "seurat",
+            "--input",
+            lognormed_test_data_path,
+            "--output",
+            "output.h5mu",
+            "--layer",
+            "log_transformed",
+            "--output_compression",
+            "gzip",
+        ]
+    )
+
+    run_component(
+        [
+            "--flavor",
+            "seurat",
+            "--input",
+            common_vars_data_path,
+            "--output",
+            "common_vars.h5mu",
+            "--layer",
+            "log_transformed",
+            "--output_compression",
+            "gzip",
+            "--var_input",
+            "common_vars",
+        ]
+    )
+
+    mdata = mu.read_h5mu("output.h5mu")
+    common_vars = mu.read_h5mu("common_vars.h5mu")
+
+    # Assert detected HVG are different
+    hvg = mdata.mod["rna"][:, mdata.mod["rna"].var["filter_with_hvg"]].var_names
+    common_vars_hvg = common_vars.mod["rna"][
+        :, common_vars.mod["rna"].var["filter_with_hvg"]
+    ].var_names
+
+    assert not np.all(var in hvg for var in common_vars_hvg)
+
+    # Assert original data is unchanged
+    # Put the output data back into its original shape
+    # so that we can compare it to the input
+    mdata.mod["rna"].var = mdata.mod["rna"].var.drop(
+        columns=["filter_with_hvg"], errors="raise"
+    )
+    mdata.var = mdata.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
+    del mdata["rna"].varm["hvg"]
+
+    common_vars_hvg.mod["rna"].var = common_vars_hvg.mod["rna"].var.drop(
+        columns=["filter_with_hvg"], errors="raise"
+    )
+    common_vars_hvg.var = common_vars_hvg.var.drop(
+        columns=["rna:filter_with_hvg"], errors="raise"
+    )
+    del common_vars_hvg["rna"].varm["hvg"]
+
+    assert_annotation_objects_equal(mdata, common_vars_hvg)
 
 
 def test_filter_with_hvg_batch_with_batch(
