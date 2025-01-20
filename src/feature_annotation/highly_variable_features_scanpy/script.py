@@ -70,8 +70,6 @@ obs = pd.DataFrame(index=data.obs_names.copy())
 var = pd.DataFrame(index=data.var_names.copy())
 if par["obs_batch_key"]:
     obs = data.obs.loc[:, par["obs_batch_key"]].to_frame()
-if par["var_input"]:
-    var = data.var.loc[:, par["var_input"]].to_frame()
 input_anndata = ad.AnnData(X=input_layer.copy(), obs=obs, var=var)
 if "log1p" in data.uns:
     input_anndata.uns["log1p"] = data.uns["log1p"]
@@ -99,8 +97,9 @@ if par["flavor"] != "seurat_v3":
         input_anndata.uns["log1p"]["base"] = None
 
 # Enable calculating the HVG only on a subset of vars
-# e.g for cell type annotation, only calculat HVG on vars that are common between query and reference
+# e.g for cell type annotation, only calculate HVG on variables that are common between query and reference
 if par["var_input"]:
+    input_anndata.var[par["var_input"]] = data.var[par["var_input"]]
     input_anndata = subset_vars(input_anndata, par["var_input"])
 
 logger.info("\tUnfiltered data: %s", data)
@@ -141,7 +140,7 @@ if par["flavor"] == "seurat_v3" and not par["n_top_features"]:
 try:
     out = sc.pp.highly_variable_genes(**hvg_args)
     if par["var_input"] is not None:
-        out.index = data[:, data.var["common_vars"]].var.index
+        out.index = data[:, data.var[par["var_input"]]].var.index
         out = out.reindex(index=data.var.index, method=None)
         out.highly_variable = out.highly_variable.fillna(False)
         assert (
