@@ -40,7 +40,7 @@ rna_in.obs["batch"] = "A"
 column_index = rna_in.obs.columns.get_indexer(["batch"])
 rna_in.obs.iloc[slice(rna_in.n_obs // 2, None), column_index] = "B"
 rna_in.var["common_vars"] = False
-rna_in.var["common_vars"][:10000] = True
+rna_in.var["common_vars"].iloc[:10000] = True
 mu_in.write_h5mu(temp_h5mu)
 par["input"] = temp_h5mu
 ## VIASH END
