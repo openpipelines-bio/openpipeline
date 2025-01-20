@@ -2,7 +2,7 @@
 
 ## NEW FUNCTIONALITY
 
-* `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948).
+* `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948, #958).
 
 ## MAJOR CHANGES
 
@@ -23,6 +23,8 @@
 * `popv`: Pin numpy<2 after new release of scvi-tools (PR #946).
 
 * Various  components (`scgpt` and `annotate`): Add resource labels (PR #947, PR #950).
+
+* `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957).
 
 # openpipelines 2.0.0
 
