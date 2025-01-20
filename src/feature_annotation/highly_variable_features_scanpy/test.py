@@ -163,15 +163,15 @@ def test_filter_with_hvg_var_input(run_component, common_vars_data_path):
     mdata.var = mdata.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
     del mdata["rna"].varm["hvg"]
 
-    common_vars_hvg.mod["rna"].var = common_vars_hvg.mod["rna"].var.drop(
+    common_vars.mod["rna"].var = common_vars.mod["rna"].var.drop(
         columns=["filter_with_hvg"], errors="raise"
     )
-    common_vars_hvg.var = common_vars_hvg.var.drop(
+    common_vars.var = common_vars.var.drop(
         columns=["rna:filter_with_hvg"], errors="raise"
     )
-    del common_vars_hvg["rna"].varm["hvg"]
+    del common_vars["rna"].varm["hvg"]
 
-    assert_annotation_objects_equal(mdata, common_vars_hvg)
+    assert_annotation_objects_equal(mdata, common_vars)
 
 
 def test_filter_with_hvg_batch_with_batch(
