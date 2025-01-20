@@ -315,10 +315,16 @@ function ViashHelp {
   echo ""
   echo "    --output_var_index"
   echo "        type: string"
-  echo "        default: ori_var_index"
+  echo "        default: _ori_var_index"
   echo "        Name of the .var column to which the .var index of the --input and"
   echo "        --reference datasets is stored. Only relevant if \"--preserve_var_index\""
   echo "        is False."
+  echo ""
+  echo "    --output_var_common_genes"
+  echo "        type: string"
+  echo "        default: _common_vars"
+  echo "        Name of the .var column in the output query and reference datasets"
+  echo "        containing the boolean array indicating the common variables."
   echo ""
   echo "Arguments:"
   echo "    Arguments related to the alignment of the input and reference datasets."
@@ -634,9 +640,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component feature_annotation align_query_reference"
-LABEL org.opencontainers.image.created="2025-01-16T09:13:09Z"
+LABEL org.opencontainers.image.created="2025-01-20T10:27:59Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="2b617a38284207512cb603afc688509e626c2f56"
+LABEL org.opencontainers.image.revision="67a467e339f7480399e604aa30bdab9bd7df232a"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1018,6 +1024,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT_VAR_INDEX=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --output_var_common_genes)
+            [ -n "$VIASH_PAR_OUTPUT_VAR_COMMON_GENES" ] && ViashError Bad arguments for option \'--output_var_common_genes\': \'$VIASH_PAR_OUTPUT_VAR_COMMON_GENES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_VAR_COMMON_GENES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_var_common_genes. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_var_common_genes=*)
+            [ -n "$VIASH_PAR_OUTPUT_VAR_COMMON_GENES" ] && ViashError Bad arguments for option \'--output_var_common_genes=*\': \'$VIASH_PAR_OUTPUT_VAR_COMMON_GENES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_VAR_COMMON_GENES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --input_reference_gene_overlap)
             [ -n "$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP" ] && ViashError Bad arguments for option \'--input_reference_gene_overlap\': \'$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP="$2"
@@ -1283,7 +1300,10 @@ if [ -z ${VIASH_PAR_OUTPUT_OBS_ID+x} ]; then
   VIASH_PAR_OUTPUT_OBS_ID="_dataset"
 fi
 if [ -z ${VIASH_PAR_OUTPUT_VAR_INDEX+x} ]; then
-  VIASH_PAR_OUTPUT_VAR_INDEX="ori_var_index"
+  VIASH_PAR_OUTPUT_VAR_INDEX="_ori_var_index"
+fi
+if [ -z ${VIASH_PAR_OUTPUT_VAR_COMMON_GENES+x} ]; then
+  VIASH_PAR_OUTPUT_VAR_COMMON_GENES="_common_vars"
 fi
 if [ -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then
   VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP="100"
@@ -1541,6 +1561,7 @@ par = {
   'output_obs_label': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_LABEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_obs_id': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_ID+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_ID//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_var_index': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_INDEX+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_INDEX//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_var_common_genes': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_COMMON_GENES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_COMMON_GENES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'unkown_celltype_label': $( if [ ! -z ${VIASH_PAR_UNKOWN_CELLTYPE_LABEL+x} ]; then echo "r'${VIASH_PAR_UNKOWN_CELLTYPE_LABEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'overwrite_existing_key': $( if [ ! -z ${VIASH_PAR_OVERWRITE_EXISTING_KEY+x} ]; then echo "r'${VIASH_PAR_OVERWRITE_EXISTING_KEY//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
@@ -1752,11 +1773,19 @@ def main():
 
     # Cross check genes
     logger.info("### Cross checking genes")
-    cross_check_genes(
+    common_vars = cross_check_genes(
         input_modality.var[par["output_var_gene_names"]],
         reference_modality.var[par["output_var_gene_names"]],
         min_gene_overlap=par["input_reference_gene_overlap"],
     )
+
+    # Add common vars to the output
+    input_modality.var[par["output_var_common_genes"]] = input_modality.var[
+        par["output_var_gene_names"]
+    ].isin(common_vars)
+    reference_modality.var[par["output_var_common_genes"]] = reference_modality.var[
+        par["output_var_gene_names"]
+    ].isin(common_vars)
 
     # Adding an id to the query and reference datasets
     logger.info("### Adding an id to the query and reference datasets")

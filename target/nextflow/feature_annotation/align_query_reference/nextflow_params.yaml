@@ -24,7 +24,8 @@ output_var_gene_names: "_gene_names"
 output_obs_batch: "_sample_id"
 output_obs_label: "_cell_type"
 output_obs_id: "_dataset"
-output_var_index: "ori_var_index"
+output_var_index: "_ori_var_index"
+output_var_common_genes: "_common_vars"
 
 # Arguments
 input_reference_gene_overlap: 100
