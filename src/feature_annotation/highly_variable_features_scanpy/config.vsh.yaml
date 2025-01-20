@@ -32,6 +32,11 @@ arguments:
     type: string
     description: use adata.layers[layer] for expression values instead of adata.X.
     required: false
+  - name: "--var_input"
+    type: string
+    description: |
+      If specified, use boolean array in adata.var[var_input] to calculate hvg on subset of vars.
+    required: false
   # output
   - name: "--output"
     type: file
