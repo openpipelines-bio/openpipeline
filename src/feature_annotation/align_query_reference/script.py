@@ -215,11 +215,19 @@ def main():
 
     # Cross check genes
     logger.info("### Cross checking genes")
-    cross_check_genes(
+    common_vars = cross_check_genes(
         input_modality.var[par["output_var_gene_names"]],
         reference_modality.var[par["output_var_gene_names"]],
         min_gene_overlap=par["input_reference_gene_overlap"],
     )
+
+    # Add common vars to the output
+    input_modality.var[par["output_var_common_genes"]] = input_modality.var[
+        par["output_var_gene_names"]
+    ].isin(common_vars)
+    reference_modality.var[par["output_var_common_genes"]] = reference_modality.var[
+        par["output_var_gene_names"]
+    ].isin(common_vars)
 
     # Adding an id to the query and reference datasets
     logger.info("### Adding an id to the query and reference datasets")
