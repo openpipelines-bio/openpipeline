@@ -2,7 +2,7 @@
 
 ## NEW FUNCTIONALITY
 
-* `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948).
+* `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948, #955).
 
 ## MAJOR CHANGES
 
