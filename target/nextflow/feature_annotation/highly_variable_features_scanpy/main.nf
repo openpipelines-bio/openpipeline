@@ -2901,6 +2901,15 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "string",
+          "name" : "--var_input",
+          "description" : "If specified, use boolean array in adata.var[var_input] to calculate hvg on subset of vars.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "file",
           "name" : "--output",
           "description" : "Output h5mu file.",
@@ -3077,6 +3086,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/subset_vars.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3239,7 +3252,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.9.0",
-    "git_commit" : "67a467e339f7480399e604aa30bdab9bd7df232a",
+    "git_commit" : "545de093570f601a0687e63d9809d131e7fd2a4e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3295,6 +3308,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_name_filter': $( if [ ! -z ${VIASH_PAR_VAR_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_VAR_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3337,6 +3351,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from subset_vars import subset_vars
 from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
@@ -3386,6 +3401,12 @@ if par["flavor"] != "seurat_v3":
     elif "log1p" in input_anndata.uns and "base" not in input_anndata.uns["log1p"]:
         input_anndata.uns["log1p"]["base"] = None
 
+# Enable calculating the HVG only on a subset of vars
+# e.g for cell type annotation, only calculate HVG on variables that are common between query and reference
+if par["var_input"]:
+    input_anndata.var[par["var_input"]] = data.var[par["var_input"]]
+    input_anndata = subset_vars(input_anndata, par["var_input"])
+
 logger.info("\\\\tUnfiltered data: %s", data)
 
 logger.info("\\\\tComputing hvg")
@@ -3423,11 +3444,19 @@ if par["flavor"] == "seurat_v3" and not par["n_top_features"]:
 # call function
 try:
     out = sc.pp.highly_variable_genes(**hvg_args)
-    if par["obs_batch_key"] is not None:
+    if par["var_input"] is not None:
+        out.index = data[:, data.var[par["var_input"]]].var.index
+        out = out.reindex(index=data.var.index, method=None)
+        out.highly_variable = out.highly_variable.fillna(False)
+        assert (
+            out.index == data.var.index
+        ).all(), "Expected output index values to be equivalent to the input index"
+    elif par["obs_batch_key"] is not None:
         out = out.reindex(index=data.var.index, method=None)
         assert (
             out.index == data.var.index
         ).all(), "Expected output index values to be equivalent to the input index"
+
 except ValueError as err:
     if str(err) == "cannot specify integer \\`bins\\` when input data contains infinity":
         err.args = (
