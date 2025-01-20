@@ -133,8 +133,13 @@ argument_groups:
         description: Name of the .obs column in the output query and reference datasets containing the dataset id.
       - name: "--output_var_index"
         type: string
-        default: "ori_var_index"
+        default: "_ori_var_index"
         description: Name of the .var column to which the .var index of the --input and --reference datasets is stored. Only relevant if "--preserve_var_index" is False.
+      - name: "--output_var_common_genes"
+        type: string
+        default: "_common_vars"
+        description: Name of the .var column in the output query and reference datasets containing the boolean array indicating the common variables.
+
 
   - name: Arguments
     description: Arguments related to the alignment of the input and reference datasets.

@@ -88,7 +88,7 @@ def test_simple_execution(run_component, random_h5mu_path):
     reference_adata = mu.read_h5mu(output_reference_file).mod["rna"]
 
     expected_layers = ["_counts"]
-    expected_var = ["_gene_names", "ori_var_index"]
+    expected_var = ["_gene_names", "_ori_var_index", "_common_vars"]
     expected_obs = ["_sample_id", "_cell_type", "_dataset"]
 
     # Evaluate presence of obs, var, layers
