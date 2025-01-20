@@ -22,15 +22,16 @@ par = {
     "varm_name": "hvg",
     "obs_batch_key": "batch",
     "layer": "log_transformed",
+    "var_input": "common_vars",
 }
 
-meta = {"resources_dir": "."}
+meta = {"resources_dir": "src/utils"}
 
 mu_in = mu.read_h5mu(
     "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 )
 rna_in = mu_in.mod["rna"]
-assert "filter_with_hvg" not in rna_in.var.columns
+# assert "filter_with_hvg" not in rna_in.var.columns
 log_transformed = sc.pp.log1p(rna_in, copy=True)
 rna_in.layers["log_transformed"] = log_transformed.X
 rna_in.uns["log1p"] = log_transformed.uns["log1p"]
@@ -38,12 +39,15 @@ temp_h5mu = "lognormed.h5mu"
 rna_in.obs["batch"] = "A"
 column_index = rna_in.obs.columns.get_indexer(["batch"])
 rna_in.obs.iloc[slice(rna_in.n_obs // 2, None), column_index] = "B"
+rna_in.var["common_vars"] = False
+rna_in.var["common_vars"][:10000] = True
 mu_in.write_h5mu(temp_h5mu)
 par["input"] = temp_h5mu
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from subset_vars import subset_vars
 from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
@@ -67,9 +71,16 @@ obs = pd.DataFrame(index=data.obs_names.copy())
 var = pd.DataFrame(index=data.var_names.copy())
 if par["obs_batch_key"]:
     obs = data.obs.loc[:, par["obs_batch_key"]].to_frame()
+if par["var_input"]:
+    var = data.var.loc[:, par["var_input"]].to_frame()
 input_anndata = ad.AnnData(X=input_layer.copy(), obs=obs, var=var)
 if "log1p" in data.uns:
     input_anndata.uns["log1p"] = data.uns["log1p"]
+
+# Enable calculating the HVG only on a subset of vars
+# e.g for cell type annotation, only calculat HVG on vars that are common between query and reference
+if par["var_input"]:
+    input_anndata = subset_vars(input_anndata, par["var_input"])
 
 # Workaround for issue
 # https://github.com/scverse/scanpy/issues/2239
