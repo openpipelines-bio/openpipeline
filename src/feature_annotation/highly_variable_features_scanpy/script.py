@@ -9,7 +9,7 @@ import re
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     "modality": "rna",
-    "output": "output.h5mu",
+    "output": "output_vars.h5mu",
     "var_name_filter": "filter_with_hvg",
     "do_subset": False,
     "flavor": "seurat",
@@ -20,9 +20,10 @@ par = {
     "span": 0.3,
     "n_bins": 20,
     "varm_name": "hvg",
-    "obs_batch_key": "batch",
+    "obs_batch_key": None,
     "layer": "log_transformed",
-    "var_input": "common_vars",
+    "var_input": None,
+    "output_compression": None,
 }
 
 meta = {"resources_dir": "src/utils"}
@@ -141,11 +142,19 @@ if par["flavor"] == "seurat_v3" and not par["n_top_features"]:
 # call function
 try:
     out = sc.pp.highly_variable_genes(**hvg_args)
-    if par["obs_batch_key"] is not None:
+    if par["var_input"] is not None:
+        out.index = data[:, data.var["common_vars"]].var.index
+        out = out.reindex(index=data.var.index, method=None)
+        out.highly_variable = out.highly_variable.fillna(False)
+        assert (
+            out.index == data.var.index
+        ).all(), "Expected output index values to be equivalent to the input index"
+    elif par["obs_batch_key"] is not None:
         out = out.reindex(index=data.var.index, method=None)
         assert (
             out.index == data.var.index
         ).all(), "Expected output index values to be equivalent to the input index"
+
 except ValueError as err:
     if str(err) == "cannot specify integer `bins` when input data contains infinity":
         err.args = (
