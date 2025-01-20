@@ -1,14 +1,12 @@
 import os
-import re
-import pandas as pd
 import subprocess
 import scanpy as sc
 import mudata as mu
 import sys
 import pytest
+import re
+import pandas as pd
 
-# import re
-# import pandas as pd
 from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START

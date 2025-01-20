@@ -9,7 +9,7 @@ import re
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     "modality": "rna",
-    "output": "output_vars.h5mu",
+    "output": "output.h5mu",
     "var_name_filter": "filter_with_hvg",
     "do_subset": False,
     "flavor": "seurat",
@@ -20,13 +20,11 @@ par = {
     "span": 0.3,
     "n_bins": 20,
     "varm_name": "hvg",
-    "obs_batch_key": None,
+    "obs_batch_key": "batch",
     "layer": "log_transformed",
-    "var_input": None,
-    "output_compression": None,
 }
 
-meta = {"resources_dir": "src/utils"}
+meta = {"resources_dir": "."}
 
 mu_in = mu.read_h5mu(
     "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
