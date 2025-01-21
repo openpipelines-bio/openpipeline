@@ -15,9 +15,11 @@ workflow run_wf {
             fromState: [
             "input": "input",
             "modality": "modality",
+            "input_layer": "input_layer",
             "input_obs_batch": "input_obs_batch_label",
             "input_var_gene_names": "input_var_gene_names",
             "reference": "reference",
+            "reference_layer": "reference_layer",
             "reference_obs_batch": "reference_obs_batch_label",
             "reference_var_gene_names": "reference_var_gene_names",
             "input_reference_gene_overlap": "input_reference_gene_overlap",
@@ -30,7 +32,8 @@ workflow run_wf {
             "output_var_gene_names": "_gene_names",
             "output_obs_batch": "_sample_id",
             "output_obs_label": "_cell_type",
-            "output_obs_id": "_dataset"
+            "output_obs_id": "_dataset",
+            "output_var_common_genes": "_common_vars"
             ],
             toState: [
             "input": "output_query",
@@ -50,16 +53,33 @@ workflow run_wf {
             toState: ["input": "output"]
         )
         | view {"After concatenation: $it"}
+        | highly_variable_features_scanpy.run(
+            fromState: [
+                "input": "input",
+                "modality": "modality",
+                "flavor": "hvg_flavor",
+                "n_top_features": "hvg_n_top_features",
+            ],
+            args: [
+                "layer": "_counts",
+                "var_input": "_common_vars",
+                "var_name_filter": "_common_hvg",
+                "obs_batch_key": "_sample_id"
+            ],
+            toState: [
+                "input": "output"
+            ]
+        )
         | pca.run(
             fromState: [
                 "input": "input",
                 "modality": "modality",
-                "var_input": "var_hvg",
                 "overwrite": "overwrite_existing_key",
-                "num_compontents": "num_components"
+                "num_compontents": "pca_num_components"
             ],
             args: [
                 "layer": "_counts",
+                "var_input": "_common_hvg",
                 "obsm_output": "X_pca_harmony",
                 "varm_output": "pca_loadings_harmony",
                 "uns_output": "pca_variance_harmony",
@@ -76,7 +96,7 @@ workflow run_wf {
                 "input": state.input,
                 "modality": state.modality,
                 "obsm_integrated": state.output_obsm_integrated,
-                "theta": state.theta,
+                "theta": state.harmony_theta,
                 "leiden_resolution": state.leiden_resolution,
                 ]
             },
@@ -137,8 +157,8 @@ workflow run_wf {
                 "output_obs_predictions": "output_obs_predictions",
                 "output_obs_probability": "output_obs_probability",
                 "output_compression": "output_compression",
-                "weights": "weights",
-                "n_neighbors": "n_neighbors",
+                "weights": "knn_weights",
+                "n_neighbors": "knn_n_neighbors",
                 "output": "workflow_output"
             ],
             toState: {id, output, state -> ["output": output.output]},

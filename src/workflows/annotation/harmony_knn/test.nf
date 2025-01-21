@@ -13,9 +13,11 @@ workflow test_wf {
       [
         id: "simple_execution_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        input_layer: "log_normalized",
         reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
         reference_var_gene_names: "ensemblid",
         input_obs_batch_label: "sample_id",
+        reference_layer: "log_normalized",
         reference_obs_batch_label: "donor_assay",
         reference_obs_targets: "cell_type",
         leiden_resolution: [1.0, 0.25]
@@ -23,9 +25,11 @@ workflow test_wf {
       [
         id: "no_leiden_resolutions_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        input_layer: "log_normalized",
         reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
         reference_var_gene_names: "ensemblid",
         input_obs_batch_label: "sample_id",
+        reference_layer: "log_normalized",
         reference_obs_batch_label: "donor_assay",
         reference_obs_targets: "cell_type",
         leiden_resolution: []

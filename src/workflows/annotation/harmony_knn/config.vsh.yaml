@@ -30,10 +30,10 @@ argument_groups:
         type: string
         default: "rna"
         required: false
-      - name: "--var_hvg"
-        type: string
+      - name: "--input_layer"
+        description: The layer of the input dataset to process if .X is not to be used. Should contain log normalizedcounts.
         required: false
-        description: The .var column containing highly variable genes. If not provided, genes will not be subset. Should match the .var column name of the --reference dataset.
+        type: string
       - name: "--input_obs_batch_label"
         type: string
         description: "The .obs field in the input (query) dataset containing the batch labels."
@@ -61,6 +61,10 @@ argument_groups:
         type: file
         description: Reference dataset consisting of the labeled observations to train the KNN classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset.
         example: reference.h5mu
+      - name: "--reference_layer"
+        description: The layer of the reference dataset to process if .X is not to be used. Should contain log normalized counts.
+        required: false
+        type: string
       - name: "--reference_obs_targets"
         type: string
         example: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
@@ -77,17 +81,33 @@ argument_groups:
         description:  "The .obs field in the reference dataset containing the batch labels."
         example: "sample"
         required: true
-  
+
+  - name: "Highly Variable Genes calculation options"
+    arguments:
+      - name: "--hvg_flavor"
+        alternatives: ["--filter_with_hvg_flavor"]
+        type: string
+        default: "seurat"
+        choices: ["seurat", "cell_ranger", "seurat_v3"]
+        description: |
+          Choose the flavor for identifying highly variable features. For the dispersion based methods
+          in their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_features.
+      - name: "--hvg_n_top_features"
+        alternatives: ["--filter_with_hvg_n_top_genes"]
+        required: false
+        type: integer
+        description: Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor is set to 'seurat_v3'.
+
   - name: PCA options
     arguments:
-      - name: "--num_components"
+      - name: "--pca_num_components"
         type: integer
         example: 25
         description: Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.
 
   - name: Harmony integration options
     arguments:
-      - name: "--theta"
+      - name: "--harmony_theta"
         type: double
         description: |
           Diversity clustering penalty parameter. Can be set as a single value for all batch observations or as multiple values, one for each observation in the batches defined by --input_obs_batch_label. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
@@ -106,7 +126,7 @@ argument_groups:
 
   - name: Neighbor classifier arguments
     arguments:
-      - name: "--weights"
+      - name: "--knn_weights"
         type: string
         default: "uniform"
         choices: ["uniform", "distance"]
@@ -114,7 +134,7 @@ argument_groups:
           Weight function used in prediction. Possible values are:
           `uniform` (all points in each neighborhood are weighted equally) or 
           `distance` (weight points by the inverse of their distance)
-      - name: "--n_neighbors"
+      - name: "--knn_n_neighbors"
         type: integer
         default: 15
         min: 5
@@ -168,6 +188,7 @@ dependencies:
   - name: dataflow/concatenate_h5mu
   - name: dimred/pca
   - name: feature_annotation/align_query_reference
+  - name: feature_annotation/highly_variable_features_scanpy
 
 resources:
   - type: nextflow_script
