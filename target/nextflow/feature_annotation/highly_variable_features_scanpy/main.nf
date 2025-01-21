@@ -3252,7 +3252,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.9.0",
-    "git_commit" : "545de093570f601a0687e63d9809d131e7fd2a4e",
+    "git_commit" : "95aba1bd2b1f5c0f976456457bc5fc5c24b62555",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3445,7 +3445,7 @@ if par["flavor"] == "seurat_v3" and not par["n_top_features"]:
 try:
     out = sc.pp.highly_variable_genes(**hvg_args)
     if par["var_input"] is not None:
-        out.index = data[:, data.var[par["var_input"]]].var.index
+        out.index = input_anndata.var.index
         out = out.reindex(index=data.var.index, method=None)
         out.highly_variable = out.highly_variable.fillna(False)
         assert (
