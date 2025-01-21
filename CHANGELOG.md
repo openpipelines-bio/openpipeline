@@ -20,7 +20,7 @@
 
 * Various  components (`scgpt` and `annotate`): Add resource labels (PR #947, PR #950).
 
-* `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957).
+* `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957, PR #959).
 
 # BUG FIXES
 
