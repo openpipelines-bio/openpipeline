@@ -24,7 +24,7 @@
 
 # BUG FIXES
 
-* `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtypa "bool" when it doesn't contain NaN values (PR #959).
+* `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).
 
 # openpipelines 2.0.0
 
