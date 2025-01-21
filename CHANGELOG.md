@@ -22,6 +22,10 @@
 
 * `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957).
 
+# BUG FIXES
+
+* `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtypa "bool" when it doesn't contain NaN values (PR #959).
+
 # openpipelines 2.0.0
 
 ## BREAKING CHANGES
