@@ -22,6 +22,8 @@
 
 * `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957).
 
+* `resources_test_scripts/annotation_test_data.sh`: Add a layer to the annotation reference dataset with log normalized counts (PR #960).
+
 # openpipelines 2.0.0
 
 ## BREAKING CHANGES
