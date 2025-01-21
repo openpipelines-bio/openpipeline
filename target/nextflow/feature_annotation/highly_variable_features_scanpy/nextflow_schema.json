@@ -61,6 +61,16 @@
     
 
         ,
+                "var_input": {
+                "type":
+                "string",
+                "description": "Type: `string`. If specified, use boolean array in adata",
+                "help_text": "Type: `string`. If specified, use boolean array in adata.var[var_input] to calculate hvg on subset of vars.\n"
+            
+            }
+    
+
+        ,
                 "output": {
                 "type":
                 "string",

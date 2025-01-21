@@ -3106,7 +3106,19 @@ meta = [
           "name" : "--output_var_index",
           "description" : "Name of the .var column to which the .var index of the --input and --reference datasets is stored. Only relevant if \\"--preserve_var_index\\" is False.",
           "default" : [
-            "ori_var_index"
+            "_ori_var_index"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_var_common_genes",
+          "description" : "Name of the .var column in the output query and reference datasets containing the boolean array indicating the common variables.",
+          "default" : [
+            "_common_vars"
           ],
           "required" : false,
           "direction" : "input",
@@ -3350,7 +3362,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/align_query_reference",
     "viash_version" : "0.9.0",
-    "git_commit" : "1de68fe5f4568b5829f946754c3def840975e3f4",
+    "git_commit" : "b14d658e2321dbd26b23f0d32a04a5e8a9590413",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3421,6 +3433,7 @@ par = {
   'output_obs_label': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_obs_id': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_ID+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_ID//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_var_index': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_INDEX+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_INDEX//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_var_common_genes': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_COMMON_GENES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_COMMON_GENES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'unkown_celltype_label': $( if [ ! -z ${VIASH_PAR_UNKOWN_CELLTYPE_LABEL+x} ]; then echo "r'${VIASH_PAR_UNKOWN_CELLTYPE_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'overwrite_existing_key': $( if [ ! -z ${VIASH_PAR_OVERWRITE_EXISTING_KEY+x} ]; then echo "r'${VIASH_PAR_OVERWRITE_EXISTING_KEY//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
@@ -3632,11 +3645,19 @@ def main():
 
     # Cross check genes
     logger.info("### Cross checking genes")
-    cross_check_genes(
+    common_vars = cross_check_genes(
         input_modality.var[par["output_var_gene_names"]],
         reference_modality.var[par["output_var_gene_names"]],
         min_gene_overlap=par["input_reference_gene_overlap"],
     )
+
+    # Add common vars to the output
+    input_modality.var[par["output_var_common_genes"]] = input_modality.var[
+        par["output_var_gene_names"]
+    ].isin(common_vars)
+    reference_modality.var[par["output_var_common_genes"]] = reference_modality.var[
+        par["output_var_gene_names"]
+    ].isin(common_vars)
 
     # Adding an id to the query and reference datasets
     logger.info("### Adding an id to the query and reference datasets")
