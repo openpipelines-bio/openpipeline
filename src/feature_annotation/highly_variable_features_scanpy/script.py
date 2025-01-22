@@ -140,7 +140,7 @@ if par["flavor"] == "seurat_v3" and not par["n_top_features"]:
 try:
     out = sc.pp.highly_variable_genes(**hvg_args)
     if par["var_input"] is not None:
-        out.index = data[:, data.var[par["var_input"]]].var.index
+        out.index = input_anndata.var.index
         out = out.reindex(index=data.var.index, method=None)
         out.highly_variable = out.highly_variable.fillna(False)
         assert (
