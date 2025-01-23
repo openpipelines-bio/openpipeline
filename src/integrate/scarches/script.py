@@ -110,23 +110,7 @@ def _align_query_with_registry(adata_query, model, model_path):
     return adata_query
 
 
-def extract_file_name(file_path):
-    """Return the name of the file from path to this file
-
-    Examples
-    --------
-    >>> extract_file_name("resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu")
-    pbmc_1k_protein_v3_mms
-    """
-    slash_position = file_path.rfind("/")
-    dot_position = file_path.rfind(".")
-
-    return file_path[slash_position + 1 : dot_position]
-
-
-def map_to_existing_reference(
-    adata_query, model, model_path, check_val_every_n_epoch=1
-):
+def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1):
     """
     A function to map the query data to the reference atlas
 
