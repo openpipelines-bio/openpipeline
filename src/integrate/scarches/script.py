@@ -15,7 +15,14 @@ except ModuleNotFoundError:
 ### VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-    "reference": "resources_test/HCLA_reference_model/HLCA_reference_model.zip",
+    "input_layer": None,
+    "input_obs_batch": "sample_id",
+    "input_obs_label": None,
+    "input_var_gene_names": None,
+    "input_obs_categorical_covariate": None,
+    "input_obs_continuous_covariate_keys": None,
+    "unkown_celltype_label": "Unkown",
+    "reference": "TS_blood_reference/scvi",
     "modality": "rna",
     "output": "foo.h5mu",
     "model_output": "./hlca_query_model",
@@ -26,12 +33,15 @@ par = {
     "early_stopping_monitor": "elbo_validation",
     "early_stopping_patience": 45,
     "early_stopping_min_delta": 0,
-    "max_epochs": 500,
+    "max_epochs": 10,
+    "output_compression": "gzip",
 }
+meta = {"resources_dir": "src/utils"}
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from set_var_index import set_var_index
 from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
@@ -63,6 +73,43 @@ def _detect_base_model(model_path):
     return names_to_models_map[_read_model_name_from_registry(model_path)]
 
 
+def _align_query_with_registry(adata_query, model, model_path):
+    registry = model.load_registry(model_path)["setup_args"]
+
+    # Sanitize gene names and set as index of the AnnData object
+    adata_query = set_var_index(adata_query, par["input_var_gene_names"])
+
+    # align layer
+    if not registry["layer"] == par["input_layer"]:
+        if registry["layer"]:
+            adata_query.layers[registry["layer"]] = (
+                adata_query.layers[par["input_layer"]]
+                if par["input_layer"]
+                else adata_query.X
+            )
+
+        else:
+            adata_query.X = (
+                adata_query.layers[par["input_layer"]]
+                if par["input_layer"]
+                else adata_query.X
+            )
+
+    # align batch
+    if not registry["batch_key"] == par["input_obs_batch"]:
+        adata_query.obs[registry["batch_key"]] = adata_query.obs[par["input_obs_batch"]]
+
+    # align labels
+    if registry["labels_key"]:
+        adata_query.obs[registry["labels_key"]] = (
+            adata_query.obs[par["input_obs_label"]]
+            if par["input_obs_label"]
+            else par["unkown_celltype_label"]
+        )
+
+    return adata_query
+
+
 def extract_file_name(file_path):
     """Return the name of the file from path to this file
 
@@ -77,7 +124,9 @@ def extract_file_name(file_path):
     return file_path[slash_position + 1 : dot_position]
 
 
-def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1):
+def map_to_existing_reference(
+    adata_query, model, model_path, check_val_every_n_epoch=1
+):
     """
     A function to map the query data to the reference atlas
 
@@ -90,6 +139,9 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
         * adata_query: The AnnData object with the query preprocessed for the mapping to the reference
     """
     model = _detect_base_model(model_path)
+
+    # Keys of the AnnData query object need to match the exact keys in the reference model registry
+    adata_query = _align_query_with_registry(adata_query, model, model_path)
 
     try:
         model.prepare_query_anndata(adata_query, model_path)
@@ -186,15 +238,6 @@ def main():
     logger.info("Reading %s, modality %s", par["input"], par["modality"])
     adata = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
     adata_query = adata.copy()
-
-    if "dataset" not in adata_query.obs.columns:
-        # Write name of the dataset as batch variable
-        if par["dataset_name"] is None:
-            logger.info("Detecting dataset name")
-            par["dataset_name"] = extract_file_name(par["input"])
-            logger.info(f"Detected {par['dataset_name']}")
-
-        adata_query.obs["dataset"] = par["dataset_name"]
 
     model_path = _get_model_path(par["reference"])
     vae_query, adata_query = map_to_existing_reference(
