@@ -26,8 +26,6 @@ workflow run_wf {
       [id, new_state]
     }
 
-    // with_mt_grep_ch = preproc_ch
-    // | filter { it -> it[1].var_name_mitochondrial_genes }
     | grep_annotation_column.run(
       runIf: { id, state ->
         state.var_name_mitochondrial_genes
@@ -48,8 +46,6 @@ workflow run_wf {
       toState: ["input": "output"]
     )
 
-    // with_rb_grep_ch = preproc_ch
-    // | filter { it -> it[1].var_name_ribosomal_genes }
     | grep_annotation_column.run(
       runIf: { id, state ->
         state.var_name_ribosomal_genes
@@ -70,30 +66,6 @@ workflow run_wf {
       toState: ["input": "output"]
     )
 
-    // join_ch = with_mt_grep_ch.join(with_rb_grep_ch).view()
-    //   | concatenate_h5mu.run(
-    //     fromState: { id, state ->
-    //       [
-    //         "input": state.collect { it.input }
-    //       ]
-    //     }
-    //   )
-
-    // without_grep_ch = preproc_ch
-    //   | filter { it -> !it[1].var_name_mitochondrial_genes && !it[1].var_name_ribosomal_genes
-    //   }
-
-    // output_ch = without_grep_ch.mix(with_mt_grep_ch, with_rb_grep_ch)
-    // | map { id, state ->
-    //   println "Final state for ${id}: ${state}"
-    //   return [id, state]
-    // }
-    // | concatenate_h5mu.run(
-    //   fromState: { id, state ->
-    //     [
-    //       "input": [state]
-    //     ]
-    // )
     | calculate_qc_metrics.run(
       fromState: { id, state ->
         def newState = [
