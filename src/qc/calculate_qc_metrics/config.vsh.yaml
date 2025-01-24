@@ -48,6 +48,7 @@ argument_groups:
           compared to the total sum of the values for all genes.
         type: string
         multiple: True
+        multiple_sep: ','
         example: "ercc,highly_variable,mitochondrial"
       - name: "--var_qc_metrics_fill_na_value"
         type: boolean
