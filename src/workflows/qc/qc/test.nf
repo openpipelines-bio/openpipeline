@@ -14,10 +14,14 @@ workflow test_wf {
       [
         id: "mouse_test",
         input: resources_test.resolve("concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"),
+        var_name_mitochondrial_genes: "mitochondrial",
+        var_name_ribosomal_genes: "ribosomal",
       ],
       [
         id: "human_test",
         input: resources_test.resolve("concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"),
+        var_name_mitochondrial_genes: "mitochondrial",
+        var_name_ribosomal_genes: "ribosomal",
       ]
     ])
     | map { state -> [state.id, state] }
