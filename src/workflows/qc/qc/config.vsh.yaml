@@ -32,6 +32,16 @@ argument_groups:
         type: string
         example: "raw_counts"
         required: false
+  - name: "Gene Detection"
+    arguments:
+      - name: "--var_gene_names"
+        required: false
+        example: "gene_symbol"
+        type: string
+        description: |
+          .var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).
+          Gene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be 
+          identified as a mitochondrial or ribosomal genes, respectively.
   - name: "Mitochondrial Gene Detection"
     arguments:
       - name: "--var_name_mitochondrial_genes"
@@ -44,14 +54,6 @@ argument_groups:
         required: false
         description: |
           .Obs slot to store the fraction of reads found to be mitochondrial. Defaults to 'fraction_' suffixed by the value of --var_name_mitochondrial_genes
-      - name: "--var_gene_names_mt"
-        required: false
-        example: "gene_symbol"
-        type: string
-        description: |
-          .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).
-          Gene names matching with the regex value from --mitochondrial_gene_regex will be identified
-          as a mitochondrial gene.
       - name: --mitochondrial_gene_regex
         type: string
         description: |
@@ -71,14 +73,6 @@ argument_groups:
         required: false
         description: |
           .Obs slot to store the fraction of reads found to be ribosomal. Defaults to 'fraction_' suffixed by the value of --var_name_ribosomal_genes
-      - name: "--var_gene_names_rb"
-        required: false
-        example: "gene_symbol"
-        type: string
-        description: |
-          .var column name to be used to detect ribosomal genes instead of .var_names (default if not set).
-          Gene names matching with the regex value from --ribosomal_gene_regex will be identified
-          as a ribosomal gene.
       - name: --ribosomal_gene_regex
         type: string
         description: |

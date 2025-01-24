@@ -34,7 +34,7 @@ workflow run_wf {
         def stateMapping = [
           "input": state.input,
           "modality": state.modality,
-          "input_column": state.var_gene_names_mt,
+          "input_column": state.var_gene_names,
           "matrix": "var",
           "output_match_column": state.var_name_mitochondrial_genes,
           "regex_pattern": state.mitochondrial_gene_regex,
@@ -54,7 +54,7 @@ workflow run_wf {
         def stateMapping = [
           "input": state.input,
           "modality": state.modality,
-          "input_column": state.var_gene_names_rb,
+          "input_column": state.var_gene_names,
           "matrix": "var",
           "output_match_column": state.var_name_ribosomal_genes,
           "regex_pattern": state.ribosomal_gene_regex,
