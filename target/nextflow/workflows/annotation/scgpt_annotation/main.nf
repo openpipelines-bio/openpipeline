@@ -3353,7 +3353,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_annotation",
     "viash_version" : "0.9.0",
-    "git_commit" : "fd427a8fa5baca4082fd37ff4e5b222abbf5bc64",
+    "git_commit" : "ca28e489080e2847e16c4e7af4ad249766e5a55a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
