@@ -4,6 +4,8 @@
 
 * `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948, #958).
 
+* `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
+
 ## MAJOR CHANGES
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
@@ -229,8 +231,6 @@
 * `filter/subset_obsp` component: Added a component to subset an .obsp matrix by column based on the value of an .obs field. The resulting subset is moved to an .obsm field (PR #888).
 
 * `labels_transfer/knn` component: Enable using additional distance functions for KNN classification (PR #830) and allow to perform KNN classification based on a pre-calculated neighborhood graph (PR #890).
-
-* `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
 
 ## MINOR CHANGES
 
