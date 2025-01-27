@@ -13,31 +13,31 @@ workflow run_wf {
         // Align query and reference datasets
         | align_query_reference.run(
             fromState: [
-            "input": "input",
-            "modality": "modality",
-            "input_layer": "input_layer",
-            "input_obs_batch": "input_obs_batch_label",
-            "input_var_gene_names": "input_var_gene_names",
-            "reference": "reference",
-            "reference_layer": "reference_layer",
-            "reference_obs_batch": "reference_obs_batch_label",
-            "reference_var_gene_names": "reference_var_gene_names",
-            "input_reference_gene_overlap": "input_reference_gene_overlap",
-            "overwrite_existing_key": "overwrite_existing_key"
+                "input": "input",
+                "modality": "modality",
+                "input_layer": "input_layer",
+                "input_obs_batch": "input_obs_batch_label",
+                "input_var_gene_names": "input_var_gene_names",
+                "reference": "reference",
+                "reference_layer": "reference_layer",
+                "reference_obs_batch": "reference_obs_batch_label",
+                "reference_var_gene_names": "reference_var_gene_names",
+                "input_reference_gene_overlap": "input_reference_gene_overlap",
+                "overwrite_existing_key": "overwrite_existing_key"
             ],
             args: [
-            "input_id": "query",
-            "reference_id": "reference",
-            "output_layer": "_counts",
-            "output_var_gene_names": "_gene_names",
-            "output_obs_batch": "_sample_id",
-            "output_obs_label": "_cell_type",
-            "output_obs_id": "_dataset",
-            "output_var_common_genes": "_common_vars"
+                "input_id": "query",
+                "reference_id": "reference",
+                "output_layer": "_counts",
+                "output_var_gene_names": "_gene_names",
+                "output_obs_batch": "_sample_id",
+                "output_obs_label": "_cell_type",
+                "output_obs_id": "_dataset",
+                "output_var_common_genes": "_common_vars"
             ],
             toState: [
-            "input": "output_query",
-            "reference": "output_reference"
+                "input": "output_query",
+                "reference": "output_reference"
             ]
         )
         // Concatenate query and reference datasets prior to integration
@@ -90,16 +90,14 @@ workflow run_wf {
         )
         // Run harmony integration with leiden clustering
         | harmony_leiden_workflow.run(
-            fromState: { id, state ->
-            [
+            fromState: { id, state -> [
                 "id": id,
                 "input": state.input,
                 "modality": state.modality,
                 "obsm_integrated": state.output_obsm_integrated,
                 "theta": state.harmony_theta,
                 "leiden_resolution": state.leiden_resolution,
-                ]
-            },
+            ]},
             args: [
                 "embedding": "X_pca_harmony",
                 "uns_neighbors": "harmonypy_integration_neighbors",
