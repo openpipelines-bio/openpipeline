@@ -4,11 +4,18 @@ input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # layer: "raw_counts"
 
+# Gene Detection
+# var_gene_names: "gene_symbol"
+
 # Mitochondrial Gene Detection
 # var_name_mitochondrial_genes: "foo"
 # obs_name_mitochondrial_fraction: "foo"
-# var_gene_names: "gene_symbol"
 mitochondrial_gene_regex: "^[mM][tT]-"
+
+# Ribosomal Gene Detection
+# var_name_ribosomal_genes: "foo"
+# obs_name_ribosomal_fraction: "foo"
+ribosomal_gene_regex: "^[Mm]?[Rr][Pp][LlSs]"
 
 # QC metrics calculation options
 # var_qc_metrics: ["ercc,highly_variable"]

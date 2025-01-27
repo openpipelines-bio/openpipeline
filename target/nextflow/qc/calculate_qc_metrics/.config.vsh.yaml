@@ -63,7 +63,7 @@ argument_groups:
     required: false
     direction: "input"
     multiple: true
-    multiple_sep: ";"
+    multiple_sep: ","
   - type: "boolean"
     name: "--var_qc_metrics_fill_na_value"
     description: "Fill any 'NA' values found in the columns specified with --var_qc_metrics\
@@ -334,7 +334,7 @@ build_info:
   output: "target/nextflow/qc/calculate_qc_metrics"
   executable: "target/nextflow/qc/calculate_qc_metrics/main.nf"
   viash_version: "0.9.0"
-  git_commit: "0e23e9dab9acb981beb2cc9ff0f527eba823307b"
+  git_commit: "ecd081c4437cd4fa1a4cfdec01fea6b9a2ebb77e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

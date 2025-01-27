@@ -230,6 +230,8 @@
 
 * `labels_transfer/knn` component: Enable using additional distance functions for KNN classification (PR #830) and allow to perform KNN classification based on a pre-calculated neighborhood graph (PR #890).
 
+* `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
+
 ## MINOR CHANGES
 
 * Several components: bump python version (PR #901).

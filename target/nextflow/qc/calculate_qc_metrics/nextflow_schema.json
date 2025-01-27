@@ -107,8 +107,8 @@
                 "var_qc_metrics": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `ercc,highly_variable,mitochondrial`, multiple_sep: `\";\"`. Keys to select a boolean (containing only True or False) column from ",
-                "help_text": "Type: List of `string`, example: `ercc,highly_variable,mitochondrial`, multiple_sep: `\";\"`. Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes.\n"
+                "description": "Type: List of `string`, example: `ercc,highly_variable,mitochondrial`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from ",
+                "help_text": "Type: List of `string`, example: `ercc,highly_variable,mitochondrial`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes.\n"
             
             }
     

@@ -2889,7 +2889,7 @@ meta = [
           "required" : false,
           "direction" : "input",
           "multiple" : true,
-          "multiple_sep" : ";"
+          "multiple_sep" : ","
         },
         {
           "type" : "boolean",
@@ -3216,7 +3216,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.9.0",
-    "git_commit" : "0e23e9dab9acb981beb2cc9ff0f527eba823307b",
+    "git_commit" : "ecd081c4437cd4fa1a4cfdec01fea6b9a2ebb77e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3270,7 +3270,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'var_qc_metrics': $( if [ ! -z ${VIASH_PAR_VAR_QC_METRICS+x} ]; then echo "r'${VIASH_PAR_VAR_QC_METRICS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'var_qc_metrics': $( if [ ! -z ${VIASH_PAR_VAR_QC_METRICS+x} ]; then echo "r'${VIASH_PAR_VAR_QC_METRICS//\\'/\\'\\"\\'\\"r\\'}'.split(',')"; else echo None; fi ),
   'var_qc_metrics_fill_na_value': $( if [ ! -z ${VIASH_PAR_VAR_QC_METRICS_FILL_NA_VALUE+x} ]; then echo "r'${VIASH_PAR_VAR_QC_METRICS_FILL_NA_VALUE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'top_n_vars': $( if [ ! -z ${VIASH_PAR_TOP_N_VARS+x} ]; then echo "list(map(int, r'${VIASH_PAR_TOP_N_VARS//\\'/\\'\\"\\'\\"r\\'}'.split(';')))"; else echo None; fi ),
   'output_obs_num_nonzero_vars': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_NUM_NONZERO_VARS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_NUM_NONZERO_VARS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
