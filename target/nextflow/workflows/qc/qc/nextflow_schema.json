@@ -95,6 +95,26 @@
 },
     
     
+    "gene detection" : {
+    "title": "Gene Detection",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gene_symbol`. ",
+                "help_text": "Type: `string`, example: `gene_symbol`. .var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as a mitochondrial or ribosomal genes, respectively.\n"
+            
+            }
+    
+
+}
+},
+    
+    
     "mitochondrial gene detection" : {
     "title": "Mitochondrial Gene Detection",
     "type": "object",
@@ -122,16 +142,6 @@
     
 
         ,
-                "var_gene_names": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gene_symbol`. ",
-                "help_text": "Type: `string`, example: `gene_symbol`. .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex will be identified\nas a mitochondrial gene.\n"
-            
-            }
-    
-
-        ,
                 "mitochondrial_gene_regex": {
                 "type":
                 "string",
@@ -139,6 +149,47 @@
                 "help_text": "Type: `string`, default: `^[mM][tT]-`. Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n"
             ,
                 "default":"^[mM][tT]-"
+            }
+    
+
+}
+},
+    
+    
+    "ribosomal gene detection" : {
+    "title": "Ribosomal Gene Detection",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "var_name_ribosomal_genes": {
+                "type":
+                "string",
+                "description": "Type: `string`. In which ",
+                "help_text": "Type: `string`. In which .var slot to store a boolean array corresponding the ribosomal genes.\n"
+            
+            }
+    
+
+        ,
+                "obs_name_ribosomal_fraction": {
+                "type":
+                "string",
+                "description": "Type: `string`. ",
+                "help_text": "Type: `string`. .Obs slot to store the fraction of reads found to be ribosomal. Defaults to \u0027fraction_\u0027 suffixed by the value of --var_name_ribosomal_genes\n"
+            
+            }
+    
+
+        ,
+                "ribosomal_gene_regex": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `^[Mm]?[Rr][Pp][LlSs]`. Regex string that identifies ribosomal genes from --var_gene_names",
+                "help_text": "Type: `string`, default: `^[Mm]?[Rr][Pp][LlSs]`. Regex string that identifies ribosomal genes from --var_gene_names.\nBy default will detect human and mouse ribosomal genes from a gene symbol.\n"
+            ,
+                "default":"^[Mm]?[Rr][Pp][LlSs]"
             }
     
 
@@ -275,7 +326,15 @@
     },
 
     {
+    "$ref": "#/definitions/gene detection"
+    },
+
+    {
     "$ref": "#/definitions/mitochondrial gene detection"
+    },
+
+    {
+    "$ref": "#/definitions/ribosomal gene detection"
     },
 
     {

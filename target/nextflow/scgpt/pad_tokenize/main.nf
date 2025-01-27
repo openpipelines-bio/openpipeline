@@ -3243,7 +3243,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize",
     "viash_version" : "0.9.0",
-    "git_commit" : "95aba1bd2b1f5c0f976456457bc5fc5c24b62555",
+    "git_commit" : "0cfb72831d10538ff9ea5da153eadff6bff138db",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

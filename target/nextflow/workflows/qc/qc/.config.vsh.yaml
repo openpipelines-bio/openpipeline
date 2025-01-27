@@ -64,6 +64,21 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+- name: "Gene Detection"
+  arguments:
+  - type: "string"
+    name: "--var_gene_names"
+    description: ".var column name to be used to detect mitochondrial/ribosomal genes\
+      \ instead of .var_names (default if not set).\nGene names matching with the\
+      \ regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will\
+      \ be \nidentified as a mitochondrial or ribosomal genes, respectively.\n"
+    info: null
+    example:
+    - "gene_symbol"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
 - name: "Mitochondrial Gene Detection"
   arguments:
   - type: "string"
@@ -85,24 +100,43 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--var_gene_names"
-    description: ".var column name to be used to detect mitochondrial genes instead\
-      \ of .var_names (default if not set).\nGene names matching with the regex value\
-      \ from --mitochondrial_gene_regex will be identified\nas a mitochondrial gene.\n"
-    info: null
-    example:
-    - "gene_symbol"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
     name: "--mitochondrial_gene_regex"
     description: "Regex string that identifies mitochondrial genes from --var_gene_names.\n\
       By default will detect human and mouse mitochondrial genes from a gene symbol.\n"
     info: null
     default:
     - "^[mM][tT]-"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Ribosomal Gene Detection"
+  arguments:
+  - type: "string"
+    name: "--var_name_ribosomal_genes"
+    description: "In which .var slot to store a boolean array corresponding the ribosomal\
+      \ genes.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_name_ribosomal_fraction"
+    description: ".Obs slot to store the fraction of reads found to be ribosomal.\
+      \ Defaults to 'fraction_' suffixed by the value of --var_name_ribosomal_genes\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--ribosomal_gene_regex"
+    description: "Regex string that identifies ribosomal genes from --var_gene_names.\n\
+      By default will detect human and mouse ribosomal genes from a gene symbol.\n"
+    info: null
+    default:
+    - "^[Mm]?[Rr][Pp][LlSs]"
     required: false
     direction: "input"
     multiple: false
@@ -329,7 +363,7 @@ build_info:
   output: "target/nextflow/workflows/qc/qc"
   executable: "target/nextflow/workflows/qc/qc/main.nf"
   viash_version: "0.9.0"
-  git_commit: "95aba1bd2b1f5c0f976456457bc5fc5c24b62555"
+  git_commit: "0cfb72831d10538ff9ea5da153eadff6bff138db"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/metadata/grep_annotation_column"
