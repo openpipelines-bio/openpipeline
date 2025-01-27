@@ -22,11 +22,12 @@ workflow run_wf {
         var_qc_default.add(state.var_name_ribosomal_genes)
       }
       // Get the new state, but make sure to overwrite var_qc_metrics if the user has set it.
-      new_state = ["var_qc_metrics": var_qc_default.join(",")] + new_state
+      new_state = ["var_qc_metrics": var_qc_default.join(";")] + new_state
       [id, new_state]
     }
 
     | grep_annotation_column.run(
+      key: "grep_mitochondrial_genes",
       runIf: { id, state ->
         state.var_name_mitochondrial_genes
       },
@@ -47,6 +48,7 @@ workflow run_wf {
     )
 
     | grep_annotation_column.run(
+      key: "grep_ribosomal_genes",
       runIf: { id, state ->
         state.var_name_ribosomal_genes
       },
