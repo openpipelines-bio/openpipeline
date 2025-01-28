@@ -573,9 +573,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component qc calculate_qc_metrics"
-LABEL org.opencontainers.image.created="2025-01-27T08:12:29Z"
+LABEL org.opencontainers.image.created="2025-01-28T02:49:13Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ecd081c4437cd4fa1a4cfdec01fea6b9a2ebb77e"
+LABEL org.opencontainers.image.revision="ad570a2ed5e1999e872ba1ef28e7d144096db596"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -752,7 +752,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_VAR_QC_METRICS" ]; then
               VIASH_PAR_VAR_QC_METRICS="$2"
             else
-              VIASH_PAR_VAR_QC_METRICS="$VIASH_PAR_VAR_QC_METRICS,""$2"
+              VIASH_PAR_VAR_QC_METRICS="$VIASH_PAR_VAR_QC_METRICS;""$2"
             fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --var_qc_metrics. Use "--help" to get more information on the parameters. && exit 1
             shift 2
@@ -761,7 +761,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_VAR_QC_METRICS" ]; then
               VIASH_PAR_VAR_QC_METRICS=$(ViashRemoveFlags "$1")
             else
-              VIASH_PAR_VAR_QC_METRICS="$VIASH_PAR_VAR_QC_METRICS,"$(ViashRemoveFlags "$1")
+              VIASH_PAR_VAR_QC_METRICS="$VIASH_PAR_VAR_QC_METRICS;"$(ViashRemoveFlags "$1")
             fi
             shift 1
             ;;
@@ -1310,7 +1310,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'var_qc_metrics': $( if [ ! -z ${VIASH_PAR_VAR_QC_METRICS+x} ]; then echo "r'${VIASH_PAR_VAR_QC_METRICS//\'/\'\"\'\"r\'}'.split(',')"; else echo None; fi ),
+  'var_qc_metrics': $( if [ ! -z ${VIASH_PAR_VAR_QC_METRICS+x} ]; then echo "r'${VIASH_PAR_VAR_QC_METRICS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'var_qc_metrics_fill_na_value': $( if [ ! -z ${VIASH_PAR_VAR_QC_METRICS_FILL_NA_VALUE+x} ]; then echo "r'${VIASH_PAR_VAR_QC_METRICS_FILL_NA_VALUE//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'top_n_vars': $( if [ ! -z ${VIASH_PAR_TOP_N_VARS+x} ]; then echo "list(map(int, r'${VIASH_PAR_TOP_N_VARS//\'/\'\"\'\"r\'}'.split(';')))"; else echo None; fi ),
   'output_obs_num_nonzero_vars': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_NUM_NONZERO_VARS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_NUM_NONZERO_VARS//\'/\'\"\'\"r\'}'"; else echo None; fi ),

@@ -3255,7 +3255,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc",
     "viash_version" : "0.9.0",
-    "git_commit" : "ecd081c4437cd4fa1a4cfdec01fea6b9a2ebb77e",
+    "git_commit" : "ad570a2ed5e1999e872ba1ef28e7d144096db596",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3319,11 +3319,12 @@ workflow run_wf {
         var_qc_default.add(state.var_name_ribosomal_genes)
       }
       // Get the new state, but make sure to overwrite var_qc_metrics if the user has set it.
-      new_state = ["var_qc_metrics": var_qc_default.join(",")] + new_state
+      new_state = ["var_qc_metrics": var_qc_default.join(";")] + new_state
       [id, new_state]
     }
 
     | grep_annotation_column.run(
+      key: "grep_mitochondrial_genes",
       runIf: { id, state ->
         state.var_name_mitochondrial_genes
       },
@@ -3344,6 +3345,7 @@ workflow run_wf {
     )
 
     | grep_annotation_column.run(
+      key: "grep_ribosomal_genes",
       runIf: { id, state ->
         state.var_name_ribosomal_genes
       },
