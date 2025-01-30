@@ -21,6 +21,7 @@ workflow run_wf {
                 "reference": "reference",
                 "reference_layer": "reference_layer",
                 "reference_obs_batch": "reference_obs_batch_label",
+                "reference_obs_label": "reference_obs_target",
                 "reference_var_gene_names": "reference_var_gene_names",
                 "input_reference_gene_overlap": "input_reference_gene_overlap",
                 "overwrite_existing_key": "overwrite_existing_key"
@@ -151,7 +152,7 @@ workflow run_wf {
                 "input_obsm_features": "output_obsm_integrated",
                 "reference": "integrated_reference",
                 "reference_obsm_features": "output_obsm_integrated",
-                "reference_obs_targets": "reference_obs_targets",
+                "reference_obs_targets": "reference_obs_target",
                 "output_obs_predictions": "output_obs_predictions",
                 "output_obs_probability": "output_obs_probability",
                 "output_compression": "output_compression",

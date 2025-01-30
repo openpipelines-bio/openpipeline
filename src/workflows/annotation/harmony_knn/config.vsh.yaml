@@ -31,7 +31,7 @@ argument_groups:
         default: "rna"
         required: false
       - name: "--input_layer"
-        description: The layer of the input dataset to process if .X is not to be used. Should contain log normalizedcounts.
+        description: The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts.
         required: false
         type: string
       - name: "--input_obs_batch_label"
@@ -65,12 +65,11 @@ argument_groups:
         description: The layer of the reference dataset to process if .X is not to be used. Should contain log normalized counts.
         required: false
         type: string
-      - name: "--reference_obs_targets"
+      - name: "--reference_obs_target"
         type: string
-        example: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
+        example: cell_type
         required: true
-        multiple: true
-        description: The `.obs` key(s) of the target labels to transfer.
+        description: The `.obs` key of the target cell type labels to transfer.
       - name: "--reference_var_gene_names"
         type: string
         required: false

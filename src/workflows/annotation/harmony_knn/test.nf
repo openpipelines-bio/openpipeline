@@ -19,7 +19,7 @@ workflow test_wf {
         input_obs_batch_label: "sample_id",
         reference_layer: "log_normalized",
         reference_obs_batch_label: "donor_assay",
-        reference_obs_targets: "cell_type",
+        reference_obs_target: "cell_type",
         leiden_resolution: [1.0, 0.25]
       ],
       [
@@ -31,7 +31,7 @@ workflow test_wf {
         input_obs_batch_label: "sample_id",
         reference_layer: "log_normalized",
         reference_obs_batch_label: "donor_assay",
-        reference_obs_targets: "cell_type",
+        reference_obs_target: "cell_type",
         leiden_resolution: []
       ]
     ])
