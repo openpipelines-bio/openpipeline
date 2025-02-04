@@ -2989,7 +2989,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish",
     "viash_version" : "0.9.0",
-    "git_commit" : "546104de3db9268f9999365381dc5bde50c20933",
+    "git_commit" : "94dda62bb66537765aebdb7cffeb9101860318af",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
