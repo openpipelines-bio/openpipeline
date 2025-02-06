@@ -26,7 +26,6 @@ par = {
     "modality": "rna",
     "output": "foo.h5mu",
     "model_output": "./hlca_query_model",
-    "dataset_name": None,
     # Other
     "obsm_output": "X_integrated_scanvi",
     "early_stopping": None,
@@ -75,11 +74,13 @@ def _detect_base_model(model_path):
 
 def _align_query_with_registry(adata_query, model, model_path):
     registry = model.load_registry(model_path)["setup_args"]
+    base_model = _detect_base_model(model_path)
 
     # Sanitize gene names and set as index of the AnnData object
+    # all scArches VAE models expect gene names to be in the .var index
     adata_query = set_var_index(adata_query, par["input_var_gene_names"])
 
-    # align layer
+    # align layers
     if not registry["layer"] == par["input_layer"]:
         if registry["layer"]:
             adata_query.layers[registry["layer"]] = (
@@ -95,17 +96,39 @@ def _align_query_with_registry(adata_query, model, model_path):
                 else adata_query.X
             )
 
-    # align batch
-    if not registry["batch_key"] == par["input_obs_batch"]:
+    # align batch .obs field
+    # relevant for AUTOZI, LinearSCVI, PEAKVI, SCANVI, SCVI, TOTALVI, MULTIVI, JaxSCVI
+    if registry["batch_key"] and not registry["batch_key"] == par["input_obs_batch"]:
         adata_query.obs[registry["batch_key"]] = adata_query.obs[par["input_obs_batch"]]
 
-    # align labels
+    # align celltype .obs field
+    # relevant for AUTOZI, CondSCVI, LinearSCVI, PEAKVI, SCANVI, SCVI
     if registry["labels_key"]:
         adata_query.obs[registry["labels_key"]] = (
             adata_query.obs[par["input_obs_label"]]
             if par["input_obs_label"]
             else par["unkown_celltype_label"]
         )
+
+    # align categorical_covariate_kes  .obs field
+    # relevant for PEAKVI, SCANVI, SCVI, TOTALVI, MULTIVI
+
+    # align continuous_covariate_keys .obs field
+    # relevant for PEAKVI, SCANVI, SCVI, TOTALVI, MULTIVI
+
+    # unkown_key
+    # relevant for SCANVI
+
+    # size_factor_key
+    # relevant for SCANVI, SCVI, TOTALVI, MULTIVI
+
+    if base_model == "TOTALVI" or base_model == "MULTIVI":
+        pass
+    # protein_expression_obsm_key
+    # relevant for TOTALVI, MULTIVI
+
+    # protein_names_uns_key
+    # relevant for TOTALVI, MULTIVI
 
     return adata_query
 
