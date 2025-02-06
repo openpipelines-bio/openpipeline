@@ -513,9 +513,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt update \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component demux cellranger_atac_mkfastq"
-LABEL org.opencontainers.image.created="2025-02-05T02:50:02Z"
+LABEL org.opencontainers.image.created="2025-02-06T02:49:51Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="677d443524505f86db59726336cf8822d7f18670"
+LABEL org.opencontainers.image.revision="16afdfee9d91c9a32cfcff7bbc14d15a9b10d85d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
