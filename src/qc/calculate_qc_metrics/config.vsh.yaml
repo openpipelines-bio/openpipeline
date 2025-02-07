@@ -7,17 +7,19 @@ description: |
   although they have slightly different names:
 
   Var metrics (name in this component -> name in scanpy):
+
     - pct_dropout -> pct_dropout_by_{expr_type}
     - num_nonzero_obs -> n_cells_by_{expr_type}
     - obs_mean -> mean_{expr_type}
     - total_counts -> total_{expr_type}
 
-    Obs metrics:
-      - num_nonzero_vars -> n_genes_by_{expr_type}
-      - pct_{var_qc_metrics} -> pct_{expr_type}_{qc_var}
-      - total_counts_{var_qc_metrics} -> total_{expr_type}_{qc_var}
-      - pct_of_counts_in_top_{top_n_vars}_vars -> pct_{expr_type}_in_top_{n}_{var_type}
-      - total_counts -> total_{expr_type}
+  Obs metrics:
+  
+    - num_nonzero_vars -> n_genes_by_{expr_type}
+    - pct_{var_qc_metrics} -> pct_{expr_type}_{qc_var}
+    - total_counts_{var_qc_metrics} -> total_{expr_type}_{qc_var}
+    - pct_of_counts_in_top_{top_n_vars}_vars -> pct_{expr_type}_in_top_{n}_{var_type}
+    - total_counts -> total_{expr_type}
       
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
