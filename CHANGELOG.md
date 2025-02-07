@@ -2,7 +2,7 @@
 
 ## NEW FUNCTIONALITY
 
-* `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948, #958).
+* `feature_annotation/align_query_reference`: Added a component to align a query and reference dataset (PR #948, #958).
 
 * `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
 
