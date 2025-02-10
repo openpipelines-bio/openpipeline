@@ -215,6 +215,7 @@ engines:
         - scvi-tools~=1.0.3      
         - jaxlib<0.4.23
         - jax<0.4.23
+        - torch<2.6.0
   __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
   - type: executable
