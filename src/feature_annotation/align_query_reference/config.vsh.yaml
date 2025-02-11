@@ -1,0 +1,193 @@
+name: align_query_reference
+namespace: feature_annotation
+description: |
+  Alignment of a query and reference dataset by:
+  * Alignment of layers
+  * Harmonization of .obs field names for batch and cell type labels
+  * Harmonization of .var field name for gene names
+  * Sanitation of gene names
+  * Cross-checking of genes
+  * Assignment of an id to the query and reference datasets
+
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ maintainer ]
+  
+argument_groups:
+  - name: Inputs
+    description: Input dataset (query) arguments
+    arguments:
+      - name: "--input"
+        type: file
+        description: The input (query) data to be labeled. Should be a .h5mu file.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality to process. Note that the query and reference modalities should be the same.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--input_layer"
+        type: string
+        required: false
+        description: The layer in the input (query) data to be used for cell type annotation if .X is not to be used. 
+      - name: "--input_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The name of the .var column in the input (query) data containing gene names; when no gene_name_layer is provided, the var index will be used.
+      - name: "--input_obs_batch"
+        type: string
+        required: true
+        example: sample_id
+        description: |
+          The name of the .obs column in the input (query) data containing batch information.
+      - name: "--input_obs_label"
+        type: string
+        required: false
+        example: cell_type
+        description: |
+          The name of the .obs column in the input (query) data containing cell type labels. If not provided, the --unkown_celltype_label will be assigned to all observations.
+      - name: "--input_id"
+        type: string
+        required: false
+        default: "query"
+        description: |
+          Meta id value to be assigned to the --output_obs_id .obs field of the aligned input (query) data.
+
+  - name: Reference
+    description: Arguments related to the reference dataset.
+    arguments:
+      - name: "--reference"
+        type: file
+        description: "The reference data to train the CellTypist classifiers on. Only required if a pre-trained --model is not provided."
+        example: reference.h5mu
+        direction: input
+        required: false
+      - name: "--reference_layer"
+        type: string
+        description: The layer in the reference data to be used for cell type annotation if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.
+        required: false
+      - name: "--reference_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The name of the .var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
+      - name: "--reference_obs_batch"
+        type: string
+        required: true
+        example: sample_id
+        description: |
+          The name of the .obs column in the reference data containing batch information.
+      - name: "--reference_obs_label"
+        type: string
+        required: false
+        example: cell_type
+        description: |
+          The name of the .obs column in the reference data containing cell type labels. If not provided, the --unkown_celltype_label will be assigned to all observations.
+      - name: "--reference_id"
+        type: string
+        required: false
+        default: "reference"
+        description: |
+          Meta id value to be assigned to the --output_obs_id .obs field of the aligned reference data.
+
+  - name: Outputs
+    description: Output arguments.
+    arguments:
+      - name: "--output_query"
+        type: file
+        description: Aligned query data.
+        direction: output
+        example: output_query.h5mu
+      - name: "--output_reference"
+        type: file
+        description: Aligned reference data.
+        direction: output
+        example: output_reference.h5mu
+      - name: "--output_compression"
+        type: string
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
+      - name: "--output_layer"
+        type: string
+        default: "_counts"
+        description: Name of the aligned layer in the output query and reference datasets.
+      - name: "--output_var_gene_names"
+        type: string
+        default: "_gene_names"
+        description: Name of the .var column in the output query and reference datasets containing the gene names.
+      - name: "--output_obs_batch"  
+        type: string
+        default: "_sample_id"
+        description: Name of the .obs column in the output query and reference datasets containing the batch information.
+      - name: "--output_obs_label"
+        type: string
+        default: "_cell_type"
+        description: Name of the .obs column in the output query and reference datasets containing the cell type labels.
+      - name: "--output_obs_id"
+        type: string
+        default: "_dataset"
+        description: Name of the .obs column in the output query and reference datasets containing the dataset id.
+      - name: "--output_var_index"
+        type: string
+        default: "_ori_var_index"
+        description: Name of the .var column to which the .var index of the --input and --reference datasets is stored. Only relevant if "--preserve_var_index" is False.
+      - name: "--output_var_common_genes"
+        type: string
+        default: "_common_vars"
+        description: Name of the .var column in the output query and reference datasets containing the boolean array indicating the common variables.
+
+  - name: Arguments
+    description: Arguments related to the alignment of the input and reference datasets.
+    arguments:
+      - name: "--input_reference_gene_overlap"
+        type: integer
+        default: 100
+        min: 1
+        description: | 
+          The minimum number of genes present in both the reference and query datasets.
+      - name: "--unkown_celltype_label"
+        type: string
+        default: "Unknown"
+        description: |
+          The label to assign to cells with an unknown cell type.
+      - name: "--overwrite_existing_key"
+        type: boolean_true
+        description: If set to true and the layer, obs or var key already exists in the query/reference file, the key will be overwritten.
+      - name: "--preserve_var_index"
+        type: boolean_true
+        description: | 
+          If set to true, the .var index of the --input and --reference datasets will be preserved.
+          If set to false (default behavior), the original .var index will be stored in the --output_var_index .var column and the .var index will be replaced with the sanitized & aligned gene names.
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/cross_check_genes.py
+  - path: /src/utils/compress_h5mu.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+  - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages: 
+          - procps
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [lowcpu, midmem]

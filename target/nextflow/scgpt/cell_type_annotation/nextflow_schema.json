@@ -36,7 +36,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output mudata file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output mudata file.\n"
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -47,7 +47,7 @@
                 "description": "Type: `string`, default: `gzip`, example: `gzip`. The compression algorithm to use for the output h5mu file",
                 "help_text": "Type: `string`, default: `gzip`, example: `gzip`. The compression algorithm to use for the output h5mu file.\n"
             ,
-                "default": "gzip"
+                "default":"gzip"
             }
     
 
@@ -58,7 +58,7 @@
                 "description": "Type: `string`, default: `scgpt_pred`. The name of the adata",
                 "help_text": "Type: `string`, default: `scgpt_pred`. The name of the adata.obs column to write predicted cell type labels to.\n"
             ,
-                "default": "scgpt_pred"
+                "default":"scgpt_pred"
             }
     
 
@@ -69,7 +69,7 @@
                 "description": "Type: `string`, default: `scgpt_probability`. The name of the adata",
                 "help_text": "Type: `string`, default: `scgpt_probability`. The name of the adata.obs column to write the probabilities of the predicted cell type labels to.\n"
             ,
-                "default": "scgpt_probability"
+                "default":"scgpt_probability"
             }
     
 
@@ -90,7 +90,7 @@
                 "description": "Type: `string`, default: `\u003cpad\u003e`. The padding token used in the model",
                 "help_text": "Type: `string`, default: `\u003cpad\u003e`. The padding token used in the model.\n"
             ,
-                "default": "<pad>"
+                "default":"<pad>"
             }
     
 
@@ -101,7 +101,7 @@
                 "description": "Type: `integer`, default: `-2`. The value of the padding",
                 "help_text": "Type: `integer`, default: `-2`. The value of the padding.\n"
             ,
-                "default": "-2"
+                "default":-2
             }
     
 
@@ -112,7 +112,7 @@
                 "description": "Type: `integer`, default: `51`. The number of input bins",
                 "help_text": "Type: `integer`, default: `51`. The number of input bins.\n"
             ,
-                "default": "51"
+                "default":51
             }
     
 
@@ -123,7 +123,7 @@
                 "description": "Type: `integer`, default: `64`. The batch size",
                 "help_text": "Type: `integer`, default: `64`. The batch size. \n"
             ,
-                "default": "64"
+                "default":64
             }
     
 
@@ -134,7 +134,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether to use domain-specific batch normalization",
                 "help_text": "Type: `boolean`, default: `true`. Whether to use domain-specific batch normalization.\n"
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -195,7 +195,7 @@
                 "description": "Type: `string`, default: `model_state_dict`. Key in the model file containing the pretrained checkpoints",
                 "help_text": "Type: `string`, default: `model_state_dict`. Key in the model file containing the pretrained checkpoints.\n"
             ,
-                "default": "model_state_dict"
+                "default":"model_state_dict"
             }
     
 
@@ -206,7 +206,7 @@
                 "description": "Type: `string`, default: `id_to_class`. Key in the model file containing the cell type class to label mapper dictionary",
                 "help_text": "Type: `string`, default: `id_to_class`. Key in the model file containing the cell type class to label mapper dictionary.\n"
             ,
-                "default": "id_to_class"
+                "default":"id_to_class"
             }
     
 
@@ -237,7 +237,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -258,7 +258,7 @@
                 "description": "Type: `string`, default: `gene_id_tokens`. The key of the ",
                 "help_text": "Type: `string`, default: `gene_id_tokens`. The key of the .obsm array containing the gene token ids\n"
             ,
-                "default": "gene_id_tokens"
+                "default":"gene_id_tokens"
             }
     
 
@@ -269,7 +269,7 @@
                 "description": "Type: `string`, default: `values_tokenized`. The key of the ",
                 "help_text": "Type: `string`, default: `values_tokenized`. The key of the .obsm array containing the count values of the tokenized genes\n"
             ,
-                "default": "values_tokenized"
+                "default":"values_tokenized"
             }
     
 

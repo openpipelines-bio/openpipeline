@@ -56,7 +56,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -107,7 +107,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output file path",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output file path"
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -118,7 +118,7 @@
                 "description": "Type: `string`, default: `X_scgpt`. In which ",
                 "help_text": "Type: `string`, default: `X_scgpt`. In which .obsm slot to store the resulting integrated embedding."
             ,
-                "default": "X_scgpt"
+                "default":"X_scgpt"
             }
     
 
@@ -189,7 +189,7 @@
                 "description": "Type: `string`, default: `\u003cpad\u003e`. Token used for padding",
                 "help_text": "Type: `string`, default: `\u003cpad\u003e`. Token used for padding.\n"
             ,
-                "default": "<pad>"
+                "default":"<pad>"
             }
     
 
@@ -200,7 +200,7 @@
                 "description": "Type: `integer`, default: `-2`. The value of the padding token",
                 "help_text": "Type: `integer`, default: `-2`. The value of the padding token.\n"
             ,
-                "default": "-2"
+                "default":-2
             }
     
 
@@ -221,7 +221,7 @@
                 "description": "Type: `integer`, default: `1200`. Number of highly variable genes to subset for",
                 "help_text": "Type: `integer`, default: `1200`. Number of highly variable genes to subset for.\n"
             ,
-                "default": "1200"
+                "default":1200
             }
     
 
@@ -240,7 +240,7 @@
                 "type":
                 "integer",
                 "description": "Type: `integer`. The maximum sequence length of the tokenized data",
-                "help_text": "Type: `integer`. The maximum sequence length of the tokenized data.\n"
+                "help_text": "Type: `integer`. The maximum sequence length of the tokenized data. Defaults to the number of features if not provided.\n"
             
             }
     
@@ -262,7 +262,7 @@
                 "description": "Type: `boolean`, default: `true`. Apply domain-specific batch normalization\n",
                 "help_text": "Type: `boolean`, default: `true`. Apply domain-specific batch normalization\n"
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -273,7 +273,7 @@
                 "description": "Type: `integer`, default: `64`. The batch size to be used for embedding inference",
                 "help_text": "Type: `integer`, default: `64`. The batch size to be used for embedding inference.\n"
             ,
-                "default": "64"
+                "default":64
             }
     
 
@@ -294,7 +294,7 @@
                 "description": "Type: `integer`, default: `51`. The number of bins to discretize the data into; When no value is provided, data won\u0027t be binned",
                 "help_text": "Type: `integer`, default: `51`. The number of bins to discretize the data into; When no value is provided, data won\u0027t be binned.\n"
             ,
-                "default": "51"
+                "default":51
             }
     
 
@@ -325,7 +325,7 @@
                 "description": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering",
                 "help_text": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
             ,
-                "default": "1.0"
+                "default":"1.0"
             }
     
 

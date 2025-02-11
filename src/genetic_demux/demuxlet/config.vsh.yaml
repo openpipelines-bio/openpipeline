@@ -124,6 +124,7 @@ argument_groups:
 resources:
   - type: r_script
     path: script.R
+  - path: demuxlet.patch
 test_resources:
   - type: bash_script
     path: test.sh
@@ -131,14 +132,16 @@ test_resources:
 
 engines:
 - type: docker
-  image: ubuntu:20.04
+  image: ubuntu:22.04
   setup:
+  - type: docker
+    copy: ["demuxlet.patch /opt/demuxlet.patch"]
   - type: apt
     packages: [ autoconf, wget, git, build-essential, libcurl4-openssl-dev, cmake, libbz2-dev, libssl-dev, liblzma-dev, zlib1g-dev, r-base]
   - type: docker
     run: git clone https://github.com/samtools/htslib.git /tmp/htslib && cd /tmp/htslib && git submodule update --init --recursive && autoreconf -i && ./configure --prefix=/usr/local/ && make && make install
   - type: docker
-    run: git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
+    run: git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && cd /tmp/popscle && git apply /opt/demuxlet.patch && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
   - type: r
     cran: [ readr, processx, dplyr ]
 

@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `string`, default: `neighbors`. The `",
                 "help_text": "Type: `string`, default: `neighbors`. The `.uns` neighbors slot as output by the `find_neighbors` component."
             ,
-                "default": "neighbors"
+                "default":"neighbors"
             }
     
 
@@ -67,26 +67,6 @@
                 "string",
                 "description": "Type: `string`, required. The slot in `",
                 "help_text": "Type: `string`, required. The slot in `.obsm` where the PCA results are stored.\n"
-            
-            }
-    
-
-        ,
-                "obsm_knn_indices": {
-                "type":
-                "string",
-                "description": "Type: `string`, required. The slot in `",
-                "help_text": "Type: `string`, required. The slot in `.obsm` where the kNN indices are stored.\n"
-            
-            }
-    
-
-        ,
-                "obsm_knn_distances": {
-                "type":
-                "string",
-                "description": "Type: `string`, required. The slot in `",
-                "help_text": "Type: `string`, required. The slot in `.obsm` where the kNN distances are stored.\n"
             
             }
     
@@ -108,7 +88,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -131,7 +111,7 @@
                 "description": "Type: `string`, default: `X_densmap`. The ",
                 "help_text": "Type: `string`, default: `X_densmap`. The .obsm key to use for storing the densMAP results.."
             ,
-                "default": "X_densmap"
+                "default":"X_densmap"
             }
     
 
@@ -152,7 +132,7 @@
                 "description": "Type: `double`, default: `0.5`. The effective minimum distance between embedded points",
                 "help_text": "Type: `double`, default: `0.5`. The effective minimum distance between embedded points. Smaller values will result \nin a more clustered/clumped embedding where nearby points on the manifold are drawn \ncloser together, while larger values will result on a more even dispersal of points. \nThe value should be set relative to the spread value, which determines the scale at \nwhich embedded points will be spread out. \n"
             ,
-                "default": "0.5"
+                "default":0.5
             }
     
 
@@ -163,7 +143,7 @@
                 "description": "Type: `double`, default: `1.0`. The effective scale of embedded points",
                 "help_text": "Type: `double`, default: `1.0`. The effective scale of embedded points. In combination with `min_dist` this \ndetermines how clustered/clumped the embedded points are.\n"
             ,
-                "default": "1.0"
+                "default":1.0
             }
     
 
@@ -174,7 +154,7 @@
                 "description": "Type: `integer`, default: `2`. The number of dimensions of the embedding",
                 "help_text": "Type: `integer`, default: `2`. The number of dimensions of the embedding."
             ,
-                "default": "2"
+                "default":2
             }
     
 
@@ -185,7 +165,7 @@
                 "description": "Type: `integer`, default: `0`. The number of iterations (epochs) of the optimization",
                 "help_text": "Type: `integer`, default: `0`. The number of iterations (epochs) of the optimization. Called `n_epochs` \nin the original UMAP. Default is set to 500 if \nneighbors[\u0027connectivities\u0027].shape[0] \u003c= 10000, else 200.\n"
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -196,7 +176,7 @@
                 "description": "Type: `double`, default: `1.0`. The initial learning rate for the embedding optimization",
                 "help_text": "Type: `double`, default: `1.0`. The initial learning rate for the embedding optimization."
             ,
-                "default": "1.0"
+                "default":1.0
             }
     
 
@@ -207,7 +187,7 @@
                 "description": "Type: `double`, default: `1.0`. Weighting applied to negative samples in low dimensional embedding optimization",
                 "help_text": "Type: `double`, default: `1.0`. Weighting applied to negative samples in low dimensional embedding optimization. \nValues higher than one will result in greater weight being given to negative samples.\n"
             ,
-                "default": "1.0"
+                "default":1.0
             }
     
 
@@ -218,7 +198,7 @@
                 "description": "Type: `integer`, default: `5`. The number of negative samples to select per positive sample\nin the optimization process",
                 "help_text": "Type: `integer`, default: `5`. The number of negative samples to select per positive sample\nin the optimization process. Increasing this value will result\nin greater repulsive force being applied, greater optimization\ncost, but slightly more accuracy.\n"
             ,
-                "default": "5"
+                "default":5
             }
     
 
@@ -231,7 +211,7 @@
                 "enum": ["paga", "spectral", "random"]
             
             ,
-                "default": "spectral"
+                "default":"spectral"
             }
     
 
@@ -252,7 +232,7 @@
                 "description": "Type: `double`, default: `2.0`. Controls the regularization weight of the density correlation term in densMAP",
                 "help_text": "Type: `double`, default: `2.0`. Controls the regularization weight of the density correlation term in densMAP. \nHigher values prioritize density preservation over the UMAP objective, and vice versa \nfor values closer to zero. Setting this parameter to zero is equivalent to running \nthe original UMAP algorithm.\n"
             ,
-                "default": "2.0"
+                "default":2.0
             }
     
 
@@ -263,7 +243,7 @@
                 "description": "Type: `double`, default: `0.3`. Controls the fraction of epochs (between 0 and 1) where the density-augmented objective \nis used in densMAP",
                 "help_text": "Type: `double`, default: `0.3`. Controls the fraction of epochs (between 0 and 1) where the density-augmented objective \nis used in densMAP. The first (1 - dens_frac) fraction of epochs optimize the original \nUMAP objective before introducing the density correlation term.\n"
             ,
-                "default": "0.3"
+                "default":0.3
             }
     
 
@@ -274,7 +254,7 @@
                 "description": "Type: `double`, default: `0.1`. A small constant added to the variance of local radii in the embedding when calculating \nthe density correlation objective to prevent numerical instability from dividing by a \nsmall number",
                 "help_text": "Type: `double`, default: `0.1`. A small constant added to the variance of local radii in the embedding when calculating \nthe density correlation objective to prevent numerical instability from dividing by a \nsmall number.\n"
             ,
-                "default": "0.1"
+                "default":0.1
             }
     
 

@@ -3,6 +3,9 @@ namespace: "workflows/ingestion"
 description: "A pipeline for running Cell Ranger multi."
 info:
   name: Cell Ranger multi
+  test_dependencies:
+    - name: cellranger_multi_test
+      namespace: test_workflows/ingestion
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author ]
@@ -18,7 +21,6 @@ argument_groups:
         example: output_dir/
       - name: "--output_h5mu"
         type: file
-        multiple: true
         description: |
           Locations for the output files. Must contain a wildcard (*) character,
           which will be replaced with the sample name.

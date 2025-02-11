@@ -53,10 +53,9 @@
                 "layer": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `log_normalized`. use specified layer for expression values instead of the ",
-                "help_text": "Type: `string`, default: `log_normalized`. use specified layer for expression values instead of the .X object from the modality."
-            ,
-                "default": "log_normalized"
+                "description": "Type: `string`. use specified layer for expression values instead of the ",
+                "help_text": "Type: `string`. use specified layer for expression values instead of the .X object from the modality."
+            
             }
     
 
@@ -67,7 +66,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to process",
                 "help_text": "Type: `string`, default: `rna`. Which modality to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -78,7 +77,7 @@
                 "description": "Type: `string`, default: `prot`. Which modality to process",
                 "help_text": "Type: `string`, default: `prot`. Which modality to process."
             ,
-                "default": "prot"
+                "default":"prot"
             }
     
 
@@ -109,7 +108,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -120,7 +119,7 @@
                 "description": "Type: `file`, default: `$id.$key.reference_model_path.reference_model_path`. Directory with the reference model",
                 "help_text": "Type: `file`, default: `$id.$key.reference_model_path.reference_model_path`. Directory with the reference model. If not exists, trained model will be saved there"
             ,
-                "default": "$id.$key.reference_model_path.reference_model_path"
+                "default":"$id.$key.reference_model_path.reference_model_path"
             }
     
 
@@ -131,7 +130,7 @@
                 "description": "Type: `file`, default: `$id.$key.query_model_path.query_model_path`. Directory, where the query model will be saved",
                 "help_text": "Type: `file`, default: `$id.$key.query_model_path.query_model_path`. Directory, where the query model will be saved"
             ,
-                "default": "$id.$key.query_model_path.query_model_path"
+                "default":"$id.$key.query_model_path.query_model_path"
             }
     
 
@@ -152,7 +151,7 @@
                 "description": "Type: `string`, default: `sample_id`. ",
                 "help_text": "Type: `string`, default: `sample_id`. .Obs column name discriminating between your batches."
             ,
-                "default": "sample_id"
+                "default":"sample_id"
             }
     
 
@@ -163,7 +162,7 @@
                 "description": "Type: `integer`, default: `400`. Number of passes through the dataset",
                 "help_text": "Type: `integer`, default: `400`. Number of passes through the dataset"
             ,
-                "default": "400"
+                "default":400
             }
     
 
@@ -174,7 +173,7 @@
                 "description": "Type: `integer`, default: `200`. Number of passes through the dataset, when fine-tuning model for query",
                 "help_text": "Type: `integer`, default: `200`. Number of passes through the dataset, when fine-tuning model for query"
             ,
-                "default": "200"
+                "default":200
             }
     
 
@@ -185,7 +184,7 @@
                 "description": "Type: `double`, default: `0.0`. Weight decay, when fine-tuning model for query",
                 "help_text": "Type: `double`, default: `0.0`. Weight decay, when fine-tuning model for query"
             ,
-                "default": "0.0"
+                "default":0.0
             }
     
 
@@ -196,7 +195,7 @@
                 "description": "Type: `boolean_true`, default: `false`. If true, retrain the model and save it to reference_model_path",
                 "help_text": "Type: `boolean_true`, default: `false`. If true, retrain the model and save it to reference_model_path"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -227,7 +226,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -238,7 +237,7 @@
                 "description": "Type: `string`, default: `X_totalvi`. In which ",
                 "help_text": "Type: `string`, default: `X_totalvi`. In which .obsm slot to store the normalized RNA from TOTALVI."
             ,
-                "default": "X_totalvi"
+                "default":"X_totalvi"
             }
     
 
@@ -259,7 +258,7 @@
                 "description": "Type: `string`, default: `prot`. Name of the modality containing proteins in the reference",
                 "help_text": "Type: `string`, default: `prot`. Name of the modality containing proteins in the reference"
             ,
-                "default": "prot"
+                "default":"prot"
             }
     
 
@@ -270,7 +269,7 @@
                 "description": "Type: `string`, default: `X_totalvi`. In which ",
                 "help_text": "Type: `string`, default: `X_totalvi`. In which .obsm slot to store the normalized protein data from TOTALVI."
             ,
-                "default": "X_totalvi"
+                "default":"X_totalvi"
             }
     
 
@@ -291,7 +290,7 @@
                 "description": "Type: `string`, default: `totalvi_integration_neighbors`. In which ",
                 "help_text": "Type: `string`, default: `totalvi_integration_neighbors`. In which .uns slot to store various neighbor output objects."
             ,
-                "default": "totalvi_integration_neighbors"
+                "default":"totalvi_integration_neighbors"
             }
     
 
@@ -302,7 +301,7 @@
                 "description": "Type: `string`, default: `totalvi_integration_distances`. In which ",
                 "help_text": "Type: `string`, default: `totalvi_integration_distances`. In which .obsp slot to store the distance matrix between the resulting neighbors."
             ,
-                "default": "totalvi_integration_distances"
+                "default":"totalvi_integration_distances"
             }
     
 
@@ -313,7 +312,7 @@
                 "description": "Type: `string`, default: `totalvi_integration_connectivities`. In which ",
                 "help_text": "Type: `string`, default: `totalvi_integration_connectivities`. In which .obsp slot to store the connectivities matrix between the resulting neighbors."
             ,
-                "default": "totalvi_integration_connectivities"
+                "default":"totalvi_integration_connectivities"
             }
     
 
@@ -334,7 +333,7 @@
                 "description": "Type: `string`, default: `totalvi_integration_neighbors`. In which ",
                 "help_text": "Type: `string`, default: `totalvi_integration_neighbors`. In which .uns slot to store various neighbor output objects."
             ,
-                "default": "totalvi_integration_neighbors"
+                "default":"totalvi_integration_neighbors"
             }
     
 
@@ -345,7 +344,7 @@
                 "description": "Type: `string`, default: `totalvi_integration_distances`. In which ",
                 "help_text": "Type: `string`, default: `totalvi_integration_distances`. In which .obsp slot to store the distance matrix between the resulting neighbors."
             ,
-                "default": "totalvi_integration_distances"
+                "default":"totalvi_integration_distances"
             }
     
 
@@ -356,7 +355,7 @@
                 "description": "Type: `string`, default: `totalvi_integration_connectivities`. In which ",
                 "help_text": "Type: `string`, default: `totalvi_integration_connectivities`. In which .obsp slot to store the connectivities matrix between the resulting neighbors."
             ,
-                "default": "totalvi_integration_connectivities"
+                "default":"totalvi_integration_connectivities"
             }
     
 
@@ -377,7 +376,7 @@
                 "description": "Type: `string`, default: `totalvi_integration_leiden`. Prefix for the ",
                 "help_text": "Type: `string`, default: `totalvi_integration_leiden`. Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for \u0027--obs_cluster\u0027 suffixed with an underscore and one of the resolutions\nresolutions specified in \u0027--leiden_resolution\u0027.\n"
             ,
-                "default": "totalvi_integration_leiden"
+                "default":"totalvi_integration_leiden"
             }
     
 
@@ -388,7 +387,7 @@
                 "description": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering",
                 "help_text": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
             ,
-                "default": "1.0"
+                "default":"1.0"
             }
     
 
@@ -409,7 +408,7 @@
                 "description": "Type: `string`, default: `totalvi_integration_leiden`. Prefix for the ",
                 "help_text": "Type: `string`, default: `totalvi_integration_leiden`. Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for \u0027--obs_cluster\u0027 suffixed with an underscore and one of the resolutions\nresolutions specified in \u0027--leiden_resolution\u0027.\n"
             ,
-                "default": "totalvi_integration_leiden"
+                "default":"totalvi_integration_leiden"
             }
     
 
@@ -420,7 +419,7 @@
                 "description": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering",
                 "help_text": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
             ,
-                "default": "1.0"
+                "default":"1.0"
             }
     
 
@@ -441,7 +440,7 @@
                 "description": "Type: `string`, default: `X_totalvi_umap`. In which ",
                 "help_text": "Type: `string`, default: `X_totalvi_umap`. In which .obsm slot to store the resulting UMAP embedding."
             ,
-                "default": "X_totalvi_umap"
+                "default":"X_totalvi_umap"
             }
     
 

@@ -46,7 +46,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
@@ -69,7 +69,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -80,7 +80,7 @@
                 "description": "Type: `string`, default: `X_pca`. Which ",
                 "help_text": "Type: `string`, default: `X_pca`. Which .obsm slot to use as a starting PCA embedding."
             ,
-                "default": "X_pca"
+                "default":"X_pca"
             }
     
 
@@ -91,7 +91,7 @@
                 "description": "Type: `string`, default: `X_pca_integrated`. In which ",
                 "help_text": "Type: `string`, default: `X_pca_integrated`. In which .obsm slot to store the resulting integrated embedding."
             ,
-                "default": "X_pca_integrated"
+                "default":"X_pca_integrated"
             }
     
 
@@ -100,9 +100,9 @@
                 "type":
                 "string",
                 "description": "Type: List of `double`, default: `2.0`, multiple_sep: `\";\"`. Diversity clustering penalty parameter",
-                "help_text": "Type: List of `double`, default: `2.0`, multiple_sep: `\";\"`. Diversity clustering penalty parameter. Specify for each variable in group.by.vars. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
+                "help_text": "Type: List of `double`, default: `2.0`, multiple_sep: `\";\"`. Diversity clustering penalty parameter. Can be set as a single value for all batch observations or as multiple values, one for each observation in the batches defined by --obs_covariates. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
             ,
-                "default": "2.0"
+                "default":"2.0"
             }
     
 

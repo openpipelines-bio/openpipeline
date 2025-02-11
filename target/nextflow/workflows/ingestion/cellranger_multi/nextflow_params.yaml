@@ -68,7 +68,7 @@ check_library_compatibility: true
 
 # Outputs
 # output_raw: "$id.$key.output_raw"
-# output_h5mu: ["$id.$key.output_h5mu_*.h5mu"]
+# output_h5mu: "$id.$key.output_h5mu.h5mu"
 uns_metrics: "metrics_cellranger"
 
 # Nextflow input-output arguments

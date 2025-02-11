@@ -46,7 +46,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Concatenate or combine VCFs and sort them",
                 "help_text": "Type: `boolean_true`, default: `false`. Concatenate or combine VCFs and sort them."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Filter VCFs",
                 "help_text": "Type: `boolean_true`, default: `false`. Filter VCFs."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -68,7 +68,7 @@
                 "description": "Type: `integer`, default: `30`. Filter VCFs with specified QUAL threshold",
                 "help_text": "Type: `integer`, default: `30`. Filter VCFs with specified QUAL threshold."
             ,
-                "default": "30"
+                "default":30
             }
     
 
@@ -79,7 +79,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.output`, example: `bcftools_out`. bcftools output directory",
                 "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `bcftools_out`. bcftools output directory"
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 

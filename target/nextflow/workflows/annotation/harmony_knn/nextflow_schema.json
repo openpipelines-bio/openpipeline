@@ -36,7 +36,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The query data in ",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The query data in .h5mu format with predicted labels predicted from the classifier trained on the reference."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `string`, default: `X_integrated_harmony`. In which ",
                 "help_text": "Type: `string`, default: `X_integrated_harmony`. In which .obsm slot to store the integrated embedding."
             ,
-                "default": "X_integrated_harmony"
+                "default":"X_integrated_harmony"
             }
     
 
@@ -120,16 +120,16 @@
                 "description": "Type: `string`, default: `rna`. Which modality to process",
                 "help_text": "Type: `string`, default: `rna`. Which modality to process. Should match the modality of the --reference dataset."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
         ,
-                "input_obsm_embedding": {
+                "input_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`, example: `X_pca`. Embedding ",
-                "help_text": "Type: `string`, example: `X_pca`. Embedding .obsm column to use as input for integration. Should match the embedding .obsm columng of the --reference dataset."
+                "description": "Type: `string`. The layer of the input dataset to process if ",
+                "help_text": "Type: `string`. The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts."
             
             }
     
@@ -141,6 +141,38 @@
                 "description": "Type: `string`, required, example: `sample`. The ",
                 "help_text": "Type: `string`, required, example: `sample`. The .obs field in the input (query) dataset containing the batch labels."
             
+            }
+    
+
+        ,
+                "input_var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`. The ",
+                "help_text": "Type: `string`. The .var field in the input (query) dataset containing gene names; if not provided, the .var index will be used.\n"
+            
+            }
+    
+
+        ,
+                "input_reference_gene_overlap": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `100`. The minimum number of genes present in both the reference and query datasets",
+                "help_text": "Type: `integer`, default: `100`. The minimum number of genes present in both the reference and query datasets.\n"
+            ,
+                "default":100
+            }
+    
+
+        ,
+                "overwrite_existing_key": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. If provided, will overwrite existing fields in the input dataset when data are copied during the reference alignment process",
+                "help_text": "Type: `boolean_true`, default: `false`. If provided, will overwrite existing fields in the input dataset when data are copied during the reference alignment process."
+            ,
+                "default":false
             }
     
 
@@ -165,11 +197,31 @@
     
 
         ,
-                "reference_obs_targets": {
+                "reference_layer": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, required, example: `ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level`, multiple_sep: `\";\"`. The `",
-                "help_text": "Type: List of `string`, required, example: `ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level`, multiple_sep: `\";\"`. The `.obs` key(s) of the target labels to transfer."
+                "description": "Type: `string`. The layer of the reference dataset to process if ",
+                "help_text": "Type: `string`. The layer of the reference dataset to process if .X is not to be used. Should contain log normalized counts."
+            
+            }
+    
+
+        ,
+                "reference_obs_target": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `cell_type`. The `",
+                "help_text": "Type: `string`, required, example: `cell_type`. The `.obs` key of the target cell type labels to transfer."
+            
+            }
+    
+
+        ,
+                "reference_var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`. The ",
+                "help_text": "Type: `string`. The .var field in the reference dataset containing gene names; if not provided, the .var index will be used.\n"
             
             }
     
@@ -188,6 +240,59 @@
 },
     
     
+    "highly variable genes calculation options" : {
+    "title": "Highly Variable Genes calculation options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "hvg_flavor": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `seurat`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. Choose the flavor for identifying highly variable features",
+                "help_text": "Type: `string`, default: `seurat`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. Choose the flavor for identifying highly variable features. For the dispersion based methods\nin their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_features.\n",
+                "enum": ["seurat", "cell_ranger", "seurat_v3"]
+            
+            ,
+                "default":"seurat"
+            }
+    
+
+        ,
+                "hvg_n_top_features": {
+                "type":
+                "integer",
+                "description": "Type: `integer`. Number of highly-variable features to keep",
+                "help_text": "Type: `integer`. Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor is set to \u0027seurat_v3\u0027."
+            
+            }
+    
+
+}
+},
+    
+    
+    "pca options" : {
+    "title": "PCA options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "pca_num_components": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `25`. Number of principal components to compute",
+                "help_text": "Type: `integer`, example: `25`. Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation."
+            
+            }
+    
+
+}
+},
+    
+    
     "harmony integration options" : {
     "title": "Harmony integration options",
     "type": "object",
@@ -195,13 +300,13 @@
     "properties": {
     
         
-                "theta": {
+                "harmony_theta": {
                 "type":
                 "string",
                 "description": "Type: List of `double`, default: `2.0`, multiple_sep: `\";\"`. Diversity clustering penalty parameter",
-                "help_text": "Type: List of `double`, default: `2.0`, multiple_sep: `\";\"`. Diversity clustering penalty parameter. Specify for each variable in group.by.vars. \nA value of theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters.\"\n"
+                "help_text": "Type: List of `double`, default: `2.0`, multiple_sep: `\";\"`. Diversity clustering penalty parameter. Can be set as a single value for all batch observations or as multiple values, one for each observation in the batches defined by --input_obs_batch_label. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters.\"\n"
             ,
-                "default": "2.0"
+                "default":"2.0"
             }
     
 
@@ -222,7 +327,7 @@
                 "description": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering",
                 "help_text": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
             ,
-                "default": "1.0"
+                "default":"1.0"
             }
     
 
@@ -237,7 +342,7 @@
     "properties": {
     
         
-                "weights": {
+                "knn_weights": {
                 "type":
                 "string",
                 "description": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction",
@@ -245,18 +350,18 @@
                 "enum": ["uniform", "distance"]
             
             ,
-                "default": "uniform"
+                "default":"uniform"
             }
     
 
         ,
-                "n_neighbors": {
+                "knn_n_neighbors": {
                 "type":
                 "integer",
                 "description": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent",
                 "help_text": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n"
             ,
-                "default": "15"
+                "default":15
             }
     
 
@@ -297,6 +402,14 @@
 
     {
     "$ref": "#/definitions/reference input"
+    },
+
+    {
+    "$ref": "#/definitions/highly variable genes calculation options"
+    },
+
+    {
+    "$ref": "#/definitions/pca options"
     },
 
     {

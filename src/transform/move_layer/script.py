@@ -1,5 +1,5 @@
 import sys
-from mudata import read_h5mu
+from mudata import read_h5ad
 from functools import partial
 from operator import setitem
 
@@ -13,37 +13,22 @@ par = {
     "output_compression": None,
 }
 
-meta = {
-    "resources_dir": "."
-}
+meta = {"resources_dir": "."}
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
+from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-logger.info("Read mudata from file")
-input_file, modality = par["input"], par["modality"]
-mdata = read_h5mu(input_file)
-mod_data = mdata.mod[modality]
+logger.info("Reading modality %s mudata from file %s", par["input"])
+mod_data = read_h5ad(par["input"], mod=par["modality"])
 
 
-logger.info("Using input layer '%s'", "X" if not par["input_layer"] else par["input_layer"])
+logger.info(
+    "Using input layer '%s'", "X" if not par["input_layer"] else par["input_layer"]
+)
 if par["input_layer"]:
     data_to_write = mod_data.layers[par["input_layer"]].copy()
     del mod_data.layers[par["input_layer"]]
@@ -51,13 +36,19 @@ else:
     data_to_write = mod_data.X
     mod_data.X = None
 
-output_layer_setter = partial(setattr, mod_data, "X") \
-                        if not par["output_layer"] \
-                        else partial(setitem, mod_data.layers, par["output_layer"])
+output_layer_setter = (
+    partial(setattr, mod_data, "X")
+    if not par["output_layer"]
+    else partial(setitem, mod_data.layers, par["output_layer"])
+)
 output_layer_setter(data_to_write)
 
-logger.info("Write output to mudata file")
-mdata.write_h5mu(par['output'], compression=par["output_compression"])
+logger.info(
+    "Writing output to file %s with compression %s",
+    par["output"],
+    par["output_compression"],
+)
 
-        
-
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], mod_data, par["output_compression"]
+)

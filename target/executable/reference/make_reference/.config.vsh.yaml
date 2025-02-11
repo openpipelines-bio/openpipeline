@@ -122,7 +122,7 @@ description: "Preprocess and build a transcriptome reference.\n\nExample input f
   \  - `ercc`: https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip\n"
 test_resources:
 - type: "bash_script"
-  path: "run_test.sh"
+  path: "test.sh"
   is_executable: true
 - type: "file"
   path: "openpipelinetestutils"
@@ -226,19 +226,18 @@ build_info:
   engine: "docker"
   output: "target/executable/reference/make_reference"
   executable: "target/executable/reference/make_reference/make_reference"
-  viash_version: "0.9.0-RC7"
-  git_commit: "c67a4ff6faddc7afb78ced1ef99b088a4a33d9ad"
+  viash_version: "0.9.0"
+  git_commit: "ed5d9e3be17b9437c265cc08e8822d65f27bc945"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1942-gc67a4ff6fa"
+  git_tag: "0.2.0-1943-ged5d9e3be1"
 package_config:
   name: "openpipeline"
-  version: "dev"
   info:
     test_resources:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0-RC7"
+  viash_version: "0.9.0"
   source: "src"
   target: "target"
   config_mods:

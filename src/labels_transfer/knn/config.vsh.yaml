@@ -1,0 +1,88 @@
+name: knn
+namespace: "labels_transfer"
+description: |
+  This component performs label transfer from reference to query using a K-Neirest Neighbors classifier.
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ maintainer, author ]
+  - __merge__: /src/authors/vladimir_shitov.yaml
+    roles: [ author ]
+
+__merge__: ../api/common_arguments.yaml
+
+argument_groups:
+  - name: Input dataset (query) arguments
+    arguments:
+      - name: "--input_obsm_distances"
+        type: string
+        direction: input
+        required: false
+        example: bbknn_distances
+        description: |
+          The `.obsm` key of the input (query) dataset containing pre-calculated distances. 
+          If not provided, the distances will be calculated using PyNNDescent.
+          Make sure the distance matrix contains distances relative to the reference dataset and were obtained in the same way as the reference embedding.
+
+  - name: Reference dataset arguments
+    arguments:
+      - name: "--reference_obsm_distances"
+        type: string
+        required: false
+        description: |
+          The `.obsm` key of the reference dataset containing pre-calculated distances. 
+          If not provided, the distances will be calculated using PyNNDescent.
+        example: bbknn_distances
+
+  - name: KNN label transfer arguments
+    arguments:
+      - name: "--weights"
+        type: string
+        choices: ["uniform", "distance", "gaussian"]
+        default: "uniform"
+        description: |
+          Weight function used in prediction. Possible values are:
+          - `uniform` - all points in each neighborhood are weighted equally 
+          - `distance` - weight points by the inverse of their distance
+          - `gaussian` - weight points by the sum of their Gaussian kernel similarities to each sample
+      - name: "--n_neighbors"
+        type: integer
+        min: 5
+        default: 15
+        description: |
+          The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. 
+          Larger values will result in more accurate search results at the cost of computation time.
+          
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/labels_transfer/utils/helper.py
+  - path: /src/utils/compress_h5mu.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/annotation_test_data/
+  - path: /resources_test/pbmc_1k_protein_v3/
+
+engines:
+  - type: docker
+    image: python:3.12
+    setup:
+      - type: apt
+        packages: 
+          - procps
+          - pkg-config
+          - libhdf5-dev
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+      - type: python
+        packages:
+          - pynndescent~=0.5.10
+          - numpy<2
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [highmem, highcpu]

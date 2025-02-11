@@ -50,6 +50,27 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+  - type: "string"
+    name: "--input_var_gene_names"
+    description: "The name of the adata var column in the input data containing gene\
+      \ names; when no gene_name_layer is provided, the var index will be used.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--input_reference_gene_overlap"
+    description: "The minimum number of genes present in both the reference and query\
+      \ datasets.\n"
+    info: null
+    default:
+    - 100
+    required: false
+    min: 1
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
 - name: "Reference"
   description: "Arguments related to the reference dataset."
   arguments:
@@ -80,8 +101,24 @@ argument_groups:
     name: "--reference_obs_target"
     description: "Key in obs field of reference modality with cell-type information."
     info: null
-    default:
-    - "cell_ontology_class"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--reference_var_gene_names"
+    description: "The name of the adata var column in the reference data containing\
+      \ gene names; when no gene_name_layer is provided, the var index will be used.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--reference_var_input"
+    description: ".var column containing highly variable genes. By default, do not\
+      \ subset genes.\n"
+    info: null
     required: false
     direction: "input"
     multiple: false
@@ -161,7 +198,8 @@ argument_groups:
     multiple_sep: ";"
   - type: "integer"
     name: "--max_depth"
-    description: "Maximum depth of the trees in the random forest."
+    description: "Maximum depth of the trees in the random forest. \nIf not provided,\
+      \ the nodes are expanded until all leaves only contain a single sample.\n"
     info: null
     required: false
     direction: "input"
@@ -183,7 +221,11 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--class_weight"
-    description: "Weights associated with classes."
+    description: "Weights associated with classes.\nThe `balanced` mode uses the values\
+      \ of y to automatically adjust weights inversely proportional to class frequencies\
+      \ in the input data.\nThe `balanced_subsample` mode is the same as `balanced`\
+      \ except that weights are computed based on the bootstrap sample for every tree\
+      \ grown.\nThe `uniform` mode gives all classes a weight  of one.\n"
     info: null
     default:
     - "balanced_subsample"
@@ -191,6 +233,21 @@ argument_groups:
     choices:
     - "balanced"
     - "balanced_subsample"
+    - "uniform"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--max_features"
+    description: "The number of features to consider when looking for the best split.\
+      \ The value can either be a positive integer or one of `sqrt`, `log2` or `all`.\n\
+      If integer: consider max_features features at each split.\nIf `sqrt`: max_features\
+      \ is the squareroot of all input features.\nIf `log2`: max_features is the log2\
+      \ of all input features.\nIf `all`: max features equals all input features.\n"
+    info: null
+    default:
+    - "200"
+    required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -200,6 +257,12 @@ resources:
   is_executable: true
 - type: "file"
   path: "setup_logger.py"
+- type: "file"
+  path: "cross_check_genes.py"
+- type: "file"
+  path: "subset_vars.py"
+- type: "file"
+  path: "set_var_index.py"
 - type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
@@ -228,6 +291,10 @@ runners:
 - type: "nextflow"
   id: "nextflow"
   directives:
+    label:
+    - "highcpu"
+    - "highmem"
+    - "highdisk"
     tag: "$id"
   auto:
     simplifyInput: true
@@ -308,10 +375,11 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "anndata==0.10.8"
-    - "mudata~=0.2.4"
-    - "pandas!=2.1.2"
-    - "numpy<2.0.0"
+    - "anndata~=0.11.1"
+    - "mudata~=0.3.1"
+    script:
+    - "exec(\"try:\\n  import awkward\\nexcept ModuleNotFoundError:\\n  exit(0)\\\
+      nelse:  exit(1)\")"
     upgrade: true
   test_setup:
   - type: "docker"
@@ -325,7 +393,7 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.7.0"
+    - "viashpy==0.8.0"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -335,19 +403,18 @@ build_info:
   engine: "docker"
   output: "target/nextflow/annotate/random_forest_annotation"
   executable: "target/nextflow/annotate/random_forest_annotation/main.nf"
-  viash_version: "0.9.0-RC7"
-  git_commit: "c67a4ff6faddc7afb78ced1ef99b088a4a33d9ad"
+  viash_version: "0.9.0"
+  git_commit: "ed5d9e3be17b9437c265cc08e8822d65f27bc945"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1942-gc67a4ff6fa"
+  git_tag: "0.2.0-1943-ged5d9e3be1"
 package_config:
   name: "openpipeline"
-  version: "dev"
   info:
     test_resources:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0-RC7"
+  viash_version: "0.9.0"
   source: "src"
   target: "target"
   config_mods:

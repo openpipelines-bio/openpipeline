@@ -185,16 +185,20 @@ engines:
   setup:
   - type: "apt"
     packages:
-    - "libhdf5-dev python3-pip python3-dev"
+    - "libhdf5-dev"
+    - "python3-pip"
+    - "python3-dev"
+    - "python-is-python3"
     interactive: false
   - type: "python"
     user: false
     packages:
-    - "anndata==0.10.8"
-    - "mudata~=0.2.4"
-    - "pandas!=2.1.2"
-    - "numpy<2.0.0"
-    - "scanpy~=1.9.6"
+    - "anndata~=0.11.1"
+    - "mudata~=0.3.1"
+    - "scanpy~=1.10.4"
+    script:
+    - "exec(\"try:\\n  import awkward\\nexcept ModuleNotFoundError:\\n  exit(0)\\\
+      nelse:  exit(1)\")"
     upgrade: true
   - type: "r"
     cran:
@@ -210,19 +214,18 @@ build_info:
   engine: "docker"
   output: "target/executable/process_10xh5/filter_10xh5"
   executable: "target/executable/process_10xh5/filter_10xh5/filter_10xh5"
-  viash_version: "0.9.0-RC7"
-  git_commit: "c67a4ff6faddc7afb78ced1ef99b088a4a33d9ad"
+  viash_version: "0.9.0"
+  git_commit: "ed5d9e3be17b9437c265cc08e8822d65f27bc945"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1942-gc67a4ff6fa"
+  git_tag: "0.2.0-1943-ged5d9e3be1"
 package_config:
   name: "openpipeline"
-  version: "dev"
   info:
     test_resources:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0-RC7"
+  viash_version: "0.9.0"
   source: "src"
   target: "target"
   config_mods:

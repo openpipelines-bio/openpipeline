@@ -1,11 +1,12 @@
 # Inputs
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
+# var_input_gene_names: "foo"
+input_reference_gene_overlap: 100
 
-# Reference
-reference: # please fill in - example: "reference.h5mu"
-scvi_reference_model: # please fill in - example: "scvi_model.pt"
-reference_obs_label: # please fill in - example: "cell_ontology_class"
+# Reference model
+# scvi_reference_model: "scvi_model.pt"
+# scanvi_reference_model: "scvi_model.pt"
 
 # SCANVI reference model training arguments
 reference_train_size: 0.9

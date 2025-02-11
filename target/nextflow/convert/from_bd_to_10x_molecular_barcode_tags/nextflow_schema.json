@@ -46,7 +46,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.sam`, example: `output.sam`. Output alignment file",
                 "help_text": "Type: `file`, default: `$id.$key.output.sam`, example: `output.sam`. Output alignment file."
             ,
-                "default": "$id.$key.output.sam"
+                "default":"$id.$key.output.sam"
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Output a BAM file",
                 "help_text": "Type: `boolean_true`, default: `false`. Output a BAM file."
             ,
-                "default": "False"
+                "default":false
             }
     
 

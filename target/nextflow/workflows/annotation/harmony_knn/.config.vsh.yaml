@@ -62,12 +62,10 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--input_obsm_embedding"
-    description: "Embedding .obsm column to use as input for integration. Should match\
-      \ the embedding .obsm columng of the --reference dataset."
+    name: "--input_layer"
+    description: "The layer of the input dataset to process if .X is not to be used.\
+      \ Should contain log normalized counts."
     info: null
-    example:
-    - "X_pca"
     required: false
     direction: "input"
     multiple: false
@@ -83,6 +81,33 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+  - type: "string"
+    name: "--input_var_gene_names"
+    description: "The .var field in the input (query) dataset containing gene names;\
+      \ if not provided, the .var index will be used.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--input_reference_gene_overlap"
+    description: "The minimum number of genes present in both the reference and query\
+      \ datasets.\n"
+    info: null
+    default:
+    - 100
+    required: false
+    min: 1
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--overwrite_existing_key"
+    description: "If provided, will overwrite existing fields in the input dataset\
+      \ when data are copied during the reference alignment process."
+    info: null
+    direction: "input"
 - name: "Reference input"
   arguments:
   - type: "file"
@@ -100,19 +125,32 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--reference_obs_targets"
-    description: "The `.obs` key(s) of the target labels to transfer."
+    name: "--reference_layer"
+    description: "The layer of the reference dataset to process if .X is not to be\
+      \ used. Should contain log normalized counts."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--reference_obs_target"
+    description: "The `.obs` key of the target cell type labels to transfer."
     info: null
     example:
-    - "ann_level_1"
-    - "ann_level_2"
-    - "ann_level_3"
-    - "ann_level_4"
-    - "ann_level_5"
-    - "ann_finest_level"
+    - "cell_type"
     required: true
     direction: "input"
-    multiple: true
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--reference_var_gene_names"
+    description: "The .var field in the reference dataset containing gene names; if\
+      \ not provided, the .var index will be used.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
     multiple_sep: ";"
   - type: "string"
     name: "--reference_obs_batch_label"
@@ -124,13 +162,58 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+- name: "Highly Variable Genes calculation options"
+  arguments:
+  - type: "string"
+    name: "--hvg_flavor"
+    alternatives:
+    - "--filter_with_hvg_flavor"
+    description: "Choose the flavor for identifying highly variable features. For\
+      \ the dispersion based methods\nin their default workflows, Seurat passes the\
+      \ cutoffs whereas Cell Ranger passes n_top_features.\n"
+    info: null
+    default:
+    - "seurat"
+    required: false
+    choices:
+    - "seurat"
+    - "cell_ranger"
+    - "seurat_v3"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--hvg_n_top_features"
+    alternatives:
+    - "--filter_with_hvg_n_top_genes"
+    description: "Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor\
+      \ is set to 'seurat_v3'."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "PCA options"
+  arguments:
+  - type: "integer"
+    name: "--pca_num_components"
+    description: "Number of principal components to compute. Defaults to 50, or 1\
+      \ - minimum dimension size of selected representation."
+    info: null
+    example:
+    - 25
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
 - name: "Harmony integration options"
   arguments:
   - type: "double"
-    name: "--theta"
-    description: "Diversity clustering penalty parameter. Specify for each variable\
-      \ in group.by.vars. \nA value of theta=0 does not encourage any diversity. Larger\
-      \ values of theta result in more diverse clusters.\"\n"
+    name: "--harmony_theta"
+    description: "Diversity clustering penalty parameter. Can be set as a single value\
+      \ for all batch observations or as multiple values, one for each observation\
+      \ in the batches defined by --input_obs_batch_label. theta=0 does not encourage\
+      \ any diversity. Larger values of theta result in more diverse clusters.\"\n"
     info: null
     default:
     - 2.0
@@ -156,7 +239,7 @@ argument_groups:
 - name: "Neighbor classifier arguments"
   arguments:
   - type: "string"
-    name: "--weights"
+    name: "--knn_weights"
     description: "Weight function used in prediction. Possible values are:\n`uniform`\
       \ (all points in each neighborhood are weighted equally) or \n`distance` (weight\
       \ points by the inverse of their distance)\n"
@@ -171,7 +254,7 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "integer"
-    name: "--n_neighbors"
+    name: "--knn_n_neighbors"
     description: "The number of neighbors to use in k-neighbor graph structure used\
       \ for fast approximate nearest neighbor search with PyNNDescent. \nLarger values\
       \ will result in more accurate search results at the cost of computation time.\n"
@@ -179,6 +262,7 @@ argument_groups:
     default:
     - 15
     required: false
+    min: 5
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -257,18 +341,24 @@ test_resources:
   is_executable: true
   entrypoint: "test_wf"
 - type: "file"
-  path: "scgpt"
+  path: "pbmc_1k_protein_v3_mms.h5mu"
+- type: "file"
+  path: "TS_Blood_filtered.h5mu"
 - type: "file"
   path: "openpipelinetestutils"
   dest: "openpipelinetestutils"
-info: null
+info:
+  name: "Harmony integration followed by KNN label transfer"
+  test_dependencies:
+  - name: "harmony_knn_test"
+    namespace: "test_workflows/annotation"
 status: "enabled"
 dependencies:
 - name: "workflows/integration/harmony_leiden"
   alias: "harmony_leiden_workflow"
   repository:
     type: "local"
-- name: "labels_transfer/pynndescent_knn"
+- name: "labels_transfer/knn"
   repository:
     type: "local"
 - name: "dataflow/split_h5mu"
@@ -277,10 +367,13 @@ dependencies:
 - name: "dataflow/concatenate_h5mu"
   repository:
     type: "local"
-- name: "metadata/add_id"
+- name: "dimred/pca"
   repository:
     type: "local"
-- name: "metadata/copy_obs"
+- name: "feature_annotation/align_query_reference"
+  repository:
+    type: "local"
+- name: "feature_annotation/highly_variable_features_scanpy"
   repository:
     type: "local"
 links:
@@ -356,26 +449,26 @@ build_info:
   engine: "native"
   output: "target/nextflow/workflows/annotation/harmony_knn"
   executable: "target/nextflow/workflows/annotation/harmony_knn/main.nf"
-  viash_version: "0.9.0-RC7"
-  git_commit: "c67a4ff6faddc7afb78ced1ef99b088a4a33d9ad"
+  viash_version: "0.9.0"
+  git_commit: "ed5d9e3be17b9437c265cc08e8822d65f27bc945"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1942-gc67a4ff6fa"
+  git_tag: "0.2.0-1943-ged5d9e3be1"
   dependencies:
   - "target/nextflow/workflows/integration/harmony_leiden"
-  - "target/nextflow/labels_transfer/pynndescent_knn"
+  - "target/nextflow/labels_transfer/knn"
   - "target/nextflow/dataflow/split_h5mu"
   - "target/nextflow/dataflow/concatenate_h5mu"
-  - "target/nextflow/metadata/add_id"
-  - "target/nextflow/metadata/copy_obs"
+  - "target/nextflow/dimred/pca"
+  - "target/nextflow/feature_annotation/align_query_reference"
+  - "target/nextflow/feature_annotation/highly_variable_features_scanpy"
 package_config:
   name: "openpipeline"
-  version: "dev"
   info:
     test_resources:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0-RC7"
+  viash_version: "0.9.0"
   source: "src"
   target: "target"
   config_mods:

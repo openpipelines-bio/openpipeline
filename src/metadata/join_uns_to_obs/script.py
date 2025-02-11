@@ -1,42 +1,28 @@
 import sys
 import pandas as pd
-from mudata import read_h5mu
+from mudata import read_h5ad
 
 ### VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     "uns_key": "metrics_cellranger",
     "output": "foo.h5mu",
-    "modality": "rna"
+    "modality": "rna",
 }
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
+from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-logger.info("Read mudata from file")
-mdata = read_h5mu(par['input'])
-mod_data = mdata.mod[par['modality']]
+logger.info("Read modality %s from file %s", par["modality"], par["input"])
+mod_data = read_h5ad(par["input"], mod=par["modality"])
 
 logger.info("Joining uns to obs")
 # get data frame
-uns_df = mod_data.uns[par['uns_key']]
+uns_df = mod_data.uns[par["uns_key"]]
 
 # check for overlapping colnames
 intersect_keys = uns_df.keys().intersection(mod_data.obs.keys())
@@ -50,7 +36,6 @@ uns_df_rep.index = mod_data.obs_names
 mod_data.obs = pd.concat([obs_drop, uns_df_rep], axis=1)
 
 logger.info("Write output to mudata file")
-mdata.write_h5mu(par['output'], compression=par["output_compression"])
-
-        
-
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], mod_data, par["output_compression"]
+)

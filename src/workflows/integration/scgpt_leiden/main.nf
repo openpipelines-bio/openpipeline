@@ -17,71 +17,61 @@ workflow run_wf {
           "input": state.input,
           "layer": state.input_layer,
           "modality": state.modality,
-          "var_name_filter": "filter_with_hvg",
+          "var_name_filter": "scgpt_filter_with_hvg",
           "n_top_features": state.n_hvg,
           "flavor": "seurat_v3"
         ]
       },
       toState: ["input": "output"]
     )
-    | do_filter.run(
-      fromState: {id, state ->
-        // do_filter does not need a layer argument because it filters all layers
-        // from a modality.
-        // filters the mudata object based on the HVG
-        [
-          "input": state.input,
-          "modality": state.modality,
-          "var_filter": "filter_with_hvg"
-        ]
-      },
-      toState: ["input": "output"]
-    )
     | cross_check_genes.run(
-      fromState: { id, state ->
-      // Check whether the genes are part of the provided vocabulary. Subsets for genes present in vocab only.
-        [
+      fromState: { id, state -> [
+      // Check whether the genes are part of the provided vocabulary.
           "input": state.input,
           "modality": state.modality,
           "vocab_file": state.model_vocab,
-          "var_gene_names": state.var_gene_names,
+          "input_var_gene_names": state.var_gene_names,
           "output": state.output,
-          "pad_token": state.pad_token
+          "pad_token": state.pad_token,
+          "var_input": "scgpt_filter_with_hvg",
+          "output_var_filter": "scgpt_cross_checked_genes"
         ]
       },
       toState: ["input": "output"]
     )
     | binning.run(
       // Bins the data into a fixed number of bins.
-        fromState: {id, state -> [
-            "input": state.input,
-            "modality": state.modality,
-            "input_layer": state.input_layer,
-            "n_input_bins": state.n_input_bins,
-            "binned_layer": "binned",
-            "output": state.output
-          ]
-        },
-        toState: ["input": "output"]
+      fromState: {id, state -> [
+          "input": state.input,
+          "modality": state.modality,
+          "input_layer": state.input_layer,
+          "n_input_bins": state.n_input_bins,
+          "output_obsm_binned_counts": "binned_counts",
+          "var_input": "scgpt_cross_checked_genes",
+          "output": state.output
+        ]
+      },
+      toState: ["input": "output"]
     )
     | pad_tokenize.run(
       // Padding and tokenization of gene count values.
-       fromState: {id, state -> [
-            "input": state.input,
-            "modality": state.modality,
-            "model_vocab": state.model_vocab,
-            "input_layer": "binned",
-            "var_gene_names": state.var_gene_names,
-            "pad_token": state.pad_token,
-            "pad_value": state.pad_value,
-            "max_seq_len": state.max_seq_len,
-            "obsm_gene_tokens": "gene_id_tokens",
-            "obsm_tokenized_values": "values_tokenized",
-            "obsm_padding_mask": "padding_mask",
-            "output": state.output
-          ]
-        },
-        toState: ["input": "output"]
+      fromState: {id, state -> [
+          "input": state.input,
+          "modality": state.modality,
+          "model_vocab": state.model_vocab,
+          "input_obsm_binned_counts": "binned_counts",
+          "var_input": "scgpt_cross_checked_genes",
+          "var_gene_names": state.var_gene_names,
+          "pad_token": state.pad_token,
+          "pad_value": state.pad_value,
+          "max_seq_len": state.max_seq_len,
+          "obsm_gene_tokens": "gene_id_tokens",
+          "obsm_tokenized_values": "values_tokenized",
+          "obsm_padding_mask": "padding_mask",
+          "output": state.output
+        ]
+      },
+      toState: ["input": "output"]
     )
     | embedding.run(
       // Generation of cell embedings from the tokenized gene counts values.
@@ -98,7 +88,7 @@ workflow run_wf {
           "obs_batch_label": state.obs_batch_label,
           "pad_token": state.pad_token,
           "pad_value": state.pad_value,
-          "DSBN": state.DSBN,
+          "dsbn": state.dsbn,
           "batch_size": state.batch_size,
           "obsm_embeddings": state.obsm_integrated,
           "finetuned_checkpoints_key": state.finetuned_checkpoints_key,
@@ -107,56 +97,29 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
-
-    | find_neighbors.run(
-      fromState: {id, state -> [
-          "input": state.input,
-          "uns_output": "scGPT_integration_neighbors",
-          "obsp_distances": "scGPT_integration_distances",
-          "obsp_connectivities": "scGPT_integration_connectivities",
-          "obsm_input": state.obsm_integrated,
-          "modality": state.modality
-        ]
-      },
-      toState: ["input": "output"]
+    
+    | neighbors_leiden_umap.run(
+      fromState: [
+        "input": "input",
+        "obsm_input": "obsm_integrated",
+        "modality": "modality",
+        "uns_neighbors": "uns_neighbors",
+        "obsp_neighbor_distances": "obsp_neighbor_distances",
+        "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
+        "output": "workflow_output",
+        "leiden_resolution": "leiden_resolution",
+        "obsm_umap": "obsm_integrated",
+      ],
+      toState: ["output": "output"],
+      args: [
+        "uns_neighbors": "scGPT_integration_neighbors",
+        "obsp_neighbor_distances": "scGPT_integration_distances",
+        "obsp_neighbor_connectivities": "scGPT_integration_connectivities",
+        "obs_cluster": "scGPT_integration_leiden",
+        "obsm_umap": "X_scGPT_umap",
+      ]
     )
-    | leiden.run(
-      runIf: {id, state -> state.leiden_resolution},
-      fromState: {id, state -> [
-        "input": state.input,
-        "obsp_connectivities": "scGPT_integration_connectivities",
-        "obsm_name": "scGPT_integration_leiden",
-        "resolution": state.leiden_resolution,
-        "modality": state.modality,
-        ]
-      },
-      toState: ["input": "output"]
-    )
-    | move_obsm_to_obs.run(
-      runIf: {id, state -> state.leiden_resolution},
-      fromState: {id, state -> [
-          "input": state.input,
-          "obsm_key": "scGPT_integration_leiden",
-          "modality": state.modality,
-        ]
-      },
-      toState: ["input": "output"]
-    )
-    | umap.run(
-      fromState: {id, state -> [
-          "input": state.input,
-          "uns_neighbors": "scGPT_integration_neighbors",
-          "obsm_output": "X_scGPT_umap",
-          "modality": state.modality,
-          "output_compression": state.output_compression,
-          "output": state.workflow_output
-        ]
-      },
-      toState: { id, output, state ->
-        [ output: output.output ]
-      },
-      auto: [ publish: true ]
-    )
+    | setState(["output"])
   
   emit:
     output_ch

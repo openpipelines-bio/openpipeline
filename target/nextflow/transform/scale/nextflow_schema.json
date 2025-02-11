@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. List of modalities to process",
                 "help_text": "Type: `string`, default: `rna`. List of modalities to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -87,7 +87,7 @@
                 "description": "Type: `boolean_false`, default: `true`. If set, omit zero-centering variables, which allows to handle sparse input efficiently",
                 "help_text": "Type: `boolean_false`, default: `true`. If set, omit zero-centering variables, which allows to handle sparse input efficiently."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -98,7 +98,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 

@@ -8,49 +8,46 @@ par = {
     "output": "output.h5mu",
     "target_sum": 10000,
     "modality": "rna",
-    "exclude_highly_expressed": False
+    "exclude_highly_expressed": False,
 }
 meta = {"name": "lognorm"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
+from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-logger.info("Reading input mudata")
-mdata = mu.read_h5mu(par["input"])
-mdata.var_names_make_unique()
+logger.info("Reading modality %s from %s", par["modality"], par["input"])
+dat = mu.read_h5ad(par["input"], mod=par["modality"])
+assert dat.var_names.is_unique, "The var_names of the input modality must be be unique."
 
 logger.info(par)
 
-mod = par["modality"]
-logger.info("Performing total normalization on modality %s", mod)
-dat = mdata.mod[mod]
-if par['input_layer'] and not par['input_layer'] in dat.layers.keys():
-    raise ValueError(f"Input layer {par['input_layer']} not found in {mod}")
-output_data = sc.pp.normalize_total(dat,
-                                    layer=par["input_layer"],
-                                    target_sum=par["target_sum"],
-                                    copy=True if par["output_layer"] else False)
+logger.info("Performing total normalization.")
+if par["input_layer"] and par["input_layer"] not in dat.layers.keys():
+    raise ValueError(f"Input layer {par['input_layer']} not found in {par['modality']}")
+output_data = sc.pp.normalize_total(
+    dat,
+    layer=par["input_layer"],
+    target_sum=par["target_sum"],
+    copy=True if par["output_layer"] else False,
+)
 
 if output_data:
-    result = output_data.X if not par["input_layer"] else output_data.layers[par["input_layer"]]
+    result = (
+        output_data.X
+        if not par["input_layer"]
+        else output_data.layers[par["input_layer"]]
+    )
     dat.layers[par["output_layer"]] = result
 
-logger.info("Writing to file")
-mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
+logger.info(
+    "Writing to file to %s with compression %s",
+    par["output"],
+    par["output_compression"],
+)
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], dat, par["output_compression"]
+)

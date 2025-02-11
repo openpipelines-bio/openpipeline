@@ -24,7 +24,7 @@ test_resources:
 
 engines:
 - type: docker
-  image: python:3.9
+  image: python:3.12
   setup:
   - type: apt
     packages: [ wget, gcc, make, libbz2-dev, zlib1g-dev, libncurses5-dev, libncursesw5-dev, liblzma-dev]

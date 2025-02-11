@@ -1,0 +1,35 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# input_layer: "foo"
+# input_var_gene_names: "foo"
+input_reference_gene_overlap: 100
+
+# Ongoloty
+cl_nlp_emb_file: # please fill in - example: "path/to/file"
+cl_ontology_file: # please fill in - example: "path/to/file"
+cl_obo_file: # please fill in - example: "path/to/file"
+
+# Reference
+# reference: "reference.h5mu"
+# reference_layer: "foo"
+reference_obs_target: # please fill in - example: "cell_ontology_class"
+# reference_var_gene_names: "foo"
+# reference_var_input: "foo"
+unknown_celltype: "Unknown"
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+output_obs_predictions: "onclass_pred"
+output_obs_probability: "onclass_prob"
+
+# Model arguments
+# model: "foo"
+max_iter: 30
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments

@@ -23,27 +23,32 @@ argument_groups:
         type: string
         default: "rna"
         required: false
+      - name: "--var_input_gene_names"
+        description: .var field containing the gene names, if the .var index is not to be used.
+        type: string
+        required: false
+      - name: "--input_reference_gene_overlap"
+        type: integer
+        default: 100
+        min: 1
+        description: | 
+          The minimum number of genes present in both the reference and query datasets.
 
-  - name: Reference
-    description: Arguments related to the reference dataset.
+  - name: Reference model
+    description: Arguments related to the reference model.
     arguments:
-      - name: "--reference"
-        type: file
-        description: Reference h5mu file.
-        direction: input
-        required: true
-        example: reference.h5mu
       - name: "--scvi_reference_model"
         type: file
-        description: "Pretrained scvi reference model"
+        description: "Pretrained SCVI reference model to initialize the SCANVI model with. The model needs to include the AnnData object used to trained the model stored. "
         example: scvi_model.pt
         direction: input
-        required: true
-      - name: "--reference_obs_label"
-        type: string
-        description: Key in obs field of reference AnnData with cell-type information.
-        example: "cell_ontology_class"
-        required: true
+        required: false
+      - name: "--scanvi_reference_model"
+        type: file
+        description: "Pretrained SCANVI reference model."
+        example: scvi_model.pt
+        direction: input
+        required: false
 
   - name: SCANVI reference model training arguments
     description: Arguments related to the reference SCANVI model.
@@ -190,6 +195,9 @@ resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
+  - path: /src/utils/cross_check_genes.py
+  - path: /src/utils/subset_vars.py
+  - path: /src/utils/set_var_index.py
 
 test_resources:
   - type: python_script
@@ -209,10 +217,12 @@ engines:
     - type: python
       packages:
         - scvi-tools==1.1.5
+        - torch<2.6.0
     - type: python
       __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
   __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
   - type: executable
   - type: nextflow
-  
+    directives:
+      label: [highcpu, highmem, highdisk, gpu]

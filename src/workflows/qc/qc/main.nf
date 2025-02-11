@@ -63,25 +63,16 @@ workflow run_wf {
             "output_var_num_nonzero_obs": state.output_var_num_nonzero_obs,
             "output_var_total_counts_obs": state.output_var_total_counts_obs,
             "output_var_obs_mean": state.output_var_obs_mean,
-            "output_var_pct_dropout": state.output_var_pct_dropout
+            "output_var_pct_dropout": state.output_var_pct_dropout,
+            "output": state.workflow_output,
+            "compression": "gzip"
           ]
           if (state.var_qc_metrics) {
             newState += ["var_qc_metrics": state.var_qc_metrics]
           }
         return newState
         },
-        // use map when viash 0.7.6 is released
-        // related to https://github.com/viash-io/viash/pull/515
-        toState: ["input": "output"]
-      )
-      | publish.run(
-        fromState: { id, state -> [
-            "input": state.input,
-            "output": state.workflow_output,
-            "compression": "gzip"
-          ]
-        },
-        auto: [ publish: true ]
+        toState: ["output": "output"]
       )
       | setState(["output"]) 
 

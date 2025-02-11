@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -87,7 +87,7 @@
                 "description": "Type: `string`, default: `gene_id_tokens`, example: `values.pt`. The key of the ",
                 "help_text": "Type: `string`, default: `gene_id_tokens`, example: `values.pt`. The key of the .obsm array containing the gene token ids\n"
             ,
-                "default": "gene_id_tokens"
+                "default":"gene_id_tokens"
             }
     
 
@@ -98,7 +98,7 @@
                 "description": "Type: `string`, default: `values_tokenized`. The key of the ",
                 "help_text": "Type: `string`, default: `values_tokenized`. The key of the .obsm array containing the count values of the tokenized genes\n"
             ,
-                "default": "values_tokenized"
+                "default":"values_tokenized"
             }
     
 
@@ -109,7 +109,7 @@
                 "description": "Type: `string`, default: `padding_mask`. The key of the ",
                 "help_text": "Type: `string`, default: `padding_mask`. The key of the .obsm array containing the padding mask.\n"
             ,
-                "default": "padding_mask"
+                "default":"padding_mask"
             }
     
 
@@ -160,7 +160,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Path to output anndata file containing pre-processed data as well as scGPT embeddings",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Path to output anndata file containing pre-processed data as well as scGPT embeddings.\n"
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -183,7 +183,7 @@
                 "description": "Type: `string`, default: `X_scGPT`. The name of the adata",
                 "help_text": "Type: `string`, default: `X_scGPT`. The name of the adata.obsm array to which scGPT embeddings will be written.\n"
             ,
-                "default": "X_scGPT"
+                "default":"X_scGPT"
             }
     
 
@@ -204,7 +204,7 @@
                 "description": "Type: `string`, default: `\u003cpad\u003e`. The token to be used for padding",
                 "help_text": "Type: `string`, default: `\u003cpad\u003e`. The token to be used for padding.\n"
             ,
-                "default": "<pad>"
+                "default":"<pad>"
             }
     
 
@@ -215,29 +215,7 @@
                 "description": "Type: `integer`, default: `-2`. The value of the padding token",
                 "help_text": "Type: `integer`, default: `-2`. The value of the padding token.\n"
             ,
-                "default": "-2"
-            }
-    
-
-        ,
-                "dbsn": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean`, default: `true`. Whether to apply domain-specific batch normalization for generating embeddings",
-                "help_text": "Type: `boolean`, default: `true`. Whether to apply domain-specific batch normalization for generating embeddings. When set to True, \u0027obs_batch_labels\u0027 must be set as well.\n"
-            ,
-                "default": "True"
-            }
-    
-
-        ,
-                "batch_size": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `64`. The batch size to be used for inference\n",
-                "help_text": "Type: `integer`, default: `64`. The batch size to be used for inference\n"
-            ,
-                "default": "64"
+                "default":-2
             }
     
 
@@ -248,7 +226,18 @@
                 "description": "Type: `boolean`, default: `true`. Whether to apply domain-specific batch normalization for generating embeddings",
                 "help_text": "Type: `boolean`, default: `true`. Whether to apply domain-specific batch normalization for generating embeddings. When set to True, \u0027obs_batch_labels\u0027 must be set as well.\n"
             ,
-                "default": "True"
+                "default":true
+            }
+    
+
+        ,
+                "batch_size": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `64`. The batch size to be used for inference\n",
+                "help_text": "Type: `integer`, default: `64`. The batch size to be used for inference\n"
+            ,
+                "default":64
             }
     
 

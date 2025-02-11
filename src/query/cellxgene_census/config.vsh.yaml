@@ -113,6 +113,10 @@ argument_groups:
         type: string
         default: "rna"
         required: false
+      - name: "--output_layer_counts"
+        description: "Which layer to store the raw counts in. If not provided, the .X layer will be used."
+        type: string
+        required: false
 resources:
   - type: python_script
     path: script.py

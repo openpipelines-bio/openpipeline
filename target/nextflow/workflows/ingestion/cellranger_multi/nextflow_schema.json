@@ -36,7 +36,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. The raw output folder",
                 "help_text": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. The raw output folder."
             ,
-                "default": "$id.$key.output_raw.output_raw"
+                "default":"$id.$key.output_raw.output_raw"
             }
     
 
@@ -44,10 +44,10 @@
                 "output_h5mu": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, default: `$id.$key.output_h5mu_*.h5mu`, example: `*.h5mu`, multiple_sep: `\";\"`. Locations for the output files",
-                "help_text": "Type: List of `file`, required, default: `$id.$key.output_h5mu_*.h5mu`, example: `*.h5mu`, multiple_sep: `\";\"`. Locations for the output files. Must contain a wildcard (*) character,\nwhich will be replaced with the sample name.\n"
+                "description": "Type: `file`, required, default: `$id.$key.output_h5mu.h5mu`, example: `*.h5mu`. Locations for the output files",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_h5mu.h5mu`, example: `*.h5mu`. Locations for the output files. Must contain a wildcard (*) character,\nwhich will be replaced with the sample name.\n"
             ,
-                "default": "$id.$key.output_h5mu_*.h5mu"
+                "default":"$id.$key.output_h5mu.h5mu"
             }
     
 
@@ -58,7 +58,7 @@
                 "description": "Type: `string`, default: `metrics_cellranger`. Name of the ",
                 "help_text": "Type: `string`, default: `metrics_cellranger`. Name of the .uns slot under which to QC metrics (if any)."
             ,
-                "default": "metrics_cellranger"
+                "default":"metrics_cellranger"
             }
     
 
@@ -207,9 +207,7 @@
                 "type":
                 "string",
                 "description": "Type: List of `string`, example: `Gene Expression`, multiple_sep: `\";\"`, choices: ``Gene Expression`, `VDJ`, `VDJ-T`, `VDJ-B`, `VDJ-T-GD`, `Antibody Capture`, `CRISPR Guide Capture`, `Multiplexing Capture`, `Antigen Capture`, `Custom``. The underlying feature type of the library",
-                "help_text": "Type: List of `string`, example: `Gene Expression`, multiple_sep: `\";\"`, choices: ``Gene Expression`, `VDJ`, `VDJ-T`, `VDJ-B`, `VDJ-T-GD`, `Antibody Capture`, `CRISPR Guide Capture`, `Multiplexing Capture`, `Antigen Capture`, `Custom``. The underlying feature type of the library.\n",
-                "enum": ["Gene Expression", "VDJ", "VDJ-T", "VDJ-B", "VDJ-T-GD", "Antibody Capture", "CRISPR Guide Capture", "Multiplexing Capture", "Antigen Capture", "Custom"]
-            
+                "help_text": "Type: List of `string`, example: `Gene Expression`, multiple_sep: `\";\"`, choices: ``Gene Expression`, `VDJ`, `VDJ-T`, `VDJ-B`, `VDJ-T-GD`, `Antibody Capture`, `CRISPR Guide Capture`, `Multiplexing Capture`, `Antigen Capture`, `Custom``. The underlying feature type of the library.\n"
             
             }
     
@@ -371,7 +369,7 @@
                 "description": "Type: `boolean`, default: `false`. Whether or not to run the secondary analysis e",
                 "help_text": "Type: `boolean`, default: `false`. Whether or not to run the secondary analysis e.g. clustering."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -382,7 +380,7 @@
                 "description": "Type: `boolean`, default: `false`. Whether to generate a BAM file",
                 "help_text": "Type: `boolean`, default: `false`. Whether to generate a BAM file."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -413,7 +411,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether or not to include intronic reads in counts",
                 "help_text": "Type: `boolean`, default: `true`. Whether or not to include intronic reads in counts.\nThis option does not apply to Fixed RNA Profiling analysis.\n"
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -446,7 +444,7 @@
                 "enum": ["auto", "threeprime", "fiveprime", "SC3Pv1", "SC3Pv2", "SC3Pv3", "SC3Pv4", "SC3Pv3LT", "SC3Pv3HT", "SC5P-PE", "SC5P-R2", "SC-FB", "SC5P-R2-v3", "SCP5-PE-v3", "SC5PHT", "MFRP", "MFRP-R1", "MFRP-RNA", "MFRP-Ab", "SFRP", "MFRP-Ab-R2pos50", "MFRP-RNA-R1", "MFRP-Ab-R1", "ARC-v1"]
             
             ,
-                "default": "auto"
+                "default":"auto"
             }
     
 
@@ -637,7 +635,7 @@
                 "description": "Type: `boolean`, default: `true`. Optional",
                 "help_text": "Type: `boolean`, default: `true`. Optional. This option allows users to disable the check that evaluates 10x Barcode overlap between\nibraries when multiple libraries are specified (e.g., Gene Expression + Antibody Capture). Setting\nthis option to false will disable the check across all library combinations. We recommend running\nthis check (default), however if the pipeline errors out, users can bypass the check to generate\noutputs for troubleshooting.\n"
             ,
-                "default": "True"
+                "default":true
             }
     
 

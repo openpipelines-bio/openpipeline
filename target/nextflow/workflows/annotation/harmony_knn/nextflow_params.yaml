@@ -2,23 +2,35 @@
 id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-# input_obsm_embedding: "X_pca"
+# input_layer: "foo"
 input_obs_batch_label: # please fill in - example: "sample"
+# input_var_gene_names: "foo"
+input_reference_gene_overlap: 100
+overwrite_existing_key: false
 
 # Reference input
 reference: # please fill in - example: "reference.h5mu"
-reference_obs_targets: # please fill in - example: ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"]
+# reference_layer: "foo"
+reference_obs_target: # please fill in - example: "cell_type"
+# reference_var_gene_names: "foo"
 reference_obs_batch_label: # please fill in - example: "sample"
 
+# Highly Variable Genes calculation options
+hvg_flavor: "seurat"
+# hvg_n_top_features: 123
+
+# PCA options
+# pca_num_components: 25
+
 # Harmony integration options
-theta: [2.0]
+harmony_theta: [2.0]
 
 # Leiden clustering options
 leiden_resolution: [1.0]
 
 # Neighbor classifier arguments
-weights: "uniform"
-n_neighbors: 15
+knn_weights: "uniform"
+knn_n_neighbors: 15
 
 # Outputs
 # output: "$id.$key.output.h5mu"

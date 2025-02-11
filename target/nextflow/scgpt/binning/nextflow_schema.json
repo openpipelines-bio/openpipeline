@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -61,13 +61,24 @@
     
 
         ,
+                "var_input": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `id_in_vocab`. The name of the adata",
+                "help_text": "Type: `string`, default: `id_in_vocab`. The name of the adata.var column containing boolean mask for vocabulary-cross checked and/or highly variable genes.\n"
+            ,
+                "default":"id_in_vocab"
+            }
+    
+
+        ,
                 "n_input_bins": {
                 "type":
                 "integer",
                 "description": "Type: `integer`, default: `51`. The number of bins to discretize the data into",
                 "help_text": "Type: `integer`, default: `51`. The number of bins to discretize the data into. When no value is provided, data won\u0027t be binned.\n"
             ,
-                "default": "51"
+                "default":51
             }
     
 
@@ -88,7 +99,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output h5mu file containing the binned data",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output h5mu file containing the binned data.    \n"
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -105,13 +116,13 @@
     
 
         ,
-                "binned_layer": {
+                "output_obsm_binned_counts": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `binned`. The name of the adata layer to write the binned data to",
-                "help_text": "Type: `string`, default: `binned`. The name of the adata layer to write the binned data to.\n"
+                "description": "Type: `string`, default: `binned_counts`. The name of the adata layer to write the binned data to",
+                "help_text": "Type: `string`, default: `binned_counts`. The name of the adata layer to write the binned data to.\n"
             ,
-                "default": "binned"
+                "default":"binned_counts"
             }
     
 

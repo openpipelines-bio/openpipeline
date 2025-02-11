@@ -264,6 +264,7 @@ runners:
     label:
     - "highmem"
     - "highcpu"
+    - "middisk"
     tag: "$id"
   auto:
     simplifyInput: true
@@ -347,7 +348,7 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.7.0"
+    - "viashpy==0.8.0"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -357,19 +358,18 @@ build_info:
   engine: "docker"
   output: "target/nextflow/mapping/cellranger_count"
   executable: "target/nextflow/mapping/cellranger_count/main.nf"
-  viash_version: "0.9.0-RC7"
-  git_commit: "c67a4ff6faddc7afb78ced1ef99b088a4a33d9ad"
+  viash_version: "0.9.0"
+  git_commit: "ed5d9e3be17b9437c265cc08e8822d65f27bc945"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1942-gc67a4ff6fa"
+  git_tag: "0.2.0-1943-ged5d9e3be1"
 package_config:
   name: "openpipeline"
-  version: "dev"
   info:
     test_resources:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0-RC7"
+  viash_version: "0.9.0"
   source: "src"
   target: "target"
   config_mods:

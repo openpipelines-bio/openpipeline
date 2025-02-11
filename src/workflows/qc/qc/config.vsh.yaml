@@ -4,6 +4,10 @@ description: "A pipeline to add basic qc statistics to a MuData "
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author, maintainer ]
+info:
+  test_dependencies:
+    - name: qc_test
+      namespace: test_workflows/qc
 argument_groups:
   - name: Inputs
     arguments:
@@ -130,7 +134,6 @@ argument_groups:
         description: Destination path to the output.
         example: output.h5mu
 dependencies:
-  - name: transfer/publish
   - name: metadata/grep_annotation_column
   - name: qc/calculate_qc_metrics
 resources:

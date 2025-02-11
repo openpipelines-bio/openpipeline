@@ -57,22 +57,6 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "string"
-    name: "--obsm_knn_indices"
-    description: "The slot in `.obsm` where the kNN indices are stored.\n"
-    info: null
-    required: true
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--obsm_knn_distances"
-    description: "The slot in `.obsm` where the kNN distances are stored.\n"
-    info: null
-    required: true
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
 - name: "Outputs"
   arguments:
   - type: "file"
@@ -269,6 +253,8 @@ resources:
 - type: "file"
   path: "setup_logger.py"
 - type: "file"
+  path: "compress_h5mu.py"
+- type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
 description: "A modification of UMAP that adds an extra cost term in order to preserve\
@@ -298,6 +284,7 @@ runners:
     label:
     - "highcpu"
     - "midmem"
+    - "middisk"
     tag: "$id"
   auto:
     simplifyInput: true
@@ -372,11 +359,12 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "anndata==0.10.8"
-    - "mudata~=0.2.4"
-    - "pandas!=2.1.2"
-    - "numpy<2.0.0"
+    - "anndata~=0.11.1"
+    - "mudata~=0.3.1"
     - "umap-learn"
+    script:
+    - "exec(\"try:\\n  import awkward\\nexcept ModuleNotFoundError:\\n  exit(0)\\\
+      nelse:  exit(1)\")"
     upgrade: true
   test_setup:
   - type: "docker"
@@ -390,7 +378,7 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.7.0"
+    - "viashpy==0.8.0"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -400,19 +388,18 @@ build_info:
   engine: "docker"
   output: "target/nextflow/dimred/densmap"
   executable: "target/nextflow/dimred/densmap/main.nf"
-  viash_version: "0.9.0-RC7"
-  git_commit: "c67a4ff6faddc7afb78ced1ef99b088a4a33d9ad"
+  viash_version: "0.9.0"
+  git_commit: "ed5d9e3be17b9437c265cc08e8822d65f27bc945"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1942-gc67a4ff6fa"
+  git_tag: "0.2.0-1943-ged5d9e3be1"
 package_config:
   name: "openpipeline"
-  version: "dev"
   info:
     test_resources:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0-RC7"
+  viash_version: "0.9.0"
   source: "src"
   target: "target"
   config_mods:

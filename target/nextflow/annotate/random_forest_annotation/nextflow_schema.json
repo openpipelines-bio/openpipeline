@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to process",
                 "help_text": "Type: `string`, default: `rna`. Which modality to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -57,6 +57,27 @@
                 "description": "Type: `string`. The layer in the input data to be used for cell type annotation if ",
                 "help_text": "Type: `string`. The layer in the input data to be used for cell type annotation if .X is not to be used."
             
+            }
+    
+
+        ,
+                "input_var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`. The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used",
+                "help_text": "Type: `string`. The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used.\n"
+            
+            }
+    
+
+        ,
+                "input_reference_gene_overlap": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `100`. The minimum number of genes present in both the reference and query datasets",
+                "help_text": "Type: `integer`, default: `100`. The minimum number of genes present in both the reference and query datasets.\n"
+            ,
+                "default":100
             }
     
 
@@ -77,7 +98,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -100,7 +121,7 @@
                 "description": "Type: `string`, default: `random_forest_pred`. In which `",
                 "help_text": "Type: `string`, default: `random_forest_pred`. In which `.obs` slots to store the predicted information.\n"
             ,
-                "default": "random_forest_pred"
+                "default":"random_forest_pred"
             }
     
 
@@ -111,7 +132,7 @@
                 "description": "Type: `string`, default: `random_forest_probability`. In which `",
                 "help_text": "Type: `string`, default: `random_forest_probability`. In which `.obs` slots to store the probability of the predictions.\n"
             ,
-                "default": "random_forest_probability"
+                "default":"random_forest_probability"
             }
     
 
@@ -149,10 +170,29 @@
                 "reference_obs_target": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `cell_ontology_class`. Key in obs field of reference modality with cell-type information",
-                "help_text": "Type: `string`, default: `cell_ontology_class`. Key in obs field of reference modality with cell-type information."
-            ,
-                "default": "cell_ontology_class"
+                "description": "Type: `string`, required. Key in obs field of reference modality with cell-type information",
+                "help_text": "Type: `string`, required. Key in obs field of reference modality with cell-type information."
+            
+            }
+    
+
+        ,
+                "reference_var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`. The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used",
+                "help_text": "Type: `string`. The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.\n"
+            
+            }
+    
+
+        ,
+                "reference_var_input": {
+                "type":
+                "string",
+                "description": "Type: `string`. ",
+                "help_text": "Type: `string`. .var column containing highly variable genes. By default, do not subset genes.\n"
+            
             }
     
 
@@ -183,7 +223,7 @@
                 "description": "Type: `integer`, default: `100`. Number of trees in the random forest",
                 "help_text": "Type: `integer`, default: `100`. Number of trees in the random forest."
             ,
-                "default": "100"
+                "default":100
             }
     
 
@@ -192,7 +232,7 @@
                 "type":
                 "integer",
                 "description": "Type: `integer`. Maximum depth of the trees in the random forest",
-                "help_text": "Type: `integer`. Maximum depth of the trees in the random forest."
+                "help_text": "Type: `integer`. Maximum depth of the trees in the random forest. \nIf not provided, the nodes are expanded until all leaves only contain a single sample.\n"
             
             }
     
@@ -206,7 +246,7 @@
                 "enum": ["gini", "entropy", "log_loss"]
             
             ,
-                "default": "gini"
+                "default":"gini"
             }
     
 
@@ -214,12 +254,23 @@
                 "class_weight": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `balanced_subsample`, choices: ``balanced`, `balanced_subsample``. Weights associated with classes",
-                "help_text": "Type: `string`, default: `balanced_subsample`, choices: ``balanced`, `balanced_subsample``. Weights associated with classes.",
-                "enum": ["balanced", "balanced_subsample"]
+                "description": "Type: `string`, default: `balanced_subsample`, choices: ``balanced`, `balanced_subsample`, `uniform``. Weights associated with classes",
+                "help_text": "Type: `string`, default: `balanced_subsample`, choices: ``balanced`, `balanced_subsample`, `uniform``. Weights associated with classes.\nThe `balanced` mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data.\nThe `balanced_subsample` mode is the same as `balanced` except that weights are computed based on the bootstrap sample for every tree grown.\nThe `uniform` mode gives all classes a weight  of one.\n",
+                "enum": ["balanced", "balanced_subsample", "uniform"]
             
             ,
-                "default": "balanced_subsample"
+                "default":"balanced_subsample"
+            }
+    
+
+        ,
+                "max_features": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `200`. The number of features to consider when looking for the best split",
+                "help_text": "Type: `string`, default: `200`. The number of features to consider when looking for the best split. The value can either be a positive integer or one of `sqrt`, `log2` or `all`.\nIf integer: consider max_features features at each split.\nIf `sqrt`: max_features is the squareroot of all input features.\nIf `log2`: max_features is the log2 of all input features.\nIf `all`: max features equals all input features.\n"
+            ,
+                "default":"200"
             }
     
 
