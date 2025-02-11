@@ -21,6 +21,7 @@ workflow run_wf {
           "reference": "reference",
           "reference_layer": "reference_layer",
           "reference_obs_batch": "reference_obs_batch_label",
+          "reference_obs_label": "reference_obs_target",
           "reference_var_gene_names": "reference_var_gene_names",
           "input_reference_gene_overlap": "input_reference_gene_overlap",
           "overwrite_existing_key": "overwrite_existing_key"
@@ -32,7 +33,8 @@ workflow run_wf {
           "output_var_gene_names": "_gene_names",
           "output_obs_batch": "_sample_id",
           "output_obs_label": "_cell_type",
-          "output_obs_id": "_dataset"
+          "output_obs_id": "_dataset",
+          "output_var_common_genes": "_common_vars"
         ],
         toState: [
           "input": "output_query",
@@ -51,6 +53,41 @@ workflow run_wf {
         toState: ["input": "output"]
       )
       | view {"After concatenation: $it"}
+      // Calculate HVG across query and reference
+      | highly_variable_features_scanpy.run(
+            fromState: [
+                "input": "input",
+                "modality": "modality"
+            ],
+            args: [
+                "layer": "log_normalized",
+                "var_input": "_common_vars",
+                "var_name_filter": "_common_hvg",
+                "obs_batch_key": "_sample_id"
+            ],
+            toState: [
+                "input": "output"
+            ]
+        )
+        // Calculate PCA on common HVG across query and reference
+        | pca.run(
+            fromState: [
+                "input": "input",
+                "modality": "modality",
+                "overwrite": "overwrite_existing_key",
+                "num_compontents": "pca_num_components"
+            ],
+            args: [
+                "layer": "_counts",
+                "var_input": "_common_hvg",
+                "obsm_output": "X_pca_harmony",
+                "varm_output": "pca_loadings_harmony",
+                "uns_output": "pca_variance_harmony",
+            ],
+            toState: [
+                "input": "output"
+            ]
+        )
       // Run scvi integration with leiden clustering
       | scvi_leiden_workflow.run(
         fromState: { id, state -> [
@@ -59,17 +96,17 @@ workflow run_wf {
           "modality": state.modality,
           "obsm_output": state.output_obsm_integrated,
           "leiden_resolution": state.leiden_resolution,
-          "var_input": state.var_hvg,
-          "early_stopping": state.early_stopping,
-          "early_stopping_monitor": state.early_stopping_monitor,
-          "early_stoping_patience": state.early_stoping_patience,
-          "early_stopping_min_delta": state.early_stopping_min_delta,
-          "max_epochs": state.max_epochs,
-          "reduce_lr_on_plateau": state.reduce_lr_on_plateau,
-          "lr_factor": state.lr_factor,
-          "lr_patience": state.lr_patience
+          "early_stopping": state.scvi_early_stopping,
+          "early_stopping_monitor": state.scvi_early_stopping_monitor,
+          "early_stoping_patience": state.scvi_early_stoping_patience,
+          "early_stopping_min_delta": state.scvi_early_stopping_min_delta,
+          "max_epochs": state.scvi_max_epochs,
+          "reduce_lr_on_plateau": state.scvi_reduce_lr_on_plateau,
+          "lr_factor": state.scvi_lr_factor,
+          "lr_patience": state.scvi_lr_patience
         ]},
         args: [
+          "var_input": "_common_hvg",
           "uns_neighbors": "scvi_integration_neighbors",
           "obsp_neighbor_distances": "scvi_integration_distances",
           "obsp_neighbor_connectivities": "scvi_integration_connectivities",
@@ -125,8 +162,8 @@ workflow run_wf {
            "reference_obs_targets": "reference_obs_targets",
            "output_obs_predictions": "output_obs_predictions",
            "output_obs_probability": "output_obs_probability",
-           "weights": "weights",
-           "n_neighbors": "n_neighbors",
+           "weights": "knn_weights",
+           "n_neighbors": "knn_n_neighbors",
            "output": "workflow_output"
         ],
         args:[

@@ -1,6 +1,10 @@
 name: "scvi_knn"
 namespace: "workflows/annotation"
-description: "Cell type annotation workflow that performs scVI integration of reference and query dataset followed by KNN label transfer. The query and reference datasets are expected to be pre-processed in the same way."
+description: |
+  "Cell type annotation workflow that performs scVI integration of reference and query dataset followed by KNN label transfer. 
+  The query and reference datasets are expected to be pre-processed in the same way, for example with the `process_samples` workflow of OpenPipeline.
+  Note that this workflow will integrate the reference dataset from scratch and integrate the query dataset in the same embedding space. 
+  The workflow does not currently output the trained SCVI reference model."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]
@@ -30,14 +34,14 @@ argument_groups:
         type: string
         default: "rna"
         required: false
-      - name: "--var_hvg"
-        type: string
-        required: false
-        description: The .var column containing highly variable genes. If not provided, genes will not be subset. Should match the .var column name of the --reference dataset.
       - name: "--input_layer"
         type: string
-        example: log_normalized
-        description: The layer of the input dataset to use for integration if .X is not to be used.
+        example: counts
+        description: The layer of the input dataset containing the raw counts if .X is not to be used.
+      - name: "--input_layer_lognormalized"
+        type: string
+        default: log_normalized
+        description: The layer of the input dataset containing the log normalized count data.
       - name: "--input_obs_batch_label"
         type: string
         description: "The .obs field in the input (query) dataset containing the batch labels."
@@ -67,13 +71,16 @@ argument_groups:
         example: reference.h5mu
       - name: "--reference_layer"
         type: string
-        example: log_normalized
+        example: counts
         description: The layer of the reference dataset to use for integration if .X is not to be used.
-      - name: "--reference_obs_targets"
+      - name: "--reference_layer_lognormalized"
         type: string
-        example: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
+        default: log_normalized
+        description: The layer of the input dataset containing the log normalized count data. 
+      - name: "--reference_obs_target"
+        type: string
+        example: cell_type
         required: true
-        multiple: true
         description: The `.obs` key(s) of the target labels to transfer.
       - name: "--reference_var_gene_names"
         type: string
@@ -86,41 +93,48 @@ argument_groups:
         example: "sample"
         required: true
 
+  - name: PCA options
+    arguments:
+      - name: "--pca_num_components"
+        type: integer
+        example: 25
+        description: Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.
+
   - name: scVI integration options
     arguments:
-      - name: "--early_stopping"
+      - name: "--scvi_early_stopping"
         required: false
         type: boolean
         description: "Whether to perform early stopping with respect to the validation set."
-      - name: "--early_stopping_monitor"
+      - name: "--scvi_early_stopping_monitor"
         choices: ["elbo_validation", "reconstruction_loss_validation", "kl_local_validation"]
         default: "elbo_validation"
         type: string
         description: "Metric logged during validation set epoch."
-      - name: "--early_stopping_patience"
+      - name: "--scvi_early_stopping_patience"
         type: integer
         min: 1
         default: 45
         description: "Number of validation epochs with no improvement after which training will be stopped."
-      - name: "--early_stopping_min_delta"
+      - name: "--scvi_early_stopping_min_delta"
         min: 0
         type: double
         default: 0.0
         description: "Minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than min_delta, will count as no improvement."
-      - name: "--max_epochs"
+      - name: "--scvi_max_epochs"
         type: integer
         description: "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest."
         required: false
-      - name: "--reduce_lr_on_plateau"
+      - name: "--scvi_reduce_lr_on_plateau"
         description: "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus."
         type: boolean
         default: True
-      - name: "--lr_factor"
+      - name: "--scvi_lr_factor"
         description: "Factor to reduce learning rate."
         type: double
         default: 0.6
         min: 0
-      - name: "--lr_patience"
+      - name: "--scvi_lr_patience"
         description: "Number of epochs with no improvement after which learning rate will be reduced."
         type: double
         default: 30
@@ -137,7 +151,7 @@ argument_groups:
 
   - name: Neighbor classifier arguments
     arguments:
-      - name: "--weights"
+      - name: "--knn_weights"
         type: string
         default: "uniform"
         choices: ["uniform", "distance"]
@@ -145,7 +159,7 @@ argument_groups:
           Weight function used in prediction. Possible values are:
           `uniform` (all points in each neighborhood are weighted equally) or 
           `distance` (weight points by the inverse of their distance)
-      - name: "--n_neighbors"
+      - name: "--knn_n_neighbors"
         type: integer
         default: 15
         min: 5
@@ -190,7 +204,9 @@ dependencies:
   - name: labels_transfer/knn
   - name: dataflow/split_h5mu
   - name: dataflow/concatenate_h5mu
+  - name: dimred/pca
   - name: feature_annotation/align_query_reference
+  - name: feature_annotation/highly_variable_features_scanpy
 
 resources:
   - type: nextflow_script
