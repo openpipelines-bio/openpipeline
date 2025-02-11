@@ -81,22 +81,6 @@ argument_groups:
         example: "sample"
         required: true
 
-  - name: "Highly Variable Genes calculation options"
-    arguments:
-      - name: "--hvg_flavor"
-        alternatives: ["--filter_with_hvg_flavor"]
-        type: string
-        default: "seurat"
-        choices: ["seurat", "cell_ranger", "seurat_v3"]
-        description: |
-          Choose the flavor for identifying highly variable features. For the dispersion based methods
-          in their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_features.
-      - name: "--hvg_n_top_features"
-        alternatives: ["--filter_with_hvg_n_top_genes"]
-        required: false
-        type: integer
-        description: Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor is set to 'seurat_v3'.
-
   - name: PCA options
     arguments:
       - name: "--pca_num_components"

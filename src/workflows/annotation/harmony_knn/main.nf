@@ -57,9 +57,7 @@ workflow run_wf {
         | highly_variable_features_scanpy.run(
             fromState: [
                 "input": "input",
-                "modality": "modality",
-                "flavor": "hvg_flavor",
-                "n_top_features": "hvg_n_top_features",
+                "modality": "modality"
             ],
             args: [
                 "layer": "_counts",
