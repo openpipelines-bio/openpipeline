@@ -12,7 +12,7 @@ workflow test_wf {
 
   resources_test = file(params.resources_test)
 
-  input_ch = Channel.fromList([
+  output_ch = Channel.fromList([
     [
       id: "mouse",
       input: resources_test.resolve("concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"),
