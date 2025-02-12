@@ -507,9 +507,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow split_h5mu"
-LABEL org.opencontainers.image.created="2025-02-11T13:31:03Z"
+LABEL org.opencontainers.image.created="2025-02-12T02:50:03Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="931d7decebdd3c5d83b02e611b2b529c3de0ac4d"
+LABEL org.opencontainers.image.revision="7ed8eab50757ae9552dd20fdede1fa3149a8a324"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
