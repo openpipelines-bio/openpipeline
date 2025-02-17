@@ -3044,6 +3044,30 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "double",
+          "name" : "--rna_min_fraction_ribo",
+          "description" : "Minimum fraction of UMIs that are mitochondrial.",
+          "example" : [
+            0.0
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "double",
+          "name" : "--rna_max_fraction_ribo",
+          "description" : "Maximum fraction of UMIs that are mitochondrial.",
+          "example" : [
+            0.2
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3213,6 +3237,23 @@ meta = [
       ]
     },
     {
+      "name" : "Gene Detection",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--var_gene_names",
+          "description" : ".var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as a mitochondrial or ribosomal genes, respectively. \n",
+          "example" : [
+            "gene_symbol"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
       "name" : "Mitochondrial Gene Detection",
       "arguments" : [
         {
@@ -3235,11 +3276,25 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--var_gene_names",
-          "description" : ".var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex will be identified\nas a mitochondrial gene.\n",
-          "example" : [
-            "gene_symbol"
+          "name" : "--mitochondrial_gene_regex",
+          "description" : "Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
+          "default" : [
+            "^[mM][tT]-"
           ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Ribosomal Gene Detection",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--var_name_ribosomal_genes",
+          "description" : "In which .var slot to store a boolean array corresponding the ribosomal genes.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3247,10 +3302,19 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--mitochondrial_gene_regex",
-          "description" : "Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
+          "name" : "--obs_name_ribosomal_fraction",
+          "description" : ".Obs slot to store the fraction of reads found to be ribosomal. Defaults to 'fraction_' suffixed by the value of --var_name_ribosomal_genes\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--ribosomal_gene_regex",
+          "description" : "Regex string that identifies ribosomal genes from --var_gene_names.\nBy default will detect human and mouse ribosomal genes from a gene symbol.\n",
           "default" : [
-            "^[mM][tT]-"
+            "^[Mm]?[Rr][Pp][LlSs]"
           ],
           "required" : false,
           "direction" : "input",
@@ -3626,7 +3690,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.9.0",
-    "git_commit" : "904f8c215e48ee7a8fbbb937f91e836a45b344be",
+    "git_commit" : "d168b842853dd5e6ea80daaf1411d85934058a90",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3691,6 +3755,9 @@ workflow run_wf {
         def var_qc_default = [state.highly_variable_features_var_output]
         if (state.var_name_mitochondrial_genes) {
           var_qc_default.add(state.var_name_mitochondrial_genes)
+        }
+        if (state.var_name_ribosomal_genes) {
+          var_qc_default.add(state.var_name_ribosomal_genes)
         }
         def newState = state + ["var_qc_metrics": var_qc_default.join(",")]
         [id, newState]
@@ -3758,6 +3825,11 @@ workflow run_wf {
         "obs_name_mitochondrial_fraction": "obs_name_mitochondrial_fraction",
         "var_gene_names": "var_gene_names",
         "mitochondrial_gene_regex": "mitochondrial_gene_regex",
+        "min_fraction_ribo": "rna_min_fraction_ribo",
+        "max_fraction_ribo": "rna_max_fraction_ribo",
+        "var_name_ribosomal_genes": "var_name_ribosomal_genes",
+        "obs_name_ribosomal_fraction": "obs_name_ribosomal_fraction",
+        "ribosomal_gene_regex": "ribosomal_gene_regex",
         "layer": "rna_layer"
       ],
       "prot": [

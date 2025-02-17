@@ -21,6 +21,8 @@ add_id_make_observation_keys_unique: true
 # rna_min_cells_per_gene: 3
 # rna_min_fraction_mito: 0.0
 # rna_max_fraction_mito: 0.2
+# rna_min_fraction_ribo: 0.0
+# rna_max_fraction_ribo: 0.2
 
 # CITE-seq filtering options
 # prot_min_counts: 3
@@ -40,11 +42,18 @@ add_id_make_observation_keys_unique: true
 highly_variable_features_var_output: "filter_with_hvg"
 highly_variable_features_obs_batch_key: "sample_id"
 
+# Gene Detection
+# var_gene_names: "gene_symbol"
+
 # Mitochondrial Gene Detection
 # var_name_mitochondrial_genes: "foo"
 # obs_name_mitochondrial_fraction: "foo"
-# var_gene_names: "gene_symbol"
 mitochondrial_gene_regex: "^[mM][tT]-"
+
+# Ribosomal Gene Detection
+# var_name_ribosomal_genes: "foo"
+# obs_name_ribosomal_fraction: "foo"
+ribosomal_gene_regex: "^[Mm]?[Rr][Pp][LlSs]"
 
 # QC metrics calculation options
 # var_qc_metrics: ["ercc,highly_variable"]
