@@ -3392,17 +3392,10 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.12-slim",
+      "image" : "nvcr.io/nvidia/pytorch:24.12-py3",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
-        {
-          "type" : "apt",
-          "packages" : [
-            "procps"
-          ],
-          "interactive" : false
-        },
         {
           "type" : "python",
           "user" : false,
@@ -3464,7 +3457,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/scanvi",
     "viash_version" : "0.9.0",
-    "git_commit" : "0cfb72831d10538ff9ea5da153eadff6bff138db",
+    "git_commit" : "bc2ee12fa7d106acfc3511da99626c0782b858f4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
