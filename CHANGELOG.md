@@ -6,6 +6,8 @@
 
 * `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
 
+* `scanvi`: enable CUDA acceleration (PR #969).
+
 ## MAJOR CHANGES
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
