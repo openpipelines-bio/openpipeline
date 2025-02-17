@@ -209,9 +209,6 @@ engines:
 - type: docker
   image: nvcr.io/nvidia/pytorch:24.12-py3
   setup:
-    - type: apt
-      packages:
-        - procps
     - type: python
       __merge__: [ /src/base/requirements/scanpy.yaml, .]
     - type: python
