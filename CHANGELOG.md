@@ -26,7 +26,7 @@
 
 * `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957, PR #959).
 
-* `integrate/scvi` and `integrate/scarches`: update base image to nvcr.io/nvidia/pytorch:24.12-py3 and pin scvi-tools version to 1.1.15 (PR #970).
+* `integrate/scvi`, `integrate/totalvi` and `integrate/scarches`: update base image to nvcr.io/nvidia/pytorch:24.12-py3, pin scvi-tools version to 1.1.5, unpin jax and jaxlib version (PR #970).
 
 # BUG FIXES
 
