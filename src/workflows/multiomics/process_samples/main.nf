@@ -10,7 +10,7 @@ workflow run_wf {
         def new_state = state + ["workflow_output": state.output]
         [id, new_state]
       }
-      // If requested to be detected, make sure the mitochondrial genes
+      // If requested to be detected, make sure the mitochondrial and ribosomal genes
       // are added to the input of the qc metrics calculation
       | map {id, state ->
         def var_qc_default = [state.highly_variable_features_var_output]
