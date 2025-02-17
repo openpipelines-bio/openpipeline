@@ -4,6 +4,10 @@
 
 * `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948, #958).
 
+* `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
+
+* `scanvi`: enable CUDA acceleration (PR #969).
+
 ## MAJOR CHANGES
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
@@ -24,7 +28,11 @@
 
 * Various  components (`scgpt` and `annotate`): Add resource labels (PR #947, PR #950).
 
-* `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957).
+* `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957, PR #959).
+
+# BUG FIXES
+
+* `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).
 
 # openpipelines 2.0.0
 
