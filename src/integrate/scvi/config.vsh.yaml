@@ -231,7 +231,7 @@ engines:
       __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
     - type: python
       packages:
-        - scvi-tools=~1.1.5
+        - scvi-tools~=1.1.5
   test_setup:
     - type: python
       __merge__: [ /src/base/requirements/viashpy.yaml, .]
