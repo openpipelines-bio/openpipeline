@@ -8,6 +8,8 @@
 
 * `workflows/rna/rna_singlesample`, `workflows/multiomics/process_samples` workflows: Added ribosomal gene detection (PR #968).
 
+* `scanvi`: enable CUDA acceleration (PR #969).
+
 ## MAJOR CHANGES
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
@@ -25,6 +27,8 @@
 * Various  components (`scgpt` and `annotate`): Add resource labels (PR #947, PR #950).
 
 * `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957, PR #959).
+
+* `integrate/scvi`, `integrate/totalvi` and `integrate/scarches`: update base image to nvcr.io/nvidia/pytorch:24.12-py3, pin scvi-tools version to 1.1.5, unpin jax and jaxlib version (PR #970).
 
 # BUG FIXES
 
