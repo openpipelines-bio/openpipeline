@@ -26,6 +26,8 @@
 
 * `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957, PR #959).
 
+* `annotate/celltypist`: Enable passing any layer with lognormalized counts, enforce checking whether counts are lognormalized (PR #971).
+
 # BUG FIXES
 
 * `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).
