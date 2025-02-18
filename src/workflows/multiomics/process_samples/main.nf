@@ -17,9 +17,6 @@ workflow run_wf {
         if (state.var_name_mitochondrial_genes) {
           var_qc_default.add(state.var_name_mitochondrial_genes)
         }
-        if (state.var_name_ribosomal_genes) {
-          var_qc_default.add(state.var_name_ribosomal_genes)
-        }
         def newState = state + ["var_qc_metrics": var_qc_default.join(",")]
         [id, newState]
       }
@@ -86,11 +83,6 @@ workflow run_wf {
         "obs_name_mitochondrial_fraction": "obs_name_mitochondrial_fraction",
         "var_gene_names": "var_gene_names",
         "mitochondrial_gene_regex": "mitochondrial_gene_regex",
-        "min_fraction_ribo": "rna_min_fraction_ribo",
-        "max_fraction_ribo": "rna_max_fraction_ribo",
-        "var_name_ribosomal_genes": "var_name_ribosomal_genes",
-        "obs_name_ribosomal_fraction": "obs_name_ribosomal_fraction",
-        "ribosomal_gene_regex": "ribosomal_gene_regex",
         "layer": "rna_layer"
       ],
       "prot": [

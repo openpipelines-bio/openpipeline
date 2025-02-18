@@ -6,7 +6,7 @@
 
 * `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
 
-* `workflows/rna/rna_singlesample`, `workflows/multiomics/process_samples` workflows: Added ribosomal gene detection (PR #968).
+* `scanvi`: enable CUDA acceleration (PR #969).
 
 ## MAJOR CHANGES
 

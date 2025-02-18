@@ -199,7 +199,7 @@ build_info:
   output: "target/executable/metadata/join_uns_to_obs"
   executable: "target/executable/metadata/join_uns_to_obs/join_uns_to_obs"
   viash_version: "0.9.0"
-  git_commit: "d168b842853dd5e6ea80daaf1411d85934058a90"
+  git_commit: "f95eeca1ce2a163477813f3ac868a7ab850f549b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

@@ -627,12 +627,8 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM python:3.12-slim
+FROM nvcr.io/nvidia/pytorch:24.12-py3
 ENTRYPOINT []
-RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y procps && \
-  rm -rf /var/lib/apt/lists/*
-
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scanpy~=1.10.4"
 
@@ -645,9 +641,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate scanvi"
-LABEL org.opencontainers.image.created="2025-02-17T12:48:24Z"
+LABEL org.opencontainers.image.created="2025-02-18T02:49:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d168b842853dd5e6ea80daaf1411d85934058a90"
+LABEL org.opencontainers.image.revision="f95eeca1ce2a163477813f3ac868a7ab850f549b"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
