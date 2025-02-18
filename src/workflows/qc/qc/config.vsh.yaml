@@ -41,7 +41,7 @@ argument_groups:
         description: |
           .var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).
           Gene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be 
-          identified as a mitochondrial or ribosomal genes, respectively.
+          identified as mitochondrial or ribosomal genes, respectively.
       - name: "--var_name_mitochondrial_genes"
         type: string
         required: false
