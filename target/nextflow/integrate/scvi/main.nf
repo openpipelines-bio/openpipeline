@@ -3456,18 +3456,10 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "nvcr.io/nvidia/pytorch:23.09-py3",
+      "image" : "nvcr.io/nvidia/pytorch:24.12-py3",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
-        {
-          "type" : "apt",
-          "packages" : [
-            "libpng-dev",
-            "libjpeg-dev"
-          ],
-          "interactive" : false
-        },
         {
           "type" : "python",
           "user" : false,
@@ -3485,11 +3477,9 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scvi-tools~=1.0.3",
-            "jaxlib<0.4.23",
-            "jax<0.4.23"
+            "scvi-tools~=1.1.5"
           ],
-          "upgrade" : false
+          "upgrade" : true
         }
       ],
       "test_setup" : [
@@ -3510,7 +3500,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.9.0",
-    "git_commit" : "bc2ee12fa7d106acfc3511da99626c0782b858f4",
+    "git_commit" : "1f02ac329d0af013cb385e9d0990304c117cb01d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

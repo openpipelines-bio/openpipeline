@@ -545,21 +545,17 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM nvcr.io/nvidia/pytorch:23.09-py3
+FROM nvcr.io/nvidia/pytorch:24.12-py3
 ENTRYPOINT []
-RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y libopenblas-dev liblapack-dev gfortran && \
-  rm -rf /var/lib/apt/lists/*
-
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scvi-tools~=1.0.3" "jaxlib<0.4.23" "jax<0.4.23" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scvi-tools~=1.1.5" && \
   python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component integrate totalvi"
-LABEL org.opencontainers.image.created="2025-02-17T14:05:18Z"
+LABEL org.opencontainers.image.created="2025-02-18T08:19:21Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bc2ee12fa7d106acfc3511da99626c0782b858f4"
+LABEL org.opencontainers.image.revision="1f02ac329d0af013cb385e9d0990304c117cb01d"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
