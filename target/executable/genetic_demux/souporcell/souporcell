@@ -533,9 +533,9 @@ FROM cumulusprod/souporcell:2022.12
 ENTRYPOINT []
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux souporcell"
-LABEL org.opencontainers.image.created="2025-02-18T08:19:26Z"
+LABEL org.opencontainers.image.created="2025-02-19T06:51:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1f02ac329d0af013cb385e9d0990304c117cb01d"
+LABEL org.opencontainers.image.revision="c4feb7e236a78c1586ff8cf34f01b11cac614c6b"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

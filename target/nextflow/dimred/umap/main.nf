@@ -3196,7 +3196,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap",
     "viash_version" : "0.9.0",
-    "git_commit" : "1f02ac329d0af013cb385e9d0990304c117cb01d",
+    "git_commit" : "c4feb7e236a78c1586ff8cf34f01b11cac614c6b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
