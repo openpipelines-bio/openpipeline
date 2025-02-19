@@ -25,7 +25,7 @@ argument_groups:
         required: false
       - name: "--input_layer"
         type: string
-        description: The layer in the input data to be used for cell type annotation if .X is not to be used. 
+        description: The layer in the input data containing log normalized counts to be used for cell type annotation if .X is not to be used. 
       - name: "--input_var_gene_names"
         type: string
         required: false
@@ -55,11 +55,6 @@ argument_groups:
         type: string
         description: The name of the adata obs column in the reference data containing cell type annotations.
         default: "cell_ontology_class"
-      - name: "--check_expression"
-        type: boolean_true
-        description: | 
-          Whether to check the expression of the reference dataset to the format reccomended by CellTypist.
-          CellTypist requires data to be log-normalized to 10000 counts per cell.
       - name: "--reference_var_gene_names"
         type: string
         required: false
