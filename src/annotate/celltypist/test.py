@@ -4,8 +4,6 @@ import pytest
 import subprocess
 import re
 import mudata as mu
-import scanpy as sc
-import anndata as ad
 from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
@@ -22,37 +20,8 @@ celltypist_input_file = (
 )
 
 
-@pytest.fixture
-def normalize_log_transform(random_h5mu_path):
-    def wrapper(input_mudata_file, modality, target_sum=1e4, output_layer=None):
-        input_mudata = mu.read_h5mu(input_mudata_file)
-        input_adata = input_mudata.mod[modality]
-        adata = input_adata.copy()
-        input_layer = adata.X
-        data_for_scanpy = ad.AnnData(X=input_layer.copy())
-        sc.pp.normalize_total(data_for_scanpy, target_sum=target_sum)
-        sc.pp.log1p(
-            data_for_scanpy,
-            base=None,
-            layer=None,  # use X
-            copy=False,
-        )  # allow overwrites in the copy that was made
-        if not output_layer:
-            adata.X = data_for_scanpy.X
-        else:
-            adata.layers[output_layer] = data_for_scanpy.X
-        adata.uns["log1p"] = data_for_scanpy.uns["log1p"].copy()
-        input_mudata.mod[modality] = adata
-        transformed_input_mudata_file = random_h5mu_path()
-        input_mudata.write_h5mu(transformed_input_mudata_file)
-        return transformed_input_mudata_file
-
-    return wrapper
-
-
-def test_simple_execution(run_component, random_h5mu_path, normalize_log_transform):
+def test_simple_execution(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
-    reference_file_lognorm = normalize_log_transform(reference_file, "rna")
 
     run_component(
         [
@@ -61,47 +30,7 @@ def test_simple_execution(run_component, random_h5mu_path, normalize_log_transfo
             "--input_layer",
             "log_normalized",
             "--reference",
-            reference_file_lognorm,
-            "--reference_obs_target",
-            "cell_ontology_class",
-            "--reference_var_gene_names",
-            "ensemblid",
-            "--output",
-            output_file,
-        ]
-    )
-
-    assert os.path.exists(output_file), "Output file does not exist"
-
-    input_mudata = mu.read_h5mu(input_file)
-    output_mudata = mu.read_h5mu(output_file)
-
-    assert_annotation_objects_equal(input_mudata.mod["prot"], output_mudata.mod["prot"])
-
-    assert {"celltypist_pred", "celltypist_probability"}.issubset(
-        output_mudata.mod["rna"].obs.keys()
-    ), "Required keys not found in .obs"
-
-    obs_values = output_mudata.mod["rna"].obs["celltypist_probability"]
-    assert all(
-        0 <= value <= 1 for value in obs_values
-    ), ".obs at celltypist_probability has values outside the range [0, 1]"
-
-
-def test_reference_layer(run_component, random_h5mu_path, normalize_log_transform):
-    output_file = random_h5mu_path()
-    reference_file_lognorm = normalize_log_transform(
-        reference_file, "rna", output_layer="log_normalized"
-    )
-
-    run_component(
-        [
-            "--input",
-            input_file,
-            "--input_layer",
-            "log_normalized",
-            "--reference",
-            reference_file_lognorm,
+            reference_file,
             "--reference_layer",
             "log_normalized",
             "--reference_obs_target",
@@ -130,9 +59,8 @@ def test_reference_layer(run_component, random_h5mu_path, normalize_log_transfor
     ), ".obs at celltypist_probability has values outside the range [0, 1]"
 
 
-def test_set_params(run_component, random_h5mu_path, normalize_log_transform):
+def test_set_params(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
-    reference_file_lognorm = normalize_log_transform(reference_file, "rna")
 
     run_component(
         [
@@ -141,7 +69,9 @@ def test_set_params(run_component, random_h5mu_path, normalize_log_transform):
             "--input_layer",
             "log_normalized",
             "--reference",
-            reference_file_lognorm,
+            reference_file,
+            "--reference_layer",
+            "log_normalized",
             "--reference_obs_target",
             "cell_ontology_class",
             "--reference_var_gene_names",
