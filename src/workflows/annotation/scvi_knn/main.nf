@@ -16,10 +16,12 @@ workflow run_wf {
           "input": "input",
           "modality": "modality",
           "input_layer": "input_layer",
+          "input_layer_lognormalized": "input_layer_lognormalized",
           "input_obs_batch": "input_obs_batch_label",
           "input_var_gene_names": "input_var_gene_names",
           "reference": "reference",
           "reference_layer": "reference_layer",
+          "reference_layer_lognormalized": "reference_layer_lognormalized",
           "reference_obs_batch": "reference_obs_batch_label",
           "reference_obs_label": "reference_obs_target",
           "reference_var_gene_names": "reference_var_gene_names",
@@ -30,11 +32,13 @@ workflow run_wf {
           "input_id": "query",
           "reference_id": "reference",
           "output_layer": "_counts",
+          "output_layer_lognormalized": "_log_normalized",
           "output_var_gene_names": "_gene_names",
           "output_obs_batch": "_sample_id",
           "output_obs_label": "_cell_type",
           "output_obs_id": "_dataset",
-          "output_var_common_genes": "_common_vars"
+          "output_var_common_genes": "_common_vars",
+          "align_layers_lognormalized_counts": "true"
         ],
         toState: [
           "input": "output_query",
@@ -55,39 +59,36 @@ workflow run_wf {
       | view {"After concatenation: $it"}
       // Calculate HVG across query and reference
       | highly_variable_features_scanpy.run(
-            fromState: [
-                "input": "input",
-                "modality": "modality"
-            ],
-            args: [
-                "layer": "log_normalized",
-                "var_input": "_common_vars",
-                "var_name_filter": "_common_hvg",
-                "obs_batch_key": "_sample_id"
-            ],
-            toState: [
-                "input": "output"
-            ]
+          fromState: [
+            "input": "input",
+            "modality": "modality",
+            "n_top_features": "n_hvg"
+
+          ],
+          args: [
+            "layer": "_log_normalized",
+            "var_input": "_common_vars",
+            "var_name_filter": "_common_hvg",
+            "obs_batch_key": "_sample_id"
+          ],
+          toState: [
+            "input": "output"
+          ]
         )
-        // Calculate PCA on common HVG across query and reference
-        | pca.run(
-            fromState: [
-                "input": "input",
-                "modality": "modality",
-                "overwrite": "overwrite_existing_key",
-                "num_compontents": "pca_num_components"
-            ],
-            args: [
-                "layer": "_counts",
-                "var_input": "_common_hvg",
-                "obsm_output": "X_pca_harmony",
-                "varm_output": "pca_loadings_harmony",
-                "uns_output": "pca_variance_harmony",
-            ],
-            toState: [
-                "input": "output"
-            ]
-        )
+      | delete_layer.run(
+          key: "delete_aligned_lognormalized_counts_layer",
+          fromState: [
+            "input": "input",
+            "modality": "modality",
+          ],
+          args: [
+            "layer": "_log_normalized",
+            "missing_ok": "true"
+          ],
+          toState: [
+            "input": "output"
+          ]
+      )
       // Run scvi integration with leiden clustering
       | scvi_leiden_workflow.run(
         fromState: { id, state -> [
@@ -116,6 +117,20 @@ workflow run_wf {
           "layer": "_counts"
         ],
         toState: ["input": "output"]
+      )
+      | delete_layer.run(
+          key: "delete_aligned_counts_layer",
+          fromState: [
+            "input": "input",
+            "modality": "modality",
+          ],
+          args: [
+            "layer": "_counts",
+            "missing_ok": "true"
+          ],
+          toState: [
+            "input": "output"
+          ]
       )
             
       | view {"After integration: $it"}
@@ -159,7 +174,7 @@ workflow run_wf {
            "input_obsm_features": "output_obsm_integrated",
            "reference": "integrated_reference",
            "reference_obsm_features": "output_obsm_integrated",
-           "reference_obs_targets": "reference_obs_targets",
+           "reference_obs_targets": "reference_obs_target",
            "output_obs_predictions": "output_obs_predictions",
            "output_obs_probability": "output_obs_probability",
            "weights": "knn_weights",

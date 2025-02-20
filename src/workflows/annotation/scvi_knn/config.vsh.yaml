@@ -40,8 +40,8 @@ argument_groups:
         description: The layer of the input dataset containing the raw counts if .X is not to be used.
       - name: "--input_layer_lognormalized"
         type: string
-        default: log_normalized
-        description: The layer of the input dataset containing the log normalized count data.
+        example: log_normalized
+        description: The layer of the input dataset containing the lognormalized counts if .X is not to be used.
       - name: "--input_obs_batch_label"
         type: string
         description: "The .obs field in the input (query) dataset containing the batch labels."
@@ -72,11 +72,11 @@ argument_groups:
       - name: "--reference_layer"
         type: string
         example: counts
-        description: The layer of the reference dataset to use for integration if .X is not to be used.
+        description: The layer of the reference dataset containing the raw counts if .X is not to be used.
       - name: "--reference_layer_lognormalized"
         type: string
-        default: log_normalized
-        description: The layer of the input dataset containing the log normalized count data. 
+        example: log_normalized
+        description: The layer of the reference dataset containing the lognormalized counts if .X is not to be used.
       - name: "--reference_obs_target"
         type: string
         example: cell_type
@@ -93,12 +93,13 @@ argument_groups:
         example: "sample"
         required: true
 
-  - name: PCA options
+  - name: "HVG subset arguments"
     arguments:
-      - name: "--pca_num_components"
+      - name: "--n_hvg"
         type: integer
-        example: 25
-        description: Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.
+        default: 1200
+        description: |
+          Number of highly variable genes to subset for.
 
   - name: scVI integration options
     arguments:
@@ -204,9 +205,9 @@ dependencies:
   - name: labels_transfer/knn
   - name: dataflow/split_h5mu
   - name: dataflow/concatenate_h5mu
-  - name: dimred/pca
   - name: feature_annotation/align_query_reference
   - name: feature_annotation/highly_variable_features_scanpy
+  - name: transform/delete_layer
 
 resources:
   - type: nextflow_script
