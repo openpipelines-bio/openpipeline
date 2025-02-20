@@ -81,6 +81,14 @@ argument_groups:
         example: "sample"
         required: true
 
+  - name: "HVG subset arguments"
+    arguments:
+      - name: "--n_hvg"
+        type: integer
+        default: 1200
+        description: |
+          Number of highly variable genes to subset for.
+
   - name: PCA options
     arguments:
       - name: "--pca_num_components"
@@ -172,6 +180,7 @@ dependencies:
   - name: dimred/pca
   - name: feature_annotation/align_query_reference
   - name: feature_annotation/highly_variable_features_scanpy
+  - name: transform/delete_layer
 
 resources:
   - type: nextflow_script
