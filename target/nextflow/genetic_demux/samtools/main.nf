@@ -3025,7 +3025,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/samtools",
     "viash_version" : "0.9.0",
-    "git_commit" : "3e37e7e4fd0bcfc312a0e9c9953193581f7a8b14",
+    "git_commit" : "275ff4dc44b45ab3aab50a1cf391a5fa97839174",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
