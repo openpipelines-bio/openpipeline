@@ -1,16 +1,20 @@
-name: "harmony_knn"
+name: "scvi_knn"
 namespace: "workflows/annotation"
-description: "Cell type annotation workflow by performing harmony integration of reference and query dataset followed by KNN label transfer."
-info:
-  name: "Harmony integration followed by KNN label transfer"
-  test_dependencies:
-    - name: harmony_knn_test
-      namespace: test_workflows/annotation
+description: |
+  "Cell type annotation workflow that performs scVI integration of reference and query dataset followed by KNN label transfer. 
+  The query and reference datasets are expected to be pre-processed in the same way, for example with the `process_samples` workflow of OpenPipeline.
+  Note that this workflow will integrate the reference dataset from scratch and integrate the query dataset in the same embedding space. 
+  The workflow does not currently output the trained SCVI reference model."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]
   - __merge__: /src/authors/weiwei_schultz.yaml
     roles: [ contributor ]
+info:
+  name: "scVI Annotation"
+  test_dependencies:
+    - name: scvi_knn_test
+      namespace: test_workflows/annotation
 
 argument_groups:
   - name: Query Input
@@ -23,7 +27,7 @@ argument_groups:
       - name: "--input"
         required: true
         type: file
-        description: Input dataset consisting of the (unlabeled) query observations. The dataset is expected to be pre-processed in the same way as --reference.
+        description: Input dataset consisting of the (unlabeled) query observations. 
         example: input.h5mu
       - name: "--modality"
         description: Which modality to process. Should match the modality of the --reference dataset.
@@ -31,9 +35,13 @@ argument_groups:
         default: "rna"
         required: false
       - name: "--input_layer"
-        description: The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts.
-        required: false
         type: string
+        example: counts
+        description: The layer of the input dataset containing the raw counts if .X is not to be used.
+      - name: "--input_layer_lognormalized"
+        type: string
+        example: log_normalized
+        description: The layer of the input dataset containing the lognormalized counts if .X is not to be used.
       - name: "--input_obs_batch_label"
         type: string
         description: "The .obs field in the input (query) dataset containing the batch labels."
@@ -59,17 +67,21 @@ argument_groups:
       - name: "--reference"
         required: true
         type: file
-        description: Reference dataset consisting of the labeled observations to train the KNN classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset.
+        description: Reference dataset consisting of the labeled observations.
         example: reference.h5mu
       - name: "--reference_layer"
-        description: The layer of the reference dataset to process if .X is not to be used. Should contain log normalized counts.
-        required: false
         type: string
+        example: counts
+        description: The layer of the reference dataset containing the raw counts if .X is not to be used.
+      - name: "--reference_layer_lognormalized"
+        type: string
+        example: log_normalized
+        description: The layer of the reference dataset containing the lognormalized counts if .X is not to be used.
       - name: "--reference_obs_target"
         type: string
         example: cell_type
         required: true
-        description: The `.obs` key of the target cell type labels to transfer.
+        description: The `.obs` key(s) of the target labels to transfer.
       - name: "--reference_var_gene_names"
         type: string
         required: false
@@ -89,22 +101,45 @@ argument_groups:
         description: |
           Number of highly variable genes to subset for.
 
-  - name: PCA options
+  - name: scVI integration options
     arguments:
-      - name: "--pca_num_components"
+      - name: "--scvi_early_stopping"
+        required: false
+        type: boolean
+        description: "Whether to perform early stopping with respect to the validation set."
+      - name: "--scvi_early_stopping_monitor"
+        choices: ["elbo_validation", "reconstruction_loss_validation", "kl_local_validation"]
+        default: "elbo_validation"
+        type: string
+        description: "Metric logged during validation set epoch."
+      - name: "--scvi_early_stopping_patience"
         type: integer
-        example: 25
-        description: Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.
-
-  - name: Harmony integration options
-    arguments:
-      - name: "--harmony_theta"
-        type: double
-        description: |
-          Diversity clustering penalty parameter. Can be set as a single value for all batch observations or as multiple values, one for each observation in the batches defined by --input_obs_batch_label. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
+        min: 1
+        default: 45
+        description: "Number of validation epochs with no improvement after which training will be stopped."
+      - name: "--scvi_early_stopping_min_delta"
         min: 0
-        default: [2]
-        multiple: true
+        type: double
+        default: 0.0
+        description: "Minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than min_delta, will count as no improvement."
+      - name: "--scvi_max_epochs"
+        type: integer
+        description: "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest."
+        required: false
+      - name: "--scvi_reduce_lr_on_plateau"
+        description: "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus."
+        type: boolean
+        default: True
+      - name: "--scvi_lr_factor"
+        description: "Factor to reduce learning rate."
+        type: double
+        default: 0.6
+        min: 0
+      - name: "--scvi_lr_patience"
+        description: "Number of epochs with no improvement after which learning rate will be reduced."
+        type: double
+        default: 30
+        min: 0
 
   - name: Leiden clustering options
     arguments:
@@ -160,24 +195,16 @@ argument_groups:
           If empty, will default to the `reference_obs_targets` combined with the `"_probability"` suffix.
       - name: "--output_obsm_integrated"
         type: string
-        default: "X_integrated_harmony"
+        default: "X_integrated_scvi"
         required: false
         description: "In which .obsm slot to store the integrated embedding."
-      - name: "--output_compression"
-        type: string
-        description: |
-          The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
 
 dependencies:
-  - name: workflows/integration/harmony_leiden
-    alias: harmony_leiden_workflow
+  - name: workflows/integration/scvi_leiden
+    alias: scvi_leiden_workflow
   - name: labels_transfer/knn
   - name: dataflow/split_h5mu
   - name: dataflow/concatenate_h5mu
-  - name: dimred/pca
   - name: feature_annotation/align_query_reference
   - name: feature_annotation/highly_variable_features_scanpy
   - name: transform/delete_layer
@@ -191,6 +218,7 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf
+  - path: /resources_test/scgpt
   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
   - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
 

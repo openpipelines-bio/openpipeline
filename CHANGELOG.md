@@ -2,7 +2,9 @@
 
 ## NEW FUNCTIONALITY
 
-* `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948, #958).
+* `feature_annotation/aling_query_reference`: Added a component to align a query and reference dataset (PR #948).
+
+* `workflows/annotation/scvi_knn` workflow: Cell-type annotation based on scVI integration followed by KNN label transfer (PR #954).
 
 * `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
 
@@ -13,10 +15,6 @@
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
 
 * The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
-
-# NEW FUNCTIONALITY 
-
-* `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
 
 # MINOR CHANGES
 

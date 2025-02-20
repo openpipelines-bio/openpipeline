@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
-"title": "harmony_knn",
-"description": "Cell type annotation workflow by performing harmony integration of reference and query dataset followed by KNN label transfer.",
+"title": "scvi_knn",
+"description": "\"Cell type annotation workflow that performs scVI integration of reference and query dataset followed by KNN label transfer. \nThe query and reference datasets are expected to be pre-processed in the same way, for example with the `process_samples` workflow of OpenPipeline.\nNote that this workflow will integrate the reference dataset from scratch and integrate the query dataset in the same embedding space. \nThe workflow does not currently output the trained SCVI reference model.\"\n",
 "type": "object",
 "definitions": {
 
@@ -64,22 +64,10 @@
                 "output_obsm_integrated": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `X_integrated_harmony`. In which ",
-                "help_text": "Type: `string`, default: `X_integrated_harmony`. In which .obsm slot to store the integrated embedding."
+                "description": "Type: `string`, default: `X_integrated_scvi`. In which ",
+                "help_text": "Type: `string`, default: `X_integrated_scvi`. In which .obsm slot to store the integrated embedding."
             ,
-                "default":"X_integrated_harmony"
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.\n",
-                "enum": ["gzip", "lzf"]
-            
-            
+                "default":"X_integrated_scvi"
             }
     
 
@@ -108,7 +96,7 @@
                 "type":
                 "string",
                 "description": "Type: `file`, required, example: `input.h5mu`. Input dataset consisting of the (unlabeled) query observations",
-                "help_text": "Type: `file`, required, example: `input.h5mu`. Input dataset consisting of the (unlabeled) query observations. The dataset is expected to be pre-processed in the same way as --reference."
+                "help_text": "Type: `file`, required, example: `input.h5mu`. Input dataset consisting of the (unlabeled) query observations."
             
             }
     
@@ -128,8 +116,18 @@
                 "input_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`. The layer of the input dataset to process if ",
-                "help_text": "Type: `string`. The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts."
+                "description": "Type: `string`, example: `counts`. The layer of the input dataset containing the raw counts if ",
+                "help_text": "Type: `string`, example: `counts`. The layer of the input dataset containing the raw counts if .X is not to be used."
+            
+            }
+    
+
+        ,
+                "input_layer_lognormalized": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `log_normalized`. The layer of the input dataset containing the lognormalized counts if ",
+                "help_text": "Type: `string`, example: `log_normalized`. The layer of the input dataset containing the lognormalized counts if .X is not to be used."
             
             }
     
@@ -190,8 +188,8 @@
                 "reference": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `reference.h5mu`. Reference dataset consisting of the labeled observations to train the KNN classifier on",
-                "help_text": "Type: `file`, required, example: `reference.h5mu`. Reference dataset consisting of the labeled observations to train the KNN classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset."
+                "description": "Type: `file`, required, example: `reference.h5mu`. Reference dataset consisting of the labeled observations",
+                "help_text": "Type: `file`, required, example: `reference.h5mu`. Reference dataset consisting of the labeled observations."
             
             }
     
@@ -200,8 +198,18 @@
                 "reference_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`. The layer of the reference dataset to process if ",
-                "help_text": "Type: `string`. The layer of the reference dataset to process if .X is not to be used. Should contain log normalized counts."
+                "description": "Type: `string`, example: `counts`. The layer of the reference dataset containing the raw counts if ",
+                "help_text": "Type: `string`, example: `counts`. The layer of the reference dataset containing the raw counts if .X is not to be used."
+            
+            }
+    
+
+        ,
+                "reference_layer_lognormalized": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `log_normalized`. The layer of the reference dataset containing the lognormalized counts if ",
+                "help_text": "Type: `string`, example: `log_normalized`. The layer of the reference dataset containing the lognormalized counts if .X is not to be used."
             
             }
     
@@ -211,7 +219,7 @@
                 "type":
                 "string",
                 "description": "Type: `string`, required, example: `cell_type`. The `",
-                "help_text": "Type: `string`, required, example: `cell_type`. The `.obs` key of the target cell type labels to transfer."
+                "help_text": "Type: `string`, required, example: `cell_type`. The `.obs` key(s) of the target labels to transfer."
             
             }
     
@@ -261,40 +269,97 @@
 },
     
     
-    "pca options" : {
-    "title": "PCA options",
+    "scvi integration options" : {
+    "title": "scVI integration options",
     "type": "object",
     "description": "No description",
     "properties": {
     
         
-                "pca_num_components": {
+                "scvi_early_stopping": {
                 "type":
-                "integer",
-                "description": "Type: `integer`, example: `25`. Number of principal components to compute",
-                "help_text": "Type: `integer`, example: `25`. Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation."
+                "boolean",
+                "description": "Type: `boolean`. Whether to perform early stopping with respect to the validation set",
+                "help_text": "Type: `boolean`. Whether to perform early stopping with respect to the validation set."
             
             }
     
 
-}
-},
-    
-    
-    "harmony integration options" : {
-    "title": "Harmony integration options",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "harmony_theta": {
+        ,
+                "scvi_early_stopping_monitor": {
                 "type":
                 "string",
-                "description": "Type: List of `double`, default: `2.0`, multiple_sep: `\";\"`. Diversity clustering penalty parameter",
-                "help_text": "Type: List of `double`, default: `2.0`, multiple_sep: `\";\"`. Diversity clustering penalty parameter. Can be set as a single value for all batch observations or as multiple values, one for each observation in the batches defined by --input_obs_batch_label. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters.\"\n"
+                "description": "Type: `string`, default: `elbo_validation`, choices: ``elbo_validation`, `reconstruction_loss_validation`, `kl_local_validation``. Metric logged during validation set epoch",
+                "help_text": "Type: `string`, default: `elbo_validation`, choices: ``elbo_validation`, `reconstruction_loss_validation`, `kl_local_validation``. Metric logged during validation set epoch.",
+                "enum": ["elbo_validation", "reconstruction_loss_validation", "kl_local_validation"]
+            
             ,
-                "default":"2.0"
+                "default":"elbo_validation"
+            }
+    
+
+        ,
+                "scvi_early_stopping_patience": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `45`. Number of validation epochs with no improvement after which training will be stopped",
+                "help_text": "Type: `integer`, default: `45`. Number of validation epochs with no improvement after which training will be stopped."
+            ,
+                "default":45
+            }
+    
+
+        ,
+                "scvi_early_stopping_min_delta": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.0`. Minimum change in the monitored quantity to qualify as an improvement, i",
+                "help_text": "Type: `double`, default: `0.0`. Minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than min_delta, will count as no improvement."
+            ,
+                "default":0.0
+            }
+    
+
+        ,
+                "scvi_max_epochs": {
+                "type":
+                "integer",
+                "description": "Type: `integer`. Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest",
+                "help_text": "Type: `integer`. Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest."
+            
+            }
+    
+
+        ,
+                "scvi_reduce_lr_on_plateau": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus",
+                "help_text": "Type: `boolean`, default: `true`. Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus."
+            ,
+                "default":true
+            }
+    
+
+        ,
+                "scvi_lr_factor": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.6`. Factor to reduce learning rate",
+                "help_text": "Type: `double`, default: `0.6`. Factor to reduce learning rate."
+            ,
+                "default":0.6
+            }
+    
+
+        ,
+                "scvi_lr_patience": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced",
+                "help_text": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced."
+            ,
+                "default":30.0
             }
     
 
@@ -397,11 +462,7 @@
     },
 
     {
-    "$ref": "#/definitions/pca options"
-    },
-
-    {
-    "$ref": "#/definitions/harmony integration options"
+    "$ref": "#/definitions/scvi integration options"
     },
 
     {
