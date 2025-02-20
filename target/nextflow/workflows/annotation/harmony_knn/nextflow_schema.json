@@ -1,0 +1,419 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "harmony_knn",
+"description": "Cell type annotation workflow by performing harmony integration of reference and query dataset followed by KNN label transfer.",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The query data in ",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The query data in .h5mu format with predicted labels predicted from the classifier trained on the reference."
+            ,
+                "default":"$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "output_obs_predictions": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. In which `",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. In which `.obs` slots to store the predicted cell labels.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_pred\"` suffix.\n"
+            
+            }
+    
+
+        ,
+                "output_obs_probability": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. In which `",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. In which `.obs` slots to store the probability of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_probability\"` suffix.\n"
+            
+            }
+    
+
+        ,
+                "output_obsm_integrated": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `X_integrated_harmony`. In which ",
+                "help_text": "Type: `string`, default: `X_integrated_harmony`. In which .obsm slot to store the integrated embedding."
+            ,
+                "default":"X_integrated_harmony"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+}
+},
+    
+    
+    "query input" : {
+    "title": "Query Input",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "id": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `foo`. ID of the sample",
+                "help_text": "Type: `string`, required, example: `foo`. ID of the sample."
+            
+            }
+    
+
+        ,
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `input.h5mu`. Input dataset consisting of the (unlabeled) query observations",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. Input dataset consisting of the (unlabeled) query observations. The dataset is expected to be pre-processed in the same way as --reference."
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. Which modality to process",
+                "help_text": "Type: `string`, default: `rna`. Which modality to process. Should match the modality of the --reference dataset."
+            ,
+                "default":"rna"
+            }
+    
+
+        ,
+                "input_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. The layer of the input dataset to process if ",
+                "help_text": "Type: `string`. The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts."
+            
+            }
+    
+
+        ,
+                "input_obs_batch_label": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `sample`. The ",
+                "help_text": "Type: `string`, required, example: `sample`. The .obs field in the input (query) dataset containing the batch labels."
+            
+            }
+    
+
+        ,
+                "input_var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`. The ",
+                "help_text": "Type: `string`. The .var field in the input (query) dataset containing gene names; if not provided, the .var index will be used.\n"
+            
+            }
+    
+
+        ,
+                "input_reference_gene_overlap": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `100`. The minimum number of genes present in both the reference and query datasets",
+                "help_text": "Type: `integer`, default: `100`. The minimum number of genes present in both the reference and query datasets.\n"
+            ,
+                "default":100
+            }
+    
+
+        ,
+                "overwrite_existing_key": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. If provided, will overwrite existing fields in the input dataset when data are copied during the reference alignment process",
+                "help_text": "Type: `boolean_true`, default: `false`. If provided, will overwrite existing fields in the input dataset when data are copied during the reference alignment process."
+            ,
+                "default":false
+            }
+    
+
+}
+},
+    
+    
+    "reference input" : {
+    "title": "Reference input",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "reference": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `reference.h5mu`. Reference dataset consisting of the labeled observations to train the KNN classifier on",
+                "help_text": "Type: `file`, required, example: `reference.h5mu`. Reference dataset consisting of the labeled observations to train the KNN classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset."
+            
+            }
+    
+
+        ,
+                "reference_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. The layer of the reference dataset to process if ",
+                "help_text": "Type: `string`. The layer of the reference dataset to process if .X is not to be used. Should contain log normalized counts."
+            
+            }
+    
+
+        ,
+                "reference_obs_target": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `cell_type`. The `",
+                "help_text": "Type: `string`, required, example: `cell_type`. The `.obs` key of the target cell type labels to transfer."
+            
+            }
+    
+
+        ,
+                "reference_var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`. The ",
+                "help_text": "Type: `string`. The .var field in the reference dataset containing gene names; if not provided, the .var index will be used.\n"
+            
+            }
+    
+
+        ,
+                "reference_obs_batch_label": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `sample`. The ",
+                "help_text": "Type: `string`, required, example: `sample`. The .obs field in the reference dataset containing the batch labels."
+            
+            }
+    
+
+}
+},
+    
+    
+    "hvg subset arguments" : {
+    "title": "HVG subset arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "n_hvg": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `1200`. Number of highly variable genes to subset for",
+                "help_text": "Type: `integer`, default: `1200`. Number of highly variable genes to subset for.\n"
+            ,
+                "default":1200
+            }
+    
+
+}
+},
+    
+    
+    "pca options" : {
+    "title": "PCA options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "pca_num_components": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `25`. Number of principal components to compute",
+                "help_text": "Type: `integer`, example: `25`. Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation."
+            
+            }
+    
+
+}
+},
+    
+    
+    "harmony integration options" : {
+    "title": "Harmony integration options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "harmony_theta": {
+                "type":
+                "string",
+                "description": "Type: List of `double`, default: `2.0`, multiple_sep: `\";\"`. Diversity clustering penalty parameter",
+                "help_text": "Type: List of `double`, default: `2.0`, multiple_sep: `\";\"`. Diversity clustering penalty parameter. Can be set as a single value for all batch observations or as multiple values, one for each observation in the batches defined by --input_obs_batch_label. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters.\"\n"
+            ,
+                "default":"2.0"
+            }
+    
+
+}
+},
+    
+    
+    "leiden clustering options" : {
+    "title": "Leiden clustering options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "leiden_resolution": {
+                "type":
+                "string",
+                "description": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering",
+                "help_text": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
+            ,
+                "default":"1.0"
+            }
+    
+
+}
+},
+    
+    
+    "neighbor classifier arguments" : {
+    "title": "Neighbor classifier arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "knn_weights": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction",
+                "help_text": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction. Possible values are:\n`uniform` (all points in each neighborhood are weighted equally) or \n`distance` (weight points by the inverse of their distance)\n",
+                "enum": ["uniform", "distance"]
+            
+            ,
+                "default":"uniform"
+            }
+    
+
+        ,
+                "knn_n_neighbors": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent",
+                "help_text": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n"
+            ,
+                "default":15
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/query input"
+    },
+
+    {
+    "$ref": "#/definitions/reference input"
+    },
+
+    {
+    "$ref": "#/definitions/hvg subset arguments"
+    },
+
+    {
+    "$ref": "#/definitions/pca options"
+    },
+
+    {
+    "$ref": "#/definitions/harmony integration options"
+    },
+
+    {
+    "$ref": "#/definitions/leiden clustering options"
+    },
+
+    {
+    "$ref": "#/definitions/neighbor classifier arguments"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}
