@@ -1,0 +1,246 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "pad_tokenize",
+"description": "Tokenize and pad a batch of data for scGPT integration zero-shot inference or fine-tuning.\n",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `input.h5mu`. The input h5mu file of pre-processed data",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. The input h5mu file of pre-processed data.\n"
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. ",
+                "help_text": "Type: `string`, default: `rna`. "
+            ,
+                "default":"rna"
+            }
+    
+
+        ,
+                "model_vocab": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `vocab.json`. Path to model vocabulary file",
+                "help_text": "Type: `file`, required, example: `vocab.json`. Path to model vocabulary file.\n"
+            
+            }
+    
+
+        ,
+                "var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`. The name of the ",
+                "help_text": "Type: `string`. The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n"
+            
+            }
+    
+
+        ,
+                "var_input": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `id_in_vocab`. The name of the adata",
+                "help_text": "Type: `string`, default: `id_in_vocab`. The name of the adata.var column containing boolean mask for vocabulary-cross checked and/or highly variable genes.\n"
+            ,
+                "default":"id_in_vocab"
+            }
+    
+
+        ,
+                "input_obsm_binned_counts": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `binned_counts`. The name of the ",
+                "help_text": "Type: `string`, default: `binned_counts`. The name of the .obsm field containing the binned counts to be padded and tokenized.\n"
+            ,
+                "default":"binned_counts"
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output h5mu file containing obsm arrays for gene tokens, tokenized data and padding mask",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output h5mu file containing obsm arrays for gene tokens, tokenized data and padding mask.\n"
+            ,
+                "default":"$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression type for the output file",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression type for the output file.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+        ,
+                "obsm_gene_tokens": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `gene_id_tokens`, example: `values.pt`. The key of the ",
+                "help_text": "Type: `string`, default: `gene_id_tokens`, example: `values.pt`. The key of the .obsm array containing the gene token ids\n"
+            ,
+                "default":"gene_id_tokens"
+            }
+    
+
+        ,
+                "obsm_tokenized_values": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `values_tokenized`. The key of the ",
+                "help_text": "Type: `string`, default: `values_tokenized`. The key of the .obsm array containing the count values of the tokenized genes\n"
+            ,
+                "default":"values_tokenized"
+            }
+    
+
+        ,
+                "obsm_padding_mask": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `padding_mask`. The key of the ",
+                "help_text": "Type: `string`, default: `padding_mask`. The key of the .obsm array containing the padding mask.\n"
+            ,
+                "default":"padding_mask"
+            }
+    
+
+}
+},
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "pad_token": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `\u003cpad\u003e`. Token used for padding",
+                "help_text": "Type: `string`, default: `\u003cpad\u003e`. Token used for padding.\n"
+            ,
+                "default":"<pad>"
+            }
+    
+
+        ,
+                "pad_value": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `-2`. The value of the padding token",
+                "help_text": "Type: `integer`, default: `-2`. The value of the padding token.\n"
+            ,
+                "default":-2
+            }
+    
+
+        ,
+                "max_seq_len": {
+                "type":
+                "integer",
+                "description": "Type: `integer`. The maximum sequence length of the tokenized data",
+                "help_text": "Type: `integer`. The maximum sequence length of the tokenized data. Defaults to the number of features if not provided.\n"
+            
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/arguments"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}

@@ -1,0 +1,306 @@
+name: "calculate_atac_qc_metrics"
+namespace: "qc"
+version: "scvi-knn-annotation_build"
+authors:
+- name: "Vladimir Shitov"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      email: "vladimir.shitov@helmholtz-muenchen.de"
+      github: "vladimirshitov"
+      orcid: "0000-0002-1960-8812"
+      linkedin: "vladimir-shitov-9a659513b"
+    organizations:
+    - name: "Helmholtz Munich"
+      href: "https://www.helmholtz-munich.de"
+      role: "PhD Candidate"
+argument_groups:
+- name: "Inputs"
+  arguments:
+  - type: "file"
+    name: "--input"
+    description: "Input h5mu file"
+    info: null
+    example:
+    - "input.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--fragments_path"
+    description: "Path to the fragments file. If not provided and not present in the\
+      \ input h5mu file,\nthe nucleosome signal and TSS enrichment score will not\
+      \ be calculated.\n"
+    info: null
+    example:
+    - "fragments.tsv.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--modality"
+    info: null
+    default:
+    - "atac"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--layer"
+    description: "Layer at `.layers` to use for the calculation. If not provided,\
+      \ `.X` is used.\n"
+    info: null
+    example:
+    - "raw_counts"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--n_fragments_for_nucleosome_signal"
+    description: "Number of fragments to use per cell for nucleosome signal calculation.\n\
+      Takes very long to calculate, for a test run lower value (e.g. 10e3) is recommended.\n\
+      See https://www.sc-best-practices.org/chromatin_accessibility/quality_control.html#nucleosome-signal\n\
+      for more information\n"
+    info: null
+    default:
+    - 100000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--nuc_signal_threshold"
+    description: "Threshold for nucleosome signal. Cells with nucleosome signal above\
+      \ this threshold\nwill be marked as low quality (\"NS_FAIL\"), otherwise they\
+      \ will be marked \"NS_PASS\".\n"
+    info: null
+    default:
+    - 2.0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--n_tss"
+    description: "Number of the transcription start sites to calculate TSS enrichment\
+      \ score.\nSee https://www.sc-best-practices.org/chromatin_accessibility/quality_control.html#tss-enrichment\n\
+      for more information\n"
+    info: null
+    default:
+    - 3000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--tss_threshold"
+    description: "Threshold for TSS enrichment score. Cells with TSS enrichment score\
+      \ below this threshold\nwill be marked as low quality (\"TSS_FAIL\") otherwise\
+      \ they will be marked as \"TSS_PASS\".\n"
+    info: null
+    default:
+    - 1.5
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Outputs"
+  arguments:
+  - type: "file"
+    name: "--output"
+    description: "Output h5mu file."
+    info: null
+    example:
+    - "output.h5mu"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_compression"
+    description: "The compression format to be used on the output h5mu object."
+    info: null
+    example:
+    - "gzip"
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "python_script"
+  path: "script.py"
+  is_executable: true
+- type: "file"
+  path: "setup_logger.py"
+- type: "file"
+  path: "compress_h5mu.py"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Add basic ATAC quality control metrics to an .h5mu file.\n\nThe metrics\
+  \ are comparable to what scanpy.pp.calculate_qc_metrics output,\nalthough they have\
+  \ slightly different names:\n\nObs metrics (name in this component -> name in scanpy):\n\
+  \  - n_features_per_cell -> n_genes_by_counts\n  - total_fragment_counts -> total_counts\n\
+  \    \n"
+test_resources:
+- type: "python_script"
+  path: "test.py"
+  is_executable: true
+- type: "file"
+  path: "counts"
+- type: "file"
+  path: "openpipelinetestutils"
+  dest: "openpipelinetestutils"
+info: null
+status: "enabled"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "singlecpu"
+    - "midmem"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "python:3.11-slim"
+  target_tag: "scvi-knn-annotation_build"
+  namespace_separator: "/"
+  setup:
+  - type: "apt"
+    packages:
+    - "procps"
+    - "pkg-config"
+    - "libhdf5-dev"
+    - "gcc"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "scanpy~=1.10.4"
+    - "muon~=0.1.5"
+    - "pysam~=0.22.0"
+    upgrade: true
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.8.0"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/qc/calculate_atac_qc_metrics/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "docker"
+  output: "target/nextflow/qc/calculate_atac_qc_metrics"
+  executable: "target/nextflow/qc/calculate_atac_qc_metrics/main.nf"
+  viash_version: "0.9.0"
+  git_commit: "76af5981df4d39a75e44d5f72535bdf514831472"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-2017-g76af5981df4"
+package_config:
+  name: "openpipeline"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+  viash_version: "0.9.0"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
+    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
+    \ := 'includeConfig(\"nextflow_labels.config\")'"
+  - ".version := \"scvi-knn-annotation_build\""
+  - ".engines[.type == 'docker'].target_tag := 'scvi-knn-annotation_build'"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"
