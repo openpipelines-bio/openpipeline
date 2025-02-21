@@ -97,7 +97,7 @@ argument_groups:
     arguments:
       - name: "--n_hvg"
         type: integer
-        default: 1200
+        default: 2000
         description: |
           Number of highly variable genes to subset for.
 
