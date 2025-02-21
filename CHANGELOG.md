@@ -2,9 +2,7 @@
 
 ## NEW FUNCTIONALITY
 
-* `feature_annotation/aling_query_reference`: Added a component to align a query and reference dataset (PR #948).
-
-* `workflows/annotation/scvi_knn` workflow: Cell-type annotation based on scVI integration followed by KNN label transfer (PR #954).
+* `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948, #958).
 
 * `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
 

@@ -2867,16 +2867,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--input_layer",
-          "description" : "The layer in the input (query) data containing raw counts if .X is not to be used.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--input_layer_lognormalized",
-          "description" : "The layer in the input (query) data containing lognormalized counts if .X is not to be used.",
+          "description" : "The layer in the input (query) data to be used for cell type annotation if .X is not to be used.",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -2950,16 +2941,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--reference_layer",
-          "description" : "The layer in the reference data containing raw counts if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--reference_layer_lognormalized",
-          "description" : "The layer in the reference data containing log normalized counts if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.",
+          "description" : "The layer in the reference data to be used for cell type annotation if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3062,21 +3044,9 @@ meta = [
         {
           "type" : "string",
           "name" : "--output_layer",
-          "description" : "Name of the aligned layer containing raw counts in the output query and reference datasets.",
+          "description" : "Name of the aligned layer in the output query and reference datasets.",
           "default" : [
             "_counts"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--output_layer_lognormalized",
-          "description" : "Name of the aligned layer containing log normalized counts in the output query and reference datasets.",
-          "default" : [
-            "_log_normalized"
           ],
           "required" : false,
           "direction" : "input",
@@ -3173,24 +3143,6 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        },
-        {
-          "type" : "boolean",
-          "name" : "--align_layers_raw_counts",
-          "description" : "Whether to align the query and reference layers containing raw counts.",
-          "default" : [
-            true
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "boolean_true",
-          "name" : "--align_layers_lognormalized_counts",
-          "description" : "Whether to align the query and reference layers containing log normalized counts.",
-          "direction" : "input"
         },
         {
           "type" : "string",
@@ -3410,7 +3362,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/align_query_reference",
     "viash_version" : "0.9.0",
-    "git_commit" : "00766752414657dfa2686f1d3342f69b6358f764",
+    "git_commit" : "17ccec4ec76262b81c3a40cd8abe1a40fce9f74f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3462,14 +3414,12 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'input_layer_lognormalized': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER_LOGNORMALIZED+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER_LOGNORMALIZED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_obs_batch': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_BATCH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_obs_label': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_id': $( if [ ! -z ${VIASH_PAR_INPUT_ID+x} ]; then echo "r'${VIASH_PAR_INPUT_ID//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_layer': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'reference_layer_lognormalized': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER_LOGNORMALIZED+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER_LOGNORMALIZED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_var_gene_names': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obs_batch': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_BATCH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obs_label': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3478,7 +3428,6 @@ par = {
   'output_reference': $( if [ ! -z ${VIASH_PAR_OUTPUT_REFERENCE+x} ]; then echo "r'${VIASH_PAR_OUTPUT_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_layer_lognormalized': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_var_gene_names': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_obs_batch': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_BATCH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_obs_label': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3486,8 +3435,6 @@ par = {
   'output_var_index': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_INDEX+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_INDEX//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_var_common_genes': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_COMMON_GENES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_COMMON_GENES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'align_layers_raw_counts': $( if [ ! -z ${VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS+x} ]; then echo "r'${VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'align_layers_lognormalized_counts': $( if [ ! -z ${VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS+x} ]; then echo "r'${VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'unkown_celltype_label': $( if [ ! -z ${VIASH_PAR_UNKOWN_CELLTYPE_LABEL+x} ]; then echo "r'${VIASH_PAR_UNKOWN_CELLTYPE_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'overwrite_existing_key': $( if [ ! -z ${VIASH_PAR_OVERWRITE_EXISTING_KEY+x} ]; then echo "r'${VIASH_PAR_OVERWRITE_EXISTING_KEY//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'preserve_var_index': $( if [ ! -z ${VIASH_PAR_PRESERVE_VAR_INDEX+x} ]; then echo "r'${VIASH_PAR_PRESERVE_VAR_INDEX//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
@@ -3622,49 +3569,20 @@ def main():
 
     # Aligning layers
     logger.info("### Aligning layers")
-
-    if par["align_layers_lognormalized_counts"] and par["align_layers_raw_counts"]:
-        if par["input_layer"] == par["input_layer_lognormalized"]:
-            raise ValueError(
-                "Layer names for raw and lognormalized counts in the query data can not be identical."
-            )
-
-        if par["reference_layer"] == par["reference_layer_lognormalized"]:
-            raise ValueError(
-                "Layer names for raw and lognormalized counts in the reference data can not be identical."
-            )
-
-    if par["align_layers_raw_counts"]:
-        logger.info("## Copying query layer raw counts...")
-        input_modality = copy_layer(
-            input_modality,
-            par["input_layer"],
-            par["output_layer"],
-            overwrite=par["overwrite_existing_key"],
-        )
-        logger.info("## Copying reference layer raw counts...")
-        reference_modality = copy_layer(
-            reference_modality,
-            par["reference_layer"],
-            par["output_layer"],
-            overwrite=par["overwrite_existing_key"],
-        )
-
-    if par["align_layers_lognormalized_counts"]:
-        logger.info("## Copying query layer lognormalized counts...")
-        input_modality = copy_layer(
-            input_modality,
-            par["input_layer_lognormalized"],
-            par["output_layer_lognormalized"],
-            overwrite=par["overwrite_existing_key"],
-        )
-        logger.info("## Copying reference layerlognormalized counts...")
-        reference_modality = copy_layer(
-            reference_modality,
-            par["reference_layer_lognormalized"],
-            par["output_layer_lognormalized"],
-            overwrite=par["overwrite_existing_key"],
-        )
+    logger.info("## Copying query layer...")
+    input_modality = copy_layer(
+        input_modality,
+        par["input_layer"],
+        par["output_layer"],
+        overwrite=par["overwrite_existing_key"],
+    )
+    logger.info("## Copying reference layer...")
+    reference_modality = copy_layer(
+        reference_modality,
+        par["reference_layer"],
+        par["output_layer"],
+        overwrite=par["overwrite_existing_key"],
+    )
 
     # Aligning batch labels
     logger.info("### Aligning batch labels")
