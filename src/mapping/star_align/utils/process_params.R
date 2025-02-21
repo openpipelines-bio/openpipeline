@@ -200,7 +200,6 @@ out2 <- out %>%
 print(out2, n = 200)
 out2 %>%
   mutate(i = row_number()) %>%
-  # filter(is.na(default_step1) != is.na(viash_default)) %>%
   select(-group_name, -description)
 
 out2 %>%

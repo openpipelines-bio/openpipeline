@@ -488,9 +488,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5mu_to_seurat"
-LABEL org.opencontainers.image.created="2025-02-19T06:51:41Z"
+LABEL org.opencontainers.image.created="2025-02-21T14:48:52Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c4feb7e236a78c1586ff8cf34f01b11cac614c6b"
+LABEL org.opencontainers.image.revision="bfb06c353146cf21e9f0b322846c8aa1204e969c"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1109,7 +1109,7 @@ determine_matrix_dims <- function(dataset, indexpointers, indices, rowwise) {
       x_dims <- rev(x_dims)
     }
   }
-  return(x_dims)
+  x_dims
 }
 for (modality_path in modalities) {
   dataset <- open_file[[modality_path]][["X"]]
