@@ -35,7 +35,7 @@ argument_groups:
       - name: "--input_layer_lognormalized"
         type: string
         required: false
-        description: The layer in the input (query) data containing lognormalized counts if .X is not to be used.       
+        description: The layer in the input (query) data containing log normalized counts if .X is not to be used.       
       - name: "--input_var_gene_names"
         type: string
         required: false
