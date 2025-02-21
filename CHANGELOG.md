@@ -6,6 +6,10 @@
 
 * `workflows/annotation/scvi_knn` workflow: Cell-type annotation based on scVI integration followed by KNN label transfer (PR #954).
 
+* `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
+
+* `scanvi`: enable CUDA acceleration (PR #969).
+
 ## MAJOR CHANGES
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
@@ -24,9 +28,13 @@
 
 * `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957, PR #959).
 
+* `integrate/scvi`, `integrate/totalvi` and `integrate/scarches`: update base image to nvcr.io/nvidia/pytorch:24.12-py3, pin scvi-tools version to 1.1.5, unpin jax and jaxlib version (PR #970).
+
 # BUG FIXES
 
 * `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).
+
+* `resources_test_scripts/annotation_test_data.sh`: Add a layer to the annotation reference dataset with log normalized counts (PR #960).
 
 # openpipelines 2.0.0
 
