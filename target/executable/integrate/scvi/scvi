@@ -669,24 +669,20 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM nvcr.io/nvidia/pytorch:23.09-py3
+FROM nvcr.io/nvidia/pytorch:24.12-py3
 ENTRYPOINT []
-RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y libpng-dev libjpeg-dev && \
-  rm -rf /var/lib/apt/lists/*
-
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4" && \
   python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 RUN pip install --upgrade pip && \
-  pip install --no-cache-dir "scvi-tools~=1.0.3" "jaxlib<0.4.23" "jax<0.4.23"
+  pip install --upgrade --no-cache-dir "scvi-tools~=1.1.5"
 
 LABEL org.opencontainers.image.authors="Malte D. Luecken, Dries Schaumont, Matthias Beyens"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scvi"
-LABEL org.opencontainers.image.created="2025-02-11T09:53:50Z"
+LABEL org.opencontainers.image.created="2025-02-21T13:40:06Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ed5d9e3be17b9437c265cc08e8822d65f27bc945"
+LABEL org.opencontainers.image.revision="743bf3c31f7b526f2cfbce4565e2646adc7caec7"
 LABEL org.opencontainers.image.version="harmony-knn-annoation-workflow_build"
 
 VIASHDOCKER

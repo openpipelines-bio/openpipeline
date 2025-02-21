@@ -3005,35 +3005,15 @@ meta = [
       ]
     },
     {
-      "name" : "Highly Variable Genes calculation options",
+      "name" : "HVG subset arguments",
       "arguments" : [
         {
-          "type" : "string",
-          "name" : "--hvg_flavor",
-          "alternatives" : [
-            "--filter_with_hvg_flavor"
-          ],
-          "description" : "Choose the flavor for identifying highly variable features. For the dispersion based methods\nin their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_features.\n",
-          "default" : [
-            "seurat"
-          ],
-          "required" : false,
-          "choices" : [
-            "seurat",
-            "cell_ranger",
-            "seurat_v3"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
           "type" : "integer",
-          "name" : "--hvg_n_top_features",
-          "alternatives" : [
-            "--filter_with_hvg_n_top_genes"
+          "name" : "--n_hvg",
+          "description" : "Number of highly variable genes to subset for.\n",
+          "default" : [
+            2000
           ],
-          "description" : "Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor is set to 'seurat_v3'.",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3282,6 +3262,12 @@ meta = [
       "repository" : {
         "type" : "local"
       }
+    },
+    {
+      "name" : "transform/delete_layer",
+      "repository" : {
+        "type" : "local"
+      }
     }
   ],
   "links" : {
@@ -3372,9 +3358,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/harmony_knn",
     "viash_version" : "0.9.0",
-    "git_commit" : "ed5d9e3be17b9437c265cc08e8822d65f27bc945",
+    "git_commit" : "743bf3c31f7b526f2cfbce4565e2646adc7caec7",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1943-ged5d9e3be1"
+    "git_tag" : "0.2.0-1944-g743bf3c31f7"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3416,6 +3402,7 @@ include { concatenate_h5mu } from "${meta.resources_dir}/../../../../nextflow/da
 include { pca } from "${meta.resources_dir}/../../../../nextflow/dimred/pca/main.nf"
 include { align_query_reference } from "${meta.resources_dir}/../../../../nextflow/feature_annotation/align_query_reference/main.nf"
 include { highly_variable_features_scanpy } from "${meta.resources_dir}/../../../../nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
+include { delete_layer } from "${meta.resources_dir}/../../../../nextflow/transform/delete_layer/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
@@ -3479,8 +3466,7 @@ workflow run_wf {
             fromState: [
                 "input": "input",
                 "modality": "modality",
-                "flavor": "hvg_flavor",
-                "n_top_features": "hvg_n_top_features",
+                "n_top_features": "n_hvg"
             ],
             args: [
                 "layer": "_counts",
@@ -3502,9 +3488,23 @@ workflow run_wf {
             args: [
                 "layer": "_counts",
                 "var_input": "_common_hvg",
-                "obsm_output": "X_pca_harmony",
-                "varm_output": "pca_loadings_harmony",
-                "uns_output": "pca_variance_harmony",
+                "obsm_output": "X_pca_query_reference",
+                "varm_output": "pca_loadings_query_reference",
+                "uns_output": "pca_variance_query_reference",
+            ],
+            toState: [
+                "input": "output"
+            ]
+        )
+        | delete_layer.run(
+            key: "delete_aligned_lognormalized_counts_layer",
+            fromState: [
+                "input": "input",
+                "modality": "modality",
+            ],
+            args: [
+                "layer": "_counts",
+                "missing_ok": "true"
             ],
             toState: [
                 "input": "output"
@@ -3521,7 +3521,7 @@ workflow run_wf {
                 "leiden_resolution": state.leiden_resolution,
             ]},
             args: [
-                "embedding": "X_pca_harmony",
+                "embedding": "X_pca_query_reference",
                 "uns_neighbors": "harmonypy_integration_neighbors",
                 "obsp_neighbor_distances": "harmonypy_integration_distances",
                 "obsp_neighbor_connectivities": "harmonypy_integration_connectivities",

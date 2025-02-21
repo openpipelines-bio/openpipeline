@@ -58,8 +58,7 @@ workflow run_wf {
             fromState: [
                 "input": "input",
                 "modality": "modality",
-                "flavor": "hvg_flavor",
-                "n_top_features": "hvg_n_top_features",
+                "n_top_features": "n_hvg"
             ],
             args: [
                 "layer": "_counts",
@@ -81,9 +80,23 @@ workflow run_wf {
             args: [
                 "layer": "_counts",
                 "var_input": "_common_hvg",
-                "obsm_output": "X_pca_harmony",
-                "varm_output": "pca_loadings_harmony",
-                "uns_output": "pca_variance_harmony",
+                "obsm_output": "X_pca_query_reference",
+                "varm_output": "pca_loadings_query_reference",
+                "uns_output": "pca_variance_query_reference",
+            ],
+            toState: [
+                "input": "output"
+            ]
+        )
+        | delete_layer.run(
+            key: "delete_aligned_lognormalized_counts_layer",
+            fromState: [
+                "input": "input",
+                "modality": "modality",
+            ],
+            args: [
+                "layer": "_counts",
+                "missing_ok": "true"
             ],
             toState: [
                 "input": "output"
@@ -100,7 +113,7 @@ workflow run_wf {
                 "leiden_resolution": state.leiden_resolution,
             ]},
             args: [
-                "embedding": "X_pca_harmony",
+                "embedding": "X_pca_query_reference",
                 "uns_neighbors": "harmonypy_integration_neighbors",
                 "obsp_neighbor_distances": "harmonypy_integration_distances",
                 "obsp_neighbor_connectivities": "harmonypy_integration_connectivities",

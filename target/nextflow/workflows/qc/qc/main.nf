@@ -2895,6 +2895,23 @@ meta = [
       ]
     },
     {
+      "name" : "Gene Detection",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--var_gene_names",
+          "description" : ".var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as a mitochondrial or ribosomal genes, respectively.\n",
+          "example" : [
+            "gene_symbol"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
       "name" : "Mitochondrial Gene Detection",
       "arguments" : [
         {
@@ -2917,11 +2934,25 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--var_gene_names",
-          "description" : ".var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex will be identified\nas a mitochondrial gene.\n",
-          "example" : [
-            "gene_symbol"
+          "name" : "--mitochondrial_gene_regex",
+          "description" : "Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
+          "default" : [
+            "^[mM][tT]-"
           ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Ribosomal Gene Detection",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--var_name_ribosomal_genes",
+          "description" : "In which .var slot to store a boolean array corresponding the ribosomal genes.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -2929,10 +2960,19 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--mitochondrial_gene_regex",
-          "description" : "Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
+          "name" : "--obs_name_ribosomal_fraction",
+          "description" : ".Obs slot to store the fraction of reads found to be ribosomal. Defaults to 'fraction_' suffixed by the value of --var_name_ribosomal_genes\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--ribosomal_gene_regex",
+          "description" : "Regex string that identifies ribosomal genes from --var_gene_names.\nBy default will detect human and mouse ribosomal genes from a gene symbol.\n",
           "default" : [
-            "^[mM][tT]-"
+            "^[Mm]?[Rr][Pp][LlSs]"
           ],
           "required" : false,
           "direction" : "input",
@@ -3215,9 +3255,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc",
     "viash_version" : "0.9.0",
-    "git_commit" : "ed5d9e3be17b9437c265cc08e8822d65f27bc945",
+    "git_commit" : "743bf3c31f7b526f2cfbce4565e2646adc7caec7",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1943-ged5d9e3be1"
+    "git_tag" : "0.2.0-1944-g743bf3c31f7"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3261,7 +3301,7 @@ workflow run_wf {
   input_ch
 
   main:
-    preproc_ch = input_ch
+    output_ch = input_ch
     // Avoid conflict between output from component and output for this workflow
     | map {id, state -> 
       assert state.output, "Output must be defined"
@@ -3276,14 +3316,19 @@ workflow run_wf {
       if (state.var_name_mitochondrial_genes) {
         var_qc_default.add(state.var_name_mitochondrial_genes)
       }
+      if (state.var_name_ribosomal_genes) {
+        var_qc_default.add(state.var_name_ribosomal_genes)
+      }
       // Get the new state, but make sure to overwrite var_qc_metrics if the user has set it.
-      new_state = ["var_qc_metrics": var_qc_default.join(",")] + new_state
+      new_state = ["var_qc_metrics": var_qc_default.join(";")] + new_state
       [id, new_state]
     }
 
-    with_grep_ch = preproc_ch
-    | filter { it -> it[1].var_name_mitochondrial_genes }
     | grep_annotation_column.run(
+      key: "grep_mitochondrial_genes",
+      runIf: { id, state ->
+        state.var_name_mitochondrial_genes
+      },
       fromState: { id, state ->
         def stateMapping = [
           "input": state.input,
@@ -3300,39 +3345,56 @@ workflow run_wf {
       toState: ["input": "output"]
     )
 
-    without_grep_ch = preproc_ch
-      | filter { it -> !it[1].var_name_mitochondrial_genes }
+    | grep_annotation_column.run(
+      key: "grep_ribosomal_genes",
+      runIf: { id, state ->
+        state.var_name_ribosomal_genes
+      },
+      fromState: { id, state ->
+        def stateMapping = [
+          "input": state.input,
+          "modality": state.modality,
+          "input_column": state.var_gene_names,
+          "matrix": "var",
+          "output_match_column": state.var_name_ribosomal_genes,
+          "regex_pattern": state.ribosomal_gene_regex,
+          "input_layer": state.layer,
+        ]
+        stateMapping.output_fraction_column = state.obs_name_ribosomal_fraction ? state.obs_name_ribosomal_fraction: "fraction_$state.var_name_ribosomal_genes"
+        return stateMapping
+      },
+      toState: ["input": "output"]
+    )
 
-    output_ch = without_grep_ch.mix(with_grep_ch)
-      | calculate_qc_metrics.run(
-        fromState: { id, state ->
-          def newState = [
-            "input": state.input,
-            "modality": state.modality,
-            "layer": state.layer,
-            // TODO: remove this workaround when Viash issue is resolved:
-            //       'top_n_vars': list(map(int, r''.split(';'))),
-            //     ValueError: invalid literal for int() with base 10: ''
-            // See https://github.com/viash-io/viash/issues/619
-            "top_n_vars": state.top_n_vars ? state.top_n_vars : null,
-            "var_qc_metrics_fill_na_value": state.var_qc_metrics_fill_na_value,
-            "output_obs_num_nonzero_vars": state.output_obs_num_nonzero_vars,
-            "output_obs_total_counts_vars": state.output_obs_total_counts_vars,
-            "output_var_num_nonzero_obs": state.output_var_num_nonzero_obs,
-            "output_var_total_counts_obs": state.output_var_total_counts_obs,
-            "output_var_obs_mean": state.output_var_obs_mean,
-            "output_var_pct_dropout": state.output_var_pct_dropout,
-            "output": state.workflow_output,
-            "compression": "gzip"
-          ]
-          if (state.var_qc_metrics) {
-            newState += ["var_qc_metrics": state.var_qc_metrics]
-          }
-        return newState
-        },
-        toState: ["output": "output"]
-      )
-      | setState(["output"]) 
+    | calculate_qc_metrics.run(
+      fromState: { id, state ->
+        def newState = [
+          "input": state.input,
+          "modality": state.modality,
+          "layer": state.layer,
+          // TODO: remove this workaround when Viash issue is resolved:
+          //       'top_n_vars': list(map(int, r''.split(';'))),
+          //     ValueError: invalid literal for int() with base 10: ''
+          // See https://github.com/viash-io/viash/issues/619
+          "top_n_vars": state.top_n_vars ? state.top_n_vars : null,
+          "var_qc_metrics_fill_na_value": state.var_qc_metrics_fill_na_value,
+          "output_obs_num_nonzero_vars": state.output_obs_num_nonzero_vars,
+          "output_obs_total_counts_vars": state.output_obs_total_counts_vars,
+          "output_var_num_nonzero_obs": state.output_var_num_nonzero_obs,
+          "output_var_total_counts_obs": state.output_var_total_counts_obs,
+          "output_var_obs_mean": state.output_var_obs_mean,
+          "output_var_pct_dropout": state.output_var_pct_dropout,
+          "output": state.workflow_output,
+          "compression": "gzip"
+        ]
+        if (state.var_qc_metrics) {
+          newState += ["var_qc_metrics": state.var_qc_metrics]
+        }
+      return newState
+      },
+      toState: ["output": "output"]
+    )
+    | setState(["output"]) 
 
   emit:
   output_ch

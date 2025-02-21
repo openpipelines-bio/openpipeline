@@ -15,9 +15,8 @@ reference_obs_target: # please fill in - example: "cell_type"
 # reference_var_gene_names: "foo"
 reference_obs_batch_label: # please fill in - example: "sample"
 
-# Highly Variable Genes calculation options
-hvg_flavor: "seurat"
-# hvg_n_top_features: 123
+# HVG subset arguments
+n_hvg: 2000
 
 # PCA options
 # pca_num_components: 25

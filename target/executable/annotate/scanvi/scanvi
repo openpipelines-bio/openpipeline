@@ -627,17 +627,13 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM python:3.12-slim
+FROM nvcr.io/nvidia/pytorch:24.12-py3
 ENTRYPOINT []
-RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y procps && \
-  rm -rf /var/lib/apt/lists/*
-
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scanpy~=1.10.4"
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scvi-tools==1.1.5" "torch<2.6.0"
+  pip install --upgrade --no-cache-dir "scvi-tools~=1.1.5"
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" && \
@@ -645,9 +641,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate scanvi"
-LABEL org.opencontainers.image.created="2025-02-11T09:53:53Z"
+LABEL org.opencontainers.image.created="2025-02-21T13:40:12Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ed5d9e3be17b9437c265cc08e8822d65f27bc945"
+LABEL org.opencontainers.image.revision="743bf3c31f7b526f2cfbce4565e2646adc7caec7"
 LABEL org.opencontainers.image.version="harmony-knn-annoation-workflow_build"
 
 VIASHDOCKER

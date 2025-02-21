@@ -52,9 +52,7 @@ sc.pp.log1p(
     copy=False,
 )  
 sub_ref_adata_final.layers["log_normalized"] = data_for_scanpy.X
-
 sub_ref_adata_final.write("${OUT}/TS_Blood_filtered.h5ad", compression='gzip')
-
 HEREDOC
 
 

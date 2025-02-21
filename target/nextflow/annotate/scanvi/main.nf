@@ -3392,17 +3392,10 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.12-slim",
+      "image" : "nvcr.io/nvidia/pytorch:24.12-py3",
       "target_tag" : "harmony-knn-annoation-workflow_build",
       "namespace_separator" : "/",
       "setup" : [
-        {
-          "type" : "apt",
-          "packages" : [
-            "procps"
-          ],
-          "interactive" : false
-        },
         {
           "type" : "python",
           "user" : false,
@@ -3415,8 +3408,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scvi-tools==1.1.5",
-            "torch<2.6.0"
+            "scvi-tools~=1.1.5"
           ],
           "upgrade" : true
         },
@@ -3465,9 +3457,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/scanvi",
     "viash_version" : "0.9.0",
-    "git_commit" : "ed5d9e3be17b9437c265cc08e8822d65f27bc945",
+    "git_commit" : "743bf3c31f7b526f2cfbce4565e2646adc7caec7",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1943-ged5d9e3be1"
+    "git_tag" : "0.2.0-1944-g743bf3c31f7"
   },
   "package_config" : {
     "name" : "openpipeline",

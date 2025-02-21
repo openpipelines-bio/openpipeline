@@ -240,32 +240,20 @@
 },
     
     
-    "highly variable genes calculation options" : {
-    "title": "Highly Variable Genes calculation options",
+    "hvg subset arguments" : {
+    "title": "HVG subset arguments",
     "type": "object",
     "description": "No description",
     "properties": {
     
         
-                "hvg_flavor": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `seurat`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. Choose the flavor for identifying highly variable features",
-                "help_text": "Type: `string`, default: `seurat`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. Choose the flavor for identifying highly variable features. For the dispersion based methods\nin their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_features.\n",
-                "enum": ["seurat", "cell_ranger", "seurat_v3"]
-            
-            ,
-                "default":"seurat"
-            }
-    
-
-        ,
-                "hvg_n_top_features": {
+                "n_hvg": {
                 "type":
                 "integer",
-                "description": "Type: `integer`. Number of highly-variable features to keep",
-                "help_text": "Type: `integer`. Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor is set to \u0027seurat_v3\u0027."
-            
+                "description": "Type: `integer`, default: `2000`. Number of highly variable genes to subset for",
+                "help_text": "Type: `integer`, default: `2000`. Number of highly variable genes to subset for.\n"
+            ,
+                "default":2000
             }
     
 
@@ -405,7 +393,7 @@
     },
 
     {
-    "$ref": "#/definitions/highly variable genes calculation options"
+    "$ref": "#/definitions/hvg subset arguments"
     },
 
     {
