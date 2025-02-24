@@ -54,8 +54,8 @@
                 "input_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`. The layer in the input data to be used for cell type annotation if ",
-                "help_text": "Type: `string`. The layer in the input data to be used for cell type annotation if .X is not to be used."
+                "description": "Type: `string`. The layer in the input data containing log normalized counts to be used for cell type annotation if ",
+                "help_text": "Type: `string`. The layer in the input data containing log normalized counts to be used for cell type annotation if .X is not to be used."
             
             }
     
@@ -174,17 +174,6 @@
                 "help_text": "Type: `string`, default: `cell_ontology_class`. The name of the adata obs column in the reference data containing cell type annotations."
             ,
                 "default":"cell_ontology_class"
-            }
-    
-
-        ,
-                "check_expression": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean_true`, default: `false`. Whether to check the expression of the reference dataset to the format reccomended by CellTypist",
-                "help_text": "Type: `boolean_true`, default: `false`. Whether to check the expression of the reference dataset to the format reccomended by CellTypist.\nCellTypist requires data to be log-normalized to 10000 counts per cell.\n"
-            ,
-                "default":false
             }
     
 

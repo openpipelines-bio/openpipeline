@@ -2886,7 +2886,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--input_layer",
-          "description" : "The layer in the input data to be used for cell type annotation if .X is not to be used.",
+          "description" : "The layer in the input data containing log normalized counts to be used for cell type annotation if .X is not to be used.",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -2954,12 +2954,6 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        },
-        {
-          "type" : "boolean_true",
-          "name" : "--check_expression",
-          "description" : "Whether to check the expression of the reference dataset to the format reccomended by CellTypist.\nCellTypist requires data to be log-normalized to 10000 counts per cell.\n",
-          "direction" : "input"
         },
         {
           "type" : "string",
@@ -3340,7 +3334,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.0",
-    "git_commit" : "98f74f85b23a39c94e53cecbd577f51f8aa5009d",
+    "git_commit" : "b8cdb2c8fe06b198dc48533815fee6f0fdc7218b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3386,6 +3380,8 @@ cat > "$tempscript" << VIASHMAIN
 import sys
 import celltypist
 import mudata as mu
+import anndata as ad
+import pandas as pd
 import numpy as np
 
 ## VIASH START
@@ -3399,7 +3395,6 @@ par = {
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_layer': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obs_target': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGET//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'check_expression': $( if [ ! -z ${VIASH_PAR_CHECK_EXPRESSION+x} ]; then echo "r'${VIASH_PAR_CHECK_EXPRESSION//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'reference_var_gene_names': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_var_input': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3467,9 +3462,19 @@ def main(par):
     input_adata = input_mudata.mod[par["modality"]]
     input_modality = input_adata.copy()
 
-    # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
-    # CellTypist requires query gene names to be in index
+    # Provide correct format of query data for celltypist annotation
+    ## Sanitize gene names and set as index
     input_modality = set_var_index(input_modality, par["input_var_gene_names"])
+    ## Fetch lognormalized counts
+    lognorm_counts = (
+        input_modality.layers[par["input_layer"]].copy()
+        if par["input_layer"]
+        else input_modality.X.copy()
+    )
+    ## Create AnnData object
+    input_modality = ad.AnnData(
+        X=lognorm_counts, var=pd.DataFrame(index=input_modality.var.index)
+    )
 
     if par["model"]:
         logger.info("Loading CellTypist model")
@@ -3502,25 +3507,11 @@ def main(par):
             min_gene_overlap=par["input_reference_gene_overlap"],
         )
 
-        input_matrix = (
-            input_modality.layers[par["input_layer"]]
-            if par["input_layer"]
-            else input_modality.X
-        )
         reference_matrix = (
             reference_modality.layers[par["reference_layer"]]
             if par["reference_layer"]
             else reference_modality.X
         )
-
-        if not check_celltypist_format(input_matrix):
-            logger.warning(
-                "Input data is not in the reccommended format for CellTypist."
-            )
-        if not check_celltypist_format(reference_matrix):
-            logger.warning(
-                "Reference data is not in the reccommended format for CellTypist."
-            )
 
         labels = reference_modality.obs[par["reference_obs_target"]]
 
@@ -3533,7 +3524,7 @@ def main(par):
             max_iter=par["max_iter"],
             use_SGD=par["use_SGD"],
             feature_selection=par["feature_selection"],
-            check_expression=par["check_expression"],
+            check_expression=True,
         )
 
     logger.info("Predicting CellTypist annotations")
