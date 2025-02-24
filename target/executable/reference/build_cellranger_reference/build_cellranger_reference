@@ -481,9 +481,9 @@ apt upgrade -y && apt install -y procps pigz && rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_cellranger_reference"
-LABEL org.opencontainers.image.created="2025-02-23T02:51:13Z"
+LABEL org.opencontainers.image.created="2025-02-24T02:51:19Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="210637eb6c1f2853390cb37ac4268a0d2b766de4"
+LABEL org.opencontainers.image.revision="40c5af14351abe71aabd46aa5441ea9a97a64df9"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
