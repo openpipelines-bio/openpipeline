@@ -10,6 +10,8 @@
 
 * `scanvi`: enable CUDA acceleration (PR #969).
 
+* `feature_annotation/align_query_reference`: Enable the alignment of multiple layers (PR #972).
+
 ## MAJOR CHANGES
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
