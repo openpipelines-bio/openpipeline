@@ -44,7 +44,16 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--input_layer"
-    description: "The layer in the input (query) data to be used for cell type annotation\
+    description: "The layer in the input (query) data containing raw counts if .X\
+      \ is not to be used."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--input_layer_lognormalized"
+    description: "The layer in the input (query) data containing log normalized counts\
       \ if .X is not to be used."
     info: null
     required: false
@@ -112,7 +121,17 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--reference_layer"
-    description: "The layer in the reference data to be used for cell type annotation\
+    description: "The layer in the reference data containing raw counts if .X is not\
+      \ to be used. Data are expected to be processed in the same way as the --input\
+      \ query dataset."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--reference_layer_lognormalized"
+    description: "The layer in the reference data containing log normalized counts\
       \ if .X is not to be used. Data are expected to be processed in the same way\
       \ as the --input query dataset."
     info: null
@@ -204,10 +223,22 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--output_layer"
-    description: "Name of the aligned layer in the output query and reference datasets."
+    description: "Name of the aligned layer containing raw counts in the output query\
+      \ and reference datasets."
     info: null
     default:
     - "_counts"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_layer_lognormalized"
+    description: "Name of the aligned layer containing log normalized counts in the\
+      \ output query and reference datasets."
+    info: null
+    default:
+    - "_log_normalized"
     required: false
     direction: "input"
     multiple: false
@@ -294,6 +325,22 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+  - type: "boolean"
+    name: "--align_layers_raw_counts"
+    description: "Whether to align the query and reference layers containing raw counts."
+    info: null
+    default:
+    - true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--align_layers_lognormalized_counts"
+    description: "Whether to align the query and reference layers containing log normalized\
+      \ counts."
+    info: null
+    direction: "input"
   - type: "string"
     name: "--unkown_celltype_label"
     description: "The label to assign to cells with an unknown cell type.\n"
@@ -464,7 +511,7 @@ build_info:
   output: "target/nextflow/feature_annotation/align_query_reference"
   executable: "target/nextflow/feature_annotation/align_query_reference/main.nf"
   viash_version: "0.9.0"
-  git_commit: "bfb06c353146cf21e9f0b322846c8aa1204e969c"
+  git_commit: "98f74f85b23a39c94e53cecbd577f51f8aa5009d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

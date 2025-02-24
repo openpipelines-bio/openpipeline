@@ -54,8 +54,18 @@
                 "input_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`. The layer in the input (query) data to be used for cell type annotation if ",
-                "help_text": "Type: `string`. The layer in the input (query) data to be used for cell type annotation if .X is not to be used."
+                "description": "Type: `string`. The layer in the input (query) data containing raw counts if ",
+                "help_text": "Type: `string`. The layer in the input (query) data containing raw counts if .X is not to be used."
+            
+            }
+    
+
+        ,
+                "input_layer_lognormalized": {
+                "type":
+                "string",
+                "description": "Type: `string`. The layer in the input (query) data containing log normalized counts if ",
+                "help_text": "Type: `string`. The layer in the input (query) data containing log normalized counts if .X is not to be used."
             
             }
     
@@ -149,10 +159,21 @@
                 "output_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `_counts`. Name of the aligned layer in the output query and reference datasets",
-                "help_text": "Type: `string`, default: `_counts`. Name of the aligned layer in the output query and reference datasets."
+                "description": "Type: `string`, default: `_counts`. Name of the aligned layer containing raw counts in the output query and reference datasets",
+                "help_text": "Type: `string`, default: `_counts`. Name of the aligned layer containing raw counts in the output query and reference datasets."
             ,
                 "default":"_counts"
+            }
+    
+
+        ,
+                "output_layer_lognormalized": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `_log_normalized`. Name of the aligned layer containing log normalized counts in the output query and reference datasets",
+                "help_text": "Type: `string`, default: `_log_normalized`. Name of the aligned layer containing log normalized counts in the output query and reference datasets."
+            ,
+                "default":"_log_normalized"
             }
     
 
@@ -244,6 +265,28 @@
     
 
         ,
+                "align_layers_raw_counts": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Whether to align the query and reference layers containing raw counts",
+                "help_text": "Type: `boolean`, default: `true`. Whether to align the query and reference layers containing raw counts."
+            ,
+                "default":true
+            }
+    
+
+        ,
+                "align_layers_lognormalized_counts": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. Whether to align the query and reference layers containing log normalized counts",
+                "help_text": "Type: `boolean_true`, default: `false`. Whether to align the query and reference layers containing log normalized counts."
+            ,
+                "default":false
+            }
+    
+
+        ,
                 "unkown_celltype_label": {
                 "type":
                 "string",
@@ -300,8 +343,18 @@
                 "reference_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`. The layer in the reference data to be used for cell type annotation if ",
-                "help_text": "Type: `string`. The layer in the reference data to be used for cell type annotation if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset."
+                "description": "Type: `string`. The layer in the reference data containing raw counts if ",
+                "help_text": "Type: `string`. The layer in the reference data containing raw counts if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset."
+            
+            }
+    
+
+        ,
+                "reference_layer_lognormalized": {
+                "type":
+                "string",
+                "description": "Type: `string`. The layer in the reference data containing log normalized counts if ",
+                "help_text": "Type: `string`. The layer in the reference data containing log normalized counts if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset."
             
             }
     

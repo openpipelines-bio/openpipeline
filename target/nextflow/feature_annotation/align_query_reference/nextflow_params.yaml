@@ -2,6 +2,7 @@
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # input_layer: "foo"
+# input_layer_lognormalized: "foo"
 # input_var_gene_names: "foo"
 input_obs_batch: # please fill in - example: "sample_id"
 # input_obs_label: "cell_type"
@@ -10,6 +11,7 @@ input_id: "query"
 # Reference
 # reference: "reference.h5mu"
 # reference_layer: "foo"
+# reference_layer_lognormalized: "foo"
 # reference_var_gene_names: "foo"
 reference_obs_batch: # please fill in - example: "sample_id"
 # reference_obs_label: "cell_type"
@@ -20,6 +22,7 @@ reference_id: "reference"
 # output_reference: "$id.$key.output_reference.h5mu"
 # output_compression: "gzip"
 output_layer: "_counts"
+output_layer_lognormalized: "_log_normalized"
 output_var_gene_names: "_gene_names"
 output_obs_batch: "_sample_id"
 output_obs_label: "_cell_type"
@@ -29,6 +32,8 @@ output_var_common_genes: "_common_vars"
 
 # Arguments
 input_reference_gene_overlap: 100
+align_layers_raw_counts: true
+align_layers_lognormalized_counts: false
 unkown_celltype_label: "Unknown"
 overwrite_existing_key: false
 preserve_var_index: false
