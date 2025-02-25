@@ -2961,6 +2961,47 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "double",
+          "name" : "--expected_doublet_rate",
+          "description" : "The estimated fraction of doublets as from the experimental setup.\n",
+          "required" : false,
+          "min" : 0.0,
+          "max" : 1.0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "double",
+          "name" : "--stdev_doublet_rate",
+          "description" : "Uncertainty in the expected doublet rate.",
+          "required" : false,
+          "min" : 0.0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--n_neighbors",
+          "description" : "Number of neighbors used to construct the KNN classifier of observed transcriptomes\nand simulated doublets.\n",
+          "required" : false,
+          "min" : 0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "double",
+          "name" : "--sim_doublet_ratio",
+          "description" : "Number of doublets to simulate relative to the number of observed\ntranscriptomes.\n",
+          "required" : false,
+          "min" : 0.0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "integer",
           "name" : "--min_counts",
           "description" : "The number of minimal UMI counts per cell that have to be present for initial cell detection.",
@@ -3219,7 +3260,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.9.0",
-    "git_commit" : "b8cdb2c8fe06b198dc48533815fee6f0fdc7218b",
+    "git_commit" : "10326355e0c9c72cf532efb17d0ab5d7edce3ee8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3279,6 +3320,10 @@ par = {
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'do_subset': $( if [ ! -z ${VIASH_PAR_DO_SUBSET+x} ]; then echo "r'${VIASH_PAR_DO_SUBSET//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'obs_name_doublet_score': $( if [ ! -z ${VIASH_PAR_OBS_NAME_DOUBLET_SCORE+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_DOUBLET_SCORE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'expected_doublet_rate': $( if [ ! -z ${VIASH_PAR_EXPECTED_DOUBLET_RATE+x} ]; then echo "float(r'${VIASH_PAR_EXPECTED_DOUBLET_RATE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'stdev_doublet_rate': $( if [ ! -z ${VIASH_PAR_STDEV_DOUBLET_RATE+x} ]; then echo "float(r'${VIASH_PAR_STDEV_DOUBLET_RATE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'n_neighbors': $( if [ ! -z ${VIASH_PAR_N_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_N_NEIGHBORS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'sim_doublet_ratio': $( if [ ! -z ${VIASH_PAR_SIM_DOUBLET_RATIO+x} ]; then echo "float(r'${VIASH_PAR_SIM_DOUBLET_RATIO//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_counts': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_cells': $( if [ ! -z ${VIASH_PAR_MIN_CELLS+x} ]; then echo "int(r'${VIASH_PAR_MIN_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_gene_variablity_percent': $( if [ ! -z ${VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT+x} ]; then echo "float(r'${VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -3332,7 +3377,17 @@ if 0 in input_layer.shape:
     )
 
 logger.info("\\\\tRunning scrublet")
-scrub = scr.Scrublet(input_layer)
+initializer_args = {
+    arg: par[arg]
+    for arg in (
+        "expected_doublet_rate",
+        "stdev_doublet_rate",
+        "n_neighbors",
+        "sim_doublet_ratio",
+    )
+    if par[arg] is not None
+}
+scrub = scr.Scrublet(input_layer, **initializer_args)
 
 doublet_scores, predicted_doublets = scrub.scrub_doublets(
     min_counts=par["min_counts"],

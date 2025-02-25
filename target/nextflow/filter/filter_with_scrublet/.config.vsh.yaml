@@ -118,6 +118,45 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+  - type: "double"
+    name: "--expected_doublet_rate"
+    description: "The estimated fraction of doublets as from the experimental setup.\n"
+    info: null
+    required: false
+    min: 0.0
+    max: 1.0
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--stdev_doublet_rate"
+    description: "Uncertainty in the expected doublet rate."
+    info: null
+    required: false
+    min: 0.0
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--n_neighbors"
+    description: "Number of neighbors used to construct the KNN classifier of observed\
+      \ transcriptomes\nand simulated doublets.\n"
+    info: null
+    required: false
+    min: 0
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--sim_doublet_ratio"
+    description: "Number of doublets to simulate relative to the number of observed\n\
+      transcriptomes.\n"
+    info: null
+    required: false
+    min: 0.0
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
   - type: "integer"
     name: "--min_counts"
     description: "The number of minimal UMI counts per cell that have to be present\
@@ -333,7 +372,7 @@ build_info:
   output: "target/nextflow/filter/filter_with_scrublet"
   executable: "target/nextflow/filter/filter_with_scrublet/main.nf"
   viash_version: "0.9.0"
-  git_commit: "b8cdb2c8fe06b198dc48533815fee6f0fdc7218b"
+  git_commit: "10326355e0c9c72cf532efb17d0ab5d7edce3ee8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
