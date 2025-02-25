@@ -53,8 +53,8 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--input_layer"
-    description: "The layer in the input data to be used for cell type annotation\
-      \ if .X is not to be used."
+    description: "The layer in the input data containing log normalized counts to\
+      \ be used for cell type annotation if .X is not to be used."
     info: null
     required: false
     direction: "input"
@@ -118,13 +118,6 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "boolean_true"
-    name: "--check_expression"
-    description: "Whether to check the expression of the reference dataset to the\
-      \ format reccomended by CellTypist.\nCellTypist requires data to be log-normalized\
-      \ to 10000 counts per cell.\n"
-    info: null
-    direction: "input"
   - type: "string"
     name: "--reference_var_gene_names"
     description: "The name of the adata var column in the reference data containing\
@@ -425,7 +418,7 @@ build_info:
   output: "target/executable/annotate/celltypist"
   executable: "target/executable/annotate/celltypist/celltypist"
   viash_version: "0.9.0"
-  git_commit: "40c5af14351abe71aabd46aa5441ea9a97a64df9"
+  git_commit: "d3fe62e00f4067adfe379659b8a422c347a810b8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

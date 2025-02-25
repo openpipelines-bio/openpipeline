@@ -104,9 +104,10 @@ argument_groups:
     multiple_sep: ";"
   - type: "double"
     name: "--theta"
-    description: "Diversity clustering penalty parameter. Specify for each variable\
-      \ in group.by.vars. theta=0 does not encourage any diversity. Larger values\
-      \ of theta result in more diverse clusters."
+    description: "Diversity clustering penalty parameter. Can be set as a single value\
+      \ for all batch observations or as multiple values, one for each observation\
+      \ in the batches defined by --obs_covariates. theta=0 does not encourage any\
+      \ diversity. Larger values of theta result in more diverse clusters."
     info: null
     default:
     - 2.0
@@ -268,7 +269,7 @@ build_info:
   output: "target/executable/integrate/harmonypy"
   executable: "target/executable/integrate/harmonypy/harmonypy"
   viash_version: "0.9.0"
-  git_commit: "40c5af14351abe71aabd46aa5441ea9a97a64df9"
+  git_commit: "d3fe62e00f4067adfe379659b8a422c347a810b8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

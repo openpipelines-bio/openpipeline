@@ -8,11 +8,17 @@
 
 * `scanvi`: enable CUDA acceleration (PR #969).
 
+* `feature_annotation/align_query_reference`: Enable the alignment of multiple layers (PR #972).
+
 ## MAJOR CHANGES
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
 
 * The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
+
+# NEW FUNCTIONALITY 
+
+* `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
 
 # MINOR CHANGES
 
@@ -27,6 +33,8 @@
 * `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957, PR #959).
 
 * `integrate/scvi`, `integrate/totalvi` and `integrate/scarches`: update base image to nvcr.io/nvidia/pytorch:24.12-py3, pin scvi-tools version to 1.1.5, unpin jax and jaxlib version (PR #970).
+
+* `annotate/celltypist`: Enable passing any layer with log normalized counts, enforce checking whether counts are log normalized (PR #971).
 
 # BUG FIXES
 

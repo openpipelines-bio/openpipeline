@@ -200,8 +200,13 @@ function ViashHelp {
   echo ""
   echo "    --input_layer"
   echo "        type: string"
-  echo "        The layer in the input (query) data to be used for cell type annotation"
-  echo "        if .X is not to be used."
+  echo "        The layer in the input (query) data containing raw counts if .X is not"
+  echo "        to be used."
+  echo ""
+  echo "    --input_layer_lognormalized"
+  echo "        type: string"
+  echo "        The layer in the input (query) data containing log normalized counts if"
+  echo "        .X is not to be used."
   echo ""
   echo "    --input_var_gene_names"
   echo "        type: string"
@@ -238,9 +243,15 @@ function ViashHelp {
   echo ""
   echo "    --reference_layer"
   echo "        type: string"
-  echo "        The layer in the reference data to be used for cell type annotation if"
-  echo "        .X is not to be used. Data are expected to be processed in the same way"
-  echo "        as the --input query dataset."
+  echo "        The layer in the reference data containing raw counts if .X is not to be"
+  echo "        used. Data are expected to be processed in the same way as the --input"
+  echo "        query dataset."
+  echo ""
+  echo "    --reference_layer_lognormalized"
+  echo "        type: string"
+  echo "        The layer in the reference data containing log normalized counts if .X"
+  echo "        is not to be used. Data are expected to be processed in the same way as"
+  echo "        the --input query dataset."
   echo ""
   echo "    --reference_var_gene_names"
   echo "        type: string"
@@ -287,7 +298,14 @@ function ViashHelp {
   echo "    --output_layer"
   echo "        type: string"
   echo "        default: _counts"
-  echo "        Name of the aligned layer in the output query and reference datasets."
+  echo "        Name of the aligned layer containing raw counts in the output query and"
+  echo "        reference datasets."
+  echo ""
+  echo "    --output_layer_lognormalized"
+  echo "        type: string"
+  echo "        default: _log_normalized"
+  echo "        Name of the aligned layer containing log normalized counts in the output"
+  echo "        query and reference datasets."
   echo ""
   echo "    --output_var_gene_names"
   echo "        type: string"
@@ -335,6 +353,16 @@ function ViashHelp {
   echo "        min: 1"
   echo "        The minimum number of genes present in both the reference and query"
   echo "        datasets."
+  echo ""
+  echo "    --align_layers_raw_counts"
+  echo "        type: boolean"
+  echo "        default: true"
+  echo "        Whether to align the query and reference layers containing raw counts."
+  echo ""
+  echo "    --align_layers_lognormalized_counts"
+  echo "        type: boolean_true"
+  echo "        Whether to align the query and reference layers containing log"
+  echo "        normalized counts."
   echo ""
   echo "    --unkown_celltype_label"
   echo "        type: string"
@@ -640,9 +668,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component feature_annotation align_query_reference"
-LABEL org.opencontainers.image.created="2025-02-24T02:51:19Z"
+LABEL org.opencontainers.image.created="2025-02-25T02:51:03Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="40c5af14351abe71aabd46aa5441ea9a97a64df9"
+LABEL org.opencontainers.image.revision="d3fe62e00f4067adfe379659b8a422c347a810b8"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -815,6 +843,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_INPUT_LAYER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --input_layer_lognormalized)
+            [ -n "$VIASH_PAR_INPUT_LAYER_LOGNORMALIZED" ] && ViashError Bad arguments for option \'--input_layer_lognormalized\': \'$VIASH_PAR_INPUT_LAYER_LOGNORMALIZED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_LAYER_LOGNORMALIZED="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_layer_lognormalized. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --input_layer_lognormalized=*)
+            [ -n "$VIASH_PAR_INPUT_LAYER_LOGNORMALIZED" ] && ViashError Bad arguments for option \'--input_layer_lognormalized=*\': \'$VIASH_PAR_INPUT_LAYER_LOGNORMALIZED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_LAYER_LOGNORMALIZED=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --input_var_gene_names)
             [ -n "$VIASH_PAR_INPUT_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--input_var_gene_names\': \'$VIASH_PAR_INPUT_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_INPUT_VAR_GENE_NAMES="$2"
@@ -879,6 +918,17 @@ while [[ $# -gt 0 ]]; do
         --reference_layer=*)
             [ -n "$VIASH_PAR_REFERENCE_LAYER" ] && ViashError Bad arguments for option \'--reference_layer=*\': \'$VIASH_PAR_REFERENCE_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_REFERENCE_LAYER=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --reference_layer_lognormalized)
+            [ -n "$VIASH_PAR_REFERENCE_LAYER_LOGNORMALIZED" ] && ViashError Bad arguments for option \'--reference_layer_lognormalized\': \'$VIASH_PAR_REFERENCE_LAYER_LOGNORMALIZED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REFERENCE_LAYER_LOGNORMALIZED="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_layer_lognormalized. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --reference_layer_lognormalized=*)
+            [ -n "$VIASH_PAR_REFERENCE_LAYER_LOGNORMALIZED" ] && ViashError Bad arguments for option \'--reference_layer_lognormalized=*\': \'$VIASH_PAR_REFERENCE_LAYER_LOGNORMALIZED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REFERENCE_LAYER_LOGNORMALIZED=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --reference_var_gene_names)
@@ -969,6 +1019,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT_LAYER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --output_layer_lognormalized)
+            [ -n "$VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED" ] && ViashError Bad arguments for option \'--output_layer_lognormalized\': \'$VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_layer_lognormalized. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_layer_lognormalized=*)
+            [ -n "$VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED" ] && ViashError Bad arguments for option \'--output_layer_lognormalized=*\': \'$VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --output_var_gene_names)
             [ -n "$VIASH_PAR_OUTPUT_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--output_var_gene_names\': \'$VIASH_PAR_OUTPUT_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_VAR_GENE_NAMES="$2"
@@ -1044,6 +1105,22 @@ while [[ $# -gt 0 ]]; do
         --input_reference_gene_overlap=*)
             [ -n "$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP" ] && ViashError Bad arguments for option \'--input_reference_gene_overlap=*\': \'$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --align_layers_raw_counts)
+            [ -n "$VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS" ] && ViashError Bad arguments for option \'--align_layers_raw_counts\': \'$VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --align_layers_raw_counts. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --align_layers_raw_counts=*)
+            [ -n "$VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS" ] && ViashError Bad arguments for option \'--align_layers_raw_counts=*\': \'$VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --align_layers_lognormalized_counts)
+            [ -n "$VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS" ] && ViashError Bad arguments for option \'--align_layers_lognormalized_counts\': \'$VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS=true
             shift 1
             ;;
         --unkown_celltype_label)
@@ -1287,6 +1364,9 @@ fi
 if [ -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then
   VIASH_PAR_OUTPUT_LAYER="_counts"
 fi
+if [ -z ${VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED+x} ]; then
+  VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED="_log_normalized"
+fi
 if [ -z ${VIASH_PAR_OUTPUT_VAR_GENE_NAMES+x} ]; then
   VIASH_PAR_OUTPUT_VAR_GENE_NAMES="_gene_names"
 fi
@@ -1307,6 +1387,12 @@ if [ -z ${VIASH_PAR_OUTPUT_VAR_COMMON_GENES+x} ]; then
 fi
 if [ -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then
   VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP="100"
+fi
+if [ -z ${VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS+x} ]; then
+  VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS="true"
+fi
+if [ -z ${VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS+x} ]; then
+  VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS="false"
 fi
 if [ -z ${VIASH_PAR_UNKOWN_CELLTYPE_LABEL+x} ]; then
   VIASH_PAR_UNKOWN_CELLTYPE_LABEL="Unknown"
@@ -1336,6 +1422,18 @@ if [[ -n "$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP" ]]; then
   fi
   if [[ $VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP -lt 1 ]]; then
     ViashError '--input_reference_gene_overlap' has be more than or equal to 1. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS" ]]; then
+  if ! [[ "$VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--align_layers_raw_counts' has to be a boolean. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS" ]]; then
+  if ! [[ "$VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--align_layers_lognormalized_counts' has to be a boolean_true. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -1542,12 +1640,14 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_layer_lognormalized': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER_LOGNORMALIZED+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER_LOGNORMALIZED//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_obs_batch': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_BATCH//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_obs_label': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_LABEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_id': $( if [ ! -z ${VIASH_PAR_INPUT_ID+x} ]; then echo "r'${VIASH_PAR_INPUT_ID//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_layer': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'reference_layer_lognormalized': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER_LOGNORMALIZED+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER_LOGNORMALIZED//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_var_gene_names': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_obs_batch': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_BATCH//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_obs_label': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_LABEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1556,6 +1656,7 @@ par = {
   'output_reference': $( if [ ! -z ${VIASH_PAR_OUTPUT_REFERENCE+x} ]; then echo "r'${VIASH_PAR_OUTPUT_REFERENCE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_layer_lognormalized': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_var_gene_names': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_obs_batch': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_BATCH//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_obs_label': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_LABEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1563,6 +1664,8 @@ par = {
   'output_var_index': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_INDEX+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_INDEX//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_var_common_genes': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_COMMON_GENES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_COMMON_GENES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'align_layers_raw_counts': $( if [ ! -z ${VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS+x} ]; then echo "r'${VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'align_layers_lognormalized_counts': $( if [ ! -z ${VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS+x} ]; then echo "r'${VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'unkown_celltype_label': $( if [ ! -z ${VIASH_PAR_UNKOWN_CELLTYPE_LABEL+x} ]; then echo "r'${VIASH_PAR_UNKOWN_CELLTYPE_LABEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'overwrite_existing_key': $( if [ ! -z ${VIASH_PAR_OVERWRITE_EXISTING_KEY+x} ]; then echo "r'${VIASH_PAR_OVERWRITE_EXISTING_KEY//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'preserve_var_index': $( if [ ! -z ${VIASH_PAR_PRESERVE_VAR_INDEX+x} ]; then echo "r'${VIASH_PAR_PRESERVE_VAR_INDEX//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi )
@@ -1697,20 +1800,49 @@ def main():
 
     # Aligning layers
     logger.info("### Aligning layers")
-    logger.info("## Copying query layer...")
-    input_modality = copy_layer(
-        input_modality,
-        par["input_layer"],
-        par["output_layer"],
-        overwrite=par["overwrite_existing_key"],
-    )
-    logger.info("## Copying reference layer...")
-    reference_modality = copy_layer(
-        reference_modality,
-        par["reference_layer"],
-        par["output_layer"],
-        overwrite=par["overwrite_existing_key"],
-    )
+
+    if par["align_layers_lognormalized_counts"] and par["align_layers_raw_counts"]:
+        if par["input_layer"] == par["input_layer_lognormalized"]:
+            raise ValueError(
+                "Layer names for raw and lognormalized counts in the query data can not be identical."
+            )
+
+        if par["reference_layer"] == par["reference_layer_lognormalized"]:
+            raise ValueError(
+                "Layer names for raw and lognormalized counts in the reference data can not be identical."
+            )
+
+    if par["align_layers_raw_counts"]:
+        logger.info("## Copying query layer raw counts...")
+        input_modality = copy_layer(
+            input_modality,
+            par["input_layer"],
+            par["output_layer"],
+            overwrite=par["overwrite_existing_key"],
+        )
+        logger.info("## Copying reference layer raw counts...")
+        reference_modality = copy_layer(
+            reference_modality,
+            par["reference_layer"],
+            par["output_layer"],
+            overwrite=par["overwrite_existing_key"],
+        )
+
+    if par["align_layers_lognormalized_counts"]:
+        logger.info("## Copying query layer lognormalized counts...")
+        input_modality = copy_layer(
+            input_modality,
+            par["input_layer_lognormalized"],
+            par["output_layer_lognormalized"],
+            overwrite=par["overwrite_existing_key"],
+        )
+        logger.info("## Copying reference layerlognormalized counts...")
+        reference_modality = copy_layer(
+            reference_modality,
+            par["reference_layer_lognormalized"],
+            par["output_layer_lognormalized"],
+            overwrite=par["overwrite_existing_key"],
+        )
 
     # Aligning batch labels
     logger.info("### Aligning batch labels")
