@@ -309,5 +309,58 @@ def test_selecting_input_layer(
     ], "Feature types of prot modality should be Antibody Capture"
 
 
+def test_customizing_detection_arguments(
+    run_component, random_h5mu_path, input_mudata_path, input_mudata
+):
+    output_mu = random_h5mu_path()
+
+    run_component(
+        [
+            "--input",
+            input_mudata_path,
+            "--output",
+            output_mu,
+            "--modality",
+            "rna",
+            "--min_counts",
+            "10",
+            "--num_pca_components",
+            "10",
+            "--do_subset",
+            "--expected_doublet_rate",
+            "0.3",
+            "--stdev_doublet_rate",
+            "0.11",
+            "--n_neighbors",
+            "100",
+            "--sim_doublet_ratio",
+            "1.5",
+        ]
+    )
+    assert Path(output_mu).is_file(), "Output file not found"
+
+    mu_out = mu.read_h5mu(output_mu)
+    new_obs = mu_out.mod["rna"].n_obs
+    new_vars = mu_out.mod["rna"].n_vars
+    assert (
+        new_obs < input_mudata.mod["rna"].n_obs
+    ), "Some cells should have been filtered"
+    assert (
+        new_vars == input_mudata.mod["rna"].n_vars
+    ), "No genes should have been filtered"
+    assert (
+        mu_out.mod["prot"].n_obs == input_mudata.mod["prot"].n_obs
+    ), "No prot obs should have been filtered"
+    assert (
+        mu_out.mod["prot"].n_vars == input_mudata.mod["prot"].n_vars
+    ), "No prot vars should have been filtered"
+    assert list(mu_out.mod["rna"].var["feature_types"].cat.categories) == [
+        "Gene Expression"
+    ], "Feature types of RNA modality should be Gene Expression"
+    assert list(mu_out.mod["prot"].var["feature_types"].cat.categories) == [
+        "Antibody Capture"
+    ], "Feature types of prot modality should be Antibody Capture"
+
+
 if __name__ == "__main__":
     exit(pytest.main([__file__]))
