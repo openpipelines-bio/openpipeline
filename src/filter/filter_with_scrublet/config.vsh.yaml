@@ -83,6 +83,7 @@ arguments:
 
   - name: "--stdev_doublet_rate"
     type: double
+    min: 0
     required: false
     description: Uncertainty in the expected doublet rate.
 
