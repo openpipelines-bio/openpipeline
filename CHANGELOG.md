@@ -10,8 +10,6 @@
 
 * `scanvi`: enable CUDA acceleration (PR #969).
 
-* `feature_annotation/align_query_reference`: Enable the alignment of multiple layers (PR #972).
-
 * `workflows/annotation/scvi_knn` workflow: Cell-type annotation based on scVI integration followed by KNN label transfer (PR #954).
 
 ## MAJOR CHANGES
