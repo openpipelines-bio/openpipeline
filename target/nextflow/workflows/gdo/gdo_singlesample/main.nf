@@ -3101,7 +3101,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/gdo/gdo_singlesample",
     "viash_version" : "0.9.0",
-    "git_commit" : "10326355e0c9c72cf532efb17d0ab5d7edce3ee8",
+    "git_commit" : "985b53c88ff6818453dbcbfa6cf8cd9b38cbf6ad",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
