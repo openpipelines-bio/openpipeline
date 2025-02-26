@@ -117,6 +117,46 @@
     
 
         ,
+                "expected_doublet_rate": {
+                "type":
+                "number",
+                "description": "Type: `double`. The estimated fraction of doublets as from the experimental setup",
+                "help_text": "Type: `double`. The estimated fraction of doublets as from the experimental setup.\n"
+            
+            }
+    
+
+        ,
+                "stdev_doublet_rate": {
+                "type":
+                "number",
+                "description": "Type: `double`. Uncertainty in the expected doublet rate",
+                "help_text": "Type: `double`. Uncertainty in the expected doublet rate."
+            
+            }
+    
+
+        ,
+                "n_neighbors": {
+                "type":
+                "integer",
+                "description": "Type: `integer`. Number of neighbors used to construct the KNN classifier of observed transcriptomes\nand simulated doublets",
+                "help_text": "Type: `integer`. Number of neighbors used to construct the KNN classifier of observed transcriptomes\nand simulated doublets.\n"
+            
+            }
+    
+
+        ,
+                "sim_doublet_ratio": {
+                "type":
+                "number",
+                "description": "Type: `double`. Number of doublets to simulate relative to the number of observed\ntranscriptomes",
+                "help_text": "Type: `double`. Number of doublets to simulate relative to the number of observed\ntranscriptomes.\n"
+            
+            }
+    
+
+        ,
                 "min_counts": {
                 "type":
                 "integer",
