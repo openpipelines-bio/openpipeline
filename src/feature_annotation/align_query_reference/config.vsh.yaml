@@ -76,11 +76,6 @@ argument_groups:
       - name: "--reference_layer_lognormalized"
         type: string
         description: The layer in the reference data containing log normalized counts if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.
-        description: The layer in the reference data containing raw counts if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.
-        required: false
-      - name: "--reference_layer_lognormalized"
-        type: string
-        description: The layer in the reference data containing log normalized counts if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.
         required: false
       - name: "--reference_var_gene_names"
         type: string
@@ -127,11 +122,6 @@ argument_groups:
       - name: "--output_layer"
         type: string
         default: "_counts"
-        description: Name of the aligned layer containing raw counts in the output query and reference datasets.
-      - name: "--output_layer_lognormalized"
-        type: string
-        default: "_log_normalized"
-        description: Name of the aligned layer containing log normalized counts in the output query and reference datasets.
         description: Name of the aligned layer containing raw counts in the output query and reference datasets.
       - name: "--output_layer_lognormalized"
         type: string
