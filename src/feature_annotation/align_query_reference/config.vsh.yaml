@@ -168,13 +168,6 @@ argument_groups:
       - name: "--align_layers_lognormalized_counts"
         type: boolean_true
         description: Whether to align the query and reference layers containing log normalized counts.
-      - name: "--align_layers_raw_counts"
-        type: boolean
-        default: true
-        description: Whether to align the query and reference layers containing raw counts.
-      - name: "--align_layers_lognormalized_counts"
-        type: boolean_true
-        description: Whether to align the query and reference layers containing log normalized counts.
       - name: "--unkown_celltype_label"
         type: string
         default: "Unknown"
