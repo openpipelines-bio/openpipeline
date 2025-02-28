@@ -32,6 +32,11 @@ arguments:
     type: string
     description: use adata.layers[layer] for expression values instead of adata.X.
     required: false
+  - name: "--var_input"
+    type: string
+    description: |
+      If specified, use boolean array in adata.var[var_input] to calculate hvg on subset of vars.
+    required: false
   # output
   - name: "--output"
     type: file
@@ -112,6 +117,7 @@ resources:
     path: script.py
   - path: /src/utils/setup_logger.py
   - path: /src/utils/compress_h5mu.py
+  - path: /src/utils/subset_vars.py
 test_resources:
   - type: python_script
     path: test.py

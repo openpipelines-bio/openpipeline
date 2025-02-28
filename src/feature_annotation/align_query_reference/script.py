@@ -27,6 +27,11 @@ par = {
     "unkown_celltype_label": "Unknown",
     "overwrite_existing_key": False,
     "output_compression": None,
+    "preserve_var_index": False,
+    "output_var_index": "_ori_var_index",
+    "output_var_common_genes": "_common_vars",
+    "align_layers_raw_counts": True,
+    "align_layers_lognormalized_counts": False,
 }
 
 meta = {"resources_dir": "src/utils"}
@@ -86,7 +91,12 @@ def copy_obs(adata, input_obs_key, output_obs_key, overwrite=False, fill_value=N
 
 
 def copy_and_sanitize_var_gene_names(
-    adata, input_var_key, output_var_key, overwrite=False
+    adata,
+    input_var_key,
+    output_var_key,
+    overwrite=par["overwrite_existing_key"],
+    preserve_index=par["preserve_var_index"],
+    var_index_field="ori_var_index",
 ):
     if output_var_key not in adata.var.keys() and input_var_key:
         logger.info(f"Copying .var field from `{input_var_key}` to `{output_var_key}`")
@@ -113,6 +123,11 @@ def copy_and_sanitize_var_gene_names(
             else adata.var.index.str.replace("\\.[0-9]+$", "", regex=True)
         )
 
+    if not preserve_index:
+        logger.info("Replacing .var index with sanitized gene names...")
+        adata.var[var_index_field] = adata.var.index
+        adata.var.index = list(adata.var[output_var_key])
+
     return adata
 
 
@@ -126,20 +141,49 @@ def main():
 
     # Aligning layers
     logger.info("### Aligning layers")
-    logger.info("## Copying query layer...")
-    input_modality = copy_layer(
-        input_modality,
-        par["input_layer"],
-        par["output_layer"],
-        overwrite=par["overwrite_existing_key"],
-    )
-    logger.info("## Copying reference layer...")
-    reference_modality = copy_layer(
-        reference_modality,
-        par["reference_layer"],
-        par["output_layer"],
-        overwrite=par["overwrite_existing_key"],
-    )
+
+    if par["align_layers_lognormalized_counts"] and par["align_layers_raw_counts"]:
+        if par["input_layer"] == par["input_layer_lognormalized"]:
+            raise ValueError(
+                "Layer names for raw and lognormalized counts in the query data can not be identical."
+            )
+
+        if par["reference_layer"] == par["reference_layer_lognormalized"]:
+            raise ValueError(
+                "Layer names for raw and lognormalized counts in the reference data can not be identical."
+            )
+
+    if par["align_layers_raw_counts"]:
+        logger.info("## Copying query layer raw counts...")
+        input_modality = copy_layer(
+            input_modality,
+            par["input_layer"],
+            par["output_layer"],
+            overwrite=par["overwrite_existing_key"],
+        )
+        logger.info("## Copying reference layer raw counts...")
+        reference_modality = copy_layer(
+            reference_modality,
+            par["reference_layer"],
+            par["output_layer"],
+            overwrite=par["overwrite_existing_key"],
+        )
+
+    if par["align_layers_lognormalized_counts"]:
+        logger.info("## Copying query layer lognormalized counts...")
+        input_modality = copy_layer(
+            input_modality,
+            par["input_layer_lognormalized"],
+            par["output_layer_lognormalized"],
+            overwrite=par["overwrite_existing_key"],
+        )
+        logger.info("## Copying reference layerlognormalized counts...")
+        reference_modality = copy_layer(
+            reference_modality,
+            par["reference_layer_lognormalized"],
+            par["output_layer_lognormalized"],
+            overwrite=par["overwrite_existing_key"],
+        )
 
     # Aligning batch labels
     logger.info("### Aligning batch labels")
@@ -187,6 +231,8 @@ def main():
         par["input_var_gene_names"],
         par["output_var_gene_names"],
         overwrite=par["overwrite_existing_key"],
+        preserve_index=par["preserve_var_index"],
+        var_index_field=par["output_var_index"],
     )
     logger.info("## Copying reference .var gene names field...")
     reference_modality = copy_and_sanitize_var_gene_names(
@@ -194,15 +240,25 @@ def main():
         par["reference_var_gene_names"],
         par["output_var_gene_names"],
         overwrite=par["overwrite_existing_key"],
+        preserve_index=par["preserve_var_index"],
+        var_index_field=par["output_var_index"],
     )
 
     # Cross check genes
     logger.info("### Cross checking genes")
-    cross_check_genes(
+    common_vars = cross_check_genes(
         input_modality.var[par["output_var_gene_names"]],
         reference_modality.var[par["output_var_gene_names"]],
         min_gene_overlap=par["input_reference_gene_overlap"],
     )
+
+    # Add common vars to the output
+    input_modality.var[par["output_var_common_genes"]] = input_modality.var[
+        par["output_var_gene_names"]
+    ].isin(common_vars)
+    reference_modality.var[par["output_var_common_genes"]] = reference_modality.var[
+        par["output_var_gene_names"]
+    ].isin(common_vars)
 
     # Adding an id to the query and reference datasets
     logger.info("### Adding an id to the query and reference datasets")

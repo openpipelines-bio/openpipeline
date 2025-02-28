@@ -36,8 +36,15 @@ def test_run():
     for top_n_vars in ("50", "100", "200", "500"):
         obs_cols_to_remove.append(f"pct_of_counts_in_top_{top_n_vars}_vars")
 
-    obs_cols_to_remove.extend(["total_counts", "num_nonzero_vars"])
-    var_cols_to_remove = ["obs_mean", "total_counts", "num_nonzero_obs", "pct_dropout"]
+    obs_cols_to_remove.extend(["total_counts",
+                               "num_nonzero_vars",
+                               "fraction_mitochondrial",
+                               "fraction_ribosomal",
+                               "total_counts_mitochondrial",
+                               "total_counts_ribosomal",
+                               "pct_mitochondrial",
+                               "pct_ribosomal"])
+    var_cols_to_remove = ["obs_mean", "total_counts", "num_nonzero_obs", "pct_dropout", "mitochondrial", "ribosomal"]
 
     assert set(obs_cols_to_remove).issubset(
         set(output_mudata.mod["rna"].obs.columns.to_list())
