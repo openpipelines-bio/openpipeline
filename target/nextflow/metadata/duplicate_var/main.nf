@@ -3114,7 +3114,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/duplicate_var",
     "viash_version" : "0.9.0",
-    "git_commit" : "22777a54af1613e94be30da4c1bafd7cb2fb9304",
+    "git_commit" : "315ab09bbf3131a274bc154bc473dbeef15310c4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
