@@ -3095,7 +3095,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs",
     "viash_version" : "0.9.0",
-    "git_commit" : "723ed3204897b6e8ec0eb32d8ced21d90777edcc",
+    "git_commit" : "1317ff5db6a5da47ef71ba8412232a0dc284b1da",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
