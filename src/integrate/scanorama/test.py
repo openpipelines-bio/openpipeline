@@ -1,7 +1,7 @@
 import sys
 import pytest
 from mudata import read_h5mu
-from openpipelinetestutils.asserters import assert_annotation_objects_equal
+from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {

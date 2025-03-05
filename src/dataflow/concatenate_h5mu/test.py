@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 import re
 import sys
-from openpipelinetestutils.utils import remove_annotation_column
+from openpipeline_testutils.utils import remove_annotation_column
 from operator import attrgetter
 
 ## VIASH START
