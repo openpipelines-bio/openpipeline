@@ -1,5 +1,5 @@
 from mudata import read_h5mu
-from openpipelinetest_utils.asserters import assert_annotation_objects_equal
+from openpipeline_testutils.asserters import assert_annotation_objects_equal
 from pathlib import Path
 import shutil
 import os

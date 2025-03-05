@@ -4,8 +4,8 @@ import shutil
 import sys
 from pathlib import Path
 from mudata import read_h5mu
-from openpipelinetest_utils.asserters import assert_annotation_objects_equal
-from openpipelinetest_utils.utils import remove_annotation_column
+from openpipeline_testutils.asserters import assert_annotation_objects_equal
+from openpipeline_testutils.utils import remove_annotation_column
 
 
 ##VIASH START

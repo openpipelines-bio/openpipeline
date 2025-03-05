@@ -3,7 +3,7 @@ import pytest
 
 from mudata import read_h5mu
 from subprocess import CalledProcessError
-from openpipelinetest_utils.asserters import assert_annotation_objects_equal
+from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {

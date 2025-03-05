@@ -4,7 +4,7 @@ import pytest
 import subprocess
 import re
 import mudata as mu
-from openpipelinetest_utils.asserters import assert_annotation_objects_equal
+from openpipeline_testutils.asserters import assert_annotation_objects_equal
 from sklearn.ensemble import RandomForestClassifier
 import pickle
 

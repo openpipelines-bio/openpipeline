@@ -1,7 +1,7 @@
 from mudata import read_h5mu
 import pytest
 
-# from openpipelinetest_utils.asserters import assert_annotation_objects_equal
+# from openpipeline_testutils.asserters import assert_annotation_objects_equal
 import sys
 import os
 import shutil
@@ -17,7 +17,7 @@ meta = {"resources_dir": "src/base/openpipelinetestutils"}
 
 ##VIASH END
 sys.path.append(meta["resources_dir"])
-from openpipelinetest_utils.asserters import assert_annotation_objects_equal
+from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 
 @pytest.fixture

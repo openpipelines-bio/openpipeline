@@ -2,7 +2,7 @@ import sys
 import pytest
 import numpy as np
 from mudata import read_h5mu
-from openpipelinetest_utils.asserters import assert_annotation_objects_equal
+from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {

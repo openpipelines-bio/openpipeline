@@ -1,5 +1,5 @@
 import mudata as mu
-from openpipelinetest_utils.asserters import assert_annotation_objects_equal
+from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ##VIASH START
 par = {"input": "output.h5mu", "orig_input": "input.5mu"}
