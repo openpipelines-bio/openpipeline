@@ -3208,7 +3208,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/interpret/lianapy",
     "viash_version" : "0.9.0",
-    "git_commit" : "bf8150a8d04e27fb046bcc643bb1764093440264",
+    "git_commit" : "89aff3bbe781d58d5be2d20fa9b81432a909e886",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
