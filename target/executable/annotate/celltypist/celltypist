@@ -602,9 +602,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate celltypist"
-LABEL org.opencontainers.image.created="2025-02-26T10:42:48Z"
+LABEL org.opencontainers.image.created="2025-03-06T14:47:31Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="985b53c88ff6818453dbcbfa6cf8cd9b38cbf6ad"
+LABEL org.opencontainers.image.revision="34559dc60cdc3c50a50b0266c614d8a97008ec24"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1602,9 +1602,10 @@ def main(par):
     predictions = celltypist.annotate(
         input_modality, model, majority_voting=par["majority_voting"]
     )
+
     input_adata.obs[par["output_obs_predictions"]] = predictions.predicted_labels[
         "predicted_labels"
-    ]
+    ].values
     input_adata.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(
         axis=1
     ).values
