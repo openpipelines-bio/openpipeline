@@ -132,10 +132,9 @@ def main(par):
         input_modality, model, majority_voting=par["majority_voting"]
     )
 
-    input_adata.obs[par["output_obs_predictions"]] = pd.Series(
-        predictions.predicted_labels["predicted_labels"].values,
-        index=input_adata.obs_names,
-    )
+    input_adata.obs[par["output_obs_predictions"]] = predictions.predicted_labels[
+        "predicted_labels"
+    ].values
     input_adata.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(
         axis=1
     ).values

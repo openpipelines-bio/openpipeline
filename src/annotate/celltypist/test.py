@@ -57,6 +57,7 @@ def test_simple_execution(run_component, random_h5mu_path):
     assert (
         predictions.dtype == "category"
     ), "Calculated predictions should be category dtype"
+    assert not all(predictions.isna()), "Not all predictions should be NA"
 
     probabilities = output_mudata.mod["rna"].obs["celltypist_probability"]
     assert (
@@ -147,6 +148,7 @@ def test_with_model(run_component, random_h5mu_path):
     assert (
         predictions.dtype == "category"
     ), "Calculated predictions should be category dtype"
+    assert not all(predictions.isna()), "Not all predictions should be NA"
 
     probabilities = output_mudata.mod["rna"].obs["celltypist_probability"]
     assert (
