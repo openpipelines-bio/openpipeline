@@ -10,9 +10,12 @@ par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "output": "output.h5mu",
     "modality": "rna",
-    "reference": None,
-    # "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
-    "model": "resources_test/annotation_test_data/celltypist_model_Immune_All_Low.pkl",
+    # "reference": None,
+    "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
+    "model": None,
+    # "model": "resources_test/annotation_test_data/celltypist_model_Immune_All_Low.pkl",
+    "input_layer": "log_normalized",
+    "reference_layer": "log_normalized",
     "input_reference_gene_overlap": 100,
     "reference_obs_target": "cell_ontology_class",
     "reference_var_input": None,
@@ -22,8 +25,10 @@ par = {
     "output_compression": "gzip",
     "input_var_gene_names": None,
     "reference_var_gene_names": "ensemblid",
-    "input_layer": "log_normalized",
-    "reference_layer": None,
+    "C": 1.0,
+    "max_iter": 1000,
+    "use_SGD": False,
+    "min_prop": 0,
     "output_obs_predictions": "celltypist_pred",
     "output_obs_probability": "celltypist_probability",
 }
@@ -126,9 +131,11 @@ def main(par):
     predictions = celltypist.annotate(
         input_modality, model, majority_voting=par["majority_voting"]
     )
-    input_adata.obs[par["output_obs_predictions"]] = predictions.predicted_labels[
-        "predicted_labels"
-    ]
+
+    input_adata.obs[par["output_obs_predictions"]] = pd.Series(
+        predictions.predicted_labels["predicted_labels"].values,
+        index=input_adata.obs_names,
+    )
     input_adata.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(
         axis=1
     ).values
