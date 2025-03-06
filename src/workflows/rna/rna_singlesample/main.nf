@@ -22,10 +22,12 @@ workflow run_wf {
         throw new RuntimeException("Enabling --min_fraction_mito or --max_fraction_mito requires --var_name_mitochondrial_genes.")
       }
       if (state.var_gene_names && !state.var_name_mitochondrial_genes && !state.var_name_ribosomal_genes) {
-        System.err.println("Warning: --var_gene_names requires either --var_name_mitochondrial_genes or --var_name_ribosomal_genes to be set.")
+        System.err.println("Warning: --var_gene_names is only required for mitochondrial gene detection and does nothing while 
+                            not also setting --var_name_mitochondrial_genes or --var_name_ribosomal_genes.")
       }
       if (state.mitochondrial_gene_regex && !state.var_name_mitochondrial_genes && !state.var_name_ribosomal_genes) {
-        System.err.println("Warning: --mitochondrial_gene_regex requires either --var_name_mitochondrial_genes or --var_name_ribosomal_genes to be set.")
+        System.err.println("Warning: --mitochondrial_gene_regex is only required for mitochondrial gene detection and does 
+                            nothing while not also setting --var_name_mitochondrial_genes or --var_name_ribosomal_genes.")
       }
       if (state.obs_name_ribosomal_fraction && !state.var_name_ribosomal_genes) {
         throw new RuntimeException("Using --obs_name_ribosomal_fraction requires --var_name_ribosomal_genes.")
