@@ -2,7 +2,7 @@
 
 ## NEW FUNCTIONALITY
 
-* `dataflow/concatenate_h5mu`: add `modality` parameter (PR #).
+* `dataflow/concatenate_h5mu`: add `modality` parameter (PR #977).
 
 * `filter_with_scrublet`: add `expected_doublet_rate`, `stdev_doublet_rate`, `n_neighbors` and `sim_doublet_ratio` arguments (PR #974).
 
