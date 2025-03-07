@@ -376,7 +376,6 @@ def main() -> None:
         par["modality"] = set(par["modality"])
         if not par["modality"].issubset(mods):
             mods_joined, input_mods_joined = ", ".join(mods), ", ".join(par["modality"])
-            input_mods_joined = ""
             raise ValueError(
                 f"One of the modalities provided ({input_mods_joined}) is not available in the input data {mods_joined}"
             )
