@@ -13,6 +13,11 @@ arguments:
     description: Paths to the different samples to be concatenated.
     required: true
     example: sample_paths
+  - name: "--modality"
+    type: string
+    multiple: true
+    description: "Only output concatenated objects for the provided modalities. Outputs all modalities by default."
+    required: false
   - name: "--input_id"
     type: string
     multiple: true
