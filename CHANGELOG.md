@@ -44,6 +44,8 @@
 
 * `resources_test_scripts/annotation_test_data.sh`: Add a layer to the annotation reference dataset with log normalized counts (PR #960).
 
+* `annotate/celltypist`: Fix missing values in annotation column caused by index misalignment (PR #976).
+
 # openpipelines 2.0.0
 
 ## BREAKING CHANGES

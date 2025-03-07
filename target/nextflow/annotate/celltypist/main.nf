@@ -3334,7 +3334,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.0",
-    "git_commit" : "89aff3bbe781d58d5be2d20fa9b81432a909e886",
+    "git_commit" : "57fb5d6098e1106217283dfe8336ba85bdd8a744",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3531,9 +3531,10 @@ def main(par):
     predictions = celltypist.annotate(
         input_modality, model, majority_voting=par["majority_voting"]
     )
+
     input_adata.obs[par["output_obs_predictions"]] = predictions.predicted_labels[
         "predicted_labels"
-    ]
+    ].values
     input_adata.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(
         axis=1
     ).values
