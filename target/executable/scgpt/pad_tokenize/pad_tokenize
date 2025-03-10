@@ -544,9 +544,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Elizabeth Mlynarski, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt pad_tokenize"
-LABEL org.opencontainers.image.created="2025-03-09T02:43:36Z"
+LABEL org.opencontainers.image.created="2025-03-10T02:43:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="912f8f8f2c4ae525b5634656c6d8496a234580a9"
+LABEL org.opencontainers.image.revision="430cbdfd1689a5132c66511077791bcdd222a9b3"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
