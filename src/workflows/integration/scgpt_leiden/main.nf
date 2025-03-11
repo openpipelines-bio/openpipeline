@@ -19,7 +19,7 @@ workflow run_wf {
           "modality": state.modality,
           "var_name_filter": "scgpt_filter_with_hvg",
           "n_top_features": state.n_hvg,
-          "flavor": "seurat_v3"
+          "flavor": state.hvg_flavor
         ]
       },
       toState: ["input": "output"]
