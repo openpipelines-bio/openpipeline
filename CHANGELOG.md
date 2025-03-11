@@ -14,6 +14,8 @@
 
 * `feature_annotation/align_query_reference`: Enable the alignment of multiple layers (PR #972).
 
+* `workflows/annotation/scgpt_integration_knn` and `workflows/annotation/harmony_knn`: Only output provided modalities (PR #978).
+
 ## MAJOR CHANGES
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
