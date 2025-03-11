@@ -1,0 +1,65 @@
+name: convert_to_sparse
+namespace: "dataflow"
+description: |
+  Convert the layers of a mudata file to sparse matrices.
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ maintainer ]
+arguments:
+  - name: "--input"
+    alternatives: ["-i"]
+    type: file
+    description: Input MuData file
+    default: input.h5mu
+    direction: input
+    required: true
+  - name: "--modality"
+    type: string
+    default: "rna"
+    required: false
+  - name: "--layer"
+    type: string
+    required: false
+    description: Layer to convert to sparse matrix, if .X is not to be used.
+  - name: "--output"
+    alternatives: ["-o"]
+    type: file
+    description: Output AnnData file.
+    default: output.h5ad
+    direction: output
+  - name: "--output_compression"
+    type: string
+    description: The compression format to be used on the final h5ad object.
+    default: "gzip"
+    choices: ["gzip", "lzf"]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
+  - path: /resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
+engines:
+  - type: docker
+    image: python:3.11-slim
+    setup:
+      - type: apt
+        packages: 
+          - procps
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        packages:
+          - pandas~=2.1.1
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [midcpu, highmem]
