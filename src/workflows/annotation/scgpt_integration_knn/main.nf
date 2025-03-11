@@ -125,6 +125,7 @@ workflow run_wf {
             "pad_token": state.pad_token,
             "pad_value": state.pad_value,
             "n_hvg": state.n_hvg,
+            "hvg_flavor": state.hvg_flavor,
             "max_seq_len": state.max_seq_len,
             "dsbn": state.dsbn,
             "batch_size": state.batch_size,
