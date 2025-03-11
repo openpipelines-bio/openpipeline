@@ -43,8 +43,10 @@ workflow run_wf {
         )
         // Concatenate query and reference datasets prior to integration
         | concatenate_h5mu.run(
-            fromState: { id, state -> [
-                "input": [state.input, state.reference]
+            fromState: { id, state -> 
+                [
+                    "input": [state.input, state.reference],
+                    "modality": "modality"
                 ]
             },
             args: [
