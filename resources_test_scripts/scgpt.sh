@@ -18,45 +18,45 @@ finetuned_model_dir="$OUT/finetuned_model"
 mkdir -p "$finetuned_model_dir"
 export finetuned_model_dir
 
-# # install gdown if necessary
-# # Check whether gdown is available
-# if ! command -v gdown &> /dev/null; then
-#     echo "This script requires gdown. Please make sure the binary is added to your PATH."
-#     exit 1
-# fi
+# install gdown if necessary
+# Check whether gdown is available
+if ! command -v gdown &> /dev/null; then
+    echo "This script requires gdown. Please make sure the binary is added to your PATH."
+    exit 1
+fi
 
-# # install torch if necessary
-# # Check whether torch is available
-# if ! python -c "import torch"; then
-#     echo "This script requires torch. Please make sure it is available in your python environment."
-#     exit 1
-# fi
+# install torch if necessary
+# Check whether torch is available
+if ! python -c "import torch"; then
+    echo "This script requires torch. Please make sure it is available in your python environment."
+    exit 1
+fi
 
-# echo "> Downloading scGPT foundation model (full_human)"
-# # download foundational model files (full_human)
-# # https://drive.google.com/drive/folders/1oWh_-ZRdhtoGQ2Fw24HP41FgLoomVo-y
-# gdown '1H3E_MJ-Dl36AQV6jLbna2EdvgPaqvqcC' -O "${foundation_model_dir}/vocab.json"
-# gdown '1hh2zGKyWAx3DyovD30GStZ3QlzmSqdk1' -O "${foundation_model_dir}/args.json"
-# gdown '14AebJfGOUF047Eg40hk57HCtrb0fyDTm' -O "${foundation_model_dir}/best_model.pt"
+echo "> Downloading scGPT foundation model (full_human)"
+# download foundational model files (full_human)
+# https://drive.google.com/drive/folders/1oWh_-ZRdhtoGQ2Fw24HP41FgLoomVo-y
+gdown '1H3E_MJ-Dl36AQV6jLbna2EdvgPaqvqcC' -O "${foundation_model_dir}/vocab.json"
+gdown '1hh2zGKyWAx3DyovD30GStZ3QlzmSqdk1' -O "${foundation_model_dir}/args.json"
+gdown '14AebJfGOUF047Eg40hk57HCtrb0fyDTm' -O "${foundation_model_dir}/best_model.pt"
 
-# echo "> Converting to finetuned model format"
-# python <<HEREDOC
-# import torch
-# import mudata
-# import os
+echo "> Converting to finetuned model format"
+python <<HEREDOC
+import torch
+import mudata
+import os
 
-# foundation_model_dir = os.environ.get('foundation_model_dir')
-# finetuned_model_dir = os.environ.get('finetuned_model_dir')
+foundation_model_dir = os.environ.get('foundation_model_dir')
+finetuned_model_dir = os.environ.get('finetuned_model_dir')
 
-# found_model_path = f"{foundation_model_dir}/best_model.pt"
-# ft_model_path = f"{finetuned_model_dir}/best_model.pt"
+found_model_path = f"{foundation_model_dir}/best_model.pt"
+ft_model_path = f"{finetuned_model_dir}/best_model.pt"
 
-# f_model_dict = torch.load(found_model_path, map_location="cpu")
-# model_dict = {}
-# model_dict["model_state_dict"] = f_model_dict
-# model_dict["id_to_class"] = {k: str(k) for k in range(15)}
-# torch.save(model_dict, ft_model_path)
-# HEREDOC
+f_model_dict = torch.load(found_model_path, map_location="cpu")
+model_dict = {}
+model_dict["model_state_dict"] = f_model_dict
+model_dict["id_to_class"] = {k: str(k) for k in range(15)}
+torch.save(model_dict, ft_model_path)
+HEREDOC
 
 # create test data dir
 test_resources_dir="$OUT/test_resources"
