@@ -1,7 +1,7 @@
 import csv
 import os
 import mudata as mu
-from openpipelinetestutils.asserters import assert_annotation_objects_equal
+from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 
 ##VIASH START
