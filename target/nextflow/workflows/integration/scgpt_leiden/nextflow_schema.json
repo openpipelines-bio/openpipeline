@@ -229,8 +229,8 @@
                 "hvg_flavor": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `cell_ranger`, choices: ``cell_ranger`, `seurat``. ",
-                "help_text": "Type: `string`, default: `cell_ranger`, choices: ``cell_ranger`, `seurat``. ",
+                "description": "Type: `string`, default: `cell_ranger`, choices: ``cell_ranger`, `seurat``. Method to be used for identifying highly variable genes",
+                "help_text": "Type: `string`, default: `cell_ranger`, choices: ``cell_ranger`, `seurat``. Method to be used for identifying highly variable genes. \nNote that the default for this workflow (`cell_ranger`) is not the default method for scanpy hvg detection (`seurat`).\n",
                 "enum": ["cell_ranger", "seurat"]
             
             ,

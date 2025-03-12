@@ -14,7 +14,6 @@ workflow test_wf {
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         input_layer: "log_normalized",
         reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
-        reference_layer: "log_normalized",
         model: resources_test.resolve("scgpt/source/best_model.pt"),
         model_config: resources_test.resolve("scgpt/source/args.json"),
         model_vocab: resources_test.resolve('scgpt/source/vocab.json'),
@@ -22,7 +21,7 @@ workflow test_wf {
         input_obs_batch_label: "sample_id",
         input_var_gene_names: "gene_symbol",
         reference_obs_batch_label: "donor_assay",
-        reference_var_gen_names: "feature_name",
+        reference_var_gene_names: "feature_name",
         reference_obs_targets: "cell_type",
         n_hvg: 100,
         leiden_resolution: [1.0, 0.25]
@@ -32,7 +31,6 @@ workflow test_wf {
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         input_layer: "log_normalized",
         reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
-        reference_layer: "log_normalized",
         model: resources_test.resolve("scgpt/source/best_model.pt"),
         model_config: resources_test.resolve("scgpt/source/args.json"),
         model_vocab: resources_test.resolve('scgpt/source/vocab.json'),
@@ -40,7 +38,7 @@ workflow test_wf {
         input_obs_batch_label: "sample_id",
         input_var_gene_names: "gene_symbol",
         reference_obs_batch_label: "donor_assay",
-        reference_var_gen_names: "feature_name",
+        reference_var_gene_names: "feature_name",
         reference_obs_targets: "cell_type",
         n_hvg: 100,
         leiden_resolution: []

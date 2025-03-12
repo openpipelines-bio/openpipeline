@@ -3073,6 +3073,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--hvg_flavor",
+          "description" : "Method to be used for identifying highly variable genes. \nNote that the default for this workflow (`cell_ranger`) is not the default method for scanpy hvg detection (`seurat`).\n",
           "default" : [
             "cell_ranger"
           ],
@@ -3345,7 +3346,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scgpt_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "e36bf4284cf3b8fe01423edf513d4b95a94d4e57",
+    "git_commit" : "62c1408103aece95e67264b961e714d1a954d109",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
