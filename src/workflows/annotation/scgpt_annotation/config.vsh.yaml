@@ -142,6 +142,9 @@ argument_groups:
         type: string
         choices: ["cell_ranger", "seurat"]
         default: "cell_ranger"
+        description: |
+          Method to be used for identifying highly variable genes. 
+          Note that the default for this workflow (`cell_ranger`) is not the default method for scanpy hvg detection (`seurat`).
 
   - name: "Tokenization arguments"
     arguments:

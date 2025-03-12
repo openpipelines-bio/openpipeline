@@ -21,7 +21,7 @@ workflow test_wf {
         input_obs_batch_label: "sample_id",
         input_var_gene_names: "gene_symbol",
         reference_obs_batch_label: "donor_assay",
-        reference_var_gen_names: "feature_name",
+        reference_var_gene_names: "feature_name",
         reference_obs_targets: "cell_type",
         n_hvg: 100,
         leiden_resolution: [1.0, 0.25]
@@ -38,7 +38,7 @@ workflow test_wf {
         input_obs_batch_label: "sample_id",
         input_var_gene_names: "gene_symbol",
         reference_obs_batch_label: "donor_assay",
-        reference_var_gen_names: "feature_name",
+        reference_var_gene_names: "feature_name",
         reference_obs_targets: "cell_type",
         n_hvg: 100,
         leiden_resolution: []
