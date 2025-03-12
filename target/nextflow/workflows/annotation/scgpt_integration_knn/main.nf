@@ -3492,7 +3492,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_integration_knn",
     "viash_version" : "0.9.0",
-    "git_commit" : "62c1408103aece95e67264b961e714d1a954d109",
+    "git_commit" : "8b156660b804681dc7b0cc08d1d891b820439760",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3665,7 +3665,6 @@ workflow run_wf {
             "pad_token": state.pad_token,
             "pad_value": state.pad_value,
             "n_hvg": state.n_hvg,
-            "hvg_flavor": state.hvg_flavor,
             "max_seq_len": state.max_seq_len,
             "dsbn": state.dsbn,
             "batch_size": state.batch_size,
