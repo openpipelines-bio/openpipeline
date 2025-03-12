@@ -2910,7 +2910,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--input_layer",
-          "description" : "The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts.\n",
+          "description" : "Mudata layer (key from layers) to use as input data for HVG subsetting and binning; if not specified, X is used.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3106,21 +3106,6 @@ meta = [
             1200
           ],
           "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--hvg_flavor",
-          "default" : [
-            "cell_ranger"
-          ],
-          "required" : false,
-          "choices" : [
-            "cell_ranger",
-            "seurat"
-          ],
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3368,7 +3353,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_annotation",
     "viash_version" : "0.9.0",
-    "git_commit" : "b0a5d1f95688ac27074715534586678056428e42",
+    "git_commit" : "bfae2e4d83d7ec80f77fb8a19db23a2a87fa9ec0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3432,10 +3417,10 @@ workflow run_wf {
         "layer": "input_layer",
         "modality": "modality",
         "n_top_features": "n_hvg",
-        "flavor": "hvg_flavor"
       ],
       args: [
-        "var_name_filter": "scgpt_filter_with_hvg"
+        "var_name_filter": "scgpt_filter_with_hvg",
+        "flavor": "seurat_v3"
       ],
       toState: ["input": "output"]
     )

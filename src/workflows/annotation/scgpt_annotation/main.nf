@@ -17,10 +17,10 @@ workflow run_wf {
         "layer": "input_layer",
         "modality": "modality",
         "n_top_features": "n_hvg",
-        "flavor": "hvg_flavor"
       ],
       args: [
-        "var_name_filter": "scgpt_filter_with_hvg"
+        "var_name_filter": "scgpt_filter_with_hvg",
+        "flavor": "seurat_v3"
       ],
       toState: ["input": "output"]
     )

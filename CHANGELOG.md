@@ -48,8 +48,6 @@
 
 * `annotate/celltypist`: Fix missing values in annotation column caused by index misalignment (PR #976).
 
-* `workflows/annotation/scgpt_annotation`, `workflows/annotation/scgpt_integration_knn` and `workflows/integrate/scgpt_leiden`: Parameterization of HVG flavor (PR #979).
-
 # openpipelines 2.0.0
 
 ## BREAKING CHANGES
