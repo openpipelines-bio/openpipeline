@@ -3346,7 +3346,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count",
     "viash_version" : "0.9.0",
-    "git_commit" : "e15007c8d0fc87167eba20bbb11259537c744301",
+    "git_commit" : "524a0e0c7ad195206281ba2e0c0e2b01e5fc6b39",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
