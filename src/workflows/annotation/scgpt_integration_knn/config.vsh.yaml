@@ -36,7 +36,7 @@ argument_groups:
         type: string
         required: False
         description: |
-          Mudata layer (key from layers) to use as input data for scGPT integration; if not specified, X is used. Should match the layer name of the reference dataset.
+          The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts.
       - name: "--input_var_gene_names"
         type: string
         required: false
@@ -128,6 +128,10 @@ argument_groups:
         default: 1200
         description: |
           Number of highly variable genes to subset for.
+      - name: "--hvg_flavor"
+        type: string
+        choices: ["cell_ranger", "seurat"]
+        default: "cell_ranger"
 
   - name: "Tokenization arguments"
     arguments:
