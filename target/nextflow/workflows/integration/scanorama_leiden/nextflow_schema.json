@@ -1,0 +1,344 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "scanorama_leiden",
+"description": "Run scanorama integration followed by neighbour calculations, leiden clustering and run umap on the result.",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "id": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `foo`. ID of the sample",
+                "help_text": "Type: `string`, required, example: `foo`. ID of the sample."
+            
+            }
+    
+
+        ,
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `dataset.h5mu`. Path to the sample",
+                "help_text": "Type: `file`, required, example: `dataset.h5mu`. Path to the sample."
+            
+            }
+    
+
+        ,
+                "layer": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `log_normalized`. use specified layer for expression values instead of the ",
+                "help_text": "Type: `string`, default: `log_normalized`. use specified layer for expression values instead of the .X object from the modality."
+            ,
+                "default":"log_normalized"
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. Which modality to process",
+                "help_text": "Type: `string`, default: `rna`. Which modality to process."
+            ,
+                "default":"rna"
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
+            ,
+                "default":"$id.$key.output.h5mu"
+            }
+    
+
+}
+},
+    
+    
+    "neighbour calculation" : {
+    "title": "Neighbour calculation",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "uns_neighbors": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scanorama_integration_neighbors`. In which ",
+                "help_text": "Type: `string`, default: `scanorama_integration_neighbors`. In which .uns slot to store various neighbor output objects."
+            ,
+                "default":"scanorama_integration_neighbors"
+            }
+    
+
+        ,
+                "obsp_neighbor_distances": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scanorama_integration_distances`. In which ",
+                "help_text": "Type: `string`, default: `scanorama_integration_distances`. In which .obsp slot to store the distance matrix between the resulting neighbors."
+            ,
+                "default":"scanorama_integration_distances"
+            }
+    
+
+        ,
+                "obsp_neighbor_connectivities": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scanorama_integration_connectivities`. In which ",
+                "help_text": "Type: `string`, default: `scanorama_integration_connectivities`. In which .obsp slot to store the connectivities matrix between the resulting neighbors."
+            ,
+                "default":"scanorama_integration_connectivities"
+            }
+    
+
+}
+},
+    
+    
+    "scanorama integration options" : {
+    "title": "Scanorama integration options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "obs_batch": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `sample_id`. Column name discriminating between your batches",
+                "help_text": "Type: `string`, default: `sample_id`. Column name discriminating between your batches."
+            ,
+                "default":"sample_id"
+            }
+    
+
+        ,
+                "obsm_input": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `X_pca`. ",
+                "help_text": "Type: `string`, default: `X_pca`. .obsm slot that points to embedding to run scanorama on."
+            ,
+                "default":"X_pca"
+            }
+    
+
+        ,
+                "obsm_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `X_scanorama`. The name of the field in adata",
+                "help_text": "Type: `string`, default: `X_scanorama`. The name of the field in adata.obsm where the integrated embeddings will be stored after running this function. Defaults to X_scanorama."
+            ,
+                "default":"X_scanorama"
+            }
+    
+
+        ,
+                "knn": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `20`. Number of nearest neighbors to use for matching",
+                "help_text": "Type: `integer`, default: `20`. Number of nearest neighbors to use for matching."
+            ,
+                "default":20
+            }
+    
+
+        ,
+                "batch_size": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `5000`. The batch size used in the alignment vector computation",
+                "help_text": "Type: `integer`, default: `5000`. The batch size used in the alignment vector computation. Useful when integrating very large (\u003e100k samples) datasets. Set to large value that runs within available memory."
+            ,
+                "default":5000
+            }
+    
+
+        ,
+                "sigma": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `15.0`. Correction smoothing parameter on Gaussian kernel",
+                "help_text": "Type: `double`, default: `15.0`. Correction smoothing parameter on Gaussian kernel."
+            ,
+                "default":15.0
+            }
+    
+
+        ,
+                "approx": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Use approximate nearest neighbors with Python annoy; greatly speeds up matching runtime",
+                "help_text": "Type: `boolean`, default: `true`. Use approximate nearest neighbors with Python annoy; greatly speeds up matching runtime."
+            ,
+                "default":true
+            }
+    
+
+        ,
+                "alpha": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.1`. Alignment score minimum cutoff",
+                "help_text": "Type: `double`, default: `0.1`. Alignment score minimum cutoff"
+            ,
+                "default":0.1
+            }
+    
+
+}
+},
+    
+    
+    "clustering options" : {
+    "title": "Clustering options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "obs_cluster": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scanorama_integration_leiden`. Prefix for the ",
+                "help_text": "Type: `string`, default: `scanorama_integration_leiden`. Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for \u0027--obs_cluster\u0027 suffixed with an underscore and one of the\nresolutions specified in \u0027--leiden_resolution\u0027.\n"
+            ,
+                "default":"scanorama_integration_leiden"
+            }
+    
+
+        ,
+                "leiden_resolution": {
+                "type":
+                "string",
+                "description": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering",
+                "help_text": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
+            ,
+                "default":"1.0"
+            }
+    
+
+}
+},
+    
+    
+    "umap options" : {
+    "title": "Umap options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "obsm_umap": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `X_leiden_scanorama_umap`. In which ",
+                "help_text": "Type: `string`, default: `X_leiden_scanorama_umap`. In which .obsm slot to store the resulting UMAP embedding."
+            ,
+                "default":"X_leiden_scanorama_umap"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/neighbour calculation"
+    },
+
+    {
+    "$ref": "#/definitions/scanorama integration options"
+    },
+
+    {
+    "$ref": "#/definitions/clustering options"
+    },
+
+    {
+    "$ref": "#/definitions/umap options"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}

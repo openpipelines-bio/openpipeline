@@ -1,0 +1,299 @@
+name: "build_bdrhap_reference"
+namespace: "reference"
+version: "parametrize-hvg-flavor_build"
+authors:
+- name: "Robrecht Cannoodt"
+  roles:
+  - "author"
+  - "maintainer"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "robrecht@data-intuitive.com"
+      github: "rcannood"
+      orcid: "0000-0003-3641-729X"
+      linkedin: "robrechtcannoodt"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Science Engineer"
+    - name: "Open Problems"
+      href: "https://openproblems.bio"
+      role: "Core Member"
+- name: "Weiwei Schultz"
+  roles:
+  - "contributor"
+  info:
+    role: "Contributor"
+    organizations:
+    - name: "Janssen R&D US"
+      role: "Associate Director Data Sciences"
+argument_groups:
+- name: "Inputs"
+  arguments:
+  - type: "file"
+    name: "--genome_fasta"
+    description: "Reference genome file in FASTA or FASTA.GZ format. The BD Rhapsody\
+      \ Sequencing Analysis Pipeline uses GRCh38 for Human and GRCm39 for Mouse."
+    info:
+      config_key: "Genome_fasta"
+    example:
+    - "genome_sequence.fa.gz"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--gtf"
+    description: "File path to the transcript annotation files in GTF or GTF.GZ format.\
+      \ The Sequence Analysis Pipeline requires the 'gene_name' or \n'gene_id' attribute\
+      \ to be set on each gene and exon feature. Gene and exon feature lines must\
+      \ have the same attribute, and exons\nmust have a corresponding gene with the\
+      \ same value. For TCR/BCR assays, the TCR or BCR gene segments must have the\
+      \ 'gene_type' or\n'gene_biotype' attribute set, and the value should begin with\
+      \ 'TR' or 'IG', respectively.\n"
+    info:
+      config_key: "Gtf"
+    example:
+    - "transcriptome_annotation.gtf.gz"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--extra_sequences"
+    description: "File path to additional sequences in FASTA format to use when building\
+      \ the STAR index. (e.g. transgenes or CRISPR guide barcodes).\nGTF lines for\
+      \ these sequences will be automatically generated and combined with the main\
+      \ GTF.\n"
+    info:
+      config_key: "Extra_sequences"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "Outputs"
+  arguments:
+  - type: "file"
+    name: "--reference_archive"
+    description: "A Compressed archive containing the Reference Genome Index and annotation\
+      \ GTF files. This archive is meant to be used as an\ninput in the BD Rhapsody\
+      \ Sequencing Analysis Pipeline.\n"
+    info: null
+    example:
+    - "reference.tar.gz"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+- name: "Arguments"
+  arguments:
+  - type: "string"
+    name: "--mitochondrial_contigs"
+    description: "Names of the Mitochondrial contigs in the provided Reference Genome.\
+      \ Fragments originating from contigs other than these are\nidentified as 'nuclear\
+      \ fragments' in the ATACseq analysis pipeline.\n"
+    info:
+      config_key: "Mitochondrial_contigs"
+    default:
+    - "chrM"
+    - "chrMT"
+    - "M"
+    - "MT"
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--filtering_off"
+    description: "By default the input Transcript Annotation files are filtered based\
+      \ on the gene_type/gene_biotype attribute. Only features \nhaving the following\
+      \ attribute values are kept:\n\n  - protein_coding\n  - lncRNA \n  - IG_LV_gene\n\
+      \  - IG_V_gene\n  - IG_V_pseudogene\n  - IG_D_gene\n  - IG_J_gene\n  - IG_J_pseudogene\n\
+      \  - IG_C_gene\n  - IG_C_pseudogene\n  - TR_V_gene\n  - TR_V_pseudogene\n  -\
+      \ TR_D_gene\n  - TR_J_gene\n  - TR_J_pseudogene\n  - TR_C_gene\n\n  If you have\
+      \ already pre-filtered the input Annotation files and/or wish to turn-off the\
+      \ filtering, please set this option to True.\n"
+    info:
+      config_key: "Filtering_off"
+    direction: "input"
+  - type: "boolean_true"
+    name: "--wta_only_index"
+    description: "Build a WTA only index, otherwise builds a WTA + ATAC index."
+    info:
+      config_key: "Wta_Only"
+    direction: "input"
+  - type: "string"
+    name: "--extra_star_params"
+    description: "Additional parameters to pass to STAR when building the genome index.\
+      \ Specify exactly like how you would on the command line."
+    info:
+      config_key: "Extra_STAR_params"
+    example:
+    - "--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "python_script"
+  path: "script.py"
+  is_executable: true
+- type: "file"
+  path: "make_rhap_reference_2.2.1_nodocker.cwl"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "The Reference Files Generator creates an archive containing Genome Index\n\
+  and Transcriptome annotation files needed for the BD Rhapsody Sequencing\nAnalysis\
+  \ Pipeline. The app takes as input one or more FASTA and GTF files\nand produces\
+  \ a compressed archive in the form of a tar.gz file. The \narchive contains:\n \
+  \ \n- STAR index\n- Filtered GTF file\n"
+test_resources:
+- type: "bash_script"
+  path: "test.sh"
+  is_executable: true
+- type: "file"
+  path: "reference.fa.gz"
+- type: "file"
+  path: "reference.gtf.gz"
+- type: "file"
+  path: "openpipelinetestutils"
+  dest: "openpipelinetestutils"
+info: null
+status: "enabled"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "highmem"
+    - "highcpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "bdgenomics/rhapsody:2.2.1"
+  target_tag: "parametrize-hvg-flavor_build"
+  namespace_separator: "/"
+  setup:
+  - type: "apt"
+    packages:
+    - "procps"
+    - "seqkit"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "cwlref-runner"
+    - "cwl-runner"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/reference/build_bdrhap_reference/config.vsh.yaml"
+  runner: "executable"
+  engine: "docker"
+  output: "target/executable/reference/build_bdrhap_reference"
+  executable: "target/executable/reference/build_bdrhap_reference/build_bdrhap_reference"
+  viash_version: "0.9.0"
+  git_commit: "c95cd38c523aae0f7df189383d33a3bf189ab7d7"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-1994-gc95cd38c523"
+package_config:
+  name: "openpipeline"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+  viash_version: "0.9.0"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
+    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
+    \ := 'includeConfig(\"nextflow_labels.config\")'"
+  - ".version := \"parametrize-hvg-flavor_build\""
+  - ".engines[.type == 'docker'].target_tag := 'parametrize-hvg-flavor_build'"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

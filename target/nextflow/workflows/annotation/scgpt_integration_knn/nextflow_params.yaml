@@ -1,0 +1,59 @@
+# Query Input
+id: # please fill in - example: "foo"
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# input_layer: "foo"
+# input_var_gene_names: "foo"
+input_obs_batch_label: # please fill in - example: "sample"
+overwrite_existing_key: false
+
+# Reference input
+reference: # please fill in - example: "reference.h5mu"
+reference_obs_targets: # please fill in - example: ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"]
+# reference_var_gene_names: "foo"
+reference_obs_batch_label: # please fill in - example: "sample"
+
+# scGPT model
+model: # please fill in - example: "resources_test/scgpt/best_model.pt"
+model_vocab: # please fill in - example: "resources_test/scgpt/vocab.json"
+model_config: # please fill in - example: "args.json"
+# finetuned_checkpoints_key: "model_state_dict"
+
+# Padding arguments
+pad_token: "<pad>"
+pad_value: -2
+
+# HVG subset arguments
+n_hvg: 1200
+hvg_flavor: "cell_ranger"
+
+# Tokenization arguments
+# max_seq_len: 123
+
+# Embedding arguments
+dsbn: true
+batch_size: 64
+
+# Binning arguments
+n_input_bins: 51
+# seed: 123
+
+# Leiden clustering options
+leiden_resolution: [1.0]
+
+# Neighbor classifier arguments
+weights: "uniform"
+n_neighbors: 15
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_obs_predictions: ["foo"]
+# output_obs_probability: ["foo"]
+output_obsm_integrated: "X_integrated_scgpt"
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments
