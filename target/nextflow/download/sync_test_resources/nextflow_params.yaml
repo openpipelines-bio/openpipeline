@@ -1,0 +1,15 @@
+# Inputs
+input: "_viash.yaml"
+
+# Outputs
+# output: "."
+
+# Arguments
+quiet: false
+dryrun: false
+delete: false
+# exclude: ["foo"]
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
