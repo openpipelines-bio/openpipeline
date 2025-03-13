@@ -8,6 +8,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `dataflow/concatenate_h5mu`: add `modality` parameter (PR #977).
+
 * `filter_with_scrublet`: add `expected_doublet_rate`, `stdev_doublet_rate`, `n_neighbors` and `sim_doublet_ratio` arguments (PR #974).
 
 * `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948, #958).
@@ -49,6 +51,8 @@
 * `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).
 
 * `resources_test_scripts/annotation_test_data.sh`: Add a layer to the annotation reference dataset with log normalized counts (PR #960).
+
+* `annotate/celltypist`: Fix missing values in annotation column caused by index misalignment (PR #976).
 
 # openpipelines 2.0.0
 
