@@ -58,6 +58,11 @@ argument_groups:
         type: file
         description: Reference dataset consisting of observations with cell type labels present in the .obs --reference_obs_batch_label column to train the classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset(s).
         example: reference.h5mu
+      - name: "--reference_layer"
+        type: string
+        required: False
+        description: |
+          The layer of the reference dataset to process if .X is not to be used. Should contain log normalized counts.
       - name: "--reference_obs_targets"
         type: string
         example: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
@@ -241,9 +246,7 @@ dependencies:
   - name: labels_transfer/knn
   - name: dataflow/split_h5mu
   - name: dataflow/concatenate_h5mu
-  - name: metadata/add_id
-  - name: metadata/duplicate_obs
-  - name: metadata/duplicate_var
+  - name: feature_annotation/align_query_reference
 
 resources:
   - type: nextflow_script
