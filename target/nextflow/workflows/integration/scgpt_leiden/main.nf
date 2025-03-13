@@ -2910,7 +2910,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--input_layer",
-          "description" : "The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts.\n",
+          "description" : "Mudata layer (key from layers) to use as input data for hvg subsetting and binning; if not specified, X is used.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3066,22 +3066,6 @@ meta = [
             1200
           ],
           "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--hvg_flavor",
-          "description" : "Method to be used for identifying highly variable genes. \nNote that the default for this workflow (`cell_ranger`) is not the default method for scanpy hvg detection (`seurat`).\n",
-          "default" : [
-            "cell_ranger"
-          ],
-          "required" : false,
-          "choices" : [
-            "cell_ranger",
-            "seurat"
-          ],
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3346,7 +3330,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scgpt_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "524a0e0c7ad195206281ba2e0c0e2b01e5fc6b39",
+    "git_commit" : "666ec80b4c65a803f5dc4273845a6f3436457a50",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3412,7 +3396,7 @@ workflow run_wf {
           "modality": state.modality,
           "var_name_filter": "scgpt_filter_with_hvg",
           "n_top_features": state.n_hvg,
-          "flavor": state.hvg_flavor
+          "flavor": "seurat_v3"
         ]
       },
       toState: ["input": "output"]

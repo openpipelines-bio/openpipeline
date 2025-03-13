@@ -119,8 +119,8 @@
                 "input_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`. The layer of the input dataset to process if ",
-                "help_text": "Type: `string`. The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts.\n"
+                "description": "Type: `string`. Mudata layer (key from layers) to use as input data for HVG subsetting and binning; if not specified, X is used",
+                "help_text": "Type: `string`. Mudata layer (key from layers) to use as input data for HVG subsetting and binning; if not specified, X is used.\n"
             
             }
     
@@ -257,19 +257,6 @@
                 "help_text": "Type: `integer`, default: `1200`. Number of highly variable genes to subset for.\n"
             ,
                 "default":1200
-            }
-    
-
-        ,
-                "hvg_flavor": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `cell_ranger`, choices: ``cell_ranger`, `seurat``. Method to be used for identifying highly variable genes",
-                "help_text": "Type: `string`, default: `cell_ranger`, choices: ``cell_ranger`, `seurat``. Method to be used for identifying highly variable genes. \nNote that the default for this workflow (`cell_ranger`) is not the default method for scanpy hvg detection (`seurat`).\n",
-                "enum": ["cell_ranger", "seurat"]
-            
-            ,
-                "default":"cell_ranger"
             }
     
 
