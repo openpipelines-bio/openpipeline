@@ -2,7 +2,7 @@
 
 ## BREAKING CHANGES
 
-* `workflows/annotation/scgpt_annotation`, `workflows/annotation/scgpt_integration_knn` and `workflows/integrate/scgpt_leiden`: Parameterization of HVG flavor with default method `cell_ranger` instead of `seurat_v3` (PR #979).
+* `workflows/annotation/scgpt_annotation` and `workflows/integrate/scgpt_leiden`: Parameterization of HVG flavor with default method `cell_ranger` instead of `seurat_v3` (PR #979).
 
 ## NEW FUNCTIONALITY
 
