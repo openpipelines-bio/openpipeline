@@ -1,0 +1,226 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "neighbors_leiden_umap",
+"description": "Performs neighborhood search, leiden clustering and run umap on an integrated embedding.",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `dataset.h5mu`. Path to the sample",
+                "help_text": "Type: `file`, required, example: `dataset.h5mu`. Path to the sample."
+            
+            }
+    
+
+        ,
+                "obsm_input": {
+                "type":
+                "string",
+                "description": "Type: `string`, required. The key of the embedding to use as input",
+                "help_text": "Type: `string`, required. The key of the embedding to use as input."
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. Which modality to process",
+                "help_text": "Type: `string`, default: `rna`. Which modality to process."
+            ,
+                "default":"rna"
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
+            ,
+                "default":"$id.$key.output.h5mu"
+            }
+    
+
+}
+},
+    
+    
+    "neighbour calculation" : {
+    "title": "Neighbour calculation",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "uns_neighbors": {
+                "type":
+                "string",
+                "description": "Type: `string`, required. In which ",
+                "help_text": "Type: `string`, required. In which .uns slot to store various neighbor output objects."
+            
+            }
+    
+
+        ,
+                "obsp_neighbor_distances": {
+                "type":
+                "string",
+                "description": "Type: `string`, required. In which ",
+                "help_text": "Type: `string`, required. In which .obsp slot to store the distance matrix between the resulting neighbors."
+            
+            }
+    
+
+        ,
+                "obsp_neighbor_connectivities": {
+                "type":
+                "string",
+                "description": "Type: `string`, required. In which ",
+                "help_text": "Type: `string`, required. In which .obsp slot to store the connectivities matrix between the resulting neighbors."
+            
+            }
+    
+
+}
+},
+    
+    
+    "clustering options" : {
+    "title": "Clustering options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "obs_cluster": {
+                "type":
+                "string",
+                "description": "Type: `string`. Prefix for the ",
+                "help_text": "Type: `string`. Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for \u0027--obs_cluster\u0027 suffixed with an underscore and one of the resolutions\nresolutions specified in \u0027--leiden_resolution\u0027.\n"
+            
+            }
+    
+
+        ,
+                "leiden_resolution": {
+                "type":
+                "string",
+                "description": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering",
+                "help_text": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
+            ,
+                "default":"1.0"
+            }
+    
+
+}
+},
+    
+    
+    "umap options" : {
+    "title": "Umap options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "obsm_umap": {
+                "type":
+                "string",
+                "description": "Type: `string`. In which ",
+                "help_text": "Type: `string`. In which .obsm slot to store the resulting UMAP embedding.\nWhen not specified, UMAP will not be executed.\n"
+            
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/neighbour calculation"
+    },
+
+    {
+    "$ref": "#/definitions/clustering options"
+    },
+
+    {
+    "$ref": "#/definitions/umap options"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}
