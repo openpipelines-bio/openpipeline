@@ -67,11 +67,10 @@ argument_groups:
         type: string
         required: False
         description: The layer in the reference data to be used for cell type annotation if .X is not to be used. 
-      - name: "--reference_obs_targets"
+      - name: "--reference_obs_target"
         type: string
-        example: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
+        example: cell_type
         required: true
-        multiple: true
         description: The `.obs` key(s) of the target labels to tranfer.
       - name: "--reference_var_gene_names"
         type: string

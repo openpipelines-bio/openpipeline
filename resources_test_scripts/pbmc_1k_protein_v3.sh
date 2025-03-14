@@ -41,7 +41,7 @@ tar -xvf "${OUT}_filtered_feature_bc_matrix.tar.gz" \
 rm "${OUT}_filtered_feature_bc_matrix.tar.gz"
 
 # convert 10x h5 to h5mu
-target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
+target/executable/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
   --input "${OUT}_filtered_feature_bc_matrix.h5" \
   --input_metrics_summary "${OUT}_metrics_summary.csv" \
   --output "${OUT}_filtered_feature_bc_matrix.h5mu"
@@ -111,6 +111,19 @@ nextflow \
   --publishDir `dirname $OUT` \
   --obs_covariates sample_id \
   -resume
+
+python <<HEREDOC
+import mudata as mu
+import re
+mudata = mu.read_h5mu("${OUT}_mms.h5mu")
+adata = mudata.mod["rna"]
+adata.var["gene_symbol_sanitized"] = [re.sub("\\.[0-9]+$", "", s) for s in adata.var['gene_symbol'].astype(str)]
+gene_symbol_cumcount = adata.var.groupby("gene_symbol_sanitized").cumcount()
+adata.var['gene_symbol_unique'] = adata.var["gene_symbol_sanitized"] + '_' + gene_symbol_cumcount.astype(str)
+adata.var.loc[gene_symbol_cumcount == 0, 'gene_symbol_unique'] = adata.var.loc[gene_symbol_cumcount == 0, 'gene_symbol_sanitized']
+del adata.var['gene_symbol_sanitized']
+mudata.write_h5mu("${OUT}_mms.h5mu")
+HEREDOC
 
 python <<HEREDOC
 import mudata as mu

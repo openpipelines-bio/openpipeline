@@ -4,8 +4,6 @@
 
 * Removed `src/metadata/duplicate_obs` and `src/metadata/duplicate_var` components (PR #952).
 
-* Updated implementation of query/reference alignment for `workflows/annotation/scgpt_integration_knn` (PR #952).
-
 ## NEW FUNCTIONALITY
 
 * `dataflow/concatenate_h5mu`: add `modality` parameter (PR #977).
@@ -29,6 +27,8 @@
 # NEW FUNCTIONALITY 
 
 * `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
+
+* Updated implementation of query/reference alignment for `workflows/annotation/scgpt_integration_knn`, enabling the use of different .var columns for the gene names across query and reference datasets (PR #952).
 
 # MINOR CHANGES
 

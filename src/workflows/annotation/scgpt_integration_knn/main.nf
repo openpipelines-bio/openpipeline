@@ -9,51 +9,49 @@ workflow run_wf {
         def new_state = state + ["workflow_output": state.output]
         [id, new_state]
       }
-      // add id as _meta join id to be able to merge with source channel and end of workflow
-      | map{ id, state -> 
-        def new_state = state + ["_meta": ["join_id": id]]
-        [id, new_state]
-      }
-      | view {"After adding join_id: $it"}
-      // Allign query and reference datasets
-      | align_query_reference.run(
-        fromState: [
-          "input": "input",
-          "modality": "modality",
-          "input_layer": "input_layer",
-          "input_var_gene_names": "input_var_gene_names",
-          "input_obs_batch": "input_obs_batch_label",
-          "reference": "reference",
-          "reference_layer": "reference_layer",
-          "reference_var_gene_names": "reference_var_gene_names",
-          "reference_obs_batch": "reference_obs_batch_label",
-          "input_reference_gene_overlap": "input_reference_gene_overlap",
-          "overwrite_existing_key": "overwrite_existing_key"
-        ],
-        args: [
-          "input_id": "query",
-          "reference_id": "reference",
-          "output_layer": "_counts",
-          "output_var_gene_names": "_gene_names",
-          "output_obs_batch": "_sample_id",
-          "output_obs_id": "_dataset"
-        ],
-        toState: [
-          "input": "output_query",
-          "reference": "output_reference"
-        ]
-      )
-      // Concatenate query and reference datasets prior to integration
-      | concatenate_h5mu.run(
-        fromState: { id, state -> 
-          ["input": [state.input, state.reference]]
-        },
-        args: [
-          "input_id": ["query", "reference"],
-          "other_axis_mode": "move"
-        ],
-        toState: ["input": "output"]
-      )
+        // Align query and reference datasets
+        | align_query_reference.run(
+            fromState: [
+                "input": "input",
+                "modality": "modality",
+                "input_layer": "input_layer",
+                "input_obs_batch": "input_obs_batch_label",
+                "input_var_gene_names": "input_var_gene_names",
+                "reference": "reference",
+                "reference_layer": "reference_layer",
+                "reference_obs_batch": "reference_obs_batch_label",
+                "reference_obs_label": "reference_obs_target",
+                "reference_var_gene_names": "reference_var_gene_names",
+                "input_reference_gene_overlap": "input_reference_gene_overlap",
+                "overwrite_existing_key": "overwrite_existing_key"
+            ],
+            args: [
+                "input_id": "query",
+                "reference_id": "reference",
+                "output_layer": "_counts",
+                "output_var_gene_names": "_gene_names",
+                "output_obs_batch": "_sample_id",
+                "output_obs_label": "_cell_type",
+                "output_obs_id": "_dataset",
+                "output_var_common_genes": "_common_vars"
+            ],
+            toState: [
+                "input": "output_query",
+                "reference": "output_reference"
+            ]
+        )
+        // Concatenate query and reference datasets prior to integration
+        | concatenate_h5mu.run(
+            fromState: { id, state -> [
+                "input": [state.input, state.reference]
+                ]
+            },
+            args: [
+                "input_id": ["query", "reference"],
+                "other_axis_mode": "move"
+            ],
+            toState: ["input": "output"]
+        )
       | view {"After concatenation: $it"}
       // Run scgpt integration with leiden clustering
       | scgpt_leiden_workflow.run(
@@ -126,7 +124,7 @@ workflow run_wf {
            "input_obsm_features": "output_obsm_integrated",
            "reference": "integrated_reference",
            "reference_obsm_features": "output_obsm_integrated",
-           "reference_obs_targets": "reference_obs_targets",
+           "reference_obs_targets": "reference_obs_target",
            "output_obs_predictions": "output_obs_predictions",
            "output_obs_probability": "output_obs_probability",
            "output_compression": "output_compression",
