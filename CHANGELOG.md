@@ -2,7 +2,9 @@
 
 ## BREAKING CHANGES
 
-* Removed `src/metadata/duplicate_obs` and `src/metadata/duplicate_var` components (PR #952).
+* Deprication of `metadata/duplicate_obs` and `metadata/duplicate_var` components (PR #952).
+
+* Deprication of `workflows/annotation/scgpt_integration_knn` component (PR #952).
 
 ## NEW FUNCTIONALITY
 
@@ -27,8 +29,6 @@
 # NEW FUNCTIONALITY 
 
 * `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
-
-* Updated implementation of query/reference alignment for `workflows/annotation/scgpt_integration_knn`, enabling the use of different .var columns for the gene names across query and reference datasets (PR #952).
 
 # MINOR CHANGES
 
