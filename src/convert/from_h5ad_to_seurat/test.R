@@ -1,4 +1,5 @@
 library(testthat, warn.conflicts = FALSE)
+library(hdf5r)
 
 ## VIASH START
 meta <- list(
@@ -34,8 +35,12 @@ obj <- readRDS(file = out_rds)
 
 cat("> Checking whether Seurat object is in the right format\n")
 expect_is(obj, "Seurat")
-expect_equal(names(slot(obj, "assays")), "rna")
+expect_equal(names(slot(obj, "assays")), "RNA")
 
 open_file <- H5File$new(in_h5ad, mode = "r+")
 
-expect_equal(dim(obj), open_file[["X"]]$dims)
+dim_rds <- dim(obj)
+dim_ad <- open_file[["X"]]$attr_open("shape")$read()
+
+expect_equal(dim_rds[1], dim_ad[2])
+expect_equal(dim_rds[2], dim_ad[1])
