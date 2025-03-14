@@ -9,7 +9,7 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
 
 ID=annotation_test_data
-OUT=resources_test/$ID
+OUT=resources_test/$ID/
 
 # ideally, this would be a versioned pipeline run
 [ -d "$OUT" ] || mkdir -p "$OUT"
@@ -63,19 +63,6 @@ viash run src/convert/from_h5ad_to_h5mu/config.vsh.yaml --engine docker -- \
     --modality "rna"
 
 rm "${OUT}/tmp_TS_Blood_filtered.h5ad"
-
-python <<HEREDOC
-import mudata as mu
-import re
-mudata = mu.read_h5mu("${OUT}/TS_Blood_filtered.h5mu")
-adata = mudata.mod["rna"]
-adata.var["gene_symbol_sanitized"] = [re.sub("\\.[0-9]+$", "", s) for s in adata.var_names.astype(str)]
-gene_symbol_cumcount = adata.var.groupby("gene_symbol_sanitized").cumcount()
-adata.var['gene_symbol_unique'] = adata.var["gene_symbol_sanitized"] + '_' + gene_symbol_cumcount.astype(str)
-adata.var.loc[gene_symbol_cumcount == 0, 'gene_symbol_unique'] = adata.var.loc[gene_symbol_cumcount == 0, 'gene_symbol_sanitized']
-del adata.var['gene_symbol_sanitized']
-mudata.write_h5mu("${OUT}/TS_Blood_filtered.h5mu")
-HEREDOC
 
 echo "> Downloading pretrained CellTypist model and sample test data"
 wget https://celltypist.cog.sanger.ac.uk/models/Pan_Immune_CellTypist/v2/Immune_All_Low.pkl \
