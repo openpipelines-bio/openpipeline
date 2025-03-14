@@ -1,6 +1,5 @@
 
 library(anndataR)
-library(Seurat)
 
 ### VIASH START
 par <- list(
