@@ -2,9 +2,7 @@
 
 ## BREAKING CHANGES
 
-* Deprication of `metadata/duplicate_obs` and `metadata/duplicate_var` components (PR #952).
-
-* Deprication of `workflows/annotation/scgpt_integration_knn` component (PR #952).
+* `workflows/annotation/scgpt_annotation` and `workflows/integrate/scgpt_leiden`: Parameterization of HVG flavor with default method `cell_ranger` instead of `seurat_v3` (PR #979).
 
 ## NEW FUNCTIONALITY
 

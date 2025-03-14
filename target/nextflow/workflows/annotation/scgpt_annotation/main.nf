@@ -2910,7 +2910,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--input_layer",
-          "description" : "Mudata layer (key from layers) to use as input data for HVG subsetting and binning; if not specified, X is used.\n",
+          "description" : "The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3106,6 +3106,22 @@ meta = [
             1200
           ],
           "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--hvg_flavor",
+          "description" : "Method to be used for identifying highly variable genes. \nNote that the default for this workflow (`cell_ranger`) is not the default method for scanpy hvg detection (`seurat`).\n",
+          "default" : [
+            "cell_ranger"
+          ],
+          "required" : false,
+          "choices" : [
+            "cell_ranger",
+            "seurat"
+          ],
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3353,7 +3369,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_annotation",
     "viash_version" : "0.9.0",
-    "git_commit" : "a4fc59555124c454fcce809fcc1a8f8387dbc6fd",
+    "git_commit" : "258c0eebc17698c9ba8e052dcd4dd481c090ccaa",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3417,10 +3433,10 @@ workflow run_wf {
         "layer": "input_layer",
         "modality": "modality",
         "n_top_features": "n_hvg",
+        "flavor": "hvg_flavor"
       ],
       args: [
-        "var_name_filter": "scgpt_filter_with_hvg",
-        "flavor": "seurat_v3"
+        "var_name_filter": "scgpt_filter_with_hvg"
       ],
       toState: ["input": "output"]
     )
