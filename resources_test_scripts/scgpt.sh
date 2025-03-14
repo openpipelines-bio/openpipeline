@@ -102,7 +102,7 @@ viash run src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml
   --layer "log_normalized" \
   --var_name_filter "scgpt_filter_with_hvg" \
   --n_top_features 1200 \
-  --flavor "seurat_v3"
+  --flavor "cell_ranger"
   
 echo "> Running scGPT cross check genes"
 viash run src/scgpt/cross_check_genes/config.vsh.yaml --engine docker -- \
@@ -133,4 +133,3 @@ echo "> Removing unnecessary files in test resources dir"
 find "${test_resources_dir}" -type f \( ! -name "Kim2020_*" -o ! -name "*.h5mu" \) -delete
 
 echo "> scGPT test resources are ready!"
-
