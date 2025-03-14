@@ -1,5 +1,11 @@
 # openpipelines 2.1.0
 
+## BREAKING CHANGES
+
+* Deprication of `metadata/duplicate_obs` and `metadata/duplicate_var` components (PR #952).
+
+* Deprication of `workflows/annotation/scgpt_integration_knn` component (PR #952).
+
 ## NEW FUNCTIONALITY
 
 * `dataflow/concatenate_h5mu`: add `modality` parameter (PR #977).

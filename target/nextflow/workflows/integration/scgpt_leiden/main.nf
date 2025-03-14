@@ -3218,12 +3218,6 @@ meta = [
       }
     },
     {
-      "name" : "filter/do_filter",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
       "name" : "scgpt/pad_tokenize",
       "repository" : {
         "type" : "local"
@@ -3330,7 +3324,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scgpt_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "5b5a7dd89bb260cdc104581034cf7e61dd943fa6",
+    "git_commit" : "a4fc59555124c454fcce809fcc1a8f8387dbc6fd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3368,7 +3362,6 @@ meta["root_dir"] = getRootDir()
 include { cross_check_genes } from "${meta.resources_dir}/../../../../nextflow/scgpt/cross_check_genes/main.nf"
 include { binning } from "${meta.resources_dir}/../../../../nextflow/scgpt/binning/main.nf"
 include { highly_variable_features_scanpy } from "${meta.resources_dir}/../../../../nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
-include { do_filter } from "${meta.resources_dir}/../../../../nextflow/filter/do_filter/main.nf"
 include { pad_tokenize } from "${meta.resources_dir}/../../../../nextflow/scgpt/pad_tokenize/main.nf"
 include { embedding } from "${meta.resources_dir}/../../../../nextflow/scgpt/embedding/main.nf"
 include { neighbors_leiden_umap } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/neighbors_leiden_umap/main.nf"
