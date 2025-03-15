@@ -1,0 +1,53 @@
+name: "from_h5ad_to_seurat"
+namespace: "convert"
+description: |
+  Converts an h5ad file into a Seurat file.
+authors:
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ author, maintainer ]
+arguments:
+  - name: "--input"
+    alternatives: ["-i"]
+    type: file
+    description: Input h5ad file
+    direction: input
+    required: true
+    example: input.h5ad
+  - name: "--assay"
+    type: string
+    default: "RNA"
+    description: Name of the assay to be created.
+  - name: "--output"
+    alternatives: ["-o"]
+    type: file
+    description: Output Seurat file
+    direction: output
+    required: true
+    example: output.rds
+resources:
+  - type: r_script
+    path: script.R
+test_resources:
+  - type: r_script
+    path: test.R
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5ad
+engines:
+  - type: docker
+    image: rocker/r2u:24.04
+    setup:
+      - type: apt
+        packages: 
+          - libhdf5-dev
+          - libgeos-dev
+      - type: r
+        cran: [ hdf5r, Seurat, SeuratObject ]
+      - type: r
+        github: scverse/anndataR
+    test_setup:
+      - type: r
+        cran: [ testthat ]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]

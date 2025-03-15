@@ -14,6 +14,8 @@
 
 * `feature_annotation/align_query_reference`: Enable the alignment of multiple layers (PR #972).
 
+* `convert/from_h5ad_to_seurat`: Add component to convert from h5ad to Seurat (PR #980).
+
 ## MAJOR CHANGES
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
