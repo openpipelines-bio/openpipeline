@@ -40,7 +40,7 @@ engines:
           - libhdf5-dev
           - libgeos-dev
       - type: r
-        cran: [ reticulate, hdf5r, Seurat, SeuratObject ]
+        cran: [ hdf5r, Seurat, SeuratObject ]
       - type: r
         github: scverse/anndataR
     test_setup:

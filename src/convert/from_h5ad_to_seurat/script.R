@@ -12,7 +12,7 @@ par <- list(
 
 seurat_obj <- read_h5ad(
   par$input,
-  mode = "r+",
+  mode = "r",
   to = "Seurat",
   assay_name = par$assay
 )
