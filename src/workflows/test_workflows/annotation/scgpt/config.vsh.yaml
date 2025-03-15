@@ -1,6 +1,6 @@
 name: "scgpt_annotation_test"
 namespace: "test_workflows/annotation"
-description: "This component test the output of the the scgpt_annotation workflow."
+description: "This component test the output of the integration test of the bd_rhapsody workflow."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
 argument_groups:
