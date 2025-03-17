@@ -22,6 +22,8 @@
 
 * `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
 
+* `from_cellranger_multi_to_h5mu`: add support for `custom` modality (PR #982).
+
 # MINOR CHANGES
 
 * Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942 and PR #949). 
