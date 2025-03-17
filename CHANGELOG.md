@@ -1,9 +1,5 @@
 # openpipelines 2.1.0
 
-## BREAKING CHANGES
-
-* Removal of `workflows/annotation/scgpt_integration_knn` workflow (PR #979).
-
 ## NEW FUNCTIONALITY
 
 * `dataflow/concatenate_h5mu`: add `modality` parameter (PR #977).
