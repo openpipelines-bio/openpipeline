@@ -3146,7 +3146,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "0f36dbd285aa82dccb84f32250a667c8fb22f33f",
+    "git_commit" : "b40125b3acdcf4397474b7bc048f2b1592e9ca2e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

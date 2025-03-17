@@ -48,6 +48,8 @@
 
 * `annotate/celltypist`: Enable passing any layer with log normalized counts, enforce checking whether counts are log normalized (PR #971).
 
+* `process_10xh5/filter_10xh5`: update container base to ubuntu 24.04 (PR #983).
+
 # BUG FIXES
 
 * `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).

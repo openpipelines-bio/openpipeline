@@ -3031,10 +3031,17 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "eddelbuettel/r2u:22.04",
+      "image" : "eddelbuettel/r2u:24.04",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
+        {
+          "type" : "docker",
+          "env" : [
+            "PIP_BREAK_SYSTEM_PACKAGES=1",
+            "RETICULATE_PYTHON=/usr/bin/python"
+          ]
+        },
         {
           "type" : "apt",
           "packages" : [
@@ -3047,7 +3054,7 @@ meta = [
         },
         {
           "type" : "python",
-          "user" : false,
+          "user" : true,
           "packages" : [
             "anndata~=0.11.1",
             "mudata~=0.3.1",
@@ -3076,7 +3083,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/process_10xh5/filter_10xh5",
     "viash_version" : "0.9.0",
-    "git_commit" : "0f36dbd285aa82dccb84f32250a667c8fb22f33f",
+    "git_commit" : "b40125b3acdcf4397474b7bc048f2b1592e9ca2e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
