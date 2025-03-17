@@ -46,6 +46,7 @@ FEATURE_TYPES_NAMES = {
     "CRISPR Guide Capture": "gdo",
     "Multiplexing Capture": "hto",
     "Antigen Capture": "antigen",
+    "Custom": "custom",
 }
 
 
