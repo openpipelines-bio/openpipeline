@@ -2,7 +2,7 @@
 
 ## BREAKING CHANGES
 
-* `workflows/annotation/scgpt_annotation` and `workflows/integrate/scgpt_leiden`: Parameterization of HVG flavor with default method `cell_ranger` instead of `seurat_v3` (PR #979).
+* Removal of `workflows/annotation/scgpt_integration_knn` workflow (PR #979).
 
 ## NEW FUNCTIONALITY
 
@@ -51,6 +51,8 @@
 * `resources_test_scripts/annotation_test_data.sh`: Add a layer to the annotation reference dataset with log normalized counts (PR #960).
 
 * `annotate/celltypist`: Fix missing values in annotation column caused by index misalignment (PR #976).
+
+* `workflows/annotation/scgpt_annotation` and `workflows/integrate/scgpt_leiden`: Parameterization of HVG flavor with default method `cell_ranger` instead of `seurat_v3` (PR #979).
 
 # openpipelines 2.0.0
 
