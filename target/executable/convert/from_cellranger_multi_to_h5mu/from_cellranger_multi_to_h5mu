@@ -504,9 +504,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_cellranger_multi_to_h5mu"
-LABEL org.opencontainers.image.created="2025-03-17T14:15:38Z"
+LABEL org.opencontainers.image.created="2025-03-17T14:39:51Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="22c9645f9d304209693975ea0c9fdb6b4c122b37"
+LABEL org.opencontainers.image.revision="0060a0b6d0a966d60414f7a3f136c4ec20c0fa1e"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1188,6 +1188,7 @@ FEATURE_TYPES_NAMES = {
     "CRISPR Guide Capture": "gdo",
     "Multiplexing Capture": "hto",
     "Antigen Capture": "antigen",
+    "Custom": "custom",
 }
 
 
