@@ -1,0 +1,10 @@
+setup:
+  - type: apt
+    packages:
+      - procps
+      - git
+  - type: python
+    __merge__:
+      - /src/base/requirements/anndata_mudata.yaml
+      - /src/base/requirements/openpipeline_testutils.yaml
+      - /src/base/requirements/viashpy.yaml

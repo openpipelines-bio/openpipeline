@@ -138,10 +138,6 @@ resources:
   dest: "nextflow_labels.config"
 description: "Performs neighborhood search, leiden clustering and run umap on an integrated\
   \ embedding."
-test_resources:
-- type: "file"
-  path: "openpipelinetestutils"
-  dest: "openpipelinetestutils"
 info: null
 status: "enabled"
 dependencies:
@@ -231,7 +227,7 @@ build_info:
   output: "target/nextflow/workflows/multiomics/neighbors_leiden_umap"
   executable: "target/nextflow/workflows/multiomics/neighbors_leiden_umap/main.nf"
   viash_version: "0.9.0"
-  git_commit: "79fac911bf54e7c63d0e1603a281873881241c94"
+  git_commit: "0f36dbd285aa82dccb84f32250a667c8fb22f33f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/cluster/leiden"
@@ -249,8 +245,7 @@ package_config:
   source: "src"
   target: "target"
   config_mods:
-  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
-    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
   - ".version := \"main_build\""

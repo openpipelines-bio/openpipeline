@@ -516,9 +516,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Elizabeth Mlynarski, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt binning"
-LABEL org.opencontainers.image.created="2025-03-17T09:05:13Z"
+LABEL org.opencontainers.image.created="2025-03-17T12:21:29Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="79fac911bf54e7c63d0e1603a281873881241c94"
+LABEL org.opencontainers.image.revision="0f36dbd285aa82dccb84f32250a667c8fb22f33f"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
