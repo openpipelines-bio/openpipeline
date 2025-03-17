@@ -3096,7 +3096,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/conversion",
     "viash_version" : "0.9.0",
-    "git_commit" : "0bacaf81eb116052977cb4e707cb3445b1330872",
+    "git_commit" : "79fac911bf54e7c63d0e1603a281873881241c94",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

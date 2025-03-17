@@ -22,6 +22,7 @@ pad_value: -2
 
 # HVG subset arguments
 n_hvg: 1200
+hvg_flavor: "cell_ranger"
 
 # Tokenization arguments
 # max_seq_len: 123
