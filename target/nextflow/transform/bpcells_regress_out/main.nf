@@ -3097,6 +3097,12 @@ meta = [
       "namespace_separator" : "/",
       "setup" : [
         {
+          "type" : "docker",
+          "env" : [
+            "RETICULATE_PYTHON=/usr/bin/python"
+          ]
+        },
+        {
           "type" : "apt",
           "packages" : [
             "libhdf5-dev",
@@ -3159,7 +3165,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/bpcells_regress_out",
     "viash_version" : "0.9.0",
-    "git_commit" : "b40125b3acdcf4397474b7bc048f2b1592e9ca2e",
+    "git_commit" : "22c9645f9d304209693975ea0c9fdb6b4c122b37",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
