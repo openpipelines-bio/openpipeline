@@ -90,3 +90,21 @@ rm "${OUT}/tmp_pretrained_models_Blood_ts.tar.gz"
 
 find "${OUT}/Pretrained_model" ! -name "example_file_model*" -type f -exec rm -f {} +
 mv "${OUT}/Pretrained_model" "${OUT}/onclass_model"
+
+echo "> Creating SCVI model"
+viash run src/integrate/scvi/config.vsh.yaml --engine docker -- \
+    --input "${OUT}/TS_Blood_filtered.h5mu" \
+    --obs_batch "donor_id" \
+    --var_gene_names "ensemblid" \
+    --obs_labels "cell_ontology_class" \
+    --output "${OUT}/scvi_output.h5mu" \
+    --output_model "${OUT}/scvi_model" \
+    --max_epochs 5 \
+    --n_obs_min_count 10 \
+    --n_var_min_count 10
+
+echo "> Creating SCANVI model"
+viash run src/annotate/scanvi/instantiate_from_scvi/config.vsh.yaml --engine docker -- \
+    --input_scvi_model "${OUT}/scvi_model" \
+    --output_scanvi_model "${OUT}/scanvi_model" \
+    --max_epochs 5 

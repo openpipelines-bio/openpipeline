@@ -1,0 +1,103 @@
+name: instantiate_from_scvi
+namespace: annotate/scanvi
+description: Initialize scanVI model with weights from pretrained scVI model.
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/weiwei_schultz.yaml
+    roles: [ contributor ]
+
+argument_groups:
+  - name: Input
+    arguments:
+      - name: "--input"
+        type: file
+        description: Path to the an SCVI model
+        direction: input
+        required: true
+        example: path/to/scvi_model
+
+  - name: Output
+    arguments:
+      - name: "--output"
+        type: file
+        description: "Path where the state of the trained scANVI model will be saved."
+        example: path/to/scanvi_model
+        direction: output
+        required: true
+
+  - name: scANVI model training arguments
+    description: Arguments related to the training of the scANVI model.
+    arguments:
+      - name: "--train_size"
+        type: double
+        description: Size of training set.
+        required: false
+        default: 0.9
+        min: 0.0
+        max: 1.0
+      - name: "--max_epochs"
+        type: integer
+        description: Maximum number of epochs.
+        required: false
+        default: 400
+      - name: "--learning_rate"
+        type: double
+        description: Learning rate.
+        required: false
+        default: 1e-3
+      - name: "--reduce_lr_on_plateau"
+        type: boolean
+        description: Reduce learning rate on plateau.
+        required: false
+        default: true
+      - name: "--lr_patience"
+        type: integer
+        description: Patience for learning rate reduction.
+        required: false
+        default: 25
+      - name: "--lr_factor"
+        type: double
+        description: Factor by which to reduce learning rate.
+        required: false
+        default: 0.5
+        min: 0.0
+        max: 1.0
+      - name: "--early_stopping"
+        type: boolean
+        description: Early stopping.
+        required: false
+        default: true
+      - name: "--early_stopping_patience"
+        type: integer
+        description: Patience for early stopping.
+        required: false
+        default: 50
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/annotation_test_data/scvi_model/
+
+engines:
+- type: docker
+  image: nvcr.io/nvidia/pytorch:24.12-py3
+  setup:
+    - type: python
+      __merge__: [ /src/base/requirements/scanpy.yaml, .]
+    - type: python
+      packages:
+        - scvi-tools~=1.1.5
+  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [highcpu, highmem, highdisk, gpu]
