@@ -1,31 +1,36 @@
-name: "duplicate_var"
-namespace: "metadata"
+name: "from_h5ad_to_seurat"
+namespace: "convert"
 version: "main_build"
 authors:
-- name: "Dorien Roosen"
+- name: "Robrecht Cannoodt"
   roles:
   - "author"
+  - "maintainer"
   info:
     role: "Core Team Member"
     links:
-      email: "dorien@data-intuitive.com"
-      github: "dorien-er"
-      linkedin: "dorien-roosen"
+      email: "robrecht@data-intuitive.com"
+      github: "rcannood"
+      orcid: "0000-0003-3641-729X"
+      linkedin: "robrechtcannoodt"
     organizations:
     - name: "Data Intuitive"
       href: "https://www.data-intuitive.com"
-      role: "Data Scientist"
+      role: "Data Science Engineer"
+    - name: "Open Problems"
+      href: "https://openproblems.bio"
+      role: "Core Member"
 argument_groups:
-- name: "MuData Input"
+- name: "Arguments"
   arguments:
   - type: "file"
     name: "--input"
     alternatives:
     - "-i"
-    description: "Input h5mu file"
+    description: "Input h5ad file"
     info: null
     example:
-    - "input.h5mu"
+    - "input.h5ad"
     must_exist: true
     create_parent: true
     required: true
@@ -33,85 +38,43 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--modality"
+    name: "--assay"
+    description: "Name of the assay to be created."
     info: null
     default:
-    - "rna"
+    - "RNA"
     required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "string"
-    name: "--input_var_key"
-    description: ".var field to be copied. If no key is provided, the .var index will\
-      \ be copied."
-    info: null
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-- name: "Arguments"
-  arguments:
-  - type: "boolean_true"
-    name: "--overwrite_existing_key"
-    description: "If set to true and the --output_obs_key already exists in the input\
-      \ file, the .obs field will be overwritten."
-    info: null
-    direction: "input"
-- name: "MuData Output"
-  arguments:
   - type: "file"
     name: "--output"
     alternatives:
     - "-o"
-    description: "Output h5mu file."
+    description: "Output Seurat file"
     info: null
     example:
-    - "output.h5mu"
+    - "output.rds"
     must_exist: true
     create_parent: true
     required: true
     direction: "output"
     multiple: false
     multiple_sep: ";"
-  - type: "string"
-    name: "--output_var_key"
-    description: ".var field where the copied --input_var_key will be stored."
-    info: null
-    required: true
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--output_compression"
-    description: "The compression format to be used on the output h5mu object."
-    info: null
-    example:
-    - "gzip"
-    required: false
-    choices:
-    - "gzip"
-    - "lzf"
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
 resources:
-- type: "python_script"
-  path: "script.py"
+- type: "r_script"
+  path: "script.R"
   is_executable: true
-- type: "file"
-  path: "setup_logger.py"
-- type: "file"
-  path: "compress_h5mu.py"
 - type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
-description: "Make a copy of an existing .var field or index to another .var field\
-  \ within the same mudata object.\n"
+description: "Converts an h5ad file into a Seurat file.\n"
 test_resources:
-- type: "python_script"
-  path: "test.py"
+- type: "r_script"
+  path: "test.R"
   is_executable: true
+- type: "file"
+  path: "pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5ad"
 - type: "file"
   path: "openpipelinetestutils"
   dest: "openpipelinetestutils"
@@ -128,8 +91,8 @@ runners:
   id: "nextflow"
   directives:
     label:
-    - "singlecpu"
     - "lowmem"
+    - "singlecpu"
     tag: "$id"
   auto:
     simplifyInput: true
@@ -193,47 +156,40 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "python:3.12-slim"
+  image: "rocker/r2u:24.04"
   target_tag: "main_build"
   namespace_separator: "/"
   setup:
   - type: "apt"
     packages:
-    - "procps"
+    - "libhdf5-dev"
+    - "libgeos-dev"
     interactive: false
-  - type: "python"
-    user: false
-    packages:
-    - "anndata~=0.11.1"
-    - "mudata~=0.3.1"
-    script:
-    - "exec(\"try:\\n  import awkward\\nexcept ModuleNotFoundError:\\n  exit(0)\\\
-      nelse:  exit(1)\")"
-    upgrade: true
+  - type: "r"
+    cran:
+    - "hdf5r"
+    - "Seurat"
+    - "SeuratObject"
+    bioc_force_install: false
+  - type: "r"
+    github:
+    - "scverse/anndataR"
+    bioc_force_install: false
   test_setup:
-  - type: "docker"
-    copy:
-    - "openpipelinetestutils /opt/openpipelinetestutils"
-  - type: "python"
-    user: false
-    packages:
-    - "/opt/openpipelinetestutils"
-    upgrade: true
-  - type: "python"
-    user: false
-    packages:
-    - "viashpy==0.8.0"
-    upgrade: true
+  - type: "r"
+    cran:
+    - "testthat"
+    bioc_force_install: false
   entrypoint: []
   cmd: null
 build_info:
-  config: "src/metadata/duplicate_var/config.vsh.yaml"
-  runner: "nextflow"
+  config: "src/convert/from_h5ad_to_seurat/config.vsh.yaml"
+  runner: "executable"
   engine: "docker"
-  output: "target/nextflow/metadata/duplicate_var"
-  executable: "target/nextflow/metadata/duplicate_var/main.nf"
+  output: "target/executable/convert/from_h5ad_to_seurat"
+  executable: "target/executable/convert/from_h5ad_to_seurat/from_h5ad_to_seurat"
   viash_version: "0.9.0"
-  git_commit: "cd41fee6b93c17cd921595a4f3a268a9ec61e868"
+  git_commit: "0bacaf81eb116052977cb4e707cb3445b1330872"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

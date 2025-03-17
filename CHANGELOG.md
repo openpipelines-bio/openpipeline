@@ -1,5 +1,11 @@
 # openpipelines 2.1.0
 
+## BREAKING CHANGES
+
+* Deprecation of `metadata/duplicate_obs` and `metadata/duplicate_var` components (PR #952).
+
+* Deprecation of `workflows/annotation/scgpt_integration_knn` component (PR #952).
+
 ## NEW FUNCTIONALITY
 
 * `dataflow/concatenate_h5mu`: add `modality` parameter (PR #977).
@@ -13,6 +19,8 @@
 * `scanvi`: enable CUDA acceleration (PR #969).
 
 * `feature_annotation/align_query_reference`: Enable the alignment of multiple layers (PR #972).
+
+* `convert/from_h5ad_to_seurat`: Add component to convert from h5ad to Seurat (PR #980).
 
 ## MAJOR CHANGES
 
