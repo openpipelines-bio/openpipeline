@@ -3195,7 +3195,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/harmony_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "3a81e7917544e85ccfdcb44bcacbef50017475bc",
+    "git_commit" : "daca2efb62a4510600695a9577ccc61b047d9601",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

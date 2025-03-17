@@ -829,7 +829,7 @@ build_info:
   output: "target/nextflow/workflows/ingestion/cellranger_multi"
   executable: "target/nextflow/workflows/ingestion/cellranger_multi/main.nf"
   viash_version: "0.9.0"
-  git_commit: "3a81e7917544e85ccfdcb44bcacbef50017475bc"
+  git_commit: "daca2efb62a4510600695a9577ccc61b047d9601"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/mapping/cellranger_multi"

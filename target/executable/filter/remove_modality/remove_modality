@@ -484,9 +484,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component filter remove_modality"
-LABEL org.opencontainers.image.created="2025-03-16T02:55:14Z"
+LABEL org.opencontainers.image.created="2025-03-17T02:54:35Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3a81e7917544e85ccfdcb44bcacbef50017475bc"
+LABEL org.opencontainers.image.revision="daca2efb62a4510600695a9577ccc61b047d9601"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
