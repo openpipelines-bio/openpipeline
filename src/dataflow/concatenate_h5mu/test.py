@@ -1163,35 +1163,5 @@ def test_keep_uns(
     assert set(mod2.uns.keys()) == set()
 
 
-def test_subset_modalities(
-    run_component, sample_1_h5mu, sample_2_h5mu, write_mudata_to_file, random_h5mu_path
-):
-    """
-    Test if outputting a subset of the modalities works
-    """
-    output_path = random_h5mu_path()
-    run_component(
-        [
-            "--input_id",
-            "sample1;sample2",
-            "--input",
-            write_mudata_to_file(sample_1_h5mu),
-            "--input",
-            write_mudata_to_file(sample_2_h5mu),
-            "--output",
-            output_path,
-            "--modality",
-            "mod1",
-            "--other_axis_mode",
-            "move",
-            "--uns_merge_mode",
-            "make_unique",
-        ]
-    )
-    assert output_path.is_file()
-    concatenated_data = md.read(output_path)
-    assert set(concatenated_data.mod.keys()) == set(["mod1"])
-
-
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-v"]))

@@ -10,7 +10,7 @@ meta = {
 }
 ## VIASH END
 
-input_anticmv = f"{meta['resources_dir']}/10x_5k_anticmv/processed/10x_5k_anticmv.cellranger_multi.output.output"
+input_anticmv = f"{meta['resources_dir']}/10x_5k_anticmv/processed/10x_5k_anticmv.cellranger_multi.output"
 input_lung_crispr = f"{meta['resources_dir']}/10x_5k_lung_crispr/processed/10x_5k_lung_crispr.cellranger_multi.output.output"
 input_beam = (
     f"{meta['resources_dir']}/10x_5k_beam/processed/10x_5k_beam.cellranger_multi.output"
@@ -172,6 +172,35 @@ def test_cellranger_multi_to_h5mu_fixed_rna(run_component, tmp_path):
     for output_path in samples:
         converted_data = read_h5mu(output_path)
         assert list(converted_data.mod.keys()) == ["rna", "prot"]
+
+
+def test_custom_modality(run_component, tmp_path):
+    input_dir = f"{meta['resources_dir']}/10x_5k_anticmv/processed_with_custom/10x_5k_anticmv.cellranger_multi.output"
+    output_dir = tmp_path / "converted"
+    output_path_template = output_dir / "*.h5mu"
+    samples_csv = tmp_path / "samples.csv"
+    # run component
+    run_component(
+        [
+            "--input",
+            input_dir,
+            "--output",
+            str(output_path_template),
+            "--output_compression",
+            "gzip",
+            "--sample_csv",
+            samples_csv,
+        ]
+    )
+    assert output_dir.is_dir()
+
+    # check output
+    samples = [item for item in output_dir.iterdir() if item.is_file()]
+    assert len(samples) == 1
+    output_path = samples[0]
+    converted_data = read_h5mu(output_path)
+    assert list(converted_data.mod.keys()) == ["rna", "custom", "vdj_t"]
+    assert "feature_reference" not in converted_data.mod["custom"].uns
 
 
 if __name__ == "__main__":

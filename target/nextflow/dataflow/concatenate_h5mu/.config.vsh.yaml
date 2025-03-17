@@ -34,15 +34,6 @@ argument_groups:
     multiple: true
     multiple_sep: ";"
   - type: "string"
-    name: "--modality"
-    description: "Only output concatenated objects for the provided modalities. Outputs\
-      \ all modalities by default."
-    info: null
-    required: false
-    direction: "input"
-    multiple: true
-    multiple_sep: ";"
-  - type: "string"
     name: "--input_id"
     description: "Names of the different samples that have to be concatenated.  Must\
       \ be specified when using '--mode move'.\nIn this case, the ids will be used\
@@ -284,7 +275,7 @@ build_info:
   output: "target/nextflow/dataflow/concatenate_h5mu"
   executable: "target/nextflow/dataflow/concatenate_h5mu/main.nf"
   viash_version: "0.9.0"
-  git_commit: "daca2efb62a4510600695a9577ccc61b047d9601"
+  git_commit: "7a1ef57c9a8647431917444efb20867911c4d38b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

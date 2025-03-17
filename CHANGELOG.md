@@ -2,8 +2,6 @@
 
 ## NEW FUNCTIONALITY
 
-* `dataflow/concatenate_h5mu`: add `modality` parameter (PR #977).
-
 * `filter_with_scrublet`: add `expected_doublet_rate`, `stdev_doublet_rate`, `n_neighbors` and `sim_doublet_ratio` arguments (PR #974).
 
 * `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948, #958).
@@ -23,6 +21,8 @@
 # NEW FUNCTIONALITY 
 
 * `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
+
+* `from_cellranger_multi_to_h5mu`: add support for `custom` modality (PR #982).
 
 # MINOR CHANGES
 

@@ -40,16 +40,6 @@
     
 
         ,
-                "modality": {
-                "type":
-                "string",
-                "description": "Type: List of `string`, multiple_sep: `\";\"`. Only output concatenated objects for the provided modalities",
-                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. Only output concatenated objects for the provided modalities. Outputs all modalities by default."
-            
-            }
-    
-
-        ,
                 "input_id": {
                 "type":
                 "string",
