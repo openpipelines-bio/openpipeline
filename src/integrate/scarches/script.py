@@ -1,6 +1,8 @@
 import sys
 import mudata
+from anndata import AnnData
 import scvi
+import pandas as pd
 
 ### VIASH START
 par = {
@@ -11,8 +13,8 @@ par = {
     "input_var_gene_names": None,
     "input_obs_categorical_covariate": None,
     "input_obs_continuous_covariate_keys": None,
-    "unkown_celltype_label": "Unkown",
-    "reference": "TS_blood_reference/scvi",
+    "unknown_celltype_label": "Unknown",
+    "reference": "resources_test/annotation_test_data/scanvi_model",
     "modality": "rna",
     "output": "foo.h5mu",
     "model_output": "./hlca_query_model",
@@ -64,63 +66,82 @@ def _detect_base_model(model_path):
 
 def _align_query_with_registry(adata_query, model, model_path):
     registry = model.load_registry(model_path)["setup_args"]
-    base_model = _detect_base_model(model_path)
+    base_model = _read_model_name_from_registry(model_path)
 
     # Sanitize gene names and set as index of the AnnData object
     # all scArches VAE models expect gene names to be in the .var index
     adata_query = set_var_index(adata_query, par["input_var_gene_names"])
 
-    # align layers
-    if not registry["layer"] == par["input_layer"]:
-        if registry["layer"]:
-            adata_query.layers[registry["layer"]] = (
-                adata_query.layers[par["input_layer"]]
-                if par["input_layer"]
-                else adata_query.X
-            )
-
-        else:
-            adata_query.X = (
-                adata_query.layers[par["input_layer"]]
-                if par["input_layer"]
-                else adata_query.X
-            )
-
-    # align batch .obs field
+    # align layer
+    query_layer = adata_query.X if not par["input_layer"] else adata_query.layers[par["layer"]]
+    var_index = adata_query.var_names.tolist()
+    obs_index = adata_query.obs_names.tolist()
+    
+    # align observations
+    query_obs = {}
+    
+    ## batch_key
     # relevant for AUTOZI, LinearSCVI, PEAKVI, SCANVI, SCVI, TOTALVI, MULTIVI, JaxSCVI
-    if registry["batch_key"] and not registry["batch_key"] == par["input_obs_batch"]:
-        adata_query.obs[registry["batch_key"]] = adata_query.obs[par["input_obs_batch"]]
-
-    # align celltype .obs field
-    # relevant for AUTOZI, CondSCVI, LinearSCVI, PEAKVI, SCANVI, SCVI
-    if registry["labels_key"]:
-        adata_query.obs[registry["labels_key"]] = (
-            adata_query.obs[par["input_obs_label"]]
-            if par["input_obs_label"]
-            else par["unkown_celltype_label"]
+    if registry["batch_key"] and not par["input_obs_batch"]:
+        raise ValueError(
+            f"The provided {base_model} model {model_path} requires `--input_obs_batch` to be provided."
         )
+        
+    if par["input_obs_batch"]:
+        
+        if not registry["batch_key"]:
+            logger.warning(f"`--input_obs_batch` was provided but is not used in the provided {base_model} model {model_path}.")
+            
+        else:
+            query_obs[registry["batch_key"]] = adata_query.obs[par["input_obs_batch"]].tolist()
 
+    ## labels-key
+    # relevant for AUTOZI, CondSCVI, LinearSCVI, PEAKVI, SCANVI, SCVI
+    if registry["labels_key"] and not par["input_obs_label"]:
+        logger.warning(f"Model registry contains a `labels_key`, but `--input_obs_label` was not provided. Will create label_key with `--unknown_celltype_label` {par["unknown_celltype_label"]} instead.")
+        if "unlabeled_category" in registry:
+            assert par["unknown_celltype_label"] == registry["unlabeled_category"], f"The provided `--unknown_celltype_label` {par["unknown_celltype_label"]} does not match the `unlabeled category` {registry["unlabeled_category"]} in the model registry."
+        adata_query.obs[registry["labels_key"]] = par["unknown_celltype_label"]
+        query_obs[registry["labels_key"]] = adata_query.obs[registry["labels_key"]].tolist()
+        
+    if par["input_obs_label"]:
+        if not registry["labels_key"]:
+            logger.warning(f"--input_obs_label was provided but is not used in the provided {base_model} model {model_path}.")
+        else:
+            query_obs[registry["labels_key"]] = adata_query.obs[par["input_obs_label"]].tolist()
+        
+
+    obs = pd.DataFrame(query_obs, index=obs_index)
+    var = pd.DataFrame(index=var_index)     
+    
+
+    aligned_query_anndata = AnnData(
+        X=query_layer,
+        obs=obs,
+        var=var
+    )
+    if registry["layer"]:
+        aligned_query_anndata.layers[registry["layer"]] = query_layer
+        
     # align categorical_covariate_kes  .obs field
     # relevant for PEAKVI, SCANVI, SCVI, TOTALVI, MULTIVI
 
     # align continuous_covariate_keys .obs field
     # relevant for PEAKVI, SCANVI, SCVI, TOTALVI, MULTIVI
 
-    # unkown_key
+    # unknown_key
     # relevant for SCANVI
 
     # size_factor_key
     # relevant for SCANVI, SCVI, TOTALVI, MULTIVI
 
-    if base_model == "TOTALVI" or base_model == "MULTIVI":
-        pass
     # protein_expression_obsm_key
     # relevant for TOTALVI, MULTIVI
 
     # protein_names_uns_key
     # relevant for TOTALVI, MULTIVI
 
-    return adata_query
+    return aligned_query_anndata
 
 
 def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1):
@@ -138,19 +159,23 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
     model = _detect_base_model(model_path)
 
     # Keys of the AnnData query object need to match the exact keys in the reference model registry
-    adata_query = _align_query_with_registry(adata_query, model, model_path)
+    aligned_adata_query = _align_query_with_registry(adata_query, model, model_path)
 
     try:
-        model.prepare_query_anndata(adata_query, model_path)
+        model.prepare_query_anndata(aligned_adata_query, model_path)
     except ValueError:
         logger.warning(
             "ValueError thrown when preparing adata for mapping. Clearing .varm field to prevent it"
         )
-        adata_query.varm.clear()
-        model.prepare_query_anndata(adata_query, model_path)
-
+        aligned_adata_query.varm.clear()
+        try:
+            model.prepare_query_anndata(aligned_adata_query, model_path)
+        except ValueError as e:
+            raise ValueError(
+                f"Could not perform model.prepare_model_anndata, likely because the model was trained with different var names then were found in the index. \n\nmodel var_names: {model.prepare_query_anndata(aligned_adata_query, model_path, return_reference_var_names=True).tolist()} \n\nquery data var_names: {aligned_adata_query.var_names.tolist()}  ")
+    
     # Load query data into the model
-    vae_query = model.load_query_data(adata_query, model_path, freeze_dropout=True)
+    vae_query = model.load_query_data(aligned_adata_query, model_path, freeze_dropout=True)
 
     # Train scArches model for query mapping
     vae_query.train(

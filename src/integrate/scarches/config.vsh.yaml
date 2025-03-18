@@ -107,7 +107,7 @@ argument_groups:
           Key in adata.obs for size factor information. Instead of using library size as a size factor,
           the provided size factor column will be used as offset in the mean of the likelihood.
           Assumed to be on linear scale.
-      - name: "--unkown_celltype_label"
+      - name: "--unknown_celltype_label"
         type: string
         default: "Unknown"
         description: |
