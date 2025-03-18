@@ -91,9 +91,6 @@ test_resources:
   is_executable: true
 - type: "file"
   path: "bcl"
-- type: "file"
-  path: "openpipelinetestutils"
-  dest: "openpipelinetestutils"
 info: null
 status: "enabled"
 links:
@@ -189,7 +186,7 @@ build_info:
   output: "target/nextflow/demux/bcl2fastq"
   executable: "target/nextflow/demux/bcl2fastq/main.nf"
   viash_version: "0.9.0"
-  git_commit: "7a1ef57c9a8647431917444efb20867911c4d38b"
+  git_commit: "995003d402b3c952934cbb91f7e4d0c4fa21b467"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
@@ -202,8 +199,7 @@ package_config:
   source: "src"
   target: "target"
   config_mods:
-  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
-    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
   - ".version := \"integration_build\""

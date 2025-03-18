@@ -200,7 +200,7 @@ def test_custom_modality(run_component, tmp_path):
     output_path = samples[0]
     converted_data = read_h5mu(output_path)
     assert list(converted_data.mod.keys()) == ["rna", "custom", "vdj_t"]
-    assert "feature_reference" not in converted_data.mod["custom"].uns
+    assert "feature_reference" in converted_data.mod["custom"].uns
 
 
 if __name__ == "__main__":

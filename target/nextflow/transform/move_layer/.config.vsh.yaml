@@ -85,9 +85,6 @@ test_resources:
 - type: "python_script"
   path: "test.py"
   is_executable: true
-- type: "file"
-  path: "openpipelinetestutils"
-  dest: "openpipelinetestutils"
 info: null
 status: "enabled"
 links:
@@ -184,18 +181,16 @@ engines:
       nelse:  exit(1)\")"
     upgrade: true
   test_setup:
-  - type: "docker"
-    copy:
-    - "openpipelinetestutils /opt/openpipelinetestutils"
-  - type: "python"
-    user: false
+  - type: "apt"
     packages:
-    - "/opt/openpipelinetestutils"
-    upgrade: true
+    - "git"
+    interactive: false
   - type: "python"
     user: false
     packages:
     - "viashpy==0.8.0"
+    github:
+    - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -206,7 +201,7 @@ build_info:
   output: "target/nextflow/transform/move_layer"
   executable: "target/nextflow/transform/move_layer/main.nf"
   viash_version: "0.9.0"
-  git_commit: "7a1ef57c9a8647431917444efb20867911c4d38b"
+  git_commit: "995003d402b3c952934cbb91f7e4d0c4fa21b467"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
@@ -219,8 +214,7 @@ package_config:
   source: "src"
   target: "target"
   config_mods:
-  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
-    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
   - ".version := \"integration_build\""
