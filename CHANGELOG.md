@@ -1,14 +1,36 @@
 # openpipelines 2.1.0
 
+## BREAKING CHANGES
+
+* Deprecation of `metadata/duplicate_obs` and `metadata/duplicate_var` components (PR #952).
+
+* Deprecation of `workflows/annotation/scgpt_integration_knn` component (PR #952).
+
 ## NEW FUNCTIONALITY
 
+* `dataflow/concatenate_h5mu`: add `modality` parameter (PR #977).
+
+* `filter_with_scrublet`: add `expected_doublet_rate`, `stdev_doublet_rate`, `n_neighbors` and `sim_doublet_ratio` arguments (PR #974).
+
 * `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948, #958).
+
+* `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
+
+* `scanvi`: enable CUDA acceleration (PR #969).
+
+* `feature_annotation/align_query_reference`: Enable the alignment of multiple layers (PR #972).
+
+* `convert/from_h5ad_to_seurat`: Add component to convert from h5ad to Seurat (PR #980).
 
 ## MAJOR CHANGES
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
 
 * The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
+
+# NEW FUNCTIONALITY 
+
+* `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
 
 # MINOR CHANGES
 
@@ -20,7 +42,21 @@
 
 * Various  components (`scgpt` and `annotate`): Add resource labels (PR #947, PR #950).
 
-* `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957).
+* `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957, PR #959).
+
+* `integrate/scvi`, `integrate/totalvi` and `integrate/scarches`: update base image to nvcr.io/nvidia/pytorch:24.12-py3, pin scvi-tools version to 1.1.5, unpin jax and jaxlib version (PR #970).
+
+* `annotate/celltypist`: Enable passing any layer with log normalized counts, enforce checking whether counts are log normalized (PR #971).
+
+# BUG FIXES
+
+* `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).
+
+* `resources_test_scripts/annotation_test_data.sh`: Add a layer to the annotation reference dataset with log normalized counts (PR #960).
+
+* `annotate/celltypist`: Fix missing values in annotation column caused by index misalignment (PR #976).
+
+* `workflows/annotation/scgpt_annotation` and `workflows/integrate/scgpt_leiden`: Parameterization of HVG flavor with default method `cell_ranger` instead of `seurat_v3` (PR #979).
 
 # openpipelines 2.0.0
 

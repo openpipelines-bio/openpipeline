@@ -7,7 +7,7 @@ import pytest
 import re
 import pandas as pd
 
-from openpipelinetestutils.asserters import assert_annotation_objects_equal
+from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
@@ -74,6 +74,7 @@ def common_vars_data_path(tmp_path, lognormed_test_data):
     rna_in = lognormed_test_data.mod["rna"]
     rna_in.var["common_vars"] = False
     rna_in.var["common_vars"].iloc[:10000] = True
+    rna_in.var["common_vars"] = rna_in.var["common_vars"].astype("boolean")
     lognormed_test_data.write_h5mu(temp_h5mu)
     return temp_h5mu
 

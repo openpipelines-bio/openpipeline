@@ -31,7 +31,7 @@ argument_groups:
         type: string
         required: False
         description: |
-          Mudata layer (key from layers) to use as input data for hvg subsetting and binning; if not specified, X is used.
+          The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts.
       - name: "--var_gene_names"
         type: string
         required: false
@@ -105,6 +105,14 @@ argument_groups:
         default: 1200
         description: |
           Number of highly variable genes to subset for.
+      - name: "--hvg_flavor"
+        type: string
+        choices: ["cell_ranger", "seurat"]
+        default: "cell_ranger"
+        description: |
+          Method to be used for identifying highly variable genes. 
+          Note that the default for this workflow (`cell_ranger`) is not the default method for scanpy hvg detection (`seurat`).
+
   - name: "Tokenization arguments"
     arguments:
       - name: "--max_seq_len"
@@ -157,7 +165,6 @@ dependencies:
   - name: scgpt/cross_check_genes
   - name: scgpt/binning
   - name: feature_annotation/highly_variable_features_scanpy
-  - name: filter/do_filter
   - name: scgpt/pad_tokenize
   - name: scgpt/embedding
   - name: workflows/multiomics/neighbors_leiden_umap

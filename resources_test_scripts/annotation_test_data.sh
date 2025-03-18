@@ -33,14 +33,25 @@ wget "https://zenodo.org/record/7580707/files/pretrained_models_Blood_ts.tar.gz?
 
 # Process Tabula Sapiens Blood reference h5ad
 # (Select one individual and 100 cells per cell type)
+# normalize and log1p transform data
 python <<HEREDOC
 import anndata as ad
+import scanpy as sc
 ref_adata = ad.read_h5ad("${OUT}/tmp_TS_Blood_filtered.h5ad")
 sub_ref_adata = ref_adata[ref_adata.obs["donor_assay"] == "TSP14_10x 3' v3"] 
 n=100
 s=sub_ref_adata.obs.groupby('cell_ontology_class').cell_ontology_class.transform('count')
 sub_ref_adata_final = sub_ref_adata[sub_ref_adata.obs[s>=n].groupby('cell_ontology_class').head(n).index]
 # assert sub_ref_adata_final.shape == (500, 58870)
+data_for_scanpy = ad.AnnData(X=sub_ref_adata_final.X)
+sc.pp.normalize_total(data_for_scanpy, target_sum=10000)
+sc.pp.log1p(
+    data_for_scanpy,
+    base=None,
+    layer=None,
+    copy=False,
+)  
+sub_ref_adata_final.layers["log_normalized"] = data_for_scanpy.X
 sub_ref_adata_final.write("${OUT}/TS_Blood_filtered.h5ad", compression='gzip')
 HEREDOC
 
@@ -79,3 +90,28 @@ rm "${OUT}/tmp_pretrained_models_Blood_ts.tar.gz"
 
 find "${OUT}/Pretrained_model" ! -name "example_file_model*" -type f -exec rm -f {} +
 mv "${OUT}/Pretrained_model" "${OUT}/onclass_model"
+
+echo "> Creating SCVI model"
+viash run src/integrate/scvi/config.vsh.yaml --engine docker -- \
+    --input "${OUT}/TS_Blood_filtered.h5mu" \
+    --obs_batch "donor_id" \
+    --var_gene_names "ensemblid" \
+    --obs_labels "cell_ontology_class" \
+    --output "${OUT}/scvi_output.h5mu" \
+    --output_model "${OUT}/scvi_model" \
+    --max_epochs 5 \
+    --n_obs_min_count 10 \
+    --n_var_min_count 10
+
+echo "> Creating SCANVI model"
+viash run src/integrate/scanvi/config.vsh.yaml --engine docker -- \
+    --input "${OUT}/TS_Blood_filtered.h5mu" \
+    --var_gene_names "ensemblid" \
+    --obs_labels "cell_ontology_class" \
+    --scvi_model "${OUT}/scvi_model" \
+    --output "${OUT}/scanvi_output.h5mu" \
+    --output_model "${OUT}/scanvi_model" \
+    --max_epochs 5 
+
+rm "${OUT}/scanvi_output.h5mu"
+rm "${OUT}/scvi_output.h5mu"

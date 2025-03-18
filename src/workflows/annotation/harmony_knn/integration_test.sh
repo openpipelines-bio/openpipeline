@@ -8,9 +8,8 @@ cd "$REPO_ROOT"
 
 nextflow \
   run . \
-  -main-script src/workflows/annotation/scgpt_integration_knn/test.nf \
+  -main-script src/workflows/annotation/harmony_knn/test.nf \
   -entry test_wf \
-  -resume \
-  -profile no_publish,docker \
+  -profile docker,no_publish \
   -c src/workflows/utils/labels_ci.config \
-  -c src/workflows/utils/integration_tests.config
+  -c src/workflows/utils/integration_tests.config \

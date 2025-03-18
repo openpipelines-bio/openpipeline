@@ -1,18 +1,16 @@
-name: "scgpt_integration_knn"
+name: "harmony_knn"
 namespace: "workflows/annotation"
-description: "Cell type annotation workflow that performs scGPT integration of reference and query dataset followed by KNN label transfer."
+description: "Cell type annotation workflow by performing harmony integration of reference and query dataset followed by KNN label transfer."
+info:
+  name: "Harmony integration followed by KNN label transfer"
+  test_dependencies:
+    - name: harmony_knn_test
+      namespace: test_workflows/annotation
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]
-  - __merge__: /src/authors/elizabeth_mlynarski.yaml
-    roles: [ author ]
   - __merge__: /src/authors/weiwei_schultz.yaml
     roles: [ contributor ]
-info:
-  name: "scGPT Annotation"
-  test_dependencies:
-    - name: scgpt_integration_knn_test
-      namespace: test_workflows/annotation
 
 argument_groups:
   - name: Query Input
@@ -33,20 +31,25 @@ argument_groups:
         default: "rna"
         required: false
       - name: "--input_layer"
-        type: string
-        required: False
-        description: |
-          Mudata layer (key from layers) to use as input data for scGPT integration; if not specified, X is used. Should match the layer name of the reference dataset.
-      - name: "--input_var_gene_names"
-        type: string
+        description: The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts.
         required: false
-        description: |
-          The .var field in the input (query) dataset containing gene names; if not provided, the .var index will be used.
+        type: string
       - name: "--input_obs_batch_label"
         type: string
         description: "The .obs field in the input (query) dataset containing the batch labels."
         example: "sample"
         required: true
+      - name: "--input_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The .var field in the input (query) dataset containing gene names; if not provided, the .var index will be used.
+      - name: "--input_reference_gene_overlap"
+        type: integer
+        default: 100
+        min: 1
+        description: | 
+          The minimum number of genes present in both the reference and query datasets.
       - name: "--overwrite_existing_key"
         type: boolean_true
         description: If provided, will overwrite existing fields in the input dataset when data are copied during the reference alignment process.
@@ -56,14 +59,17 @@ argument_groups:
       - name: "--reference"
         required: true
         type: file
-        description: Reference dataset consisting of observations with cell type labels present in the .obs --reference_obs_batch_label column to train the classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset(s).
+        description: Reference dataset consisting of the labeled observations to train the KNN classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset.
         example: reference.h5mu
-      - name: "--reference_obs_targets"
+      - name: "--reference_layer"
+        description: The layer of the reference dataset to process if .X is not to be used. Should contain log normalized counts.
+        required: false
         type: string
-        example: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
+      - name: "--reference_obs_target"
+        type: string
+        example: cell_type
         required: true
-        multiple: true
-        description: The `.obs` key(s) of the target labels to tranfer.
+        description: The `.obs` key of the target cell type labels to transfer.
       - name: "--reference_var_gene_names"
         type: string
         required: false
@@ -75,117 +81,54 @@ argument_groups:
         example: "sample"
         required: true
 
-  - name: scGPT model
-    arguments:
-      - name: "--model"
-        type: file
-        required: true
-        example: resources_test/scgpt/best_model.pt
-        description: |
-          The scGPT model file.
-          Can either be a foundation model or a fine-tuned model. 
-          If the model file is a fine-tuned model, it must contain a key for the checkpoints (--finetuned_checkpoints_key).
-      - name: "--model_vocab"
-        type: file
-        direction: input
-        required: true
-        example: resources_test/scgpt/vocab.json
-        description: |
-          The scGPT model vocabulary file.
-      - name: "--model_config"
-        type: file
-        direction: input
-        required: true
-        example: args.json
-        description: |
-          The scGPT model configuration file.
-      - name: "--finetuned_checkpoints_key"
-        type: string
-        required: false
-        example: model_state_dict
-        description: |
-          Key in the model file containing the pretrained checkpoints. Must be provided when `--model` is a fine-tuned model.
-
-  - name: "Padding arguments"
-    arguments:
-      - name: "--pad_token"
-        type: string
-        default: "<pad>"
-        required: false
-        description: |
-          Token used for padding.
-      - name: "--pad_value"
-        type: integer
-        default: -2
-        required: false
-        description: |
-          The value of the padding token.
-
   - name: "HVG subset arguments"
     arguments:
       - name: "--n_hvg"
         type: integer
-        default: 1200
+        default: 2000
         description: |
           Number of highly variable genes to subset for.
 
-  - name: "Tokenization arguments"
+  - name: PCA options
     arguments:
-      - name: "--max_seq_len"
+      - name: "--pca_num_components"
         type: integer
-        required: false
-        description: |
-          The maximum sequence length of the tokenized data. Defaults to the number of features if not provided.
+        example: 25
+        description: Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.
 
-  - name: "Embedding arguments"
+  - name: Harmony integration options
     arguments:
-      - name: --dsbn
-        type: boolean
-        default: true
+      - name: "--harmony_theta"
+        type: double
         description: |
-          Apply domain-specific batch normalization
-      - name: "--batch_size"
-        type: integer
-        default: 64
-        description: |
-          The batch size to be used for embedding inference.
-
-  - name: "Binning arguments"
-    arguments:
-      - name: "--n_input_bins"
-        type: integer
-        default: 51
-        required: False
-        min: 1
-        description: |
-          The number of bins to discretize the data into; When no value is provided, data won't be binned.
-      - name: "--seed"
-        type: integer
-        required: false
-        description: |
-          Seed for random number generation used for binning. If not set, no seed is used.
+          Diversity clustering penalty parameter. Can be set as a single value for all batch observations or as multiple values, one for each observation in the batches defined by --input_obs_batch_label. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
+        min: 0
+        default: [2]
+        multiple: true
 
   - name: Leiden clustering options
     arguments:
       - name: "--leiden_resolution"
         type: double
         description: Control the coarseness of the clustering. Higher values lead to more clusters.
+        min: 0
         default: [1]
         multiple: true
 
   - name: Neighbor classifier arguments
     arguments:
-      - name: "--weights"
+      - name: "--knn_weights"
         type: string
         default: "uniform"
-        choices: ["uniform", "distance", "gaussian"]
+        choices: ["uniform", "distance"]
         description: |
           Weight function used in prediction. Possible values are:
           `uniform` (all points in each neighborhood are weighted equally) or 
           `distance` (weight points by the inverse of their distance)
-      - name: "--n_neighbors"
+      - name: "--knn_n_neighbors"
         type: integer
         default: 15
+        min: 5
         required: false
         description: |
           The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. 
@@ -204,7 +147,7 @@ argument_groups:
         required: false
         multiple: true
         description: |
-          In which `.obs` slots to store the predicted information.
+          In which `.obs` slots to store the predicted cell labels.
           If provided, must have the same length as `--reference_obs_targets`.
           If empty, will default to the `reference_obs_targets` combined with the `"_pred"` suffix.
       - name: "--output_obs_probability"
@@ -217,7 +160,7 @@ argument_groups:
           If empty, will default to the `reference_obs_targets` combined with the `"_probability"` suffix.
       - name: "--output_obsm_integrated"
         type: string
-        default: "X_integrated_scgpt"
+        default: "X_integrated_harmony"
         required: false
         description: "In which .obsm slot to store the integrated embedding."
       - name: "--output_compression"
@@ -229,14 +172,15 @@ argument_groups:
         example: "gzip"
 
 dependencies:
-  - name: workflows/integration/scgpt_leiden
-    alias: scgpt_leiden_workflow
+  - name: workflows/integration/harmony_leiden
+    alias: harmony_leiden_workflow
   - name: labels_transfer/knn
   - name: dataflow/split_h5mu
   - name: dataflow/concatenate_h5mu
-  - name: metadata/add_id
-  - name: metadata/duplicate_obs
-  - name: metadata/duplicate_var
+  - name: dimred/pca
+  - name: feature_annotation/align_query_reference
+  - name: feature_annotation/highly_variable_features_scanpy
+  - name: transform/delete_layer
 
 resources:
   - type: nextflow_script
@@ -247,7 +191,6 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf
-  - path: /resources_test/scgpt
   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
   - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
 

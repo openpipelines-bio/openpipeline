@@ -1,16 +1,6 @@
 import sys
 import mudata
 import scvi
-from torch.cuda import is_available as cuda_is_available
-
-try:
-    from torch.backends.mps import is_available as mps_is_available
-except ModuleNotFoundError:
-    # Older pytorch versions
-    # MacOS GPUs
-    def mps_is_available():
-        return False
-
 
 ### VIASH START
 par = {
@@ -170,7 +160,7 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
         early_stopping_patience=par["early_stopping_patience"],
         early_stopping_min_delta=par["early_stopping_min_delta"],
         check_val_every_n_epoch=check_val_every_n_epoch,
-        use_gpu=(cuda_is_available() or mps_is_available()),
+        accelerator="auto",
     )
 
     return vae_query, adata_query

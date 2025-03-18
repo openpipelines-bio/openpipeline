@@ -1,16 +1,21 @@
 import sys
 import celltypist
 import mudata as mu
+import anndata as ad
+import pandas as pd
 import numpy as np
 
 ## VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix_log_normalized.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "output": "output.h5mu",
     "modality": "rna",
-    "reference": None,
-    # "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
-    "model": "resources_test/annotation_test_data/celltypist_model_Immune_All_Low.pkl",
+    # "reference": None,
+    "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
+    "model": None,
+    # "model": "resources_test/annotation_test_data/celltypist_model_Immune_All_Low.pkl",
+    "input_layer": "log_normalized",
+    "reference_layer": "log_normalized",
     "input_reference_gene_overlap": 100,
     "reference_obs_target": "cell_ontology_class",
     "reference_var_input": None,
@@ -18,14 +23,16 @@ par = {
     "feature_selection": True,
     "majority_voting": True,
     "output_compression": "gzip",
-    "input_var_gene_names": "gene_symbol",
+    "input_var_gene_names": None,
     "reference_var_gene_names": "ensemblid",
-    "input_layer": None,
-    "reference_layer": None,
+    "C": 1.0,
+    "max_iter": 1000,
+    "use_SGD": False,
+    "min_prop": 0,
     "output_obs_predictions": "celltypist_pred",
-    "output_obs_probabilities": "celltypist_probability",
+    "output_obs_probability": "celltypist_probability",
 }
-meta = {}
+meta = {"resources_dir": "src/utils"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -55,9 +62,19 @@ def main(par):
     input_adata = input_mudata.mod[par["modality"]]
     input_modality = input_adata.copy()
 
-    # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
-    # CellTypist requires query gene names to be in index
+    # Provide correct format of query data for celltypist annotation
+    ## Sanitize gene names and set as index
     input_modality = set_var_index(input_modality, par["input_var_gene_names"])
+    ## Fetch lognormalized counts
+    lognorm_counts = (
+        input_modality.layers[par["input_layer"]].copy()
+        if par["input_layer"]
+        else input_modality.X.copy()
+    )
+    ## Create AnnData object
+    input_modality = ad.AnnData(
+        X=lognorm_counts, var=pd.DataFrame(index=input_modality.var.index)
+    )
 
     if par["model"]:
         logger.info("Loading CellTypist model")
@@ -90,25 +107,11 @@ def main(par):
             min_gene_overlap=par["input_reference_gene_overlap"],
         )
 
-        input_matrix = (
-            input_modality.layers[par["input_layer"]]
-            if par["input_layer"]
-            else input_modality.X
-        )
         reference_matrix = (
             reference_modality.layers[par["reference_layer"]]
             if par["reference_layer"]
             else reference_modality.X
         )
-
-        if not check_celltypist_format(input_matrix):
-            logger.warning(
-                "Input data is not in the reccommended format for CellTypist."
-            )
-        if not check_celltypist_format(reference_matrix):
-            logger.warning(
-                "Reference data is not in the reccommended format for CellTypist."
-            )
 
         labels = reference_modality.obs[par["reference_obs_target"]]
 
@@ -121,16 +124,17 @@ def main(par):
             max_iter=par["max_iter"],
             use_SGD=par["use_SGD"],
             feature_selection=par["feature_selection"],
-            check_expression=par["check_expression"],
+            check_expression=True,
         )
 
     logger.info("Predicting CellTypist annotations")
     predictions = celltypist.annotate(
         input_modality, model, majority_voting=par["majority_voting"]
     )
+
     input_adata.obs[par["output_obs_predictions"]] = predictions.predicted_labels[
         "predicted_labels"
-    ]
+    ].values
     input_adata.obs[par["output_obs_probability"]] = predictions.probability_matrix.max(
         axis=1
     ).values

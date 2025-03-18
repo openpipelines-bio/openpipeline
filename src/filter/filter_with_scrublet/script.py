@@ -12,7 +12,7 @@ par = {
     "output": "output.h5mu",
     "output_compression": "gzip",
     "obs_name_filter": "filter_with_scrublet",
-    # "expected_doublet_rate": 0.05,
+    "expected_doublet_rate": 0.05,
     "min_counts": 2,
     "min_cells": 3,
     "min_gene_variablity_percent": 85,
@@ -22,10 +22,13 @@ par = {
     "obs_name_predicted_doublets": "scrublet_predicted_doublets",
     "do_subset": True,
     "layer": None,
+    "stdev_doublet_rate": None,
+    "sim_doublet_ratio": None,
+    "n_neighbors": None,
 }
 meta = {
     "name": "scrublet",
-    "resources_dir": ".",
+    "resources_dir": "src/utils",
 }
 ### VIASH END
 
@@ -49,7 +52,17 @@ if 0 in input_layer.shape:
     )
 
 logger.info("\tRunning scrublet")
-scrub = scr.Scrublet(input_layer)
+initializer_args = {
+    arg: par[arg]
+    for arg in (
+        "expected_doublet_rate",
+        "stdev_doublet_rate",
+        "n_neighbors",
+        "sim_doublet_ratio",
+    )
+    if par[arg] is not None
+}
+scrub = scr.Scrublet(input_layer, **initializer_args)
 
 doublet_scores, predicted_doublets = scrub.scrub_doublets(
     min_counts=par["min_counts"],
