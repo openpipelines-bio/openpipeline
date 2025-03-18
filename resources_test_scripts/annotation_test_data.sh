@@ -106,10 +106,12 @@ viash run src/integrate/scvi/config.vsh.yaml --engine docker -- \
 echo "> Creating SCANVI model"
 viash run src/integrate/scanvi/config.vsh.yaml --engine docker -- \
     --input "${OUT}/TS_Blood_filtered.h5mu" \
-    --obs_batch "donor_id" \
     --var_gene_names "ensemblid" \
     --obs_labels "cell_ontology_class" \
     --scvi_model "${OUT}/scvi_model" \
     --output "${OUT}/scanvi_output.h5mu" \
     --output_model "${OUT}/scanvi_model" \
     --max_epochs 5 
+
+rm "${OUT}/scanvi_output.h5mu"
+rm "${OUT}/scvi_output.h5mu"
