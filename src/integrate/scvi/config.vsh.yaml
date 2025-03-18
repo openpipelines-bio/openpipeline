@@ -223,10 +223,12 @@ resources:
   - path: /src/utils/subset_vars.py
   - path: /src/utils/set_var_index.py
   - path: /src/utils/compress_h5mu.py
+  - path: /src/utils/set_var_index.py
 test_resources:
   - type: python_script
     path: test.py
   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+  - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
 
 engines:
 - type: docker

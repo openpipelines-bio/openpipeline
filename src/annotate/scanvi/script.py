@@ -8,8 +8,8 @@ par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
     "var_input_gene_names": None,
-    "scvi_reference_model": None,
-    "scanvi_reference_model": "resources_test/annotation_test_data/scanvi_model",
+    "scvi_reference_model": "resources_test/annotation_test_data/scvi_model",
+    "scanvi_reference_model": None,
     "unknown_celltype": "Unkown",
     "output": "output.h5mu",
     "output_obsm_scanvi_embedding": "scanvi_embedding",
@@ -34,7 +34,7 @@ par = {
     "query_early_stopping": True,
     "query_early_stopping_patience": 50,
 }
-meta = {"resources_dir": "src/annotate/utils"}
+meta = {"resources_dir": "src/utils"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])

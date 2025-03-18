@@ -93,6 +93,7 @@ def main():
         par["n_obs_min_count"],
         par["n_var_min_count"],
     )
+
     # Set up the data
     scvi.model.SCVI.setup_anndata(
         adata_subset,
