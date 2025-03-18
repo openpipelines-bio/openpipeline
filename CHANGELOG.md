@@ -32,6 +32,8 @@
 
 * `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
 
+* `from_cellranger_multi_to_h5mu`: add support for `custom` modality (PR #982).
+
 # MINOR CHANGES
 
 * Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942 and PR #949). 
@@ -47,6 +49,8 @@
 * `integrate/scvi`, `integrate/totalvi` and `integrate/scarches`: update base image to nvcr.io/nvidia/pytorch:24.12-py3, pin scvi-tools version to 1.1.5, unpin jax and jaxlib version (PR #970).
 
 * `annotate/celltypist`: Enable passing any layer with log normalized counts, enforce checking whether counts are log normalized (PR #971).
+
+* `process_10xh5/filter_10xh5`: update container base to ubuntu 24.04 (PR #983).
 
 # BUG FIXES
 
