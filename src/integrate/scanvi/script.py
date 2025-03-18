@@ -5,10 +5,14 @@ import scvi
 ### VIASH START
 par = {
     "input": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
+    "scvi_model": "resources_test/annotation_test_data/scvi_model",
+    "obs_labels": "cell_ontology_class",
+    "unlabeled_category": "Unknown",
     "modality": "rna",
     "input_layer": None,
     "var_input": None,
     "output": "foo.h5mu",
+    "var_gene_names": "ensemblid",
     "obsm_output": "X_scvi_integrated",
     "early_stopping": True,
     "early_stopping_monitor": "elbo_validation",
@@ -17,11 +21,12 @@ par = {
     "reduce_lr_on_plateau": True,
     "lr_factor": 0.6,
     "lr_patience": 30,
-    "max_epochs": 500,
+    "max_epochs": 5,
     "n_obs_min_count": 10,
     "n_var_min_count": 10,
     "output_model": "test/",
     "output_compression": "gzip",
+    "output_model": "resources_test/annotation_test_data/scanvi_model"
 }
 
 meta = {"resources_dir": "src/utils"}
@@ -34,6 +39,7 @@ sys.path.append(meta["resources_dir"])
 from subset_vars import subset_vars
 from compress_h5mu import write_h5ad_to_h5mu_with_compression
 from setup_logger import setup_logger
+from set_var_index import set_var_index
 
 logger = setup_logger()
 
@@ -47,6 +53,9 @@ def main():
     else:
         adata_subset = adata.copy()
 
+    # Sanitize gene names and set as index of the AnnData object
+    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
+    
     logger.info(f"Loading pre-trained scVI model from {par['scvi_model']}")
     scvi_model = scvi.model.SCVI.load(
         par["scvi_model"],

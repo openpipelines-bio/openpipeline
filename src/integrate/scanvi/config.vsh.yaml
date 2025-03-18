@@ -25,6 +25,10 @@ argument_groups:
         type: string
         required: false
         description: "Input layer to use. If None, X is used"
+      - name: "--var_gene_names"
+        type: string
+        required: false
+        description: ".var column containing gene names. By default, use the index."
       - name: "--var_input"
         type: string
         required: false
