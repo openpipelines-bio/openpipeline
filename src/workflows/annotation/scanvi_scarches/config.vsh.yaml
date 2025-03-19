@@ -1,6 +1,6 @@
-name: "scanvi"
+name: "scanvi_scarches"
 namespace: "workflows/annotation"
-description: "Cell type annotation workflow using ScanVI."
+description: "Cell type annotation workflow using ScanVI with scArches for reference mapping."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]
@@ -162,13 +162,10 @@ argument_groups:
         example: "gzip"
 
 dependencies:
-  - name: workflows/integration/scvi_leiden
-    alias: scvi_leiden_workflow
-  - name: labels_transfer/knn
-  - name: dataflow/split_h5mu
-  - name: dataflow/concatenate_h5mu
-  - name: metadata/add_id
-  - name: metadata/copy_obs
+  - name: integrate/scvi
+  - name: annotate/scanvi
+  - name: reference_mapping/scarches
+  - name: workflows/multiomics/neighbors_leiden_umap
 
 resources:
   - type: nextflow_script
@@ -179,7 +176,8 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf
-  - path: /resources_test/scgpt
+  - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 
 runners:
   - type: nextflow
