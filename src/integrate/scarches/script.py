@@ -11,13 +11,12 @@ par = {
     "input_obs_batch": "sample_id",
     "input_obs_label": None,
     "input_var_gene_names": None,
-    "input_obs_categorical_covariate": None,
-    "input_obs_continuous_covariate_keys": None,
     "unknown_celltype_label": "Unknown",
-    "reference": "resources_test/annotation_test_data/scanvi_model",
+    "input_obs_size_factor": None,
+    "reference": "resources_test/annotation_test_data/scvi_model",
     "modality": "rna",
     "output": "foo.h5mu",
-    "model_output": "./hlca_query_model",
+    "model_output": "test",
     # Other
     "obsm_output": "X_integrated_scanvi",
     "early_stopping": None,
@@ -63,10 +62,30 @@ def _detect_base_model(model_path):
 
     return names_to_models_map[_read_model_name_from_registry(model_path)]
 
-
-def _align_query_with_registry(adata_query, model, model_path):
-    registry = model.load_registry(model_path)["setup_args"]
-    base_model = _read_model_name_from_registry(model_path)
+def _validate_par(model_registry, model_name):
+    registry_par_mapper = {
+        "batch_key": "input_obs_batch",
+        "labels_key": "input_obs_label",
+        "size_factor_key": "input_obs_size_factor"    
+    }
+    
+    for registry_key, par_key in registry_par_mapper.items():
+                    
+        if model_registry.get(registry_key) and not par[par_key]:
+            if par_key == "input_obs_label" and model_registry.get("unlabeled_category"):
+                continue
+            else:
+                raise ValueError(
+                    f"The provided {model_name} model requires `--{par_key}` to be provided."
+                )
+            
+        elif par[par_key] and not model_registry.get(registry_key):
+            logger.warning(f"`--{par_key}` was provided but is not used in the provided {model_name} model.")
+                   
+    
+def _align_query_with_registry(adata_query, model_name, model_registry):
+    
+    _validate_par(model_registry, model_name)
 
     # Sanitize gene names and set as index of the AnnData object
     # all scArches VAE models expect gene names to be in the .var index
@@ -80,66 +99,35 @@ def _align_query_with_registry(adata_query, model, model_path):
     # align observations
     query_obs = {}
     
-    ## batch_key
-    # relevant for AUTOZI, LinearSCVI, PEAKVI, SCANVI, SCVI, TOTALVI, MULTIVI, JaxSCVI
-    if registry["batch_key"] and not par["input_obs_batch"]:
-        raise ValueError(
-            f"The provided {base_model} model {model_path} requires `--input_obs_batch` to be provided."
-        )
-        
-    if par["input_obs_batch"]:
-        
-        if not registry["batch_key"]:
-            logger.warning(f"`--input_obs_batch` was provided but is not used in the provided {base_model} model {model_path}.")
-            
-        else:
-            query_obs[registry["batch_key"]] = adata_query.obs[par["input_obs_batch"]].tolist()
+    ## batch_key, size_factor_key
+    simple_mappings = {
+        "batch_key": "input_obs_batch", # relevant for AUTOZI, LinearSCVI, PEAKVI, SCANVI, SCVI, TOTALVI, MULTIVI, JaxSCVI
+        "size_factor_key": "input_obs_size_factor" # relevant for SCANVI, SCVI, TOTALVI, MULTIVI
+    }
+    
+    for registry_key, par_key in simple_mappings.items():
+        if model_registry.get(registry_key):
+            query_obs[model_registry[registry_key]] = adata_query.obs[par[par_key]].tolist()
 
-    ## labels-key
-    # relevant for AUTOZI, CondSCVI, LinearSCVI, PEAKVI, SCANVI, SCVI
-    if registry["labels_key"] and not par["input_obs_label"]:
-        logger.warning(f"Model registry contains a `labels_key`, but `--input_obs_label` was not provided. Will create label_key with `--unknown_celltype_label` {par["unknown_celltype_label"]} instead.")
-        if "unlabeled_category" in registry:
-            assert par["unknown_celltype_label"] == registry["unlabeled_category"], f"The provided `--unknown_celltype_label` {par["unknown_celltype_label"]} does not match the `unlabeled category` {registry["unlabeled_category"]} in the model registry."
-        adata_query.obs[registry["labels_key"]] = par["unknown_celltype_label"]
-        query_obs[registry["labels_key"]] = adata_query.obs[registry["labels_key"]].tolist()
-        
-    if par["input_obs_label"]:
-        if not registry["labels_key"]:
-            logger.warning(f"--input_obs_label was provided but is not used in the provided {base_model} model {model_path}.")
+    ## labels-key, relevant for AUTOZI, CondSCVI, LinearSCVI, PEAKVI, SCANVI, SCVI
+    if model_registry.get("labels_key"):
+        if par["input_obs_label"]:
+            query_obs[model_registry["labels_key"]] = adata_query.obs[par["input_obs_label"]].tolist()
         else:
-            query_obs[registry["labels_key"]] = adata_query.obs[par["input_obs_label"]].tolist()
-        
+            adata_query.obs[model_registry["labels_key"]] = model_registry["unlabeled_category"]
+            query_obs[model_registry["labels_key"]] = adata_query.obs[model_registry["labels_key"]].tolist()
 
+        
     obs = pd.DataFrame(query_obs, index=obs_index)
     var = pd.DataFrame(index=var_index)     
     
-
     aligned_query_anndata = AnnData(
         X=query_layer,
         obs=obs,
         var=var
     )
-    if registry["layer"]:
-        aligned_query_anndata.layers[registry["layer"]] = query_layer
-        
-    # align categorical_covariate_kes  .obs field
-    # relevant for PEAKVI, SCANVI, SCVI, TOTALVI, MULTIVI
-
-    # align continuous_covariate_keys .obs field
-    # relevant for PEAKVI, SCANVI, SCVI, TOTALVI, MULTIVI
-
-    # unknown_key
-    # relevant for SCANVI
-
-    # size_factor_key
-    # relevant for SCANVI, SCVI, TOTALVI, MULTIVI
-
-    # protein_expression_obsm_key
-    # relevant for TOTALVI, MULTIVI
-
-    # protein_names_uns_key
-    # relevant for TOTALVI, MULTIVI
+    if model_registry["layer"]:
+        aligned_query_anndata.layers[model_registry["layer"]] = query_layer
 
     return aligned_query_anndata
 
@@ -157,9 +145,13 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
         * adata_query: The AnnData object with the query preprocessed for the mapping to the reference
     """
     model = _detect_base_model(model_path)
+    model_name = _read_model_name_from_registry(model_path)
+    model_registry = model.load_registry(model_path)["setup_args"]
 
+    
     # Keys of the AnnData query object need to match the exact keys in the reference model registry
-    aligned_adata_query = _align_query_with_registry(adata_query, model, model_path)
+    
+    aligned_adata_query = _align_query_with_registry(adata_query, model_name, model_registry)
 
     try:
         model.prepare_query_anndata(aligned_adata_query, model_path)
@@ -188,7 +180,7 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
         accelerator="auto",
     )
 
-    return vae_query, adata_query
+    return vae_query
 
 
 def _convert_object_dtypes_to_strings(adata):
@@ -262,7 +254,7 @@ def main():
     adata_query = adata.copy()
 
     model_path = _get_model_path(par["reference"])
-    vae_query, adata_query = map_to_existing_reference(
+    vae_query = map_to_existing_reference(
         adata_query, model_path=model_path
     )
     model_name = _read_model_name_from_registry(model_path)
