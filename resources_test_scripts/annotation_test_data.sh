@@ -96,7 +96,6 @@ viash run src/integrate/scvi/config.vsh.yaml --engine docker -- \
     --input "${OUT}/TS_Blood_filtered.h5mu" \
     --obs_batch "donor_id" \
     --var_gene_names "ensemblid" \
-    --obs_labels "cell_ontology_class" \
     --output "${OUT}/scvi_output.h5mu" \
     --output_model "${OUT}/scvi_model" \
     --max_epochs 5 \
