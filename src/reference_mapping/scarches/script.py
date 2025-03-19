@@ -3,6 +3,7 @@ import mudata
 from anndata import AnnData
 import scvi
 import pandas as pd
+import numpy as np
 
 ### VIASH START
 par = {
@@ -19,6 +20,7 @@ par = {
     "model_output": "test",
     # Other
     "obsm_output": "X_integrated_scanvi",
+    "obs_output_probabilities": "scanvi_proba",
     "obs_output_predictions": "scanvi_pred",
     "early_stopping": None,
     "early_stopping_monitor": "elbo_validation",
@@ -269,6 +271,7 @@ def main():
 
     if model_name == "SCANVI":
         adata.obs[par["obs_output_predictions"]] = vae_query.predict()
+        adata.obs[par["obs_output_probabilities"]] = np.max(vae_query.predict(soft=True), axis=1)
         
     logger.info("Converting dtypes")
     adata = _convert_object_dtypes_to_strings(adata)

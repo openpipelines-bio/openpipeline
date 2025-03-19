@@ -102,6 +102,7 @@ def test_scvi_model(run_component, tmp_path):
     output_data = mudata.read_h5mu(output_path)
     assert "X_integrated_scvi" in output_data.mod["rna"].obsm
     assert "scanvi_pred" not in output_data.mod["rna"].obs
+    assert "scanvi_proba" not in output_data.mod["rna"].obs
     assert output_data["rna"].uns["integration_method"] == "SCVI"
     assert (output_model_path / "model.pt").is_file()
 
@@ -138,6 +139,22 @@ def test_scanvi_model(run_component, tmp_path):
     assert "X_integrated_scanvi" in output_data.mod["rna"].obsm
     assert output_data["rna"].uns["integration_method"] == "SCANVI"
     assert "scanvi_pred" in output_data.mod["rna"].obs
+    assert "scanvi_proba" in output_data.mod["rna"].obs
+    
+    predictions = output_data.mod["rna"].obs["scanvi_pred"]
+    probabilities = output_data.mod["rna"].obs["scanvi_proba"]
+    
+    assert (
+        predictions.dtype == "category"
+    ), "Calculated predictions should be category dtype"
+    assert not all(predictions.isna()), "Not all predictions should be NA"
+    assert (
+        probabilities.dtype == "float32"
+    ), "Calculated probabilities should be float32 dtype"
+    assert all(
+        0 <= value <= 1 for value in probabilities
+    ), ".obs at celltypist_probability has values outside the range [0, 1]"
+
     assert (output_model_path / "model.pt").is_file()
     
     
