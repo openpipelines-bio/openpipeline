@@ -1,6 +1,9 @@
 name: scanvi
 namespace: "annotate"
-description: "Instantiates a scANVI model from a pre-trained scVI model and integrates data."
+description: |
+  scANVI () is a semi-supervised model for single-cell transcriptomics data. scANVI is an scVI extension that can leverage the cell type knowledge for a subset of the cells present in the data sets to infer the states of the rest of the cells.
+  This component will instantiate a scANVI model from a pre-trained scVI model, integrate the data and perform label prediction.
+
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ maintainer ]
