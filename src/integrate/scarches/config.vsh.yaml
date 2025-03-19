@@ -165,6 +165,7 @@ resources:
     path: script.py
   - path: /src/utils/setup_logger.py
   - path: /src/utils/compress_h5mu.py
+  - path: /src/utils/set_var_index.py
 test_resources:
   - type: python_script
     path: test.py

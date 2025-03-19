@@ -7,7 +7,7 @@ import pandas as pd
 ### VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-    "input_layer": None,
+    "layer": None,
     "input_obs_batch": "sample_id",
     "input_obs_label": None,
     "input_var_gene_names": None,
@@ -73,7 +73,7 @@ def _align_query_with_registry(adata_query, model, model_path):
     adata_query = set_var_index(adata_query, par["input_var_gene_names"])
 
     # align layer
-    query_layer = adata_query.X if not par["input_layer"] else adata_query.layers[par["layer"]]
+    query_layer = adata_query.X if not par["layer"] else adata_query.layers[par["layer"]]
     var_index = adata_query.var_names.tolist()
     obs_index = adata_query.obs_names.tolist()
     

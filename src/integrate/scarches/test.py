@@ -38,6 +38,10 @@ def test_hlca_reference_model(run_component, input_with_batch, tmp_path):
         [
             "--input",
             str(tmp_input_path),
+            "--input_obs_batch",
+            "batch",
+            "--unknown_celltype_label",
+            "unlabeled",
             "--reference",
             reference,
             "--modality",
