@@ -27,6 +27,21 @@ argument_groups:
         type: string
         description: The layer in the input data to be used for cell type annotation if .X is not to be used.
         required: false
+      - name: "--input_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used.
+      - name: "--input_reference_gene_overlap"
+        type: integer
+        default: 100
+        min: 1
+        description: | 
+          The minimum number of genes present in both the reference and query datasets.
+
+  - name: Ongoloty
+    description: Ontology input files
+    arguments:
       - name: "--cl_nlp_emb_file"
         type: file
         description: The .nlp.emb file with the cell type embeddings.
@@ -39,11 +54,7 @@ argument_groups:
         type: file
         description: The .obo file with the cell type ontology.
         required: true
-      - name: "--var_query_gene_names"
-        type: string
-        required: false
-        description: |
-          The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used.
+
   - name: Reference
     description: Arguments related to the reference dataset.
     arguments:
@@ -62,6 +73,23 @@ argument_groups:
         description: The name of the adata obs column in the reference data containing cell type annotations.
         example: "cell_ontology_class"
         required: true
+      - name:  "--reference_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
+      - name: "--reference_var_input"
+        type: string
+        required: false
+        description: |
+          .var column containing highly variable genes. By default, do not subset genes.
+      - name: "--unknown_celltype"
+        type: string
+        default: "Unknown"
+        required: false
+        description: |
+          Label for unknown cell types.
+
   - name: Outputs
     description: Output arguments.
     arguments:
@@ -87,6 +115,7 @@ argument_groups:
         required: false
         description: |
           In which `.obs` slots to store the probability of the predictions.
+
   - name: Model arguments
     description: Model arguments
     arguments:
@@ -112,6 +141,9 @@ resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
+  - path: /src/utils/cross_check_genes.py
+  - path: /src/utils/subset_vars.py
+  - path: /src/utils/set_var_index.py
 
 test_resources:
   - type: python_script
@@ -121,16 +153,17 @@ test_resources:
 
 engines:
   - type: docker
-    image: python:3.8
+    image: python:3.11
     setup:
       - type: python
         packages:
-          - scikit-learn==0.24.0
-          - OnClass==1.2
-          - tensorflow==2.13.1
-          - obonet==1.1.0
-          - mudata
+          - OnClass~=1.3
+          - tensorflow
+          - obonet
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
   - type: executable
   - type: nextflow
+    directives:
+      label: [highcpu, highmem, highdisk]

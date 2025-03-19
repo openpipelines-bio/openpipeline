@@ -6,6 +6,8 @@ authors:
     roles: [ author ]
   - __merge__: /src/authors/povilas_gibas.yaml
     roles: [ author ]
+info:
+  test_dependencies:
 argument_groups:
   - name: "Inputs"
     arguments:
@@ -108,11 +110,8 @@ argument_groups:
         required: false
         description: "In which .obsm slot to store the resulting UMAP embedding."
 dependencies:
-  - name: "cluster/leiden"
-  - name: "integrate/scanorama"
-  - name: "dimred/umap"
-  - name: "metadata/move_obsm_to_obs"
-  - name: "neighbors/find_neighbors"
+  - name: integrate/scanorama
+  - name: workflows/multiomics/neighbors_leiden_umap
 resources:
   - type: nextflow_script
     path: main.nf

@@ -77,29 +77,18 @@ arguments:
     default: 0
     description: A random seed.
 
-  - name: "--obsm_knn_indices"
-    type: string
-    default: "knn_indices"
-    description: "In which .obsm slot to store the indices of the k-nearest neighbors."
-    required: false
-
-  - name: "--obsm_knn_distances"
-    type: string
-    default: "knn_distances"
-    description: "In which .obsm slot to store the distances of the k-nearest neighbors."
-    required: false
-
 resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
 test_resources:
   - type: python_script
     path: test.py
   - path: /resources_test/pbmc_1k_protein_v3
 engines:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.12-slim
     setup:
       - type: apt
         packages: 
@@ -112,4 +101,4 @@ runners:
   - type: executable
   - type: nextflow
     directives:
-      label: [lowcpu, midmem]
+      label: [lowcpu, midmem, middisk]

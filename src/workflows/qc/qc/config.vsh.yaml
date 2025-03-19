@@ -4,6 +4,10 @@ description: "A pipeline to add basic qc statistics to a MuData "
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author, maintainer ]
+info:
+  test_dependencies:
+    - name: qc_test
+      namespace: test_workflows/qc
 argument_groups:
   - name: Inputs
     arguments:
@@ -28,6 +32,16 @@ argument_groups:
         type: string
         example: "raw_counts"
         required: false
+  - name: "Gene Detection"
+    arguments:
+      - name: "--var_gene_names"
+        required: false
+        example: "gene_symbol"
+        type: string
+        description: |
+          .var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).
+          Gene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be 
+          identified as a mitochondrial or ribosomal genes, respectively.
   - name: "Mitochondrial Gene Detection"
     arguments:
       - name: "--var_name_mitochondrial_genes"
@@ -40,14 +54,6 @@ argument_groups:
         required: false
         description: |
           .Obs slot to store the fraction of reads found to be mitochondrial. Defaults to 'fraction_' suffixed by the value of --var_name_mitochondrial_genes
-      - name: "--var_gene_names"
-        required: false
-        example: "gene_symbol"
-        type: string
-        description: |
-          .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).
-          Gene names matching with the regex value from --mitochondrial_gene_regex will be identified
-          as a mitochondrial gene.
       - name: --mitochondrial_gene_regex
         type: string
         description: |
@@ -55,6 +61,25 @@ argument_groups:
           By default will detect human and mouse mitochondrial genes from a gene symbol.
         required: false
         default: "^[mM][tT]-"
+  - name: "Ribosomal Gene Detection"
+    arguments:
+      - name: "--var_name_ribosomal_genes"
+        type: string
+        required: false
+        description: |
+          In which .var slot to store a boolean array corresponding the ribosomal genes.
+      - name: "--obs_name_ribosomal_fraction"
+        type: string
+        required: false
+        description: |
+          .Obs slot to store the fraction of reads found to be ribosomal. Defaults to 'fraction_' suffixed by the value of --var_name_ribosomal_genes
+      - name: --ribosomal_gene_regex
+        type: string
+        description: |
+          Regex string that identifies ribosomal genes from --var_gene_names.
+          By default will detect human and mouse ribosomal genes from a gene symbol.
+        required: false
+        default: "^[Mm]?[Rr][Pp][LlSs]"
   - name: "QC metrics calculation options"
     arguments:
       - name: "--var_qc_metrics"
@@ -130,7 +155,6 @@ argument_groups:
         description: Destination path to the output.
         example: output.h5mu
 dependencies:
-  - name: transfer/publish
   - name: metadata/grep_annotation_column
   - name: qc/calculate_qc_metrics
 resources:

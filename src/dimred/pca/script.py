@@ -20,50 +20,38 @@ par = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
+from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-logger.info("Reading %s.", par["input"])
-mdata = mu.read_h5mu(par["input"])
+logger.info("Reading %s, modality %s", par["input"], par["modality"])
+data = mu.read_h5ad(par["input"], mod=par["modality"])
 
-logger.info("Computing PCA components for modality '%s'", par['modality'])
-data = mdata.mod[par['modality']]
-if par['layer'] and par['layer'] not in data.layers:
+logger.info("Computing PCA components for modality '%s'", par["modality"])
+if par["layer"] and par["layer"] not in data.layers:
     raise ValueError(f"{par['layer']} was not found in modality {par['modality']}.")
-layer = data.X if not par['layer'] else data.layers[par['layer']]
+layer = data.X if not par["layer"] else data.layers[par["layer"]]
 adata_input_layer = AnnData(layer)
 adata_input_layer.var.index = data.var.index
 
 use_highly_variable = False
 if par["var_input"]:
-    if not par["var_input"] in data.var.columns:
-        raise ValueError(f"Requested to use .var column {par['var_input']} "
-                         "as a selection of genes to run the PCA on, "
-                         f"but the column is not available for modality {par['modality']}")
+    if par["var_input"] not in data.var.columns:
+        raise ValueError(
+            f"Requested to use .var column {par['var_input']} "
+            "as a selection of genes to run the PCA on, "
+            f"but the column is not available for modality {par['modality']}"
+        )
     use_highly_variable = True
-    adata_input_layer.var['highly_variable'] = data.var[par["var_input"]]
+    adata_input_layer.var["highly_variable"] = data.var[par["var_input"]]
 
 # run pca
 output_adata = sc.tl.pca(
     adata_input_layer,
     n_comps=par["num_components"],
     copy=True,
-    use_highly_variable=use_highly_variable
+    use_highly_variable=use_highly_variable,
 )
 
 # store output in specific objects
@@ -71,22 +59,30 @@ output_adata = sc.tl.pca(
 check_exist_dict = {
     "obsm_output": ("obs"),
     "varm_output": ("varm"),
-    "uns_output": ("uns")
+    "uns_output": ("uns"),
 }
 for parameter_name, field in check_exist_dict.items():
     if par[parameter_name] in getattr(data, field):
         if not par["overwrite"]:
-            raise ValueError(f"Requested to create field {par[parameter_name]} in .{field} "
-                            f"for modality {par['modality']}, but field already exists.")
+            raise ValueError(
+                f"Requested to create field {par[parameter_name]} in .{field} "
+                f"for modality {par['modality']}, but field already exists."
+            )
         del getattr(data, field)[par[parameter_name]]
 
-data.obsm[par["obsm_output"]] = output_adata.obsm['X_pca']
-data.varm[par["varm_output"]] = output_adata.varm['PCs']
-data.uns[par["uns_output"]] = { "variance": output_adata.uns['pca']['variance'],
-                                "variance_ratio": output_adata.uns['pca']['variance_ratio'] }
+data.obsm[par["obsm_output"]] = output_adata.obsm["X_pca"]
+data.varm[par["varm_output"]] = output_adata.varm["PCs"]
+data.uns[par["uns_output"]] = {
+    "variance": output_adata.uns["pca"]["variance"],
+    "variance_ratio": output_adata.uns["pca"]["variance_ratio"],
+}
 
 
-logger.info("Writing to %s.", par["output"])
-mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
+logger.info(
+    "Writing to %s with compression %s.", par["output"], par["output_compression"]
+)
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], data, par["output_compression"]
+)
 
 logger.info("Finished")

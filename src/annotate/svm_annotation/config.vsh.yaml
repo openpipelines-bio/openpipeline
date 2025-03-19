@@ -23,6 +23,18 @@ argument_groups:
       - name: "--input_layer"
         type: string
         description: The layer in the input data to be used for cell type annotation if .X is not to be used. 
+      - name: "--input_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used.
+      - name: "--input_reference_gene_overlap"
+        type: integer
+        default: 100
+        min: 1
+        description: | 
+          The minimum number of genes present in both the reference and query datasets.
+
   - name: Reference
     description: Arguments related to the reference dataset.
     arguments:
@@ -40,6 +52,17 @@ argument_groups:
         type: string
         description:
         required: true
+      - name:  "--reference_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
+      - name: "--reference_var_input"
+        type: string
+        required: false
+        description: |
+          .var column containing highly variable genes. By default, do not subset genes.
+
   - name: Outputs
     description: Output arguments.
     arguments:
@@ -65,6 +88,7 @@ argument_groups:
         required: false
         description: |
           In which `.obs` slots to store the probability of the predictions.
+
   - name: Model arguments
     description: Model arguments.
     arguments:
@@ -100,6 +124,9 @@ resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
+  - path: /src/utils/cross_check_genes.py
+  - path: /src/utils/subset_vars.py
+  - path: /src/utils/set_var_index.py
   
 test_resources:
   - type: python_script
@@ -124,3 +151,5 @@ engines:
 runners:
   - type: executable 
   - type: nextflow
+    directives:
+      label: [highcpu, highmem, highdisk]

@@ -13,41 +13,27 @@ par = {
     "output_compression": "gzip",
     "log_idf": True,
     "log_tf": True,
-    "log_tfidf": False
+    "log_tfidf": False,
 }
 meta = {"name": "tfidf"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
+from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-logger.info("Reading input mudata")
-mdata = mudata.read_h5mu(par["input"])
+logger.info("Reading input modality %s from %s", par["modality"], par["input"])
+adata = mudata.read_h5ad(par["input"], mod=par["modality"])
 
 logger.info(par)
 
-mod = par["modality"]
-logger.info("Performing TF-IDF normalization on modality %s", mod)
-adata = mdata.mod[mod].copy()
+logger.info("Performing TF-IDF normalization")
+input_data = adata.copy()
 
 muon.atac.pp.tfidf(
-    adata,
+    input_data,
     log_tf=par["log_tf"],
     log_idf=par["log_idf"],
     log_tfidf=par["log_tfidf"],
@@ -58,7 +44,9 @@ muon.atac.pp.tfidf(
     to_layer=par["output_layer"],
 )
 
-mdata.mod[mod].layers[par["output_layer"]] = adata.layers[par["output_layer"]]
+adata.layers[par["output_layer"]] = input_data.layers[par["output_layer"]]
 
 logger.info("Writing to file")
-mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], adata, par["output_compression"]
+)

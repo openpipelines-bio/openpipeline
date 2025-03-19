@@ -41,7 +41,7 @@ arguments:
     required: false
     description: "In which .obsm slot to store the resulting integrated embedding."
   - name: "--theta"
-    description: "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
+    description: "Diversity clustering penalty parameter. Can be set as a single value for all batch observations or as multiple values, one for each observation in the batches defined by --obs_covariates. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
     type: double
     default: 2
     multiple: true
@@ -54,6 +54,8 @@ arguments:
 resources:
   - type: python_script
     path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
 test_resources:
   - type: python_script
     path: test.py
@@ -61,7 +63,7 @@ test_resources:
 
 engines:
 - type: docker
-  image: python:3.10-slim
+  image: python:3.12-slim
   setup:
     - type: apt
       packages: 
@@ -70,12 +72,10 @@ engines:
       __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       packages:
         - harmonypy~=0.0.6
-  test_setup:
-    - type: python
-      __merge__: [ /src/base/requirements/viashpy.yaml, .]
+  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 
 runners:
 - type: executable
 - type: nextflow
   directives:
-    label: [highmem, highcpu]
+    label: [highmem, highcpu, highdisk]

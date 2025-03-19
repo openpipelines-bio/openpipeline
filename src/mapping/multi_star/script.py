@@ -49,11 +49,12 @@ def fetch_arguments_info(config: Dict[str, Any]) -> Dict[str, Any]:
     }
     return arguments
 
+
 def process_par(
     par: Dict[str, Any],
     arguments_info: Dict[str, Any],
     gz_args: List[str],
-    temp_dir: Path
+    temp_dir: Path,
 ) -> Dict[str, Any]:
     """
     Process the Viash par dictionary
@@ -95,6 +96,7 @@ def process_par(
         new_par[key] = value
     return new_par
 
+
 def generate_cmd_arguments(par, arguments_info, step_filter=None, flatten=False):
     """
     Generate command-line arguments by fetching the relevant args
@@ -112,7 +114,7 @@ def generate_cmd_arguments(par, arguments_info, step_filter=None, flatten=False)
 
     for key, arg in arguments_info.items():
         arg_val = par.get(key)
-        # The info key is always present (changed in viash 0.7.4) 
+        # The info key is always present (changed in viash 0.7.4)
         # in the parsed config (None if not specified in source config)
         info = arg["info"] or {}
         orig_arg = info.get("orig_arg")
@@ -136,10 +138,12 @@ def generate_cmd_arguments(par, arguments_info, step_filter=None, flatten=False)
 
     return cmd_args
 
+
 def is_gz_file(path: Path) -> bool:
     """Check whether something is a gzip"""
     with open(path, "rb") as file:
         return file.read(2) == b"\x1f\x8b"
+
 
 def extract_if_need_be(par_value: Path, temp_dir_path: Path) -> Path:
     """if {par_value} is a Path, extract it to a temp_dir_path and return the resulting path"""
@@ -179,27 +183,34 @@ def extract_if_need_be(par_value: Path, temp_dir_path: Path) -> Path:
     else:
         return par_value
 
+
 def load_star_reference(reference_index: str) -> None:
     """Load star reference index into memory."""
     subprocess.run(
         [
             "STAR",
-            "--genomeLoad", "LoadAndExit",
-            "--genomeDir", str(reference_index),
+            "--genomeLoad",
+            "LoadAndExit",
+            "--genomeDir",
+            str(reference_index),
         ],
-        check=True
+        check=True,
     )
+
 
 def unload_star_reference(reference_index: str) -> None:
     """Remove star reference index from memory."""
     subprocess.run(
         [
             "STAR",
-            "--genomeLoad", "Remove",
-            "--genomeDir", str(reference_index),
+            "--genomeLoad",
+            "Remove",
+            "--genomeDir",
+            str(reference_index),
         ],
-        check=True
+        check=True,
     )
+
 
 def star_and_htseq(
     group_id: str,
@@ -208,8 +219,8 @@ def star_and_htseq(
     temp_dir: Path,
     par: Dict[str, Any],
     arguments_info: Dict[str, Any],
-    num_threads: int
-) -> Tuple[int, str] :
+    num_threads: int,
+) -> Tuple[int, str]:
     star_output = par["output"] / "per" / group_id
     temp_dir_group = temp_dir / f"star_tmp_{group_id}"
     unsorted_bam = star_output / "Aligned.out.bam"
@@ -227,18 +238,22 @@ def star_and_htseq(
         temp_dir=temp_dir / f"star_tmp_{group_id}",
         par=par,
         arguments_info=arguments_info,
-        num_threads=num_threads
+        num_threads=num_threads,
     )
     if not unsorted_bam.exists():
         return (1, f"Could not find unsorted bam at '{unsorted_bam}'")
 
     if par["run_htseq_count"]:
-        print(f">> Running samtools sort for group '{group_id}' with command:", flush=True)
+        print(
+            f">> Running samtools sort for group '{group_id}' with command:", flush=True
+        )
         run_samtools_sort(unsorted_bam, sorted_bam)
         if not sorted_bam.exists():
             return (1, f"Could not find sorted bam at '{unsorted_bam}'")
 
-        print(f">> Running htseq-count for group '{group_id}' with command:", flush=True)
+        print(
+            f">> Running htseq-count for group '{group_id}' with command:", flush=True
+        )
         run_htseq_count(sorted_bam, counts_file, par, arguments_info)
         if not counts_file.exists():
             return (1, f"Could not find counts at '{counts_file}'")
@@ -247,8 +262,9 @@ def star_and_htseq(
         run_multiqc(star_output)
         if not multiqc_path.exists():
             return (1, f"Could not find MultiQC output at '{multiqc_path}'")
-    
+
     return (0, "")
+
 
 def run_star(
     r1_files: List[Path],
@@ -257,7 +273,7 @@ def run_star(
     temp_dir: Path,
     par: Dict[str, Any],
     arguments_info: Dict[str, Any],
-    num_threads: int
+    num_threads: int,
 ) -> None:
     """Run star"""
     # process manual arguments
@@ -274,12 +290,9 @@ def run_star(
         # make sure there is a trailing /
         "--outFileNamePrefix": [f"{output_dir}/"],
         # fix the outSAMtype to return unsorted BAM files
-        "--outSAMtype": ["BAM", "Unsorted"]
+        "--outSAMtype": ["BAM", "Unsorted"],
     }
-    manual_cmd = [str(x)
-        for key, values in manual_par.items()
-        for x in [key] + values
-    ]
+    manual_cmd = [str(x) for key, values in manual_par.items() for x in [key] + values]
 
     # process all passthrough star arguments
     par_cmd = generate_cmd_arguments(par, arguments_info, "star", flatten=True)
@@ -290,10 +303,8 @@ def run_star(
     # run star
     subprocess.run(cmd_args, check=True)
 
-def run_samtools_sort(
-    unsorted_bam: Path,
-    sorted_bam: Path
-) -> None:
+
+def run_samtools_sort(unsorted_bam: Path, sorted_bam: Path) -> None:
     "Run samtools sort"
     cmd_args = [
         "samtools",
@@ -304,18 +315,16 @@ def run_samtools_sort(
     ]
     subprocess.run(cmd_args, check=True)
 
+
 def run_htseq_count(
     sorted_bam: Path,
     counts_file: Path,
     par: Dict[str, Any],
-    arguments_info: Dict[str, Any]
+    arguments_info: Dict[str, Any],
 ) -> None:
     """Run HTSeq count"""
     # process manual arguments
-    manual_cmd = [
-        sorted_bam,
-        par["reference_gtf"]
-    ]
+    manual_cmd = [sorted_bam, par["reference_gtf"]]
 
     # process all passthrough htseq arguments
     par_cmd = generate_cmd_arguments(par, arguments_info, "htseq")
@@ -327,6 +336,7 @@ def run_htseq_count(
     with open(counts_file, "w", encoding="utf-8") as file:
         subprocess.run(cmd_args, check=True, stdout=file)
 
+
 def get_feature_info(reference_gtf) -> pd.DataFrame:
     ref = gtfparse.read_gtf(reference_gtf)
     ref_genes = ref.filter((pl.col("feature") == "gene") | (pl.col("source") == "ERCC"))
@@ -334,12 +344,20 @@ def get_feature_info(reference_gtf) -> pd.DataFrame:
         {
             "feature_id": pd.Index(ref_genes.get_column("gene_id")),
             "feature_type": "Gene Expression",
-            "feature_name": ref_genes.get_column("gene_name").to_pandas()
+            "feature_name": ref_genes.get_column("gene_name").to_pandas(),
         }
     )
 
+
 def run_multiqc(input_dir: Path) -> None:
-    cmd_args = ["multiqc", str(input_dir), "--outdir", str(input_dir), "--no-report", "--force"]
+    cmd_args = [
+        "multiqc",
+        str(input_dir),
+        "--outdir",
+        str(input_dir),
+        "--no-report",
+        "--force",
+    ]
 
     # run multiqc
     subprocess.run(cmd_args, check=True)
@@ -349,13 +367,18 @@ def run_multiqc(input_dir: Path) -> None:
 ###    Main code     ###
 ########################
 
+
 def main(par, meta):
     """Main function"""
 
     # check input arguments
-    assert len(par["input_id"]) == len(par["input_r1"]), "--input_r1 should have same length as --input_id"
+    assert len(par["input_id"]) == len(
+        par["input_r1"]
+    ), "--input_r1 should have same length as --input_id"
     if par["input_r2"]:
-        assert len(par["input_id"]) == len(par["input_r2"]), "--input_r2 should have same length as --input_id"
+        assert len(par["input_id"]) == len(
+            par["input_r2"]
+        ), "--input_r2 should have same length as --input_id"
 
     # read config arguments
     with open(meta["config"], "r", encoding="utf-8") as file:
@@ -366,9 +389,7 @@ def main(par, meta):
 
     # temp_dir = "tmp/"
     with tempfile.TemporaryDirectory(
-        prefix=f"{meta['name']}-",
-        dir=meta["temp_dir"],
-        ignore_cleanup_errors=True
+        prefix=f"{meta['name']}-", dir=meta["temp_dir"], ignore_cleanup_errors=True
     ) as temp_dir:
         temp_dir = Path(temp_dir)
         temp_dir.mkdir(parents=True, exist_ok=True)
@@ -384,7 +405,9 @@ def main(par, meta):
         # group input_files by input_id
         print(">> Group by --input_id", flush=True)
         grouped_inputs = {}
-        for group_id, file_r1, file_r2 in zip(par["input_id"], par["input_r1"], par["input_r2"]):
+        for group_id, file_r1, file_r2 in zip(
+            par["input_id"], par["input_r1"], par["input_r2"]
+        ):
             if group_id not in grouped_inputs:
                 grouped_inputs[group_id] = ([], [])
             grouped_inputs[group_id][0].append(file_r1)
@@ -417,9 +440,9 @@ def main(par, meta):
                     temp_dir=temp_dir,
                     par=par,
                     arguments_info=arguments_info,
-                    num_threads=num_threads_per_task
+                    num_threads=num_threads_per_task,
                 ),
-                grouped_inputs.items()
+                grouped_inputs.items(),
             )
 
         num_errored = 0
@@ -432,7 +455,10 @@ def main(par, meta):
         print("------------------")
         print(f"Success rate: {math.ceil(pct_succeeded * 100)}%")
 
-        assert pct_succeeded >= par["min_success_rate"], f"Success rate should be at least {math.ceil(par['min_success_rate'] * 100)}%"
+        assert (
+            pct_succeeded >= par["min_success_rate"]
+        ), f"Success rate should be at least {math.ceil(par['min_success_rate'] * 100)}%"
+
 
 if __name__ == "__main__":
     main(par, meta)

@@ -3,20 +3,25 @@ nextflow.enable.dsl=2
 include { qc } from params.rootDir + "/target/nextflow/workflows/qc/qc/main.nf"
 include { qc_test } from params.rootDir + "/target/nextflow/test_workflows/qc/qc_test/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
-  // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+
+  resources_test = file(params.resources_test)
 
   output_ch = 
     Channel.fromList([
       [
         id: "mouse_test",
         input: resources_test.resolve("concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"),
+        var_name_mitochondrial_genes: "mitochondrial",
+        var_name_ribosomal_genes: "ribosomal",
       ],
       [
         id: "human_test",
         input: resources_test.resolve("concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"),
+        var_name_mitochondrial_genes: "mitochondrial",
+        var_name_ribosomal_genes: "ribosomal",
       ]
     ])
     | map { state -> [state.id, state] }

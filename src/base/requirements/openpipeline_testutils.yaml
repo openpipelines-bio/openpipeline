@@ -1,0 +1,2 @@
+github:
+  - openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils
