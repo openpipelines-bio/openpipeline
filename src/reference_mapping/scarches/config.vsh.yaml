@@ -81,6 +81,11 @@ argument_groups:
         default: "scanvi_pred"
         required: false
         description: "In which .obs slot to store the resulting label predictions. Only relevant if a scANVI model was provided."
+      - name: "--obs_output_probabilities"
+        type: string
+        default: "scanvi_proba"
+        required: false
+        description: "In which .obs slot to store the probabilities of the label predictions. Only relevant if a scANVI model was provided."
 
   - name: "Early stopping arguments"
     arguments:
