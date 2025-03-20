@@ -25,7 +25,7 @@ par = {
     "output_compression": "gzip",
 }
 
-meta = {"resources_dir": "src/integrate/scvi"}
+meta = {"resources_dir": "src/utils"}
 ### VIASH END
 
 import sys
@@ -33,6 +33,7 @@ import sys
 sys.path.append(meta["resources_dir"])
 
 from subset_vars import subset_vars
+from set_var_index import set_var_index
 from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 
@@ -66,6 +67,9 @@ def main():
     else:
         adata_subset = adata.copy()
 
+    # Sanitize gene names and set as index of the AnnData object
+    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
+    
     check_validity_anndata(
         adata_subset,
         par["input_layer"],
@@ -73,6 +77,7 @@ def main():
         par["n_obs_min_count"],
         par["n_var_min_count"],
     )
+
     # Set up the data
     scvi.model.SCVI.setup_anndata(
         adata_subset,

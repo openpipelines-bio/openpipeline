@@ -27,17 +27,23 @@ argument_groups:
         required: false
       - name: "--layer"
         type: string
-        example: log_normalized
         description: Which layer to use for integration if .X is not to be used. Should match the layer of the --reference dataset.
-      - name: "--var_hvg"
-        type: string
-        required: false
-        description: ".var column containing highly variable genes. If not provided, genes will not be subset. Should match the .var column name of the --reference dataset."
       - name: "--input_obs_batch_label"
         type: string
         description: "The .obs field in the input (query) dataset containing the batch labels."
         example: "sample"
         required: true
+      - name: "--input_obs_size_factor"
+        type: string
+        required: false
+        description: |
+          Key in adata.obs for size factor information. Instead of using library size as a size factor,
+          the provided size factor column will be used as offset in the mean of the likelihood.
+          Assumed to be on linear scale.
+      - name: "--input_var_gene_names"
+        type: string
+        required: false
+        description: ".var column containing gene names. By default, use the index."
 
   - name: Reference input
     arguments:
@@ -46,19 +52,38 @@ argument_groups:
         type: file
         description: Reference dataset consisting of the labeled observations to train the KNN classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset.
         example: reference.h5mu
-      - name: "--reference_obs_targets"
+      - name: "--reference_obs_target"
         type: string
-        example: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
+        example: cell_type
         required: true
-        multiple: true
-        description: The `.obs` key(s) of the target labels to transfer.
+        description: The `.obs` key containing the target labels.
       - name: "--reference_obs_batch_label"
         type: string
         description:  "The .obs field in the reference dataset containing the batch labels."
         example: "sample"
         required: true
+      - name: "--reference_obs_size_factor"
+        type: string
+        required: false
+        description: |
+          Key in adata.obs for size factor information. Instead of using library size as a size factor,
+          the provided size factor column will be used as offset in the mean of the likelihood.
+          Assumed to be on linear scale.
+      - name: "--unlabeled_category"
+        type: string
+        default: "Unknown"
+        description: | 
+          Value in the --reference_obs_batch_label field that indicates unlabeled observations
+      - name: "--reference_var_hvg"
+        type: string
+        required: false
+        description: ".var column containing highly variable genes. If not provided, genes will not be subset."
+      - name: "--reference_var_gene_names"
+        type: string
+        required: false
+        description: ".var column containing gene names. By default, use the index."
 
-  - name: scVI integration options
+  - name: scVI, scANVI and scArches training options
     arguments:
       - name: "--early_stopping"
         required: false
@@ -98,32 +123,6 @@ argument_groups:
         default: 30
         min: 0
 
-  - name: Leiden clustering options
-    arguments:
-      - name: "--leiden_resolution"
-        type: double
-        description: Control the coarseness of the clustering. Higher values lead to more clusters.
-        min: 0
-        default: [1]
-        multiple: true
-
-  - name: Neighbor classifier arguments
-    arguments:
-      - name: "--weights"
-        type: string
-        default: "uniform"
-        choices: ["uniform", "distance"]
-        description: |
-          Weight function used in prediction. Possible values are:
-          `uniform` (all points in each neighborhood are weighted equally) or 
-          `distance` (weight points by the inverse of their distance)
-      - name: "--n_neighbors"
-        type: integer
-        default: 15
-        required: false
-        description: |
-          The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. 
-          Larger values will result in more accurate search results at the cost of computation time.
   - name: "Outputs"
     arguments:
       - name: "--output"
@@ -134,24 +133,15 @@ argument_groups:
         example: output.h5mu
       - name: "--output_obs_predictions"
         type: string
-        required: false
-        multiple: true
-        description: |
-          In which `.obs` slots to store the predicted cell labels.
-          If provided, must have the same length as `--reference_obs_targets`.
-          If empty, will default to the `reference_obs_targets` combined with the `"_pred"` suffix.
+        default: "scanvi_pred"
+        description: "In which .obs slot to store the predicted labels."
       - name: "--output_obs_probability"
         type: string
-        required: false
-        multiple: true
-        description: |
-          In which `.obs` slots to store the probability of the predictions.
-          If provided, must have the same length as `--reference_obs_targets`.
-          If empty, will default to the `reference_obs_targets` combined with the `"_probability"` suffix.
+        default: "scanvi_probabilities"
+        description: "In which. obs slot to store the probabilities of the predicted labels."
       - name: "--output_obsm_integrated"
         type: string
-        default: "X_integrated_scvi"
-        required: false
+        default: "X_integrated_scanvi"
         description: "In which .obsm slot to store the integrated embedding."
       - name: "--output_compression"
         type: string
@@ -160,7 +150,11 @@ argument_groups:
         choices: ["gzip", "lzf"]
         required: false
         example: "gzip"
-
+      - name: "--output_model"
+        type: file
+        direction: output
+        description: Path to the resulting scANVI model that was updated with query data.
+      
 dependencies:
   - name: integrate/scvi
   - name: annotate/scanvi
