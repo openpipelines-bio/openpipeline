@@ -32,6 +32,10 @@ argument_groups:
         type: string
         required: false
         description: ".var column containing highly variable genes that were used to train the scVi model. By default, do not subset genes."
+      - name: "--var_gene_names"
+        type: string
+        required: false
+        description: ".var column containing gene names. By default, use the index."
       - name: "--obs_labels"
         type: string
         required: true

@@ -1,4 +1,3 @@
-
 import mudata
 import scvi
 import numpy as np
@@ -33,10 +32,12 @@ import sys
 sys.path.append(meta["resources_dir"])
 
 from subset_vars import subset_vars
+from set_var_index import set_var_index
 from compress_h5mu import write_h5ad_to_h5mu_with_compression
 from setup_logger import setup_logger
 
 logger = setup_logger()
+
 
 def main():
     logger.info("Reading input data...")
@@ -48,6 +49,9 @@ def main():
     else:
         adata_subset = adata.copy()
 
+    # Sanitize gene names and set as index of the AnnData object
+    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
+
     logger.info(f"Loading pre-trained scVI model from {par['scvi_model']}")
     scvi_model = scvi.model.SCVI.load(
         par["scvi_model"],
@@ -55,13 +59,13 @@ def main():
         accelerator="auto",
         device="auto",
     )
-    
+
     logger.info("Instantiating scANVI model from scVI model...")
     vae_uns = scvi.model.SCANVI.from_scvi_model(
         scvi_model,
         unlabeled_category=par["unlabeled_category"],
         labels_key=par["obs_labels"],
-        adata=adata_subset
+        adata=adata_subset,
     )
 
     plan_kwargs = {
@@ -90,7 +94,9 @@ def main():
 
     logger.info("Performing scANVI prediction...")
     adata.obs[par["obs_output_predictions"]] = vae_uns.predict()
-    adata.obs[par["obs_output_probabilities"]] = np.max(vae_uns.predict(soft=True), axis=1)
+    adata.obs[par["obs_output_probabilities"]] = np.max(
+        vae_uns.predict(soft=True), axis=1
+    )
 
     logger.info("Writing output data...")
     write_h5ad_to_h5mu_with_compression(
