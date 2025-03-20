@@ -8,7 +8,7 @@ workflow run_wf {
     output_ch = input_ch
         // Set aside the output for this workflow to avoid conflicts
         | map {id, state -> 
-        def new_state = state + ["workflow_output": state.output]
+        def new_state = state + ["workflow_output": state.output, "workflow_output_model": state.output_model]
         [id, new_state]
         }
 
@@ -63,7 +63,7 @@ workflow run_wf {
             ],
             toState: [
                 "reference": "output",
-                "output_model": "output_model"
+                "scanvi_model": "output_model"
             ]
         )
 
@@ -76,7 +76,7 @@ workflow run_wf {
                 "input_obs_batch": "input_obs_batch_label",
                 "input_var_gene_names": "input_var_gene_names",
                 "input_obs_size_factor": "input_obs_size_factor",
-                "reference": "output_model",
+                "reference": "scanvi_model",
                 "obsm_output": "output_obsm_integrated",
                 "obs_output_predictions": "output_obs_predictions",
                 "obs_output_probabilities": "output_obs_probability",
@@ -88,32 +88,18 @@ workflow run_wf {
                 "reduce_lr_on_plateau": "reduce_lr_on_plateau",
                 "lr_factor": "lr_factor",
                 "lr_patience": "lr_patience",
+                "output": "workflow_output",
+                "model_output": "workflow_output_model"
             ],
-            toState: {id, output, state -> [
-                "output": output.output, 
-                "output_model": output.output_model
+            toState: {id, output, state -> 
+                [
+                "output": output.output,
+                "output_model": output.model_output
                 ]
             }
+
         )
-        // // Perform KNN label transfer from integrated reference to integrated query
-        // | knn.run(
-        //     fromState: [
-        //         "input": "integrated_query",
-        //         "modality": "modality",
-        //         "input_obsm_features": "output_obsm_integrated",
-        //         "reference": "integrated_reference",
-        //         "reference_obsm_features": "output_obsm_integrated",
-        //         "reference_obs_targets": "reference_obs_targets",
-        //         "output_obs_predictions": "output_obs_predictions",
-        //         "output_obs_probability": "output_obs_probability",
-        //         "output_compression": "output_compression",
-        //         "weights": "weights",
-        //         "n_neighbors": "n_neighbors",
-        //         "output": "workflow_output"
-        //     ],
-        //     toState: {id, output, state -> ["output": output.output]},
-        //     auto: [ publish: true ]
-        // )
+        | niceView()
 
   emit:
     output_ch
