@@ -6,6 +6,8 @@
 
 * Deprecation of `workflows/annotation/scgpt_integration_knn` component (PR #952).
 
+* `reference_mapping/scarches`: moved component from `integrate/scarches`, implemented functionality to align the query dataset with the model registry and extend functionality to predict labels for scANVI models (PR #964).
+
 ## NEW FUNCTIONALITY
 
 * `dataflow/concatenate_h5mu`: add `modality` parameter (PR #977).
