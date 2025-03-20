@@ -1,6 +1,6 @@
 name: scarches
-namespace: "integrate"
-description: "Performs reference mapping with scArches"
+namespace: "reference_mapping"
+description: "Performs reference mapping with scArches by updating a pre-trained (reference) model with query data."
 authors:
   - __merge__: /src/authors/vladimir_shitov.yaml
     roles: [ author ]
