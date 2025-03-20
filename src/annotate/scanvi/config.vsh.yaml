@@ -79,6 +79,10 @@ argument_groups:
         type: string
         default: scanvi_pred
         description: "In which .obs slot to store the predicted labels."
+      - name: "--obs_output_probabilities"
+        type: string
+        default: scanvi_proba
+        description: "In which. obs slot to store the probabilities of the predicted labels."
   
   - name: "scANVI training arguments"
     arguments:

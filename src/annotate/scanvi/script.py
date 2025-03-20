@@ -1,6 +1,7 @@
 
 import mudata
 import scvi
+import numpy as np
 
 ### VIASH START
 par = {
@@ -89,7 +90,8 @@ def main():
 
     logger.info("Performing scANVI prediction...")
     adata.obs[par["obs_output_predictions"]] = vae_uns.predict()
-    
+    adata.obs[par["obs_output_probabilities"]] = np.max(vae_uns.predict(soft=True), axis=1)
+
     logger.info("Writing output data...")
     write_h5ad_to_h5mu_with_compression(
         par["output"], par["input"], par["modality"], adata, par["output_compression"]

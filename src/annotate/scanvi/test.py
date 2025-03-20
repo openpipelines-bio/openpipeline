@@ -62,22 +62,37 @@ def test_scanvi(run_component):
         output_rna.n_vars == input_rna.n_vars
     ), f"Number of variables changed\noutput_data: {output_data}"
 
-    expected_obsm_output = "X_scanvi_integrated"
     assert (
-        expected_obsm_output in output_rna.obsm
-    ), f".obsm['{expected_obsm_output}'] not added\noutput_data: {output_data}"
+        "X_scanvi_integrated" in output_rna.obsm
+    ), f".obsm['X_scanvi_integrated'] not added\noutput_data: {output_data}"
 
-    expected_obs_output = "scanvi_pred"
     assert (
-        expected_obs_output in output_rna.obs
-    ), f".obs['{expected_obsm_output}'] not added\noutput_data: {output_data}"
-
+        "scanvi_pred" in output_rna.obs
+    ), f".obs['scanvi_pred'] not added\noutput_data: {output_data}"
+    
+    assert (
+        "scanvi_proba" in output_rna.obs
+    ), f".obs['scanvi_proba'] not added\noutput_data: {output_data}"
+    
+    predictions = output_data.mod["rna"].obs["scanvi_pred"]
+    probabilities = output_data.mod["rna"].obs["scanvi_proba"]
+    
+    assert (
+        predictions.dtype == "category"
+    ), "Calculated predictions should be category dtype"
+    assert not all(predictions.isna()), "Not all predictions should be NA"
+    assert (
+        probabilities.dtype == "float32"
+    ), "Calculated probabilities should be float32 dtype"
+    assert all(
+        0 <= value <= 1 for value in probabilities
+    ), ".obs at celltypist_probability has values outside the range [0, 1]"
 
     # assert that nothing else has changed
-    del output_rna.obsm[expected_obsm_output]
-    del output_rna.obs[expected_obs_output]
-    print(output_rna.obs.keys())
-    print(input_rna.obs.keys())
+    del output_rna.obsm["X_scanvi_integrated"]
+    del output_rna.obs["scanvi_pred"]
+    del output_rna.obs["scanvi_proba"]
+
     assert_equal(input_rna, output_rna)
 
 
