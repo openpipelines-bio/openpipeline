@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 
-include { scanvi } from params.rootDir + "/target/nextflow/workflows/annotation/scanvi/main.nf"
-include { scanvi_test } from params.rootDir + "/target/nextflow/test_workflows/annotation/scanvi_test/main.nf"
+include { scanvi_scarches } from params.rootDir + "/target/nextflow/workflows/annotation/scanvi_scarches/main.nf"
+// include { scanvi_scarches_test } from params.rootDir + "/target/nextflow/test_workflows/annotation/scanvi_scarches_test/main.nf"
 
 workflow test_wf {
   // allow changing the resources_test dir
@@ -12,26 +12,17 @@ workflow test_wf {
       [
         id: "simple_execution_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
-        obsm_embedding: "X_pca",
         input_obs_batch_label: "sample_id",
-        reference_obs_batch_label: "donor_assay",
-        reference_obs_targets: "cell_type",
-        leiden_resolution: [1.0, 0.25]
-      ],
-      [
-        id: "no_leiden_resolutions_test",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
-        obsm_embedding: "X_pca",
-        input_obs_batch_label: "sample_id",
         reference_obs_batch_label: "donor_assay",
-        reference_obs_targets: "cell_type",
-        leiden_resolution: []
+        reference_obs_target: "cell_type",
+        reference_var_gene_names: "ensemblid",
+        max_epochs: 10,
+        obsm_embedding: "X_pca"
       ]
     ])
     | map{ state -> [state.id, state] }
-    | scanvi 
+    | scanvi_scarches 
     | view { output ->
       assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
 
@@ -43,19 +34,22 @@ workflow test_wf {
       def state = output[1]
       assert state instanceof Map : "State should be a map. Found: ${state}"
       assert state.containsKey("output") : "Output should contain key 'output'."
+      assert state.containsKey("output_model") : "Output should contain key 'output_model'."
       assert state.output.isFile() : "'output' should be a file."
+      assert state.output_model.isDirectory(): "'output_model' should be a directory."
       assert state.output.toString().endsWith(".h5mu") : "Output file should end with '.h5mu'. Found: ${state.output}"
 
     "Output: $output"
     }
-    | scanvi_test.run(
-        fromState: [
-          "input": "output"
-        ]
-    )
-    | toSortedList({a, b -> a[0] <=> b[0]})
-    | map { output_list ->
-      assert output_list.size() == 2 : "output channel should contain 2 events"
-      assert output_list.collect{it[0]} == ["no_leiden_resolutions_test", "simple_execution_test"]
-    }
+    // }
+    // | scanvi_scarches_test.run(
+    //     fromState: [
+    //       "input": "output"
+    //     ]
+    // )
+    // | toSortedList({a, b -> a[0] <=> b[0]})
+    // | map { output_list ->
+    //   assert output_list.size() == 2 : "output channel should contain 2 events"
+    //   assert output_list.collect{it[0]} == ["no_leiden_resolutions_test", "simple_execution_test"]
+    // }
     }

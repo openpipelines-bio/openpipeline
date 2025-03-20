@@ -10,7 +10,7 @@ export NXF_VER=21.10.6
 
 nextflow \
   run . \
-  -main-script src/workflows/annotation/scanvi/test.nf \
+  -main-script src/workflows/annotation/scanvi_scarches/test.nf \
   -entry test_wf \
   -resume \
   -profile no_publish,docker \
