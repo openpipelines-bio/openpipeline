@@ -90,3 +90,5 @@ rm "${OUT}/tmp_pretrained_models_Blood_ts.tar.gz"
 
 find "${OUT}/Pretrained_model" ! -name "example_file_model*" -type f -exec rm -f {} +
 mv "${OUT}/Pretrained_model" "${OUT}/onclass_model"
+
+rm -r "${OUT}/Pretrained_model/"
