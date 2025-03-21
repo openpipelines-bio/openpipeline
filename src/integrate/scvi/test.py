@@ -18,7 +18,7 @@ sys.path.append(meta["resources_dir"])
 from subset_vars import subset_vars
 
 input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu"
-
+input_file_2 = f"{meta['resources_dir']}/TS_Blood_filtered.h5mu"
 
 @pytest.fixture
 def mudata_with_mod_rna_obs_batch(tmp_path, request):
@@ -90,6 +90,66 @@ def test_scvi(run_component, mudata_with_mod_rna_obs_batch):
     ), f"Number of variables changed\noutput_data: {output_data}"
 
     expected_obsm_output = "X_scvi_integrated" if obsm_output is None else obsm_output
+    assert (
+        expected_obsm_output in output_rna.obsm
+    ), f".obsm['{expected_obsm_output}'] not added\noutput_data: {output_data}"
+
+    # assert that nothing else has changed
+    del output_rna.obsm[expected_obsm_output]
+    assert_equal(input_rna, output_rna)
+
+
+def test_input_parameters(run_component):
+    args = [
+            "--input",
+            input_file_2,
+            "--modality",
+            "rna",
+            "--obs_batch",
+            "donor_id",
+            "--var_gene_names",
+            "ensemblid",
+            "--obs_labels",
+            "cell_ontology_class",
+            "--obsm_output",
+            "X_scvi_integrated_test",
+            "--obs_categorical_covariate",
+            "donor_assay;donor_tissue",
+            "--output",
+            "output.h5mu",
+            "--output_model",
+            "test_model/",
+            "--max_epochs",
+            "1",
+            "--n_obs_min_count",
+            "10",
+            "--n_var_min_count",
+            "10",
+            "--output_compression",
+            "gzip",
+        ]
+
+    run_component(args)
+
+    # check files
+    assert Path("output.h5mu").is_file(), "Output file does not exist"
+    assert Path("test_model").is_dir()
+    assert Path("test_model/model.pt").is_file()
+
+    # Read input h5mu
+    input_rna = mudata.read_h5mu(input_file_2).mod["rna"]
+
+    # check output h5mu
+    output_data = mudata.read_h5mu("output.h5mu")
+    output_rna = output_data.mod["rna"]
+    assert (
+        output_rna.n_obs == input_rna.n_obs
+    ), f"Number of observations changed\noutput_data: {output_data}"
+    assert (
+        output_rna.n_vars == input_rna.n_vars
+    ), f"Number of variables changed\noutput_data: {output_data}"
+
+    expected_obsm_output = "X_scvi_integrated_test"
     assert (
         expected_obsm_output in output_rna.obsm
     ), f".obsm['{expected_obsm_output}'] not added\noutput_data: {output_data}"
