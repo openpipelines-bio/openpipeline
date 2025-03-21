@@ -1,0 +1,21 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+
+# Outputs
+# output_train: "$id.$key.output_train.h5mu"
+# output_test: "$id.$key.output_test.h5mu"
+# output_val: "$id.$key.output_val.h5mu"
+# compression: "gzip"
+
+# Split arguments
+test_size: 0.2
+# val_size: 123.0
+shuffle: false
+# random_state: 123
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments
