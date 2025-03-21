@@ -6,6 +6,8 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 # ensure that the command below is run from the root of the repository
 cd "$REPO_ROOT"
 
+viash ns build -q scvi_knn --setup cb
+
 nextflow \
   run . \
   -main-script src/workflows/annotation/scvi_knn/test.nf \

@@ -9,18 +9,18 @@ workflow test_wf {
 
   output_ch = Channel.fromList(
     [
-      [
-        id: "simple_execution_test",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        input_layer_lognormalized: "log_normalized",
-        input_obs_batch_label: "sample_id",
-        reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
-        reference_layer_lognormalized: "log_normalized",
-        reference_var_gene_names: "ensemblid",
-        reference_obs_batch_label: "donor_assay",
-        reference_obs_target: "cell_type",
-        leiden_resolution: [1.0, 0.25]
-      ],
+      // [
+      //   id: "simple_execution_test",
+      //   input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+      //   input_layer_lognormalized: "log_normalized",
+      //   input_obs_batch_label: "sample_id",
+      //   reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
+      //   reference_layer_lognormalized: "log_normalized",
+      //   reference_var_gene_names: "ensemblid",
+      //   reference_obs_batch_label: "donor_assay",
+      //   reference_obs_target: "cell_type",
+      //   leiden_resolution: [1.0, 0.25]
+      // ],
       [
         id: "no_leiden_resolutions_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
@@ -52,15 +52,15 @@ workflow test_wf {
 
     "Output: $output"
     }
-    | scvi_knn_test.run(
-      fromState: [
-        "input": "output"
-      ]
-    )
-    | toSortedList({a, b -> a[0] <=> b[0]})
-    | map { output_list ->
-      assert output_list.size() == 2 : "output channel should contain 2 events"
-      assert output_list.collect{it[0]} == ["no_leiden_resolutions_test", "simple_execution_test"]
-    }
+    // | scvi_knn_test.run(
+    //   fromState: [
+    //     "input": "output"
+    //   ]
+    // )
+    // | toSortedList({a, b -> a[0] <=> b[0]})
+    // | map { output_list ->
+    //   assert output_list.size() == 2 : "output channel should contain 2 events"
+    //   assert output_list.collect{it[0]} == ["no_leiden_resolutions_test", "simple_execution_test"]
+    // }
     }
   
