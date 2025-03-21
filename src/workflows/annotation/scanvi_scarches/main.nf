@@ -4,7 +4,6 @@ workflow run_wf {
 
   main:
 
-
     output_ch = input_ch
         // Set aside the output for this workflow to avoid conflicts
         | map {id, state -> 
@@ -12,6 +11,7 @@ workflow run_wf {
         [id, new_state]
         }
 
+        // Integrate & generate scvi model from the reference data
         | scvi.run(
             fromState: [
                 "input": "reference",
@@ -31,14 +31,15 @@ workflow run_wf {
                 "lr_patience": "lr_patience",
             ],
             args: [
-                "obsm_output": "X_scvi_integrated"
+                "obsm_output": "X_integrated_scvi"
             ],
             toState: [
                 "reference": "output",
                 "output_scvi_model": "output_model"
             ]
         )
-        | view {"After scvi: $it"}
+        
+        // Create scanvi model from the scvi reference model and integrate reference data
         | scanvi.run(
             fromState: [
                 "input": "reference",
@@ -67,7 +68,7 @@ workflow run_wf {
             ]
         )
 
-        | view {"After scanvi: $it"}
+        // Update scANVI reference model with query data and integrate+annotate query data
         | scarches.run(
             fromState: [
                 "input": "input",
@@ -91,15 +92,30 @@ workflow run_wf {
                 "output": "workflow_output",
                 "model_output": "workflow_output_model"
             ],
-            toState: {id, output, state -> 
-                [
-                "output": output.output,
-                "output_model": output.model_output
-                ]
-            }
-
+            toState: [
+                "input": "output",
+                "output_model": "model_output"
+            ]
         )
+        | view {"After scarches: $it"}
         | niceView()
+        // Perform neighbors calculation, leiden clustering and umap dimred on the integrated query data
+        | neighbors_leiden_umap.run(
+            fromState: [
+                "input": "input",
+                "modality": "modality",
+                "obsm_input": "output_obsm_integrated",
+                "output": "workflow_output",
+                "uns_neighbors": "uns_neighbors",
+                "obsp_neighbor_distances": "obsp_neighbor_distances",
+                "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
+                "leiden_resolution": "leiden_resolution",
+                "obs_cluster": "obs_cluster",
+                "obsm_umap": "obsm_umap"
+            ],
+            toState: [ "output": "output" ]
+        )
+        | setState(["output", "output_model"])
 
   emit:
     output_ch

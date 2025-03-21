@@ -123,6 +123,44 @@ argument_groups:
         default: 30
         min: 0
 
+  - name: Neighbour calculation
+    arguments:
+      - name: "--uns_neighbors"
+        type: string
+        default: scanvi_integration_neighbors
+        description: In which .uns slot to store various neighbor output objects.
+      - name: "--obsp_neighbor_distances"
+        type: string
+        default: "scanvi_integration_distances"
+        description: "In which .obsp slot to store the distance matrix between the resulting neighbors."
+      - name: "--obsp_neighbor_connectivities"
+        type: string
+        default: "scanvi_integration_connectivities"
+        description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
+
+  - name: Clustering options
+    arguments:
+      - name: "--obs_cluster"
+        type: string
+        description: |
+          Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will 
+          be created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions
+          resolutions specified in '--leiden_resolution'.
+        default: "scanvi_integration_leiden"
+      - name: "--leiden_resolution"
+        type: double
+        description: Control the coarseness of the clustering. Higher values lead to more clusters.
+        default: [1]
+        multiple: true
+
+  - name: Umap options
+    arguments:
+      - name: "--obsm_umap"
+        type: string
+        default: "X_scanvi_umap"
+        required: false
+        description: "In which .obsm slot to store the resulting UMAP embedding."
+  
   - name: "Outputs"
     arguments:
       - name: "--output"

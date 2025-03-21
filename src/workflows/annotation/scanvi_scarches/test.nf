@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 
 include { scanvi_scarches } from params.rootDir + "/target/nextflow/workflows/annotation/scanvi_scarches/main.nf"
-// include { scanvi_scarches_test } from params.rootDir + "/target/nextflow/test_workflows/annotation/scanvi_scarches_test/main.nf"
+include { scanvi_scarches_test } from params.rootDir + "/target/nextflow/test_workflows/annotation/scanvi_scarches_test/main.nf"
 
 workflow test_wf {
   // allow changing the resources_test dir
@@ -41,15 +41,15 @@ workflow test_wf {
 
     "Output: $output"
     }
-    // }
-    // | scanvi_scarches_test.run(
-    //     fromState: [
-    //       "input": "output"
-    //     ]
-    // )
-    // | toSortedList({a, b -> a[0] <=> b[0]})
-    // | map { output_list ->
-    //   assert output_list.size() == 2 : "output channel should contain 2 events"
-    //   assert output_list.collect{it[0]} == ["no_leiden_resolutions_test", "simple_execution_test"]
-    // }
+    | scanvi_scarches_test.run(
+        fromState: [
+          "input": "output",
+          "input_model": "output_model"
+        ]
+    )
+    | toSortedList({a, b -> a[0] <=> b[0]})
+    | map { output_list ->
+      assert output_list.size() == 1 : "output channel should contain 1 event"
+      assert output_list.collect{it[0]} == ["simple_execution_test"]
     }
+  }
