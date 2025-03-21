@@ -65,29 +65,32 @@ def _detect_base_model(model_path):
 
     return names_to_models_map[_read_model_name_from_registry(model_path)]
 
+
 def _validate_par(model_registry, model_name):
     registry_par_mapper = {
         "batch_key": "input_obs_batch",
         "labels_key": "input_obs_label",
-        "size_factor_key": "input_obs_size_factor"    
+        "size_factor_key": "input_obs_size_factor",
     }
-    
+
     for registry_key, par_key in registry_par_mapper.items():
-                    
         if model_registry.get(registry_key) and not par[par_key]:
-            if par_key == "input_obs_label" and model_registry.get("unlabeled_category"):
+            if par_key == "input_obs_label" and model_registry.get(
+                "unlabeled_category"
+            ):
                 continue
             else:
                 raise ValueError(
                     f"The provided {model_name} model requires `--{par_key}` to be provided."
                 )
-            
+
         elif par[par_key] and not model_registry.get(registry_key):
-            logger.warning(f"`--{par_key}` was provided but is not used in the provided {model_name} model.")
-                   
-    
+            logger.warning(
+                f"`--{par_key}` was provided but is not used in the provided {model_name} model."
+            )
+
+
 def _align_query_with_registry(adata_query, model_name, model_registry):
-    
     _validate_par(model_registry, model_name)
 
     # Sanitize gene names and set as index of the AnnData object
@@ -95,40 +98,45 @@ def _align_query_with_registry(adata_query, model_name, model_registry):
     adata_query = set_var_index(adata_query, par["input_var_gene_names"])
 
     # align layer
-    query_layer = adata_query.X if not par["layer"] else adata_query.layers[par["layer"]]
+    query_layer = (
+        adata_query.X if not par["layer"] else adata_query.layers[par["layer"]]
+    )
     var_index = adata_query.var_names.tolist()
     obs_index = adata_query.obs_names.tolist()
-    
+
     # align observations
     query_obs = {}
-    
+
     ## batch_key, size_factor_key
     simple_mappings = {
-        "batch_key": "input_obs_batch", # relevant for AUTOZI, LinearSCVI, PEAKVI, SCANVI, SCVI, TOTALVI, MULTIVI, JaxSCVI
-        "size_factor_key": "input_obs_size_factor" # relevant for SCANVI, SCVI, TOTALVI, MULTIVI
+        "batch_key": "input_obs_batch",  # relevant for AUTOZI, LinearSCVI, PEAKVI, SCANVI, SCVI, TOTALVI, MULTIVI, JaxSCVI
+        "size_factor_key": "input_obs_size_factor",  # relevant for SCANVI, SCVI, TOTALVI, MULTIVI
     }
-    
+
     for registry_key, par_key in simple_mappings.items():
         if model_registry.get(registry_key):
-            query_obs[model_registry[registry_key]] = adata_query.obs[par[par_key]].tolist()
+            query_obs[model_registry[registry_key]] = adata_query.obs[
+                par[par_key]
+            ].tolist()
 
     ## labels-key, relevant for AUTOZI, CondSCVI, LinearSCVI, PEAKVI, SCANVI, SCVI
     if model_registry.get("labels_key"):
         if par["input_obs_label"]:
-            query_obs[model_registry["labels_key"]] = adata_query.obs[par["input_obs_label"]].tolist()
+            query_obs[model_registry["labels_key"]] = adata_query.obs[
+                par["input_obs_label"]
+            ].tolist()
         else:
-            adata_query.obs[model_registry["labels_key"]] = model_registry["unlabeled_category"]
-            query_obs[model_registry["labels_key"]] = adata_query.obs[model_registry["labels_key"]].tolist()
+            adata_query.obs[model_registry["labels_key"]] = model_registry[
+                "unlabeled_category"
+            ]
+            query_obs[model_registry["labels_key"]] = adata_query.obs[
+                model_registry["labels_key"]
+            ].tolist()
 
-        
     obs = pd.DataFrame(query_obs, index=obs_index)
-    var = pd.DataFrame(index=var_index)     
-    
-    aligned_query_anndata = AnnData(
-        X=query_layer,
-        obs=obs,
-        var=var
-    )
+    var = pd.DataFrame(index=var_index)
+
+    aligned_query_anndata = AnnData(X=query_layer, obs=obs, var=var)
     if model_registry["layer"]:
         aligned_query_anndata.layers[model_registry["layer"]] = query_layer
 
@@ -151,10 +159,11 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
     model_name = _read_model_name_from_registry(model_path)
     model_registry = model.load_registry(model_path)["setup_args"]
 
-    
     # Keys of the AnnData query object need to match the exact keys in the reference model registry
-    
-    aligned_adata_query = _align_query_with_registry(adata_query, model_name, model_registry)
+
+    aligned_adata_query = _align_query_with_registry(
+        adata_query, model_name, model_registry
+    )
 
     try:
         model.prepare_query_anndata(aligned_adata_query, model_path)
@@ -165,12 +174,15 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
         aligned_adata_query.varm.clear()
         try:
             model.prepare_query_anndata(aligned_adata_query, model_path)
-        except ValueError as e:
+        except ValueError:
             raise ValueError(
-                f"Could not perform model.prepare_model_anndata, likely because the model was trained with different var names then were found in the index. \n\nmodel var_names: {model.prepare_query_anndata(aligned_adata_query, model_path, return_reference_var_names=True).tolist()} \n\nquery data var_names: {aligned_adata_query.var_names.tolist()}  ")
-    
+                f"Could not perform model.prepare_model_anndata, likely because the model was trained with different var names then were found in the index. \n\nmodel var_names: {model.prepare_query_anndata(aligned_adata_query, model_path, return_reference_var_names=True).tolist()} \n\nquery data var_names: {aligned_adata_query.var_names.tolist()}  "
+            )
+
     # Load query data into the model
-    vae_query = model.load_query_data(aligned_adata_query, model_path, freeze_dropout=True)
+    vae_query = model.load_query_data(
+        aligned_adata_query, model_path, freeze_dropout=True
+    )
 
     # Train scArches model for query mapping
     vae_query.train(
@@ -257,9 +269,7 @@ def main():
     adata_query = adata.copy()
 
     model_path = _get_model_path(par["reference"])
-    vae_query = map_to_existing_reference(
-        adata_query, model_path=model_path
-    )
+    vae_query = map_to_existing_reference(adata_query, model_path=model_path)
     model_name = _read_model_name_from_registry(model_path)
 
     # Save info about the used model
@@ -271,8 +281,10 @@ def main():
 
     if model_name == "SCANVI":
         adata.obs[par["obs_output_predictions"]] = vae_query.predict()
-        adata.obs[par["obs_output_probabilities"]] = np.max(vae_query.predict(soft=True), axis=1)
-        
+        adata.obs[par["obs_output_probabilities"]] = np.max(
+            vae_query.predict(soft=True), axis=1
+        )
+
     logger.info("Converting dtypes")
     adata = _convert_object_dtypes_to_strings(adata)
 
