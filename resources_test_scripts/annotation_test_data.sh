@@ -91,6 +91,8 @@ rm "${OUT}/tmp_pretrained_models_Blood_ts.tar.gz"
 find "${OUT}/Pretrained_model" ! -name "example_file_model*" -type f -exec rm -f {} +
 mv "${OUT}/Pretrained_model" "${OUT}/onclass_model"
 
+rm -r "${OUT}/Pretrained_model/"
+
 echo "> Creating SCVI model"
 viash run src/integrate/scvi/config.vsh.yaml --engine docker -- \
     --input "${OUT}/TS_Blood_filtered.h5mu" \
