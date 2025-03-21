@@ -3335,7 +3335,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scgpt_leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "80e5f83998ed54f0cc4d99c028949eb10de72635",
+    "git_commit" : "5f56aa209587497e1cd59658d3c1b9ef5cb1949c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

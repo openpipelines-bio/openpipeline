@@ -1,14 +1,22 @@
 # Inputs
 input: # please fill in - example: "path/to/file"
+# layer: "foo"
 modality: "rna"
+# input_obs_batch: "foo"
+# input_obs_label: "foo"
+# input_var_gene_names: "foo"
+# input_obs_size_factor: "foo"
+
+# Reference
 reference: # please fill in - example: "path/to/file"
-dataset_name: "test_dataset"
 
 # Outputs
 # output: "$id.$key.output"
 # output_compression: "gzip"
 # model_output: "model"
 obsm_output: "X_integrated_scanvi"
+obs_output_predictions: "scanvi_pred"
+obs_output_probabilities: "scanvi_proba"
 
 # Early stopping arguments
 # early_stopping: true
