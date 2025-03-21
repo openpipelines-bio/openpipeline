@@ -36,15 +36,20 @@ workflow test_wf {
       assert state.containsKey("output") : "Output should contain key 'output'."
       assert state.containsKey("output_model") : "Output should contain key 'output_model'."
       assert state.output.isFile() : "'output' should be a file."
-      assert state.output_model.isDirectory(): "'output_model' should be a directory."
       assert state.output.toString().endsWith(".h5mu") : "Output file should end with '.h5mu'. Found: ${state.output}"
+
+      // check output_model
+      assert state.containsKey("output_model") : "Output should contain key 'output_model'."
+      assert state.output_model.isDirectory() : "'output_model' should be a directory."
+      assert state.output_model.toString().endsWith("_model") : "Model output directory should end with '_model'. Found: ${state.output_model}"
+      def modelFile = state.output_model.resolve("model.pt")
+      assert modelFile.isFile(), "Model output directory should contain a model.pt file."
 
     "Output: $output"
     }
     | scanvi_scarches_test.run(
         fromState: [
-          "input": "output",
-          "input_model": "output_model"
+          "input": "output"
         ]
     )
     | toSortedList({a, b -> a[0] <=> b[0]})

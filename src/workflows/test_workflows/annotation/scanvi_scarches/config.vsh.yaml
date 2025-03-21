@@ -11,11 +11,7 @@ argument_groups:
         required: true
         description: Path to h5mu output.
         example: foo.final.h5mu
-      - name: "--input_model"
-        type: file
-        required: true
-        description: Path to scarches scanvi output model
-        example: path/to/scarches_scanvi/
+
 resources:
   - type: python_script
     path: script.py
