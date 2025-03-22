@@ -194,6 +194,12 @@ workflow run_wf {
           def newKeys = ["input": integrated_query, "reference": integrated_reference]
           [id, state + newKeys]
       }
+      // remove keys from split files
+      | map {id, state -> 
+        def keysToRemove = ["output_files"]
+        def newState = state.findAll{it.key !in keysToRemove}
+        [id, newState]
+      }
       | view {"after state mapping: $it"}
       // Perform KNN label transfer from reference to query
       | knn.run(
@@ -213,7 +219,7 @@ workflow run_wf {
         args:[
           "output_compression": "gzip"
         ],
-        toState: ["output": "output"]
+        toState: ["input": "output"]
         // toState: {id, output, state -> ["output": output.output]}
       )
 

@@ -17,11 +17,11 @@ def test_run():
     expected_obsm = ["X_integrated_scvi", "X_leiden_scvi_umap"]
     expected_obs = ["cell_type_pred", "cell_type_probability"]
     expected_obsp = ["scvi_integration_connectivities", "scvi_integration_distances"]
-    expected_mod = ["rna", "prot", "foo"]
+    expected_mod = ["rna", "prot"]
 
     assert all(
         key in list(input_mudata.mod) for key in expected_mod
-    ), f"Input modalities should be: {expected_mod}, found: {input_mudata.mod}."
+    ), f"Input modalities should be: {expected_mod}, found: {input_mudata.mod.keys()}."
     assert all(
         key in list(input_mudata.mod["rna"].obsm) for key in expected_obsm
     ), f"Input mod['rna'] obsm columns should be: {expected_obsm}, found: {input_mudata.mod['rna'].obsm.keys()}."
