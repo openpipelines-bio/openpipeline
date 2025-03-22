@@ -33,10 +33,10 @@ def test_run():
     ), f"Input mod['rna'] obsp columns should be: {expected_obsp}, found: {input_mudata.mod['rna'].obsp.keys()}."
 
 
-    assert input_mudata.mod["rna"].obs["cell_type_pred"].dtype == "category"
-    assert input_mudata.mod["rna"].obs["cell_type_probability"].dtype == "float64"
+    assert input_mudata.mod["rna"].obs["cell_type_pred"].dtype == "category", "Cell type predictions should be of dtype category."
+    assert input_mudata.mod["rna"].obs["cell_type_probability"].dtype == "float64", "Cell type probabilities should be of dtype float64."
     
-    
+    assert input_mudata.mod["rna"].shape[0] == input_mudata.mod["prot"].shape[0], "Number of observations should be equal in all modalities."
 
 
 if __name__ == "__main__":

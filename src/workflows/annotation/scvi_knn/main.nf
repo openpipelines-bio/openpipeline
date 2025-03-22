@@ -87,7 +87,6 @@ workflow run_wf {
         ],
         toState: ["input": "output"]
       )
-      | view {"After concatenation: $it"}
 
       // Calculate HVG across query and reference
       | highly_variable_features_scanpy.run(
@@ -180,7 +179,6 @@ workflow run_wf {
           "output_files": "output_files" 
         ]
       )
-      | view {"rna channel: $it"}
       // map the integrated query and reference datasets back to the state
       | map {id, state ->
           def outputDir = state.output
@@ -200,7 +198,7 @@ workflow run_wf {
         def newState = state.findAll{it.key !in keysToRemove}
         [id, newState]
       }
-      | view {"after state mapping: $it"}
+
       // Perform KNN label transfer from reference to query
       | knn.run(
         fromState: [
@@ -222,19 +220,14 @@ workflow run_wf {
         toState: ["input": "output"]
         // toState: {id, output, state -> ["output": output.output]}
       )
+      | view {"After processing RNA modality: $it"}
 
-      | view {"rna channel: $it"}
-      | niceView()
 
     other_mod_ch = modalities_ch
       | filter{id, state -> state.modality != "rna"}
-      | view {"other channel: $it"}
-
 
     output_ch = rna_ch.mix(other_mod_ch)
-      | view {"after channel mixing: $it"}
       | groupTuple(by: 0, sort: "hash")
-      | view {"After toSortedList: $it"}
       | map { id, states ->
           def new_input = states.collect{it.input}
           def modalities = states.collect{it.modality}.unique()
@@ -254,7 +247,6 @@ workflow run_wf {
           }
           [id, new_state + ["input": new_input, "modalities": modalities]]
       }
-      | view {"Input merge channel: $it"}
       | merge.run(
         fromState: ["input": "input"],
         toState: ["output": "output"],
