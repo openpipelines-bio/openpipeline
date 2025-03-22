@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
 "title": "scanvi",
-"description": "scANVI () is a semi-supervised model for single-cell transcriptomics data. scANVI is an scVI extension that can leverage the cell type knowledge for a subset of the cells present in the data sets to infer the states of the rest of the cells.\nThis component will instantiate a scANVI model from a pre-trained scVI model, integrate the data and perform label prediction.\n",
+"description": "Semi-supervised model for single-cell transcriptomics data. A scVI extension that can leverage the cell type knowledge for a subset of the cells present in the data sets to infer the states of the rest of the cells.",
 "type": "object",
 "definitions": {
 
@@ -26,15 +26,15 @@
     "inputs" : {
     "title": "Inputs",
     "type": "object",
-    "description": "No description",
+    "description": "Arguments related to the input (aka query) dataset.",
     "properties": {
     
         
                 "input": {
                 "type":
                 "string",
-                "description": "Type: `file`, required. Input h5mu file",
-                "help_text": "Type: `file`, required. Input h5mu file. Note that this needs to be the exact same dataset as the --scvi_model was trained on."
+                "description": "Type: `file`, required, example: `input.h5mu`. Input h5mu file",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. Input h5mu file."
             
             }
     
@@ -43,61 +43,31 @@
                 "modality": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `rna`. ",
-                "help_text": "Type: `string`, default: `rna`. "
+                "description": "Type: `string`, default: `rna`. Which modality to process",
+                "help_text": "Type: `string`, default: `rna`. Which modality to process."
             ,
                 "default":"rna"
             }
     
 
         ,
-                "input_layer": {
-                "type":
-                "string",
-                "description": "Type: `string`. Input layer to use",
-                "help_text": "Type: `string`. Input layer to use. If None, X is used"
-            
-            }
-    
-
-        ,
-                "var_input": {
+                "var_input_gene_names": {
                 "type":
                 "string",
                 "description": "Type: `string`. ",
-                "help_text": "Type: `string`. .var column containing highly variable genes that were used to train the scVi model. By default, do not subset genes."
+                "help_text": "Type: `string`. .var field containing the gene names, if the .var index is not to be used."
             
             }
     
 
         ,
-                "var_gene_names": {
+                "input_reference_gene_overlap": {
                 "type":
-                "string",
-                "description": "Type: `string`. ",
-                "help_text": "Type: `string`. .var column containing gene names. By default, use the index."
-            
-            }
-    
-
-        ,
-                "obs_labels": {
-                "type":
-                "string",
-                "description": "Type: `string`, required. ",
-                "help_text": "Type: `string`, required. .obs field containing the labels"
-            
-            }
-    
-
-        ,
-                "unlabeled_category": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `Unknown`. Value in the --obs_labels field that indicates unlabeled observations\n",
-                "help_text": "Type: `string`, default: `Unknown`. Value in the --obs_labels field that indicates unlabeled observations\n"
+                "integer",
+                "description": "Type: `integer`, default: `100`. The minimum number of genes present in both the reference and query datasets",
+                "help_text": "Type: `integer`, default: `100`. The minimum number of genes present in both the reference and query datasets.\n"
             ,
-                "default":"Unknown"
+                "default":100
             }
     
 
@@ -108,28 +78,17 @@
     "outputs" : {
     "title": "Outputs",
     "type": "object",
-    "description": "No description",
+    "description": "Arguments related to the output.",
     "properties": {
     
         
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file."
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default":"$id.$key.output.output"
-            }
-    
-
-        ,
-                "output_model": {
-                "type":
-                "string",
-                "description": "Type: `file`, default: `$id.$key.output_model.output_model`. Folder where the state of the trained model will be saved to",
-                "help_text": "Type: `file`, default: `$id.$key.output_model.output_model`. Folder where the state of the trained model will be saved to."
-            ,
-                "default":"$id.$key.output_model.output_model"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -137,8 +96,8 @@
                 "output_compression": {
                 "type":
                 "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
                 "enum": ["gzip", "lzf"]
             
             
@@ -146,35 +105,57 @@
     
 
         ,
-                "obsm_output": {
+                "output_model": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `X_scanvi_integrated`. In which ",
-                "help_text": "Type: `string`, default: `X_scanvi_integrated`. In which .obsm slot to store the resulting integrated embedding."
+                "description": "Type: `file`, default: `$id.$key.output_model.output_model`, example: `model_dir`. Folder where the state of the trained model will be saved to",
+                "help_text": "Type: `file`, default: `$id.$key.output_model.output_model`, example: `model_dir`. Folder where the state of the trained model will be saved to."
             ,
-                "default":"X_scanvi_integrated"
+                "default":"$id.$key.output_model.output_model"
             }
     
 
         ,
-                "obs_output_predictions": {
+                "output_obs_predictions": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `scanvi_pred`. In which ",
-                "help_text": "Type: `string`, default: `scanvi_pred`. In which .obs slot to store the predicted labels."
+                "description": "Type: `string`, default: `scanvi_pred`. In which `",
+                "help_text": "Type: `string`, default: `scanvi_pred`. In which `.obs` slots to store the predicted information.\n"
             ,
                 "default":"scanvi_pred"
             }
     
 
         ,
-                "obs_output_probabilities": {
+                "output_obs_probability": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `scanvi_proba`. In which",
-                "help_text": "Type: `string`, default: `scanvi_proba`. In which. obs slot to store the probabilities of the predicted labels."
+                "description": "Type: `string`, default: `scanvi_probability`. In which `",
+                "help_text": "Type: `string`, default: `scanvi_probability`. In which `.obs` slots to store the probability of the predictions.\n"
             ,
-                "default":"scanvi_proba"
+                "default":"scanvi_probability"
+            }
+    
+
+        ,
+                "output_obsm_scanvi_embedding": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scanvi_embedding`. In which `",
+                "help_text": "Type: `string`, default: `scanvi_embedding`. In which `.obsm` slots to store the scvi embedding.\n"
+            ,
+                "default":"scanvi_embedding"
+            }
+    
+
+        ,
+                "unknown_celltype": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `Unknown`. Label for unknown cell types",
+                "help_text": "Type: `string`, default: `Unknown`. Label for unknown cell types.\n"
+            ,
+                "default":"Unknown"
             }
     
 
@@ -182,18 +163,28 @@
 },
     
     
-    "scvi model" : {
-    "title": "scVI Model",
+    "reference model" : {
+    "title": "Reference model",
     "type": "object",
-    "description": "No description",
+    "description": "Arguments related to the reference model.",
     "properties": {
     
         
-                "scvi_model": {
+                "scvi_reference_model": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `scvi_model.pt`. Pretrained SCVI reference model to initialize the SCANVI model with",
-                "help_text": "Type: `file`, required, example: `scvi_model.pt`. Pretrained SCVI reference model to initialize the SCANVI model with."
+                "description": "Type: `file`, example: `scvi_model.pt`. Pretrained SCVI reference model to initialize the SCANVI model with",
+                "help_text": "Type: `file`, example: `scvi_model.pt`. Pretrained SCVI reference model to initialize the SCANVI model with. The model needs to include the AnnData object used to trained the model stored. "
+            
+            }
+    
+
+        ,
+                "scanvi_reference_model": {
+                "type":
+                "string",
+                "description": "Type: `file`, example: `scvi_model.pt`. Pretrained SCANVI reference model",
+                "help_text": "Type: `file`, example: `scvi_model.pt`. Pretrained SCANVI reference model."
             
             }
     
@@ -202,97 +193,195 @@
 },
     
     
-    "scanvi training arguments" : {
-    "title": "scANVI training arguments",
+    "scanvi reference model training arguments" : {
+    "title": "SCANVI reference model training arguments",
     "type": "object",
-    "description": "No description",
+    "description": "Arguments related to the reference SCANVI model.",
     "properties": {
     
         
-                "early_stopping": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean`. Whether to perform early stopping with respect to the validation set",
-                "help_text": "Type: `boolean`. Whether to perform early stopping with respect to the validation set."
-            
-            }
-    
-
-        ,
-                "early_stopping_monitor": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `elbo_validation`, choices: ``elbo_validation`, `reconstruction_loss_validation`, `kl_local_validation``. Metric logged during validation set epoch",
-                "help_text": "Type: `string`, default: `elbo_validation`, choices: ``elbo_validation`, `reconstruction_loss_validation`, `kl_local_validation``. Metric logged during validation set epoch.",
-                "enum": ["elbo_validation", "reconstruction_loss_validation", "kl_local_validation"]
-            
-            ,
-                "default":"elbo_validation"
-            }
-    
-
-        ,
-                "early_stopping_patience": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `45`. Number of validation epochs with no improvement after which training will be stopped",
-                "help_text": "Type: `integer`, default: `45`. Number of validation epochs with no improvement after which training will be stopped."
-            ,
-                "default":45
-            }
-    
-
-        ,
-                "early_stopping_min_delta": {
+                "reference_train_size": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `0.0`. Minimum change in the monitored quantity to qualify as an improvement, i",
-                "help_text": "Type: `double`, default: `0.0`. Minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than min_delta, will count as no improvement."
+                "description": "Type: `double`, default: `0.9`. Size of training set",
+                "help_text": "Type: `double`, default: `0.9`. Size of training set."
             ,
-                "default":0.0
+                "default":0.9
             }
     
 
         ,
-                "max_epochs": {
+                "reference_max_epochs": {
                 "type":
                 "integer",
-                "description": "Type: `integer`. Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest",
-                "help_text": "Type: `integer`. Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest."
-            
+                "description": "Type: `integer`, default: `400`. Maximum number of epochs",
+                "help_text": "Type: `integer`, default: `400`. Maximum number of epochs."
+            ,
+                "default":400
             }
     
 
         ,
-                "reduce_lr_on_plateau": {
+                "reference_learning_rate": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.001`. Learning rate",
+                "help_text": "Type: `double`, default: `0.001`. Learning rate."
+            ,
+                "default":0.001
+            }
+    
+
+        ,
+                "reference_reduce_lr_on_plateau": {
                 "type":
                 "boolean",
-                "description": "Type: `boolean`, default: `true`. Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus",
-                "help_text": "Type: `boolean`, default: `true`. Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus."
+                "description": "Type: `boolean`, default: `true`. Reduce learning rate on plateau",
+                "help_text": "Type: `boolean`, default: `true`. Reduce learning rate on plateau."
             ,
                 "default":true
             }
     
 
         ,
-                "lr_factor": {
+                "reference_lr_patience": {
                 "type":
-                "number",
-                "description": "Type: `double`, default: `0.6`. Factor to reduce learning rate",
-                "help_text": "Type: `double`, default: `0.6`. Factor to reduce learning rate."
+                "integer",
+                "description": "Type: `integer`, default: `25`. Patience for learning rate reduction",
+                "help_text": "Type: `integer`, default: `25`. Patience for learning rate reduction."
             ,
-                "default":0.6
+                "default":25
             }
     
 
         ,
-                "lr_patience": {
+                "reference_lr_factor": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced",
-                "help_text": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced."
+                "description": "Type: `double`, default: `0.5`. Factor by which to reduce learning rate",
+                "help_text": "Type: `double`, default: `0.5`. Factor by which to reduce learning rate."
             ,
-                "default":30.0
+                "default":0.5
+            }
+    
+
+        ,
+                "reference_early_stopping": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Early stopping",
+                "help_text": "Type: `boolean`, default: `true`. Early stopping."
+            ,
+                "default":true
+            }
+    
+
+        ,
+                "reference_early_stopping_patience": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `50`. Patience for early stopping",
+                "help_text": "Type: `integer`, default: `50`. Patience for early stopping."
+            ,
+                "default":50
+            }
+    
+
+}
+},
+    
+    
+    "scanvi query model training arguments" : {
+    "title": "SCANVI query model training arguments",
+    "type": "object",
+    "description": "Arguments related to the query SCANVI model.",
+    "properties": {
+    
+        
+                "query_train_size": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.9`. Size of training set",
+                "help_text": "Type: `double`, default: `0.9`. Size of training set."
+            ,
+                "default":0.9
+            }
+    
+
+        ,
+                "query_max_epochs": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `400`. Maximum number of epochs",
+                "help_text": "Type: `integer`, default: `400`. Maximum number of epochs."
+            ,
+                "default":400
+            }
+    
+
+        ,
+                "query_learning_rate": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.001`. Learning rate",
+                "help_text": "Type: `double`, default: `0.001`. Learning rate."
+            ,
+                "default":0.001
+            }
+    
+
+        ,
+                "query_reduce_lr_on_plateau": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Reduce learning rate on plateau",
+                "help_text": "Type: `boolean`, default: `true`. Reduce learning rate on plateau."
+            ,
+                "default":true
+            }
+    
+
+        ,
+                "query_lr_patience": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `25`. Patience for learning rate reduction",
+                "help_text": "Type: `integer`, default: `25`. Patience for learning rate reduction."
+            ,
+                "default":25
+            }
+    
+
+        ,
+                "query_lr_factor": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.5`. Factor by which to reduce learning rate",
+                "help_text": "Type: `double`, default: `0.5`. Factor by which to reduce learning rate."
+            ,
+                "default":0.5
+            }
+    
+
+        ,
+                "query_early_stopping": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Early stopping",
+                "help_text": "Type: `boolean`, default: `true`. Early stopping."
+            ,
+                "default":true
+            }
+    
+
+        ,
+                "query_early_stopping_patience": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `50`. Patience for early stopping",
+                "help_text": "Type: `integer`, default: `50`. Patience for early stopping."
+            ,
+                "default":50
             }
     
 
@@ -332,11 +421,15 @@
     },
 
     {
-    "$ref": "#/definitions/scvi model"
+    "$ref": "#/definitions/reference model"
     },
 
     {
-    "$ref": "#/definitions/scanvi training arguments"
+    "$ref": "#/definitions/scanvi reference model training arguments"
+    },
+
+    {
+    "$ref": "#/definitions/scanvi query model training arguments"
     },
 
     {

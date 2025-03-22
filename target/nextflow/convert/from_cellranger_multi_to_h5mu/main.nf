@@ -3092,7 +3092,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu",
     "viash_version" : "0.9.0",
-    "git_commit" : "5f56aa209587497e1cd59658d3c1b9ef5cb1949c",
+    "git_commit" : "69c7e3d1d936c2a654a2f8d009253cb4fc5fcd08",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

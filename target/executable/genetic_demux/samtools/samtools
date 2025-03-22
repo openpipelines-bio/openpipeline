@@ -474,9 +474,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux samtools"
-LABEL org.opencontainers.image.created="2025-03-21T07:50:11Z"
+LABEL org.opencontainers.image.created="2025-03-22T02:51:44Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5f56aa209587497e1cd59658d3c1b9ef5cb1949c"
+LABEL org.opencontainers.image.revision="69c7e3d1d936c2a654a2f8d009253cb4fc5fcd08"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

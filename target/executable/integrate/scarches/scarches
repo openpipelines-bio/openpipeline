@@ -12,8 +12,7 @@
 # files.
 # 
 # Component authors:
-#  * Vladimir Shitov (author)
-#  * Dorien Roosen (maintainer)
+#  * Vladimir Shitov
 
 set -e
 
@@ -180,45 +179,24 @@ function ViashHelp {
   echo "Performs reference mapping with scArches"
   echo ""
   echo "Inputs:"
-  echo "    Arguments related to the input (query) dataset"
-  echo ""
   echo "    -i, --input"
   echo "        type: file, required parameter, file must exist"
   echo "        Input h5mu file to use as a query"
-  echo ""
-  echo "    --layer"
-  echo "        type: string"
-  echo "        Layer to be used for scArches, if .X is not to be used."
   echo ""
   echo "    --modality"
   echo "        type: string"
   echo "        default: rna"
   echo ""
-  echo "    --input_obs_batch"
-  echo "        type: string"
-  echo "        Name of the .obs column with batch information."
-  echo ""
-  echo "    --input_obs_label"
-  echo "        type: string"
-  echo "        Name of the .obs column with celltype information."
-  echo ""
-  echo "    --input_var_gene_names"
-  echo "        type: string"
-  echo "        Name of the .var column with gene names, if the var .index is not to be"
-  echo "        used."
-  echo ""
-  echo "    --input_obs_size_factor"
-  echo "        type: string"
-  echo "        Key in adata.obs for size factor information. Instead of using library"
-  echo "        size as a size factor,"
-  echo "        the provided size factor column will be used as offset in the mean of"
-  echo "        the likelihood."
-  echo "        Assumed to be on linear scale."
-  echo ""
-  echo "Reference:"
   echo "    -r, --reference"
   echo "        type: file, required parameter, file must exist"
-  echo "        Path to the directory with reference model or a web link."
+  echo "        Path to the directory with reference model or a web link. For HLCA use"
+  echo "        https://zenodo.org/record/6337966/files/HLCA_reference_model.zip"
+  echo ""
+  echo "    --dataset_name"
+  echo "        type: string"
+  echo "        default: test_dataset"
+  echo "        Name of query dataset to use as a batch name. If not set, name of the"
+  echo "        input file is used"
   echo ""
   echo "Outputs:"
   echo "    -o, --output"
@@ -240,18 +218,6 @@ function ViashHelp {
   echo "        type: string"
   echo "        default: X_integrated_scanvi"
   echo "        In which .obsm slot to store the resulting integrated embedding."
-  echo ""
-  echo "    --obs_output_predictions"
-  echo "        type: string"
-  echo "        default: scanvi_pred"
-  echo "        In which .obs slot to store the resulting label predictions. Only"
-  echo "        relevant if a scANVI model was provided."
-  echo ""
-  echo "    --obs_output_probabilities"
-  echo "        type: string"
-  echo "        default: scanvi_proba"
-  echo "        In which .obs slot to store the probabilities of the label predictions."
-  echo "        Only relevant if a scANVI model was provided."
   echo ""
   echo "Early stopping arguments:"
   echo "    --early_stopping"
@@ -585,11 +551,11 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scvi-tools~=1.1.5" && \
   python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
-LABEL org.opencontainers.image.authors="Vladimir Shitov, Dorien Roosen"
-LABEL org.opencontainers.image.description="Companion container for running component reference_mapping scarches"
-LABEL org.opencontainers.image.created="2025-03-21T07:50:11Z"
+LABEL org.opencontainers.image.authors="Vladimir Shitov"
+LABEL org.opencontainers.image.description="Companion container for running component integrate scarches"
+LABEL org.opencontainers.image.created="2025-03-22T02:51:43Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5f56aa209587497e1cd59658d3c1b9ef5cb1949c"
+LABEL org.opencontainers.image.revision="69c7e3d1d936c2a654a2f8d009253cb4fc5fcd08"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -746,17 +712,6 @@ while [[ $# -gt 0 ]]; do
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -i. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --layer)
-            [ -n "$VIASH_PAR_LAYER" ] && ViashError Bad arguments for option \'--layer\': \'$VIASH_PAR_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_LAYER="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --layer. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --layer=*)
-            [ -n "$VIASH_PAR_LAYER" ] && ViashError Bad arguments for option \'--layer=*\': \'$VIASH_PAR_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_LAYER=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         --modality)
             [ -n "$VIASH_PAR_MODALITY" ] && ViashError Bad arguments for option \'--modality\': \'$VIASH_PAR_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_MODALITY="$2"
@@ -766,50 +721,6 @@ while [[ $# -gt 0 ]]; do
         --modality=*)
             [ -n "$VIASH_PAR_MODALITY" ] && ViashError Bad arguments for option \'--modality=*\': \'$VIASH_PAR_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_MODALITY=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --input_obs_batch)
-            [ -n "$VIASH_PAR_INPUT_OBS_BATCH" ] && ViashError Bad arguments for option \'--input_obs_batch\': \'$VIASH_PAR_INPUT_OBS_BATCH\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_OBS_BATCH="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_obs_batch. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --input_obs_batch=*)
-            [ -n "$VIASH_PAR_INPUT_OBS_BATCH" ] && ViashError Bad arguments for option \'--input_obs_batch=*\': \'$VIASH_PAR_INPUT_OBS_BATCH\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_OBS_BATCH=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --input_obs_label)
-            [ -n "$VIASH_PAR_INPUT_OBS_LABEL" ] && ViashError Bad arguments for option \'--input_obs_label\': \'$VIASH_PAR_INPUT_OBS_LABEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_OBS_LABEL="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_obs_label. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --input_obs_label=*)
-            [ -n "$VIASH_PAR_INPUT_OBS_LABEL" ] && ViashError Bad arguments for option \'--input_obs_label=*\': \'$VIASH_PAR_INPUT_OBS_LABEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_OBS_LABEL=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --input_var_gene_names)
-            [ -n "$VIASH_PAR_INPUT_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--input_var_gene_names\': \'$VIASH_PAR_INPUT_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_VAR_GENE_NAMES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_var_gene_names. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --input_var_gene_names=*)
-            [ -n "$VIASH_PAR_INPUT_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--input_var_gene_names=*\': \'$VIASH_PAR_INPUT_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --input_obs_size_factor)
-            [ -n "$VIASH_PAR_INPUT_OBS_SIZE_FACTOR" ] && ViashError Bad arguments for option \'--input_obs_size_factor\': \'$VIASH_PAR_INPUT_OBS_SIZE_FACTOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_OBS_SIZE_FACTOR="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_obs_size_factor. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --input_obs_size_factor=*)
-            [ -n "$VIASH_PAR_INPUT_OBS_SIZE_FACTOR" ] && ViashError Bad arguments for option \'--input_obs_size_factor=*\': \'$VIASH_PAR_INPUT_OBS_SIZE_FACTOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_OBS_SIZE_FACTOR=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --reference)
@@ -828,6 +739,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_REFERENCE="$2"
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -r. Use "--help" to get more information on the parameters. && exit 1
             shift 2
+            ;;
+        --dataset_name)
+            [ -n "$VIASH_PAR_DATASET_NAME" ] && ViashError Bad arguments for option \'--dataset_name\': \'$VIASH_PAR_DATASET_NAME\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DATASET_NAME="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --dataset_name. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --dataset_name=*)
+            [ -n "$VIASH_PAR_DATASET_NAME" ] && ViashError Bad arguments for option \'--dataset_name=*\': \'$VIASH_PAR_DATASET_NAME\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DATASET_NAME=$(ViashRemoveFlags "$1")
+            shift 1
             ;;
         --output)
             [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
@@ -877,28 +799,6 @@ while [[ $# -gt 0 ]]; do
         --obsm_output=*)
             [ -n "$VIASH_PAR_OBSM_OUTPUT" ] && ViashError Bad arguments for option \'--obsm_output=*\': \'$VIASH_PAR_OBSM_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBSM_OUTPUT=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --obs_output_predictions)
-            [ -n "$VIASH_PAR_OBS_OUTPUT_PREDICTIONS" ] && ViashError Bad arguments for option \'--obs_output_predictions\': \'$VIASH_PAR_OBS_OUTPUT_PREDICTIONS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBS_OUTPUT_PREDICTIONS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_output_predictions. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --obs_output_predictions=*)
-            [ -n "$VIASH_PAR_OBS_OUTPUT_PREDICTIONS" ] && ViashError Bad arguments for option \'--obs_output_predictions=*\': \'$VIASH_PAR_OBS_OUTPUT_PREDICTIONS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBS_OUTPUT_PREDICTIONS=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --obs_output_probabilities)
-            [ -n "$VIASH_PAR_OBS_OUTPUT_PROBABILITIES" ] && ViashError Bad arguments for option \'--obs_output_probabilities\': \'$VIASH_PAR_OBS_OUTPUT_PROBABILITIES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBS_OUTPUT_PROBABILITIES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_output_probabilities. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --obs_output_probabilities=*)
-            [ -n "$VIASH_PAR_OBS_OUTPUT_PROBABILITIES" ] && ViashError Bad arguments for option \'--obs_output_probabilities=*\': \'$VIASH_PAR_OBS_OUTPUT_PROBABILITIES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBS_OUTPUT_PROBABILITIES=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --early_stopping)
@@ -1075,7 +975,7 @@ if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
 
   # determine docker image id
   if [[ "$VIASH_ENGINE_ID" == 'docker' ]]; then
-    VIASH_DOCKER_IMAGE_ID='ghcr.io/openpipelines-bio/openpipeline/reference_mapping/scarches:integration_build'
+    VIASH_DOCKER_IMAGE_ID='ghcr.io/openpipelines-bio/openpipeline/integrate/scarches:integration_build'
   fi
 
   # print dockerfile
@@ -1204,17 +1104,14 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
+if [ -z ${VIASH_PAR_DATASET_NAME+x} ]; then
+  VIASH_PAR_DATASET_NAME="test_dataset"
+fi
 if [ -z ${VIASH_PAR_MODEL_OUTPUT+x} ]; then
   VIASH_PAR_MODEL_OUTPUT="model"
 fi
 if [ -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then
   VIASH_PAR_OBSM_OUTPUT="X_integrated_scanvi"
-fi
-if [ -z ${VIASH_PAR_OBS_OUTPUT_PREDICTIONS+x} ]; then
-  VIASH_PAR_OBS_OUTPUT_PREDICTIONS="scanvi_pred"
-fi
-if [ -z ${VIASH_PAR_OBS_OUTPUT_PROBABILITIES+x} ]; then
-  VIASH_PAR_OBS_OUTPUT_PROBABILITIES="scanvi_proba"
 fi
 if [ -z ${VIASH_PAR_EARLY_STOPPING_MONITOR+x} ]; then
   VIASH_PAR_EARLY_STOPPING_MONITOR="elbo_validation"
@@ -1527,28 +1424,19 @@ trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
 import sys
 import mudata
-from anndata import AnnData
 import scvi
-import pandas as pd
-import numpy as np
 
 ### VIASH START
 # The following code has been auto-generated by Viash.
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'input_obs_batch': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_BATCH//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'input_obs_label': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_LABEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'input_obs_size_factor': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_SIZE_FACTOR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'dataset_name': $( if [ ! -z ${VIASH_PAR_DATASET_NAME+x} ]; then echo "r'${VIASH_PAR_DATASET_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'model_output': $( if [ ! -z ${VIASH_PAR_MODEL_OUTPUT+x} ]; then echo "r'${VIASH_PAR_MODEL_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'obs_output_predictions': $( if [ ! -z ${VIASH_PAR_OBS_OUTPUT_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OBS_OUTPUT_PREDICTIONS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'obs_output_probabilities': $( if [ ! -z ${VIASH_PAR_OBS_OUTPUT_PROBABILITIES+x} ]; then echo "r'${VIASH_PAR_OBS_OUTPUT_PROBABILITIES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'early_stopping': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'early_stopping_monitor': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_MONITOR+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING_MONITOR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'early_stopping_patience': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_PATIENCE+x} ]; then echo "int(r'${VIASH_PAR_EARLY_STOPPING_PATIENCE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
@@ -1586,7 +1474,6 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
-from set_var_index import set_var_index
 from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
@@ -1617,74 +1504,19 @@ def _detect_base_model(model_path):
 
     return names_to_models_map[_read_model_name_from_registry(model_path)]
 
-def _validate_par(model_registry, model_name):
-    registry_par_mapper = {
-        "batch_key": "input_obs_batch",
-        "labels_key": "input_obs_label",
-        "size_factor_key": "input_obs_size_factor"    
-    }
-    
-    for registry_key, par_key in registry_par_mapper.items():
-                    
-        if model_registry.get(registry_key) and not par[par_key]:
-            if par_key == "input_obs_label" and model_registry.get("unlabeled_category"):
-                continue
-            else:
-                raise ValueError(
-                    f"The provided {model_name} model requires \`--{par_key}\` to be provided."
-                )
-            
-        elif par[par_key] and not model_registry.get(registry_key):
-            logger.warning(f"\`--{par_key}\` was provided but is not used in the provided {model_name} model.")
-                   
-    
-def _align_query_with_registry(adata_query, model_name, model_registry):
-    
-    _validate_par(model_registry, model_name)
 
-    # Sanitize gene names and set as index of the AnnData object
-    # all scArches VAE models expect gene names to be in the .var index
-    adata_query = set_var_index(adata_query, par["input_var_gene_names"])
+def extract_file_name(file_path):
+    """Return the name of the file from path to this file
 
-    # align layer
-    query_layer = adata_query.X if not par["layer"] else adata_query.layers[par["layer"]]
-    var_index = adata_query.var_names.tolist()
-    obs_index = adata_query.obs_names.tolist()
-    
-    # align observations
-    query_obs = {}
-    
-    ## batch_key, size_factor_key
-    simple_mappings = {
-        "batch_key": "input_obs_batch", # relevant for AUTOZI, LinearSCVI, PEAKVI, SCANVI, SCVI, TOTALVI, MULTIVI, JaxSCVI
-        "size_factor_key": "input_obs_size_factor" # relevant for SCANVI, SCVI, TOTALVI, MULTIVI
-    }
-    
-    for registry_key, par_key in simple_mappings.items():
-        if model_registry.get(registry_key):
-            query_obs[model_registry[registry_key]] = adata_query.obs[par[par_key]].tolist()
+    Examples
+    --------
+    >>> extract_file_name("resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu")
+    pbmc_1k_protein_v3_mms
+    """
+    slash_position = file_path.rfind("/")
+    dot_position = file_path.rfind(".")
 
-    ## labels-key, relevant for AUTOZI, CondSCVI, LinearSCVI, PEAKVI, SCANVI, SCVI
-    if model_registry.get("labels_key"):
-        if par["input_obs_label"]:
-            query_obs[model_registry["labels_key"]] = adata_query.obs[par["input_obs_label"]].tolist()
-        else:
-            adata_query.obs[model_registry["labels_key"]] = model_registry["unlabeled_category"]
-            query_obs[model_registry["labels_key"]] = adata_query.obs[model_registry["labels_key"]].tolist()
-
-        
-    obs = pd.DataFrame(query_obs, index=obs_index)
-    var = pd.DataFrame(index=var_index)     
-    
-    aligned_query_anndata = AnnData(
-        X=query_layer,
-        obs=obs,
-        var=var
-    )
-    if model_registry["layer"]:
-        aligned_query_anndata.layers[model_registry["layer"]] = query_layer
-
-    return aligned_query_anndata
+    return file_path[slash_position + 1 : dot_position]
 
 
 def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1):
@@ -1700,29 +1532,18 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
         * adata_query: The AnnData object with the query preprocessed for the mapping to the reference
     """
     model = _detect_base_model(model_path)
-    model_name = _read_model_name_from_registry(model_path)
-    model_registry = model.load_registry(model_path)["setup_args"]
-
-    
-    # Keys of the AnnData query object need to match the exact keys in the reference model registry
-    
-    aligned_adata_query = _align_query_with_registry(adata_query, model_name, model_registry)
 
     try:
-        model.prepare_query_anndata(aligned_adata_query, model_path)
+        model.prepare_query_anndata(adata_query, model_path)
     except ValueError:
         logger.warning(
             "ValueError thrown when preparing adata for mapping. Clearing .varm field to prevent it"
         )
-        aligned_adata_query.varm.clear()
-        try:
-            model.prepare_query_anndata(aligned_adata_query, model_path)
-        except ValueError as e:
-            raise ValueError(
-                f"Could not perform model.prepare_model_anndata, likely because the model was trained with different var names then were found in the index. \\n\\nmodel var_names: {model.prepare_query_anndata(aligned_adata_query, model_path, return_reference_var_names=True).tolist()} \\n\\nquery data var_names: {aligned_adata_query.var_names.tolist()}  ")
-    
+        adata_query.varm.clear()
+        model.prepare_query_anndata(adata_query, model_path)
+
     # Load query data into the model
-    vae_query = model.load_query_data(aligned_adata_query, model_path, freeze_dropout=True)
+    vae_query = model.load_query_data(adata_query, model_path, freeze_dropout=True)
 
     # Train scArches model for query mapping
     vae_query.train(
@@ -1735,7 +1556,7 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
         accelerator="auto",
     )
 
-    return vae_query
+    return vae_query, adata_query
 
 
 def _convert_object_dtypes_to_strings(adata):
@@ -1808,8 +1629,17 @@ def main():
     adata = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
     adata_query = adata.copy()
 
+    if "dataset" not in adata_query.obs.columns:
+        # Write name of the dataset as batch variable
+        if par["dataset_name"] is None:
+            logger.info("Detecting dataset name")
+            par["dataset_name"] = extract_file_name(par["input"])
+            logger.info(f"Detected {par['dataset_name']}")
+
+        adata_query.obs["dataset"] = par["dataset_name"]
+
     model_path = _get_model_path(par["reference"])
-    vae_query = map_to_existing_reference(
+    vae_query, adata_query = map_to_existing_reference(
         adata_query, model_path=model_path
     )
     model_name = _read_model_name_from_registry(model_path)
@@ -1821,10 +1651,6 @@ def main():
     output_key = par["obsm_output"].format(model_name=model_name)
     adata.obsm[output_key] = vae_query.get_latent_representation()
 
-    if model_name == "SCANVI":
-        adata.obs[par["obs_output_predictions"]] = vae_query.predict()
-        adata.obs[par["obs_output_probabilities"]] = np.max(vae_query.predict(soft=True), axis=1)
-        
     logger.info("Converting dtypes")
     adata = _convert_object_dtypes_to_strings(adata)
 

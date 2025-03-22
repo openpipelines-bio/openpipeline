@@ -26,7 +26,7 @@
     "inputs" : {
     "title": "Inputs",
     "type": "object",
-    "description": "Arguments related to the input (query) dataset",
+    "description": "No description",
     "properties": {
     
         
@@ -35,16 +35,6 @@
                 "string",
                 "description": "Type: `file`, required. Input h5mu file to use as a query",
                 "help_text": "Type: `file`, required. Input h5mu file to use as a query"
-            
-            }
-    
-
-        ,
-                "layer": {
-                "type":
-                "string",
-                "description": "Type: `string`. Layer to be used for scArches, if ",
-                "help_text": "Type: `string`. Layer to be used for scArches, if .X is not to be used."
             
             }
     
@@ -61,42 +51,23 @@
     
 
         ,
-                "input_obs_batch": {
+                "reference": {
                 "type":
                 "string",
-                "description": "Type: `string`. Name of the ",
-                "help_text": "Type: `string`. Name of the .obs column with batch information."
+                "description": "Type: `file`, required. Path to the directory with reference model or a web link",
+                "help_text": "Type: `file`, required. Path to the directory with reference model or a web link. For HLCA use https://zenodo.org/record/6337966/files/HLCA_reference_model.zip"
             
             }
     
 
         ,
-                "input_obs_label": {
+                "dataset_name": {
                 "type":
                 "string",
-                "description": "Type: `string`. Name of the ",
-                "help_text": "Type: `string`. Name of the .obs column with celltype information."
-            
-            }
-    
-
-        ,
-                "input_var_gene_names": {
-                "type":
-                "string",
-                "description": "Type: `string`. Name of the ",
-                "help_text": "Type: `string`. Name of the .var column with gene names, if the var .index is not to be used."
-            
-            }
-    
-
-        ,
-                "input_obs_size_factor": {
-                "type":
-                "string",
-                "description": "Type: `string`. Key in adata",
-                "help_text": "Type: `string`. Key in adata.obs for size factor information. Instead of using library size as a size factor,\nthe provided size factor column will be used as offset in the mean of the likelihood.\nAssumed to be on linear scale.\n"
-            
+                "description": "Type: `string`, default: `test_dataset`. Name of query dataset to use as a batch name",
+                "help_text": "Type: `string`, default: `test_dataset`. Name of query dataset to use as a batch name. If not set, name of the input file is used"
+            ,
+                "default":"test_dataset"
             }
     
 
@@ -152,48 +123,6 @@
                 "help_text": "Type: `string`, default: `X_integrated_scanvi`. In which .obsm slot to store the resulting integrated embedding."
             ,
                 "default":"X_integrated_scanvi"
-            }
-    
-
-        ,
-                "obs_output_predictions": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `scanvi_pred`. In which ",
-                "help_text": "Type: `string`, default: `scanvi_pred`. In which .obs slot to store the resulting label predictions. Only relevant if a scANVI model was provided."
-            ,
-                "default":"scanvi_pred"
-            }
-    
-
-        ,
-                "obs_output_probabilities": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `scanvi_proba`. In which ",
-                "help_text": "Type: `string`, default: `scanvi_proba`. In which .obs slot to store the probabilities of the label predictions. Only relevant if a scANVI model was provided."
-            ,
-                "default":"scanvi_proba"
-            }
-    
-
-}
-},
-    
-    
-    "reference" : {
-    "title": "Reference",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "reference": {
-                "type":
-                "string",
-                "description": "Type: `file`, required. Path to the directory with reference model or a web link",
-                "help_text": "Type: `file`, required. Path to the directory with reference model or a web link."
-            
             }
     
 
@@ -338,10 +267,6 @@
 
     {
     "$ref": "#/definitions/outputs"
-    },
-
-    {
-    "$ref": "#/definitions/reference"
     },
 
     {
