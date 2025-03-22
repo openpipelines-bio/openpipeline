@@ -17,8 +17,11 @@ def test_run():
     expected_obsm = ["X_integrated_scvi", "X_leiden_scvi_umap"]
     expected_obs = ["cell_type_pred", "cell_type_probability"]
     expected_obsp = ["scvi_integration_connectivities", "scvi_integration_distances"]
+    expected_mod = ["rna", "prot", "foo"]
 
-    assert "rna" in list(input_mudata.mod.keys()), "Input should contain rna modality."
+    assert all(
+        key in list(input_mudata.mod) for key in expected_mod
+    ), f"Input modalities should be: {expected_mod}, found: {input_mudata.mod}."
     assert all(
         key in list(input_mudata.mod["rna"].obsm) for key in expected_obsm
     ), f"Input mod['rna'] obsm columns should be: {expected_obsm}, found: {input_mudata.mod['rna'].obsm.keys()}."
@@ -29,8 +32,11 @@ def test_run():
         key in list(input_mudata.mod["rna"].obsp) for key in expected_obsp
     ), f"Input mod['rna'] obsp columns should be: {expected_obsp}, found: {input_mudata.mod['rna'].obsp.keys()}."
 
+
     assert input_mudata.mod["rna"].obs["cell_type_pred"].dtype == "category"
     assert input_mudata.mod["rna"].obs["cell_type_probability"].dtype == "float64"
+    
+    
 
 
 if __name__ == "__main__":

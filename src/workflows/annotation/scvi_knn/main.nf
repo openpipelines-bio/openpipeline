@@ -64,7 +64,7 @@ workflow run_wf {
       }
       // Remove arguments from split modalities from state
       | map {id, state -> 
-        def keysToRemove = ["output_types"]
+        def keysToRemove = ["output_types", "output_files"]
         def newState = state.findAll{it.key !in keysToRemove}
         [id, newState]
       }
@@ -227,12 +227,33 @@ workflow run_wf {
 
     output_ch = rna_ch.mix(other_mod_ch)
       | view {"after channel mixing: $it"}
+      | groupTuple(by: 0, sort: "hash")
+      | view {"After toSortedList: $it"}
+      | map { id, states ->
+          def new_input = states.collect{it.input}
+          def modalities = states.collect{it.modality}.unique()
+          def other_state_keys = states.inject([].toSet()){ current_keys, state ->
+            def new_keys = current_keys + state.keySet()
+            return new_keys
+          }.minus(["output", "input", "modality", "reference"])
+          def new_state = other_state_keys.inject([:]){ old_state, argument_name ->
+            argument_values = states.collect{it.get(argument_name)}.unique()
+            assert argument_values.size() == 1, "Arguments should be the same across modalities. Please report this \
+                                                 as a bug. Argument name: $argument_name, \
+                                                 argument value: $argument_values"
+            def argument_value
+            argument_values.each { argument_value = it }
+            def current_state = old_state + [(argument_name): argument_value]
+            return current_state
+          }
+          [id, new_state + ["input": new_input, "modalities": modalities]]
+      }
+      | view {"Input merge channel: $it"}
       | merge.run(
         fromState: ["input": "input"],
         toState: ["output": "output"],
       )
       | setState(["output"])
-
     
   emit:
     output_ch
