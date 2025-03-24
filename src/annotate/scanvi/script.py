@@ -1,109 +1,165 @@
-import mudata
+import sys
+import mudata as mu
 import scvi
 import numpy as np
 
-### VIASH START
+## VIASH START
 par = {
-    "input": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
-    "input_layer": None,
-    "var_input": None,
-    "output": "foo.h5mu",
-    "obsm_output": "X_scvi_integrated",
-    "early_stopping": True,
-    "early_stopping_monitor": "elbo_validation",
-    "early_stopping_patience": 45,
-    "early_stopping_min_delta": 0,
-    "reduce_lr_on_plateau": True,
-    "lr_factor": 0.6,
-    "lr_patience": 30,
-    "max_epochs": 500,
-    "n_obs_min_count": 10,
-    "n_var_min_count": 10,
-    "output_model": "test/",
-    "output_compression": "gzip",
+    "var_input_gene_names": None,
+    "scvi_reference_model": None,
+    "scanvi_reference_model": "resources_test/annotation_test_data/scanvi_model",
+    "unknown_celltype": "Unkown",
+    "output": "output.h5mu",
+    "output_obsm_scanvi_embedding": "scanvi_embedding",
+    "output_obs_predictions": "scanvi_pred",
+    "output_obs_probability": "scanvi_probability",
+    "output_model": None,
+    "output_compression": None,
+    "reference_learning_rate": 1e-3,
+    "reference_reduce_lr_on_plateau": True,
+    "reference_lr_patience": 25,
+    "reference_lr_factor": 0.5,
+    "reference_train_size": 0.9,
+    "reference_max_epochs": 10,
+    "reference_early_stopping": True,
+    "reference_early_stopping_patience": 50,
+    "query_train_size": 0.9,
+    "query_max_epochs": 10,
+    "query_learning_rate": 1e-3,
+    "query_reduce_lr_on_plateau": True,
+    "query_lr_patience": 25,
+    "query_lr_factor": 0.5,
+    "query_early_stopping": True,
+    "query_early_stopping_patience": 50,
 }
-
-meta = {"resources_dir": "src/utils"}
-### VIASH END
-
-import sys
+meta = {"resources_dir": "src/annotate/utils"}
+## VIASH END
 
 sys.path.append(meta["resources_dir"])
-
-from subset_vars import subset_vars
-from set_var_index import set_var_index
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
 from setup_logger import setup_logger
+from cross_check_genes import cross_check_genes
+from set_var_index import set_var_index
 
 logger = setup_logger()
 
+if (
+    (not par["scvi_reference_model"])
+    and not (par["scanvi_reference_model"])
+    or (par["scvi_reference_model"] and par["scanvi_reference_model"])
+):
+    raise ValueError(
+        "Make sure to provide either an '--scvi_reference_model' or a '--scanvi_reference_model', but not both."
+    )
+
 
 def main():
-    logger.info("Reading input data...")
-    adata = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
+    logger.info("Reading the query data")
+    # Read in data
+    input_mdata = mu.read_h5mu(par["input"])
+    input_adata = input_mdata.mod[par["modality"]]
+    input_modality = input_adata.copy()
+    # scANVI requires query and reference gene names to be equivalent
+    input_modality = set_var_index(input_modality, par["var_input_gene_names"])
 
-    if par["var_input"]:
-        # Subset to HVG
-        adata_subset = subset_vars(adata, subset_col=par["var_input"]).copy()
-    else:
-        adata_subset = adata.copy()
+    if par["scanvi_reference_model"]:
+        logger.info(
+            f"Loading the pretrained scANVI model from {par['scanvi_reference_model']} and updating it with the query data {par['input']}"
+        )
+        scanvi_query = scvi.model.SCANVI.load_query_data(
+            input_modality,
+            par["scanvi_reference_model"],
+            freeze_classifier=True,
+            inplace_subset_query_vars=True,
+        )
 
-    # Sanitize gene names and set as index of the AnnData object
-    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
+    elif par["scvi_reference_model"]:
+        logger.info("Reading in the reference model and associated reference data")
+        scvi_reference_model = scvi.model.SCVI.load(par["scvi_reference_model"])
+        reference = scvi_reference_model.adata
 
-    logger.info(f"Loading pre-trained scVI model from {par['scvi_model']}")
-    scvi_model = scvi.model.SCVI.load(
-        par["scvi_model"],
-        adata_subset,
-        accelerator="auto",
-        device="auto",
-    )
+        logger.info("Alligning genes in reference and query dataset")
+        # scANVI requires query and reference gene names to be equivalent
+        reference = set_var_index(reference)
+        # Subset query dataset based on genes present in reference
+        common_ens_ids = cross_check_genes(
+            input_modality.var.index,
+            reference.var.index,
+            min_gene_overlap=par["input_reference_gene_overlap"],
+        )
+        input_modality = input_modality[:, common_ens_ids]
 
-    logger.info("Instantiating scANVI model from scVI model...")
-    vae_uns = scvi.model.SCANVI.from_scvi_model(
-        scvi_model,
-        unlabeled_category=par["unlabeled_category"],
-        labels_key=par["obs_labels"],
-        adata=adata_subset,
-    )
+        logger.info("Instantiating scANVI model from the scVI model")
+        scanvi_ref = scvi.model.SCANVI.from_scvi_model(
+            scvi_reference_model,
+            unlabeled_category=par["unknown_celltype"],
+            labels_key=scvi_reference_model.adata_manager._registry["setup_args"][
+                "labels_key"
+            ],
+        )
 
-    plan_kwargs = {
-        "reduce_lr_on_plateau": par["reduce_lr_on_plateau"],
-        "lr_patience": par["lr_patience"],
-        "lr_factor": par["lr_factor"],
+        reference_plan_kwargs = {
+            "lr": par["reference_learning_rate"],
+            "reduce_lr_on_plateau": par["reference_reduce_lr_on_plateau"],
+            "lr_patience": par["reference_lr_patience"],
+            "lr_factor": par["reference_lr_factor"],
+        }
+
+        logger.info("Training scANVI model on reference data with celltype labels")
+
+        scanvi_ref.train(
+            train_size=par["reference_train_size"],
+            max_epochs=par["reference_max_epochs"],
+            early_stopping=par["reference_early_stopping"],
+            early_stopping_patience=par["reference_early_stopping_patience"],
+            plan_kwargs=reference_plan_kwargs,
+            check_val_every_n_epoch=1,
+            accelerator="auto",
+        )
+
+        logger.info(f"Updating scANVI model with query data {par['input']}")
+        scvi.model.SCANVI.prepare_query_anndata(
+            input_modality, scanvi_ref, inplace=True
+        )
+        scanvi_query = scvi.model.SCANVI.load_query_data(input_modality, scanvi_ref)
+
+    logger.info("Training scANVI model with query data")
+    query_plan_kwargs = {
+        "lr": par["query_learning_rate"],
+        "reduce_lr_on_plateau": par["query_reduce_lr_on_plateau"],
+        "lr_patience": par["query_lr_patience"],
+        "lr_factor": par["query_lr_factor"],
     }
 
-    logger.info("Training scANVI model...")
-    # Train the model
-    vae_uns.train(
-        max_epochs=par["max_epochs"],
-        early_stopping=par["early_stopping"],
-        early_stopping_monitor=par["early_stopping_monitor"],
-        early_stopping_patience=par["early_stopping_patience"],
-        early_stopping_min_delta=par["early_stopping_min_delta"],
-        plan_kwargs=plan_kwargs,
+    scanvi_query.train(
+        train_size=par["query_train_size"],
+        max_epochs=par["query_max_epochs"],
+        early_stopping=par["query_early_stopping"],
+        early_stopping_patience=par["query_early_stopping_patience"],
+        plan_kwargs=query_plan_kwargs,
         check_val_every_n_epoch=1,
         accelerator="auto",
     )
-    # Note: train_size=1.0 should give better results, but then can't do early_stopping on validation set
 
-    logger.info("Performing scANVI integration...")
-    # Get the latent output
-    adata.obsm[par["obsm_output"]] = vae_uns.get_latent_representation()
-
-    logger.info("Performing scANVI prediction...")
-    adata.obs[par["obs_output_predictions"]] = vae_uns.predict()
-    adata.obs[par["obs_output_probabilities"]] = np.max(
-        vae_uns.predict(soft=True), axis=1
+    logger.info("Adding latent representation to query data")
+    input_adata.obsm[par["output_obsm_scanvi_embedding"]] = (
+        scanvi_query.get_latent_representation()
     )
 
-    logger.info("Writing output data...")
-    write_h5ad_to_h5mu_with_compression(
-        par["output"], par["input"], par["modality"], adata, par["output_compression"]
+    logger.info("Running predictions on query data")
+    input_adata.obs[par["output_obs_predictions"]] = scanvi_query.predict(
+        input_modality
     )
+    input_adata.obs[par["output_obs_probability"]] = np.max(
+        scanvi_query.predict(input_modality, soft=True), axis=1
+    )
+
+    logger.info("Saving output and model")
+    input_mdata.write_h5mu(par["output"], compression=par["output_compression"])
+
     if par["output_model"]:
-        vae_uns.save(par["output_model"], overwrite=True)
+        scanvi_query.save(par["output_model"], overwrite=True)
 
 
 if __name__ == "__main__":

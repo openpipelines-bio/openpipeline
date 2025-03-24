@@ -2895,12 +2895,12 @@ meta = [
       ]
     },
     {
-      "name" : "Gene Detection",
+      "name" : "Mitochondrial & Ribosomal Gene Detection",
       "arguments" : [
         {
           "type" : "string",
           "name" : "--var_gene_names",
-          "description" : ".var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as a mitochondrial or ribosomal genes, respectively.\n",
+          "description" : ".var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as mitochondrial or ribosomal genes, respectively.\n",
           "example" : [
             "gene_symbol"
           ],
@@ -2908,12 +2908,7 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "Mitochondrial Gene Detection",
-      "arguments" : [
+        },
         {
           "type" : "string",
           "name" : "--var_name_mitochondrial_genes",
@@ -2943,12 +2938,7 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "Ribosomal Gene Detection",
-      "arguments" : [
+        },
         {
           "type" : "string",
           "name" : "--var_name_ribosomal_genes",
@@ -2961,7 +2951,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--obs_name_ribosomal_fraction",
-          "description" : ".Obs slot to store the fraction of reads found to be ribosomal. Defaults to 'fraction_' suffixed by the value of --var_name_ribosomal_genes\n",
+          "description" : "When specified, write the fraction of counts originating from ribosomal genes \n(based on --ribosomal_gene_regex) to an .obs column with the specified name.\nRequires --var_name_ribosomal_genes.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3250,7 +3240,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc",
     "viash_version" : "0.9.0",
-    "git_commit" : "10d71bee7e657a93a7b2f3f8bd0356b2f2172673",
+    "git_commit" : "eda2b4456646104e230aacec7d88718d29e9ee84",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

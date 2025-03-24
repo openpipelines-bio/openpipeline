@@ -2938,15 +2938,6 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--var_gene_names",
-          "description" : ".var column containing gene names. By default, use the index.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
           "name" : "--var_input",
           "description" : ".var column containing highly variable genes. By default, do not subset genes.",
           "required" : false,
@@ -3352,10 +3343,6 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/src/utils/set_var_index.py"
-    },
-    {
-      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3370,10 +3357,6 @@ meta = [
     {
       "type" : "file",
       "path" : "/resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
-    },
-    {
-      "type" : "file",
-      "path" : "/resources_test/annotation_test_data/TS_Blood_filtered.h5mu"
     }
   ],
   "status" : "enabled",
@@ -3512,7 +3495,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.9.0",
-    "git_commit" : "10d71bee7e657a93a7b2f3f8bd0356b2f2172673",
+    "git_commit" : "eda2b4456646104e230aacec7d88718d29e9ee84",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3566,7 +3549,6 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_batch': $( if [ ! -z ${VIASH_PAR_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_labels': $( if [ ! -z ${VIASH_PAR_OBS_LABELS+x} ]; then echo "r'${VIASH_PAR_OBS_LABELS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_size_factor': $( if [ ! -z ${VIASH_PAR_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_OBS_SIZE_FACTOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3629,7 +3611,6 @@ import sys
 sys.path.append(meta["resources_dir"])
 
 from subset_vars import subset_vars
-from set_var_index import set_var_index
 from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 
@@ -3663,9 +3644,6 @@ def main():
     else:
         adata_subset = adata.copy()
 
-    # Sanitize gene names and set as index of the AnnData object
-    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
-    
     check_validity_anndata(
         adata_subset,
         par["input_layer"],
@@ -3673,7 +3651,6 @@ def main():
         par["n_obs_min_count"],
         par["n_var_min_count"],
     )
-
     # Set up the data
     scvi.model.SCVI.setup_anndata(
         adata_subset,

@@ -10,7 +10,6 @@
 // files.
 // 
 // Component authors:
-//  * Dorien Roosen (maintainer)
 //  * Jakub Majercik (author)
 //  * Weiwei Schultz (contributor)
 
@@ -2814,27 +2813,6 @@ meta = [
   "version" : "integration_build",
   "authors" : [
     {
-      "name" : "Dorien Roosen",
-      "roles" : [
-        "maintainer"
-      ],
-      "info" : {
-        "role" : "Core Team Member",
-        "links" : {
-          "email" : "dorien@data-intuitive.com",
-          "github" : "dorien-er",
-          "linkedin" : "dorien-roosen"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Scientist"
-          }
-        ]
-      }
-    },
-    {
       "name" : "Jakub Majercik",
       "roles" : [
         "author"
@@ -2874,6 +2852,7 @@ meta = [
   "argument_groups" : [
     {
       "name" : "Inputs",
+      "description" : "Arguments related to the input (aka query) dataset.",
       "arguments" : [
         {
           "type" : "file",
@@ -2881,7 +2860,10 @@ meta = [
           "alternatives" : [
             "-i"
           ],
-          "description" : "Input h5mu file. Note that this needs to be the exact same dataset as the --scvi_model was trained on.",
+          "description" : "Input h5mu file.",
+          "example" : [
+            "input.h5mu"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
@@ -2892,6 +2874,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--modality",
+          "description" : "Which modality to process.",
           "default" : [
             "rna"
           ],
@@ -2902,46 +2885,160 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--input_layer",
-          "description" : "Input layer to use. If None, X is used",
+          "name" : "--var_input_gene_names",
+          "description" : ".var field containing the gene names, if the .var index is not to be used.",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
         },
         {
-          "type" : "string",
-          "name" : "--var_input",
-          "description" : ".var column containing highly variable genes that were used to train the scVi model. By default, do not subset genes.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--var_gene_names",
-          "description" : ".var column containing gene names. By default, use the index.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--obs_labels",
-          "description" : ".obs field containing the labels",
-          "required" : true,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--unlabeled_category",
-          "description" : "Value in the --obs_labels field that indicates unlabeled observations\n",
+          "type" : "integer",
+          "name" : "--input_reference_gene_overlap",
+          "description" : "The minimum number of genes present in both the reference and query datasets.\n",
           "default" : [
-            "Unknown"
+            100
+          ],
+          "required" : false,
+          "min" : 1,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Reference model",
+      "description" : "Arguments related to the reference model.",
+      "arguments" : [
+        {
+          "type" : "file",
+          "name" : "--scvi_reference_model",
+          "description" : "Pretrained SCVI reference model to initialize the SCANVI model with. The model needs to include the AnnData object used to trained the model stored. ",
+          "example" : [
+            "scvi_model.pt"
+          ],
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "file",
+          "name" : "--scanvi_reference_model",
+          "description" : "Pretrained SCANVI reference model.",
+          "example" : [
+            "scvi_model.pt"
+          ],
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "SCANVI reference model training arguments",
+      "description" : "Arguments related to the reference SCANVI model.",
+      "arguments" : [
+        {
+          "type" : "double",
+          "name" : "--reference_train_size",
+          "description" : "Size of training set.",
+          "default" : [
+            0.9
+          ],
+          "required" : false,
+          "min" : 0.0,
+          "max" : 1.0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--reference_max_epochs",
+          "description" : "Maximum number of epochs.",
+          "default" : [
+            400
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "double",
+          "name" : "--reference_learning_rate",
+          "description" : "Learning rate.",
+          "default" : [
+            0.001
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--reference_reduce_lr_on_plateau",
+          "description" : "Reduce learning rate on plateau.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--reference_lr_patience",
+          "description" : "Patience for learning rate reduction.",
+          "default" : [
+            25
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "double",
+          "name" : "--reference_lr_factor",
+          "description" : "Factor by which to reduce learning rate.",
+          "default" : [
+            0.5
+          ],
+          "required" : false,
+          "min" : 0.0,
+          "max" : 1.0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--reference_early_stopping",
+          "description" : "Early stopping.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--reference_early_stopping_patience",
+          "description" : "Patience for early stopping.",
+          "default" : [
+            50
           ],
           "required" : false,
           "direction" : "input",
@@ -2951,18 +3048,105 @@ meta = [
       ]
     },
     {
-      "name" : "scVI Model",
+      "name" : "SCANVI query model training arguments",
+      "description" : "Arguments related to the query SCANVI model.",
       "arguments" : [
         {
-          "type" : "file",
-          "name" : "--scvi_model",
-          "description" : "Pretrained SCVI reference model to initialize the SCANVI model with.",
-          "example" : [
-            "scvi_model.pt"
+          "type" : "double",
+          "name" : "--query_train_size",
+          "description" : "Size of training set.",
+          "default" : [
+            0.9
           ],
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : true,
+          "required" : false,
+          "min" : 0.0,
+          "max" : 1.0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--query_max_epochs",
+          "description" : "Maximum number of epochs.",
+          "default" : [
+            400
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "double",
+          "name" : "--query_learning_rate",
+          "description" : "Learning rate.",
+          "default" : [
+            0.001
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--query_reduce_lr_on_plateau",
+          "description" : "Reduce learning rate on plateau.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--query_lr_patience",
+          "description" : "Patience for learning rate reduction.",
+          "default" : [
+            25
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "double",
+          "name" : "--query_lr_factor",
+          "description" : "Factor by which to reduce learning rate.",
+          "default" : [
+            0.5
+          ],
+          "required" : false,
+          "min" : 0.0,
+          "max" : 1.0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--query_early_stopping",
+          "description" : "Early stopping.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--query_early_stopping_patience",
+          "description" : "Patience for early stopping.",
+          "default" : [
+            50
+          ],
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -2971,14 +3155,15 @@ meta = [
     },
     {
       "name" : "Outputs",
+      "description" : "Arguments related to the output.",
       "arguments" : [
         {
           "type" : "file",
           "name" : "--output",
-          "alternatives" : [
-            "-o"
-          ],
           "description" : "Output h5mu file.",
+          "example" : [
+            "output.h5mu"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
@@ -2987,20 +3172,8 @@ meta = [
           "multiple_sep" : ";"
         },
         {
-          "type" : "file",
-          "name" : "--output_model",
-          "description" : "Folder where the state of the trained model will be saved to.",
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : false,
-          "direction" : "output",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
           "type" : "string",
           "name" : "--output_compression",
-          "description" : "The compression format to be used on the output h5mu object.",
           "example" : [
             "gzip"
           ],
@@ -3014,21 +3187,23 @@ meta = [
           "multiple_sep" : ";"
         },
         {
-          "type" : "string",
-          "name" : "--obsm_output",
-          "description" : "In which .obsm slot to store the resulting integrated embedding.",
-          "default" : [
-            "X_scanvi_integrated"
+          "type" : "file",
+          "name" : "--output_model",
+          "description" : "Folder where the state of the trained model will be saved to.",
+          "example" : [
+            "model_dir"
           ],
+          "must_exist" : true,
+          "create_parent" : true,
           "required" : false,
-          "direction" : "input",
+          "direction" : "output",
           "multiple" : false,
           "multiple_sep" : ";"
         },
         {
           "type" : "string",
-          "name" : "--obs_output_predictions",
-          "description" : "In which .obs slot to store the predicted labels.",
+          "name" : "--output_obs_predictions",
+          "description" : "In which `.obs` slots to store the predicted information.\n",
           "default" : [
             "scanvi_pred"
           ],
@@ -3039,25 +3214,11 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--obs_output_probabilities",
-          "description" : "In which. obs slot to store the probabilities of the predicted labels.",
+          "name" : "--output_obs_probability",
+          "description" : "In which `.obs` slots to store the probability of the predictions.\n",
           "default" : [
-            "scanvi_proba"
+            "scanvi_probability"
           ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "scANVI training arguments",
-      "arguments" : [
-        {
-          "type" : "boolean",
-          "name" : "--early_stopping",
-          "description" : "Whether to perform early stopping with respect to the validation set.",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3065,62 +3226,10 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--early_stopping_monitor",
-          "description" : "Metric logged during validation set epoch.",
+          "name" : "--output_obsm_scanvi_embedding",
+          "description" : "In which `.obsm` slots to store the scvi embedding.\n",
           "default" : [
-            "elbo_validation"
-          ],
-          "required" : false,
-          "choices" : [
-            "elbo_validation",
-            "reconstruction_loss_validation",
-            "kl_local_validation"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "integer",
-          "name" : "--early_stopping_patience",
-          "description" : "Number of validation epochs with no improvement after which training will be stopped.",
-          "default" : [
-            45
-          ],
-          "required" : false,
-          "min" : 1,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "double",
-          "name" : "--early_stopping_min_delta",
-          "description" : "Minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than min_delta, will count as no improvement.",
-          "default" : [
-            0.0
-          ],
-          "required" : false,
-          "min" : 0.0,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "integer",
-          "name" : "--max_epochs",
-          "description" : "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "boolean",
-          "name" : "--reduce_lr_on_plateau",
-          "description" : "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus.",
-          "default" : [
-            true
+            "scanvi_embedding"
           ],
           "required" : false,
           "direction" : "input",
@@ -3128,27 +3237,13 @@ meta = [
           "multiple_sep" : ";"
         },
         {
-          "type" : "double",
-          "name" : "--lr_factor",
-          "description" : "Factor to reduce learning rate.",
+          "type" : "string",
+          "name" : "--unknown_celltype",
+          "description" : "Label for unknown cell types.\n",
           "default" : [
-            0.6
+            "Unknown"
           ],
           "required" : false,
-          "min" : 0.0,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "double",
-          "name" : "--lr_patience",
-          "description" : "Number of epochs with no improvement after which learning rate will be reduced.",
-          "default" : [
-            30.0
-          ],
-          "required" : false,
-          "min" : 0.0,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3164,11 +3259,15 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/src/utils/subset_vars.py"
+      "path" : "/src/utils/setup_logger.py"
     },
     {
       "type" : "file",
-      "path" : "/src/utils/compress_h5mu.py"
+      "path" : "/src/utils/cross_check_genes.py"
+    },
+    {
+      "type" : "file",
+      "path" : "/src/utils/subset_vars.py"
     },
     {
       "type" : "file",
@@ -3176,15 +3275,11 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/src/utils/setup_logger.py"
-    },
-    {
-      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
   ],
-  "description" : "scANVI () is a semi-supervised model for single-cell transcriptomics data. scANVI is an scVI extension that can leverage the cell type knowledge for a subset of the cells present in the data sets to infer the states of the rest of the cells.\nThis component will instantiate a scANVI model from a pre-trained scVI model, integrate the data and perform label prediction.\n",
+  "description" : "Semi-supervised model for single-cell transcriptomics data. A scVI extension that can leverage the cell type knowledge for a subset of the cells present in the data sets to infer the states of the rest of the cells.",
   "test_resources" : [
     {
       "type" : "python_script",
@@ -3193,15 +3288,11 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/resources_test/annotation_test_data/scvi_model/"
+      "path" : "/resources_test/annotation_test_data/"
     },
     {
       "type" : "file",
-      "path" : "/resources_test/annotation_test_data/TS_Blood_filtered.h5mu"
-    },
-    {
-      "type" : "file",
-      "path" : "/resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+      "path" : "/resources_test/pbmc_1k_protein_v3/"
     }
   ],
   "status" : "enabled",
@@ -3220,10 +3311,10 @@ meta = [
       "id" : "nextflow",
       "directives" : {
         "label" : [
-          "midcpu",
-          "midmem",
-          "gpu",
-          "highdisk"
+          "highcpu",
+          "highmem",
+          "highdisk",
+          "gpu"
         ],
         "tag" : "$id"
       },
@@ -3304,12 +3395,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.11.1",
-            "mudata~=0.3.1",
             "scanpy~=1.10.4"
-          ],
-          "script" : [
-            "exec(\\"try:\\\\n  import awkward\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  exit(1)\\")"
           ],
           "upgrade" : true
         },
@@ -3320,14 +3406,36 @@ meta = [
             "scvi-tools~=1.1.5"
           ],
           "upgrade" : true
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "anndata~=0.11.1",
+            "mudata~=0.3.1"
+          ],
+          "script" : [
+            "exec(\\"try:\\\\n  import awkward\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  exit(1)\\")"
+          ],
+          "upgrade" : true
         }
       ],
       "test_setup" : [
+        {
+          "type" : "apt",
+          "packages" : [
+            "git"
+          ],
+          "interactive" : false
+        },
         {
           "type" : "python",
           "user" : false,
           "packages" : [
             "viashpy==0.8.0"
+          ],
+          "github" : [
+            "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
         }
@@ -3340,7 +3448,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/scanvi",
     "viash_version" : "0.9.0",
-    "git_commit" : "10d71bee7e657a93a7b2f3f8bd0356b2f2172673",
+    "git_commit" : "eda2b4456646104e230aacec7d88718d29e9ee84",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3383,35 +3491,43 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
-import mudata
+import sys
+import mudata as mu
 import scvi
 import numpy as np
 
-### VIASH START
+## VIASH START
 # The following code has been auto-generated by Viash.
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obs_labels': $( if [ ! -z ${VIASH_PAR_OBS_LABELS+x} ]; then echo "r'${VIASH_PAR_OBS_LABELS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'unlabeled_category': $( if [ ! -z ${VIASH_PAR_UNLABELED_CATEGORY+x} ]; then echo "r'${VIASH_PAR_UNLABELED_CATEGORY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'scvi_model': $( if [ ! -z ${VIASH_PAR_SCVI_MODEL+x} ]; then echo "r'${VIASH_PAR_SCVI_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'var_input_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_INPUT_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'scvi_reference_model': $( if [ ! -z ${VIASH_PAR_SCVI_REFERENCE_MODEL+x} ]; then echo "r'${VIASH_PAR_SCVI_REFERENCE_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'scanvi_reference_model': $( if [ ! -z ${VIASH_PAR_SCANVI_REFERENCE_MODEL+x} ]; then echo "r'${VIASH_PAR_SCANVI_REFERENCE_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'reference_train_size': $( if [ ! -z ${VIASH_PAR_REFERENCE_TRAIN_SIZE+x} ]; then echo "float(r'${VIASH_PAR_REFERENCE_TRAIN_SIZE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'reference_max_epochs': $( if [ ! -z ${VIASH_PAR_REFERENCE_MAX_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_REFERENCE_MAX_EPOCHS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'reference_learning_rate': $( if [ ! -z ${VIASH_PAR_REFERENCE_LEARNING_RATE+x} ]; then echo "float(r'${VIASH_PAR_REFERENCE_LEARNING_RATE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'reference_reduce_lr_on_plateau': $( if [ ! -z ${VIASH_PAR_REFERENCE_REDUCE_LR_ON_PLATEAU+x} ]; then echo "r'${VIASH_PAR_REFERENCE_REDUCE_LR_ON_PLATEAU//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'reference_lr_patience': $( if [ ! -z ${VIASH_PAR_REFERENCE_LR_PATIENCE+x} ]; then echo "int(r'${VIASH_PAR_REFERENCE_LR_PATIENCE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'reference_lr_factor': $( if [ ! -z ${VIASH_PAR_REFERENCE_LR_FACTOR+x} ]; then echo "float(r'${VIASH_PAR_REFERENCE_LR_FACTOR//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'reference_early_stopping': $( if [ ! -z ${VIASH_PAR_REFERENCE_EARLY_STOPPING+x} ]; then echo "r'${VIASH_PAR_REFERENCE_EARLY_STOPPING//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'reference_early_stopping_patience': $( if [ ! -z ${VIASH_PAR_REFERENCE_EARLY_STOPPING_PATIENCE+x} ]; then echo "int(r'${VIASH_PAR_REFERENCE_EARLY_STOPPING_PATIENCE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'query_train_size': $( if [ ! -z ${VIASH_PAR_QUERY_TRAIN_SIZE+x} ]; then echo "float(r'${VIASH_PAR_QUERY_TRAIN_SIZE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'query_max_epochs': $( if [ ! -z ${VIASH_PAR_QUERY_MAX_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_QUERY_MAX_EPOCHS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'query_learning_rate': $( if [ ! -z ${VIASH_PAR_QUERY_LEARNING_RATE+x} ]; then echo "float(r'${VIASH_PAR_QUERY_LEARNING_RATE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'query_reduce_lr_on_plateau': $( if [ ! -z ${VIASH_PAR_QUERY_REDUCE_LR_ON_PLATEAU+x} ]; then echo "r'${VIASH_PAR_QUERY_REDUCE_LR_ON_PLATEAU//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'query_lr_patience': $( if [ ! -z ${VIASH_PAR_QUERY_LR_PATIENCE+x} ]; then echo "int(r'${VIASH_PAR_QUERY_LR_PATIENCE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'query_lr_factor': $( if [ ! -z ${VIASH_PAR_QUERY_LR_FACTOR+x} ]; then echo "float(r'${VIASH_PAR_QUERY_LR_FACTOR//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'query_early_stopping': $( if [ ! -z ${VIASH_PAR_QUERY_EARLY_STOPPING+x} ]; then echo "r'${VIASH_PAR_QUERY_EARLY_STOPPING//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'query_early_stopping_patience': $( if [ ! -z ${VIASH_PAR_QUERY_EARLY_STOPPING_PATIENCE+x} ]; then echo "int(r'${VIASH_PAR_QUERY_EARLY_STOPPING_PATIENCE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_model': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obs_output_predictions': $( if [ ! -z ${VIASH_PAR_OBS_OUTPUT_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OBS_OUTPUT_PREDICTIONS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obs_output_probabilities': $( if [ ! -z ${VIASH_PAR_OBS_OUTPUT_PROBABILITIES+x} ]; then echo "r'${VIASH_PAR_OBS_OUTPUT_PROBABILITIES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'early_stopping': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'early_stopping_monitor': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_MONITOR+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING_MONITOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'early_stopping_patience': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_PATIENCE+x} ]; then echo "int(r'${VIASH_PAR_EARLY_STOPPING_PATIENCE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'early_stopping_min_delta': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_MIN_DELTA+x} ]; then echo "float(r'${VIASH_PAR_EARLY_STOPPING_MIN_DELTA//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'max_epochs': $( if [ ! -z ${VIASH_PAR_MAX_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_MAX_EPOCHS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'reduce_lr_on_plateau': $( if [ ! -z ${VIASH_PAR_REDUCE_LR_ON_PLATEAU+x} ]; then echo "r'${VIASH_PAR_REDUCE_LR_ON_PLATEAU//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'lr_factor': $( if [ ! -z ${VIASH_PAR_LR_FACTOR+x} ]; then echo "float(r'${VIASH_PAR_LR_FACTOR//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'lr_patience': $( if [ ! -z ${VIASH_PAR_LR_PATIENCE+x} ]; then echo "float(r'${VIASH_PAR_LR_PATIENCE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+  'output_model': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_obs_predictions': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PREDICTIONS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_obs_probability': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PROBABILITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_obsm_scanvi_embedding': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBSM_SCANVI_EMBEDDING+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBSM_SCANVI_EMBEDDING//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'unknown_celltype': $( if [ ! -z ${VIASH_PAR_UNKNOWN_CELLTYPE+x} ]; then echo "r'${VIASH_PAR_UNKNOWN_CELLTYPE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3437,85 +3553,131 @@ dep = {
   
 }
 
-### VIASH END
-
-import sys
+## VIASH END
 
 sys.path.append(meta["resources_dir"])
-
-from subset_vars import subset_vars
-from set_var_index import set_var_index
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
 from setup_logger import setup_logger
+from cross_check_genes import cross_check_genes
+from set_var_index import set_var_index
 
 logger = setup_logger()
 
+if (
+    (not par["scvi_reference_model"])
+    and not (par["scanvi_reference_model"])
+    or (par["scvi_reference_model"] and par["scanvi_reference_model"])
+):
+    raise ValueError(
+        "Make sure to provide either an '--scvi_reference_model' or a '--scanvi_reference_model', but not both."
+    )
+
 
 def main():
-    logger.info("Reading input data...")
-    adata = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
+    logger.info("Reading the query data")
+    # Read in data
+    input_mdata = mu.read_h5mu(par["input"])
+    input_adata = input_mdata.mod[par["modality"]]
+    input_modality = input_adata.copy()
+    # scANVI requires query and reference gene names to be equivalent
+    input_modality = set_var_index(input_modality, par["var_input_gene_names"])
 
-    if par["var_input"]:
-        # Subset to HVG
-        adata_subset = subset_vars(adata, subset_col=par["var_input"]).copy()
-    else:
-        adata_subset = adata.copy()
+    if par["scanvi_reference_model"]:
+        logger.info(
+            f"Loading the pretrained scANVI model from {par['scanvi_reference_model']} and updating it with the query data {par['input']}"
+        )
+        scanvi_query = scvi.model.SCANVI.load_query_data(
+            input_modality,
+            par["scanvi_reference_model"],
+            freeze_classifier=True,
+            inplace_subset_query_vars=True,
+        )
 
-    # Sanitize gene names and set as index of the AnnData object
-    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
+    elif par["scvi_reference_model"]:
+        logger.info("Reading in the reference model and associated reference data")
+        scvi_reference_model = scvi.model.SCVI.load(par["scvi_reference_model"])
+        reference = scvi_reference_model.adata
 
-    logger.info(f"Loading pre-trained scVI model from {par['scvi_model']}")
-    scvi_model = scvi.model.SCVI.load(
-        par["scvi_model"],
-        adata_subset,
-        accelerator="auto",
-        device="auto",
-    )
+        logger.info("Alligning genes in reference and query dataset")
+        # scANVI requires query and reference gene names to be equivalent
+        reference = set_var_index(reference)
+        # Subset query dataset based on genes present in reference
+        common_ens_ids = cross_check_genes(
+            input_modality.var.index,
+            reference.var.index,
+            min_gene_overlap=par["input_reference_gene_overlap"],
+        )
+        input_modality = input_modality[:, common_ens_ids]
 
-    logger.info("Instantiating scANVI model from scVI model...")
-    vae_uns = scvi.model.SCANVI.from_scvi_model(
-        scvi_model,
-        unlabeled_category=par["unlabeled_category"],
-        labels_key=par["obs_labels"],
-        adata=adata_subset,
-    )
+        logger.info("Instantiating scANVI model from the scVI model")
+        scanvi_ref = scvi.model.SCANVI.from_scvi_model(
+            scvi_reference_model,
+            unlabeled_category=par["unknown_celltype"],
+            labels_key=scvi_reference_model.adata_manager._registry["setup_args"][
+                "labels_key"
+            ],
+        )
 
-    plan_kwargs = {
-        "reduce_lr_on_plateau": par["reduce_lr_on_plateau"],
-        "lr_patience": par["lr_patience"],
-        "lr_factor": par["lr_factor"],
+        reference_plan_kwargs = {
+            "lr": par["reference_learning_rate"],
+            "reduce_lr_on_plateau": par["reference_reduce_lr_on_plateau"],
+            "lr_patience": par["reference_lr_patience"],
+            "lr_factor": par["reference_lr_factor"],
+        }
+
+        logger.info("Training scANVI model on reference data with celltype labels")
+
+        scanvi_ref.train(
+            train_size=par["reference_train_size"],
+            max_epochs=par["reference_max_epochs"],
+            early_stopping=par["reference_early_stopping"],
+            early_stopping_patience=par["reference_early_stopping_patience"],
+            plan_kwargs=reference_plan_kwargs,
+            check_val_every_n_epoch=1,
+            accelerator="auto",
+        )
+
+        logger.info(f"Updating scANVI model with query data {par['input']}")
+        scvi.model.SCANVI.prepare_query_anndata(
+            input_modality, scanvi_ref, inplace=True
+        )
+        scanvi_query = scvi.model.SCANVI.load_query_data(input_modality, scanvi_ref)
+
+    logger.info("Training scANVI model with query data")
+    query_plan_kwargs = {
+        "lr": par["query_learning_rate"],
+        "reduce_lr_on_plateau": par["query_reduce_lr_on_plateau"],
+        "lr_patience": par["query_lr_patience"],
+        "lr_factor": par["query_lr_factor"],
     }
 
-    logger.info("Training scANVI model...")
-    # Train the model
-    vae_uns.train(
-        max_epochs=par["max_epochs"],
-        early_stopping=par["early_stopping"],
-        early_stopping_monitor=par["early_stopping_monitor"],
-        early_stopping_patience=par["early_stopping_patience"],
-        early_stopping_min_delta=par["early_stopping_min_delta"],
-        plan_kwargs=plan_kwargs,
+    scanvi_query.train(
+        train_size=par["query_train_size"],
+        max_epochs=par["query_max_epochs"],
+        early_stopping=par["query_early_stopping"],
+        early_stopping_patience=par["query_early_stopping_patience"],
+        plan_kwargs=query_plan_kwargs,
         check_val_every_n_epoch=1,
         accelerator="auto",
     )
-    # Note: train_size=1.0 should give better results, but then can't do early_stopping on validation set
 
-    logger.info("Performing scANVI integration...")
-    # Get the latent output
-    adata.obsm[par["obsm_output"]] = vae_uns.get_latent_representation()
-
-    logger.info("Performing scANVI prediction...")
-    adata.obs[par["obs_output_predictions"]] = vae_uns.predict()
-    adata.obs[par["obs_output_probabilities"]] = np.max(
-        vae_uns.predict(soft=True), axis=1
+    logger.info("Adding latent representation to query data")
+    input_adata.obsm[par["output_obsm_scanvi_embedding"]] = (
+        scanvi_query.get_latent_representation()
     )
 
-    logger.info("Writing output data...")
-    write_h5ad_to_h5mu_with_compression(
-        par["output"], par["input"], par["modality"], adata, par["output_compression"]
+    logger.info("Running predictions on query data")
+    input_adata.obs[par["output_obs_predictions"]] = scanvi_query.predict(
+        input_modality
     )
+    input_adata.obs[par["output_obs_probability"]] = np.max(
+        scanvi_query.predict(input_modality, soft=True), axis=1
+    )
+
+    logger.info("Saving output and model")
+    input_mdata.write_h5mu(par["output"], compression=par["output_compression"])
+
     if par["output_model"]:
-        vae_uns.save(par["output_model"], overwrite=True)
+        scanvi_query.save(par["output_model"], overwrite=True)
 
 
 if __name__ == "__main__":
@@ -3884,10 +4046,10 @@ meta["defaults"] = [
     "tag" : "integration_build"
   },
   "label" : [
-    "midcpu",
-    "midmem",
-    "gpu",
-    "highdisk"
+    "highcpu",
+    "highmem",
+    "highdisk",
+    "gpu"
   ],
   "tag" : "$id"
 }'''),
