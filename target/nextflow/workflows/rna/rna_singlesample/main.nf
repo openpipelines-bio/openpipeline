@@ -3035,52 +3035,12 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        },
-        {
-          "type" : "double",
-          "name" : "--min_fraction_ribo",
-          "description" : "Minimum fraction of UMIs that are ribosomal. Requires --obs_name_ribosomal_fraction.",
-          "example" : [
-            0.0
-          ],
-          "required" : false,
-          "min" : 0.0,
-          "max" : 1.0,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "double",
-          "name" : "--max_fraction_ribo",
-          "description" : "Maximum fraction of UMIs that are ribosomal. Requires --obs_name_ribosomal_fraction.\n",
-          "example" : [
-            0.2
-          ],
-          "required" : false,
-          "min" : 0.0,
-          "max" : 1.0,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
         }
       ]
     },
     {
-      "name" : "Mitochondrial & Ribosomal Gene Detection",
+      "name" : "Mitochondrial gene detection",
       "arguments" : [
-        {
-          "type" : "string",
-          "name" : "--var_gene_names",
-          "description" : ".var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as mitochondrial or ribosomal genes, respectively.  \n",
-          "example" : [
-            "gene_symbol"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
         {
           "type" : "string",
           "name" : "--var_name_mitochondrial_genes",
@@ -3101,10 +3061,10 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--mitochondrial_gene_regex",
-          "description" : "Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
-          "default" : [
-            "^[mM][tT]-"
+          "name" : "--var_gene_names",
+          "description" : ".var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex will be identified\nas a mitochondrial gene.\n",
+          "example" : [
+            "gene_symbol"
           ],
           "required" : false,
           "direction" : "input",
@@ -3113,28 +3073,10 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--var_name_ribosomal_genes",
-          "description" : "In which .var slot to store a boolean array corresponding the ribosomal genes.\n",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--obs_name_ribosomal_fraction",
-          "description" : "When specified, write the fraction of counts originating from ribosomal genes \n(based on --ribosomal_gene_regex) to an .obs column with the specified name.\nRequires --var_name_ribosomal_genes.\n",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--ribosomal_gene_regex",
-          "description" : "Regex string that identifies ribosomal genes from --var_gene_names.\nBy default will detect human and mouse ribosomal genes from a gene symbol.\n",
+          "name" : "--mitochondrial_gene_regex",
+          "description" : "Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
           "default" : [
-            "^[Mm]?[Rr][Pp][LlSs]"
+            "^[mM][tT]-"
           ],
           "required" : false,
           "direction" : "input",
@@ -3304,7 +3246,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample",
     "viash_version" : "0.9.0",
-    "git_commit" : "6e6bd03b24467175debba75c65c43624145cef9e",
+    "git_commit" : "10d71bee7e657a93a7b2f3f8bd0356b2f2172673",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3358,7 +3300,7 @@ workflow run_wf {
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
-    // Check for correctness of mitochondrial and ribosomal gene detection arguments
+    // Check for correctness of mitochondrial gene detection arguments
     | map { id, state ->
       def new_state = [:]
       if (state.obs_name_mitochondrial_fraction && !state.var_name_mitochondrial_genes) {
@@ -3370,22 +3312,15 @@ workflow run_wf {
       if ((state.min_fraction_mito != null || state.max_fraction_mito != null) && !state.var_name_mitochondrial_genes) {
         throw new RuntimeException("Enabling --min_fraction_mito or --max_fraction_mito requires --var_name_mitochondrial_genes.")
       }
-      if (state.var_gene_names && !state.var_name_mitochondrial_genes && !state.var_name_ribosomal_genes) {
-        System.err.println("Warning: --var_gene_names is only required for mitochondrial gene detection and does nothing while 
-                            not also setting --var_name_mitochondrial_genes or --var_name_ribosomal_genes.")
+      if (state.var_gene_names && !state.var_name_mitochondrial_genes) {
+        System.err.println("Warning: --var_gene_names is set, but not --var_name_mitochondrial_genes. \
+                           --var_gene_names is only required for mitochondrial gene detection and does \
+                           nothing while not also setting --var_name_mitochondrial_genes")
       }
-      if (state.mitochondrial_gene_regex && !state.var_name_mitochondrial_genes && !state.var_name_ribosomal_genes) {
-        System.err.println("Warning: --mitochondrial_gene_regex is only required for mitochondrial gene detection and does 
-                            nothing while not also setting --var_name_mitochondrial_genes or --var_name_ribosomal_genes.")
-      }
-      if (state.obs_name_ribosomal_fraction && !state.var_name_ribosomal_genes) {
-        throw new RuntimeException("Using --obs_name_ribosomal_fraction requires --var_name_ribosomal_genes.")
-      }
-      if (!state.obs_name_ribosomal_fraction && state.var_name_ribosomal_genes) {
-        new_state.obs_name_ribosomal_fraction = "fraction_${state.var_name_ribosomal_genes}"
-      }
-      if ((state.min_fraction_ribo != null || state.max_fraction_ribo != null) && !state.var_name_ribosomal_genes) {
-        throw new RuntimeException("Enabling --min_fraction_ribo or --max_fraction_ribo requires --var_name_ribosomal_genes.")
+      if (state.mitochondrial_gene_regex && !state.var_name_mitochondrial_genes) {
+        System.err.println("Warning: --mitochondrial_gene_regex is set, but not --var_name_mitochondrial_genes. \
+                           --mitochondrial_gene_regex is only required for mitochondrial gene detection and does \
+                           nothing while not also setting --var_name_mitochondrial_genes")
       }
       [id, state + new_state]
     }
@@ -3428,22 +3363,6 @@ workflow run_wf {
           ]
         }
 
-        if (state.var_name_ribosomal_genes) {
-          // Check if user has defined var columns to calculate metrics
-          def new_var_qc_metrics = state.var_qc_metrics != null ? state.var_qc_metrics : []
-          assert new_var_qc_metrics instanceof List
-          // Add the ribosomal genes var column to the columns to calculate statistics for if set.
-          new_var_qc_metrics = ((new_var_qc_metrics as Set) + [state.var_name_ribosomal_genes]) as List
-          
-          args += [
-            "var_qc_metrics": new_var_qc_metrics,
-            "obs_name_ribosomal_fraction": state.obs_name_ribosomal_fraction,
-            "var_gene_names": state.var_gene_names,
-            "var_name_ribosomal_genes": state.var_name_ribosomal_genes,
-            "ribosomal_gene_regex": state.ribosomal_gene_regex
-          ]
-        }
-
         return args
       },
       toState: ["input": "output"]
@@ -3451,26 +3370,13 @@ workflow run_wf {
     | delimit_fraction.run(
       runIf: {id, state -> state.var_name_mitochondrial_genes},
       fromState: {id, state -> 
-      [
-        "input": state.input,
-        "obs_name_filter": "filter_mitochondrial",
-        "min_fraction": state.min_fraction_mito,
-        "max_fraction": state.max_fraction_mito,
-        "obs_fraction_column": state.obs_name_mitochondrial_fraction,
-      ]
-      },
-      toState: ["input": "output"]
-    )
-    | delimit_fraction.run(
-      runIf: {id, state -> state.var_name_ribosomal_genes},
-      fromState: {id, state -> 
-      [
-        "input": state.input,
-        "obs_name_filter": "filter_ribosomal",
-        "min_fraction": state.min_fraction_ribo,
-        "max_fraction": state.max_fraction_ribo,
-        "obs_fraction_column": state.obs_name_ribosomal_fraction,
-      ]
+        [
+          "input": state.input,
+          "obs_name_filter": "filter_mitochondrial",
+          "min_fraction": state.min_fraction_mito,
+          "max_fraction": state.max_fraction_mito,
+          "obs_fraction_column": state.obs_name_mitochondrial_fraction,
+        ]
       },
       toState: ["input": "output"]
     )
@@ -3504,9 +3410,6 @@ workflow run_wf {
         def obs_filter = ["filter_with_counts"]
         if (state.var_name_mitochondrial_genes) {
           obs_filter += ["filter_mitochondrial"]
-        }
-        if (state.var_name_ribosomal_genes) {
-          obs_filter += ["filter_ribosomal"]
         }
         stateMapping += ["obs_filter": obs_filter]
         return stateMapping

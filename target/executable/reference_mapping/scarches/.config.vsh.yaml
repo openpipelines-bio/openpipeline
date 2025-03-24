@@ -1,8 +1,10 @@
 name: "scarches"
-namespace: "integrate"
+namespace: "reference_mapping"
 version: "integration_build"
 authors:
 - name: "Vladimir Shitov"
+  roles:
+  - "author"
   info:
     role: "Contributor"
     links:
@@ -14,8 +16,22 @@ authors:
     - name: "Helmholtz Munich"
       href: "https://www.helmholtz-munich.de"
       role: "PhD Candidate"
+- name: "Dorien Roosen"
+  roles:
+  - "maintainer"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "dorien@data-intuitive.com"
+      github: "dorien-er"
+      linkedin: "dorien-roosen"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Scientist"
 argument_groups:
 - name: "Inputs"
+  description: "Arguments related to the input (query) dataset"
   arguments:
   - type: "file"
     name: "--input"
@@ -30,6 +46,14 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
+    name: "--layer"
+    description: "Layer to be used for scArches, if .X is not to be used."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
     name: "--modality"
     info: null
     default:
@@ -38,27 +62,52 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "file"
-    name: "--reference"
-    alternatives:
-    - "-r"
-    description: "Path to the directory with reference model or a web link. For HLCA\
-      \ use https://zenodo.org/record/6337966/files/HLCA_reference_model.zip"
+  - type: "string"
+    name: "--input_obs_batch"
+    description: "Name of the .obs column with batch information."
     info: null
-    must_exist: true
-    create_parent: true
-    required: true
+    required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--dataset_name"
-    description: "Name of query dataset to use as a batch name. If not set, name of\
-      \ the input file is used"
+    name: "--input_obs_label"
+    description: "Name of the .obs column with celltype information."
     info: null
-    default:
-    - "test_dataset"
     required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--input_var_gene_names"
+    description: "Name of the .var column with gene names, if the var .index is not\
+      \ to be used."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--input_obs_size_factor"
+    description: "Key in adata.obs for size factor information. Instead of using library\
+      \ size as a size factor,\nthe provided size factor column will be used as offset\
+      \ in the mean of the likelihood.\nAssumed to be on linear scale.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Reference"
+  arguments:
+  - type: "file"
+    name: "--reference"
+    alternatives:
+    - "-r"
+    description: "Path to the directory with reference model or a web link."
+    info: null
+    must_exist: true
+    create_parent: true
+    required: true
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -107,6 +156,28 @@ argument_groups:
     info: null
     default:
     - "X_integrated_scanvi"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_output_predictions"
+    description: "In which .obs slot to store the resulting label predictions. Only\
+      \ relevant if a scANVI model was provided."
+    info: null
+    default:
+    - "scanvi_pred"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_output_probabilities"
+    description: "In which .obs slot to store the probabilities of the label predictions.\
+      \ Only relevant if a scANVI model was provided."
+    info: null
+    default:
+    - "scanvi_proba"
     required: false
     direction: "input"
     multiple: false
@@ -214,6 +285,8 @@ resources:
 - type: "file"
   path: "compress_h5mu.py"
 - type: "file"
+  path: "set_var_index.py"
+- type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
 description: "Performs reference mapping with scArches"
@@ -221,6 +294,10 @@ test_resources:
 - type: "python_script"
   path: "test.py"
   is_executable: true
+- type: "file"
+  path: "scanvi_model"
+- type: "file"
+  path: "scvi_model"
 - type: "file"
   path: "pbmc_1k_protein_v3_mms.h5mu"
 - type: "file"
@@ -327,13 +404,13 @@ engines:
   entrypoint: []
   cmd: null
 build_info:
-  config: "src/integrate/scarches/config.vsh.yaml"
+  config: "src/reference_mapping/scarches/config.vsh.yaml"
   runner: "executable"
   engine: "docker"
-  output: "target/executable/integrate/scarches"
-  executable: "target/executable/integrate/scarches/scarches"
+  output: "target/executable/reference_mapping/scarches"
+  executable: "target/executable/reference_mapping/scarches/scarches"
   viash_version: "0.9.0"
-  git_commit: "6e6bd03b24467175debba75c65c43624145cef9e"
+  git_commit: "10d71bee7e657a93a7b2f3f8bd0356b2f2172673"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

@@ -3150,7 +3150,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/harmonypy",
     "viash_version" : "0.9.0",
-    "git_commit" : "6e6bd03b24467175debba75c65c43624145cef9e",
+    "git_commit" : "10d71bee7e657a93a7b2f3f8bd0356b2f2172673",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

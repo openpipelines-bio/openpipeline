@@ -170,45 +170,8 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "double"
-    name: "--min_fraction_ribo"
-    description: "Minimum fraction of UMIs that are ribosomal. Requires --obs_name_ribosomal_fraction."
-    info: null
-    example:
-    - 0.0
-    required: false
-    min: 0.0
-    max: 1.0
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "double"
-    name: "--max_fraction_ribo"
-    description: "Maximum fraction of UMIs that are ribosomal. Requires --obs_name_ribosomal_fraction.\n"
-    info: null
-    example:
-    - 0.2
-    required: false
-    min: 0.0
-    max: 1.0
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-- name: "Mitochondrial & Ribosomal Gene Detection"
+- name: "Mitochondrial gene detection"
   arguments:
-  - type: "string"
-    name: "--var_gene_names"
-    description: ".var column name to be used to detect mitochondrial/ribosomal genes\
-      \ instead of .var_names (default if not set).\nGene names matching with the\
-      \ regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will\
-      \ be \nidentified as mitochondrial or ribosomal genes, respectively.  \n"
-    info: null
-    example:
-    - "gene_symbol"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
   - type: "string"
     name: "--var_name_mitochondrial_genes"
     description: "In which .var slot to store a boolean array corresponding the mitochondrial\
@@ -229,42 +192,24 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
+    name: "--var_gene_names"
+    description: ".var column name to be used to detect mitochondrial genes instead\
+      \ of .var_names (default if not set).\nGene names matching with the regex value\
+      \ from --mitochondrial_gene_regex will be identified\nas a mitochondrial gene.\n"
+    info: null
+    example:
+    - "gene_symbol"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
     name: "--mitochondrial_gene_regex"
     description: "Regex string that identifies mitochondrial genes from --var_gene_names.\n\
       By default will detect human and mouse mitochondrial genes from a gene symbol.\n"
     info: null
     default:
     - "^[mM][tT]-"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--var_name_ribosomal_genes"
-    description: "In which .var slot to store a boolean array corresponding the ribosomal\
-      \ genes.\n"
-    info: null
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--obs_name_ribosomal_fraction"
-    description: "When specified, write the fraction of counts originating from ribosomal\
-      \ genes \n(based on --ribosomal_gene_regex) to an .obs column with the specified\
-      \ name.\nRequires --var_name_ribosomal_genes.\n"
-    info: null
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--ribosomal_gene_regex"
-    description: "Regex string that identifies ribosomal genes from --var_gene_names.\n\
-      By default will detect human and mouse ribosomal genes from a gene symbol.\n"
-    info: null
-    default:
-    - "^[Mm]?[Rr][Pp][LlSs]"
     required: false
     direction: "input"
     multiple: false
@@ -384,7 +329,7 @@ build_info:
   output: "target/nextflow/workflows/rna/rna_singlesample"
   executable: "target/nextflow/workflows/rna/rna_singlesample/main.nf"
   viash_version: "0.9.0"
-  git_commit: "6e6bd03b24467175debba75c65c43624145cef9e"
+  git_commit: "10d71bee7e657a93a7b2f3f8bd0356b2f2172673"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/filter/filter_with_counts"

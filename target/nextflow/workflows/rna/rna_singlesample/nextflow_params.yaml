@@ -14,17 +14,12 @@ input: # please fill in - example: "dataset.h5mu"
 # min_cells_per_gene: 3
 # min_fraction_mito: 0.0
 # max_fraction_mito: 0.2
-# min_fraction_ribo: 0.0
-# max_fraction_ribo: 0.2
 
-# Mitochondrial & Ribosomal Gene Detection
-# var_gene_names: "gene_symbol"
+# Mitochondrial gene detection
 # var_name_mitochondrial_genes: "foo"
 # obs_name_mitochondrial_fraction: "foo"
+# var_gene_names: "gene_symbol"
 mitochondrial_gene_regex: "^[mM][tT]-"
-# var_name_ribosomal_genes: "foo"
-# obs_name_ribosomal_fraction: "foo"
-ribosomal_gene_regex: "^[Mm]?[Rr][Pp][LlSs]"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

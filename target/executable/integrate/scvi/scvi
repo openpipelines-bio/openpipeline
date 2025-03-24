@@ -199,6 +199,10 @@ function ViashHelp {
   echo "        default: sample_id"
   echo "        Column name discriminating between your batches."
   echo ""
+  echo "    --var_gene_names"
+  echo "        type: string"
+  echo "        .var column containing gene names. By default, use the index."
+  echo ""
   echo "    --var_input"
   echo "        type: string"
   echo "        .var column containing highly variable genes. By default, do not subset"
@@ -680,9 +684,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Malte D. Luecken, Dries Schaumont, Matthias Beyens"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scvi"
-LABEL org.opencontainers.image.created="2025-03-24T02:57:45Z"
+LABEL org.opencontainers.image.created="2025-03-24T17:01:51Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6e6bd03b24467175debba75c65c43624145cef9e"
+LABEL org.opencontainers.image.revision="10d71bee7e657a93a7b2f3f8bd0356b2f2172673"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -870,6 +874,17 @@ while [[ $# -gt 0 ]]; do
         --obs_batch=*)
             [ -n "$VIASH_PAR_OBS_BATCH" ] && ViashError Bad arguments for option \'--obs_batch=*\': \'$VIASH_PAR_OBS_BATCH\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBS_BATCH=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --var_gene_names)
+            [ -n "$VIASH_PAR_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--var_gene_names\': \'$VIASH_PAR_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_GENE_NAMES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --var_gene_names. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --var_gene_names=*)
+            [ -n "$VIASH_PAR_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--var_gene_names=*\': \'$VIASH_PAR_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --var_input)
@@ -1868,6 +1883,7 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_batch': $( if [ ! -z ${VIASH_PAR_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_labels': $( if [ ! -z ${VIASH_PAR_OBS_LABELS+x} ]; then echo "r'${VIASH_PAR_OBS_LABELS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_size_factor': $( if [ ! -z ${VIASH_PAR_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_OBS_SIZE_FACTOR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1930,6 +1946,7 @@ import sys
 sys.path.append(meta["resources_dir"])
 
 from subset_vars import subset_vars
+from set_var_index import set_var_index
 from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 
@@ -1963,6 +1980,9 @@ def main():
     else:
         adata_subset = adata.copy()
 
+    # Sanitize gene names and set as index of the AnnData object
+    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
+    
     check_validity_anndata(
         adata_subset,
         par["input_layer"],
@@ -1970,6 +1990,7 @@ def main():
         par["n_obs_min_count"],
         par["n_var_min_count"],
     )
+
     # Set up the data
     scvi.model.SCVI.setup_anndata(
         adata_subset,
