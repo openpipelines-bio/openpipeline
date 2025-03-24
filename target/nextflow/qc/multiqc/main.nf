@@ -2870,11 +2870,6 @@ meta = [
     {
       "type" : "file",
       "path" : "/resources_test/10x_5k_anticmv/fastqc/"
-    },
-    {
-      "type" : "file",
-      "path" : "/src/base/openpipelinetestutils",
-      "dest" : "openpipelinetestutils"
     }
   ],
   "status" : "enabled",
@@ -3005,9 +3000,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/multiqc",
     "viash_version" : "0.9.0",
-    "git_commit" : "76af5981df4d39a75e44d5f72535bdf514831472",
+    "git_commit" : "a3b2a33d96b95b4f7ca56c249f75f7eba8c7f171",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2017-g76af5981df4"
+    "git_tag" : "0.2.0-2018-ga3b2a33d96b"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3024,7 +3019,7 @@ meta = [
     "source" : "/home/runner/work/openpipeline/openpipeline/src",
     "target" : "/home/runner/work/openpipeline/openpipeline/target",
     "config_mods" : [
-      ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n.resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n.runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script := 'includeConfig(\\"nextflow_labels.config\\")'",
+      ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n.runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script := 'includeConfig(\\"nextflow_labels.config\\")'",
       ".version := \\"scvi-knn-annotation_build\\"",
       ".engines[.type == 'docker'].target_tag := 'scvi-knn-annotation_build'"
     ],

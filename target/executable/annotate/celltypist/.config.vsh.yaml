@@ -53,8 +53,8 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--input_layer"
-    description: "The layer in the input data to be used for cell type annotation\
-      \ if .X is not to be used."
+    description: "The layer in the input data containing log normalized counts to\
+      \ be used for cell type annotation if .X is not to be used."
     info: null
     required: false
     direction: "input"
@@ -118,13 +118,6 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "boolean_true"
-    name: "--check_expression"
-    description: "Whether to check the expression of the reference dataset to the\
-      \ format reccomended by CellTypist.\nCellTypist requires data to be log-normalized\
-      \ to 10000 counts per cell.\n"
-    info: null
-    direction: "input"
   - type: "string"
     name: "--reference_var_gene_names"
     description: "The name of the adata var column in the reference data containing\
@@ -292,9 +285,6 @@ test_resources:
   path: "annotation_test_data"
 - type: "file"
   path: "pbmc_1k_protein_v3"
-- type: "file"
-  path: "openpipelinetestutils"
-  dest: "openpipelinetestutils"
 info: null
 status: "enabled"
 links:
@@ -403,18 +393,16 @@ engines:
       nelse:  exit(1)\")"
     upgrade: true
   test_setup:
-  - type: "docker"
-    copy:
-    - "openpipelinetestutils /opt/openpipelinetestutils"
-  - type: "python"
-    user: false
+  - type: "apt"
     packages:
-    - "/opt/openpipelinetestutils"
-    upgrade: true
+    - "git"
+    interactive: false
   - type: "python"
     user: false
     packages:
     - "viashpy==0.8.0"
+    github:
+    - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -425,9 +413,9 @@ build_info:
   output: "target/executable/annotate/celltypist"
   executable: "target/executable/annotate/celltypist/celltypist"
   viash_version: "0.9.0"
-  git_commit: "76af5981df4d39a75e44d5f72535bdf514831472"
+  git_commit: "a3b2a33d96b95b4f7ca56c249f75f7eba8c7f171"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-2017-g76af5981df4"
+  git_tag: "0.2.0-2018-ga3b2a33d96b"
 package_config:
   name: "openpipeline"
   info:
@@ -439,8 +427,7 @@ package_config:
   source: "src"
   target: "target"
   config_mods:
-  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
-    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
   - ".version := \"scvi-knn-annotation_build\""

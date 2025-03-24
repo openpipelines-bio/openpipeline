@@ -64,8 +64,8 @@
                 "input_layer_lognormalized": {
                 "type":
                 "string",
-                "description": "Type: `string`. The layer in the input (query) data containing lognormalized counts if ",
-                "help_text": "Type: `string`. The layer in the input (query) data containing lognormalized counts if .X is not to be used."
+                "description": "Type: `string`. The layer in the input (query) data containing log normalized counts if ",
+                "help_text": "Type: `string`. The layer in the input (query) data containing log normalized counts if .X is not to be used."
             
             }
     

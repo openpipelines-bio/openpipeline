@@ -1,7 +1,8 @@
 test_setup:
-  - type: docker
-    copy: ["openpipelinetestutils /opt/openpipelinetestutils"]
+  - type: apt
+    packages:
+      - git
   - type: python
-    packages: /opt/openpipelinetestutils
-  - type: python
-    __merge__: /src/base/requirements/viashpy.yaml
+    __merge__:
+      - /src/base/requirements/viashpy.yaml
+      - /src/base/requirements/openpipeline_testutils.yaml

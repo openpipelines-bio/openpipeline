@@ -18,7 +18,7 @@ reference_obs_target: # please fill in - example: "cell_type"
 reference_obs_batch_label: # please fill in - example: "sample"
 
 # HVG subset arguments
-n_hvg: 1200
+n_hvg: 2000
 
 # scVI integration options
 # scvi_early_stopping: true

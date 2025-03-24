@@ -2910,7 +2910,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--input_layer",
-          "description" : "Mudata layer (key from layers) to use as input data for HVG subsetting and binning; if not specified, X is used.\n",
+          "description" : "The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3109,6 +3109,22 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--hvg_flavor",
+          "description" : "Method to be used for identifying highly variable genes. \nNote that the default for this workflow (`cell_ranger`) is not the default method for scanpy hvg detection (`seurat`).\n",
+          "default" : [
+            "cell_ranger"
+          ],
+          "required" : false,
+          "choices" : [
+            "cell_ranger",
+            "seurat"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3209,11 +3225,6 @@ meta = [
     {
       "type" : "file",
       "path" : "/resources_test/scgpt"
-    },
-    {
-      "type" : "file",
-      "path" : "/src/base/openpipelinetestutils",
-      "dest" : "openpipelinetestutils"
     }
   ],
   "info" : {
@@ -3353,9 +3364,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_annotation",
     "viash_version" : "0.9.0",
-    "git_commit" : "76af5981df4d39a75e44d5f72535bdf514831472",
+    "git_commit" : "a3b2a33d96b95b4f7ca56c249f75f7eba8c7f171",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2017-g76af5981df4"
+    "git_tag" : "0.2.0-2018-ga3b2a33d96b"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3372,7 +3383,7 @@ meta = [
     "source" : "/home/runner/work/openpipeline/openpipeline/src",
     "target" : "/home/runner/work/openpipeline/openpipeline/target",
     "config_mods" : [
-      ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n.resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n.runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script := 'includeConfig(\\"nextflow_labels.config\\")'",
+      ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n.runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script := 'includeConfig(\\"nextflow_labels.config\\")'",
       ".version := \\"scvi-knn-annotation_build\\""
     ],
     "organization" : "openpipelines-bio",
@@ -3418,10 +3429,10 @@ workflow run_wf {
         "layer": "input_layer",
         "modality": "modality",
         "n_top_features": "n_hvg",
+        "flavor": "hvg_flavor"
       ],
       args: [
-        "var_name_filter": "scgpt_filter_with_hvg",
-        "flavor": "seurat_v3"
+        "var_name_filter": "scgpt_filter_with_hvg"
       ],
       toState: ["input": "output"]
     )

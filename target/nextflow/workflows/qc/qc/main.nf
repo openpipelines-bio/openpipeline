@@ -2895,12 +2895,12 @@ meta = [
       ]
     },
     {
-      "name" : "Gene Detection",
+      "name" : "Mitochondrial & Ribosomal Gene Detection",
       "arguments" : [
         {
           "type" : "string",
           "name" : "--var_gene_names",
-          "description" : ".var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as a mitochondrial or ribosomal genes, respectively.\n",
+          "description" : ".var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as mitochondrial or ribosomal genes, respectively.\n",
           "example" : [
             "gene_symbol"
           ],
@@ -2908,12 +2908,7 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "Mitochondrial Gene Detection",
-      "arguments" : [
+        },
         {
           "type" : "string",
           "name" : "--var_name_mitochondrial_genes",
@@ -2943,12 +2938,7 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "Ribosomal Gene Detection",
-      "arguments" : [
+        },
         {
           "type" : "string",
           "name" : "--var_name_ribosomal_genes",
@@ -2961,7 +2951,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--obs_name_ribosomal_fraction",
-          "description" : ".Obs slot to store the fraction of reads found to be ribosomal. Defaults to 'fraction_' suffixed by the value of --var_name_ribosomal_genes\n",
+          "description" : "When specified, write the fraction of counts originating from ribosomal genes \n(based on --ribosomal_gene_regex) to an .obs column with the specified name.\nRequires --var_name_ribosomal_genes.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3137,11 +3127,6 @@ meta = [
     {
       "type" : "file",
       "path" : "/resources_test/pbmc_1k_protein_v3"
-    },
-    {
-      "type" : "file",
-      "path" : "/src/base/openpipelinetestutils",
-      "dest" : "openpipelinetestutils"
     }
   ],
   "info" : {
@@ -3255,9 +3240,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc",
     "viash_version" : "0.9.0",
-    "git_commit" : "76af5981df4d39a75e44d5f72535bdf514831472",
+    "git_commit" : "a3b2a33d96b95b4f7ca56c249f75f7eba8c7f171",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2017-g76af5981df4"
+    "git_tag" : "0.2.0-2018-ga3b2a33d96b"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3274,7 +3259,7 @@ meta = [
     "source" : "/home/runner/work/openpipeline/openpipeline/src",
     "target" : "/home/runner/work/openpipeline/openpipeline/target",
     "config_mods" : [
-      ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n.resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n.runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script := 'includeConfig(\\"nextflow_labels.config\\")'",
+      ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n.runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script := 'includeConfig(\\"nextflow_labels.config\\")'",
       ".version := \\"scvi-knn-annotation_build\\""
     ],
     "organization" : "openpipelines-bio",

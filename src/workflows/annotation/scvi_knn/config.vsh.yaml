@@ -97,7 +97,7 @@ argument_groups:
     arguments:
       - name: "--n_hvg"
         type: integer
-        default: 1200
+        default: 2000
         description: |
           Number of highly variable genes to subset for.
 
@@ -208,6 +208,8 @@ dependencies:
   - name: feature_annotation/align_query_reference
   - name: feature_annotation/highly_variable_features_scanpy
   - name: transform/delete_layer
+  - name: workflows/multiomics/split_modalities
+  - name: dataflow/merge
 
 resources:
   - type: nextflow_script

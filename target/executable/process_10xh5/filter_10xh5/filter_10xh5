@@ -488,14 +488,16 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM eddelbuettel/r2u:22.04
+FROM eddelbuettel/r2u:24.04
 ENTRYPOINT []
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
+ENV RETICULATE_PYTHON=/usr/bin/python
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y libhdf5-dev python3-pip python3-dev python-is-python3 && \
   rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4" && \
+RUN pip install --user --upgrade pip && \
+  pip install --user --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4" && \
   python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
@@ -503,9 +505,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component process_10xh5 filter_10xh5"
-LABEL org.opencontainers.image.created="2025-02-21T07:46:39Z"
+LABEL org.opencontainers.image.created="2025-03-24T09:34:54Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="76af5981df4d39a75e44d5f72535bdf514831472"
+LABEL org.opencontainers.image.revision="a3b2a33d96b95b4f7ca56c249f75f7eba8c7f171"
 LABEL org.opencontainers.image.version="scvi-knn-annotation_build"
 
 VIASHDOCKER

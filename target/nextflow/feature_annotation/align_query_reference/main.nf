@@ -2876,7 +2876,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--input_layer_lognormalized",
-          "description" : "The layer in the input (query) data containing lognormalized counts if .X is not to be used.",
+          "description" : "The layer in the input (query) data containing log normalized counts if .X is not to be used.",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3257,11 +3257,6 @@ meta = [
     {
       "type" : "file",
       "path" : "/resources_test/annotation_test_data/TS_Blood_filtered.h5mu"
-    },
-    {
-      "type" : "file",
-      "path" : "/src/base/openpipelinetestutils",
-      "dest" : "openpipelinetestutils"
     }
   ],
   "status" : "enabled",
@@ -3380,24 +3375,20 @@ meta = [
       ],
       "test_setup" : [
         {
-          "type" : "docker",
-          "copy" : [
-            "openpipelinetestutils /opt/openpipelinetestutils"
-          ]
-        },
-        {
-          "type" : "python",
-          "user" : false,
+          "type" : "apt",
           "packages" : [
-            "/opt/openpipelinetestutils"
+            "git"
           ],
-          "upgrade" : true
+          "interactive" : false
         },
         {
           "type" : "python",
           "user" : false,
           "packages" : [
             "viashpy==0.8.0"
+          ],
+          "github" : [
+            "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
         }
@@ -3410,9 +3401,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/align_query_reference",
     "viash_version" : "0.9.0",
-    "git_commit" : "76af5981df4d39a75e44d5f72535bdf514831472",
+    "git_commit" : "a3b2a33d96b95b4f7ca56c249f75f7eba8c7f171",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2017-g76af5981df4"
+    "git_tag" : "0.2.0-2018-ga3b2a33d96b"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3429,7 +3420,7 @@ meta = [
     "source" : "/home/runner/work/openpipeline/openpipeline/src",
     "target" : "/home/runner/work/openpipeline/openpipeline/target",
     "config_mods" : [
-      ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n.resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n.runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script := 'includeConfig(\\"nextflow_labels.config\\")'",
+      ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n.runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script := 'includeConfig(\\"nextflow_labels.config\\")'",
       ".version := \\"scvi-knn-annotation_build\\"",
       ".engines[.type == 'docker'].target_tag := 'scvi-knn-annotation_build'"
     ],

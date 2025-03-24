@@ -258,10 +258,10 @@
                 "n_hvg": {
                 "type":
                 "integer",
-                "description": "Type: `integer`, default: `1200`. Number of highly variable genes to subset for",
-                "help_text": "Type: `integer`, default: `1200`. Number of highly variable genes to subset for.\n"
+                "description": "Type: `integer`, default: `2000`. Number of highly variable genes to subset for",
+                "help_text": "Type: `integer`, default: `2000`. Number of highly variable genes to subset for.\n"
             ,
-                "default":1200
+                "default":2000
             }
     
 

@@ -104,9 +104,10 @@ argument_groups:
     multiple_sep: ";"
   - type: "double"
     name: "--theta"
-    description: "Diversity clustering penalty parameter. Specify for each variable\
-      \ in group.by.vars. theta=0 does not encourage any diversity. Larger values\
-      \ of theta result in more diverse clusters."
+    description: "Diversity clustering penalty parameter. Can be set as a single value\
+      \ for all batch observations or as multiple values, one for each observation\
+      \ in the batches defined by --obs_covariates. theta=0 does not encourage any\
+      \ diversity. Larger values of theta result in more diverse clusters."
     info: null
     default:
     - 2.0
@@ -144,9 +145,6 @@ test_resources:
   is_executable: true
 - type: "file"
   path: "pbmc_1k_protein_v3_mms.h5mu"
-- type: "file"
-  path: "openpipelinetestutils"
-  dest: "openpipelinetestutils"
 info: null
 status: "enabled"
 links:
@@ -246,18 +244,16 @@ engines:
       nelse:  exit(1)\")"
     upgrade: true
   test_setup:
-  - type: "docker"
-    copy:
-    - "openpipelinetestutils /opt/openpipelinetestutils"
-  - type: "python"
-    user: false
+  - type: "apt"
     packages:
-    - "/opt/openpipelinetestutils"
-    upgrade: true
+    - "git"
+    interactive: false
   - type: "python"
     user: false
     packages:
     - "viashpy==0.8.0"
+    github:
+    - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -268,9 +264,9 @@ build_info:
   output: "target/executable/integrate/harmonypy"
   executable: "target/executable/integrate/harmonypy/harmonypy"
   viash_version: "0.9.0"
-  git_commit: "76af5981df4d39a75e44d5f72535bdf514831472"
+  git_commit: "a3b2a33d96b95b4f7ca56c249f75f7eba8c7f171"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-2017-g76af5981df4"
+  git_tag: "0.2.0-2018-ga3b2a33d96b"
 package_config:
   name: "openpipeline"
   info:
@@ -282,8 +278,7 @@ package_config:
   source: "src"
   target: "target"
   config_mods:
-  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
-    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
   - ".version := \"scvi-knn-annotation_build\""

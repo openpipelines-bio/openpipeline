@@ -240,6 +240,30 @@ function ViashHelp {
   echo "        Name of the doublet scores column in the obs slot of the returned"
   echo "        object."
   echo ""
+  echo "    --expected_doublet_rate"
+  echo "        type: double"
+  echo "        min: 0.0"
+  echo "        max: 1.0"
+  echo "        The estimated fraction of doublets as from the experimental setup."
+  echo ""
+  echo "    --stdev_doublet_rate"
+  echo "        type: double"
+  echo "        min: 0.0"
+  echo "        Uncertainty in the expected doublet rate."
+  echo ""
+  echo "    --n_neighbors"
+  echo "        type: integer"
+  echo "        min: 0"
+  echo "        Number of neighbors used to construct the KNN classifier of observed"
+  echo "        transcriptomes"
+  echo "        and simulated doublets."
+  echo ""
+  echo "    --sim_doublet_ratio"
+  echo "        type: double"
+  echo "        min: 0.0"
+  echo "        Number of doublets to simulate relative to the number of observed"
+  echo "        transcriptomes."
+  echo ""
   echo "    --min_counts"
   echo "        type: integer"
   echo "        default: 2"
@@ -561,9 +585,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_scrublet"
-LABEL org.opencontainers.image.created="2025-02-21T07:46:31Z"
+LABEL org.opencontainers.image.created="2025-03-24T09:34:53Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="76af5981df4d39a75e44d5f72535bdf514831472"
+LABEL org.opencontainers.image.revision="a3b2a33d96b95b4f7ca56c249f75f7eba8c7f171"
 LABEL org.opencontainers.image.version="scvi-knn-annotation_build"
 
 VIASHDOCKER
@@ -783,6 +807,50 @@ while [[ $# -gt 0 ]]; do
         --obs_name_doublet_score=*)
             [ -n "$VIASH_PAR_OBS_NAME_DOUBLET_SCORE" ] && ViashError Bad arguments for option \'--obs_name_doublet_score=*\': \'$VIASH_PAR_OBS_NAME_DOUBLET_SCORE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBS_NAME_DOUBLET_SCORE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --expected_doublet_rate)
+            [ -n "$VIASH_PAR_EXPECTED_DOUBLET_RATE" ] && ViashError Bad arguments for option \'--expected_doublet_rate\': \'$VIASH_PAR_EXPECTED_DOUBLET_RATE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EXPECTED_DOUBLET_RATE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --expected_doublet_rate. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --expected_doublet_rate=*)
+            [ -n "$VIASH_PAR_EXPECTED_DOUBLET_RATE" ] && ViashError Bad arguments for option \'--expected_doublet_rate=*\': \'$VIASH_PAR_EXPECTED_DOUBLET_RATE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EXPECTED_DOUBLET_RATE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --stdev_doublet_rate)
+            [ -n "$VIASH_PAR_STDEV_DOUBLET_RATE" ] && ViashError Bad arguments for option \'--stdev_doublet_rate\': \'$VIASH_PAR_STDEV_DOUBLET_RATE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_STDEV_DOUBLET_RATE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --stdev_doublet_rate. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --stdev_doublet_rate=*)
+            [ -n "$VIASH_PAR_STDEV_DOUBLET_RATE" ] && ViashError Bad arguments for option \'--stdev_doublet_rate=*\': \'$VIASH_PAR_STDEV_DOUBLET_RATE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_STDEV_DOUBLET_RATE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --n_neighbors)
+            [ -n "$VIASH_PAR_N_NEIGHBORS" ] && ViashError Bad arguments for option \'--n_neighbors\': \'$VIASH_PAR_N_NEIGHBORS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_NEIGHBORS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --n_neighbors. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --n_neighbors=*)
+            [ -n "$VIASH_PAR_N_NEIGHBORS" ] && ViashError Bad arguments for option \'--n_neighbors=*\': \'$VIASH_PAR_N_NEIGHBORS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_NEIGHBORS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --sim_doublet_ratio)
+            [ -n "$VIASH_PAR_SIM_DOUBLET_RATIO" ] && ViashError Bad arguments for option \'--sim_doublet_ratio\': \'$VIASH_PAR_SIM_DOUBLET_RATIO\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SIM_DOUBLET_RATIO="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --sim_doublet_ratio. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --sim_doublet_ratio=*)
+            [ -n "$VIASH_PAR_SIM_DOUBLET_RATIO" ] && ViashError Bad arguments for option \'--sim_doublet_ratio=*\': \'$VIASH_PAR_SIM_DOUBLET_RATIO\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SIM_DOUBLET_RATIO=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --min_counts)
@@ -1089,6 +1157,86 @@ if [[ -n "$VIASH_PAR_DO_SUBSET" ]]; then
     exit 1
   fi
 fi
+if [[ -n "$VIASH_PAR_EXPECTED_DOUBLET_RATE" ]]; then
+  if ! [[ "$VIASH_PAR_EXPECTED_DOUBLET_RATE" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--expected_doublet_rate' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if command -v bc &> /dev/null; then
+    if ! [[ `echo $VIASH_PAR_EXPECTED_DOUBLET_RATE '>=' 0.0 | bc` -eq 1 ]]; then
+      ViashError '--expected_doublet_rate' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  elif command -v awk &> /dev/null; then
+    if ! [[ `awk -v n1=$VIASH_PAR_EXPECTED_DOUBLET_RATE -v n2=0.0 'BEGIN { print (n1 >= n2) ? "1" : "0" }'` -eq 1 ]]; then
+      ViashError '--expected_doublet_rate' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  else
+    ViashWarning '--expected_doublet_rate' specifies a minimum value but the value was not verified as neither \'bc\' or \`awk\` are present on the system.
+  fi
+  if command -v bc &> /dev/null; then
+    if ! [[ `echo $VIASH_PAR_EXPECTED_DOUBLET_RATE '<=' 1.0 | bc` -eq 1 ]]; then
+      ViashError '--expected_doublet_rate' has to be less than or equal to 1.0. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  elif command -v awk &> /dev/null; then
+    if ! [[ `awk -v n1=$VIASH_PAR_EXPECTED_DOUBLET_RATE -v n2=1.0 'BEGIN { print (n1 <= n2) ? "1" : "0" }'` -eq 1 ]]; then
+      ViashError '--expected_doublet_rate' has be less than or equal to 1.0. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  else
+    ViashWarning '--expected_doublet_rate' specifies a maximum value but the value was not verified as neither \'bc\' or \'awk\' are present on the system.
+  fi
+fi
+if [[ -n "$VIASH_PAR_STDEV_DOUBLET_RATE" ]]; then
+  if ! [[ "$VIASH_PAR_STDEV_DOUBLET_RATE" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--stdev_doublet_rate' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if command -v bc &> /dev/null; then
+    if ! [[ `echo $VIASH_PAR_STDEV_DOUBLET_RATE '>=' 0.0 | bc` -eq 1 ]]; then
+      ViashError '--stdev_doublet_rate' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  elif command -v awk &> /dev/null; then
+    if ! [[ `awk -v n1=$VIASH_PAR_STDEV_DOUBLET_RATE -v n2=0.0 'BEGIN { print (n1 >= n2) ? "1" : "0" }'` -eq 1 ]]; then
+      ViashError '--stdev_doublet_rate' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  else
+    ViashWarning '--stdev_doublet_rate' specifies a minimum value but the value was not verified as neither \'bc\' or \`awk\` are present on the system.
+  fi
+fi
+if [[ -n "$VIASH_PAR_N_NEIGHBORS" ]]; then
+  if ! [[ "$VIASH_PAR_N_NEIGHBORS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--n_neighbors' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if [[ $VIASH_PAR_N_NEIGHBORS -lt 0 ]]; then
+    ViashError '--n_neighbors' has be more than or equal to 0. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_SIM_DOUBLET_RATIO" ]]; then
+  if ! [[ "$VIASH_PAR_SIM_DOUBLET_RATIO" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--sim_doublet_ratio' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if command -v bc &> /dev/null; then
+    if ! [[ `echo $VIASH_PAR_SIM_DOUBLET_RATIO '>=' 0.0 | bc` -eq 1 ]]; then
+      ViashError '--sim_doublet_ratio' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  elif command -v awk &> /dev/null; then
+    if ! [[ `awk -v n1=$VIASH_PAR_SIM_DOUBLET_RATIO -v n2=0.0 'BEGIN { print (n1 >= n2) ? "1" : "0" }'` -eq 1 ]]; then
+      ViashError '--sim_doublet_ratio' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  else
+    ViashWarning '--sim_doublet_ratio' specifies a minimum value but the value was not verified as neither \'bc\' or \`awk\` are present on the system.
+  fi
+fi
 if [[ -n "$VIASH_PAR_MIN_COUNTS" ]]; then
   if ! [[ "$VIASH_PAR_MIN_COUNTS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError '--min_counts' has to be an integer. Use "--help" to get more information on the parameters.
@@ -1306,6 +1454,10 @@ par = {
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'do_subset': $( if [ ! -z ${VIASH_PAR_DO_SUBSET+x} ]; then echo "r'${VIASH_PAR_DO_SUBSET//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'obs_name_doublet_score': $( if [ ! -z ${VIASH_PAR_OBS_NAME_DOUBLET_SCORE+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_DOUBLET_SCORE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'expected_doublet_rate': $( if [ ! -z ${VIASH_PAR_EXPECTED_DOUBLET_RATE+x} ]; then echo "float(r'${VIASH_PAR_EXPECTED_DOUBLET_RATE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'stdev_doublet_rate': $( if [ ! -z ${VIASH_PAR_STDEV_DOUBLET_RATE+x} ]; then echo "float(r'${VIASH_PAR_STDEV_DOUBLET_RATE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'n_neighbors': $( if [ ! -z ${VIASH_PAR_N_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_N_NEIGHBORS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'sim_doublet_ratio': $( if [ ! -z ${VIASH_PAR_SIM_DOUBLET_RATIO+x} ]; then echo "float(r'${VIASH_PAR_SIM_DOUBLET_RATIO//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'min_counts': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'min_cells': $( if [ ! -z ${VIASH_PAR_MIN_CELLS+x} ]; then echo "int(r'${VIASH_PAR_MIN_CELLS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'min_gene_variablity_percent': $( if [ ! -z ${VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT+x} ]; then echo "float(r'${VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT//\'/\'\"\'\"r\'}')"; else echo None; fi ),
@@ -1359,7 +1511,17 @@ if 0 in input_layer.shape:
     )
 
 logger.info("\\tRunning scrublet")
-scrub = scr.Scrublet(input_layer)
+initializer_args = {
+    arg: par[arg]
+    for arg in (
+        "expected_doublet_rate",
+        "stdev_doublet_rate",
+        "n_neighbors",
+        "sim_doublet_ratio",
+    )
+    if par[arg] is not None
+}
+scrub = scr.Scrublet(input_layer, **initializer_args)
 
 doublet_scores, predicted_doublets = scrub.scrub_doublets(
     min_counts=par["min_counts"],

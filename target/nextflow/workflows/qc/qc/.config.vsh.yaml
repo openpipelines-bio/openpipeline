@@ -64,14 +64,14 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-- name: "Gene Detection"
+- name: "Mitochondrial & Ribosomal Gene Detection"
   arguments:
   - type: "string"
     name: "--var_gene_names"
     description: ".var column name to be used to detect mitochondrial/ribosomal genes\
       \ instead of .var_names (default if not set).\nGene names matching with the\
       \ regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will\
-      \ be \nidentified as a mitochondrial or ribosomal genes, respectively.\n"
+      \ be \nidentified as mitochondrial or ribosomal genes, respectively.\n"
     info: null
     example:
     - "gene_symbol"
@@ -79,8 +79,6 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-- name: "Mitochondrial Gene Detection"
-  arguments:
   - type: "string"
     name: "--var_name_mitochondrial_genes"
     description: "In which .var slot to store a boolean array corresponding the mitochondrial\
@@ -110,8 +108,6 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-- name: "Ribosomal Gene Detection"
-  arguments:
   - type: "string"
     name: "--var_name_ribosomal_genes"
     description: "In which .var slot to store a boolean array corresponding the ribosomal\
@@ -123,8 +119,9 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--obs_name_ribosomal_fraction"
-    description: ".Obs slot to store the fraction of reads found to be ribosomal.\
-      \ Defaults to 'fraction_' suffixed by the value of --var_name_ribosomal_genes\n"
+    description: "When specified, write the fraction of counts originating from ribosomal\
+      \ genes \n(based on --ribosomal_gene_regex) to an .obs column with the specified\
+      \ name.\nRequires --var_name_ribosomal_genes.\n"
     info: null
     required: false
     direction: "input"
@@ -274,9 +271,6 @@ test_resources:
   path: "concat_test_data"
 - type: "file"
   path: "pbmc_1k_protein_v3"
-- type: "file"
-  path: "openpipelinetestutils"
-  dest: "openpipelinetestutils"
 info:
   test_dependencies:
   - name: "qc_test"
@@ -363,9 +357,9 @@ build_info:
   output: "target/nextflow/workflows/qc/qc"
   executable: "target/nextflow/workflows/qc/qc/main.nf"
   viash_version: "0.9.0"
-  git_commit: "76af5981df4d39a75e44d5f72535bdf514831472"
+  git_commit: "a3b2a33d96b95b4f7ca56c249f75f7eba8c7f171"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-2017-g76af5981df4"
+  git_tag: "0.2.0-2018-ga3b2a33d96b"
   dependencies:
   - "target/nextflow/metadata/grep_annotation_column"
   - "target/nextflow/qc/calculate_qc_metrics"
@@ -380,8 +374,7 @@ package_config:
   source: "src"
   target: "target"
   config_mods:
-  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
-    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
   - ".version := \"scvi-knn-annotation_build\""

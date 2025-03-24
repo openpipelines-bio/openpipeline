@@ -1,5 +1,6 @@
 # Arguments
 input: # please fill in - example: ["sample_paths"]
+# modality: ["foo"]
 # input_id: ["foo"]
 # output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
