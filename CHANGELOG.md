@@ -12,7 +12,7 @@
 
 * `filter_with_scrublet`: add `expected_doublet_rate`, `stdev_doublet_rate`, `n_neighbors` and `sim_doublet_ratio` arguments (PR #974).
 
-* `feature_annotation/aling_query_reference`: Added a component to align a query and reference dataset (PR #948, #958, #972).
+* `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948, #958).
 
 * `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
 
@@ -20,7 +20,7 @@
 
 * `scanvi`: enable CUDA acceleration (PR #969).
 
-* `workflows/annotation/scvi_knn` workflow: Cell-type annotation based on scVI integration followed by KNN label transfer (PR #954).
+* `feature_annotation/align_query_reference`: Enable the alignment of multiple layers (PR #972).
 
 * `convert/from_h5ad_to_seurat`: Add component to convert from h5ad to Seurat (PR #980).
 
