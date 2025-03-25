@@ -3263,6 +3263,18 @@ meta = [
       "repository" : {
         "type" : "local"
       }
+    },
+    {
+      "name" : "workflows/multiomics/split_modalities",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
+      "name" : "dataflow/merge",
+      "repository" : {
+        "type" : "local"
+      }
     }
   ],
   "links" : {
@@ -3353,7 +3365,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/harmony_knn",
     "viash_version" : "0.9.0",
-    "git_commit" : "db3dbf5fca02ac431d964b95d79d320eb96140dc",
+    "git_commit" : "ddfdd9f0905c9cf4897ab3f21649ba8872d161a3",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3397,6 +3409,8 @@ include { pca } from "${meta.resources_dir}/../../../../nextflow/dimred/pca/main
 include { align_query_reference } from "${meta.resources_dir}/../../../../nextflow/feature_annotation/align_query_reference/main.nf"
 include { highly_variable_features_scanpy } from "${meta.resources_dir}/../../../../nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
 include { delete_layer } from "${meta.resources_dir}/../../../../nextflow/transform/delete_layer/main.nf"
+include { split_modalities } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/split_modalities/main.nf"
+include { merge } from "${meta.resources_dir}/../../../../nextflow/dataflow/merge/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
@@ -3406,7 +3420,7 @@ workflow run_wf {
 
   main:
     
-    output_ch = input_ch
+    modalities_ch = input_ch
         // Set aside the output for this workflow to avoid conflicts
         | map {id, state -> 
             def new_state = state + ["workflow_output": state.output]
@@ -3443,7 +3457,39 @@ workflow run_wf {
                 "reference": "output_reference"
             ]
         )
+
+              | split_modalities.run(
+        fromState: {id, state ->
+          def newState = ["input": state.input, "id": id]
+        },
+        toState: ["output": "output", "output_types": "output_types"]
+      )
+      | flatMap {id, state ->
+        def outputDir = state.output
+        def types = readCsv(state.output_types.toUriString())
+        
+        types.collect{ dat ->
+          // def new_id = id + "_" + dat.name
+          def new_id = id // it's okay because the channel will get split up anyways
+          def new_data = outputDir.resolve(dat.filename)
+          [ new_id, state + ["input": new_data, modality: dat.name]]
+        }
+      }
+      // Remove arguments from split modalities from state
+      | map {id, state -> 
+        def keysToRemove = ["output_types", "output_files"]
+        def newState = state.findAll{it.key !in keysToRemove}
+        [id, newState]
+      }
+      | view {"After splitting modalities: $it"}
+
+
+    rna_ch = modalities_ch
+
+      | filter{id, state -> state.modality == "rna"}
+      
         // Concatenate query and reference datasets prior to integration
+        // Only concatenate rna modality in this channel
         | concatenate_h5mu.run(
             fromState: { id, state -> [
                 "input": [state.input, state.reference]
@@ -3451,6 +3497,7 @@ workflow run_wf {
             },
             args: [
                 "input_id": ["query", "reference"],
+                "modality": "rna",
                 "other_axis_mode": "move"
             ],
             toState: ["input": "output"]
@@ -3555,17 +3602,22 @@ workflow run_wf {
             assert reference_file.size() == 1, 'there should only be one reference file'
             def integrated_query = outputDir.resolve(query_file.filename)
             def integrated_reference = outputDir.resolve(reference_file.filename)
-            def newKeys = ["integrated_query": integrated_query, "integrated_reference": integrated_reference]
+            def newKeys = ["input": integrated_query, "reference": integrated_reference]
             [id, state + newKeys]
         }
-        | view {"After splitting query: $it"}
+        // remove keys from split files
+        | map {id, state -> 
+            def keysToRemove = ["output_files"]
+            def newState = state.findAll{it.key !in keysToRemove}
+            [id, newState]
+        }
         // Perform KNN label transfer from integrated reference to integrated query
         | knn.run(
             fromState: [
-                "input": "integrated_query",
+                "input": "input",
                 "modality": "modality",
                 "input_obsm_features": "output_obsm_integrated",
-                "reference": "integrated_reference",
+                "reference": "reference",
                 "reference_obsm_features": "output_obsm_integrated",
                 "reference_obs_targets": "reference_obs_target",
                 "output_obs_predictions": "output_obs_predictions",
@@ -3575,8 +3627,40 @@ workflow run_wf {
                 "n_neighbors": "knn_n_neighbors",
                 "output": "workflow_output"
             ],
-            toState: {id, output, state -> ["output": output.output]},
+            toState: ["input": "output"]
+            // toState: {id, output, state -> ["output": output.output]}
         )
+      | view {"After processing RNA modality: $it"}
+
+    other_mod_ch = modalities_ch
+      | filter{id, state -> state.modality != "rna"}
+
+    output_ch = rna_ch.mix(other_mod_ch)
+      | groupTuple(by: 0, sort: "hash")
+      | map { id, states ->
+          def new_input = states.collect{it.input}
+          def modalities = states.collect{it.modality}.unique()
+          def other_state_keys = states.inject([].toSet()){ current_keys, state ->
+            def new_keys = current_keys + state.keySet()
+            return new_keys
+          }.minus(["output", "input", "modality", "reference"])
+          def new_state = other_state_keys.inject([:]){ old_state, argument_name ->
+            argument_values = states.collect{it.get(argument_name)}.unique()
+            assert argument_values.size() == 1, "Arguments should be the same across modalities. Please report this \
+                                                 as a bug. Argument name: $argument_name, \
+                                                 argument value: $argument_values"
+            def argument_value
+            argument_values.each { argument_value = it }
+            def current_state = old_state + [(argument_name): argument_value]
+            return current_state
+          }
+          [id, new_state + ["input": new_input, "modalities": modalities]]
+      }
+      | merge.run(
+        fromState: ["input": "input"],
+        toState: ["output": "output"],
+      )
+      | setState(["output"])
     
   emit:
     output_ch

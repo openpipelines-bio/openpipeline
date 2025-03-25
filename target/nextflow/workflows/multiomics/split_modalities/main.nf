@@ -3043,7 +3043,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities",
     "viash_version" : "0.9.0",
-    "git_commit" : "db3dbf5fca02ac431d964b95d79d320eb96140dc",
+    "git_commit" : "ddfdd9f0905c9cf4897ab3f21649ba8872d161a3",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
