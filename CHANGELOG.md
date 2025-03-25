@@ -50,6 +50,8 @@
 
 # BUG FIXES
 
+* `cluster/leiden`: Fix an issue where insufficient shared memory (size of `/dev/shm`) causes the processing to hang.  
+
 * `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).
 
 * `resources_test_scripts/annotation_test_data.sh`: Add a layer to the annotation reference dataset with log normalized counts (PR #960).
