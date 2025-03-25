@@ -8,10 +8,14 @@ import numpy as np
 ### VIASH START
 par = {
     "input": [
-        "./resources_test/merge/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu",
-        "./resources_test/merge/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu",
+        "merged.align_query_reference.output_query_prot.h5mu",
+        "merged.knn.output.h5mu",
     ],
     "output": "foo.h5mu",
+    "output_compression": None
+}
+meta = {
+    "resources_dir": "src/utils"
 }
 ### VIASH END
 
@@ -48,13 +52,23 @@ def main():
             convert_integer=True,
             convert_string=False,
             convert_boolean=True,
-            convert_floating=False,
+            convert_floating=True,
         )
 
         # Convert leftover 'object' columns to string
         object_cols = df.select_dtypes(include="object").columns.values
         for obj_col in object_cols:
-            df[obj_col].astype(str).astype("category")
+            df[obj_col] = df[obj_col].astype(str).astype("category")
+            
+        # Nullable float columns are not supported by anndata/mudata
+        float64_cols = df.select_dtypes(include=pd.Float64Dtype())
+        for float64_col in float64_cols:
+            df[float64_col] = df[float64_col].astype(np.float64)
+        
+        float32_cols = df.select_dtypes(include=pd.Float32Dtype())
+        for float32_col in float32_cols:
+            df[float32_col] = df[float32_col].astype(np.float32)
+            
         setattr(merged, df_attr, df)
 
     merged.write_h5mu(par["output"], compression=par["output_compression"])
