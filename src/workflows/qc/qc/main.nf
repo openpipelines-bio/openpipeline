@@ -3,7 +3,7 @@ workflow run_wf {
   input_ch
 
   main:
-    preproc_ch = input_ch
+    output_ch = input_ch
     // Avoid conflict between output from component and output for this workflow
     | map {id, state -> 
       assert state.output, "Output must be defined"
@@ -18,14 +18,19 @@ workflow run_wf {
       if (state.var_name_mitochondrial_genes) {
         var_qc_default.add(state.var_name_mitochondrial_genes)
       }
+      if (state.var_name_ribosomal_genes) {
+        var_qc_default.add(state.var_name_ribosomal_genes)
+      }
       // Get the new state, but make sure to overwrite var_qc_metrics if the user has set it.
-      new_state = ["var_qc_metrics": var_qc_default.join(",")] + new_state
+      new_state = ["var_qc_metrics": var_qc_default.join(";")] + new_state
       [id, new_state]
     }
 
-    with_grep_ch = preproc_ch
-    | filter { it -> it[1].var_name_mitochondrial_genes }
     | grep_annotation_column.run(
+      key: "grep_mitochondrial_genes",
+      runIf: { id, state ->
+        state.var_name_mitochondrial_genes
+      },
       fromState: { id, state ->
         def stateMapping = [
           "input": state.input,
@@ -42,44 +47,56 @@ workflow run_wf {
       toState: ["input": "output"]
     )
 
-    without_grep_ch = preproc_ch
-      | filter { it -> !it[1].var_name_mitochondrial_genes }
+    | grep_annotation_column.run(
+      key: "grep_ribosomal_genes",
+      runIf: { id, state ->
+        state.var_name_ribosomal_genes
+      },
+      fromState: { id, state ->
+        def stateMapping = [
+          "input": state.input,
+          "modality": state.modality,
+          "input_column": state.var_gene_names,
+          "matrix": "var",
+          "output_match_column": state.var_name_ribosomal_genes,
+          "regex_pattern": state.ribosomal_gene_regex,
+          "input_layer": state.layer,
+        ]
+        stateMapping.output_fraction_column = state.obs_name_ribosomal_fraction ? state.obs_name_ribosomal_fraction: "fraction_$state.var_name_ribosomal_genes"
+        return stateMapping
+      },
+      toState: ["input": "output"]
+    )
 
-    output_ch = without_grep_ch.mix(with_grep_ch)
-      | calculate_qc_metrics.run(
-        fromState: { id, state ->
-          def newState = [
-            "input": state.input,
-            "modality": state.modality,
-            "layer": state.layer,
-            "top_n_vars": state.top_n_vars,
-            "var_qc_metrics_fill_na_value": state.var_qc_metrics_fill_na_value,
-            "output_obs_num_nonzero_vars": state.output_obs_num_nonzero_vars,
-            "output_obs_total_counts_vars": state.output_obs_total_counts_vars,
-            "output_var_num_nonzero_obs": state.output_var_num_nonzero_obs,
-            "output_var_total_counts_obs": state.output_var_total_counts_obs,
-            "output_var_obs_mean": state.output_var_obs_mean,
-            "output_var_pct_dropout": state.output_var_pct_dropout
-          ]
-          if (state.var_qc_metrics) {
-            newState += ["var_qc_metrics": state.var_qc_metrics]
-          }
-        return newState
-        },
-        // use map when viash 0.7.6 is released
-        // related to https://github.com/viash-io/viash/pull/515
-        toState: ["input": "output"]
-      )
-      | publish.run(
-        fromState: { id, state -> [
-            "input": state.input,
-            "output": state.workflow_output,
-            "compression": "gzip"
-          ]
-        },
-        auto: [ publish: true ]
-      )
-      | setState(["output"]) 
+    | calculate_qc_metrics.run(
+      fromState: { id, state ->
+        def newState = [
+          "input": state.input,
+          "modality": state.modality,
+          "layer": state.layer,
+          // TODO: remove this workaround when Viash issue is resolved:
+          //       'top_n_vars': list(map(int, r''.split(';'))),
+          //     ValueError: invalid literal for int() with base 10: ''
+          // See https://github.com/viash-io/viash/issues/619
+          "top_n_vars": state.top_n_vars ? state.top_n_vars : null,
+          "var_qc_metrics_fill_na_value": state.var_qc_metrics_fill_na_value,
+          "output_obs_num_nonzero_vars": state.output_obs_num_nonzero_vars,
+          "output_obs_total_counts_vars": state.output_obs_total_counts_vars,
+          "output_var_num_nonzero_obs": state.output_var_num_nonzero_obs,
+          "output_var_total_counts_obs": state.output_var_total_counts_obs,
+          "output_var_obs_mean": state.output_var_obs_mean,
+          "output_var_pct_dropout": state.output_var_pct_dropout,
+          "output": state.workflow_output,
+          "compression": "gzip"
+        ]
+        if (state.var_qc_metrics) {
+          newState += ["var_qc_metrics": state.var_qc_metrics]
+        }
+      return newState
+      },
+      toState: ["output": "output"]
+    )
+    | setState(["output"]) 
 
   emit:
   output_ch

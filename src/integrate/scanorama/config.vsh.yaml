@@ -1,91 +1,94 @@
-functionality:
-  name: scanorama
-  namespace: "integrate"
-  description: |
-    Use Scanorama to integrate different experiments.
-  authors:
-    - __merge__: /src/authors/dries_de_maeyer.yaml
-      roles: [ author ]
-    - __merge__: /src/authors/dries_schaumont.yaml
-      roles: [ maintainer ]
-  arguments:
-    - name: "--input"
-      alternatives: [-i]
-      type: file
-      description: Input h5mu file
-      direction: input
-      required: true
-    - name: "--modality"
-      type: string
-      default: "rna"
-      required: false
-    - name: "--output"
-      alternatives: ["-o"]
-      type: file
-      description: Output .h5mu file
-      direction: output
-      required: true
-      default: "output.h5ad"
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
-    - name: "--obs_batch"
-      type: string
-      description: Column name discriminating between your batches.
-      default: "batch"
-    - name: "--obsm_input"
-      type: string
-      description: Basis obsm slot to run scanorama on.
-      default: "X_pca"
-    - name: "--obsm_output"
-      type: string
-      description: The name of the field in adata.obsm where the integrated embeddings will be stored after running this function. Defaults to X_scanorama.
-      default: "X_scanorama"   
-    - name: "--knn"
-      type: integer
-      description: "Number of nearest neighbors to use for matching."
-      default: 20
-    - name: "--batch_size"
-      type: integer
-      description: "The batch size used in the alignment vector computation. Useful when integrating very large (>100k samples) datasets. Set to large value that runs within available memory."
-      default: 5000
-    - name: "--sigma"
-      type: double
-      description: "Correction smoothing parameter on Gaussian kernel."
-      default: 15
-    - name: "--approx"
-      type: boolean
-      description: "Use approximate nearest neighbors with Python annoy; greatly speeds up matching runtime."
-      default: True
-    - name: "--alpha"
-      type: double
-      description: "Alignment score minimum cutoff"
-      default: 0.1
-  resources:
-    - type: python_script
-      path: script.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
-platforms:
-  - type: docker
-    image: python:3.9-slim
-    setup:
-      - type: apt
-        packages: 
-          - procps
-          - build-essential
-      - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
-        packages:
-          - scanorama
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
-  - type: nextflow
-    directives:
-      label: [midcpu, highmem]
+name: scanorama
+namespace: "integrate"
+description: |
+  Use Scanorama to integrate different experiments.
+authors:
+  - __merge__: /src/authors/dries_de_maeyer.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ maintainer ]
+arguments:
+  - name: "--input"
+    alternatives: [-i]
+    type: file
+    description: Input h5mu file
+    direction: input
+    required: true
+  - name: "--modality"
+    type: string
+    default: "rna"
+    required: false
+  - name: "--output"
+    alternatives: ["-o"]
+    type: file
+    description: Output .h5mu file
+    direction: output
+    required: true
+    default: "output.h5ad"
+  - name: "--output_compression"
+    type: string
+    description: The compression format to be used on the output h5mu object.
+    choices: ["gzip", "lzf"]
+    required: false
+    example: "gzip"
+  - name: "--obs_batch"
+    type: string
+    description: Column name discriminating between your batches.
+    default: "batch"
+  - name: "--obsm_input"
+    type: string
+    description: Basis obsm slot to run scanorama on.
+    default: "X_pca"
+  - name: "--obsm_output"
+    type: string
+    description: The name of the field in adata.obsm where the integrated embeddings will be stored after running this function. Defaults to X_scanorama.
+    default: "X_scanorama"   
+  - name: "--knn"
+    type: integer
+    description: "Number of nearest neighbors to use for matching."
+    default: 20
+  - name: "--batch_size"
+    type: integer
+    description: "The batch size used in the alignment vector computation. Useful when integrating very large (>100k samples) datasets. Set to large value that runs within available memory."
+    default: 5000
+  - name: "--sigma"
+    type: double
+    description: "Correction smoothing parameter on Gaussian kernel."
+    default: 15
+  - name: "--approx"
+    type: boolean
+    description: "Use approximate nearest neighbors with Python annoy; greatly speeds up matching runtime."
+    default: True
+  - name: "--alpha"
+    type: double
+    description: "Alignment score minimum cutoff"
+    default: 0.1
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+
+engines:
+- type: docker
+  image: python:3.12-slim
+  setup:
+    - type: apt
+      packages: 
+        - procps
+        - build-essential
+    - type: python
+      __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+      packages:
+        - scanorama
+  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [midcpu, highmem, highdisk]

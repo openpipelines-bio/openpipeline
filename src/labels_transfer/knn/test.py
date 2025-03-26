@@ -1,80 +1,202 @@
+import re
+import subprocess
 import pytest
 from pathlib import Path
-import anndata
-import mudata
+import anndata as ad
+import mudata as mu
 import numpy as np
+from scipy.sparse import csr_matrix
 
 ## VIASH START
-meta = {
-    'executable': './target/docker/labels_transfer/knn/knn',
-    'resources_dir': './resources_test/'
-}
+meta = {"resources_dir": "./resources_test/"}
 ## VIASH END
 
-reference_file = f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5ad"
+reference_h5ad_file = (
+    f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5ad"
+)
+# convert reference to h5mu
+reference_adata = ad.read_h5ad(reference_h5ad_file)
+reference_mdata = mu.MuData({"rna": reference_adata})
+reference_file = f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5mu"
+reference_mdata.write_h5mu(reference_file)
 input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
-@pytest.fixture
-def test_args(tmp_path, request):
-    obsm_features, obs_targets, output_uns_parameters = request.param
 
-    # read reference
-    tempfile_reference_file = tmp_path / "reference.h5ad"
-    reference_adata = anndata.read_h5ad(reference_file)
-
-    # generate reference obs targets
-    for i, target in enumerate(obs_targets):
-        class_names = [str(idx) for idx in range(i + 2)]  # e.g. ["0", "1", "2"], the higher the level, the more the classes
-        reference_adata.obs[target] = np.random.choice(class_names, size=reference_adata.n_obs)
-
-    # read input query
-    tempfile_input_file = tmp_path / "input.h5mu"
-    input_data = mudata.read_h5mu(input_file)
-    adata = input_data.mod["rna"]
-    
-    # generate features
-    reference_adata.obsm[obsm_features] = np.random.normal(size=(reference_adata.n_obs, 30))
-    adata.obsm[obsm_features] = np.random.normal(size=(adata.n_obs, 30))
-
-    # write files
-    reference_adata.write(tempfile_reference_file.name)
-    input_data.write(tempfile_input_file.name)
-
-    return tempfile_reference_file, reference_adata, tempfile_input_file, adata, obsm_features, obs_targets, output_uns_parameters
-
-@pytest.mark.parametrize("test_args", [("X_integrated_scvi", ["celltype"], None), ("X_int", ["ann_level_1", "ann_level_2", "ann_level_3"], "lab_tran")], indirect=True)
-def test_label_transfer(run_component, test_args):
-    tempfile_reference_file, reference_adata, tempfile_input_file, query_adata, obsm_features, obs_targets, output_uns_parameters = test_args
+def test_label_transfer(run_component, random_h5mu_path):
+    output = random_h5mu_path()
 
     args = [
-        "--input", tempfile_input_file.name,
-        "--modality", "rna",
-        "--input_obsm_features", obsm_features,
-        "--reference", tempfile_reference_file.name,
-        "--reference_obsm_features", obsm_features,
-        "--reference_obs_targets", ";".join(obs_targets),
-        "--output", "output.h5mu",
-        "--n_neighbors", "5"
+        "--input",
+        input_file,
+        "--modality",
+        "rna",
+        "--reference",
+        reference_file,
+        "--reference_obs_targets",
+        "cell_type",
+        "--output",
+        output,
+        "--n_neighbors",
+        "5",
     ]
-
-    if output_uns_parameters is not None:
-        args.extend(["--output_uns_parameters", output_uns_parameters])
 
     run_component(args)
 
-    assert Path("output.h5mu").is_file()
+    assert Path(output).is_file()
 
-    output_data = mudata.read_h5mu("output.h5mu")
+    output_data = mu.read_h5mu(output)
 
-    exp_uns = "labels_transfer" if output_uns_parameters is None else output_uns_parameters
+    assert (
+        "cell_type_pred" in output_data.mod["rna"].obs
+    ), f"Predictions cell_type_pred is missing from output\noutput: {output_data.mod['rna'].obs}"
+    assert (
+        "cell_type_probability" in output_data.mod["rna"].obs
+    ), f"Uncertainties cell_type_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
 
-    for target in obs_targets:
-        assert f"{target}_pred" in output_data.mod["rna"].obs, f"Predictions are missing from output\noutput: {output_data.mod['rna'].obs}"
-        assert f"{target}_uncertainty" in output_data.mod["rna"].obs, f"Uncertainties are missing from output\noutput: {output_data.mod['rna'].obs}"
-        assert exp_uns in output_data.mod["rna"].uns, f"Parameters are missing from output\noutput: {output_data.mod['rna'].uns}"
-        assert target in output_data.mod["rna"].uns[exp_uns], f"Parameters are missing from output\noutput: {output_data.mod['rna'].uns}"
-        assert output_data.mod["rna"].uns[exp_uns][target].get("method") == "KNN_pynndescent", f"Wrong method in parameters\noutput: {output_data.mod['rna'].uns}"
-        assert output_data.mod["rna"].uns[exp_uns][target].get("n_neighbors") == 5, f"Wrong number of neighbors in parameters\noutput: {output_data.mod['rna'].uns}"
 
-if __name__ == '__main__':
+@pytest.mark.parametrize("weights", ["uniform", "distance", "gaussian"])
+def test_label_transfer_prediction_columns(run_component, weights, random_h5mu_path):
+    output = random_h5mu_path()
+
+    args = [
+        "--input",
+        input_file,
+        "--modality",
+        "rna",
+        "--reference",
+        reference_file,
+        "--reference_obs_targets",
+        "cell_type",
+        "--weights",
+        weights,
+        "--output",
+        output,
+        "--output_obs_probability",
+        "test_probability",
+        "--output_obs_predictions",
+        "test_prediction",
+        "--n_neighbors",
+        "5",
+    ]
+
+    run_component(args)
+
+    assert Path(output).is_file()
+
+    output_data = mu.read_h5mu(output)
+
+    assert (
+        "test_prediction" in output_data.mod["rna"].obs
+    ), f"Predictions test_prediction is missing from output\noutput: {output_data.mod['rna'].obs}"
+    assert (
+        "test_probability" in output_data.mod["rna"].obs
+    ), f"Uncertainties test_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
+
+
+def test_label_transfer_prediction_precomputed_neighbor_graph(
+    run_component, random_h5mu_path
+):
+    output = random_h5mu_path()
+
+    # Add mock distance matrix to obsm slot
+    reference_mdata = mu.read_h5mu(reference_file)
+    ref_distances = np.random.rand(400, 400)
+    ref_distances[ref_distances < 0.5] = 0
+    ref_distances = csr_matrix(ref_distances)
+    reference_mdata.mod["rna"].obsm["distances"] = ref_distances
+    reference_mdata.write_h5mu(reference_file)
+
+    query_mdata = mu.read_h5mu(input_file)
+    query_distances = np.random.rand(713, 400)
+    query_distances[query_distances < 0.5] = 0
+    query_distances = csr_matrix(query_distances)
+    query_mdata.mod["rna"].obsm["distances"] = query_distances
+    query_mdata.write_h5mu(input_file)
+
+    args = [
+        "--input",
+        input_file,
+        "--modality",
+        "rna",
+        "--reference",
+        reference_file,
+        "--reference_obs_targets",
+        "cell_type",
+        "--output",
+        output,
+        "--input_obsm_distances",
+        "distances",
+        "--reference_obsm_distances",
+        "distances",
+        "--output_obs_probability",
+        "test_probability",
+        "--output_obs_predictions",
+        "test_prediction",
+        "--n_neighbors",
+        "5",
+    ]
+
+    run_component(args)
+
+    assert Path(output).is_file()
+
+    output_data = mu.read_h5mu(output)
+
+    assert (
+        "test_prediction" in output_data.mod["rna"].obs
+    ), f"Predictions test_prediction is missing from output\noutput: {output_data.mod['rna'].obs}"
+    assert (
+        "test_probability" in output_data.mod["rna"].obs
+    ), f"Uncertainties test_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
+
+
+def test_raises_distance_matrix_dimensions(run_component, random_h5mu_path):
+    output = random_h5mu_path()
+
+    reference_mdata = mu.read_h5mu(reference_file)
+    ref_distances = np.random.rand(400, 100)
+    ref_distances[ref_distances < 0.5] = 0
+    ref_distances = csr_matrix(ref_distances)
+    reference_mdata.mod["rna"].obsm["distances"] = ref_distances
+    reference_mdata.write_h5mu(reference_file)
+
+    query_mdata = mu.read_h5mu(input_file)
+    query_distances = np.random.rand(713, 400)
+    query_distances[query_distances < 0.5] = 0
+    query_distances = csr_matrix(query_distances)
+    query_mdata.mod["rna"].obsm["distances"] = query_distances
+    query_mdata.write_h5mu(input_file)
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                input_file,
+                "--modality",
+                "rna",
+                "--reference",
+                reference_file,
+                "--reference_obs_targets",
+                "cell_type",
+                "--output",
+                output,
+                "--input_obsm_distances",
+                "distances",
+                "--reference_obsm_distances",
+                "distances",
+                "--output_obs_probability",
+                "test_probability",
+                "--output_obs_predictions",
+                "test_prediction",
+                "--n_neighbors",
+                "5",
+            ]
+        )
+    assert re.search(
+        r"ValueError: The number of neighbors in the query and reference distance matrices do not match. Make sure both distance matrices contain distances to the reference dataset.",
+        err.value.stdout.decode("utf-8"),
+    )
+
+
+if __name__ == "__main__":
     exit(pytest.main([__file__]))

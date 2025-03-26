@@ -12,21 +12,34 @@ par_output_gtf="temp/reference.gtf.gz"
 ## VIASH END
 
 # create temporary directory
-tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_functionality_name-XXXXXXXX")
+tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
 }
 trap clean_up EXIT
 
+echo "> Getting path of fasta file"
+par_genome_fasta=$(realpath $par_genome_fasta)
+echo "> Getting path of annotation file"
+par_transcriptome_gtf=$(realpath $par_transcriptome_gtf)
+
 echo "> Processing genome sequence"
 genome_fasta="$tmpdir/genome_sequence.fa"
-# curl "$par_genome_fasta" | gunzip > "$genome_fasta"
-gunzip -c "$par_genome_fasta" > "$genome_fasta"
+# if genome is gzipped, extract. otherwise not
+if file --mime-type "$par_genome_fasta" | grep -q gzip$; then
+  zcat "$par_genome_fasta" > "$genome_fasta"
+else
+  cp "$par_genome_fasta" "$genome_fasta"
+fi
 
 echo "> Processing transcriptome annotation"
 transcriptome_gtf="$tmpdir/transcriptome_annotation.gtf"
-# curl "$par_transcriptome_gtf" | gunzip > "$transcriptome_gtf"
-gunzip -c "$par_transcriptome_gtf"> "$transcriptome_gtf"
+# if transcriptome is gzipped, extract. otherwise not
+if file --mime-type "$par_transcriptome_gtf" | grep -q gzip$; then
+  zcat "$par_transcriptome_gtf" > "$transcriptome_gtf"
+else
+  cp "$par_transcriptome_gtf" "$transcriptome_gtf"
+fi
 
 if [[ ! -z $par_ercc ]]; then
   echo "> Processing ERCC sequences"

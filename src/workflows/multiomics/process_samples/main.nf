@@ -10,12 +10,15 @@ workflow run_wf {
         def new_state = state + ["workflow_output": state.output]
         [id, new_state]
       }
-      // If requested to be detected, make sure the mitochondrial genes
+      // If requested to be detected, make sure the mitochondrial and ribosomal genes
       // are added to the input of the qc metrics calculation
       | map {id, state ->
         def var_qc_default = [state.highly_variable_features_var_output]
         if (state.var_name_mitochondrial_genes) {
           var_qc_default.add(state.var_name_mitochondrial_genes)
+        }
+        if (state.var_name_ribosomal_genes) {
+          var_qc_default.add(state.var_name_ribosomal_genes)
         }
         def newState = state + ["var_qc_metrics": var_qc_default.join(",")]
         [id, newState]
@@ -83,6 +86,11 @@ workflow run_wf {
         "obs_name_mitochondrial_fraction": "obs_name_mitochondrial_fraction",
         "var_gene_names": "var_gene_names",
         "mitochondrial_gene_regex": "mitochondrial_gene_regex",
+        "min_fraction_ribo": "rna_min_fraction_ribo",
+        "max_fraction_ribo": "rna_max_fraction_ribo",
+        "var_name_ribosomal_genes": "var_name_ribosomal_genes",
+        "obs_name_ribosomal_fraction": "obs_name_ribosomal_fraction",
+        "ribosomal_gene_regex": "ribosomal_gene_regex",
         "layer": "rna_layer"
       ],
       "prot": [
@@ -108,7 +116,7 @@ workflow run_wf {
       | runEach(
         components: [rna_singlesample, prot_singlesample, gdo_singlesample],
         filter: { id, state, component ->
-          state.modality + "_singlesample" == component.config.functionality.name
+          state.modality + "_singlesample" == component.config.name
         },
         fromState: { id, state, component ->
           def newState = singlesample_arguments.get(state.modality).collectEntries{key_, value_ -> 
@@ -147,15 +155,31 @@ workflow run_wf {
       | view {"After groupTuple: $it"}
       | map { modality, old_ids, states ->
         def new_id = "combined_$modality"
-        def new_keys = [
+        // keys in the new state that should not have a unique value across samples
+        def new_state_non_unique_values = [
           "input": states.collect{it.input},
           "input_id": old_ids,
           "_meta": ["join_id": old_ids[0]]
         ]
-        // Just take the state of the first sample for each modality
-        // and update it to become the new state
-        def new_state = states[0] + new_keys
-        [new_id, new_state]
+        // Gather the keys from the different states,
+        // one state might contain more keys compared to another (so create a set)
+        def all_state_keys = states.inject([].toSet()){ current_keys, state ->
+            def new_keys = current_keys + state.keySet()
+            return new_keys
+        }.minus(["output", "input_id", "input", "_meta"])
+        // Create the new state from the keys, values should be the same across samples
+        def new_state = all_state_keys.inject([:]){ old_state, argument_name ->
+            argument_values = states.collect{it.get(argument_name)}.unique()
+            assert argument_values.size() == 1, "Arguments should be the same across samples. Argument name: $argument_name, \
+                                                 argument value: $argument_values"
+            // take the unique value from the set (there is only one)
+            def argument_value
+            argument_values.each { argument_value = it }
+            def current_state = old_state + [(argument_name): argument_value]
+            return current_state
+        }
+        def final_state = new_state_non_unique_values + new_state
+        [new_id, final_state]
       }
       | concatenate_h5mu.run(
         fromState: [
@@ -204,6 +228,15 @@ workflow run_wf {
             "pca_overwrite": state.pca_overwrite,
             "rna_layer": state.rna_layer,
             "prot_layer": state.prot_layer,
+            "clr_axis": state.clr_axis,
+            "rna_enable_scaling": state.rna_enable_scaling,
+            "rna_scaling_output_layer": state.rna_scaling_output_layer,
+            "rna_scaling_pca_obsm_output": state.rna_scaling_pca_obsm_output,
+            "rna_scaling_pca_loadings_varm_output": state.rna_scaling_pca_loadings_varm_output,
+            "rna_scaling_pca_variance_uns_output": state.rna_scaling_pca_variance_uns_output,
+            "rna_scaling_umap_obsm_output": state.rna_scaling_umap_obsm_output,
+            "rna_scaling_max_value": state.rna_scaling_max_value,
+            "rna_scaling_zero_center": state.rna_scaling_zero_center,
           ]
         },
         toState: {id, output, state -> 

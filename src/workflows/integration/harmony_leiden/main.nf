@@ -3,7 +3,7 @@ workflow run_wf {
   input_ch
 
   main:
-  neighbors_ch = input_ch
+  output_ch = input_ch
     // Make sure there is not conflict between the output from this workflow
     // And the output from any of the components
     | map {id, state ->
@@ -22,66 +22,22 @@ workflow run_wf {
       ],
       toState: ["input": "output"]
     )
-    
-    // run knn
-    | find_neighbors.run(
+    | neighbors_leiden_umap.run(
       fromState: [
         "input": "input",
         "modality": "modality",
-        "uns_output": "uns_neighbors",
-        "obsp_distances": "obsp_neighbor_distances",
-        "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obsm_input": "obsm_integrated"
+        "obsm_input": "obsm_integrated",
+        "output": "workflow_output",
+        "uns_neighbors": "uns_neighbors",
+        "obsp_neighbor_distances": "obsp_neighbor_distances",
+        "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
+        "leiden_resolution": "leiden_resolution",
+        "obs_cluster": "obs_cluster",
+        "obsm_umap": "obsm_umap",
       ],
-      toState: ["input": "output"]
+      toState: ["output": "output"]
     )
-
-  with_leiden_ch = neighbors_ch
-    | filter{id, state -> state.leiden_resolution}
-    // run leiden clustering
-    | leiden.run(
-      fromState: [
-        "input": "input",
-        "modality": "modality",
-        "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obsm_name": "obs_cluster",
-        "resolution": "leiden_resolution"
-      ],
-      toState: ["input": "output"]
-    )
-    // move obsm to obs
-    | move_obsm_to_obs.run(
-      fromState: 
-        [
-          "input": "input",
-          "obsm_key": "obs_cluster",
-          "modality": "modality",
-        ],
-      toState: ["input": "output"]
-    )
-
-  without_leiden_ch = neighbors_ch
-    | filter{id, state -> !state.leiden_resolution}
-
-  output_ch = with_leiden_ch.mix(without_leiden_ch)
-    // run umap
-    | umap.run(
-      fromState: { id, state ->
-        [
-          "input": state.input,
-          "modality": state.modality,
-          "obsm_input": state.obsm_integrated,
-          "obsm_output": state.obsm_umap,
-          "uns_neighbors": state.uns_neighbors,
-          "output": state.workflow_output,
-          "output_compression": "gzip"
-        ]
-      },
-      toState: { id, output, state ->
-        [ output: output.output ]
-      },
-      auto: [ publish: true ]
-    )
+    | setState(["output"])
 
   emit:
   output_ch

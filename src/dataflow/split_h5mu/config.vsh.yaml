@@ -1,0 +1,74 @@
+name: split_h5mu
+namespace: "dataflow"
+description: |
+  Split the samples of a single modality from a .h5mu (multimodal) sample into seperate .h5mu files based on the values of an .obs column of this modality. 
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+- name: Input & specifications
+  arguments:
+  - name: "--input"
+    type: file
+    description: Path to a single .h5mu file.
+    required: true
+  - name: "--modality"
+    type: string
+    default: "rna"
+    required: false
+  - name: "--obs_feature"
+    type: string
+    required: true
+    description: The .obs column to split the mudata on.
+    example: "celltype"
+  - name: "--drop_obs_nan"
+    type: boolean_true
+    description: Whether to drop all .obs columns that contain only nan values after splitting.
+  - name: "--ensure_unique_filenames"
+    type: boolean_true
+    description: Append number suffixes to ensure unique filenames after sanitizing obs feature values.
+
+- name: Outputs
+  arguments:
+  - name: "--output"
+    type: file
+    required: true
+    direction: output
+    example: "/path/to/output"
+    description: Output directory containing multiple h5mu files.
+  - name: "--output_compression"
+    type: string
+    description: The compression format to be used on the output h5mu object.
+    choices: ["gzip", "lzf"]
+    required: false
+    example: "gzip"
+  - name: "--output_files"
+    type: file
+    required: true
+    direction: output
+    example: sample_files.csv
+    description: A csv containing the base filename and obs feature by which it was split.
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages: 
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [ lowcpu, highmem, highdisk]

@@ -2,9 +2,7 @@ import subprocess
 from pathlib import Path
 
 ## VIASH START
-meta = {
-    "resources_dir": "resources_test"
-}
+meta = {"resources_dir": "resources_test"}
 ## VIASH END
 
 print("> sort and index", flush=True)
@@ -13,11 +11,16 @@ output = "test_output.bam"
 
 cmd_pars = [
     meta["executable"],
-    "--input", input,
-    "--output_bam", output,
-    "--output_bai", output + ".bai",
-    "---memory", "3gb",
-    "---cpus", "2"
+    "--input",
+    input,
+    "--output_bam",
+    output,
+    "--output_bai",
+    output + ".bai",
+    "---memory",
+    "3gb",
+    "---cpus",
+    "2",
 ]
 subprocess.run(cmd_pars, check=True)
 
@@ -32,11 +35,15 @@ output2 = "test_output2.bam"
 
 cmd_pars = [
     meta["executable"],
-    "--input", input,
-    "--output_bam", output2,
+    "--input",
+    input,
+    "--output_bam",
+    output2,
     "--sort_by_read_names",
-    "---memory", "3gb",
-    "---cpus", "2"
+    "---memory",
+    "3gb",
+    "---cpus",
+    "2",
 ]
 subprocess.run(cmd_pars, check=True)
 

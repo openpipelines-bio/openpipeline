@@ -1,0 +1,126 @@
+name: lsi
+namespace: "dimred"
+description: |
+  Runs Latent Semantic Indexing. Computes cell embeddings, feature loadings and singular values. Uses the implementation of scipy.
+authors:
+  - __merge__: /src/authors/sarah_ouologuem.yaml
+    roles: [ contributor ]
+  - __merge__: /src/authors/vladimir_shitov.yaml
+    roles: [ contributor ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: Path to input h5mu file
+        direction: input
+        required: true
+        example: input.h5mu
+
+      - name: "--modality"
+        type: string
+        default: "atac"
+        description: On which modality to run LSI on.
+        required: false
+
+      - name: "--layer"
+        type: string
+        description: Use specified layer for expression values. If not specified, uses adata.X.
+        required: false
+
+      - name: "--var_input"
+        type: string
+        description: Column name in .var matrix that will be used to select which genes to run the LSI on. If not specified, uses all features.
+        required: false
+
+  - name: LSI options
+    arguments:
+      - name: "--num_components"
+        type: integer
+        default: 50
+        description: Number of components to compute.
+        required: false
+        min: 2
+
+      - name: "--scale_embeddings"
+        type: boolean
+        default: true
+        description: Scale embeddings to zero mean and unit variance.
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
+
+      - name: "--output_compression"
+        type: string
+        default: "gzip"
+        description: The compression format to be used on the output h5mu object.
+        choices: ["gzip", "lzf"]
+        required: false
+
+      - name: "--obsm_output"
+        type: string
+        default: "X_lsi"
+        description: In which .obsm slot to store the resulting embedding.
+        required: false
+
+      - name: "--varm_output"
+        type: string
+        default: "lsi"
+        description: In which .varm slot to store the resulting loadings matrix.
+        required: false
+
+      - name: "--uns_output"
+        type: string
+        default: "lsi"
+        description: In which .uns slot to store the stdev.
+        required: false
+
+      - name: "--overwrite"
+        type: boolean_true
+        description: Allow overwriting .obsm, .varm and .uns slots.
+
+    
+resources:
+  - type: python_script
+    path: script.py
+  - path: ../../utils/subset_vars.py
+  - path: /src/utils/compress_h5mu.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: ../../utils/subset_vars.py
+  - path: ../../../resources_test/concat_test_data
+  
+
+engines:
+  - type: docker
+    image: python:3.11-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+          - pkg-config  # Otherwise h5py installation fails, which is required for scanpy
+          - libhdf5-dev
+          - gcc
+      - type: python
+        __merge__: [../../../src/base/requirements/anndata_mudata.yaml, .]
+        packages:
+          - muon~=0.1.6
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: 
+        - highcpu
+        - highmem
+        - middisk

@@ -72,9 +72,14 @@ workflow run_wf {
         "var_qc_metrics": "var_qc_metrics",
         "top_n_vars": "top_n_vars",
         "layer": "rna_layer",
+        "enable_scaling": "rna_enable_scaling",
+        "scaling_output_layer": "rna_scaling_output_layer",
+        "scaling_max_value": "rna_scaling_max_value",
+        "scaling_zero_center": "rna_scaling_zero_center",
       ],
       "prot": [
         "layer": "prot_layer",
+        "clr_axis": "clr_axis",
       ]
     ].asImmutable()
 
@@ -82,7 +87,7 @@ workflow run_wf {
       | runEach(
         components: [rna_multisample, prot_multisample],
         filter: { id, state, component ->
-          state.modality + "_multisample" == component.config.functionality.name
+          state.modality + "_multisample" == component.config.name
         },
         fromState: { id, state, component -> 
           def newState = multisample_arguments.get(state.modality).collectEntries{key_, value_ -> 
@@ -105,8 +110,9 @@ workflow run_wf {
         def keysToRemove = multisample_arguments.inject([]){currentKeys, modality, stateMapping -> 
           def newKeys = currentKeys + stateMapping.values()
           return newKeys
-        }
-        def newState = state.findAll{it.key !in keysToRemove}
+        } 
+        keysToRemove -= ["rna_enable_scaling", "rna_scaling_output_layer"]
+        def newState = state.findAll{it.key !in keysToRemove }
         [id, newState]
       }
       | view {"After multisample processing: $it"}
@@ -152,13 +158,13 @@ workflow run_wf {
       // Processing of multi-modal multisample MuData files.
       // Performs calculations on samples that have *not* been integrated,
       // and can be considered a "no-integration" workflow.
-
-      output_ch = [dimensionality_reduction_rna, dimensionality_reduction_prot].inject(multimodal_ch){ channel_in, component ->
+      output_ch = [dimensionality_reduction_rna, dimensionality_reduction_scaling_rna, dimensionality_reduction_prot].inject(multimodal_ch){ channel_in, component ->
         channel_out_integrated = channel_in
           | component.run(
             runIf: {id, state ->
-              def reg = ~/^dimensionality_reduction_/
-              state.modalities.contains(component.name - reg)
+              def reg = state.rna_enable_scaling ? ~/^dimensionality_reduction_(scaling_)?/ : ~/^dimensionality_reduction_/
+              def modality_to_check = component.name - reg
+              state.modalities.contains(modality_to_check)
             },
             fromState: { id, state -> 
               def stateMappings = [
@@ -170,6 +176,26 @@ workflow run_wf {
                     "modality": "rna",
                     "var_pca_feature_selection": state.highly_variable_features_var_output, // run PCA on highly variable genes only
                     "pca_overwrite": state.pca_overwrite,
+                    "output": state.workflow_output,
+                  ],
+                "dimensionality_reduction_scaling_rna":
+                  [
+                    "id": id,
+                    "input": state.input,
+                    "layer": state.rna_scaling_output_layer,
+                    "modality": "rna",
+                    "var_pca_feature_selection": state.highly_variable_features_var_output, // run PCA on highly variable genes only
+                    "pca_overwrite": state.pca_overwrite,
+                    // extra scaling args
+                    "obsm_pca": state.rna_scaling_pca_obsm_output,
+                    "pca_loadings_varm_output": state.rna_scaling_pca_loadings_varm_output,
+                    "pca_variance_uns_output": state.rna_scaling_pca_variance_uns_output,
+                    "pca_overwrite": state.pca_overwrite,
+                    "obsm_umap": state.rna_scaling_umap_obsm_output,
+                    "uns_neighbors": "neighbors_scaled",
+                    "obsp_neighbor_connectivities": "connectivities_scaled",
+                    "obsp_neighbor_distances": "distances_scaled",
+                    "output": state.workflow_output,
                   ],
                 "dimensionality_reduction_prot":
                   [
@@ -177,7 +203,8 @@ workflow run_wf {
                     "input": state.input,
                     "layer": "clr",
                     "modality": "prot",
-                    "pca_overwrite": state.pca_overwrite
+                    "pca_overwrite": state.pca_overwrite,
+                    "output": state.workflow_output,
                   ]
               ]
               return stateMappings[component.name]
@@ -185,16 +212,12 @@ workflow run_wf {
             toState: ["input": "output"]
           )
       }
-      | publish.run(
-        fromState: { id, state -> [
-            "input": state.input,
-            "output": state.workflow_output,
-          ]
-        },
-        auto: [publish: true]
-      )
-      | setState(["output"])
-
+      // At the end of the reduce statement,
+      // the `toState` closure put the output back into
+      // into the 'input' slot
+      | map {id, state ->
+        [id, ["output": state.input]]
+      }
 
   emit:
   output_ch

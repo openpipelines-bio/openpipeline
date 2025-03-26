@@ -1,14 +1,376 @@
-# openpipelines x.x.x
+# openpipelines 2.1.0
+
+## BREAKING CHANGES
+
+* Deprecation of `metadata/duplicate_obs` and `metadata/duplicate_var` components (PR #952).
+
+* Deprecation of `workflows/annotation/scgpt_integration_knn` component (PR #952).
+
+## NEW FUNCTIONALITY
+
+* `dataflow/concatenate_h5mu`: add `modality` parameter (PR #977).
+
+* `filter_with_scrublet`: add `expected_doublet_rate`, `stdev_doublet_rate`, `n_neighbors` and `sim_doublet_ratio` arguments (PR #974).
+
+* `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948, #958).
+
+* `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
+
+* `workflows/rna/rna_singlesample`, `workflows/multiomics/process_samples` workflows: Added ribosomal gene detection (PR #968).
+
+* `scanvi`: enable CUDA acceleration (PR #969).
+
+* `feature_annotation/align_query_reference`: Enable the alignment of multiple layers (PR #972).
+
+* `convert/from_h5ad_to_seurat`: Add component to convert from h5ad to Seurat (PR #980).
+
+## MAJOR CHANGES
+
+* Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
+
+* The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
+
+# NEW FUNCTIONALITY 
+
+* `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
+
+* `from_cellranger_multi_to_h5mu`: add support for `custom` modality (PR #982).
+
+# MINOR CHANGES
+
+* Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942 and PR #949). 
+
+* `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
+
+* `popv`: Pin numpy<2 after new release of scvi-tools (PR #946).
+
+* Various  components (`scgpt` and `annotate`): Add resource labels (PR #947, PR #950).
+
+* `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957, PR #959).
+
+* `integrate/scvi`, `integrate/totalvi` and `integrate/scarches`: update base image to nvcr.io/nvidia/pytorch:24.12-py3, pin scvi-tools version to 1.1.5, unpin jax and jaxlib version (PR #970).
+
+* `annotate/celltypist`: Enable passing any layer with log normalized counts, enforce checking whether counts are log normalized (PR #971).
+
+* `process_10xh5/filter_10xh5`: update container base to ubuntu 24.04 (PR #983).
+
+# BUG FIXES
+
+* `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).
+
+* `resources_test_scripts/annotation_test_data.sh`: Add a layer to the annotation reference dataset with log normalized counts (PR #960).
+
+* `annotate/celltypist`: Fix missing values in annotation column caused by index misalignment (PR #976).
+
+* `workflows/annotation/scgpt_annotation` and `workflows/integrate/scgpt_leiden`: Parameterization of HVG flavor with default method `cell_ranger` instead of `seurat_v3` (PR #979).
+
+# openpipelines 2.0.0
+
+## BREAKING CHANGES
+
+* `velocity/scvelo`: update `scvelo` to `0.3.3`, which also removes support for using `loom` input files. The component now uses a `MuData` object as input. Several arguments were added to support selecting different inputs from the MuData file: `counts_layer`, `modality`, `layer_spliced`, `layer_unspliced`, `layer_ambiguous`. An `output_h5mu` argument was has been added (PR #932). 
+
+* `src/annotate/onclass` and `src/annotate/celltypist`: Input parameter for gene name layers of input datasets has been updated to `--input_var_gene_names` and `reference_var_gene_names` (PR #919).
+
+* Several components under `src/scgpt` (`cross_check_genes`, `tokenize_pad`, `binning`) now processes the input (query) datasets differently. Instead of subsetting datasets based on genes in the model vocabulary and/or highly variable genes, these components require an input .var column with a boolean mask specifying this information. The results are written back to the original input data, preserving the dataset structure (PR #832).
+
+* `query/cellxgene_census`: The default output layer has been changed from `.layers["counts"]` to `.X` to be more aligned with the standard OpenPipelines format (PR #933).
+  Use argument `--output_layer_counts counts` to revert the behaviour to the previous default.
+
+## NEW FUNCTIONALITY
+
+* `velocyto_to_h5mu`: now writes counts to `.X` (PR #932)
+
+* `qc/calculate_atac_qc_metrics`: new component for calculating ATAC QC metrics (PR #868).
+
+* `workflows/annotation/scgpt_annotation` workflow: Added a scGPT transformer-based cell type annotation workflow (PR #832).
+
+* `workflows/annotation/scgpt_integration_knn` workflow: Cell-type annotation based on scGPT integration with KNN label transfer (PR #875).
+
+* CI: Use `params.resources_test` in test workflows in order to point to an alternative location (e.g. a cache) (PR #889).
+
+## MINOR CHANGES
+
+* Pin `scikit-learn` for `labels_transfer/xgboost` to `<1.6` (PR #931).
+
+* `filter/filter_with_scrublet`: provide cleaner error message when running scrublet on an empty modality (PR #929).
+
+* Several component (cleanup): remove workaround for using being able to use shared utility functions with Nextflow Fusion (PR #920).
+
+* `scgpt/cell_type_annotation` component update: Added support for multi-processing (PR #832).
+
+* Several annotation (`src/annotate/`) components (`onclass`, `celltypist`, `random_forest_annotation`, `scanvi`, `svm_annotation`): Updated input parameteres to ensure uniformity across components, implemented functionality to cross-check the overlap of genes between query and reference (model) datasets and implemented logic to allow for subsetting of genes (PR #919). 
+
+* `workflows/annotation/scgpt_annotation` workflow: Added a scGPT transformer-based cell type annotation workflow (PR #832).
+
+* `scgpt/cross_check_genes` component update: Highly variable genes are now cross-checked based on the boolean mask in `var_input`. The filtering information is stored in the `--output_var_filter` .var field instead of subsetting the dataset (PR #832).
+
+* `scgpt/binning` component update: This component now requires the `--var_input` parameter to provide gene filtering information. Binned data is written to the `--output_obsm_binned_counts` .obsm field in the original input data (PR #832).
+
+* `scgpt/pad_tokenize` component update: Genes are padded and tokenized based on filtering information in `--var_input` and `--input_obsm_binned_counts` (PR #832).
+
+* `resources_test_scripts/scgpt.sh`: Update scGPT test resources to avoid subsetting of datasets (PR #926).
+
+* `workflows/integration/scgpt_leiden` workflow update: Update workflow such that input dataset is not subsetted for HVG but uses boolean masks in .var field instead (PR #875).
+
+## BUG FIXES
+
+* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (PR #936 and PR #938). 
+
+* `scgpt/embedding`: remove unused argument `dbsn` (PR #875).
+
+* `scgpt/binning`: update handling of empty rows in sparse matrices (PR #875).
+
+* `dataflow/split_h5mu`: Update memory label from `lowmem` to `highmem` and cpu label from `singlecpu` to `lowcpu` (PR #930).
+
+# openpipelines 2.0.0-rc.2
+
+## BUG FIXES
+
+* `annotate/popv`: fix popv raising `ValueError` when an accelerator (e.g. GPU) is unavailable (PR #915).
+
+## MINOR CHANGES
+
+* `dataflow/split_h5mu`: Optimize resource usage of the component (PR #913).
+
+# openpipelines 2.0.0-rc.1
+
+## BREAKING CHANGES
+
+* Added cell multiplexing support to the `from_cellranger_multi_to_h5mu` component and the `cellranger_multi` workflow. For the `from_cellranger_multi_to_h5mu` component, the `output` argument now requires a value containing a wildcard character `*`, which will be replaced by the sample ID to form the final output file names. Additionally, a `sample_csv` argument is added to the `from_cellragner_multi_to_h5mu` component which describes the sample name per output file. No change is required for the `output_h5mu` argument from the `cellranger_multi` workflow, the workflow will just emit multiple events in case of a multiplexed run, one for each sample. The id of the events (and default output file names) are set by `--sample_ids` (in case of cell multiplexing), or (as before) by the user provided `id` for the input (PR #803 and PR #902).
+
+* `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
+
+* `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0.1` (PR #774 and PR #811).
+
+* Removed `--disable_library_compatibility_check` in favour of `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).
+
+* `lianapy`: bumped version to `1.3.0` (PR #827 and PR #862). Additionally, `groupby` is now a required argument.
+
+* `concat`: this component was deprecated and has now been removed, use `concatenate_h5mu` instead (PR #796).
+
+* The `workflows` folder in the root of the project no longer contains symbolic links to the build workflows in `target`.
+  Using any workflows that was previously linked in this directory will now result in an error which will indicate
+  the location of the workflow to be used instead (PR #796).
+  
+* `XGBoost`: bump version to `2.0.3` (PR #646).
+
+* Several components: update anndata to `0.11.1` and mudata to `0.3.1` (PR #645 and PR #901), and scanpy to `1.10.4` (PR #901). 
+
+* `filter/filter_with_hvg`: this component was deprecated and has now been removed. Use `feature_annotation/highly_variable_features_scanpy` instead (PR #843).
+
+* `dataflow/concat`: this component was deprecated and has now been removed. Use `dataflow/concatenate_h5mu` instead (PR #857).
+
+* `convert/from_h5mu_to_seurat`: bump seurat to latest version (PR #850).
+
+* `workflows/ingestion/bd_rhapsody`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
+* `mapping/bd_rhapsody`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
+* `reference/make_bdrhap_reference`: Upgrade BD Rhapsody 1.x to 2.x, thereby changing the interface of the workflow (PR #846).
+
+* `reference/build_star_reference`: Rename `mapping/star_build_reference` to `reference/build_star_reference` (PR #846).
+
+* `reference/cellranger_mkgtf`: Rename `reference/mkgtf` to `reference/cellranger_mkgtf` (PR #846).
+
+* `labels_transfer/xgboost`: Align interface with new annotation workflow
+  - Store label probabilities instead of uncertainties
+  - Take `.h5mu` format as an input instead of `.h5ad`
+
+* `reference/build_cellranger_arc_reference`: a default value of "output" is now specified for the argument `--genome`, inline with `reference/build_cellranger_reference` component. Additionally, providing a value for `--organism` is no longer required and its default value of `Homo Sapiens` has been removed (PR #864).
+
+## MAJOR CHANGES
+
+* Bump popv to `0.4.2` (PR #901)
 
 ## NEW FUNCTIONALITY
 
 * Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
 
+* `process_samples`, `process_batches` and `rna_multisample` workflows: added functionality to scale the log-normalized 
+  gene expression data to unit variance and zero mean. The scaled data will be output to a different layer and the
+  representation with reduced dimensions will be created and stored in addition to the non-scaled data (PR #733).
+
+* `transform/scaling`: add `--input_layer` and `--output_layer` arguments (PR #733).
+
+* CI: added checking of mudata contents for multiple workflows (PR #783).
+
+* Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #803).
+
+* `convert/from_cellranger_to_h5mu`: add support for antigen analysis. 
+
+* Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
+
 * Added `reference/build_cellranger_reference` component: build reference file compatible with ATAC and ATAC+GEX experiments (PR #726).
+
+* `demux/bcl_convert`: add support for no lane splitting (PR #804).
+
+* `reference/cellranger_mkgtf` component: Added cellranger mkgtf as a standalone component (PR #771).
+
+* `scgpt/cross_check_genes` component: Added a gene-model cross check component for scGPT (PR #758).
+
+* `scgpt/embedding`: component: Added scGPT embedding component (PR #761)
+
+* `scgpt/tokenize_pad`: component: Added scGPT padding and tokenization component (PR #754).
+
+* `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
+
+* `workflows/integration/scgpt_leiden` workflow with scGPT integration followed by Leiden clustering (PR #794).
+
+* `scgpt/cell_type_annotation` component: Added scGPT cell type annotation component (PR #798).
+
+* `resources_test_scripts/scGPT.sh`: Added script to include scGPT test resources (PR #800).
+
+* `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
+  on workflow level as well (PR #767).
+  
+* `annotate/celltypist` component: Added a CellTypist annotation component (PR #825).
+
+* `dataflow/split_h5mu` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
+
+* `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
+
+* `workflows/ingestion/make_reference`: Add additional arguments passed through to the STAR and BD Rhapsody reference components (PR #846).
+
+* `annotate/random_forest_annotation` component: Added a random forest cell type annotation component (PR #848).
+
+* `dataflow/concatenate_h5mu`: data from `.uns`, both originating from the global and per-modality slots, is now retained in the final concatenated output object. Additionally, added the `uns_merge_mode` argument in order to tune the behavior when conflicting keys are detected across samples (PR #859).
+
+* `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
+
+* `annotate/scanvi` component: Added a component to annotate cells using scANVI (PR #833).
+
+* `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
+
+* `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
+
+* `workflows/ingestion/make_reference`: add possibility to build CellRanger ARC references. Added `--motifs_file`, `--non_nuclear_contigs` and `--output_cellranger_arc` arguments (PR #864).
+
+* Test resources (reference_gencodev41_chr1): switch reference genome for CellRanger to ARC variant (PR #864).
+
+* `transform/bpcells_regress_out` component: Added a component to regress out effects of confounding variables in the count matrix using BPCells (PR #863).
+
+* `transform/regress_out`: Allow providing 'input' and 'output' layers for scanpy regress_out functionality (PR #863).
+
+* Added `transform/tfidf` component: normalize ATAC data with TF-IDF (PR #870).
+
+* Added `dimred/lsi` component (PR #552).
+
+* `metadata/duplicate_obs` component: Added a component to make a copy from one .obs field or index to another .obs field within the same MuData object (PR #874, PR #899).
+
+* `annotate/onclass`: component: Added a component to annotate cell types using OnClass (PR #844).
+
+* `annotate/svm` component: Added a component to annotate cell types using support vector machine (SVM) (PR #845).
+
+* `metadata/duplicate_var` component: Added a component to make a copy from one .var field or index to another .var field within the same MuData object (PR #877, PR #899).
+
+* `filter/subset_obsp` component: Added a component to subset an .obsp matrix by column based on the value of an .obs field. The resulting subset is moved to an .obsm field (PR #888).
+
+* `labels_transfer/knn` component: Enable using additional distance functions for KNN classification (PR #830) and allow to perform KNN classification based on a pre-calculated neighborhood graph (PR #890).
 
 ## MINOR CHANGES
 
+* Several components: bump python version (PR #901).
+
+* `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: generate counts from fastq files using CellRanger atac count (PR #726).
+
+* `cellbender_remove_background_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
+
+* Bump scvelo to `0.3.2` (PR #828).
+
+* Pin numpy<2 for several components (PR #815).
+
 * Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
+
+* `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
+
+* Bump `viash-actions` to `v6` (PR #821).
+
+* `reference/make_reference`: Do not try to extract genome fasta and transcriptome gtf if they are not gzipped (PR #856).
+
+* Changes related to syncing the test resources (PR #867):
+
+  - Add `.info.test_resources` to `_viash.yaml` to specify where test resources need to be synced from.
+  - `download/sync_test_resources`: Use `.info.test_resources` in `_viash.yaml` to detect where test resources need to be synced from.
+  - Update CI to use `project/sync-and-cache` instead of `project/sync-and-cache-s3`.
+
+## BUG FIXES
+
+* Fix failing tests for `ingestion/cellranger_postprocessing`, `ingestion/conversion` and `multiomics/process_batches` (PR #869).
+
+* `convert/from_10xh5_to_h5mu`: add .uns slot to mdata root when metrics file is provided (PR #887).
+
+* Fix ingestion components not working when optional arguments are unset (PR #894).
+
+* `transform/normalize_total` component: pass the `target_sum` argument to `sc.pp.normalize_total()` (PR #823).
+
+* `from_cellranger_multi_to_h5mu`: fix missing `pytest` dependency (PR #897).
+
+## DOCUMENTATION
+
+* Update authorship of components (PR #835).
+
+# openpipelines 1.0.4
+
+## BUG FIXES
+
+* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (PR #939, backported from PR #936 and PR #938). 
+
+# openpipelines 1.0.3
+
+## BUG FIXES
+
+* `qc/calculate_qc_metrics`: increase total counts accuracy with low precision floating dtypes as input layer (PR # , backported from PR #852).
+
+# openpipelines 1.0.2
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
+  data dtype (dtype) changed as a result of adding more observations after concatenation, causing `TypeError`.
+  One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
+  which is present in another sample; causing the values being filled with `NA` (PR #842, backported from PR #837).
+
+# openpipelines 1.0.1
+
+## BUG FIXES
+
+* Bump viash to `0.8.6` (PR #816, backported from #815). This changes the at-runtime generated nextflow process from an in-memory to an on-disk temporary file, which should cause less issues with Nextflow Fusion.
+
+# openpipelines 1.0.0-rc6
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: fix regression bug where observations are no longer linked to the correct metadata
+after concatenation (PR #807)
+
+# openpipelines 1.0.0-rc5
+
+## BUG FIXES
+
+* `cluster/leiden`: prevent leiden component from hanging when a child process is killed (e.g. when there is not enough memory available) (PR #805).
+
+# openpipelines 1.0.0-rc4
+
+## BREAKING CHANGES
+
+* `query/cellxgene_census`: Refactored the interface, documentation and internal workings of this component (PR #621).
+  - Renamed arguments to align with standard OpenPipelines notations and cellxgene census API:
+    - `--input_database` became `--input_uri`
+    - `--cellxgene_release` became `--census_version`
+    - `--cell_query` became `--obs_value_filter`
+    - `--cells_filter_columns` became `--cell_filter_grouping`
+    - `--min_cells_filter_columns` became `--cell_filter_minimum_count`
+    - `--modality` became `--output_modality`
+    - Removed `--dataset_id` since it was no longer being used.
+    - Added `--add_dataset_meta` to add metadata to the output MuData object.
+  - Documentation of the component and its arguments was improved.
+
+## BUG FIXES
+
+* `mapping/cellranger_multi`: Fix the regex for the fastq input files to allow dropping the lane from the input file names (e.g. `_L001`) (PR #778).
+
+* `workflows/rna/rna_singlesample`: Fix argument passing `top_n_vars` and `obs_name_mitochondrial_fraction` to the `qc` subworkflow (PR #779).
 
 # openpipelines 1.0.0-rc3
 
@@ -26,14 +388,6 @@
 ## NEW FUNCTIONALITY
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
-
-* `scgpt/cross_check_genes` component: Added a gene-model cross check component for scGPT (PR #758).
-
-* `scgpt/embedding`: component: Added scGPT embedding component (PR #761)
-
-* `scgpt/tokenize_pad`: component: Added scGPT padding and tokenization component (PR #754).
-
-* `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
 # openpipelines 1.0.0-rc2
 
