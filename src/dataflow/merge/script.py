@@ -61,13 +61,9 @@ def main():
             df[obj_col] = df[obj_col].astype(str).astype("category")
             
         # Nullable float columns are not supported by anndata/mudata
-        float64_cols = df.select_dtypes(include=pd.Float64Dtype())
-        for float64_col in float64_cols:
-            df[float64_col] = df[float64_col].astype(np.float64)
-        
-        float32_cols = df.select_dtypes(include=pd.Float32Dtype())
-        for float32_col in float32_cols:
-            df[float32_col] = df[float32_col].astype(np.float32)
+        float_cols = df.select_dtypes(include=[pd.Float64Dtype(), pd.Float32Dtype()]).columns.values
+        for float_col in float_cols:
+            df[float_col] = df[float_col].astype(df[float_col].dtype.numpy_dtype)
             
         setattr(merged, df_attr, df)
 
