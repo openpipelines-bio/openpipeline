@@ -181,8 +181,6 @@ dependencies:
   - name: feature_annotation/align_query_reference
   - name: feature_annotation/highly_variable_features_scanpy
   - name: transform/delete_layer
-  - name: workflows/multiomics/split_modalities
-  - name: dataflow/merge
 
 resources:
   - type: nextflow_script
