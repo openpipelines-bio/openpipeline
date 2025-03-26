@@ -52,7 +52,7 @@ def main():
             convert_integer=True,
             convert_string=False,
             convert_boolean=True,
-            convert_floating=True,
+            convert_floating=False,
         )
 
         # Convert leftover 'object' columns to string
