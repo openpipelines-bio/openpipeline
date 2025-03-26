@@ -1,149 +1,151 @@
-functionality:
-  name: popv
-  namespace: "annotate"
-  description: "Performs popular major vote cell typing on single cell sequence data using multiple algorithms. Note that this is a one-shot version of PopV."
-  authors:
-    - __merge__: /src/authors/matthias_beyens.yaml
-      roles: [ author ]
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ author ]
-  argument_groups:
-    - name: Inputs
-      description: Arguments related to the input (aka query) dataset.
-      arguments:
-        - name: "--input"
-          alternatives: [-i]
-          type: file
-          description: Input h5mu file.
-          direction: input
-          required: true
-          example: input.h5mu
-        - name: "--modality"
-          description: Which modality to process.
-          type: string
-          default: "rna"
-          required: false
-        - name: "--input_layer"
-          type: string
-          description: Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[input_layer]`.
-          required: false
-        - name: "--input_obs_batch"
-          type: string
-          description: Key in obs field of input adata for batch information. If no value is provided, batch label is assumed to be unknown.
-          required: false
-        - name: "--input_var_subset"
-          type: string
-          description: Subset the input object with this column.
-          required: false
-        - name: "--input_obs_label"
-          type: string
-          description: Key in obs field of input adata for label information. This is only used for training scANVI. Unlabelled cells should be set to `"unknown_celltype_label"`.
-          required: false
-        - name: "--unknown_celltype_label"
-          type: string
-          description: If `input_obs_label` is specified, cells with this value will be treated as unknown and will be predicted by the model.
-          default: "unknown"
-          required: false
-    - name: Reference
-      description: Arguments related to the reference dataset.
-      arguments:
-        - name: "--reference"
-          type: file
-          description: "User-provided reference tissue. The data that will be used as reference to call cell types."
-          example: TS_Bladder_filtered.h5ad
-          direction: input
-          required: true
-        - name: "--reference_layer"
-          type: string
-          description: Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[reference_layer]`.
-          required: false
-        - name: "--reference_obs_label"
-          type: string
-          description: Key in obs field of reference AnnData with cell-type information.
-          default: "cell_ontology_class"
-          required: false
-        - name: "--reference_obs_batch"
-          type: string
-          description: Key in obs field of input adata for batch information.
-          default: "donor_assay"
-          required: false
-        # - name: "--reference_models"
-        #   type: file
-        #   description: Pretrained models. Can be a directory or a tar gz.
-        #   required: false
-        #   example: pretrained_models_Bladder_ts.tar.gz
-    - name: Outputs
-      description: Output arguments.
-      arguments:
-        - name: "--output"
-          type: file
-          description: Output h5mu file.
-          direction: output
-          required: true
-          example: output.h5mu
-        - name: "--output_compression"
-          type: string
-          choices: ["gzip", "lzf"]
-          required: false
-          example: "gzip"
-        # - name: "--output_models"
-        #   type: file
-        #   direction: output
-        #   description: If `prediction_mode == "retrain"`, saves models to a directory and compresses the results into a tar gz.
-        #   example: "output.tar.gz"
-        #   required: false
-    - name: Arguments
-      description: Other arguments.
-      arguments:
-        - name: "--methods"
-          type: string
-          description: "Methods to call cell types. By default, runs to knn_on_scvi and scanvi."
-          example: ["knn_on_scvi", "scanvi"]
-          choices: [celltypist, knn_on_bbknn, knn_on_scanorama, knn_on_scvi, onclass, rf, scanvi, svm]
-          required: true
-          multiple: true
-        # - name: "--prediction_mode"
-        #   type: string
-        #   description: |
-        #     Execution mode of cell-type annotation.
-        #     "retrain": Train all prediction models and saves them to disk. Argument `output_models` must be defined.
-        #     "inference": Classify all cells based on pretrained models. Argument `reference_models` must be defined.
-        #     "fast": Fast inference using only query cells and single epoch in scArches.
-        # - name: "--plots"
-        #   type: boolean
-        #   description: "Creation of agreement and frequency plots between selected cell type algorithmn(s) and final PopV ensemble called cell type."
-        #   default: false
-        #   required: false
-  resources:
-    - type: python_script
-      path: script.py
-    - path: /src/utils/setup_logger.py
-    
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/annotation_test_data/
-    - path: /resources_test/pbmc_1k_protein_v3/
+name: popv
+namespace: "annotate"
+description: "Performs popular major vote cell typing on single cell sequence data using multiple algorithms. Note that this is a one-shot version of PopV."
+authors:
+  - __merge__: /src/authors/matthias_beyens.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ author ]
+argument_groups:
+  - name: Inputs
+    description: Arguments related to the input (aka query) dataset.
+    arguments:
+      - name: "--input"
+        alternatives: [-i]
+        type: file
+        description: Input h5mu file.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--input_layer"
+        type: string
+        description: Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[input_layer]`.
+        required: false
+      - name: "--input_obs_batch"
+        type: string
+        description: Key in obs field of input adata for batch information. If no value is provided, batch label is assumed to be unknown.
+        required: false
+      - name: "--input_var_subset"
+        type: string
+        description: Subset the input object with this column.
+        required: false
+      - name: "--input_obs_label"
+        type: string
+        description: Key in obs field of input adata for label information. This is only used for training scANVI. Unlabelled cells should be set to `"unknown_celltype_label"`.
+        required: false
+      - name: "--unknown_celltype_label"
+        type: string
+        description: If `input_obs_label` is specified, cells with this value will be treated as unknown and will be predicted by the model.
+        default: "unknown"
+        required: false
+  - name: Reference
+    description: Arguments related to the reference dataset.
+    arguments:
+      - name: "--reference"
+        type: file
+        description: "User-provided reference tissue. The data that will be used as reference to call cell types."
+        example: TS_Bladder_filtered.h5ad
+        direction: input
+        required: true
+      - name: "--reference_layer"
+        type: string
+        description: Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[reference_layer]`.
+        required: false
+      - name: "--reference_obs_label"
+        type: string
+        description: Key in obs field of reference AnnData with cell-type information.
+        default: "cell_ontology_class"
+        required: false
+      - name: "--reference_obs_batch"
+        type: string
+        description: Key in obs field of input adata for batch information.
+        default: "donor_assay"
+        required: false
+      # - name: "--reference_models"
+      #   type: file
+      #   description: Pretrained models. Can be a directory or a tar gz.
+      #   required: false
+      #   example: pretrained_models_Bladder_ts.tar.gz
+  - name: Outputs
+    description: Output arguments.
+    arguments:
+      - name: "--output"
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
+      - name: "--output_compression"
+        type: string
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
+      # - name: "--output_models"
+      #   type: file
+      #   direction: output
+      #   description: If `prediction_mode == "retrain"`, saves models to a directory and compresses the results into a tar gz.
+      #   example: "output.tar.gz"
+      #   required: false
+  - name: Arguments
+    description: Other arguments.
+    arguments:
+      - name: "--methods"
+        type: string
+        description: "Methods to call cell types. By default, runs to knn_on_scvi and scanvi."
+        example: ["knn_on_scvi", "scanvi"]
+        choices: [celltypist, knn_on_bbknn, knn_on_scanorama, knn_on_scvi, onclass, rf, scanvi, svm]
+        required: true
+        multiple: true
+      # - name: "--prediction_mode"
+      #   type: string
+      #   description: |
+      #     Execution mode of cell-type annotation.
+      #     "retrain": Train all prediction models and saves them to disk. Argument `output_models` must be defined.
+      #     "inference": Classify all cells based on pretrained models. Argument `reference_models` must be defined.
+      #     "fast": Fast inference using only query cells and single epoch in scArches.
+      # - name: "--plots"
+      #   type: boolean
+      #   description: "Creation of agreement and frequency plots between selected cell type algorithmn(s) and final PopV ensemble called cell type."
+      #   default: false
+      #   required: false
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/annotation_test_data/
+  - path: /resources_test/pbmc_1k_protein_v3/
 
-platforms:
+engines:
   - type: docker
     #image: nvcr.io/nvidia/pytorch:22.12-py3
-    image: python:3.9-slim
+    image: python:3.11-slim
+
     setup:
+      - type: docker
+        env:
+          # Build extensions without AVX512/AVX2 support
+          - CFLAGS="-mno-avx512f -mno-avx2" 
+          - CPPFLAGS="-mno-avx512f -mno-avx2"
       - type: apt
         packages:
           - procps
           - git
           - build-essential
-          - wget
       - type: python
-        __merge__: [ /src/base/requirements/scanpy.yaml, .]
         packages:
-          - scvi-tools~=1.0.3
-          - popv~=0.3.2
-          - jax==0.4.10
-          - jaxlib==0.4.10
-          - ml-dtypes<0.3.0
+          - popv~=0.4.2
+          # Previously, scvi-tools < 1.2.2 pinned numpy to <2. We want to keep it pinned here
+          - numpy<2
+          - setuptools
       # These need to be updated AFTER popv is installed.
       # See https://github.com/YosefLab/PopV/issues/30
       - type: python
@@ -151,12 +153,14 @@ platforms:
       # download ontology required by popv
       - type: docker
         run: |
-          cd /opt && git clone --depth 1 https://github.com/YosefLab/PopV.git && \
-            cd PopV && git fetch --depth 1 origin tag v0.2 && git checkout v0.2
+          cd /opt && git clone --depth 1 https://github.com/YosefLab/PopV.git
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
+runners:
+  - type: executable
   - type: nextflow
     directives:
       # TODO: should add new label highmem-single-gpu and lowmem-single-gpu
-      label: [highmem, highcpu]
+      label: [highmem, highcpu, highdisk]

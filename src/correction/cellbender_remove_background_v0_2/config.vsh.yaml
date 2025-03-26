@@ -1,170 +1,169 @@
-functionality:
-  name: cellbender_remove_background_v0_2
-  namespace: "correction"
-  description: |
-    Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
+name: cellbender_remove_background_v0_2
+namespace: "correction"
+description: |
+  Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
 
-    This module removes counts due to ambient RNA molecules and random barcode swapping from (raw) UMI-based scRNA-seq count matrices. 
-    At the moment, only the count matrices produced by the CellRanger count pipeline is supported. Support for additional tools and protocols 
-    will be added in the future. A quick start tutorial can be found here.
+  This module removes counts due to ambient RNA molecules and random barcode swapping from (raw) UMI-based scRNA-seq count matrices. 
+  At the moment, only the count matrices produced by the CellRanger count pipeline is supported. Support for additional tools and protocols 
+  will be added in the future. A quick start tutorial can be found here.
 
-    Fleming et al. 2022, bioRxiv.
-  argument_groups:
-    - name: Inputs
-      arguments:
-        - name: "--input"
-          alternatives: [-i]
-          type: file
-          description: Input h5mu file.
-          direction: input
-          required: true
-          example: input.h5mu
-        - name: "--modality"
-          description: List of modalities to process.
-          type: string
-          default: "rna"
-          required: false
-    - name: Outputs
-      arguments:
-        - name: "--output"
-          alternatives: [-o]
-          type: file
-          description: Full count matrix as an h5mu file, with background RNA removed. This file contains all the original droplet barcodes.
-          direction: output
-          required: true
-          example: output.h5mu
-        - name: "--output_compression"
-          type: string
-          choices: ["gzip", "lzf"]
-          required: false
-          example: "gzip"
-        - name: "--layer_output"
-          description: Output layer
-          type: string
-          default: "corrected"
-        - name: "--obs_latent_rt_efficiency"
-          type: string
-          default: "latent_rt_efficiency"
-        - name: "--obs_latent_cell_probability"
-          type: string
-          default: "latent_cell_probability"
-        - name: "--obs_latent_scale"
-          type: string
-          default: "latent_scale"
-        - name: "--var_ambient_expression"
-          type: string
-          default: "ambient_expression"
-        - name: "--obsm_latent_gene_encoding"
-          type: string
-          default: "cellbender_latent_gene_encoding"
-    - name: Arguments
-      arguments:
-        - name: "--expected_cells"
-          type: integer
-          description: Number of cells expected in the dataset (a rough estimate within a factor of 2 is sufficient).
-          example: 1000
-        - name: "--total_droplets_included"
-          type: integer
-          description: |
-            The number of droplets from the rank-ordered UMI plot
-            that will be analyzed. The largest 'total_droplets'
-            droplets will have their cell probabilities inferred
-            as an output.
-          example: 25000
-        - name: "--expected_cells_from_qc"
-          type: boolean
-          description: Will use the Cell Ranger QC to determine the estimated number of cells
-          default: true
-        - name: "--model"
-          type: string
-          choices: [simple, ambient, swapping, full]
-          description: |
-            Which model is being used for count data. 'simple'
-            does not model either ambient RNA or random barcode
-            swapping (for debugging purposes -- not recommended).
-            'ambient' assumes background RNA is incorporated into
-            droplets. 'swapping' assumes background RNA comes from
-            random barcode swapping. 'full' uses a combined
-            ambient and swapping model.
-          default: full
-        - name: "--epochs"
-          type: integer
-          description: Number of epochs to train. 
-          default: 150
-        - name: "--low_count_threshold"
-          type: integer
-          description: |
-            Droplets with UMI counts below this number are completely 
-            excluded from the analysis. This can help identify the correct 
-            prior for empty droplet counts in the rare case where empty 
-            counts are extremely high (over 200).
-          default: 15
-        - name: "--z_dim"
-          type: integer
-          description: |
-            Dimension of latent variable z.
-          default: 100
-        - name: "--z_layers"
-          type: integer
-          description: |
-            Dimension of hidden layers in the encoder for z.
-          multiple: true
-          default: [500]
-        - name: "--training_fraction"
-          type: double
-          description: |
-            Training detail: the fraction of the data used for training.
-            The rest is never seen by the inference algorithm. Speeds up learning.
-          default: 0.9
-        - name: "--empty_drop_training_fraction"
-          type: double
-          description: |
-            Training detail: the fraction of the training data each epoch that 
-            is drawn (randomly sampled) from surely empty droplets.
-          default: 0.5
-        - name: "--fpr"
-          type: double
-          description: |
-            Target false positive rate in (0, 1). A false positive
-            is a true signal count that is erroneously removed.
-            More background removal is accompanied by more signal
-            removal at high values of FPR. You can specify
-            multiple values, which will create multiple output
-            files.
-          multiple: true
-          default: [0.01]
-        - name: "--exclude_antibody_capture"
-          type: boolean_true
-          description: |
-            Including the flag --exclude-antibody-capture will
-            cause remove-background to operate on gene counts
-            only, ignoring other features.
-        - name: "--learning_rate"
-          type: double
-          description: |
-            Training detail: lower learning rate for inference. A
-            OneCycle learning rate schedule is used, where the
-            upper learning rate is ten times this value. (For this
-            value, probably do not exceed 1e-3).
-          example: 0.0001
-        - name: "--cuda"
-          type: boolean_true
-          description: |
-            Including the flag --cuda will run the inference on a
-            GPU.
-  resources:
-    - type: python_script
-      path: script.py
-    - path: helper.py
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    # normally cellbender should only be run on unfiltered data, but for the purposes of the unit test the filtered data will do.
-    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
-platforms:
+  Fleming et al. 2022, bioRxiv.
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: [-i]
+        type: file
+        description: Input h5mu file.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: List of modalities to process.
+        type: string
+        default: "rna"
+        required: false
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: [-o]
+        type: file
+        description: Full count matrix as an h5mu file, with background RNA removed. This file contains all the original droplet barcodes.
+        direction: output
+        required: true
+        example: output.h5mu
+      - name: "--output_compression"
+        type: string
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
+      - name: "--layer_output"
+        description: Output layer
+        type: string
+        default: "corrected"
+      - name: "--obs_latent_rt_efficiency"
+        type: string
+        default: "latent_rt_efficiency"
+      - name: "--obs_latent_cell_probability"
+        type: string
+        default: "latent_cell_probability"
+      - name: "--obs_latent_scale"
+        type: string
+        default: "latent_scale"
+      - name: "--var_ambient_expression"
+        type: string
+        default: "ambient_expression"
+      - name: "--obsm_latent_gene_encoding"
+        type: string
+        default: "cellbender_latent_gene_encoding"
+  - name: Arguments
+    arguments:
+      - name: "--expected_cells"
+        type: integer
+        description: Number of cells expected in the dataset (a rough estimate within a factor of 2 is sufficient).
+        example: 1000
+      - name: "--total_droplets_included"
+        type: integer
+        description: |
+          The number of droplets from the rank-ordered UMI plot
+          that will be analyzed. The largest 'total_droplets'
+          droplets will have their cell probabilities inferred
+          as an output.
+        example: 25000
+      - name: "--expected_cells_from_qc"
+        type: boolean
+        description: Will use the Cell Ranger QC to determine the estimated number of cells
+        default: true
+      - name: "--model"
+        type: string
+        choices: [simple, ambient, swapping, full]
+        description: |
+          Which model is being used for count data. 'simple'
+          does not model either ambient RNA or random barcode
+          swapping (for debugging purposes -- not recommended).
+          'ambient' assumes background RNA is incorporated into
+          droplets. 'swapping' assumes background RNA comes from
+          random barcode swapping. 'full' uses a combined
+          ambient and swapping model.
+        default: full
+      - name: "--epochs"
+        type: integer
+        description: Number of epochs to train. 
+        default: 150
+      - name: "--low_count_threshold"
+        type: integer
+        description: |
+          Droplets with UMI counts below this number are completely 
+          excluded from the analysis. This can help identify the correct 
+          prior for empty droplet counts in the rare case where empty 
+          counts are extremely high (over 200).
+        default: 15
+      - name: "--z_dim"
+        type: integer
+        description: |
+          Dimension of latent variable z.
+        default: 100
+      - name: "--z_layers"
+        type: integer
+        description: |
+          Dimension of hidden layers in the encoder for z.
+        multiple: true
+        default: [500]
+      - name: "--training_fraction"
+        type: double
+        description: |
+          Training detail: the fraction of the data used for training.
+          The rest is never seen by the inference algorithm. Speeds up learning.
+        default: 0.9
+      - name: "--empty_drop_training_fraction"
+        type: double
+        description: |
+          Training detail: the fraction of the training data each epoch that 
+          is drawn (randomly sampled) from surely empty droplets.
+        default: 0.5
+      - name: "--fpr"
+        type: double
+        description: |
+          Target false positive rate in (0, 1). A false positive
+          is a true signal count that is erroneously removed.
+          More background removal is accompanied by more signal
+          removal at high values of FPR. You can specify
+          multiple values, which will create multiple output
+          files.
+        multiple: true
+        default: [0.01]
+      - name: "--exclude_antibody_capture"
+        type: boolean_true
+        description: |
+          Including the flag --exclude-antibody-capture will
+          cause remove-background to operate on gene counts
+          only, ignoring other features.
+      - name: "--learning_rate"
+        type: double
+        description: |
+          Training detail: lower learning rate for inference. A
+          OneCycle learning rate schedule is used, where the
+          upper learning rate is ten times this value. (For this
+          value, probably do not exceed 1e-3).
+        example: 0.0001
+      - name: "--cuda"
+        type: boolean_true
+        description: |
+          Including the flag --cuda will run the inference on a
+          GPU.
+resources:
+  - type: python_script
+    path: script.py
+  - path: helper.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  # normally cellbender should only be run on unfiltered data, but for the purposes of the unit test the filtered data will do.
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
+engines:
   - type: docker
-    image: nvcr.io/nvidia/pytorch:22.12-py3
+    image: nvcr.io/nvidia/pytorch:23.12-py3
     # run_args: ["--gpus all"]
     # image: nvcr.io/nvidia/cuda:11.6.0-base-ubuntu20.04
     # image: pytorch/pytorch:1.12.1-cuda11.3-cudnn8-runtime
@@ -173,7 +172,6 @@ platforms:
         __merge__: /src/base/requirements/anndata_mudata.yaml
         packages:
           - muon==0.1.5
-          - tables==3.8.0
           - cellbender==0.2.1
           # - torch
           # - torchvision
@@ -184,6 +182,8 @@ platforms:
       - type: python
         packages: 
           - muon~=0.1.4
+runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [gpu]

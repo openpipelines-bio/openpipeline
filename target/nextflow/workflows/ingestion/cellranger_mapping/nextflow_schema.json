@@ -73,10 +73,10 @@
                 "output_raw": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir/`. Location where the output folder from Cell Ranger will be stored",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir/`. Location where the output folder from Cell Ranger will be stored."
+                "description": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. Location where the output folder from Cell Ranger will be stored",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. Location where the output folder from Cell Ranger will be stored."
             ,
-                "default": "$id.$key.output_raw.output_raw"
+                "default":"$id.$key.output_raw.output_raw"
             }
     
 
@@ -87,7 +87,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output_h5mu.h5mu`, example: `output.h5mu`. The output from Cell Ranger, converted to h5mu",
                 "help_text": "Type: `file`, required, default: `$id.$key.output_h5mu.h5mu`, example: `output.h5mu`. The output from Cell Ranger, converted to h5mu."
             ,
-                "default": "$id.$key.output_h5mu.h5mu"
+                "default":"$id.$key.output_h5mu.h5mu"
             }
     
 
@@ -98,7 +98,7 @@
                 "description": "Type: `string`, default: `metrics_summary`. Name of the ",
                 "help_text": "Type: `string`, default: `metrics_summary`. Name of the .uns slot under which to QC metrics (if any)."
             ,
-                "default": "metrics_summary"
+                "default":"metrics_summary"
             }
     
 
@@ -111,7 +111,7 @@
                 "enum": ["raw", "filtered"]
             
             ,
-                "default": "raw"
+                "default":"raw"
             }
     
 
@@ -144,7 +144,7 @@
                 "enum": ["auto", "threeprime", "fiveprime", "SC3Pv1", "SC3Pv2", "SC3Pv3", "SC3Pv3LT", "SC3Pv3HT", "SC5P-PE", "SC5P-R2", "SC-FB"]
             
             ,
-                "default": "auto"
+                "default":"auto"
             }
     
 
@@ -155,7 +155,7 @@
                 "description": "Type: `boolean`, default: `false`. Whether or not to run the secondary analysis e",
                 "help_text": "Type: `boolean`, default: `false`. Whether or not to run the secondary analysis e.g. clustering."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -166,7 +166,7 @@
                 "description": "Type: `boolean`, default: `true`. Whether to generate a BAM file",
                 "help_text": "Type: `boolean`, default: `true`. Whether to generate a BAM file."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -177,7 +177,7 @@
                 "description": "Type: `boolean`, default: `true`. Include intronic reads in count (default=true unless --target-panel is specified in which case default=false)",
                 "help_text": "Type: `boolean`, default: `true`. Include intronic reads in count (default=true unless --target-panel is specified in which case default=false)"
             ,
-                "default": "True"
+                "default":true
             }
     
 

@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `prot`. ",
                 "help_text": "Type: `string`, default: `prot`. "
             ,
-                "default": "prot"
+                "default":"prot"
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -90,6 +90,19 @@
                 "description": "Type: `string`. Output layer to use",
                 "help_text": "Type: `string`. Output layer to use. By default, use X."
             
+            }
+    
+
+        ,
+                "axis": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `0`, choices: ``0`, `1``. Axis across which CLR is performed",
+                "help_text": "Type: `integer`, default: `0`, choices: ``0`, `1``. Axis across which CLR is performed. If set to 0, CLR is performed across observations (cells).\nIf set to 1, CLR is performed across features (genes).\n",
+                "enum": [0, 1]
+            
+            ,
+                "default":0
             }
     
 

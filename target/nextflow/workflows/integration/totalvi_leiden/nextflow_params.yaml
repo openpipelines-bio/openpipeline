@@ -1,15 +1,15 @@
 # Inputs
 id: # please fill in - example: "foo"
 input: # please fill in - example: "dataset.h5mu"
-layer: "log_normalized"
+# layer: "foo"
 modality: "rna"
 prot_modality: "prot"
 reference: # please fill in - example: "path/to/file"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# reference_model_path: "$id.$key.reference_model_path.reference_model_path"
-# query_model_path: "$id.$key.query_model_path.query_model_path"
+# reference_model_path: "totalvi_model_reference"
+# query_model_path: "totalvi_model_query"
 
 # General TotalVI Options
 obs_batch: "sample_id"
@@ -39,11 +39,11 @@ prot_obsp_neighbor_connectivities: "totalvi_integration_connectivities"
 
 # Clustering options RNA
 rna_obs_cluster: "totalvi_integration_leiden"
-rna_leiden_resolution: [1]
+rna_leiden_resolution: [1.0]
 
 # Clustering options ADT
 prot_obs_cluster: "totalvi_integration_leiden"
-prot_leiden_resolution: [1]
+prot_leiden_resolution: [1.0]
 
 # Umap options
 obsm_umap: "X_totalvi_umap"
@@ -51,3 +51,5 @@ obsm_umap: "X_totalvi_umap"
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

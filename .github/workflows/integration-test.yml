@@ -22,7 +22,6 @@ jobs:
       push_containers: ${{ github.event_name == 'schedule' || inputs.push_containers }}
       version: 'integration_build'
       target_tag: 'integration_build'
-      deploy_to_viash_hub: false
       deploy_branch: 'integration_build'
     secrets: inherit
 
@@ -34,14 +33,15 @@ jobs:
 
     outputs:
       cache_key: ${{ steps.cache.outputs.cache_key }}
+      dest_paths: ${{ steps.cache.outputs.dest_paths }}
 
     steps:
-    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v5
-      id: cache 
+    - uses: actions/checkout@v4
       with:
-        s3_bucket: $s3_bucket
-        dest_path: resources_test
-        cache_key_prefix: resources_test__
+        fetch-depth: 0
+
+    - uses: viash-io/viash-actions/project/sync-and-cache@v6
+      id: cache
 
   # phase 3
   integration_test:
@@ -55,6 +55,10 @@ jobs:
         component: ${{ fromJson(needs.build.outputs.workflow_matrix) }}
 
     steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v2
     
@@ -66,23 +70,24 @@ jobs:
       with:
         ref: 'integration_build'
 
-    - uses: viash-io/viash-actions/setup@v5
+    - uses: viash-io/viash-actions/setup@v6
 
-    - uses: nf-core/setup-nextflow@v2.0.0
+    - uses: nf-core/setup-nextflow@v2.1.4
 
     # use cache
     - name: Cache resources data
-      uses: actions/cache@v4
-      timeout-minutes: 5
+      if: ${{ needs.sync_s3.outputs.cache_key != '' }}
+      uses: actions/cache/restore@v4
+      timeout-minutes: 10
       with:
-        path: resources_test
+        path: ${{ needs.sync_s3.outputs.dest_paths }}
         key: ${{ needs.sync_s3.outputs.cache_key }}
         fail-on-cache-miss: true
 
     - name: Remove unused test resources to save space
       shell: bash
       run: |
-        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" -c 'del(.functionality.dependencies)' | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" -c 'del(.dependencies)' | jq -r -c '(.build_info.config | capture("^(?<dir>.*\/)").dir) as $dir | .test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
         to_not_remove=()
         for resource in "${resources[@]}"; do
           if [[ $resource == *"resources_test"* ]]; then
@@ -101,8 +106,20 @@ jobs:
         find ./resources_test/ "${to_not_remove[@]}" -type f -exec rm {} +
         tree ./resources_test/
 
+    - name: Build test dependencies
+      run: |
+        readarray -t test_dependencies < <(viash ns list --format json "${{ matrix.component.config }}" | jq -r -c '(.[].info.test_dependencies // []) | flatten | .[] | (.namespace + "/" + .name)')
+        for dependency in "${test_dependencies[@]}"; do
+          echo $dependency
+          viash ns build -q "$dependency" -c ".version := 'integration_build'" -c ".engines[.type == 'docker'].target_tag := 'integration_build'" --setup alwayspullelsebuild
+        done
+
+    - name: Remove docker builder cache
+      run: |
+        docker builder prune -a -f 
+    
     - name: Run integration test
-      timeout-minutes: 60
+      timeout-minutes: 120
       run: |
         # todo: replace with viash test command
         export NXF_VER=22.04.5

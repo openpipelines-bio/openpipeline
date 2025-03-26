@@ -50,13 +50,23 @@
     
 
         ,
+                "reference_version": {
+                "type":
+                "string",
+                "description": "Type: `string`. Optional reference version string to include with reference",
+                "help_text": "Type: `string`. Optional reference version string to include with reference"
+            
+            }
+    
+
+        ,
                 "output": {
                 "type":
                 "string",
                 "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `cellranger_reference`. Output folder",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `cellranger_reference`. Output folder"
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 

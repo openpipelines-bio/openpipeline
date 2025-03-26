@@ -10,11 +10,13 @@ obsm_umap: # please fill in - example: "X_scGPT_umap"
 # Outputs
 # output: "$id.$key.output.pdf"
 output_raw: false
-# output_umap_label_fig: "$id.$key.output_umap_label_fig.png"
-# output_umap_batch_fig: "$id.$key.output_umap_batch_fig.png"
-# output_md_report: "$id.$key.output_md_report.qmd"
-# output_metrics: "$id.$key.output_metrics.json"
+# output_umap_label_fig: "umap_label.png"
+# output_umap_batch_fig: "umap_batch.png"
+# output_md_report: "report.qmd"
+# output_metrics: "metrics.json"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

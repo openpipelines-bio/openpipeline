@@ -1,288 +1,323 @@
-functionality:
-  name: "make_reference"
-  namespace: "workflows/ingestion"
-  version: "integration-qc_build"
-  authors:
-  - name: "Angela Oliveira Pisco"
-    roles:
-    - "author"
-    info:
-      role: "Contributor"
-      links:
-        github: "aopisco"
-        orcid: "0000-0003-0142-2355"
-        linkedin: "aopisco"
-      organizations:
-      - name: "Insitro"
-        href: "https://insitro.com"
-        role: "Director of Computational Biology"
-      - name: "Open Problems"
-        href: "https://openproblems.bio"
-        role: "Core Member"
-  - name: "Robrecht Cannoodt"
-    roles:
-    - "author"
-    - "maintainer"
-    info:
-      role: "Core Team Member"
-      links:
-        email: "robrecht@data-intuitive.com"
-        github: "rcannood"
-        orcid: "0000-0003-3641-729X"
-        linkedin: "robrechtcannoodt"
-      organizations:
-      - name: "Data Intuitive"
-        href: "https://www.data-intuitive.com"
-        role: "Data Science Engineer"
-      - name: "Open Problems"
-        href: "https://openproblems.bio"
-        role: "Core Member"
-  argument_groups:
-  - name: "Inputs"
-    arguments:
-    - type: "string"
-      name: "--id"
-      description: "ID of the reference."
-      info: null
-      example:
-      - "foo"
-      required: true
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "file"
-      name: "--genome_fasta"
-      description: "Reference genome fasta."
-      info: null
-      example:
-      - "https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz"
-      must_exist: true
-      create_parent: true
-      required: true
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "file"
-      name: "--transcriptome_gtf"
-      description: "Reference transcriptome annotation."
-      info: null
-      example:
-      - "https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz"
-      must_exist: true
-      create_parent: true
-      required: true
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "file"
-      name: "--ercc"
-      description: "ERCC sequence and annotation file."
-      info: null
-      example:
-      - "https:/assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip"
-      must_exist: true
-      create_parent: true
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-  - name: "Outputs"
-    arguments:
-    - type: "string"
-      name: "--target"
-      description: "Which reference indices to generate."
-      info: null
-      default:
-      - "star"
-      required: false
-      choices:
-      - "cellranger"
-      - "bd_rhapsody"
-      - "star"
-      direction: "input"
-      multiple: true
-      multiple_sep: ";"
-      dest: "par"
-    - type: "file"
-      name: "--output_fasta"
-      description: "Output genome sequence fasta."
-      info: null
-      example:
-      - "genome_sequence.fa.gz"
-      must_exist: true
-      create_parent: true
-      required: false
-      direction: "output"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "file"
-      name: "--output_gtf"
-      description: "Output transcriptome annotation gtf."
-      info: null
-      example:
-      - "transcriptome_annotation.gtf.gz"
-      must_exist: true
-      create_parent: true
-      required: false
-      direction: "output"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "file"
-      name: "--output_cellranger"
-      description: "Output index"
-      info: null
-      example:
-      - "cellranger_index.tar.gz"
-      must_exist: true
-      create_parent: true
-      required: false
-      direction: "output"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "file"
-      name: "--output_bd_rhapsody"
-      description: "Output index"
-      info: null
-      example:
-      - "bdrhap_index.tar.gz"
-      must_exist: true
-      create_parent: true
-      required: false
-      direction: "output"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "file"
-      name: "--output_star"
-      description: "Output index"
-      info: null
-      example:
-      - "star_index.tar.gz"
-      must_exist: true
-      create_parent: true
-      required: false
-      direction: "output"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-  - name: "Arguments"
-    arguments:
-    - type: "string"
-      name: "--subset_regex"
-      description: "Will subset the reference chromosomes using the given regex."
-      info: null
-      example:
-      - "(ERCC-00002|chr1)"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-  resources:
-  - type: "nextflow_script"
-    path: "main.nf"
-    is_executable: true
-    entrypoint: "run_wf"
+name: "make_reference"
+namespace: "workflows/ingestion"
+version: "integration-qc_build"
+authors:
+- name: "Angela Oliveira Pisco"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      github: "aopisco"
+      orcid: "0000-0003-0142-2355"
+      linkedin: "aopisco"
+    organizations:
+    - name: "Insitro"
+      href: "https://insitro.com"
+      role: "Director of Computational Biology"
+    - name: "Open Problems"
+      href: "https://openproblems.bio"
+      role: "Core Member"
+- name: "Robrecht Cannoodt"
+  roles:
+  - "author"
+  - "maintainer"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "robrecht@data-intuitive.com"
+      github: "rcannood"
+      orcid: "0000-0003-3641-729X"
+      linkedin: "robrechtcannoodt"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Science Engineer"
+    - name: "Open Problems"
+      href: "https://openproblems.bio"
+      role: "Core Member"
+- name: "Weiwei Schultz"
+  roles:
+  - "contributor"
+  info:
+    role: "Contributor"
+    organizations:
+    - name: "Janssen R&D US"
+      role: "Associate Director Data Sciences"
+argument_groups:
+- name: "Inputs"
+  arguments:
+  - type: "string"
+    name: "--id"
+    description: "ID of the reference."
+    info: null
+    example:
+    - "foo"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
   - type: "file"
-    path: "src/workflows/utils/"
+    name: "--genome_fasta"
+    description: "Reference genome fasta."
+    info: null
+    example:
+    - "https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
   - type: "file"
-    path: "./src/workflows/utils/labels.config"
-    dest: "nextflow_labels.config"
-  description: "Build a transcriptomics reference into one of many formats.\n"
-  test_resources:
-  - type: "nextflow_script"
-    path: "test.nf"
-    is_executable: true
-    entrypoint: "test_wf"
+    name: "--transcriptome_gtf"
+    description: "Reference transcriptome annotation."
+    info: null
+    example:
+    - "https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
   - type: "file"
-    path: "resources_test/reference_gencodev41_chr1"
+    name: "--ercc"
+    description: "ERCC sequence and annotation file."
+    info: null
+    example:
+    - "https:/assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "STAR Settings"
+  arguments:
+  - type: "integer"
+    name: "--star_genome_sa_index_nbases"
+    description: "Length (bases) of the SA pre-indexing string. Typically between\
+      \ 10 and 15.\nLonger strings will use much more memory, but allow faster searches.\
+      \ For small\ngenomes, the parameter {genomeSAindexNbases must be scaled down\
+      \ to\nmin(14, log2(GenomeLength)/2 - 1).\n"
+    info: null
+    default:
+    - 14
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "BD Rhapsody Settings"
+  arguments:
+  - type: "string"
+    name: "--bdrhap_mitochondrial_contigs"
+    description: "Names of the Mitochondrial contigs in the provided Reference Genome.\
+      \ Fragments originating from contigs other than these are\nidentified as 'nuclear\
+      \ fragments' in the ATACseq analysis pipeline.\n"
+    info: null
+    default:
+    - "chrM"
+    - "chrMT"
+    - "M"
+    - "MT"
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--bdrhap_filtering_off"
+    description: "By default the input Transcript Annotation files are filtered based\
+      \ on the gene_type/gene_biotype attribute. Only features \nhaving the following\
+      \ attribute values are kept:\n\n  - protein_coding\n  - lncRNA \n  - IG_LV_gene\n\
+      \  - IG_V_gene\n  - IG_V_pseudogene\n  - IG_D_gene\n  - IG_J_gene\n  - IG_J_pseudogene\n\
+      \  - IG_C_gene\n  - IG_C_pseudogene\n  - TR_V_gene\n  - TR_V_pseudogene\n  -\
+      \ TR_D_gene\n  - TR_J_gene\n  - TR_J_pseudogene\n  - TR_C_gene\n\n  If you have\
+      \ already pre-filtered the input Annotation files and/or wish to turn-off the\
+      \ filtering, please set this option to True.\n"
+    info: null
+    direction: "input"
+  - type: "boolean_true"
+    name: "--bdrhap_wta_only_index"
+    description: "Build a WTA only index, otherwise builds a WTA + ATAC index."
+    info: null
+    direction: "input"
+  - type: "string"
+    name: "--bdrhap_extra_star_params"
+    description: "Additional parameters to pass to STAR when building the genome index.\
+      \ Specify exactly like how you would on the command line."
+    info: null
+    example:
+    - "--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Cellranger ARC options"
+  arguments:
   - type: "file"
-    path: "src/base/openpipelinetestutils"
-    dest: "openpipelinetestutils"
-  info: null
-  status: "enabled"
-  requirements:
-    commands:
-    - "ps"
-  dependencies:
-  - name: "reference/make_reference"
-    alias: "make_reference_component"
-    repository:
-      type: "local"
-      localPath: ""
-    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/reference/make_reference/config.vsh.yaml"
-    configInfo:
-      functionalityName: "make_reference"
-      git_tag: "0.2.0-1583-gec06d130e1"
-      git_remote: "https://github.com/openpipelines-bio/openpipeline"
-      viash_version: "0.8.5"
-      config: "/home/runner/work/openpipeline/openpipeline/src/reference/make_reference/config.vsh.yaml"
-      functionalityNamespace: "reference"
-      output: ""
-      platform: ""
-      git_commit: "ec06d130e1731ae70ddd2236cda9979b09dde9b5"
-      executable: "/nextflow/reference/make_reference/main.nf"
-    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/make_reference"
-  - name: "reference/build_bdrhap_reference"
-    repository:
-      type: "local"
-      localPath: ""
-    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/reference/build_bdrhap_reference/config.vsh.yaml"
-    configInfo:
-      functionalityName: "build_bdrhap_reference"
-      git_tag: "0.2.0-1583-gec06d130e1"
-      git_remote: "https://github.com/openpipelines-bio/openpipeline"
-      viash_version: "0.8.5"
-      config: "/home/runner/work/openpipeline/openpipeline/src/reference/build_bdrhap_reference/config.vsh.yaml"
-      functionalityNamespace: "reference"
-      output: ""
-      platform: ""
-      git_commit: "ec06d130e1731ae70ddd2236cda9979b09dde9b5"
-      executable: "/nextflow/reference/build_bdrhap_reference/main.nf"
-    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference"
-  - name: "mapping/star_build_reference"
-    repository:
-      type: "local"
-      localPath: ""
-    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/mapping/star_build_reference/config.vsh.yml"
-    configInfo:
-      functionalityName: "star_build_reference"
-      git_tag: "0.2.0-1583-gec06d130e1"
-      git_remote: "https://github.com/openpipelines-bio/openpipeline"
-      viash_version: "0.8.5"
-      config: "/home/runner/work/openpipeline/openpipeline/src/mapping/star_build_reference/config.vsh.yml"
-      functionalityNamespace: "mapping"
-      output: ""
-      platform: ""
-      git_commit: "ec06d130e1731ae70ddd2236cda9979b09dde9b5"
-      executable: "/nextflow/mapping/star_build_reference/main.nf"
-    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_build_reference"
-  - name: "reference/build_cellranger_reference"
-    repository:
-      type: "local"
-      localPath: ""
-    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/reference/build_cellranger_reference/config.vsh.yaml"
-    configInfo:
-      functionalityName: "build_cellranger_reference"
-      git_tag: "0.2.0-1583-gec06d130e1"
-      git_remote: "https://github.com/openpipelines-bio/openpipeline"
-      viash_version: "0.8.5"
-      config: "/home/runner/work/openpipeline/openpipeline/src/reference/build_cellranger_reference/config.vsh.yaml"
-      functionalityNamespace: "reference"
-      output: ""
-      platform: ""
-      git_commit: "ec06d130e1731ae70ddd2236cda9979b09dde9b5"
-      executable: "/nextflow/reference/build_cellranger_reference/main.nf"
-    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_reference"
-  set_wd_to_resources_dir: false
-platforms:
+    name: "--motifs_file"
+    description: "Path to file containing transcription factor motifs in JASPAR format."
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--non_nuclear_contigs"
+    description: "Name(s) of contig(s) that do not have any chromatin structure, for\
+      \ example, \nmitochondria or plastids. These contigs are excluded from peak\
+      \ calling since\nthe entire contig will be \"open\" due to a lack of chromatin\
+      \ structure.\nLeave empty if there are no such contigs.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "Outputs"
+  arguments:
+  - type: "string"
+    name: "--target"
+    description: "Which reference indices to generate."
+    info: null
+    default:
+    - "star"
+    required: false
+    choices:
+    - "cellranger"
+    - "cellranger_arc"
+    - "bd_rhapsody"
+    - "star"
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_fasta"
+    description: "Output genome sequence fasta."
+    info: null
+    example:
+    - "genome_sequence.fa.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_gtf"
+    description: "Output transcriptome annotation gtf."
+    info: null
+    example:
+    - "transcriptome_annotation.gtf.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_cellranger"
+    description: "Output index"
+    info: null
+    example:
+    - "cellranger_index.tar.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_cellranger_arc"
+    description: "Output index"
+    info: null
+    example:
+    - "cellranger_index_arc.tar.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_bd_rhapsody"
+    description: "Output index"
+    info: null
+    example:
+    - "bdrhap_index.tar.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_star"
+    description: "Output index"
+    info: null
+    example:
+    - "star_index.tar.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+- name: "Arguments"
+  arguments:
+  - type: "string"
+    name: "--subset_regex"
+    description: "Will subset the reference chromosomes using the given regex."
+    info: null
+    example:
+    - "(ERCC-00002|chr1)"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "nextflow_script"
+  path: "main.nf"
+  is_executable: true
+  entrypoint: "run_wf"
+- type: "file"
+  path: "utils"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Build a transcriptomics reference into one of many formats.\n"
+test_resources:
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf"
+- type: "file"
+  path: "reference_gencodev41_chr1"
+info: null
+status: "enabled"
+dependencies:
+- name: "reference/make_reference"
+  alias: "make_reference_component"
+  repository:
+    type: "local"
+- name: "reference/build_bdrhap_reference"
+  repository:
+    type: "local"
+- name: "reference/build_star_reference"
+  repository:
+    type: "local"
+- name: "reference/build_cellranger_reference"
+  repository:
+    type: "local"
+- name: "reference/build_cellranger_arc_reference"
+  repository:
+    type: "local"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
 - type: "nextflow"
   id: "nextflow"
   directives:
@@ -294,26 +329,44 @@ platforms:
     publish: false
   config:
     labels:
-      mem1gb: "memory = 1.GB"
-      mem2gb: "memory = 2.GB"
-      mem4gb: "memory = 4.GB"
-      mem8gb: "memory = 8.GB"
-      mem16gb: "memory = 16.GB"
-      mem32gb: "memory = 32.GB"
-      mem64gb: "memory = 64.GB"
-      mem128gb: "memory = 128.GB"
-      mem256gb: "memory = 256.GB"
-      mem512gb: "memory = 512.GB"
-      mem1tb: "memory = 1.TB"
-      mem2tb: "memory = 2.TB"
-      mem4tb: "memory = 4.TB"
-      mem8tb: "memory = 8.TB"
-      mem16tb: "memory = 16.TB"
-      mem32tb: "memory = 32.TB"
-      mem64tb: "memory = 64.TB"
-      mem128tb: "memory = 128.TB"
-      mem256tb: "memory = 256.TB"
-      mem512tb: "memory = 512.TB"
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
       cpu1: "cpus = 1"
       cpu2: "cpus = 2"
       cpu5: "cpus = 5"
@@ -328,12 +381,41 @@ platforms:
     - "includeConfig(\"nextflow_labels.config\")"
   debug: false
   container: "docker"
-info:
-  config: "/home/runner/work/openpipeline/openpipeline/src/workflows/ingestion/make_reference/config.vsh.yaml"
-  platform: "nextflow"
-  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/make_reference"
-  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/make_reference/main.nf"
-  viash_version: "0.8.5"
-  git_commit: "ec06d130e1731ae70ddd2236cda9979b09dde9b5"
+build_info:
+  config: "src/workflows/ingestion/make_reference/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "native"
+  output: "target/nextflow/workflows/ingestion/make_reference"
+  executable: "target/nextflow/workflows/ingestion/make_reference/main.nf"
+  viash_version: "0.9.0"
+  git_commit: "c69ec299b8b7fe47752573ceda873ced85ecdba2"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1583-gec06d130e1"
+  git_tag: "0.2.0-1584-gc69ec299b8b"
+  dependencies:
+  - "target/nextflow/reference/make_reference"
+  - "target/nextflow/reference/build_bdrhap_reference"
+  - "target/nextflow/reference/build_star_reference"
+  - "target/nextflow/reference/build_cellranger_reference"
+  - "target/nextflow/reference/build_cellranger_arc_reference"
+package_config:
+  name: "openpipeline"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+  viash_version: "0.9.0"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
+    \ := 'includeConfig(\"nextflow_labels.config\")'"
+  - ".version := \"integration-qc_build\""
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

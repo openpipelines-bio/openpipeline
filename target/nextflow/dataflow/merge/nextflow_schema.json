@@ -33,10 +33,10 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, default: `sample_paths`, multiple_sep: `\":\"`. Paths to the single-modality ",
-                "help_text": "Type: List of `file`, required, default: `sample_paths`, multiple_sep: `\":\"`. Paths to the single-modality .h5mu files that need to be combined"
+                "description": "Type: List of `file`, required, default: `sample_paths`, multiple_sep: `\";\"`. Paths to the single-modality ",
+                "help_text": "Type: List of `file`, required, default: `sample_paths`, multiple_sep: `\";\"`. Paths to the single-modality .h5mu files that need to be combined"
             ,
-                "default": "sample_paths"
+                "default":"sample_paths"
             }
     
 
@@ -47,7 +47,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`. Path to the output file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`. Path to the output file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 

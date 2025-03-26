@@ -1,7 +1,8 @@
 # Arguments
 genome_fasta: # please fill in - example: "genome_sequence.fa.gz"
 transcriptome_gtf: # please fill in - example: "transcriptome_annotation.gtf.gz"
-# output: "$id.$key.output.output"
+# reference_version: "foo"
+# output: "$id.$key.output"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

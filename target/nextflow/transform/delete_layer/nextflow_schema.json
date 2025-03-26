@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -54,8 +54,8 @@
                 "layer": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, required, multiple_sep: `\":\"`. Input layer to remove",
-                "help_text": "Type: List of `string`, required, multiple_sep: `\":\"`. Input layer to remove"
+                "description": "Type: List of `string`, required, multiple_sep: `\";\"`. Input layer to remove",
+                "help_text": "Type: List of `string`, required, multiple_sep: `\";\"`. Input layer to remove"
             
             }
     
@@ -67,7 +67,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -90,7 +90,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Do not raise an error if the layer does not exist for all modalities",
                 "help_text": "Type: `boolean_true`, default: `false`. Do not raise an error if the layer does not exist for all modalities."
             ,
-                "default": "False"
+                "default":false
             }
     
 

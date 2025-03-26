@@ -43,8 +43,8 @@
                 "modality": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, required, multiple_sep: `\":\"`. ",
-                "help_text": "Type: List of `string`, required, multiple_sep: `\":\"`. "
+                "description": "Type: List of `string`, required, multiple_sep: `\";\"`. ",
+                "help_text": "Type: List of `string`, required, multiple_sep: `\";\"`. "
             
             }
     
@@ -56,7 +56,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 

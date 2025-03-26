@@ -18,13 +18,13 @@ obsm_input: "X_pca"
 obsm_output: "X_scanorama"
 knn: 20
 batch_size: 5000
-sigma: 15
+sigma: 15.0
 approx: true
 alpha: 0.1
 
 # Clustering options
 obs_cluster: "scanorama_integration_leiden"
-leiden_resolution: [1]
+leiden_resolution: [1.0]
 
 # Umap options
 obsm_umap: "X_leiden_scanorama_umap"
@@ -32,3 +32,5 @@ obsm_umap: "X_leiden_scanorama_umap"
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

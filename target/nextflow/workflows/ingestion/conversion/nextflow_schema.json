@@ -78,7 +78,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Name or template for the output files",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Name or template for the output files."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -96,8 +96,8 @@
                 "modality": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, multiple_sep: `\":\"`. Name of the modality where the h5ad is stored in the h5mu object",
-                "help_text": "Type: List of `string`, multiple_sep: `\":\"`. Name of the modality where the h5ad is stored in the h5mu object."
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. Name of the modality where the h5ad is stored in the h5mu object",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. Name of the modality where the h5ad is stored in the h5mu object."
             
             }
     

@@ -96,7 +96,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -117,7 +117,7 @@
                 "description": "Type: `boolean`, default: `true`. Add the value passed with --id to ",
                 "help_text": "Type: `boolean`, default: `true`. Add the value passed with --id to .obs."
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -128,7 +128,7 @@
                 "description": "Type: `string`, default: `sample_id`. ",
                 "help_text": "Type: `string`, default: `sample_id`. .Obs column to add the sample IDs to. Required and only used when \n--add_id_to_obs is set to \u0027true\u0027\n"
             ,
-                "default": "sample_id"
+                "default":"sample_id"
             }
     
 
@@ -139,7 +139,7 @@
                 "description": "Type: `boolean`, default: `true`. Join the id to the ",
                 "help_text": "Type: `boolean`, default: `true`. Join the id to the .obs index (.obs_names). \nOnly used when --add_id_to_obs is set to \u0027true\u0027.\n"
             ,
-                "default": "True"
+                "default":true
             }
     
 
@@ -207,14 +207,34 @@
                 "rna_min_fraction_mito": {
                 "type":
                 "number",
-                "description": "Type: `double`, example: `0`. Minimum fraction of UMIs that are mitochondrial",
-                "help_text": "Type: `double`, example: `0`. Minimum fraction of UMIs that are mitochondrial."
+                "description": "Type: `double`, example: `0.0`. Minimum fraction of UMIs that are mitochondrial",
+                "help_text": "Type: `double`, example: `0.0`. Minimum fraction of UMIs that are mitochondrial."
             
             }
     
 
         ,
                 "rna_max_fraction_mito": {
+                "type":
+                "number",
+                "description": "Type: `double`, example: `0.2`. Maximum fraction of UMIs that are mitochondrial",
+                "help_text": "Type: `double`, example: `0.2`. Maximum fraction of UMIs that are mitochondrial."
+            
+            }
+    
+
+        ,
+                "rna_min_fraction_ribo": {
+                "type":
+                "number",
+                "description": "Type: `double`, example: `0.0`. Minimum fraction of UMIs that are mitochondrial",
+                "help_text": "Type: `double`, example: `0.0`. Minimum fraction of UMIs that are mitochondrial."
+            
+            }
+    
+
+        ,
+                "rna_max_fraction_ribo": {
                 "type":
                 "number",
                 "description": "Type: `double`, example: `0.2`. Maximum fraction of UMIs that are mitochondrial",
@@ -360,7 +380,7 @@
                 "description": "Type: `string`, default: `filter_with_hvg`. In which ",
                 "help_text": "Type: `string`, default: `filter_with_hvg`. In which .var slot to store a boolean array corresponding to the highly variable genes."
             ,
-                "default": "filter_with_hvg"
+                "default":"filter_with_hvg"
             }
     
 
@@ -371,7 +391,7 @@
                 "description": "Type: `string`, default: `sample_id`. If specified, highly-variable genes are selected within each batch separately and merged",
                 "help_text": "Type: `string`, default: `sample_id`. If specified, highly-variable genes are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific genes and acts as a lightweight batch correction method.\n"
             ,
-                "default": "sample_id"
+                "default":"sample_id"
             }
     
 
@@ -379,13 +399,23 @@
 },
     
     
-    "mitochondrial gene detection" : {
-    "title": "Mitochondrial Gene Detection",
+    "mitochondrial & ribosomal gene detection" : {
+    "title": "Mitochondrial & Ribosomal Gene Detection",
     "type": "object",
     "description": "No description",
     "properties": {
     
         
+                "var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gene_symbol`. ",
+                "help_text": "Type: `string`, example: `gene_symbol`. .var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as mitochondrial or ribosomal genes, respectively. \n"
+            
+            }
+    
+
+        ,
                 "var_name_mitochondrial_genes": {
                 "type":
                 "string",
@@ -406,23 +436,44 @@
     
 
         ,
-                "var_gene_names": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gene_symbol`. ",
-                "help_text": "Type: `string`, example: `gene_symbol`. .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex will be identified\nas a mitochondrial gene.\n"
-            
-            }
-    
-
-        ,
                 "mitochondrial_gene_regex": {
                 "type":
                 "string",
                 "description": "Type: `string`, default: `^[mM][tT]-`. Regex string that identifies mitochondrial genes from --var_gene_names",
                 "help_text": "Type: `string`, default: `^[mM][tT]-`. Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n"
             ,
-                "default": "^[mM][tT]-"
+                "default":"^[mM][tT]-"
+            }
+    
+
+        ,
+                "var_name_ribosomal_genes": {
+                "type":
+                "string",
+                "description": "Type: `string`. In which ",
+                "help_text": "Type: `string`. In which .var slot to store a boolean array corresponding the ribosomal genes.\n"
+            
+            }
+    
+
+        ,
+                "obs_name_ribosomal_fraction": {
+                "type":
+                "string",
+                "description": "Type: `string`. When specified, write the fraction of counts originating from ribosomal genes \n(based on --ribosomal_gene_regex) to an ",
+                "help_text": "Type: `string`. When specified, write the fraction of counts originating from ribosomal genes \n(based on --ribosomal_gene_regex) to an .obs column with the specified name.\nRequires --var_name_ribosomal_genes.\n"
+            
+            }
+    
+
+        ,
+                "ribosomal_gene_regex": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `^[Mm]?[Rr][Pp][LlSs]`. Regex string that identifies ribosomal genes from --var_gene_names",
+                "help_text": "Type: `string`, default: `^[Mm]?[Rr][Pp][LlSs]`. Regex string that identifies ribosomal genes from --var_gene_names.\nBy default will detect human and mouse ribosomal genes from a gene symbol.\n"
+            ,
+                "default":"^[Mm]?[Rr][Pp][LlSs]"
             }
     
 
@@ -453,7 +504,7 @@
                 "description": "Type: List of `integer`, default: `50,100,200,500`, multiple_sep: `\",\"`. Number of top vars to be used to calculate cumulative proportions",
                 "help_text": "Type: List of `integer`, default: `50,100,200,500`, multiple_sep: `\",\"`. Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n"
             ,
-                "default": "50,100,200,500"
+                "default":"50,100,200,500"
             }
     
 
@@ -474,7 +525,125 @@
                 "description": "Type: `boolean_true`, default: `false`. Allow overwriting slots for PCA output",
                 "help_text": "Type: `boolean_true`, default: `false`. Allow overwriting slots for PCA output."
             ,
-                "default": "False"
+                "default":false
+            }
+    
+
+}
+},
+    
+    
+    "clr options" : {
+    "title": "CLR options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "clr_axis": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `0`. Axis to perform the CLR transformation on",
+                "help_text": "Type: `integer`, default: `0`. Axis to perform the CLR transformation on."
+            ,
+                "default":0
+            }
+    
+
+}
+},
+    
+    
+    "rna scaling options" : {
+    "title": "RNA Scaling options",
+    "type": "object",
+    "description": "Options for enabling scaling of the log-normalized data to unit variance and zero mean.\nThe scaled data will be output a different layer and representation with reduced dimensions\nwill be created and stored in addition to the non-scaled data.\n",
+    "properties": {
+    
+        
+                "rna_enable_scaling": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. Enable scaling for the RNA modality",
+                "help_text": "Type: `boolean_true`, default: `false`. Enable scaling for the RNA modality."
+            ,
+                "default":false
+            }
+    
+
+        ,
+                "rna_scaling_output_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scaled`. Output layer where the scaled log-normalized data will be stored",
+                "help_text": "Type: `string`, default: `scaled`. Output layer where the scaled log-normalized data will be stored."
+            ,
+                "default":"scaled"
+            }
+    
+
+        ,
+                "rna_scaling_pca_obsm_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scaled_pca`. Name of the ",
+                "help_text": "Type: `string`, default: `scaled_pca`. Name of the .obsm key where the PCA representation of the log-normalized\nand scaled data is stored.\n"
+            ,
+                "default":"scaled_pca"
+            }
+    
+
+        ,
+                "rna_scaling_pca_loadings_varm_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scaled_pca_loadings`. Name of the ",
+                "help_text": "Type: `string`, default: `scaled_pca_loadings`. Name of the .varm key where the PCA loadings of the log-normalized and scaled\ndata is stored.\n"
+            ,
+                "default":"scaled_pca_loadings"
+            }
+    
+
+        ,
+                "rna_scaling_pca_variance_uns_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scaled_pca_variance`. Name of the ",
+                "help_text": "Type: `string`, default: `scaled_pca_variance`. Name of the .uns key where the variance and variance ratio will be stored as a map.\nThe map will contain two keys: variance and variance_ratio respectively.\n"
+            ,
+                "default":"scaled_pca_variance"
+            }
+    
+
+        ,
+                "rna_scaling_umap_obsm_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scaled_umap`. Name of the ",
+                "help_text": "Type: `string`, default: `scaled_umap`. Name of the .obsm key where the UMAP representation of the log-normalized and scaled data is stored."
+            ,
+                "default":"scaled_umap"
+            }
+    
+
+        ,
+                "rna_scaling_max_value": {
+                "type":
+                "number",
+                "description": "Type: `double`. Clip (truncate) data to this value after scaling",
+                "help_text": "Type: `double`. Clip (truncate) data to this value after scaling. If not specified, do not clip."
+            
+            }
+    
+
+        ,
+                "rna_scaling_zero_center": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_false`, default: `true`. If set, omit zero-centering variables, which allows to handle sparse input efficiently",
+                "help_text": "Type: `boolean_false`, default: `true`. If set, omit zero-centering variables, which allows to handle sparse input efficiently.\""
+            ,
+                "default":true
             }
     
 
@@ -534,7 +703,7 @@
     },
 
     {
-    "$ref": "#/definitions/mitochondrial gene detection"
+    "$ref": "#/definitions/mitochondrial & ribosomal gene detection"
     },
 
     {
@@ -543,6 +712,14 @@
 
     {
     "$ref": "#/definitions/pca options"
+    },
+
+    {
+    "$ref": "#/definitions/clr options"
+    },
+
+    {
+    "$ref": "#/definitions/rna scaling options"
     },
 
     {

@@ -1,150 +1,171 @@
-functionality:
-  name: "qc"
-  namespace: "workflows/qc"
-  description: "A pipeline to add basic qc statistics to a MuData "
-  authors:
-    - __merge__: /src/authors/dries_schaumont.yaml
-      roles: [ author, maintainer ]
-  argument_groups:
-    - name: Inputs
-      arguments:
-        - name: "--id"
-          required: true
-          type: string
-          description: ID of the sample.
-          example: foo
-        - name: "--input"
-          alternatives: [-i]
-          description: Path to the sample.
-          required: true
-          example: input.h5mu
-          type: file
-        - name: "--modality"
-          description: Which modality to process.
-          type: string
-          default: "rna"
-          required: false
-        - name: "--layer"
-          description: "Layer to calculate qc metrics for."
-          type: string
-          example: "raw_counts"
-          required: false
-    - name: "Mitochondrial Gene Detection"
-      arguments:
-        - name: "--var_name_mitochondrial_genes"
-          type: string
-          required: false
-          description: |
-            In which .var slot to store a boolean array corresponding the mitochondrial genes.
-        - name: "--obs_name_mitochondrial_fraction"
-          type: string
-          required: false
-          description: |
-            .Obs slot to store the fraction of reads found to be mitochondrial. Defaults to 'fraction_' suffixed by the value of --var_name_mitochondrial_genes
-        - name: "--var_gene_names"
-          required: false
-          example: "gene_symbol"
-          type: string
-          description: |
-            .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).
-            Gene names matching with the regex value from --mitochondrial_gene_regex will be identified
-            as a mitochondrial gene.
-        - name: --mitochondrial_gene_regex
-          type: string
-          description: |
-            Regex string that identifies mitochondrial genes from --var_gene_names.
-            By default will detect human and mouse mitochondrial genes from a gene symbol.
-          required: false
-          default: "^[mM][tT]-"
-    - name: "QC metrics calculation options"
-      arguments:
-        - name: "--var_qc_metrics"
-          description: |
-            Keys to select a boolean (containing only True or False) column from .var.
-            For each cell, calculate the proportion of total values for genes which are labeled 'True', 
-            compared to the total sum of the values for all genes. Defaults to the value from
-            --var_name_mitochondrial_genes.
-          type: string
-          multiple: True
-          multiple_sep: ','
-          required: false
-          example: "ercc,highly_variable"
-        - name: "--top_n_vars"
-          type: integer
-          description: |
-            Number of top vars to be used to calculate cumulative proportions.
-            If not specified, proportions are not calculated. `--top_n_vars 20,50` finds
-            cumulative proportion to the 20th and 50th most expressed vars.
-          multiple: true
-          multiple_sep: ','
-          required: false
-          default: [50, 100, 200, 500]
-        - name: "--output_obs_num_nonzero_vars"
-          description: |
-            Name of column in .obs describing, for each observation, the number of stored values
-            (including explicit zeroes). In other words, the name of the column that counts
-            for each row the number of columns that contain data.
-          type: string
-          required: false
-          default: "num_nonzero_vars"
-        - name: "--output_obs_total_counts_vars"
-          description: |
-            Name of the column for .obs describing, for each observation (row),
-            the sum of the stored values in the columns.
-          type: string
-          required: false
-          default: total_counts
-        - name: "--output_var_num_nonzero_obs"
-          description: |
-            Name of column describing, for each feature, the number of stored values
-            (including explicit zeroes). In other words, the name of the column that counts
-            for each column the number of rows that contain data.
-          type: string
-          required: false
-          default: "num_nonzero_obs"
-        - name: "--output_var_total_counts_obs"
-          description: |
-            Name of the column in .var describing, for each feature (column),
-            the sum of the stored values in the rows.
-          type: string
-          required: false
-          default: total_counts
-        - name: "--output_var_obs_mean"
-          type: string
-          description: |
-            Name of the column in .obs providing the mean of the values in each row.
-          default: "obs_mean"
-          required: false
-        - name: "--output_var_pct_dropout"
-          type: string
-          default: "pct_dropout"
-          description: |
-            Name of the column in .obs providing for each feature the percentage of
-            observations the feature does not appear on (i.e. is missing). Same as `--output_var_num_nonzero_obs`
-            but percentage based.
-    - name: "Outputs"
-      arguments:
-        - name: "--output"
-          type: file
-          required: true
-          direction: output
-          description: Destination path to the output.
-          example: output.h5mu
-  dependencies:
-    - name: transfer/publish
-    - name: metadata/grep_annotation_column
-    - name: qc/calculate_qc_metrics
-  resources:
-    - type: nextflow_script
-      path: main.nf
-      entrypoint: run_wf
-    - type: file
-      path: /src/workflows/utils/
-  test_resources:
-    - type: nextflow_script
-      path: test.nf
-      entrypoint: test_wf
-    - path: /resources_test/concat_test_data
-    - path: /resources_test/pbmc_1k_protein_v3
-platforms:
+name: "qc"
+namespace: "workflows/qc"
+description: "A pipeline to add basic qc statistics to a MuData "
+authors:
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ author, maintainer ]
+info:
+  test_dependencies:
+    - name: qc_test
+      namespace: test_workflows/qc
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--id"
+        required: true
+        type: string
+        description: ID of the sample.
+        example: foo
+      - name: "--input"
+        alternatives: [-i]
+        description: Path to the sample.
+        required: true
+        example: input.h5mu
+        type: file
+      - name: "--modality"
+        description: Which modality to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--layer"
+        description: "Layer to calculate qc metrics for."
+        type: string
+        example: "raw_counts"
+        required: false
+  - name: "Mitochondrial & Ribosomal Gene Detection"
+    arguments:
+      - name: "--var_gene_names"
+        required: false
+        example: "gene_symbol"
+        type: string
+        description: |
+          .var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).
+          Gene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be 
+          identified as mitochondrial or ribosomal genes, respectively.
+      - name: "--var_name_mitochondrial_genes"
+        type: string
+        required: false
+        description: |
+          In which .var slot to store a boolean array corresponding the mitochondrial genes.
+      - name: "--obs_name_mitochondrial_fraction"
+        type: string
+        required: false
+        description: |
+          .Obs slot to store the fraction of reads found to be mitochondrial. Defaults to 'fraction_' suffixed by the value of --var_name_mitochondrial_genes
+      - name: --mitochondrial_gene_regex
+        type: string
+        description: |
+          Regex string that identifies mitochondrial genes from --var_gene_names.
+          By default will detect human and mouse mitochondrial genes from a gene symbol.
+        required: false
+        default: "^[mM][tT]-"
+      - name: "--var_name_ribosomal_genes"
+        type: string
+        required: false
+        description: |
+          In which .var slot to store a boolean array corresponding the ribosomal genes.
+      - name: "--obs_name_ribosomal_fraction"
+        type: string
+        required: false
+        description: |
+          When specified, write the fraction of counts originating from ribosomal genes 
+          (based on --ribosomal_gene_regex) to an .obs column with the specified name.
+          Requires --var_name_ribosomal_genes.
+      - name: --ribosomal_gene_regex
+        type: string
+        description: |
+          Regex string that identifies ribosomal genes from --var_gene_names.
+          By default will detect human and mouse ribosomal genes from a gene symbol.
+        required: false
+        default: "^[Mm]?[Rr][Pp][LlSs]"
+  - name: "QC metrics calculation options"
+    arguments:
+      - name: "--var_qc_metrics"
+        description: |
+          Keys to select a boolean (containing only True or False) column from .var.
+          For each cell, calculate the proportion of total values for genes which are labeled 'True', 
+          compared to the total sum of the values for all genes. Defaults to the value from
+          --var_name_mitochondrial_genes.
+        type: string
+        multiple: True
+        multiple_sep: ','
+        required: false
+        example: "ercc,highly_variable"
+      - name: "--top_n_vars"
+        type: integer
+        description: |
+          Number of top vars to be used to calculate cumulative proportions.
+          If not specified, proportions are not calculated. `--top_n_vars 20,50` finds
+          cumulative proportion to the 20th and 50th most expressed vars.
+        multiple: true
+        multiple_sep: ','
+        required: false
+        default: [50, 100, 200, 500]
+      - name: "--output_obs_num_nonzero_vars"
+        description: |
+          Name of column in .obs describing, for each observation, the number of stored values
+          (including explicit zeroes). In other words, the name of the column that counts
+          for each row the number of columns that contain data.
+        type: string
+        required: false
+        default: "num_nonzero_vars"
+      - name: "--output_obs_total_counts_vars"
+        description: |
+          Name of the column for .obs describing, for each observation (row),
+          the sum of the stored values in the columns.
+        type: string
+        required: false
+        default: total_counts
+      - name: "--output_var_num_nonzero_obs"
+        description: |
+          Name of column describing, for each feature, the number of stored values
+          (including explicit zeroes). In other words, the name of the column that counts
+          for each column the number of rows that contain data.
+        type: string
+        required: false
+        default: "num_nonzero_obs"
+      - name: "--output_var_total_counts_obs"
+        description: |
+          Name of the column in .var describing, for each feature (column),
+          the sum of the stored values in the rows.
+        type: string
+        required: false
+        default: total_counts
+      - name: "--output_var_obs_mean"
+        type: string
+        description: |
+          Name of the column in .obs providing the mean of the values in each row.
+        default: "obs_mean"
+        required: false
+      - name: "--output_var_pct_dropout"
+        type: string
+        default: "pct_dropout"
+        description: |
+          Name of the column in .obs providing for each feature the percentage of
+          observations the feature does not appear on (i.e. is missing). Same as `--output_var_num_nonzero_obs`
+          but percentage based.
+  - name: "Outputs"
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: Destination path to the output.
+        example: output.h5mu
+dependencies:
+  - name: metadata/grep_annotation_column
+  - name: qc/calculate_qc_metrics
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+  - type: file
+    path: /src/workflows/utils/
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - path: /resources_test/concat_test_data
+  - path: /resources_test/pbmc_1k_protein_v3
+runners:
   - type: nextflow

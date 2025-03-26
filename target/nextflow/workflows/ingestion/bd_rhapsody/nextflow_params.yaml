@@ -1,38 +1,59 @@
 # Inputs
-mode: # please fill in - example: "wta"
-id: # please fill in - example: "foo"
-input: # please fill in - example: ["input.fastq.gz"]
-reference: # please fill in - example: ["reference_genome.tar.gz|reference.fasta"]
-# transcriptome_annotation: "transcriptome.gtf"
-# abseq_reference: ["abseq_reference.fasta"]
+# reads: ["WTALibrary_S1_L001_R1_001.fastq.gz", "WTALibrary_S1_L001_R2_001.fastq.gz"]
+# reads_atac: ["ATACLibrary_S2_L001_R1_001.fastq.gz", "ATACLibrary_S2_L001_R2_001.fastq.gz", "ATACLibrary_S2_L001_I2_001.fastq.gz"]
+
+# References
+# reference_archive: "RhapRef_Human_WTA_2023-02.tar.gz"
+# targeted_reference: ["BD_Rhapsody_Immune_Response_Panel_Hs.fasta"]
+# abseq_reference: ["AbSeq_reference.fasta"]
 # supplemental_reference: ["supplemental_reference.fasta"]
-sample_prefix: "sample"
 
 # Outputs
-# output_raw: "$id.$key.output_raw.output_raw"
-# output_h5mu: "$id.$key.output_h5mu.h5mu"
+# output: "$id.$key.output.h5mu"
+# output_raw: "$id.$key.output_raw"
 
-# Putative cell calling settings
-# putative_cell_call: "mRNA"
+# Putative Cell Calling Settings
+# cell_calling_data: "mRNA"
+# cell_calling_bioproduct_algorithm: "Basic"
+# cell_calling_atac_algorithm: "Basic"
 # exact_cell_count: 10000
-disable_putative_calling: false
+# expected_cell_count: 20000
 
-# Subsample arguments
-# subsample: 0.01
-# subsample_seed: 3445
+# Intronic Reads Settings
+# exclude_intronic_reads: false
 
-# Multiplex arguments
+# Multiplex Settings
 # sample_tags_version: "human"
 # tag_names: ["4-mySample", "9-myOtherSample", "6-alsoThisSample"]
 
 # VDJ arguments
 # vdj_version: "human"
 
+# ATAC options
+# predefined_atac_peaks: "predefined_peaks.bed"
+
+# Additional options
+run_name: "sample"
+generate_bam: false
+# long_reads: true
+
+# Advanced options
+# custom_star_params: "--alignIntronMax 6000 --outFilterScoreMinOverLread 0.1 --limitOutSJcollapsed 2000000"
+# custom_bwa_mem2_params: "-k 16 -w 200 -r"
+
 # CWL-runner arguments
 parallel: true
 timestamps: false
-dryrun: false
+
+# Undocumented arguments
+# abseq_umi: 123
+# target_analysis: true
+# vdj_jgene_evalue: 123.0
+# vdj_vgene_evalue: 123.0
+# write_filtered_reads: true
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

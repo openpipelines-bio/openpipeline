@@ -1,120 +1,123 @@
-functionality:
-  name: umap
-  namespace: "dimred"
-  description: |
-    UMAP (Uniform Manifold Approximation and Projection) is a manifold learning technique suitable for visualizing high-dimensional data. Besides tending to be faster than tSNE, it optimizes the embedding such that it best reflects the topology of the data, which we represent throughout Scanpy using a neighborhood graph. tSNE, by contrast, optimizes the distribution of nearest-neighbor distances in the embedding such that these best match the distribution of distances in the high-dimensional space. We use the implementation of umap-learn [McInnes18]. For a few comparisons of UMAP with tSNE, see this preprint.
-  authors:
-    - __merge__: /src/authors/dries_de_maeyer.yaml
-      roles: [ maintainer ]
-  argument_groups:
-    - name: Inputs
-      arguments:
-        - name: "--input"
-          type: file
-          description: Input h5mu file
-          direction: input
-          required: true
-          example: input.h5mu
+name: umap
+namespace: "dimred"
+description: |
+  UMAP (Uniform Manifold Approximation and Projection) is a manifold learning technique suitable for visualizing high-dimensional data. Besides tending to be faster than tSNE, it optimizes the embedding such that it best reflects the topology of the data, which we represent throughout Scanpy using a neighborhood graph. tSNE, by contrast, optimizes the distribution of nearest-neighbor distances in the embedding such that these best match the distribution of distances in the high-dimensional space. We use the implementation of umap-learn [McInnes18]. For a few comparisons of UMAP with tSNE, see this preprint.
+authors:
+  - __merge__: /src/authors/dries_de_maeyer.yaml
+    roles: [ maintainer ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        description: Input h5mu file
+        direction: input
+        required: true
+        example: input.h5mu
 
-        - name: "--modality"
-          type: string
-          default: "rna"
-          required: false
+      - name: "--modality"
+        type: string
+        default: "rna"
+        required: false
 
-        - name: "--uns_neighbors"
-          type: string
-          default: "neighbors"
-          description: The `.uns` neighbors slot as output by the `find_neighbors` component.
+      - name: "--uns_neighbors"
+        type: string
+        default: "neighbors"
+        description: The `.uns` neighbors slot as output by the `find_neighbors` component.
     
-    - name: Outputs
-      arguments:
-        - name: "--output"
-          alternatives: ["-o"]
-          type: file
-          description: Output h5mu file.
-          direction: output
-          required: true
-          example: output.h5mu
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
 
-        - name: "--output_compression"
-          type: string
-          description: The compression format to be used on the output h5mu object.
-          choices: ["gzip", "lzf"]
-          required: false
-          example: "gzip"
+      - name: "--output_compression"
+        type: string
+        description: The compression format to be used on the output h5mu object.
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
 
-        - name: "--obsm_output"
-          type: string
-          description: The pre/postfix under which to store the UMAP results.
-          default: "umap"
+      - name: "--obsm_output"
+        type: string
+        description: The pre/postfix under which to store the UMAP results.
+        default: "umap"
     
-    - name: Arguments
-      arguments:
-        - name: "--min_dist"
-          type: double
-          description: The effective minimum distance between embedded points. Smaller values will result in a more clustered/clumped embedding where nearby points on the manifold are drawn closer together, while larger values will result on a more even dispersal of points. The value should be set relative to the spread value, which determines the scale at which embedded points will be spread out. 
-          default: 0.5
+  - name: Arguments
+    arguments:
+      - name: "--min_dist"
+        type: double
+        description: The effective minimum distance between embedded points. Smaller values will result in a more clustered/clumped embedding where nearby points on the manifold are drawn closer together, while larger values will result on a more even dispersal of points. The value should be set relative to the spread value, which determines the scale at which embedded points will be spread out. 
+        default: 0.5
 
-        - name: "--spread"
-          type: double
-          description: The effective scale of embedded points. In combination with `min_dist` this determines how clustered/clumped the embedded points are.
-          default: 1.0
+      - name: "--spread"
+        type: double
+        description: The effective scale of embedded points. In combination with `min_dist` this determines how clustered/clumped the embedded points are.
+        default: 1.0
 
-        - name: "--num_components"
-          type: integer
-          description: The number of dimensions of the embedding.
-          default: 2
+      - name: "--num_components"
+        type: integer
+        description: The number of dimensions of the embedding.
+        default: 2
 
-        - name: "--max_iter"
-          type: integer
-          description: The number of iterations (epochs) of the optimization. Called `n_epochs` in the original UMAP. Default is set to 500 if neighbors['connectivities'].shape[0] <= 10000, else 200.
+      - name: "--max_iter"
+        type: integer
+        description: The number of iterations (epochs) of the optimization. Called `n_epochs` in the original UMAP. Default is set to 500 if neighbors['connectivities'].shape[0] <= 10000, else 200.
 
-        - name: "--alpha"
-          type: double
-          description: The initial learning rate for the embedding optimization.
-          default: 1.0
+      - name: "--alpha"
+        type: double
+        description: The initial learning rate for the embedding optimization.
+        default: 1.0
 
-        - name: "--gamma"
-          type: double
-          description: Weighting applied to negative samples in low dimensional embedding optimization. Values higher than one will result in greater weight being given to negative samples.
-          default: 1.0
+      - name: "--gamma"
+        type: double
+        description: Weighting applied to negative samples in low dimensional embedding optimization. Values higher than one will result in greater weight being given to negative samples.
+        default: 1.0
 
-        - name: "--negative_sample_rate"
-          type: integer
-          description: The number of negative edge/1-simplex samples to use per positive edge/1-simplex sample in optimizing the low dimensional embedding.
-          default: 5
+      - name: "--negative_sample_rate"
+        type: integer
+        description: The number of negative edge/1-simplex samples to use per positive edge/1-simplex sample in optimizing the low dimensional embedding.
+        default: 5
           
-        - name: "--init_pos"
-          type: string
-          description: |
-            How to initialize the low dimensional embedding. Called `init` in the original UMAP. Options are:
+      - name: "--init_pos"
+        type: string
+        description: |
+          How to initialize the low dimensional embedding. Called `init` in the original UMAP. Options are:
             
-            * Any key from `.obsm`
-            * `'paga'`: positions from `paga()`
-            * `'spectral'`: use a spectral embedding of the graph
-            * `'random'`: assign initial embedding positions at random.
+          * Any key from `.obsm`
+          * `'paga'`: positions from `paga()`
+          * `'spectral'`: use a spectral embedding of the graph
+          * `'random'`: assign initial embedding positions at random.
 
-          default: spectral
-  resources:
-    - type: python_script
-      path: script.py
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/pbmc_1k_protein_v3
-platforms:
-  - type: docker
-    image: python:3.9-slim
-    setup:
-      - type: apt
-        packages:
-          - procps
-      - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
-  - type: nextflow
-    directives:
-      label: [highcpu, midmem]
+        default: spectral
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3
+engines:
+- type: docker
+  image: python:3.12-slim
+  setup:
+    - type: apt
+      packages:
+        - procps
+    - type: python
+      __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+  test_setup:
+    - type: python
+      __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [highcpu, midmem, middisk]

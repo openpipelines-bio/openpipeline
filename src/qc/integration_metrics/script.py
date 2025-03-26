@@ -2,7 +2,6 @@ import scib
 import mudata as mu
 import numpy as np
 import warnings
-from time import sleep
 
 ## VIASH START
 par = {
@@ -263,7 +262,6 @@ logger.info("Calculating Overall Score")
 # See https://doi.org/10.1038/s41592-021-01336-8
 overall_score = (0.4 * avg_batch) + (0.6 * avg_bio)
 
-# sleep(10000)
 
 logger.info("Writing output data")
 adata.uns["bio_conservation_metrics"] = bio_metrics

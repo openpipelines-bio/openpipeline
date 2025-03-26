@@ -1,129 +1,164 @@
-functionality:
-  name: "rna_singlesample"
-  namespace: "workflows/rna"
-  description: "Processing unimodal single-sample RNA transcriptomics data."
-  info:
-    image: /images/concepts/fig_workflow_multiomics_rna_singlesample.svg
-  authors:
-    - __merge__: /src/authors/dries_de_maeyer.yaml
-      roles: [ author ]
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ author, maintainer ]
-    - __merge__: /src/authors/dries_schaumont.yaml
-      roles: [ author ]
-  argument_groups:
-    - name: "Input"
-      arguments:
-        - name: "--id"
-          required: true
-          type: string
-          description: ID of the sample.
-          example: foo
-        - name: "--input"
-          type: file
-          required: true
-          description: Path to the sample.
-          example: dataset.h5mu
-        - name: "--layer"
-          type: string
-          required: false
-          description: "Input layer to start from. By default, .X will be used."
-    - name: "Output"
-      arguments:
-        - name: "--output"
-          type: file
-          required: true
-          direction: output
-          description: Destination path to the output.
-          example: output.h5mu
-    - name: "Filtering options"
-      arguments:
-        - name: "--min_counts"
-          example: 200
-          type: integer
-          description: Minimum number of counts captured per cell.
-        - name: "--max_counts"
-          example: 5000000
-          type: integer
-          description: Maximum number of counts captured per cell.
+name: "rna_singlesample"
+namespace: "workflows/rna"
+description: "Processing unimodal single-sample RNA transcriptomics data."
+info:
+  image: /images/concepts/fig_workflow_multiomics_rna_singlesample.svg
+  test_dependencies:
+authors:
+  - __merge__: /src/authors/dries_de_maeyer.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ author, maintainer ]
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ author ]
+argument_groups:
+  - name: "Input"
+    arguments:
+      - name: "--id"
+        required: true
+        type: string
+        description: ID of the sample.
+        example: foo
+      - name: "--input"
+        type: file
+        required: true
+        description: Path to the sample.
+        example: dataset.h5mu
+      - name: "--layer"
+        type: string
+        required: false
+        description: "Input layer to start from. By default, .X will be used."
+  - name: "Output"
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: Destination path to the output.
+        example: output.h5mu
+  - name: "Filtering options"
+    arguments:
+      - name: "--min_counts"
+        example: 200
+        type: integer
+        description: Minimum number of counts captured per cell.
+      - name: "--max_counts"
+        example: 5000000
+        type: integer
+        description: Maximum number of counts captured per cell.
   
-        - name: "--min_genes_per_cell"
-          type: integer
-          example: 200
-          description: Minimum of non-zero values per cell.
-        - name: "--max_genes_per_cell"
-          example: 1500000
-          type: integer
-          description: Maximum of non-zero values per cell.
+      - name: "--min_genes_per_cell"
+        type: integer
+        example: 200
+        description: Minimum of non-zero values per cell.
+      - name: "--max_genes_per_cell"
+        example: 1500000
+        type: integer
+        description: Maximum of non-zero values per cell.
 
-        - name: "--min_cells_per_gene"
-          example: 3
-          type: integer
-          description: Minimum of non-zero values per gene.
+      - name: "--min_cells_per_gene"
+        example: 3
+        type: integer
+        description: Minimum of non-zero values per gene.
 
-        - name: "--min_fraction_mito"
-          example: 0
-          type: double
-          required: false
-          min: 0
-          max: 1
-          description: Minimum fraction of UMIs that are mitochondrial. Requires --obs_name_mitochondrial_fraction.
-        - name: "--max_fraction_mito"
-          type: double
-          required: false
-          min: 0
-          max: 1
-          example: 0.2
-          description: |
-            Maximum fraction of UMIs that are mitochondrial. Requires --obs_name_mitochondrial_fraction.
-    - name: "Mitochondrial gene detection"
-      arguments:
-        - name: "--var_name_mitochondrial_genes"
-          type: string
-          required: false
-          description: |
-            In which .var slot to store a boolean array corresponding the mitochondrial genes.
-        - name: "--obs_name_mitochondrial_fraction"
-          type: string
-          required: false
-          description: |
-            When specified, write the fraction of counts originating from mitochondrial genes 
-            (based on --mitochondrial_gene_regex) to an .obs column with the specified name.
-            Requires --var_name_mitochondrial_genes.
-        - name: "--var_gene_names"
-          required: false
-          example: "gene_symbol"
-          type: string
-          description: |
-            .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).
-            Gene names matching with the regex value from --mitochondrial_gene_regex will be identified
-            as a mitochondrial gene.
-        - name: --mitochondrial_gene_regex
-          type: string
-          description: |
-            Regex string that identifies mitochondrial genes from --var_gene_names.
-            By default will detect human and mouse mitochondrial genes from a gene symbol.
-          required: false
-          default: "^[mM][tT]-"
-  resources:
-    - type: nextflow_script
-      path: main.nf
-      entrypoint: run_wf
-    - type: file
-      path: /src/workflows/utils/
-  dependencies:
-    - name: filter/filter_with_counts
-    - name: filter/filter_with_scrublet
-    - name: filter/do_filter
-    - name: filter/delimit_fraction
-    - name: workflows/qc/qc
-  test_resources:
-    - type: nextflow_script
-      path: test.nf
-      entrypoint: test_wf
-    - type: nextflow_script
-      path: test.nf
-      entrypoint: test_wf2
-    - path: /resources_test/pbmc_1k_protein_v3
-platforms:
+      - name: "--min_fraction_mito"
+        example: 0
+        type: double
+        required: false
+        min: 0
+        max: 1
+        description: Minimum fraction of UMIs that are mitochondrial. Requires --obs_name_mitochondrial_fraction.
+      - name: "--max_fraction_mito"
+        type: double
+        required: false
+        min: 0
+        max: 1
+        example: 0.2
+        description: |
+          Maximum fraction of UMIs that are mitochondrial. Requires --obs_name_mitochondrial_fraction.
+
+      - name: "--min_fraction_ribo"
+        type: double
+        required: false
+        min: 0
+        max: 1
+        example: 0
+        description: Minimum fraction of UMIs that are ribosomal. Requires --obs_name_ribosomal_fraction.
+      - name: "--max_fraction_ribo"
+        type: double
+        required: false
+        min: 0
+        max: 1
+        example: 0.2
+        description: |
+          Maximum fraction of UMIs that are ribosomal. Requires --obs_name_ribosomal_fraction.
+  - name: "Mitochondrial & Ribosomal Gene Detection"
+    arguments:
+      - name: "--var_gene_names"
+        required: false
+        example: "gene_symbol"
+        type: string
+        description: |
+          .var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).
+          Gene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be 
+          identified as mitochondrial or ribosomal genes, respectively.  
+      - name: "--var_name_mitochondrial_genes"
+        type: string
+        required: false
+        description: |
+          In which .var slot to store a boolean array corresponding the mitochondrial genes.
+      - name: "--obs_name_mitochondrial_fraction"
+        type: string
+        required: false
+        description: |
+          When specified, write the fraction of counts originating from mitochondrial genes 
+          (based on --mitochondrial_gene_regex) to an .obs column with the specified name.
+          Requires --var_name_mitochondrial_genes.
+      - name: --mitochondrial_gene_regex
+        type: string
+        description: |
+          Regex string that identifies mitochondrial genes from --var_gene_names.
+          By default will detect human and mouse mitochondrial genes from a gene symbol.
+        required: false
+        default: "^[mM][tT]-"
+      - name: "--var_name_ribosomal_genes"
+        type: string
+        required: false
+        description: |
+          In which .var slot to store a boolean array corresponding the ribosomal genes.
+      - name: "--obs_name_ribosomal_fraction"
+        type: string
+        required: false
+        description: |
+          When specified, write the fraction of counts originating from ribosomal genes 
+          (based on --ribosomal_gene_regex) to an .obs column with the specified name.
+          Requires --var_name_ribosomal_genes.
+      - name: --ribosomal_gene_regex
+        type: string
+        description: |
+          Regex string that identifies ribosomal genes from --var_gene_names.
+          By default will detect human and mouse ribosomal genes from a gene symbol.
+        required: false
+        default: "^[Mm]?[Rr][Pp][LlSs]"
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+  - type: file
+    path: /src/workflows/utils/
+dependencies:
+  - name: filter/filter_with_counts
+  - name: filter/filter_with_scrublet
+  - name: filter/do_filter
+  - name: filter/delimit_fraction
+  - name: workflows/qc/qc
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf2
+  - path: /resources_test/pbmc_1k_protein_v3
+runners:
   - type: nextflow

@@ -1,68 +1,85 @@
-functionality:
-  name: concatenate_h5mu
-  namespace: "dataflow"
-  description: |
-    Concatenates several uni-modal samples in .h5mu files into a single file.
-  authors:
-    - __merge__: /src/authors/dries_schaumont.yaml
-      roles: [ maintainer ]
-  arguments:
-    - name: "--input"
-      alternatives: ["-i"]
-      type: file
-      multiple: true
-      description: Paths to the different samples to be concatenated.
-      required: true
-      example: sample_paths
-    - name: "--input_id"
-      type: string
-      multiple: true
-      description: |
-        Names of the different samples that have to be concatenated.  Must be specified when using '--mode move'.
-        In this case, the ids will be used for the columns names of the dataframes registring the conflicts.
-        If specified, must be of same length as `--input`.
-      required: false
-    - name: "--output"
-      alternatives: ["-o"]
-      type: file
-      direction: output
-      example: "output.h5mu"
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
-    - name: "--obs_sample_name"
-      type: string
-      description: Name of the .obs key under which to add the sample names.
-      default: "sample_id"
-    - name: "--other_axis_mode"
-      type: string
-      choices: [same, unique, first, only, concat, move]
-      default: move
-      description: |
-        How to handle the merging of other axis (var, obs, ...).
+name: concatenate_h5mu
+namespace: "dataflow"
+description: |
+  Concatenate observations from samples in several (uni- and/or multi-modal) MuData files into a single file.
+authors:
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ maintainer ]
+arguments:
+  - name: "--input"
+    alternatives: ["-i"]
+    type: file
+    multiple: true
+    description: Paths to the different samples to be concatenated.
+    required: true
+    example: sample_paths
+  - name: "--modality"
+    type: string
+    multiple: true
+    description: "Only output concatenated objects for the provided modalities. Outputs all modalities by default."
+    required: false
+  - name: "--input_id"
+    type: string
+    multiple: true
+    description: |
+      Names of the different samples that have to be concatenated.  Must be specified when using '--mode move'.
+      In this case, the ids will be used for the columns names of the dataframes registring the conflicts.
+      If specified, must be of same length as `--input`.
+    required: false
+  - name: "--output"
+    alternatives: ["-o"]
+    type: file
+    direction: output
+    example: "output.h5mu"
+  - name: "--output_compression"
+    type: string
+    description: The compression format to be used on the output h5mu object.
+    choices: ["gzip", "lzf"]
+    required: false
+    example: "gzip"
+  - name: "--obs_sample_name"
+    type: string
+    description: Name of the .obs key under which to add the sample names.
+    default: "sample_id"
+  - name: "--other_axis_mode"
+    type: string
+    choices: [same, unique, first, only, concat, move]
+    default: move
+    description: |
+      How to handle the merging of other axis (var, obs, ...).
 
-         - None: keep no data
-         - same: only keep elements of the matrices which are the same in each of the samples
-         - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)
-         - first: keep the annotation from the first sample
-         - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)
-         - move: identical to 'same', but moving the conflicting values to .varm or .obsm
-  resources:
-    - type: python_script
-      path: script.py
-    - path: /src/utils/setup_logger.py
-    # - path: /src/utils/compress_h5mu.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
-    - path: /resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
-platforms:
+        - None: keep no data
+        - same: only keep elements of the matrices which are the same in each of the samples
+        - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)
+        - first: keep the annotation from the first sample
+        - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)
+        - move: identical to 'same', but moving the conflicting values to .varm or .obsm
+  - name: "--uns_merge_mode"
+    description: |
+      How to handle the merging of .uns across modalities
+        - None: keep no data
+        - same: only keep elements of the matrices which are the same in each of the samples
+        - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)
+        - first: keep the annotation from the first sample
+        - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)
+        - make_unique: identical to 'unique', but keys which are not unique are made unique by prefixing them with the sample id.
+    type: string
+    choices: ["same", "unique", "first", "only", "make_unique"]
+    default: make_unique
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
+  - path: /resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
+engines:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.11-slim
     setup:
       - type: apt
         packages: 
@@ -71,12 +88,12 @@ platforms:
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - pandas~=2.1.1
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
-        packages:
-          - muon
-  - type: native
+runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [midcpu, highmem]

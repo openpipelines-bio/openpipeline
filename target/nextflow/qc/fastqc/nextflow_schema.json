@@ -38,7 +38,7 @@
                 "enum": ["files", "dir"]
             
             ,
-                "default": "files"
+                "default":"files"
             }
     
 
@@ -46,8 +46,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `fastq_dir/`. Directory containing input fastq files",
-                "help_text": "Type: `file`, required, example: `fastq_dir/`. Directory containing input fastq files."
+                "description": "Type: `file`, required, example: `fastq_dir`. Directory containing input fastq files",
+                "help_text": "Type: `file`, required, example: `fastq_dir`. Directory containing input fastq files."
             
             }
     
@@ -56,10 +56,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `qc/`. Output directory to write reports to",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `qc/`. Output directory to write reports to."
+                "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `qc`. Output directory to write reports to",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `qc`. Output directory to write reports to."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 

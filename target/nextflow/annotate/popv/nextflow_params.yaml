@@ -7,18 +7,18 @@ modality: "rna"
 # input_obs_label: "foo"
 unknown_celltype_label: "unknown"
 
+# Reference
+reference: # please fill in - example: "TS_Bladder_filtered.h5ad"
+# reference_layer: "foo"
+reference_obs_label: "cell_ontology_class"
+reference_obs_batch: "donor_assay"
+
 # Outputs
 # output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
 
 # Arguments
 methods: # please fill in - example: ["knn_on_scvi", "scanvi"]
-
-# Reference
-reference: # please fill in - example: "TS_Bladder_filtered.h5ad"
-# reference_layer: "foo"
-reference_obs_label: "cell_ontology_class"
-reference_obs_batch: "donor_assay"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

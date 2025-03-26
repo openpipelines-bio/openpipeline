@@ -12,7 +12,7 @@ workflow run_wf {
           "10xmtx": "from_10xmtx_to_h5mu",
           "h5ad": "from_h5ad_to_h5mu"
         ]
-        componentNameMapper[state.input_type] == component.config.functionality.name
+        componentNameMapper[state.input_type] == component.config.name
       },
       fromState: { id, state, component ->
         def passed_state = [
@@ -25,11 +25,9 @@ workflow run_wf {
         }
         passed_state
       },
-      toState: {id, output, state, comp ->
-        ["output": output.output]
-      },
-      auto: [publish: true],
+      toState: ["output": "output"]
     )
+    | setState(["output": "output"])
   
   emit:
   output_ch

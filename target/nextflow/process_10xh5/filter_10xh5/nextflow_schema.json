@@ -46,7 +46,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5`, example: `pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5`. Output h5 file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5`, example: `pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5`. Output h5 file."
             ,
-                "default": "$id.$key.output.h5"
+                "default":"$id.$key.output.h5"
             }
     
 
@@ -57,7 +57,7 @@
                 "description": "Type: `integer`, default: `0`. Minimum library size",
                 "help_text": "Type: `integer`, default: `0`. Minimum library size."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -68,7 +68,7 @@
                 "description": "Type: `integer`, default: `0`. Minimum number of cells per gene",
                 "help_text": "Type: `integer`, default: `0`. Minimum number of cells per gene."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -76,8 +76,8 @@
                 "keep_feature_types": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `Antibody Capture`, multiple_sep: `\":\"`. Specify which feature types will never be filtered out",
-                "help_text": "Type: List of `string`, example: `Antibody Capture`, multiple_sep: `\":\"`. Specify which feature types will never be filtered out"
+                "description": "Type: List of `string`, example: `Antibody Capture`, multiple_sep: `\";\"`. Specify which feature types will never be filtered out",
+                "help_text": "Type: List of `string`, example: `Antibody Capture`, multiple_sep: `\";\"`. Specify which feature types will never be filtered out"
             
             }
     
@@ -89,7 +89,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Increase verbosity",
                 "help_text": "Type: `boolean_true`, default: `false`. Increase verbosity"
             ,
-                "default": "False"
+                "default":false
             }
     
 

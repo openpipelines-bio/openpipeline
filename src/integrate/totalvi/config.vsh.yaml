@@ -1,138 +1,132 @@
-functionality:
-  name: totalvi
-  namespace: "integrate"
-  description: "Performs mapping to the reference by totalvi model: https://docs.scvi-tools.org/en/stable/tutorials/notebooks/scarches_scvi_tools.html#Reference-mapping-with-TOTALVI"
-  authors:
-    - __merge__: /src/authors/vladimir_shitov.yaml
-  argument_groups:
-    - name: Inputs
-      arguments:
-        - name: "--input"
-          alternatives: ["-i"]
-          type: file
-          description: Input h5mu file with query data to integrate with reference.
-          direction: input
-          required: true
-        - name: "--reference"
-          alternatives: ["-r"]
-          type: file
-          description: Input h5mu file with reference data to train the TOTALVI model.
-          direction: input
-          required: true
-        - name: "--force_retrain"
-          alternatives: ["-f"]
-          type: boolean_true
-          description: If true, retrain the model and save it to reference_model_path
-        - name: "--query_modality"
-          type: string
-          default: "rna"
-          required: false
-        - name: "--query_proteins_modality"
-          type: string
-          description: Name of the modality in the input (query) h5mu file containing protein data
-          required: false
-        - name: "--reference_modality"
-          type: string
-          default: "rna"
-          required: false
-        - name: "--reference_proteins_modality"
-          type: string
-          description: Name of the modality containing proteins in the reference
-          default: "prot"
-          required: false
-        - name: "--input_layer"
-          type: string
-          required: false
-          description: "Input layer to use. If None, X is used"
-        - name: "--obs_batch"
-          type: string
-          default: "sample_id"
-          required: false
-          description: Column name discriminating between your batches.
-        - name: "--var_input"
-          type: string
-          required: false
-          description: ".var column containing highly variable genes. By default, do not subset genes."
-    - name: Outputs
-      arguments:
-        - name: "--output"
-          alternatives: ["-o"]
-          type: file
-          description: Output h5mu file.
-          direction: output
-          required: true
-        - name: "--obsm_output"
-          type: string
-          default: "X_integrated_totalvi"
-          required: false
-          description: "In which .obsm slot to store the resulting integrated embedding."
-        - name: "--obsm_normalized_rna_output"
-          type: string
-          default: "X_totalvi_normalized_rna"
-          required: false
-          description: "In which .obsm slot to store the normalized RNA from TOTALVI."
-        - name: "--obsm_normalized_protein_output"
-          type: string
-          default: "X_totalvi_normalized_protein"
-          required: false
-          description: "In which .obsm slot to store the normalized protein data from TOTALVI."
-        - name: "--reference_model_path"
-          type: file
-          description: Directory with the reference model. If not exists, trained model will be saved there
-          required: false
-          default: "totalvi_model_reference/"
-          direction: output
-        - name: "--query_model_path"
-          type: file
-          description: Directory, where the query model will be saved
-          required: false
-          default: "totalvi_model_query/"
-          direction: output
-    - name: "Learning parameters"
-      arguments:
-        - name: "--max_epochs"
-          type: integer
-          description: "Number of passes through the dataset"
-          required: false
-          default: 400
-        - name: "--max_query_epochs"
-          type: integer
-          description: "Number of passes through the dataset, when fine-tuning model for query"
-          required: false
-          default: 200
-        - name: "--weight_decay"
-          type: double
-          description: "Weight decay, when fine-tuning model for query"
-          required: false
-          default: 0.0
-  resources:
-    - type: python_script
-      path: script.py
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
-platforms:
-  - type: docker
-    image: nvcr.io/nvidia/pytorch:23.09-py3
-    setup:
-      - type: apt
-        packages:
-          - libopenblas-dev
-          - liblapack-dev
-          - gfortran
-      - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
-        packages:
-          - scvi-tools~=1.0.3
-          - jaxlib<0.4.23
-          - jax<0.4.23
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+name: totalvi
+namespace: "integrate"
+description: "Performs mapping to the reference by totalvi model: https://docs.scvi-tools.org/en/stable/tutorials/notebooks/scarches_scvi_tools.html#Reference-mapping-with-TOTALVI"
+authors:
+  - __merge__: /src/authors/vladimir_shitov.yaml
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: Input h5mu file with query data to integrate with reference.
+        direction: input
+        required: true
+      - name: "--reference"
+        alternatives: ["-r"]
+        type: file
+        description: Input h5mu file with reference data to train the TOTALVI model.
+        direction: input
+        required: true
+      - name: "--force_retrain"
+        alternatives: ["-f"]
+        type: boolean_true
+        description: If true, retrain the model and save it to reference_model_path
+      - name: "--query_modality"
+        type: string
+        default: "rna"
+        required: false
+      - name: "--query_proteins_modality"
+        type: string
+        description: Name of the modality in the input (query) h5mu file containing protein data
+        required: false
+      - name: "--reference_modality"
+        type: string
+        default: "rna"
+        required: false
+      - name: "--reference_proteins_modality"
+        type: string
+        description: Name of the modality containing proteins in the reference
+        default: "prot"
+        required: false
+      - name: "--input_layer"
+        type: string
+        required: false
+        description: "Input layer to use. If None, X is used"
+      - name: "--obs_batch"
+        type: string
+        default: "sample_id"
+        required: false
+        description: Column name discriminating between your batches.
+      - name: "--var_input"
+        type: string
+        required: false
+        description: ".var column containing highly variable genes. By default, do not subset genes."
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+      - name: "--obsm_output"
+        type: string
+        default: "X_integrated_totalvi"
+        required: false
+        description: "In which .obsm slot to store the resulting integrated embedding."
+      - name: "--obsm_normalized_rna_output"
+        type: string
+        default: "X_totalvi_normalized_rna"
+        required: false
+        description: "In which .obsm slot to store the normalized RNA from TOTALVI."
+      - name: "--obsm_normalized_protein_output"
+        type: string
+        default: "X_totalvi_normalized_protein"
+        required: false
+        description: "In which .obsm slot to store the normalized protein data from TOTALVI."
+      - name: "--reference_model_path"
+        type: file
+        description: Directory with the reference model. If not exists, trained model will be saved there
+        required: false
+        default: "totalvi_model_reference/"
+        direction: output
+      - name: "--query_model_path"
+        type: file
+        description: Directory, where the query model will be saved
+        required: false
+        default: "totalvi_model_query/"
+        direction: output
+  - name: "Learning parameters"
+    arguments:
+      - name: "--max_epochs"
+        type: integer
+        description: "Number of passes through the dataset"
+        required: false
+        default: 400
+      - name: "--max_query_epochs"
+        type: integer
+        description: "Number of passes through the dataset, when fine-tuning model for query"
+        required: false
+        default: 200
+      - name: "--weight_decay"
+        type: double
+        description: "Weight decay, when fine-tuning model for query"
+        required: false
+        default: 0.0
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 
-  - type: nextflow
-    directives:
-      label: [highmem, highcpu]
-  - type: native
+engines:
+- type: docker
+  image: nvcr.io/nvidia/pytorch:24.12-py3
+  setup:
+    - type: python
+      __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+      packages:
+        - scvi-tools~=1.1.5
+  test_setup:
+    - type: python
+      __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [highmem, highcpu, highdisk]

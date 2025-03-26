@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
 "title": "calculate_qc_metrics",
-"description": "Add basic quality control metrics to an .h5mu file.\n\nThe metrics are comparable to what scanpy.pp.calculate_qc_metrics output,\nalthough they have slightly different names:\n\nVar metrics (name in this component -\u003e name in scanpy):\n  - pct_dropout -\u003e pct_dropout_by_{expr_type}\n  - num_nonzero_obs -\u003e n_cells_by_{expr_type}\n  - obs_mean -\u003e mean_{expr_type}\n  - total_counts -\u003e total_{expr_type}\n\nObs metrics:\n  - num_nonzero_vars -\u003e n_genes_by_{expr_type}\n  - pct_{var_qc_metrics} -\u003e pct_{expr_type}_{qc_var}\n  - total_counts_{var_qc_metrics} -\u003e total_{expr_type}_{qc_var}\n  - pct_of_counts_in_top_{top_n_vars}_vars -\u003e pct_{expr_type}_in_top_{n}_{var_type}\n  - total_counts -\u003e total_{expr_type}\n  \n",
+"description": "Add basic quality control metrics to an .h5mu file.\n\nThe metrics are comparable to what scanpy.pp.calculate_qc_metrics output,\nalthough they have slightly different names:\n\nVar metrics (name in this component -\u003e name in scanpy):\n  - pct_dropout -\u003e pct_dropout_by_{expr_type}\n  - num_nonzero_obs -\u003e n_cells_by_{expr_type}\n  - obs_mean -\u003e mean_{expr_type}\n  - total_counts -\u003e total_{expr_type}\n\n  Obs metrics:\n    - num_nonzero_vars -\u003e n_genes_by_{expr_type}\n    - pct_{var_qc_metrics} -\u003e pct_{expr_type}_{qc_var}\n    - total_counts_{var_qc_metrics} -\u003e total_{expr_type}_{qc_var}\n    - pct_of_counts_in_top_{top_n_vars}_vars -\u003e pct_{expr_type}_in_top_{n}_{var_type}\n    - total_counts -\u003e total_{expr_type}\n    \n",
 "type": "object",
 "definitions": {
 
@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -77,7 +77,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -107,8 +107,8 @@
                 "var_qc_metrics": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `ercc,highly_variable,mitochondrial`, multiple_sep: `\":\"`. Keys to select a boolean (containing only True or False) column from ",
-                "help_text": "Type: List of `string`, example: `ercc,highly_variable,mitochondrial`, multiple_sep: `\":\"`. Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes.\n"
+                "description": "Type: List of `string`, example: `ercc,highly_variable,mitochondrial`, multiple_sep: `\";\"`. Keys to select a boolean (containing only True or False) column from ",
+                "help_text": "Type: List of `string`, example: `ercc,highly_variable,mitochondrial`, multiple_sep: `\";\"`. Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes.\n"
             
             }
     
@@ -127,8 +127,8 @@
                 "top_n_vars": {
                 "type":
                 "string",
-                "description": "Type: List of `integer`, multiple_sep: `\":\"`. Number of top vars to be used to calculate cumulative proportions",
-                "help_text": "Type: List of `integer`, multiple_sep: `\":\"`. Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20;50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n"
+                "description": "Type: List of `integer`, multiple_sep: `\";\"`. Number of top vars to be used to calculate cumulative proportions",
+                "help_text": "Type: List of `integer`, multiple_sep: `\";\"`. Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20;50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n"
             
             }
     
@@ -140,7 +140,7 @@
                 "description": "Type: `string`, default: `num_nonzero_vars`. Name of column in ",
                 "help_text": "Type: `string`, default: `num_nonzero_vars`. Name of column in .obs describing, for each observation, the number of stored values\n(including explicit zeroes). In other words, the name of the column that counts\nfor each row the number of columns that contain data.\n"
             ,
-                "default": "num_nonzero_vars"
+                "default":"num_nonzero_vars"
             }
     
 
@@ -151,7 +151,7 @@
                 "description": "Type: `string`, default: `total_counts`. Name of the column for ",
                 "help_text": "Type: `string`, default: `total_counts`. Name of the column for .obs describing, for each observation (row),\nthe sum of the stored values in the columns.\n"
             ,
-                "default": "total_counts"
+                "default":"total_counts"
             }
     
 
@@ -172,7 +172,7 @@
                 "description": "Type: `string`, default: `num_nonzero_obs`. Name of column describing, for each feature, the number of stored values\n(including explicit zeroes)",
                 "help_text": "Type: `string`, default: `num_nonzero_obs`. Name of column describing, for each feature, the number of stored values\n(including explicit zeroes). In other words, the name of the column that counts\nfor each column the number of rows that contain data.\n"
             ,
-                "default": "num_nonzero_obs"
+                "default":"num_nonzero_obs"
             }
     
 
@@ -183,7 +183,7 @@
                 "description": "Type: `string`, default: `total_counts`. Name of the column in ",
                 "help_text": "Type: `string`, default: `total_counts`. Name of the column in .var describing, for each feature (column),\nthe sum of the stored values in the rows.\n"
             ,
-                "default": "total_counts"
+                "default":"total_counts"
             }
     
 
@@ -194,7 +194,7 @@
                 "description": "Type: `string`, default: `obs_mean`. Name of the column in ",
                 "help_text": "Type: `string`, default: `obs_mean`. Name of the column in .obs providing the mean of the values in each row.\n"
             ,
-                "default": "obs_mean"
+                "default":"obs_mean"
             }
     
 
@@ -205,7 +205,7 @@
                 "description": "Type: `string`, default: `pct_dropout`. Name of the column in ",
                 "help_text": "Type: `string`, default: `pct_dropout`. Name of the column in .obs providing for each feature the percentage of\nobservations the feature does not appear on (i.e. is missing). Same as `--num_nonzero_obs`\nbut percentage based.\n"
             ,
-                "default": "pct_dropout"
+                "default":"pct_dropout"
             }
     
 

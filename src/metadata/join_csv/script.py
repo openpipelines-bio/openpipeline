@@ -1,6 +1,6 @@
 import sys
 import pandas as pd
-from mudata import read_h5mu
+from mudata import read_h5ad
 
 ### VIASH START
 par = {
@@ -10,27 +10,14 @@ par = {
     "modality": "rna",
     "csv_key": "id",
     "obs_key": "sample_id",
-    "var_key": None
+    "var_key": None,
 }
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
+from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
 if par["obs_key"] and par["var_key"]:
@@ -39,15 +26,14 @@ if not (par["obs_key"] or par["var_key"]):
     raise ValueError("Must define either --obs_key or --var_key")
 
 logger.info("Read metadata csv from file")
-metadata = pd.read_csv(par['input_csv'], sep=",", header=0, index_col=par["csv_key"])
-metadata.fillna('', inplace=True)
+metadata = pd.read_csv(par["input_csv"], sep=",", header=0, index_col=par["csv_key"])
+metadata.fillna("", inplace=True)
 
-logger.info("Read mudata from file")
-mdata = read_h5mu(par['input'])
-mod_data = mdata.mod[par['modality']]
+logger.info("Read modality %s from file %s", par["modality"], par["input"])
+mod_data = read_h5ad(par["input"], mod=par["modality"])
 
 logger.info("Joining csv to mudata")
-matrix = 'var' if par["var_key"] else 'obs'
+matrix = "var" if par["var_key"] else "obs"
 matrix_sample_column_name = par["var_key"] if par["var_key"] else par["obs_key"]
 original_matrix = getattr(mod_data, matrix)
 sample_ids = original_matrix[matrix_sample_column_name]
@@ -55,16 +41,17 @@ sample_ids = original_matrix[matrix_sample_column_name]
 try:
     new_columns = metadata.loc[sample_ids.tolist()]
 except KeyError as e:
-    raise KeyError(f"Not all sample IDs selected from {matrix} "
-                    "(using the column selected with --var_key or --obs_key) were found in "
-                    "the csv file.") from e
-new_matrix = pd.concat([original_matrix.reset_index(drop=True),
-                        new_columns.reset_index(drop=True)], axis=1)\
-                        .set_axis(original_matrix.index)
+    raise KeyError(
+        f"Not all sample IDs selected from {matrix} "
+        "(using the column selected with --var_key or --obs_key) were found in "
+        "the csv file."
+    ) from e
+new_matrix = pd.concat(
+    [original_matrix.reset_index(drop=True), new_columns.reset_index(drop=True)], axis=1
+).set_axis(original_matrix.index)
 setattr(mod_data, matrix, new_matrix)
 
 logger.info("Write output to mudata file")
-mdata.write_h5mu(par['output'], compression=par["output_compression"])
-
-
-
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], mod_data, par["output_compression"]
+)

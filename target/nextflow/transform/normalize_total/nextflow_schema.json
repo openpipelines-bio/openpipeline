@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -97,10 +97,9 @@
                 "target_sum": {
                 "type":
                 "integer",
-                "description": "Type: `integer`, default: `10000`. If None, after normalization, each observation (cell) has a total count equal to the median of total counts for observations (cells) before normalization",
-                "help_text": "Type: `integer`, default: `10000`. If None, after normalization, each observation (cell) has a total count equal to the median of total counts for observations (cells) before normalization."
-            ,
-                "default": "10000"
+                "description": "Type: `integer`. If None, after normalization, each observation (cell) has a total count equal to the median of total counts for observations (cells) before normalization",
+                "help_text": "Type: `integer`. If None, after normalization, each observation (cell) has a total count equal to the median of total counts for observations (cells) before normalization."
+            
             }
     
 
@@ -111,7 +110,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Exclude (very) highly expressed genes for the computation of the normalization factor (size factor) for each cell",
                 "help_text": "Type: `boolean_true`, default: `false`. Exclude (very) highly expressed genes for the computation of the normalization factor (size factor) for each cell. A gene is considered highly expressed, if it has more than max_fraction of the total counts in at least one cell. The not-excluded genes will sum up to target_sum."
             ,
-                "default": "False"
+                "default":false
             }
     
 

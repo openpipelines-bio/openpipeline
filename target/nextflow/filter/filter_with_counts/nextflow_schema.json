@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -77,7 +77,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -100,7 +100,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Whether to subset before storing the output",
                 "help_text": "Type: `boolean_true`, default: `false`. Whether to subset before storing the output."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -111,7 +111,7 @@
                 "description": "Type: `string`, default: `filter_with_counts`. In which ",
                 "help_text": "Type: `string`, default: `filter_with_counts`. In which .obs slot to store a boolean array corresponding to which observations should be removed."
             ,
-                "default": "filter_with_counts"
+                "default":"filter_with_counts"
             }
     
 
@@ -122,7 +122,7 @@
                 "description": "Type: `string`, default: `filter_with_counts`. In which ",
                 "help_text": "Type: `string`, default: `filter_with_counts`. In which .var slot to store a boolean array corresponding to which variables should be removed."
             ,
-                "default": "filter_with_counts"
+                "default":"filter_with_counts"
             }
     
 

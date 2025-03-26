@@ -2,435 +2,319 @@ import os
 import re
 import subprocess
 import tempfile
-import sys
 from typing import Any
-import pandas as pd
-import gzip
+import yaml
 import shutil
+import glob
 
 ## VIASH START
 par = {
-    'sample_prefix': 'sample',
-    'input': ['resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R1_001_subset.fastq.gz',
-                'resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R2_001_subset.fastq.gz'],
-    'mode': 'wta',
-    'output': 'foo',
-    'subsample': None,
-    'reference': ['resources_test/reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz'],
-    'transcriptome_annotation': 'resources_test/reference_gencodev41_chr1/reference.gtf.gz',
-    'exact_cell_count': None,
-    'putative_cell_call': None,
-    'disable_putative_calling': False,
-    'subsample': None,
-    'subsample_seed': None,
-    'sample_tags_version': None,
-    'tag_names': None,
-    'vdj_version': None,
-    'dryrun': False,
-    'parallel': True,
-    'timestamps': False,
-    'abseq_reference': ["resources_test/bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"],
-    'supplemental_reference': []
+    "reads": [
+        "resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R1_001_subset.fastq.gz",
+        "resources_test/bdrhap_5kjrt/raw/12WTA_S1_L432_R2_001_subset.fastq.gz",
+        "resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R1_001_subset.fastq.gz",
+        "resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R2_001_subset.fastq.gz",
+    ],
+    "reads_atac": None,
+    "reference_archive": "reference_gencodev41_chr1.tar.gz",
+    "targeted_reference": [],
+    "abseq_reference": [
+        "resources_test/bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"
+    ],
+    "supplemental_reference": [],
+    "cell_calling_data": "mRNA",
+    "cell_calling_bioproduct_algorithm": None,
+    "cell_calling_atac_algorithm": None,
+    "exact_cell_count": 4900,
+    "expected_cell_count": None,
+    "exclude_intronic_reads": None,
+    "sample_tags_version": None,
+    "tag_names": [],
+    "vdj_version": None,
+    "predefined_atac_peaks": None,
+    "run_name": "sample",
+    "generate_bam": False,
+    "alignment_star_params": None,
+    "alignment_bwa_mem2_params": None,
+    "parallel": True,
+    "timestamps": False,
+    "dryrun": False,
+    "output_dir": "output_large_op",
+    "output_seurat": "seurat.rds",
+    "output_mudata": "mudata.h5mu",
+    "metrics_summary": "metrics_summary.csv",
+    "pipeline_report": "pipeline_report.html",
+    "rsec_mols_per_cell": None,
+    "dbec_mols_per_cell": None,
+    "rsec_mols_per_cell_unfiltered": None,
+    "bam": None,
+    "bam_index": None,
+    "bioproduct_stats": None,
+    "dimred_tsne": None,
+    "dimred_umap": None,
+    "immune_cell_classification": None,
+    "sample_tag_metrics": None,
+    "sample_tag_calls": None,
+    "sample_tag_counts": None,
+    "sample_tag_counts_unassigned": None,
+    "vdj_metrics": None,
+    "vdj_per_cell": None,
+    "vdj_per_cell_uncorrected": None,
+    "vdj_dominant_contigs": None,
+    "vdj_unfiltered_contigs": None,
+    "atac_metrics": None,
+    "atac_metrics_json": None,
+    "atac_fragments": None,
+    "atac_fragments_index": None,
+    "atac_transposase_sites": None,
+    "atac_transposase_sites_index": None,
+    "atac_peaks": None,
+    "atac_peaks_index": None,
+    "atac_peak_annotation": None,
+    "atac_cell_by_peak": None,
+    "atac_cell_by_peak_unfiltered": None,
+    "atac_bam": None,
+    "atac_bam_index": None,
+    "protein_aggregates_experimental": None,
+    "long_reads": None,
+    "custom_star_params": None,
+    "custom_bwa_mem2_params": None,
+    "abseq_umi": None,
+    "target_analysis": None,
+    "vdj_jgene_evalue": None,
+    "vdj_vgene_evalue": None,
+    "write_filtered_reads": None,
 }
 meta = {
-    'resources_dir': os.path.abspath('src/mapping/bd_rhapsody'),
-    'temp_dir': os.getenv("VIASH_TEMP"),
-    'memory_mb': None,
-    'n_proc': None
+    "config": "target/nextflow/mapping/bd_rhapsody/.config.vsh.yaml",
+    "resources_dir": os.path.abspath("src/mapping/bd_rhapsody"),
+    "temp_dir": os.getenv("VIASH_TEMP"),
+    "memory_mb": None,
+    "cpus": None,
 }
 ## VIASH END
 
-sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
-# reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
-def setup_logger():
-    import logging
-    from sys import stdout
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
+def clean_arg(argument):
+    argument["clean_name"] = re.sub("^-*", "", argument["name"])
+    return argument
 
-    return logger
-# END TEMPORARY WORKAROUND setup_logger
-logger = setup_logger()
 
-def is_gz_file(filepath):
-    with open(filepath, 'rb') as test_f:
-        return test_f.read(2) == b'\x1f\x8b'
+def read_config(path: str) -> dict[str, Any]:
+    with open(path, "r") as f:
+        config = yaml.safe_load(f)
+
+    config["arguments"] = [
+        clean_arg(arg) for grp in config["argument_groups"] for arg in grp["arguments"]
+    ]
+
+    return config
+
 
 def strip_margin(text: str) -> str:
-    return re.sub('(\n?)[ \t]*\|', '\\1', text)
+    return re.sub("(\n?)[ \t]*\|", "\\1", text)
 
-def process_params(par: dict[str, Any]) -> str:
+
+def process_params(par: dict[str, Any], config, temp_dir: str) -> str:
     # check input parameters
-    assert par["input"] is not None, "Pass at least one set of inputs to --input."
-    if par["mode"] == "wta":
-        assert len(par["reference"]) == 1, "When mode is \"wta\", --reference should be length 1"
-        assert par["transcriptome_annotation"] is not None, "When mode is \"wta\", --transcriptome_annotation should be defined"
-    elif par["mode"] == "targeted":
-        assert par["transcriptome_annotation"] is None, "When mode is \"targeted\", --transcriptome_annotation should be undefined"
-        assert par["supplemental_reference"] is None, "When mode is \"targeted\", --supplemental_reference should be undefined"
+    assert (
+        par["reads"] or par["reads_atac"]
+    ), "Pass at least one set of inputs to --reads or --reads_atac."
+
+    # output to temp dir if output_dir was not passed
+    if not par["output_dir"]:
+        par["output_dir"] = os.path.join(temp_dir, "output")
 
     # checking sample prefix
-    if re.match("[^A-Za-z0-9]", par["sample_prefix"]):
-        logger.warning("--sample_prefix should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
-        par["sample_prefix"] = re.sub("[^A-Za-z0-9\\-]", "-", par["sample_prefix"])
+    if par["run_name"] and re.match("[^A-Za-z0-9]", par["run_name"]):
+        print(
+            "--run_name should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.",
+            flush=True,
+        )
+        par["run_name"] = re.sub("[^A-Za-z0-9\\-]", "-", par["run_name"])
 
-    # if par_input is a directory, look for fastq files
-    if len(par["input"]) == 1 and os.path.isdir(par["input"][0]):
-        par["input"] = [ os.path.join(dp, f) for dp, dn, filenames in os.walk(par["input"]) for f in filenames if re.match(r'.*\.fastq.gz', f) ]
+    # make paths absolute
+    for argument in config["arguments"]:
+        if par[argument["clean_name"]] and argument["type"] == "file":
+            if isinstance(par[argument["clean_name"]], list):
+                par[argument["clean_name"]] = [
+                    os.path.abspath(f) for f in par[argument["clean_name"]]
+                ]
+            else:
+                par[argument["clean_name"]] = os.path.abspath(
+                    par[argument["clean_name"]]
+                )
 
-    # use absolute paths
-    par["input"] = [ os.path.abspath(f) for f in par["input"] ]
-    if par["reference"]:
-        par["reference"] = [ os.path.abspath(f) for f in par["reference"] ]
-    if par["transcriptome_annotation"]:
-        par["transcriptome_annotation"] = os.path.abspath(par["transcriptome_annotation"])
-    if par["abseq_reference"]:
-        par["abseq_reference"] = [ os.path.abspath(f) for f in par["abseq_reference"] ]
-    if par["supplemental_reference"]:
-        par["supplemental_reference"] = [ os.path.abspath(f) for f in par["supplemental_reference"] ]
-    par["output"] = os.path.abspath(par["output"])
-    
     return par
 
-def generate_config(par: dict[str, Any]) -> str:
-    content_list = [strip_margin(f"""\
+
+def generate_config(par: dict[str, Any], config) -> str:
+    content_list = [
+        strip_margin("""\
         |#!/usr/bin/env cwl-runner
         |
         |cwl:tool: rhapsody
-        |
-        |# This is a YML file used to specify the inputs for a BD Genomics {"WTA" if par["mode"] == "wta" else "Targeted" } Rhapsody Analysis pipeline run. See the
-        |# BD Genomics Analysis Setup User Guide (Doc ID: 47383) for more details.
-        |
-        |## Reads (required) - Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
-        |Reads:
-        |""")]
+        |""")
+    ]
 
-    for file in par["input"]:
-        content_list.append(strip_margin(f"""\
-            | - class: File
-            |   location: "{file}"
-            |"""))
-
-    if par["reference"] and par["mode"] == "wta":
-        content_list.append(strip_margin(f"""\
-            |
-            |## Reference_Genome (required) - Path to STAR index for tar.gz format. See Doc ID: 47383 for instructions to obtain pre-built STAR index file.
-            |Reference_Genome:
-            |   class: File
-            |   location: "{par["reference"][0]}"
-            |"""))
-
-    if par["reference"] and par["mode"] == "targeted":
-        content_list.append(strip_margin(f"""\
-            |
-            |## Reference (optional) - Path to mRNA reference file for pre-designed, supplemental, or custom panel, in FASTA format.
-            |Reference:
-            |"""))
-        for file in par["reference"]:
-            content_list.append(strip_margin(f"""\
-                | - class: File
-                |   location: {file}
-                |"""))
-
-    if par["transcriptome_annotation"]:
-        content_list.append(strip_margin(f"""\
-            |
-            |## Transcriptome_Annotation (required) - Path to GTF annotation file
-            |Transcriptome_Annotation:
-            |   class: File
-            |   location: "{par["transcriptome_annotation"]}"
-            |"""))
-
-    if par["abseq_reference"]:
-        content_list.append(strip_margin(f"""\
-            |
-            |## AbSeq_Reference (optional) - Path to the AbSeq reference file in FASTA format.  Only needed if BD AbSeq Ab-Oligos are used.
-            |AbSeq_Reference:
-            |"""))
-        for file in par["abseq_reference"]:
-            content_list.append(strip_margin(f"""\
-                | - class: File
-                |   location: {file}
-                |"""))
-
-    if par["supplemental_reference"]:
-        content_list.append(strip_margin(f"""\
-            |
-            |## Supplemental_Reference (optional) - Path to the supplemental reference file in FASTA format.  Only needed if there are additional transgene sequences used in the experiment.
-            |Supplemental_Reference:
-            |"""))
-        for file in par["supplemental_reference"]:
-            content_list.append(strip_margin(f"""\
-                | - class: File
-                |   location: {file}
-                |"""))
-
-    ## Putative Cell Calling Settings
-    content_list.append(strip_margin(f"""\
-        |
-        |####################################
-        |## Putative Cell Calling Settings ##
-        |####################################
-        |"""))
-
-    if par["putative_cell_call"]:
-        content_list.append(strip_margin(f"""\
-            |## Putative cell calling dataset (optional) - Specify the dataset to be used for putative cell calling: mRNA or AbSeq_Experimental.
-            |## For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.
-            |## By default, the mRNA data will be used for putative cell calling.
-            |Putative_Cell_Call: {par["putative_cell_call"]}
-            |"""))
-
-    if par["exact_cell_count"]:
-        content_list.append(strip_margin(f"""\
-            |## Exact cell count (optional) - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count
-            |Exact_Cell_Count: {par["exact_cell_count"]}
-            |"""))
-
-    if par["disable_putative_calling"]:
-        content_list.append(strip_margin(f"""\
-            |## Disable Refined Putative Cell Calling (optional) - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve).  The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types.  Does not apply if Exact Cell Count is set.
-            |## The values can be true or false. By default, the refined algorithm is used.
-            |Basic_Algo_Only: {str(par["disable_putative_calling"]).lower()}
-            |"""))
-
-    ## Subsample Settings
-    content_list.append(strip_margin(f"""\
-        |
-        |########################
-        |## Subsample Settings ##
-        |########################
-        |"""
-    ))
-
-    if par["subsample"]:
-        content_list.append(strip_margin(f"""\
-            |## Subsample (optional) - A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.
-            |Subsample: {par["subsample"]}
-            |"""))
-
-    if par["subsample_seed"]:
-        content_list.append(strip_margin(f"""\
-            |## Subsample seed (optional) - A seed for replicating a previous subsampled run.
-            |Subsample_seed: {par["subsample_seed"]}
-            |"""))
-
-
-    ## Multiplex options
-    content_list.append(strip_margin(f"""\
-        |
-        |#######################
-        |## Multiplex options ##
-        |#######################
-        |"""
-    ))
-
-    if par["sample_tags_version"]:
-        content_list.append(strip_margin(f"""\
-            |## Sample Tags Version (optional) - Specify if multiplexed run: human, hs, mouse or mm
-            |Sample_Tags_Version: {par["sample_tags_version"]}
-            |"""))
-
-    if par["tag_names"]:
-        content_list.append(strip_margin(f"""\
-            |## Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv
-            |# Do not use the special characters: &, (), [], {{}},  <>, ?, |
-            |Tag_Names: [{', '.join(par["tag_names"])}]
-            |"""))
-
-    ## VDJ options
-    content_list.append(strip_margin(f"""\
-        |
-        |#################
-        |## VDJ options ##
-        |#################
-        |"""
-    ))
-
-    if par["vdj_version"]:
-        content_list.append(strip_margin(f"""\
-            |## VDJ Version (optional) - Specify if VDJ run: human, mouse, humanBCR, humanTCR, mouseBCR, mouseTCR
-            |VDJ_Version: {par["vdj_version"]}
-            |"""))
-
-    ## VDJ options
-    content_list.append(strip_margin(f"""\
-        |
-        |########################
-        |## Additional Options ##
-        |########################
-        |"""
-    ))
-
-    if par["sample_prefix"]:
-        content_list.append(strip_margin(f"""\
-            |## Run Name (optional) -  Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.
-            |Run_Name: {par["sample_prefix"]}
-            |"""))
+    for argument in config["arguments"]:
+        arg_info = argument.get("info") or {}
+        config_key = arg_info.get("config_key")
+        if par[argument["clean_name"]] and config_key:
+            if argument["type"] == "file":
+                str = strip_margin(f"""\
+                    |{config_key}:
+                    |""")
+                if isinstance(par[argument["clean_name"]], list):
+                    for file in par[argument["clean_name"]]:
+                        str += strip_margin(f"""\
+                            | - class: File
+                            |   location: "{file}"
+                            |""")
+                else:
+                    str += strip_margin(f"""\
+                        |   class: File
+                        |   location: "{par[argument["clean_name"]]}"
+                        |""")
+                content_list.append(str)
+            else:
+                content_list.append(
+                    strip_margin(f"""\
+                    |{config_key}: {par[argument["clean_name"]]}
+                    |""")
+                )
 
     ## Write config to file
-    return ''.join(content_list)
+    return "".join(content_list)
 
-def generate_cwl_file(par: dict[str, Any], meta: dict[str, Any]) -> str:
-        # create cwl file (if need be)
-    if par["mode"] == "wta":
-        orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_wta_1.10.1_nodocker.cwl")
-    elif par["mode"] == "targeted":
-        orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_targeted_1.10.1_nodocker.cwl")
+
+def generate_config_file(
+    par: dict[str, Any], config: dict[str, Any], temp_dir: str
+) -> str:
+    config_file = os.path.join(temp_dir, "config.yml")
+    config_content = generate_config(par, config)
+    with open(config_file, "w") as f:
+        f.write(config_content)
+    return config_file
+
+
+def generate_cwl_file(meta: dict[str, Any], dir: str) -> str:
+    # create cwl file (if need be)
+    orig_cwl_file = os.path.join(
+        meta["resources_dir"], "rhapsody_pipeline_2.2.1_nodocker.cwl"
+    )
 
     # Inject computational requirements into pipeline
     if meta["memory_mb"] or meta["cpus"]:
-        cwl_file = os.path.join(par["output"], "pipeline.cwl")
+        cwl_file = os.path.join(dir, "pipeline.cwl")
 
         # Read in the file
-        with open(orig_cwl_file, 'r') as file :
+        with open(orig_cwl_file, "r") as file:
             cwl_data = file.read()
 
         # Inject computational requirements into pipeline
         if meta["memory_mb"]:
-            memory = int(meta["memory_mb"]) - 2000 # keep 2gb for OS
-            cwl_data = re.sub('"ramMin": [^\n]*,\n', f'"ramMin": {memory},\n', cwl_data)
+            memory = int(meta["memory_mb"]) - 2000  # keep 2gb for OS
+            cwl_data = re.sub(
+                '"ramMin": [^\n]*[^,](,?)\n', f'"ramMin": {memory}\\1\n', cwl_data
+            )
         if meta["cpus"]:
-            cwl_data = re.sub('"coresMin": [^\n]*,\n', f'"coresMin": {meta["cpus"]},\n', cwl_data)
+            cwl_data = re.sub(
+                '"coresMin": [^\n]*[^,](,?)\n',
+                f'"coresMin": {meta["cpus"]}\\1\n',
+                cwl_data,
+            )
 
         # Write the file out again
-        with open(cwl_file, 'w') as file:
+        with open(cwl_file, "w") as file:
             file.write(cwl_data)
     else:
         cwl_file = orig_cwl_file
 
     return cwl_file
 
-def process_fasta(feature_type: str, path: str) -> pd.DataFrame:
-    with open(path) as f:
-        df = pd.DataFrame(data={
-        'feature_type': feature_type,
-        'feature_id': [line[1:].strip() for line in f if line[0] == ">"],
-        'reference_file': os.path.basename(path),
-        })
-        return df
 
-def process_gtf(feature_type: str, path: str) -> pd.DataFrame:
-    with open(path) as f:
-        data = []
-        for line in f:
-            if not line.startswith("#"):
-                attr = dict(item.strip().split(' ') for item in line.split('\t')[8].strip('\n').split(';') if item)
-                row = {
-                    'feature_types': feature_type,
-                    'feature_ids': attr["gene_name"].strip("\""),
-                    'reference_file': os.path.basename(path),
-                }
-            data.append(row)
-    df = pd.DataFrame(data)
-    df = df.drop_duplicates()
-    return df
+def copy_outputs(par: dict[str, Any], config: dict[str, Any]):
+    for arg in config["arguments"]:
+        par_value = par[arg["clean_name"]]
+        if par_value and arg["type"] == "file" and arg["direction"] == "output":
+            # example template: '[sample_name]_(assay)_cell_type_experimental.csv'
+            template = (arg.get("info") or {}).get("template")
+            if template:
+                template_glob = (
+                    template.replace("sample", par["run_name"])
+                    .replace("assay", "*")
+                    .replace("number", "*")
+                )
+                files = glob.glob(os.path.join(par["output_dir"], template_glob))
+                if len(files) == 0 and arg["required"]:
+                    raise ValueError(
+                        f"Expected output file '{template_glob}' not found."
+                    )
+                elif len(files) > 1 and not arg["multiple"]:
+                    raise ValueError(
+                        f"Expected single output file '{template_glob}', but found multiple."
+                    )
 
-def extract_feature_types(par: dict[str, Any]):
-    feature_types = []
+                if not arg["multiple"]:
+                    try:
+                        shutil.copy(files[0], par_value)
+                        print(f"Copied {files[0]} to {par_value}")
+                    except IndexError:
+                        print(f"Unable to copy {template_glob} to {par_value}")
+                else:
+                    # replace '*' in par_value with index
+                    for i, file in enumerate(files):
+                        shutil.copy(file, par_value.replace("*", str(i)))
 
-    if par["mode"] == "targeted":
-        for file in par["reference"]:
-            logger.info(f"Processing reference fasta {file}")
-            feature_types.append(process_fasta("Gene Expression", file))
 
-    if par["mode"] == "wta":
-        file = par["transcriptome_annotation"]
-        logger.info(f"Processing reference gtf {file}")
-        feature_types.append(process_gtf("Gene Expression", file))
+def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
+    config = read_config(meta["config"])
 
-    if par["abseq_reference"]:
-        for file in par["abseq_reference"]:
-            logger.info(f"Processing abseq fasta {file}")
-            feature_types.append(process_fasta("Antibody Capture", file))
-
-    if par["supplemental_reference"]:
-        for file in par["supplemental_reference"]:
-            logger.info(f"Processing supp fasta {file}")
-            feature_types.append(process_fasta("Other", file))
-    
-    return pd.concat(feature_types)
-
-def main(par: dict[str, Any], meta: dict[str, Any]):
     # Preprocess params
-    par = process_params(par)
-
-    # Create output dir if not exists
-    if not os.path.exists(par["output"]):
-        os.makedirs(par["output"])
+    par = process_params(par, config, temp_dir)
 
     ## Process parameters
-    proc_pars = ["--no-container", "--outdir", par["output"]]
+    cmd = [
+        "cwl-runner",
+        "--no-container",
+        "--preserve-entire-environment",
+        "--outdir",
+        par["output_dir"],
+    ]
 
     if par["parallel"]:
-        proc_pars.append("--parallel")
+        cmd.append("--parallel")
 
     if par["timestamps"]:
-        proc_pars.append("--timestamps")
+        cmd.append("--timestamps")
 
-    with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
-        # extract transcriptome gtf if need be
-        if par["transcriptome_annotation"] and is_gz_file(par["transcriptome_annotation"]):
-            with open(os.path.join(temp_dir, "transcriptome.gtf"), 'wb') as genes_uncompressed:
-                with gzip.open(par["transcriptome_annotation"], 'rb') as genes_compressed:
-                    shutil.copyfileobj(genes_compressed, genes_uncompressed)
-                    par["transcriptome_annotation"] = genes_uncompressed.name
+    # Create cwl file (if need be)
+    cwl_file = generate_cwl_file(meta, temp_dir)
+    cmd.append(cwl_file)
 
-        # Create params file
-        config_file = os.path.join(par["output"], "config.yml")
-        config_content = generate_config(par)
-        with open(config_file, "w") as f:
-            f.write(config_content)
+    # Create params file
+    config_file = generate_config_file(par, config, temp_dir)
+    cmd.append(config_file)
 
-        # Create cwl file (if need be)
-        cwl_file = generate_cwl_file(par, meta)
+    # keep environment variables but set TMPDIR to temp_dir
+    env = dict(os.environ)
+    env["TMPDIR"] = temp_dir
 
-        ## Run pipeline
-        if not par["dryrun"]:
-            cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
+    # Create output dir if not exists
+    if not os.path.exists(par["output_dir"]):
+        os.makedirs(par["output_dir"])
 
-            env = dict(os.environ)
-            env["TMPDIR"] = temp_dir
+    # Run command
+    print("> " + " ".join(cmd), flush=True)
+    _ = subprocess.check_call(cmd, cwd=os.path.dirname(config_file), env=env)
 
-            logger.info("> " + ' '.join(cmd))
-            _ = subprocess.check_call(
-                cmd,
-                cwd=os.path.dirname(config_file),
-                env=env
-            )
+    # Copy outputs
+    copy_outputs(par, config)
 
-        # extracting feature ids from references
-        # extract info from reference files (while they still exist)
-        feature_df = extract_feature_types(par)
-        feature_types_file = os.path.join(par["output"], "feature_types.tsv")
-        feature_df.to_csv(feature_types_file, sep="\t", index=False)
-
-
-    if not par["dryrun"]:
-        # look for counts file
-        if not par["sample_prefix"]:
-            par["sample_prefix"] = "sample"
-        counts_filename = par["sample_prefix"] + "_RSEC_MolsPerCell.csv"
-        
-        if par["sample_tags_version"]:
-            counts_filename = "Combined_" + counts_filename
-        counts_file = os.path.join(par["output"], counts_filename)
-        
-        if not os.path.exists(counts_file):
-            raise ValueError(f"Could not find output counts file '{counts_filename}'")
-
-        # look for metrics file
-        metrics_filename = par["sample_prefix"] + "_Metrics_Summary.csv"
-        metrics_file = os.path.join(par["output"], metrics_filename)
-        if not os.path.exists(metrics_file):
-            raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
 
 if __name__ == "__main__":
-    main(par, meta)
+    with tempfile.TemporaryDirectory(
+        prefix="cwl-bd_rhapsody-", dir=meta["temp_dir"]
+    ) as temp_dir:
+        main(par, meta, temp_dir)

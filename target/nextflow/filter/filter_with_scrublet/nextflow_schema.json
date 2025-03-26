@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -90,7 +90,7 @@
                 "description": "Type: `string`, default: `filter_with_scrublet`. In which ",
                 "help_text": "Type: `string`, default: `filter_with_scrublet`. In which .obs slot to store a boolean array corresponding to which observations should be filtered out."
             ,
-                "default": "filter_with_scrublet"
+                "default":"filter_with_scrublet"
             }
     
 
@@ -101,7 +101,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Whether to subset before storing the output",
                 "help_text": "Type: `boolean_true`, default: `false`. Whether to subset before storing the output."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -112,7 +112,47 @@
                 "description": "Type: `string`, default: `scrublet_doublet_score`. Name of the doublet scores column in the obs slot of the returned object",
                 "help_text": "Type: `string`, default: `scrublet_doublet_score`. Name of the doublet scores column in the obs slot of the returned object."
             ,
-                "default": "scrublet_doublet_score"
+                "default":"scrublet_doublet_score"
+            }
+    
+
+        ,
+                "expected_doublet_rate": {
+                "type":
+                "number",
+                "description": "Type: `double`. The estimated fraction of doublets as from the experimental setup",
+                "help_text": "Type: `double`. The estimated fraction of doublets as from the experimental setup.\n"
+            
+            }
+    
+
+        ,
+                "stdev_doublet_rate": {
+                "type":
+                "number",
+                "description": "Type: `double`. Uncertainty in the expected doublet rate",
+                "help_text": "Type: `double`. Uncertainty in the expected doublet rate."
+            
+            }
+    
+
+        ,
+                "n_neighbors": {
+                "type":
+                "integer",
+                "description": "Type: `integer`. Number of neighbors used to construct the KNN classifier of observed transcriptomes\nand simulated doublets",
+                "help_text": "Type: `integer`. Number of neighbors used to construct the KNN classifier of observed transcriptomes\nand simulated doublets.\n"
+            
+            }
+    
+
+        ,
+                "sim_doublet_ratio": {
+                "type":
+                "number",
+                "description": "Type: `double`. Number of doublets to simulate relative to the number of observed\ntranscriptomes",
+                "help_text": "Type: `double`. Number of doublets to simulate relative to the number of observed\ntranscriptomes.\n"
+            
             }
     
 
@@ -123,7 +163,7 @@
                 "description": "Type: `integer`, default: `2`. The number of minimal UMI counts per cell that have to be present for initial cell detection",
                 "help_text": "Type: `integer`, default: `2`. The number of minimal UMI counts per cell that have to be present for initial cell detection."
             ,
-                "default": "2"
+                "default":2
             }
     
 
@@ -134,7 +174,7 @@
                 "description": "Type: `integer`, default: `3`. The number of cells in which UMIs for a gene were detected",
                 "help_text": "Type: `integer`, default: `3`. The number of cells in which UMIs for a gene were detected."
             ,
-                "default": "3"
+                "default":3
             }
     
 
@@ -142,10 +182,10 @@
                 "min_gene_variablity_percent": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `85`. Used for gene filtering prior to PCA",
-                "help_text": "Type: `double`, default: `85`. Used for gene filtering prior to PCA. Keep the most highly variable genes (in the top min_gene_variability_pctl percentile), as measured by the v-statistic [Klein et al., Cell 2015]."
+                "description": "Type: `double`, default: `85.0`. Used for gene filtering prior to PCA",
+                "help_text": "Type: `double`, default: `85.0`. Used for gene filtering prior to PCA. Keep the most highly variable genes (in the top min_gene_variability_pctl percentile), as measured by the v-statistic [Klein et al., Cell 2015]."
             ,
-                "default": "85"
+                "default":85.0
             }
     
 
@@ -156,7 +196,7 @@
                 "description": "Type: `integer`, default: `30`. Number of principal components to use during PCA dimensionality reduction",
                 "help_text": "Type: `integer`, default: `30`. Number of principal components to use during PCA dimensionality reduction."
             ,
-                "default": "30"
+                "default":30
             }
     
 
@@ -167,7 +207,7 @@
                 "description": "Type: `string`, default: `euclidean`. The distance metric used for computing similarities",
                 "help_text": "Type: `string`, default: `euclidean`. The distance metric used for computing similarities."
             ,
-                "default": "euclidean"
+                "default":"euclidean"
             }
     
 
@@ -178,7 +218,7 @@
                 "description": "Type: `boolean_true`, default: `false`. When scrublet fails to automatically determine the double score threshold, \nallow the component to continue and set the output columns to NA",
                 "help_text": "Type: `boolean_true`, default: `false`. When scrublet fails to automatically determine the double score threshold, \nallow the component to continue and set the output columns to NA.\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 

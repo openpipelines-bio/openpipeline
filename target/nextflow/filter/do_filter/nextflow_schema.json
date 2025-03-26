@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -54,8 +54,8 @@
                 "obs_filter": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\":\"`. Which ",
-                "help_text": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\":\"`. Which .obs columns to use to filter the observations by."
+                "description": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\";\"`. Which ",
+                "help_text": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\";\"`. Which .obs columns to use to filter the observations by."
             
             }
     
@@ -64,8 +64,8 @@
                 "var_filter": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\":\"`. Which ",
-                "help_text": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\":\"`. Which .var columns to use to filter the observations by."
+                "description": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\";\"`. Which ",
+                "help_text": "Type: List of `string`, example: `filter_with_x`, multiple_sep: `\";\"`. Which .var columns to use to filter the observations by."
             
             }
     
@@ -77,7 +77,7 @@
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 

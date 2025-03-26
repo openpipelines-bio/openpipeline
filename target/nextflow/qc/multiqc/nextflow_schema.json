@@ -33,8 +33,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, example: `input.txt`, multiple_sep: `\":\"`. Inputs for MultiQC",
-                "help_text": "Type: List of `file`, required, example: `input.txt`, multiple_sep: `\":\"`. Inputs for MultiQC."
+                "description": "Type: List of `file`, required, example: `input.txt`, multiple_sep: `\";\"`. Inputs for MultiQC",
+                "help_text": "Type: List of `file`, required, example: `input.txt`, multiple_sep: `\";\"`. Inputs for MultiQC."
             
             }
     
@@ -46,7 +46,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `report`. Create report in the specified output directory",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `report`. Create report in the specified output directory."
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 

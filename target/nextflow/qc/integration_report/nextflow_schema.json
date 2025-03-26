@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -117,7 +117,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.pdf`, example: `output.pdf`. Name of the integration qc output pdf report",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.pdf`, example: `output.pdf`. Name of the integration qc output pdf report."
             ,
-                "default": "$id.$key.output.pdf"
+                "default":"$id.$key.output.pdf"
             }
     
 
@@ -128,7 +128,7 @@
                 "description": "Type: `boolean_true`, default: `false`. If provided, the raw data (unrendered report (md), figures (png) and metrics (json)) will be published",
                 "help_text": "Type: `boolean_true`, default: `false`. If provided, the raw data (unrendered report (md), figures (png) and metrics (json)) will be published.\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -139,7 +139,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_umap_label_fig.png`. Name of the UMAP label figure (png)",
                 "help_text": "Type: `file`, default: `$id.$key.output_umap_label_fig.png`. Name of the UMAP label figure (png). Will only be saved if --output_raw is set to true.\n"
             ,
-                "default": "$id.$key.output_umap_label_fig.png"
+                "default":"$id.$key.output_umap_label_fig.png"
             }
     
 
@@ -150,7 +150,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_umap_batch_fig.png`. Name of the UMAP batch figure (png)",
                 "help_text": "Type: `file`, default: `$id.$key.output_umap_batch_fig.png`. Name of the UMAP batch figure (png). Will only be saved if --output_raw is set to true.\n"
             ,
-                "default": "$id.$key.output_umap_batch_fig.png"
+                "default":"$id.$key.output_umap_batch_fig.png"
             }
     
 
@@ -161,7 +161,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_md_report.qmd`. Name of the unrendered report file (qmd)",
                 "help_text": "Type: `file`, default: `$id.$key.output_md_report.qmd`. Name of the unrendered report file (qmd). Will only be saved if --output_raw is set to true.\n"
             ,
-                "default": "$id.$key.output_md_report.qmd"
+                "default":"$id.$key.output_md_report.qmd"
             }
     
 
@@ -172,7 +172,7 @@
                 "description": "Type: `file`, default: `$id.$key.output_metrics.json`. Name of the json file containing integration metrics (json)",
                 "help_text": "Type: `file`, default: `$id.$key.output_metrics.json`. Name of the json file containing integration metrics (json). Will only be saved if --output_raw is set to true.       \n"
             ,
-                "default": "$id.$key.output_metrics.json"
+                "default":"$id.$key.output_metrics.json"
             }
     
 

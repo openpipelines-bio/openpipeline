@@ -56,7 +56,7 @@
                 "description": "Type: `integer`, default: `2`. Number of samples multiplexed together",
                 "help_text": "Type: `integer`, default: `2`. Number of samples multiplexed together"
             ,
-                "default": "2"
+                "default":2
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Turn on writing auxilary output files",
                 "help_text": "Type: `boolean_true`, default: `false`. Turn on writing auxilary output files"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -78,7 +78,7 @@
                 "description": "Type: `integer`, default: `100`. Turn on verbose mode with specific verbosity threshold",
                 "help_text": "Type: `integer`, default: `100`. Turn on verbose mode with specific verbosity threshold. 0: fully verbose, 100 : no verbose messages."
             ,
-                "default": "100"
+                "default":100
             }
     
 
@@ -89,7 +89,7 @@
                 "description": "Type: `double`, default: `0.5`. Prior of doublet",
                 "help_text": "Type: `double`, default: `0.5`. Prior of doublet."
             ,
-                "default": "0.5"
+                "default":0.5
             }
     
 
@@ -100,7 +100,7 @@
                 "description": "Type: `double`, default: `0.1`. Genotype error parameter per cluster",
                 "help_text": "Type: `double`, default: `0.1`. Genotype error parameter per cluster."
             ,
-                "default": "0.1"
+                "default":0.1
             }
     
 
@@ -111,7 +111,7 @@
                 "description": "Type: `double`, default: `5.41`. Bayes Factor Threshold used in the initial clustering",
                 "help_text": "Type: `double`, default: `5.41`. Bayes Factor Threshold used in the initial clustering."
             ,
-                "default": "5.41"
+                "default":5.41
             }
     
 
@@ -119,10 +119,10 @@
                 "frac_init_clust": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `1`. Fraction of droplets to be clustered in the very first round of initial clustering procedure",
-                "help_text": "Type: `double`, default: `1`. Fraction of droplets to be clustered in the very first round of initial clustering procedure."
+                "description": "Type: `double`, default: `1.0`. Fraction of droplets to be clustered in the very first round of initial clustering procedure",
+                "help_text": "Type: `double`, default: `1.0`. Fraction of droplets to be clustered in the very first round of initial clustering procedure."
             ,
-                "default": "1"
+                "default":1.0
             }
     
 
@@ -133,7 +133,7 @@
                 "description": "Type: `integer`, default: `10`. Iteration for initial cluster assignment (set to zero to skip the iterations)",
                 "help_text": "Type: `integer`, default: `10`. Iteration for initial cluster assignment (set to zero to skip the iterations)."
             ,
-                "default": "10"
+                "default":10
             }
     
 
@@ -144,7 +144,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Keep missing cluster assignment as missing in the initial iteration",
                 "help_text": "Type: `boolean_true`, default: `false`. Keep missing cluster assignment as missing in the initial iteration."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -155,7 +155,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Randomize the singlet scores to test its effect",
                 "help_text": "Type: `boolean_true`, default: `false`. Randomize the singlet scores to test its effect."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -166,7 +166,7 @@
                 "description": "Type: `integer`, default: `0`. Seed for random number (use clocks if not set)",
                 "help_text": "Type: `integer`, default: `0`. Seed for random number (use clocks if not set)."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -177,7 +177,7 @@
                 "description": "Type: `integer`, default: `20`. Maximum base quality (higher BQ will be capped)",
                 "help_text": "Type: `integer`, default: `20`. Maximum base quality (higher BQ will be capped)."
             ,
-                "default": "20"
+                "default":20
             }
     
 
@@ -188,7 +188,7 @@
                 "description": "Type: `integer`, default: `13`. Minimum base quality to consider (lower BQ will be skipped)",
                 "help_text": "Type: `integer`, default: `13`. Minimum base quality to consider (lower BQ will be skipped)."
             ,
-                "default": "13"
+                "default":13
             }
     
 
@@ -209,7 +209,7 @@
                 "description": "Type: `integer`, default: `0`. Minimum number of total reads for a droplet/cell to be considered",
                 "help_text": "Type: `integer`, default: `0`. Minimum number of total reads for a droplet/cell to be considered."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -220,7 +220,7 @@
                 "description": "Type: `integer`, default: `0`. Minimum number of UMIs for a droplet/cell to be considered",
                 "help_text": "Type: `integer`, default: `0`. Minimum number of UMIs for a droplet/cell to be considered."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -231,7 +231,7 @@
                 "description": "Type: `integer`, default: `0`. Minimum number of SNPs with coverage for a droplet/cell to be considered",
                 "help_text": "Type: `integer`, default: `0`. Minimum number of SNPs with coverage for a droplet/cell to be considered."
             ,
-                "default": "0"
+                "default":0
             }
     
 
@@ -249,10 +249,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.output`, example: `freemux/`. Output directory",
-                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `freemux/`. Output directory"
+                "description": "Type: `file`, default: `$id.$key.output.output`, example: `freemux`. Output directory",
+                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `freemux`. Output directory"
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 

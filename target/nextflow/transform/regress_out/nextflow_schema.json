@@ -46,7 +46,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -69,7 +69,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality (one or more) to run this component on",
                 "help_text": "Type: `string`, default: `rna`. Which modality (one or more) to run this component on."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -77,8 +77,28 @@
                 "obs_keys": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, multiple_sep: `\":\"`. Which ",
-                "help_text": "Type: List of `string`, multiple_sep: `\":\"`. Which .obs keys to regress on."
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. Which ",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. Which .obs keys to regress on."
+            
+            }
+    
+
+        ,
+                "input_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `X_normalized`. The layer of the adata object to regress on",
+                "help_text": "Type: `string`, example: `X_normalized`. The layer of the adata object to regress on.\nIf not provided, the X attribute of the adata object will be used.\n"
+            
+            }
+    
+
+        ,
+                "output_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `X_regressed`. The layer of the adata object containing the regressed count data",
+                "help_text": "Type: `string`, example: `X_regressed`. The layer of the adata object containing the regressed count data.\nIf not provided, the X attribute of the adata object will be used.\n"
             
             }
     

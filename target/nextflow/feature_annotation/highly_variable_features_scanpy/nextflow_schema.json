@@ -46,7 +46,7 @@
                 "description": "Type: `string`, default: `rna`. ",
                 "help_text": "Type: `string`, default: `rna`. "
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -61,13 +61,23 @@
     
 
         ,
+                "var_input": {
+                "type":
+                "string",
+                "description": "Type: `string`. If specified, use boolean array in adata",
+                "help_text": "Type: `string`. If specified, use boolean array in adata.var[var_input] to calculate hvg on subset of vars.\n"
+            
+            }
+    
+
+        ,
                 "output": {
                 "type":
                 "string",
                 "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -90,7 +100,7 @@
                 "description": "Type: `string`, default: `filter_with_hvg`. In which ",
                 "help_text": "Type: `string`, default: `filter_with_hvg`. In which .var slot to store a boolean array corresponding to which observations should be filtered out."
             ,
-                "default": "filter_with_hvg"
+                "default":"filter_with_hvg"
             }
     
 
@@ -101,7 +111,7 @@
                 "description": "Type: `string`, default: `hvg`. In which ",
                 "help_text": "Type: `string`, default: `hvg`. In which .varm slot to store additional metadata."
             ,
-                "default": "hvg"
+                "default":"hvg"
             }
     
 
@@ -114,7 +124,7 @@
                 "enum": ["seurat", "cell_ranger", "seurat_v3"]
             
             ,
-                "default": "seurat"
+                "default":"seurat"
             }
     
 
@@ -135,7 +145,7 @@
                 "description": "Type: `double`, default: `0.0125`. If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
                 "help_text": "Type: `double`, default: `0.0125`. If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor=\u0027seurat_v3\u0027."
             ,
-                "default": "0.0125"
+                "default":0.0125
             }
     
 
@@ -143,10 +153,10 @@
                 "max_mean": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `3`. If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
-                "help_text": "Type: `double`, default: `3`. If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor=\u0027seurat_v3\u0027."
+                "description": "Type: `double`, default: `3.0`. If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
+                "help_text": "Type: `double`, default: `3.0`. If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor=\u0027seurat_v3\u0027."
             ,
-                "default": "3"
+                "default":3.0
             }
     
 
@@ -157,7 +167,7 @@
                 "description": "Type: `double`, default: `0.5`. If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
                 "help_text": "Type: `double`, default: `0.5`. If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor=\u0027seurat_v3\u0027."
             ,
-                "default": "0.5"
+                "default":0.5
             }
     
 
@@ -178,7 +188,7 @@
                 "description": "Type: `double`, default: `0.3`. The fraction of the data (cells) used when estimating the variance in the loess model fit if flavor=\u0027seurat_v3\u0027",
                 "help_text": "Type: `double`, default: `0.3`. The fraction of the data (cells) used when estimating the variance in the loess model fit if flavor=\u0027seurat_v3\u0027."
             ,
-                "default": "0.3"
+                "default":0.3
             }
     
 
@@ -189,7 +199,7 @@
                 "description": "Type: `integer`, default: `20`. Number of bins for binning the mean feature expression",
                 "help_text": "Type: `integer`, default: `20`. Number of bins for binning the mean feature expression. Normalization is done with respect to each bin. If just a single feature falls into a bin, the normalized dispersion is artificially set to 1."
             ,
-                "default": "20"
+                "default":20
             }
     
 

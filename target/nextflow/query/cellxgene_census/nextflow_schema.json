@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
 "title": "cellxgene_census",
-"description": "Query CellxGene Census or user-specified TileDBSoma object, and eventually fetch cell and gene metadata or/and expression counts.",
+"description": "Query cells from a CellxGene Census or custom TileDBSoma object.\nAside from fetching the cells\u0027 RNA counts (`.X`), cell metadata\n(`.obs`) and gene metadata (`.var`), this component also fetches\nthe dataset metadata and joins it into the cell metadata.\n",
 "type": "object",
 "definitions": {
 
@@ -23,49 +23,6 @@
 
     
     
-    "inputs" : {
-    "title": "Inputs",
-    "type": "object",
-    "description": "Arguments related to the input (aka query) dataset.",
-    "properties": {
-    
-        
-                "input_database": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `CellxGene`, example: `s3://`. Full input database S3 prefix URL",
-                "help_text": "Type: `string`, default: `CellxGene`, example: `s3://`. Full input database S3 prefix URL. Default: CellxGene Census"
-            ,
-                "default": "CellxGene"
-            }
-    
-
-        ,
-                "modality": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `rna`. Which modality to store the output in",
-                "help_text": "Type: `string`, default: `rna`. Which modality to store the output in."
-            ,
-                "default": "rna"
-            }
-    
-
-        ,
-                "cellxgene_release": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `2023-05-15`. CellxGene Census release date",
-                "help_text": "Type: `string`, default: `2023-05-15`. CellxGene Census release date. More information: https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html"
-            ,
-                "default": "2023-05-15"
-            }
-    
-
-}
-},
-    
-    
     "outputs" : {
     "title": "Outputs",
     "type": "object",
@@ -79,7 +36,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -95,12 +52,74 @@
             }
     
 
+        ,
+                "output_modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. Which modality to store the output in",
+                "help_text": "Type: `string`, default: `rna`. Which modality to store the output in."
+            ,
+                "default":"rna"
+            }
+    
+
+        ,
+                "output_layer_counts": {
+                "type":
+                "string",
+                "description": "Type: `string`. Which layer to store the raw counts in",
+                "help_text": "Type: `string`. Which layer to store the raw counts in. If not provided, the .X layer will be used."
+            
+            }
+    
+
 }
 },
     
     
-    "query" : {
-    "title": "Query",
+    "input database" : {
+    "title": "Input database",
+    "type": "object",
+    "description": "Open CellxGene Census by version or URI.",
+    "properties": {
+    
+        
+                "input_uri": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `s3://bucket/path`. If specified, a URI containing the Census SOMA objects",
+                "help_text": "Type: `string`, example: `s3://bucket/path`. If specified, a URI containing the Census SOMA objects. If specified, will take precedence over the `--census_version` argument."
+            
+            }
+    
+
+        ,
+                "census_version": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `stable`. Which release of CellxGene census to use",
+                "help_text": "Type: `string`, example: `stable`. Which release of CellxGene census to use. Possible values are \"latest\", \"stable\", or the date of one of the releases (e.g. \"2023-07-25\"). For more information, check the documentation on [Census data releases](https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html)."
+            
+            }
+    
+
+        ,
+                "add_dataset_metadata": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. If true, the experiment metadata will be added to the cell metadata",
+                "help_text": "Type: `boolean_true`, default: `false`. If true, the experiment metadata will be added to the cell metadata. More specifically: `collection_id`, `collection_name`, `collection_doi`, `dataset_title`."
+            ,
+                "default":false
+            }
+    
+
+}
+},
+    
+    
+    "cell query" : {
+    "title": "Cell query",
     "type": "object",
     "description": "Arguments related to the query.",
     "properties": {
@@ -109,42 +128,103 @@
                 "species": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `homo_sapiens`, example: `homo_sapiens`, choices: ``homo_sapiens`, `mus_musculus``. Specie(s) of interest",
-                "help_text": "Type: `string`, default: `homo_sapiens`, example: `homo_sapiens`, choices: ``homo_sapiens`, `mus_musculus``. Specie(s) of interest. If not specified, Homo Sapiens will be queried.",
-                "enum": ["homo_sapiens", "mus_musculus"]
+                "description": "Type: `string`, required, example: `homo_sapiens`. The organism to query, usually one of `Homo sapiens` or `Mus musculus`",
+                "help_text": "Type: `string`, required, example: `homo_sapiens`. The organism to query, usually one of `Homo sapiens` or `Mus musculus`."
             
+            }
+    
+
+        ,
+                "obs_value_filter": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `is_primary_data == True and cell_type_ontology_term_id in [\u0027CL:0000136\u0027, \u0027CL:1000311\u0027, \u0027CL:0002616\u0027] and suspension_type == \u0027cell\u0027`. Filter for selecting the `obs` metadata (i",
+                "help_text": "Type: `string`, required, example: `is_primary_data == True and cell_type_ontology_term_id in [\u0027CL:0000136\u0027, \u0027CL:1000311\u0027, \u0027CL:0002616\u0027] and suspension_type == \u0027cell\u0027`. Filter for selecting the `obs` metadata (i.e. cells). Value is a filter query written in the SOMA `value_filter` syntax."
+            
+            }
+    
+
+}
+},
+    
+    
+    "filter cells by grouping" : {
+    "title": "Filter cells by grouping",
+    "type": "object",
+    "description": "Filter groups with fewer than X number of cells.",
+    "properties": {
+    
+        
+                "cell_filter_grouping": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, example: `dataset_id;tissue;assay;disease;cell_type`, multiple_sep: `\";\"`. A subset of \u0027obs\u0027 columns by which to group the cells for filtering",
+                "help_text": "Type: List of `string`, example: `dataset_id;tissue;assay;disease;cell_type`, multiple_sep: `\";\"`. A subset of \u0027obs\u0027 columns by which to group the cells for filtering.\nOnly groups surpassing or equal to the `--cell_filter_minimum_count`\nthreshold will be retained. Take care not to introduce a selection\nbias against cells with more fine-grained ontology annotations.\n"
+            
+            }
+    
+
+        ,
+                "cell_filter_minimum_count": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `100`. A minimum number of cells per group to retain",
+                "help_text": "Type: `integer`, example: `100`. A minimum number of cells per group to retain. If `--cell_filter_grouping`\nis defined, this parameter should also be provided and vice versa.\n"
+            
+            }
+    
+
+}
+},
+    
+    
+    "count filtering" : {
+    "title": "Count filtering",
+    "type": "object",
+    "description": "Arguments related to filtering cells and genes by counts.",
+    "properties": {
+    
+        
+                "cell_filter_min_genes": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `50`. Remove cells with less than this number of genes",
+                "help_text": "Type: `integer`, default: `50`. Remove cells with less than this number of genes."
             ,
-                "default": "homo_sapiens"
+                "default":50
             }
     
 
         ,
-                "cell_query": {
+                "cell_filter_min_counts": {
                 "type":
-                "string",
-                "description": "Type: `string`, example: `is_primary_data == True and cell_type_ontology_term_id in [\u0027CL:0000136\u0027, \u0027CL:1000311\u0027, \u0027CL:0002616\u0027] and suspension_type == \u0027cell\u0027`. The query for selecting the cells as defined by the cellxgene census schema",
-                "help_text": "Type: `string`, example: `is_primary_data == True and cell_type_ontology_term_id in [\u0027CL:0000136\u0027, \u0027CL:1000311\u0027, \u0027CL:0002616\u0027] and suspension_type == \u0027cell\u0027`. The query for selecting the cells as defined by the cellxgene census schema."
-            
+                "integer",
+                "description": "Type: `integer`, default: `0`. Remove cells with less than this number of counts",
+                "help_text": "Type: `integer`, default: `0`. Remove cells with less than this number of counts."
+            ,
+                "default":0
             }
     
 
         ,
-                "cells_filter_columns": {
+                "gene_filter_min_cells": {
                 "type":
-                "string",
-                "description": "Type: List of `string`, example: `dataset_id:tissue:assay:disease:cell_type`, multiple_sep: `\":\"`. The query for selecting the cells as defined by the cellxgene census schema",
-                "help_text": "Type: List of `string`, example: `dataset_id:tissue:assay:disease:cell_type`, multiple_sep: `\":\"`. The query for selecting the cells as defined by the cellxgene census schema."
-            
+                "integer",
+                "description": "Type: `integer`, default: `5`. Remove genes expressed in less than this number of cells",
+                "help_text": "Type: `integer`, default: `5`. Remove genes expressed in less than this number of cells."
+            ,
+                "default":5
             }
     
 
         ,
-                "min_cells_filter_columns": {
+                "gene_filter_min_counts": {
                 "type":
-                "number",
-                "description": "Type: `double`, example: `100`. Minimum of amount of summed cells_filter_columns cells",
-                "help_text": "Type: `double`, example: `100`. Minimum of amount of summed cells_filter_columns cells"
-            
+                "integer",
+                "description": "Type: `integer`, default: `0`. Remove genes with less than this number of counts",
+                "help_text": "Type: `integer`, default: `0`. Remove genes with less than this number of counts."
+            ,
+                "default":0
             }
     
 
@@ -176,15 +256,23 @@
 "allOf": [
 
     {
-    "$ref": "#/definitions/inputs"
-    },
-
-    {
     "$ref": "#/definitions/outputs"
     },
 
     {
-    "$ref": "#/definitions/query"
+    "$ref": "#/definitions/input database"
+    },
+
+    {
+    "$ref": "#/definitions/cell query"
+    },
+
+    {
+    "$ref": "#/definitions/filter cells by grouping"
+    },
+
+    {
+    "$ref": "#/definitions/count filtering"
     },
 
     {

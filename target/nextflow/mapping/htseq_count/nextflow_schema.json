@@ -38,7 +38,7 @@
                 "enum": ["pos", "name"]
             
             ,
-                "default": "name"
+                "default":"name"
             }
     
 
@@ -51,7 +51,7 @@
                 "enum": ["yes", "no", "reverse"]
             
             ,
-                "default": "yes"
+                "default":"yes"
             }
     
 
@@ -62,7 +62,7 @@
                 "description": "Type: `integer`, default: `10`. Skip all reads with MAPQ alignment quality lower than the given minimum value",
                 "help_text": "Type: `integer`, default: `10`. Skip all reads with MAPQ alignment quality lower than the given minimum value. \nMAPQ is the 5th column of a SAM/BAM file and its usage depends on the software \nused to map the reads.\n"
             ,
-                "default": "10"
+                "default":10
             }
     
 
@@ -80,8 +80,8 @@
                 "id_attribute": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `gene_id`, multiple_sep: `\":\"`. GTF attribute to be used as feature ID (default, suitable for Ensembl GTF files: gene_id)",
-                "help_text": "Type: List of `string`, example: `gene_id`, multiple_sep: `\":\"`. GTF attribute to be used as feature ID (default, suitable for Ensembl GTF files: gene_id).\nAll feature of the right type (see -t option) within the same GTF attribute will be added\ntogether. The typical way of using this option is to count all exonic reads from each gene\nand add the exons but other uses are possible as well. You can call this option multiple\ntimes: in that case, the combination of all attributes separated by colons (:) will be used\nas a unique identifier, e.g. for exons you might use -i gene_id -i exon_number.\n"
+                "description": "Type: List of `string`, example: `gene_id`, multiple_sep: `\";\"`. GTF attribute to be used as feature ID (default, suitable for Ensembl GTF files: gene_id)",
+                "help_text": "Type: List of `string`, example: `gene_id`, multiple_sep: `\";\"`. GTF attribute to be used as feature ID (default, suitable for Ensembl GTF files: gene_id).\nAll feature of the right type (see -t option) within the same GTF attribute will be added\ntogether. The typical way of using this option is to count all exonic reads from each gene\nand add the exons but other uses are possible as well. You can call this option multiple\ntimes: in that case, the combination of all attributes separated by colons (:) will be used\nas a unique identifier, e.g. for exons you might use -i gene_id -i exon_number.\n"
             
             }
     
@@ -90,8 +90,8 @@
                 "additional_attributes": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `gene_name`, multiple_sep: `\":\"`. Additional feature attributes (suitable for Ensembl GTF files: gene_name)",
-                "help_text": "Type: List of `string`, example: `gene_name`, multiple_sep: `\":\"`. Additional feature attributes (suitable for Ensembl GTF files: gene_name). Use multiple times\nfor more than one additional attribute. These attributes are only used as annotations in the\noutput, while the determination of how the counts are added together is done based on option -i.\n"
+                "description": "Type: List of `string`, example: `gene_name`, multiple_sep: `\";\"`. Additional feature attributes (suitable for Ensembl GTF files: gene_name)",
+                "help_text": "Type: List of `string`, example: `gene_name`, multiple_sep: `\";\"`. Additional feature attributes (suitable for Ensembl GTF files: gene_name). Use multiple times\nfor more than one additional attribute. These attributes are only used as annotations in the\noutput, while the determination of how the counts are added together is done based on option -i.\n"
             
             }
     
@@ -103,7 +103,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Store information about the chromosome of each feature as an additional attribute\n(e",
                 "help_text": "Type: `boolean_true`, default: `false`. Store information about the chromosome of each feature as an additional attribute\n(e.g. colunm in the TSV output file).\n"
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -116,7 +116,7 @@
                 "enum": ["union", "intersection-strict", "intersection-nonempty"]
             
             ,
-                "default": "union"
+                "default":"union"
             }
     
 
@@ -129,7 +129,7 @@
                 "enum": ["none", "all", "fraction", "random"]
             
             ,
-                "default": "none"
+                "default":"none"
             }
     
 
@@ -164,7 +164,7 @@
                 "description": "Type: `boolean_true`, default: `false`. Store the counts as a sparse matrix (mtx, h5ad, loom)",
                 "help_text": "Type: `boolean_true`, default: `false`. Store the counts as a sparse matrix (mtx, h5ad, loom)."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -182,8 +182,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, example: `mysample1.BAM:mysample2.BAM`, multiple_sep: `\":\"`. Path to the SAM/BAM files containing the mapped reads",
-                "help_text": "Type: List of `file`, required, example: `mysample1.BAM:mysample2.BAM`, multiple_sep: `\":\"`. Path to the SAM/BAM files containing the mapped reads."
+                "description": "Type: List of `file`, required, example: `mysample1.BAM;mysample2.BAM`, multiple_sep: `\";\"`. Path to the SAM/BAM files containing the mapped reads",
+                "help_text": "Type: List of `file`, required, example: `mysample1.BAM;mysample2.BAM`, multiple_sep: `\";\"`. Path to the SAM/BAM files containing the mapped reads."
             
             }
     
@@ -215,7 +215,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.tsv`, example: `htseq-count.tsv`. Filename to output the counts to",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.tsv`, example: `htseq-count.tsv`. Filename to output the counts to."
             ,
-                "default": "$id.$key.output.tsv"
+                "default":"$id.$key.output.tsv"
             }
     
 
@@ -233,10 +233,10 @@
                 "output_sam": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, default: `$id.$key.output_sam_*.BAM`, example: `mysample1_out.BAM:mysample2_out.BAM`, multiple_sep: `\":\"`. Write out all SAM alignment records into SAM/BAM files (one per input file needed), \nannotating each line with its feature assignment (as an optional field with tag \u0027XF\u0027)",
-                "help_text": "Type: List of `file`, default: `$id.$key.output_sam_*.BAM`, example: `mysample1_out.BAM:mysample2_out.BAM`, multiple_sep: `\":\"`. Write out all SAM alignment records into SAM/BAM files (one per input file needed), \nannotating each line with its feature assignment (as an optional field with tag \u0027XF\u0027). \nSee the -p option to use BAM instead of SAM.\n"
+                "description": "Type: List of `file`, default: `$id.$key.output_sam_*.BAM`, example: `mysample1_out.BAM;mysample2_out.BAM`, multiple_sep: `\";\"`. Write out all SAM alignment records into SAM/BAM files (one per input file needed), \nannotating each line with its feature assignment (as an optional field with tag \u0027XF\u0027)",
+                "help_text": "Type: List of `file`, default: `$id.$key.output_sam_*.BAM`, example: `mysample1_out.BAM;mysample2_out.BAM`, multiple_sep: `\";\"`. Write out all SAM alignment records into SAM/BAM files (one per input file needed), \nannotating each line with its feature assignment (as an optional field with tag \u0027XF\u0027). \nSee the -p option to use BAM instead of SAM.\n"
             ,
-                "default": "$id.$key.output_sam_*.BAM"
+                "default":"$id.$key.output_sam_*.BAM"
             }
     
 

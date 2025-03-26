@@ -1,8 +1,14 @@
 # Inputs
 input: # please fill in - example: "path/to/file"
+# counts_layer: "foo"
+modality: # please fill in - example: "foo"
+layer_spliced: "spliced"
+layer_unspliced: "unspliced"
+layer_ambiguous: "ambiguous"
 
 # Outputs
-# output: "$id.$key.output.output"
+# output: "$id.$key.output"
+# output_h5mu: "$id.$key.output_h5mu"
 # output_compression: "gzip"
 
 # Filtering and normalization
@@ -22,3 +28,5 @@ n_neighbors: 30
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

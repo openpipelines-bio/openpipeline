@@ -56,7 +56,7 @@
                 "description": "Type: `string`, default: `log_normalized`. use specified layer for expression values instead of the ",
                 "help_text": "Type: `string`, default: `log_normalized`. use specified layer for expression values instead of the .X object from the modality."
             ,
-                "default": "log_normalized"
+                "default":"log_normalized"
             }
     
 
@@ -67,7 +67,7 @@
                 "description": "Type: `string`, default: `rna`. Which modality to process",
                 "help_text": "Type: `string`, default: `rna`. Which modality to process."
             ,
-                "default": "rna"
+                "default":"rna"
             }
     
 
@@ -88,7 +88,7 @@
                 "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
             ,
-                "default": "$id.$key.output.h5mu"
+                "default":"$id.$key.output.h5mu"
             }
     
 
@@ -109,7 +109,7 @@
                 "description": "Type: `string`, default: `X_pca`. In which ",
                 "help_text": "Type: `string`, default: `X_pca`. In which .obsm slot to store the resulting PCA embedding."
             ,
-                "default": "X_pca"
+                "default":"X_pca"
             }
     
 
@@ -124,13 +124,33 @@
     
 
         ,
+                "pca_loadings_varm_output": {
+                "type":
+                "string",
+                "description": "Type: `string`. Name of the ",
+                "help_text": "Type: `string`. Name of the .varm key where the PCA loadings are stored.\n"
+            
+            }
+    
+
+        ,
+                "pca_variance_uns_output": {
+                "type":
+                "string",
+                "description": "Type: `string`. Name of the ",
+                "help_text": "Type: `string`. Name of the .uns key where the variance and variance ratio will be stored as a map.\nThe map will contain two keys: variance and variance_ratio respectively.\n"
+            
+            }
+    
+
+        ,
                 "pca_overwrite": {
                 "type":
                 "boolean",
                 "description": "Type: `boolean_true`, default: `false`. Allow overwriting slots for PCA output",
                 "help_text": "Type: `boolean_true`, default: `false`. Allow overwriting slots for PCA output."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -151,7 +171,7 @@
                 "description": "Type: `string`, default: `neighbors`. In which ",
                 "help_text": "Type: `string`, default: `neighbors`. In which .uns slot to store various neighbor output objects."
             ,
-                "default": "neighbors"
+                "default":"neighbors"
             }
     
 
@@ -162,7 +182,7 @@
                 "description": "Type: `string`, default: `distances`. In which ",
                 "help_text": "Type: `string`, default: `distances`. In which .obsp slot to store the distance matrix between the resulting neighbors."
             ,
-                "default": "distances"
+                "default":"distances"
             }
     
 
@@ -173,7 +193,7 @@
                 "description": "Type: `string`, default: `connectivities`. In which ",
                 "help_text": "Type: `string`, default: `connectivities`. In which .obsp slot to store the connectivities matrix between the resulting neighbors."
             ,
-                "default": "connectivities"
+                "default":"connectivities"
             }
     
 
@@ -194,7 +214,7 @@
                 "description": "Type: `string`, default: `X_umap`. In which ",
                 "help_text": "Type: `string`, default: `X_umap`. In which .obsm slot to store the resulting UMAP embedding."
             ,
-                "default": "X_umap"
+                "default":"X_umap"
             }
     
 

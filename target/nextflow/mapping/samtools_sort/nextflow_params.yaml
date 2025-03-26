@@ -1,10 +1,3 @@
-# Arguments
-minimizer_cluster: false
-# minimizer_kmer: 20
-sort_by_read_names: false
-# sort_by: "foo"
-no_pg: false
-
 # Input
 input: # please fill in - example: "input.bam"
 
@@ -13,6 +6,13 @@ input: # please fill in - example: "input.bam"
 # output_bai: "$id.$key.output_bai.bai"
 # output_format: "bam"
 # compression: 5
+
+# Arguments
+minimizer_cluster: false
+# minimizer_kmer: 20
+sort_by_read_names: false
+# sort_by: "foo"
+no_pg: false
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

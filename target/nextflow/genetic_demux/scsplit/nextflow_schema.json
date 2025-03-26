@@ -66,7 +66,7 @@
                 "description": "Type: `string`, default: `CB`. tag for barcode",
                 "help_text": "Type: `string`, default: `CB`. tag for barcode"
             ,
-                "default": "CB"
+                "default":"CB"
             }
     
 
@@ -97,7 +97,7 @@
                 "description": "Type: `integer`, default: `10`. maximum number of subpopulations in autodetect mode",
                 "help_text": "Type: `integer`, default: `10`. maximum number of subpopulations in autodetect mode"
             ,
-                "default": "10"
+                "default":10
             }
     
 
@@ -108,7 +108,7 @@
                 "description": "Type: `integer`, default: `30`. number of EM repeats to avoid local maximum",
                 "help_text": "Type: `integer`, default: `30`. number of EM repeats to avoid local maximum"
             ,
-                "default": "30"
+                "default":30
             }
     
 
@@ -139,7 +139,7 @@
                 "description": "Type: `boolean_true`, default: `false`. generate sample genotypes based on the split result",
                 "help_text": "Type: `boolean_true`, default: `false`. generate sample genotypes based on the split result."
             ,
-                "default": "False"
+                "default":false
             }
     
 
@@ -157,10 +157,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.output`, example: `scSplit_out/`. Output directory",
-                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `scSplit_out/`. Output directory"
+                "description": "Type: `file`, default: `$id.$key.output.output`, example: `scSplit_out`. Output directory",
+                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `scSplit_out`. Output directory"
             ,
-                "default": "$id.$key.output.output"
+                "default":"$id.$key.output.output"
             }
     
 
