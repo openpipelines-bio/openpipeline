@@ -5266,7 +5266,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_align_v273a",
     "viash_version" : "0.9.0",
-    "git_commit" : "feca61faa11c70b27b5aa25bb827da866a790fcb",
+    "git_commit" : "8d48e1d7c3cdbaa42e2fad917647941ad5ae814c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
