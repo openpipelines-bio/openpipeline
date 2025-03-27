@@ -261,9 +261,9 @@ build_info:
   output: "target/nextflow/demux/bcl_convert"
   executable: "target/nextflow/demux/bcl_convert/main.nf"
   viash_version: "0.9.0"
-  git_commit: "995cd00e5ed3e48527e9c4ebcc1775ca6b712588"
+  git_commit: "58a336a28e09998a21a5780cfb15fcf3fbac05a9"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-2000-g995cd00e5ed"
+  git_tag: "0.2.0-2001-g58a336a28e0"
 package_config:
   name: "openpipeline"
   info:

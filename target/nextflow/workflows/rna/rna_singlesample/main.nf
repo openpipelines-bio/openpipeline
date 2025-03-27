@@ -3304,9 +3304,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample",
     "viash_version" : "0.9.0",
-    "git_commit" : "995cd00e5ed3e48527e9c4ebcc1775ca6b712588",
+    "git_commit" : "58a336a28e09998a21a5780cfb15fcf3fbac05a9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2000-g995cd00e5ed"
+    "git_tag" : "0.2.0-2001-g58a336a28e0"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3372,12 +3372,12 @@ workflow run_wf {
         throw new RuntimeException("Enabling --min_fraction_mito or --max_fraction_mito requires --var_name_mitochondrial_genes.")
       }
       if (state.var_gene_names && !state.var_name_mitochondrial_genes && !state.var_name_ribosomal_genes) {
-        System.err.println("Warning: --var_gene_names is only required for mitochondrial gene detection and does nothing while 
-                            not also setting --var_name_mitochondrial_genes or --var_name_ribosomal_genes.")
+        System.err.println("Warning: --var_gene_names is only required for mitochondrial gene detection and does nothing while \
+                           not also setting --var_name_mitochondrial_genes or --var_name_ribosomal_genes.")
       }
       if (state.mitochondrial_gene_regex && !state.var_name_mitochondrial_genes && !state.var_name_ribosomal_genes) {
-        System.err.println("Warning: --mitochondrial_gene_regex is only required for mitochondrial gene detection and does 
-                            nothing while not also setting --var_name_mitochondrial_genes or --var_name_ribosomal_genes.")
+        System.err.println("Warning: --mitochondrial_gene_regex is only required for mitochondrial gene detection and does \
+                           nothing while not also setting --var_name_mitochondrial_genes or --var_name_ribosomal_genes.")
       }
       if (state.obs_name_ribosomal_fraction && !state.var_name_ribosomal_genes) {
         throw new RuntimeException("Using --obs_name_ribosomal_fraction requires --var_name_ribosomal_genes.")
