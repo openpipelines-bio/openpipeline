@@ -8,8 +8,8 @@ import numpy as np
 ### VIASH START
 par = {
     "input": [
-        "merged.align_query_reference.output_query_prot.h5mu",
-        "merged.knn.output.h5mu",
+        "./resources_test/merge/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu",
+        "./resources_test/merge/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu",
     ],
     "output": "foo.h5mu",
     "output_compression": None,
