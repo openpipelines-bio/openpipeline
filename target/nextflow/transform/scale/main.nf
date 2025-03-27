@@ -3111,7 +3111,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/scale",
     "viash_version" : "0.9.0",
-    "git_commit" : "5367a81dbd5e07e3c188b6106502d5de71312443",
+    "git_commit" : "77061a38d69cefc5fb1b2453e21261e7a251bdb4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

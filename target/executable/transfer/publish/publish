@@ -465,9 +465,9 @@ FROM ubuntu:22.04
 ENTRYPOINT []
 LABEL org.opencontainers.image.authors="Toni Verbeiren"
 LABEL org.opencontainers.image.description="Companion container for running component transfer publish"
-LABEL org.opencontainers.image.created="2025-03-21T08:22:23Z"
+LABEL org.opencontainers.image.created="2025-03-27T10:36:32Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5367a81dbd5e07e3c188b6106502d5de71312443"
+LABEL org.opencontainers.image.revision="77061a38d69cefc5fb1b2453e21261e7a251bdb4"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
