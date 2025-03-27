@@ -64,7 +64,7 @@
 
 * `workflows/annotation/scgpt_annotation` and `workflows/integrate/scgpt_leiden`: Parameterization of HVG flavor with default method `cell_ranger` instead of `seurat_v3` (PR #979).
 
-* `dataflow/merge`: Casting of nullable dtypes to their native numpy dtypes (PR #959).
+* `dataflow/merge`: Casting of nullable dtypes that are not supported by MuData/AnnData to their native numpy dtypes (PR #959).
 
 # openpipelines 2.0.0
 
