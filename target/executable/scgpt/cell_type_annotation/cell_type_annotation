@@ -571,9 +571,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt cell_type_annotation"
-LABEL org.opencontainers.image.created="2025-03-24T09:34:54Z"
+LABEL org.opencontainers.image.created="2025-03-27T16:36:47Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a3b2a33d96b95b4f7ca56c249f75f7eba8c7f171"
+LABEL org.opencontainers.image.revision="5e1933183bc3ebc48ee1f710415042fbda40347a"
 LABEL org.opencontainers.image.version="scvi-knn-annotation_build"
 
 VIASHDOCKER
