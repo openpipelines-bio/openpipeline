@@ -12,11 +12,9 @@ par = {
         "merged.knn.output.h5mu",
     ],
     "output": "foo.h5mu",
-    "output_compression": None
+    "output_compression": None,
 }
-meta = {
-    "resources_dir": "src/utils"
-}
+meta = {"resources_dir": "src/utils"}
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -59,12 +57,15 @@ def main():
         object_cols = df.select_dtypes(include="object").columns.values
         for obj_col in object_cols:
             df[obj_col] = df[obj_col].astype(str).astype("category")
-            
+
         # Nullable float columns are not supported by anndata/mudata
-        float_cols = df.select_dtypes(include=[pd.Float64Dtype(), pd.Float32Dtype()]).columns.values
+        float_cols = df.select_dtypes(
+            include=[pd.Float64Dtype(), pd.Float32Dtype()]
+        ).columns.values
         for float_col in float_cols:
-            df[float_col] = df[float_col].astype(df[float_col].dtype.numpy_dtype)
-            
+            numpy_dtype = df[float_col].dtype.type
+            df[float_col] = df[float_col].astype(numpy_dtype)
+
         setattr(merged, df_attr, df)
 
     merged.write_h5mu(par["output"], compression=par["output_compression"])
