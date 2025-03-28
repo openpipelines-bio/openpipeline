@@ -269,9 +269,9 @@ build_info:
   output: "target/executable/transform/bpcells_regress_out"
   executable: "target/executable/transform/bpcells_regress_out/bpcells_regress_out"
   viash_version: "0.9.0"
-  git_commit: "d4085105d8f2b2da414c449fe96db2752615356b"
+  git_commit: "79cb154fb1660b6f232336c98b70bd88b50e6e35"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-2045-gd4085105d8f"
+  git_tag: "0.2.0-2046-g79cb154fb16"
 package_config:
   name: "openpipeline"
   info:

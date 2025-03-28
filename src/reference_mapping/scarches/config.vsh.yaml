@@ -115,7 +115,7 @@ argument_groups:
       - name: "--max_epochs"
         type: integer
         description: "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest."
-        required: true
+        required: false
       - name: "--reduce_lr_on_plateau"
         description: "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus."
         type: boolean

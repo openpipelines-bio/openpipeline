@@ -266,8 +266,8 @@
                 "max_epochs": {
                 "type":
                 "integer",
-                "description": "Type: `integer`, required. Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest",
-                "help_text": "Type: `integer`, required. Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest."
+                "description": "Type: `integer`. Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest",
+                "help_text": "Type: `integer`. Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest."
             
             }
     
