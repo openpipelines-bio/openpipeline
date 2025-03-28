@@ -36,8 +36,7 @@
 
 * `from_cellranger_multi_to_h5mu`: add support for `custom` modality (PR #982).
 
-* `integrate/scvi`: Enable passing any .var field for gene name information instead of .var index (PR #986).
-
+* `integrate/scvi`: Enable passing any .var field for gene name information instead of .var index, using the `--var_gene_names` parameter (PR #986).
 
 # MINOR CHANGES
 
