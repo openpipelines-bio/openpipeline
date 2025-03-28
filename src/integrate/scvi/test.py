@@ -20,6 +20,7 @@ from subset_vars import subset_vars
 input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu"
 input_file_2 = f"{meta['resources_dir']}/TS_Blood_filtered.h5mu"
 
+
 @pytest.fixture
 def mudata_with_mod_rna_obs_batch(tmp_path, request):
     obs_batch, var_input, obsm_output = request.param
@@ -101,41 +102,41 @@ def test_scvi(run_component, mudata_with_mod_rna_obs_batch):
 
 def test_input_parameters(run_component):
     args = [
-            "--input",
-            input_file_2,
-            "--modality",
-            "rna",
-            "--obs_batch",
-            "donor_id",
-            "--var_gene_names",
-            "ensemblid",
-            "--obs_labels",
-            "cell_ontology_class",
-            "--obsm_output",
-            "X_scvi_integrated_test",
-            "--obs_categorical_covariate",
-            "donor_assay;donor_tissue",
-            "--output",
-            "output.h5mu",
-            "--output_model",
-            "test_model/",
-            "--max_epochs",
-            "1",
-            "--n_obs_min_count",
-            "10",
-            "--n_var_min_count",
-            "10",
-            "--output_compression",
-            "gzip",
-        ]
-    
+        "--input",
+        input_file_2,
+        "--modality",
+        "rna",
+        "--obs_batch",
+        "donor_id",
+        "--var_gene_names",
+        "ensemblid",
+        "--obs_labels",
+        "cell_ontology_class",
+        "--obsm_output",
+        "X_scvi_integrated_test",
+        "--obs_categorical_covariate",
+        "donor_assay;donor_tissue",
+        "--output",
+        "output.h5mu",
+        "--output_model",
+        "test_model/",
+        "--max_epochs",
+        "1",
+        "--n_obs_min_count",
+        "10",
+        "--n_var_min_count",
+        "10",
+        "--output_compression",
+        "gzip",
+    ]
+
     run_component(args)
 
     # check files
     assert Path("output.h5mu").is_file(), "Output file does not exist"
     assert Path("test_model").is_dir()
     assert Path("test_model/model.pt").is_file()
-    
+
     # Read input h5mu
     input_rna = mudata.read_h5mu(input_file_2).mod["rna"]
 
