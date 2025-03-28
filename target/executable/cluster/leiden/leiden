@@ -517,9 +517,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component cluster leiden"
-LABEL org.opencontainers.image.created="2025-03-28T07:46:06Z"
+LABEL org.opencontainers.image.created="2025-03-28T08:50:12Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d96fb6dd16a13f1512b38d0897cbaf1dd87e319d"
+LABEL org.opencontainers.image.revision="5b27c20f5910a3dde5da2c7bc03b9de107f454b1"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1225,6 +1225,13 @@ from compress_h5mu import compress_h5mu
 _shared_logger_name = "leiden"
 
 
+# Function to check available space in /dev/shm
+def get_available_shared_memory():
+    shm_path = "/dev/shm"
+    shm_stats = os.statvfs(shm_path)
+    return shm_stats.f_bsize * shm_stats.f_bavail
+
+
 class SharedNumpyMatrix:
     def __init__(
         self,
@@ -1240,6 +1247,13 @@ class SharedNumpyMatrix:
     def from_numpy(
         cls, memory_manager: managers.SharedMemoryManager, array: npt.ArrayLike
     ):
+        available_shared_memory = get_available_shared_memory()
+        n_bytes_required = array.nbytes
+        if available_shared_memory < n_bytes_required:
+            raise ValueError(
+                "Not enough shared memory (/dev/shm) is available to load the data. "
+                f"Required amount: {n_bytes_required}, available: {available_shared_memory}."
+            )
         shm = memory_manager.SharedMemory(size=array.nbytes)
         array_in_shared_memory = np.ndarray(
             array.shape, dtype=array.dtype, buffer=shm.buf
