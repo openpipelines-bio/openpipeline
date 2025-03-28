@@ -106,13 +106,15 @@ workflow run_wf {
                 "modality": "modality",
                 "obsm_input": "output_obsm_integrated",
                 "output": "workflow_output",
-                "uns_neighbors": "uns_neighbors",
-                "obsp_neighbor_distances": "obsp_neighbor_distances",
-                "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
-                "leiden_resolution": "leiden_resolution",
-                "obs_cluster": "obs_cluster",
-                "obsm_umap": "obsm_umap"
+                "leiden_resolution": "leiden_resolution"
             ],
+            args: [
+                "uns_neighbors": "scanvi_integration_neighbors",
+                "obsp_neighbor_distances": "scanvi_integration_distances",
+                "obsp_neighbor_connectivities": "scanvi_integration_connectivities",
+                "obs_cluster": "scanvi_integration_leiden",
+                "obsm_umap": "X_scanvi_umap"
+            ]
             toState: [ "output": "output" ]
         )
         | setState(["output", "output_model"])
