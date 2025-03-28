@@ -69,7 +69,7 @@ def main():
 
     # Sanitize gene names and set as index of the AnnData object
     adata_subset = set_var_index(adata_subset, par["var_gene_names"])
-    
+
     check_validity_anndata(
         adata_subset,
         par["input_layer"],
