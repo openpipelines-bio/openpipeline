@@ -12,6 +12,7 @@
 # files.
 # 
 # Component authors:
+#  * Dorien Roosen (maintainer)
 #  * Jakub Majercik (author)
 #  * Weiwei Schultz (contributor)
 
@@ -177,181 +178,131 @@ VIASH_META_TEMP_DIR="$VIASH_TEMP"
 function ViashHelp {
   echo "scanvi main_build"
   echo ""
-  echo "Semi-supervised model for single-cell transcriptomics data. A scVI extension"
-  echo "that can leverage the cell type knowledge for a subset of the cells present in"
-  echo "the data sets to infer the states of the rest of the cells."
+  echo "scANVI () is a semi-supervised model for single-cell transcriptomics data."
+  echo "scANVI is an scVI extension that can leverage the cell type knowledge for a"
+  echo "subset of the cells present in the data sets to infer the states of the rest of"
+  echo "the cells."
+  echo "This component will instantiate a scANVI model from a pre-trained scVI model,"
+  echo "integrate the data and perform label prediction."
   echo ""
   echo "Inputs:"
-  echo "    Arguments related to the input (aka query) dataset."
-  echo ""
   echo "    -i, --input"
   echo "        type: file, required parameter, file must exist"
-  echo "        example: input.h5mu"
-  echo "        Input h5mu file."
+  echo "        Input h5mu file. Note that this needs to be the exact same dataset as"
+  echo "        the --scvi_model was trained on."
   echo ""
   echo "    --modality"
   echo "        type: string"
   echo "        default: rna"
-  echo "        Which modality to process."
   echo ""
-  echo "    --var_input_gene_names"
+  echo "    --input_layer"
   echo "        type: string"
-  echo "        .var field containing the gene names, if the .var index is not to be"
-  echo "        used."
+  echo "        Input layer to use. If None, X is used"
   echo ""
-  echo "    --input_reference_gene_overlap"
-  echo "        type: integer"
-  echo "        default: 100"
-  echo "        min: 1"
-  echo "        The minimum number of genes present in both the reference and query"
-  echo "        datasets."
+  echo "    --var_input"
+  echo "        type: string"
+  echo "        .var column containing highly variable genes that were used to train the"
+  echo "        scVi model. By default, do not subset genes."
   echo ""
-  echo "Reference model:"
-  echo "    Arguments related to the reference model."
+  echo "    --var_gene_names"
+  echo "        type: string"
+  echo "        .var column containing gene names. By default, use the index."
   echo ""
-  echo "    --scvi_reference_model"
-  echo "        type: file, file must exist"
+  echo "    --obs_labels"
+  echo "        type: string, required parameter"
+  echo "        .obs field containing the labels"
+  echo ""
+  echo "    --unlabeled_category"
+  echo "        type: string"
+  echo "        default: Unknown"
+  echo "        Value in the --obs_labels field that indicates unlabeled observations"
+  echo ""
+  echo "scVI Model:"
+  echo "    --scvi_model"
+  echo "        type: file, required parameter, file must exist"
   echo "        example: scvi_model.pt"
-  echo "        Pretrained SCVI reference model to initialize the SCANVI model with. The"
-  echo "        model needs to include the AnnData object used to trained the model"
-  echo "        stored."
-  echo ""
-  echo "    --scanvi_reference_model"
-  echo "        type: file, file must exist"
-  echo "        example: scvi_model.pt"
-  echo "        Pretrained SCANVI reference model."
-  echo ""
-  echo "SCANVI reference model training arguments:"
-  echo "    Arguments related to the reference SCANVI model."
-  echo ""
-  echo "    --reference_train_size"
-  echo "        type: double"
-  echo "        default: 0.9"
-  echo "        min: 0.0"
-  echo "        max: 1.0"
-  echo "        Size of training set."
-  echo ""
-  echo "    --reference_max_epochs"
-  echo "        type: integer"
-  echo "        default: 400"
-  echo "        Maximum number of epochs."
-  echo ""
-  echo "    --reference_learning_rate"
-  echo "        type: double"
-  echo "        default: 0.001"
-  echo "        Learning rate."
-  echo ""
-  echo "    --reference_reduce_lr_on_plateau"
-  echo "        type: boolean"
-  echo "        default: true"
-  echo "        Reduce learning rate on plateau."
-  echo ""
-  echo "    --reference_lr_patience"
-  echo "        type: integer"
-  echo "        default: 25"
-  echo "        Patience for learning rate reduction."
-  echo ""
-  echo "    --reference_lr_factor"
-  echo "        type: double"
-  echo "        default: 0.5"
-  echo "        min: 0.0"
-  echo "        max: 1.0"
-  echo "        Factor by which to reduce learning rate."
-  echo ""
-  echo "    --reference_early_stopping"
-  echo "        type: boolean"
-  echo "        default: true"
-  echo "        Early stopping."
-  echo ""
-  echo "    --reference_early_stopping_patience"
-  echo "        type: integer"
-  echo "        default: 50"
-  echo "        Patience for early stopping."
-  echo ""
-  echo "SCANVI query model training arguments:"
-  echo "    Arguments related to the query SCANVI model."
-  echo ""
-  echo "    --query_train_size"
-  echo "        type: double"
-  echo "        default: 0.9"
-  echo "        min: 0.0"
-  echo "        max: 1.0"
-  echo "        Size of training set."
-  echo ""
-  echo "    --query_max_epochs"
-  echo "        type: integer"
-  echo "        default: 400"
-  echo "        Maximum number of epochs."
-  echo ""
-  echo "    --query_learning_rate"
-  echo "        type: double"
-  echo "        default: 0.001"
-  echo "        Learning rate."
-  echo ""
-  echo "    --query_reduce_lr_on_plateau"
-  echo "        type: boolean"
-  echo "        default: true"
-  echo "        Reduce learning rate on plateau."
-  echo ""
-  echo "    --query_lr_patience"
-  echo "        type: integer"
-  echo "        default: 25"
-  echo "        Patience for learning rate reduction."
-  echo ""
-  echo "    --query_lr_factor"
-  echo "        type: double"
-  echo "        default: 0.5"
-  echo "        min: 0.0"
-  echo "        max: 1.0"
-  echo "        Factor by which to reduce learning rate."
-  echo ""
-  echo "    --query_early_stopping"
-  echo "        type: boolean"
-  echo "        default: true"
-  echo "        Early stopping."
-  echo ""
-  echo "    --query_early_stopping_patience"
-  echo "        type: integer"
-  echo "        default: 50"
-  echo "        Patience for early stopping."
+  echo "        Pretrained SCVI reference model to initialize the SCANVI model with."
   echo ""
   echo "Outputs:"
-  echo "    Arguments related to the output."
-  echo ""
-  echo "    --output"
+  echo "    -o, --output"
   echo "        type: file, required parameter, output, file must exist"
-  echo "        example: output.h5mu"
   echo "        Output h5mu file."
+  echo ""
+  echo "    --output_model"
+  echo "        type: file, output, file must exist"
+  echo "        Folder where the state of the trained model will be saved to."
   echo ""
   echo "    --output_compression"
   echo "        type: string"
   echo "        example: gzip"
   echo "        choices: [ gzip, lzf ]"
+  echo "        The compression format to be used on the output h5mu object."
   echo ""
-  echo "    --output_model"
-  echo "        type: file, output, file must exist"
-  echo "        example: model_dir"
-  echo "        Folder where the state of the trained model will be saved to."
+  echo "    --obsm_output"
+  echo "        type: string"
+  echo "        default: X_scanvi_integrated"
+  echo "        In which .obsm slot to store the resulting integrated embedding."
   echo ""
-  echo "    --output_obs_predictions"
+  echo "    --obs_output_predictions"
   echo "        type: string"
   echo "        default: scanvi_pred"
-  echo "        In which \`.obs\` slots to store the predicted information."
+  echo "        In which .obs slot to store the predicted labels."
   echo ""
-  echo "    --output_obs_probability"
+  echo "    --obs_output_probabilities"
   echo "        type: string"
-  echo "        default: scanvi_probability"
-  echo "        In which \`.obs\` slots to store the probability of the predictions."
+  echo "        default: scanvi_proba"
+  echo "        In which. obs slot to store the probabilities of the predicted labels."
   echo ""
-  echo "    --output_obsm_scanvi_embedding"
-  echo "        type: string"
-  echo "        default: scanvi_embedding"
-  echo "        In which \`.obsm\` slots to store the scvi embedding."
+  echo "scANVI training arguments:"
+  echo "    --early_stopping"
+  echo "        type: boolean"
+  echo "        Whether to perform early stopping with respect to the validation set."
   echo ""
-  echo "    --unknown_celltype"
+  echo "    --early_stopping_monitor"
   echo "        type: string"
-  echo "        default: Unknown"
-  echo "        Label for unknown cell types."
+  echo "        default: elbo_validation"
+  echo "        choices: [ elbo_validation, reconstruction_loss_validation,"
+  echo "kl_local_validation ]"
+  echo "        Metric logged during validation set epoch."
+  echo ""
+  echo "    --early_stopping_patience"
+  echo "        type: integer"
+  echo "        default: 45"
+  echo "        min: 1"
+  echo "        Number of validation epochs with no improvement after which training"
+  echo "        will be stopped."
+  echo ""
+  echo "    --early_stopping_min_delta"
+  echo "        type: double"
+  echo "        default: 0.0"
+  echo "        min: 0.0"
+  echo "        Minimum change in the monitored quantity to qualify as an improvement,"
+  echo "        i.e. an absolute change of less than min_delta, will count as no"
+  echo "        improvement."
+  echo ""
+  echo "    --max_epochs"
+  echo "        type: integer"
+  echo "        Number of passes through the dataset, defaults to (20000 / number of"
+  echo "        cells) * 400 or 400; whichever is smallest."
+  echo ""
+  echo "    --reduce_lr_on_plateau"
+  echo "        type: boolean"
+  echo "        default: true"
+  echo "        Whether to monitor validation loss and reduce learning rate when"
+  echo "        validation set \`lr_scheduler_metric\` plateaus."
+  echo ""
+  echo "    --lr_factor"
+  echo "        type: double"
+  echo "        default: 0.6"
+  echo "        min: 0.0"
+  echo "        Factor to reduce learning rate."
+  echo ""
+  echo "    --lr_patience"
+  echo "        type: double"
+  echo "        default: 30.0"
+  echo "        min: 0.0"
+  echo "        Number of epochs with no improvement after which learning rate will be"
+  echo "        reduced."
 }
 
 # initialise variables
@@ -630,20 +581,17 @@ function ViashDockerfile {
 FROM nvcr.io/nvidia/pytorch:24.12-py3
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.10.4"
+  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4" && \
+  python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scvi-tools~=1.1.5"
 
-RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" && \
-  python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
-
-LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
+LABEL org.opencontainers.image.authors="Dorien Roosen, Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate scanvi"
-LABEL org.opencontainers.image.created="2025-03-28T08:50:15Z"
+LABEL org.opencontainers.image.created="2025-03-28T13:12:06Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5b27c20f5910a3dde5da2c7bc03b9de107f454b1"
+LABEL org.opencontainers.image.revision="3b233168326f74eb87f5570f1dca7845bd1e9ca9"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -811,224 +759,70 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_MODALITY=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --var_input_gene_names)
-            [ -n "$VIASH_PAR_VAR_INPUT_GENE_NAMES" ] && ViashError Bad arguments for option \'--var_input_gene_names\': \'$VIASH_PAR_VAR_INPUT_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_VAR_INPUT_GENE_NAMES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --var_input_gene_names. Use "--help" to get more information on the parameters. && exit 1
+        --input_layer)
+            [ -n "$VIASH_PAR_INPUT_LAYER" ] && ViashError Bad arguments for option \'--input_layer\': \'$VIASH_PAR_INPUT_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_LAYER="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_layer. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --var_input_gene_names=*)
-            [ -n "$VIASH_PAR_VAR_INPUT_GENE_NAMES" ] && ViashError Bad arguments for option \'--var_input_gene_names=*\': \'$VIASH_PAR_VAR_INPUT_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_VAR_INPUT_GENE_NAMES=$(ViashRemoveFlags "$1")
+        --input_layer=*)
+            [ -n "$VIASH_PAR_INPUT_LAYER" ] && ViashError Bad arguments for option \'--input_layer=*\': \'$VIASH_PAR_INPUT_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_LAYER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --input_reference_gene_overlap)
-            [ -n "$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP" ] && ViashError Bad arguments for option \'--input_reference_gene_overlap\': \'$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_reference_gene_overlap. Use "--help" to get more information on the parameters. && exit 1
+        --var_input)
+            [ -n "$VIASH_PAR_VAR_INPUT" ] && ViashError Bad arguments for option \'--var_input\': \'$VIASH_PAR_VAR_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --var_input. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --input_reference_gene_overlap=*)
-            [ -n "$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP" ] && ViashError Bad arguments for option \'--input_reference_gene_overlap=*\': \'$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP=$(ViashRemoveFlags "$1")
+        --var_input=*)
+            [ -n "$VIASH_PAR_VAR_INPUT" ] && ViashError Bad arguments for option \'--var_input=*\': \'$VIASH_PAR_VAR_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_INPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --scvi_reference_model)
-            [ -n "$VIASH_PAR_SCVI_REFERENCE_MODEL" ] && ViashError Bad arguments for option \'--scvi_reference_model\': \'$VIASH_PAR_SCVI_REFERENCE_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_SCVI_REFERENCE_MODEL="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --scvi_reference_model. Use "--help" to get more information on the parameters. && exit 1
+        --var_gene_names)
+            [ -n "$VIASH_PAR_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--var_gene_names\': \'$VIASH_PAR_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_GENE_NAMES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --var_gene_names. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --scvi_reference_model=*)
-            [ -n "$VIASH_PAR_SCVI_REFERENCE_MODEL" ] && ViashError Bad arguments for option \'--scvi_reference_model=*\': \'$VIASH_PAR_SCVI_REFERENCE_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_SCVI_REFERENCE_MODEL=$(ViashRemoveFlags "$1")
+        --var_gene_names=*)
+            [ -n "$VIASH_PAR_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--var_gene_names=*\': \'$VIASH_PAR_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --scanvi_reference_model)
-            [ -n "$VIASH_PAR_SCANVI_REFERENCE_MODEL" ] && ViashError Bad arguments for option \'--scanvi_reference_model\': \'$VIASH_PAR_SCANVI_REFERENCE_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_SCANVI_REFERENCE_MODEL="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --scanvi_reference_model. Use "--help" to get more information on the parameters. && exit 1
+        --obs_labels)
+            [ -n "$VIASH_PAR_OBS_LABELS" ] && ViashError Bad arguments for option \'--obs_labels\': \'$VIASH_PAR_OBS_LABELS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBS_LABELS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_labels. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --scanvi_reference_model=*)
-            [ -n "$VIASH_PAR_SCANVI_REFERENCE_MODEL" ] && ViashError Bad arguments for option \'--scanvi_reference_model=*\': \'$VIASH_PAR_SCANVI_REFERENCE_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_SCANVI_REFERENCE_MODEL=$(ViashRemoveFlags "$1")
+        --obs_labels=*)
+            [ -n "$VIASH_PAR_OBS_LABELS" ] && ViashError Bad arguments for option \'--obs_labels=*\': \'$VIASH_PAR_OBS_LABELS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBS_LABELS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --reference_train_size)
-            [ -n "$VIASH_PAR_REFERENCE_TRAIN_SIZE" ] && ViashError Bad arguments for option \'--reference_train_size\': \'$VIASH_PAR_REFERENCE_TRAIN_SIZE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_TRAIN_SIZE="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_train_size. Use "--help" to get more information on the parameters. && exit 1
+        --unlabeled_category)
+            [ -n "$VIASH_PAR_UNLABELED_CATEGORY" ] && ViashError Bad arguments for option \'--unlabeled_category\': \'$VIASH_PAR_UNLABELED_CATEGORY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_UNLABELED_CATEGORY="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --unlabeled_category. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --reference_train_size=*)
-            [ -n "$VIASH_PAR_REFERENCE_TRAIN_SIZE" ] && ViashError Bad arguments for option \'--reference_train_size=*\': \'$VIASH_PAR_REFERENCE_TRAIN_SIZE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_TRAIN_SIZE=$(ViashRemoveFlags "$1")
+        --unlabeled_category=*)
+            [ -n "$VIASH_PAR_UNLABELED_CATEGORY" ] && ViashError Bad arguments for option \'--unlabeled_category=*\': \'$VIASH_PAR_UNLABELED_CATEGORY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_UNLABELED_CATEGORY=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --reference_max_epochs)
-            [ -n "$VIASH_PAR_REFERENCE_MAX_EPOCHS" ] && ViashError Bad arguments for option \'--reference_max_epochs\': \'$VIASH_PAR_REFERENCE_MAX_EPOCHS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_MAX_EPOCHS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_max_epochs. Use "--help" to get more information on the parameters. && exit 1
+        --scvi_model)
+            [ -n "$VIASH_PAR_SCVI_MODEL" ] && ViashError Bad arguments for option \'--scvi_model\': \'$VIASH_PAR_SCVI_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SCVI_MODEL="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --scvi_model. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --reference_max_epochs=*)
-            [ -n "$VIASH_PAR_REFERENCE_MAX_EPOCHS" ] && ViashError Bad arguments for option \'--reference_max_epochs=*\': \'$VIASH_PAR_REFERENCE_MAX_EPOCHS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_MAX_EPOCHS=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --reference_learning_rate)
-            [ -n "$VIASH_PAR_REFERENCE_LEARNING_RATE" ] && ViashError Bad arguments for option \'--reference_learning_rate\': \'$VIASH_PAR_REFERENCE_LEARNING_RATE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_LEARNING_RATE="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_learning_rate. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --reference_learning_rate=*)
-            [ -n "$VIASH_PAR_REFERENCE_LEARNING_RATE" ] && ViashError Bad arguments for option \'--reference_learning_rate=*\': \'$VIASH_PAR_REFERENCE_LEARNING_RATE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_LEARNING_RATE=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --reference_reduce_lr_on_plateau)
-            [ -n "$VIASH_PAR_REFERENCE_REDUCE_LR_ON_PLATEAU" ] && ViashError Bad arguments for option \'--reference_reduce_lr_on_plateau\': \'$VIASH_PAR_REFERENCE_REDUCE_LR_ON_PLATEAU\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_REDUCE_LR_ON_PLATEAU="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_reduce_lr_on_plateau. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --reference_reduce_lr_on_plateau=*)
-            [ -n "$VIASH_PAR_REFERENCE_REDUCE_LR_ON_PLATEAU" ] && ViashError Bad arguments for option \'--reference_reduce_lr_on_plateau=*\': \'$VIASH_PAR_REFERENCE_REDUCE_LR_ON_PLATEAU\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_REDUCE_LR_ON_PLATEAU=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --reference_lr_patience)
-            [ -n "$VIASH_PAR_REFERENCE_LR_PATIENCE" ] && ViashError Bad arguments for option \'--reference_lr_patience\': \'$VIASH_PAR_REFERENCE_LR_PATIENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_LR_PATIENCE="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_lr_patience. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --reference_lr_patience=*)
-            [ -n "$VIASH_PAR_REFERENCE_LR_PATIENCE" ] && ViashError Bad arguments for option \'--reference_lr_patience=*\': \'$VIASH_PAR_REFERENCE_LR_PATIENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_LR_PATIENCE=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --reference_lr_factor)
-            [ -n "$VIASH_PAR_REFERENCE_LR_FACTOR" ] && ViashError Bad arguments for option \'--reference_lr_factor\': \'$VIASH_PAR_REFERENCE_LR_FACTOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_LR_FACTOR="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_lr_factor. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --reference_lr_factor=*)
-            [ -n "$VIASH_PAR_REFERENCE_LR_FACTOR" ] && ViashError Bad arguments for option \'--reference_lr_factor=*\': \'$VIASH_PAR_REFERENCE_LR_FACTOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_LR_FACTOR=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --reference_early_stopping)
-            [ -n "$VIASH_PAR_REFERENCE_EARLY_STOPPING" ] && ViashError Bad arguments for option \'--reference_early_stopping\': \'$VIASH_PAR_REFERENCE_EARLY_STOPPING\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_EARLY_STOPPING="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_early_stopping. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --reference_early_stopping=*)
-            [ -n "$VIASH_PAR_REFERENCE_EARLY_STOPPING" ] && ViashError Bad arguments for option \'--reference_early_stopping=*\': \'$VIASH_PAR_REFERENCE_EARLY_STOPPING\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_EARLY_STOPPING=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --reference_early_stopping_patience)
-            [ -n "$VIASH_PAR_REFERENCE_EARLY_STOPPING_PATIENCE" ] && ViashError Bad arguments for option \'--reference_early_stopping_patience\': \'$VIASH_PAR_REFERENCE_EARLY_STOPPING_PATIENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_EARLY_STOPPING_PATIENCE="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_early_stopping_patience. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --reference_early_stopping_patience=*)
-            [ -n "$VIASH_PAR_REFERENCE_EARLY_STOPPING_PATIENCE" ] && ViashError Bad arguments for option \'--reference_early_stopping_patience=*\': \'$VIASH_PAR_REFERENCE_EARLY_STOPPING_PATIENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_EARLY_STOPPING_PATIENCE=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --query_train_size)
-            [ -n "$VIASH_PAR_QUERY_TRAIN_SIZE" ] && ViashError Bad arguments for option \'--query_train_size\': \'$VIASH_PAR_QUERY_TRAIN_SIZE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_TRAIN_SIZE="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --query_train_size. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --query_train_size=*)
-            [ -n "$VIASH_PAR_QUERY_TRAIN_SIZE" ] && ViashError Bad arguments for option \'--query_train_size=*\': \'$VIASH_PAR_QUERY_TRAIN_SIZE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_TRAIN_SIZE=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --query_max_epochs)
-            [ -n "$VIASH_PAR_QUERY_MAX_EPOCHS" ] && ViashError Bad arguments for option \'--query_max_epochs\': \'$VIASH_PAR_QUERY_MAX_EPOCHS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_MAX_EPOCHS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --query_max_epochs. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --query_max_epochs=*)
-            [ -n "$VIASH_PAR_QUERY_MAX_EPOCHS" ] && ViashError Bad arguments for option \'--query_max_epochs=*\': \'$VIASH_PAR_QUERY_MAX_EPOCHS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_MAX_EPOCHS=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --query_learning_rate)
-            [ -n "$VIASH_PAR_QUERY_LEARNING_RATE" ] && ViashError Bad arguments for option \'--query_learning_rate\': \'$VIASH_PAR_QUERY_LEARNING_RATE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_LEARNING_RATE="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --query_learning_rate. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --query_learning_rate=*)
-            [ -n "$VIASH_PAR_QUERY_LEARNING_RATE" ] && ViashError Bad arguments for option \'--query_learning_rate=*\': \'$VIASH_PAR_QUERY_LEARNING_RATE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_LEARNING_RATE=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --query_reduce_lr_on_plateau)
-            [ -n "$VIASH_PAR_QUERY_REDUCE_LR_ON_PLATEAU" ] && ViashError Bad arguments for option \'--query_reduce_lr_on_plateau\': \'$VIASH_PAR_QUERY_REDUCE_LR_ON_PLATEAU\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_REDUCE_LR_ON_PLATEAU="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --query_reduce_lr_on_plateau. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --query_reduce_lr_on_plateau=*)
-            [ -n "$VIASH_PAR_QUERY_REDUCE_LR_ON_PLATEAU" ] && ViashError Bad arguments for option \'--query_reduce_lr_on_plateau=*\': \'$VIASH_PAR_QUERY_REDUCE_LR_ON_PLATEAU\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_REDUCE_LR_ON_PLATEAU=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --query_lr_patience)
-            [ -n "$VIASH_PAR_QUERY_LR_PATIENCE" ] && ViashError Bad arguments for option \'--query_lr_patience\': \'$VIASH_PAR_QUERY_LR_PATIENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_LR_PATIENCE="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --query_lr_patience. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --query_lr_patience=*)
-            [ -n "$VIASH_PAR_QUERY_LR_PATIENCE" ] && ViashError Bad arguments for option \'--query_lr_patience=*\': \'$VIASH_PAR_QUERY_LR_PATIENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_LR_PATIENCE=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --query_lr_factor)
-            [ -n "$VIASH_PAR_QUERY_LR_FACTOR" ] && ViashError Bad arguments for option \'--query_lr_factor\': \'$VIASH_PAR_QUERY_LR_FACTOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_LR_FACTOR="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --query_lr_factor. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --query_lr_factor=*)
-            [ -n "$VIASH_PAR_QUERY_LR_FACTOR" ] && ViashError Bad arguments for option \'--query_lr_factor=*\': \'$VIASH_PAR_QUERY_LR_FACTOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_LR_FACTOR=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --query_early_stopping)
-            [ -n "$VIASH_PAR_QUERY_EARLY_STOPPING" ] && ViashError Bad arguments for option \'--query_early_stopping\': \'$VIASH_PAR_QUERY_EARLY_STOPPING\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_EARLY_STOPPING="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --query_early_stopping. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --query_early_stopping=*)
-            [ -n "$VIASH_PAR_QUERY_EARLY_STOPPING" ] && ViashError Bad arguments for option \'--query_early_stopping=*\': \'$VIASH_PAR_QUERY_EARLY_STOPPING\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_EARLY_STOPPING=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --query_early_stopping_patience)
-            [ -n "$VIASH_PAR_QUERY_EARLY_STOPPING_PATIENCE" ] && ViashError Bad arguments for option \'--query_early_stopping_patience\': \'$VIASH_PAR_QUERY_EARLY_STOPPING_PATIENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_EARLY_STOPPING_PATIENCE="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --query_early_stopping_patience. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --query_early_stopping_patience=*)
-            [ -n "$VIASH_PAR_QUERY_EARLY_STOPPING_PATIENCE" ] && ViashError Bad arguments for option \'--query_early_stopping_patience=*\': \'$VIASH_PAR_QUERY_EARLY_STOPPING_PATIENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_EARLY_STOPPING_PATIENCE=$(ViashRemoveFlags "$1")
+        --scvi_model=*)
+            [ -n "$VIASH_PAR_SCVI_MODEL" ] && ViashError Bad arguments for option \'--scvi_model=*\': \'$VIASH_PAR_SCVI_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SCVI_MODEL=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -1042,16 +836,11 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_compression)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+        -o)
+            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'-o\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
-            ;;
-        --output_compression=*)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
-            shift 1
             ;;
         --output_model)
             [ -n "$VIASH_PAR_OUTPUT_MODEL" ] && ViashError Bad arguments for option \'--output_model\': \'$VIASH_PAR_OUTPUT_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
@@ -1064,48 +853,136 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT_MODEL=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_obs_predictions)
-            [ -n "$VIASH_PAR_OUTPUT_OBS_PREDICTIONS" ] && ViashError Bad arguments for option \'--output_obs_predictions\': \'$VIASH_PAR_OUTPUT_OBS_PREDICTIONS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_OBS_PREDICTIONS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_obs_predictions. Use "--help" to get more information on the parameters. && exit 1
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_obs_predictions=*)
-            [ -n "$VIASH_PAR_OUTPUT_OBS_PREDICTIONS" ] && ViashError Bad arguments for option \'--output_obs_predictions=*\': \'$VIASH_PAR_OUTPUT_OBS_PREDICTIONS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_OBS_PREDICTIONS=$(ViashRemoveFlags "$1")
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_obs_probability)
-            [ -n "$VIASH_PAR_OUTPUT_OBS_PROBABILITY" ] && ViashError Bad arguments for option \'--output_obs_probability\': \'$VIASH_PAR_OUTPUT_OBS_PROBABILITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_OBS_PROBABILITY="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_obs_probability. Use "--help" to get more information on the parameters. && exit 1
+        --obsm_output)
+            [ -n "$VIASH_PAR_OBSM_OUTPUT" ] && ViashError Bad arguments for option \'--obsm_output\': \'$VIASH_PAR_OBSM_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSM_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsm_output. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_obs_probability=*)
-            [ -n "$VIASH_PAR_OUTPUT_OBS_PROBABILITY" ] && ViashError Bad arguments for option \'--output_obs_probability=*\': \'$VIASH_PAR_OUTPUT_OBS_PROBABILITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_OBS_PROBABILITY=$(ViashRemoveFlags "$1")
+        --obsm_output=*)
+            [ -n "$VIASH_PAR_OBSM_OUTPUT" ] && ViashError Bad arguments for option \'--obsm_output=*\': \'$VIASH_PAR_OBSM_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSM_OUTPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_obsm_scanvi_embedding)
-            [ -n "$VIASH_PAR_OUTPUT_OBSM_SCANVI_EMBEDDING" ] && ViashError Bad arguments for option \'--output_obsm_scanvi_embedding\': \'$VIASH_PAR_OUTPUT_OBSM_SCANVI_EMBEDDING\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_OBSM_SCANVI_EMBEDDING="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_obsm_scanvi_embedding. Use "--help" to get more information on the parameters. && exit 1
+        --obs_output_predictions)
+            [ -n "$VIASH_PAR_OBS_OUTPUT_PREDICTIONS" ] && ViashError Bad arguments for option \'--obs_output_predictions\': \'$VIASH_PAR_OBS_OUTPUT_PREDICTIONS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBS_OUTPUT_PREDICTIONS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_output_predictions. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_obsm_scanvi_embedding=*)
-            [ -n "$VIASH_PAR_OUTPUT_OBSM_SCANVI_EMBEDDING" ] && ViashError Bad arguments for option \'--output_obsm_scanvi_embedding=*\': \'$VIASH_PAR_OUTPUT_OBSM_SCANVI_EMBEDDING\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_OBSM_SCANVI_EMBEDDING=$(ViashRemoveFlags "$1")
+        --obs_output_predictions=*)
+            [ -n "$VIASH_PAR_OBS_OUTPUT_PREDICTIONS" ] && ViashError Bad arguments for option \'--obs_output_predictions=*\': \'$VIASH_PAR_OBS_OUTPUT_PREDICTIONS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBS_OUTPUT_PREDICTIONS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --unknown_celltype)
-            [ -n "$VIASH_PAR_UNKNOWN_CELLTYPE" ] && ViashError Bad arguments for option \'--unknown_celltype\': \'$VIASH_PAR_UNKNOWN_CELLTYPE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_UNKNOWN_CELLTYPE="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --unknown_celltype. Use "--help" to get more information on the parameters. && exit 1
+        --obs_output_probabilities)
+            [ -n "$VIASH_PAR_OBS_OUTPUT_PROBABILITIES" ] && ViashError Bad arguments for option \'--obs_output_probabilities\': \'$VIASH_PAR_OBS_OUTPUT_PROBABILITIES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBS_OUTPUT_PROBABILITIES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_output_probabilities. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --unknown_celltype=*)
-            [ -n "$VIASH_PAR_UNKNOWN_CELLTYPE" ] && ViashError Bad arguments for option \'--unknown_celltype=*\': \'$VIASH_PAR_UNKNOWN_CELLTYPE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_UNKNOWN_CELLTYPE=$(ViashRemoveFlags "$1")
+        --obs_output_probabilities=*)
+            [ -n "$VIASH_PAR_OBS_OUTPUT_PROBABILITIES" ] && ViashError Bad arguments for option \'--obs_output_probabilities=*\': \'$VIASH_PAR_OBS_OUTPUT_PROBABILITIES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBS_OUTPUT_PROBABILITIES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --early_stopping)
+            [ -n "$VIASH_PAR_EARLY_STOPPING" ] && ViashError Bad arguments for option \'--early_stopping\': \'$VIASH_PAR_EARLY_STOPPING\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EARLY_STOPPING="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --early_stopping. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --early_stopping=*)
+            [ -n "$VIASH_PAR_EARLY_STOPPING" ] && ViashError Bad arguments for option \'--early_stopping=*\': \'$VIASH_PAR_EARLY_STOPPING\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EARLY_STOPPING=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --early_stopping_monitor)
+            [ -n "$VIASH_PAR_EARLY_STOPPING_MONITOR" ] && ViashError Bad arguments for option \'--early_stopping_monitor\': \'$VIASH_PAR_EARLY_STOPPING_MONITOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EARLY_STOPPING_MONITOR="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --early_stopping_monitor. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --early_stopping_monitor=*)
+            [ -n "$VIASH_PAR_EARLY_STOPPING_MONITOR" ] && ViashError Bad arguments for option \'--early_stopping_monitor=*\': \'$VIASH_PAR_EARLY_STOPPING_MONITOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EARLY_STOPPING_MONITOR=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --early_stopping_patience)
+            [ -n "$VIASH_PAR_EARLY_STOPPING_PATIENCE" ] && ViashError Bad arguments for option \'--early_stopping_patience\': \'$VIASH_PAR_EARLY_STOPPING_PATIENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EARLY_STOPPING_PATIENCE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --early_stopping_patience. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --early_stopping_patience=*)
+            [ -n "$VIASH_PAR_EARLY_STOPPING_PATIENCE" ] && ViashError Bad arguments for option \'--early_stopping_patience=*\': \'$VIASH_PAR_EARLY_STOPPING_PATIENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EARLY_STOPPING_PATIENCE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --early_stopping_min_delta)
+            [ -n "$VIASH_PAR_EARLY_STOPPING_MIN_DELTA" ] && ViashError Bad arguments for option \'--early_stopping_min_delta\': \'$VIASH_PAR_EARLY_STOPPING_MIN_DELTA\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EARLY_STOPPING_MIN_DELTA="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --early_stopping_min_delta. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --early_stopping_min_delta=*)
+            [ -n "$VIASH_PAR_EARLY_STOPPING_MIN_DELTA" ] && ViashError Bad arguments for option \'--early_stopping_min_delta=*\': \'$VIASH_PAR_EARLY_STOPPING_MIN_DELTA\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EARLY_STOPPING_MIN_DELTA=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --max_epochs)
+            [ -n "$VIASH_PAR_MAX_EPOCHS" ] && ViashError Bad arguments for option \'--max_epochs\': \'$VIASH_PAR_MAX_EPOCHS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MAX_EPOCHS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --max_epochs. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --max_epochs=*)
+            [ -n "$VIASH_PAR_MAX_EPOCHS" ] && ViashError Bad arguments for option \'--max_epochs=*\': \'$VIASH_PAR_MAX_EPOCHS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MAX_EPOCHS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --reduce_lr_on_plateau)
+            [ -n "$VIASH_PAR_REDUCE_LR_ON_PLATEAU" ] && ViashError Bad arguments for option \'--reduce_lr_on_plateau\': \'$VIASH_PAR_REDUCE_LR_ON_PLATEAU\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REDUCE_LR_ON_PLATEAU="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reduce_lr_on_plateau. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --reduce_lr_on_plateau=*)
+            [ -n "$VIASH_PAR_REDUCE_LR_ON_PLATEAU" ] && ViashError Bad arguments for option \'--reduce_lr_on_plateau=*\': \'$VIASH_PAR_REDUCE_LR_ON_PLATEAU\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REDUCE_LR_ON_PLATEAU=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --lr_factor)
+            [ -n "$VIASH_PAR_LR_FACTOR" ] && ViashError Bad arguments for option \'--lr_factor\': \'$VIASH_PAR_LR_FACTOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LR_FACTOR="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --lr_factor. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --lr_factor=*)
+            [ -n "$VIASH_PAR_LR_FACTOR" ] && ViashError Bad arguments for option \'--lr_factor=*\': \'$VIASH_PAR_LR_FACTOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LR_FACTOR=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --lr_patience)
+            [ -n "$VIASH_PAR_LR_PATIENCE" ] && ViashError Bad arguments for option \'--lr_patience\': \'$VIASH_PAR_LR_PATIENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LR_PATIENCE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --lr_patience. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --lr_patience=*)
+            [ -n "$VIASH_PAR_LR_PATIENCE" ] && ViashError Bad arguments for option \'--lr_patience=*\': \'$VIASH_PAR_LR_PATIENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LR_PATIENCE=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---engine)
@@ -1282,6 +1159,14 @@ if [ -z ${VIASH_PAR_INPUT+x} ]; then
   ViashError '--input' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
+if [ -z ${VIASH_PAR_OBS_LABELS+x} ]; then
+  ViashError '--obs_labels' is a required argument. Use "--help" to get more information on the parameters.
+  exit 1
+fi
+if [ -z ${VIASH_PAR_SCVI_MODEL+x} ]; then
+  ViashError '--scvi_model' is a required argument. Use "--help" to get more information on the parameters.
+  exit 1
+fi
 if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
   ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
@@ -1315,68 +1200,35 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
-if [ -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then
-  VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP="100"
+if [ -z ${VIASH_PAR_UNLABELED_CATEGORY+x} ]; then
+  VIASH_PAR_UNLABELED_CATEGORY="Unknown"
 fi
-if [ -z ${VIASH_PAR_REFERENCE_TRAIN_SIZE+x} ]; then
-  VIASH_PAR_REFERENCE_TRAIN_SIZE="0.9"
+if [ -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then
+  VIASH_PAR_OBSM_OUTPUT="X_scanvi_integrated"
 fi
-if [ -z ${VIASH_PAR_REFERENCE_MAX_EPOCHS+x} ]; then
-  VIASH_PAR_REFERENCE_MAX_EPOCHS="400"
+if [ -z ${VIASH_PAR_OBS_OUTPUT_PREDICTIONS+x} ]; then
+  VIASH_PAR_OBS_OUTPUT_PREDICTIONS="scanvi_pred"
 fi
-if [ -z ${VIASH_PAR_REFERENCE_LEARNING_RATE+x} ]; then
-  VIASH_PAR_REFERENCE_LEARNING_RATE="0.001"
+if [ -z ${VIASH_PAR_OBS_OUTPUT_PROBABILITIES+x} ]; then
+  VIASH_PAR_OBS_OUTPUT_PROBABILITIES="scanvi_proba"
 fi
-if [ -z ${VIASH_PAR_REFERENCE_REDUCE_LR_ON_PLATEAU+x} ]; then
-  VIASH_PAR_REFERENCE_REDUCE_LR_ON_PLATEAU="true"
+if [ -z ${VIASH_PAR_EARLY_STOPPING_MONITOR+x} ]; then
+  VIASH_PAR_EARLY_STOPPING_MONITOR="elbo_validation"
 fi
-if [ -z ${VIASH_PAR_REFERENCE_LR_PATIENCE+x} ]; then
-  VIASH_PAR_REFERENCE_LR_PATIENCE="25"
+if [ -z ${VIASH_PAR_EARLY_STOPPING_PATIENCE+x} ]; then
+  VIASH_PAR_EARLY_STOPPING_PATIENCE="45"
 fi
-if [ -z ${VIASH_PAR_REFERENCE_LR_FACTOR+x} ]; then
-  VIASH_PAR_REFERENCE_LR_FACTOR="0.5"
+if [ -z ${VIASH_PAR_EARLY_STOPPING_MIN_DELTA+x} ]; then
+  VIASH_PAR_EARLY_STOPPING_MIN_DELTA="0.0"
 fi
-if [ -z ${VIASH_PAR_REFERENCE_EARLY_STOPPING+x} ]; then
-  VIASH_PAR_REFERENCE_EARLY_STOPPING="true"
+if [ -z ${VIASH_PAR_REDUCE_LR_ON_PLATEAU+x} ]; then
+  VIASH_PAR_REDUCE_LR_ON_PLATEAU="true"
 fi
-if [ -z ${VIASH_PAR_REFERENCE_EARLY_STOPPING_PATIENCE+x} ]; then
-  VIASH_PAR_REFERENCE_EARLY_STOPPING_PATIENCE="50"
+if [ -z ${VIASH_PAR_LR_FACTOR+x} ]; then
+  VIASH_PAR_LR_FACTOR="0.6"
 fi
-if [ -z ${VIASH_PAR_QUERY_TRAIN_SIZE+x} ]; then
-  VIASH_PAR_QUERY_TRAIN_SIZE="0.9"
-fi
-if [ -z ${VIASH_PAR_QUERY_MAX_EPOCHS+x} ]; then
-  VIASH_PAR_QUERY_MAX_EPOCHS="400"
-fi
-if [ -z ${VIASH_PAR_QUERY_LEARNING_RATE+x} ]; then
-  VIASH_PAR_QUERY_LEARNING_RATE="0.001"
-fi
-if [ -z ${VIASH_PAR_QUERY_REDUCE_LR_ON_PLATEAU+x} ]; then
-  VIASH_PAR_QUERY_REDUCE_LR_ON_PLATEAU="true"
-fi
-if [ -z ${VIASH_PAR_QUERY_LR_PATIENCE+x} ]; then
-  VIASH_PAR_QUERY_LR_PATIENCE="25"
-fi
-if [ -z ${VIASH_PAR_QUERY_LR_FACTOR+x} ]; then
-  VIASH_PAR_QUERY_LR_FACTOR="0.5"
-fi
-if [ -z ${VIASH_PAR_QUERY_EARLY_STOPPING+x} ]; then
-  VIASH_PAR_QUERY_EARLY_STOPPING="true"
-fi
-if [ -z ${VIASH_PAR_QUERY_EARLY_STOPPING_PATIENCE+x} ]; then
-  VIASH_PAR_QUERY_EARLY_STOPPING_PATIENCE="50"
-fi
-if [ -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then
-  VIASH_PAR_OUTPUT_OBS_PREDICTIONS="scanvi_pred"
-fi
-if [ -z ${VIASH_PAR_OUTPUT_OBS_PROBABILITY+x} ]; then
-  VIASH_PAR_OUTPUT_OBS_PROBABILITY="scanvi_probability"
-fi
-if [ -z ${VIASH_PAR_OUTPUT_OBSM_SCANVI_EMBEDDING+x} ]; then
-  VIASH_PAR_OUTPUT_OBSM_SCANVI_EMBEDDING="scanvi_embedding"
-fi
-if [ -z ${VIASH_PAR_UNKNOWN_CELLTYPE+x} ]; then
-  VIASH_PAR_UNKNOWN_CELLTYPE="Unknown"
+if [ -z ${VIASH_PAR_LR_PATIENCE+x} ]; then
+  VIASH_PAR_LR_PATIENCE="30.0"
 fi
 
 # check whether required files exist
@@ -1384,224 +1236,95 @@ if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
   ViashError "Input file '$VIASH_PAR_INPUT' does not exist."
   exit 1
 fi
-if [ ! -z "$VIASH_PAR_SCVI_REFERENCE_MODEL" ] && [ ! -e "$VIASH_PAR_SCVI_REFERENCE_MODEL" ]; then
-  ViashError "Input file '$VIASH_PAR_SCVI_REFERENCE_MODEL' does not exist."
-  exit 1
-fi
-if [ ! -z "$VIASH_PAR_SCANVI_REFERENCE_MODEL" ] && [ ! -e "$VIASH_PAR_SCANVI_REFERENCE_MODEL" ]; then
-  ViashError "Input file '$VIASH_PAR_SCANVI_REFERENCE_MODEL' does not exist."
+if [ ! -z "$VIASH_PAR_SCVI_MODEL" ] && [ ! -e "$VIASH_PAR_SCVI_MODEL" ]; then
+  ViashError "Input file '$VIASH_PAR_SCVI_MODEL' does not exist."
   exit 1
 fi
 
 # check whether parameters values are of the right type
-if [[ -n "$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP" ]]; then
-  if ! [[ "$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--input_reference_gene_overlap' has to be an integer. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-  if [[ $VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP -lt 1 ]]; then
-    ViashError '--input_reference_gene_overlap' has be more than or equal to 1. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_EARLY_STOPPING" ]]; then
+  if ! [[ "$VIASH_PAR_EARLY_STOPPING" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--early_stopping' has to be a boolean. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
-if [[ -n "$VIASH_PAR_REFERENCE_TRAIN_SIZE" ]]; then
-  if ! [[ "$VIASH_PAR_REFERENCE_TRAIN_SIZE" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
-    ViashError '--reference_train_size' has to be a double. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_EARLY_STOPPING_PATIENCE" ]]; then
+  if ! [[ "$VIASH_PAR_EARLY_STOPPING_PATIENCE" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--early_stopping_patience' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if [[ $VIASH_PAR_EARLY_STOPPING_PATIENCE -lt 1 ]]; then
+    ViashError '--early_stopping_patience' has be more than or equal to 1. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_EARLY_STOPPING_MIN_DELTA" ]]; then
+  if ! [[ "$VIASH_PAR_EARLY_STOPPING_MIN_DELTA" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--early_stopping_min_delta' has to be a double. Use "--help" to get more information on the parameters.
     exit 1
   fi
   if command -v bc &> /dev/null; then
-    if ! [[ `echo $VIASH_PAR_REFERENCE_TRAIN_SIZE '>=' 0.0 | bc` -eq 1 ]]; then
-      ViashError '--reference_train_size' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
+    if ! [[ `echo $VIASH_PAR_EARLY_STOPPING_MIN_DELTA '>=' 0.0 | bc` -eq 1 ]]; then
+      ViashError '--early_stopping_min_delta' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
       exit 1
     fi
   elif command -v awk &> /dev/null; then
-    if ! [[ `awk -v n1=$VIASH_PAR_REFERENCE_TRAIN_SIZE -v n2=0.0 'BEGIN { print (n1 >= n2) ? "1" : "0" }'` -eq 1 ]]; then
-      ViashError '--reference_train_size' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
+    if ! [[ `awk -v n1=$VIASH_PAR_EARLY_STOPPING_MIN_DELTA -v n2=0.0 'BEGIN { print (n1 >= n2) ? "1" : "0" }'` -eq 1 ]]; then
+      ViashError '--early_stopping_min_delta' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
       exit 1
     fi
   else
-    ViashWarning '--reference_train_size' specifies a minimum value but the value was not verified as neither \'bc\' or \`awk\` are present on the system.
-  fi
-  if command -v bc &> /dev/null; then
-    if ! [[ `echo $VIASH_PAR_REFERENCE_TRAIN_SIZE '<=' 1.0 | bc` -eq 1 ]]; then
-      ViashError '--reference_train_size' has to be less than or equal to 1.0. Use "--help" to get more information on the parameters.
-      exit 1
-    fi
-  elif command -v awk &> /dev/null; then
-    if ! [[ `awk -v n1=$VIASH_PAR_REFERENCE_TRAIN_SIZE -v n2=1.0 'BEGIN { print (n1 <= n2) ? "1" : "0" }'` -eq 1 ]]; then
-      ViashError '--reference_train_size' has be less than or equal to 1.0. Use "--help" to get more information on the parameters.
-      exit 1
-    fi
-  else
-    ViashWarning '--reference_train_size' specifies a maximum value but the value was not verified as neither \'bc\' or \'awk\' are present on the system.
+    ViashWarning '--early_stopping_min_delta' specifies a minimum value but the value was not verified as neither \'bc\' or \`awk\` are present on the system.
   fi
 fi
-if [[ -n "$VIASH_PAR_REFERENCE_MAX_EPOCHS" ]]; then
-  if ! [[ "$VIASH_PAR_REFERENCE_MAX_EPOCHS" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--reference_max_epochs' has to be an integer. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_MAX_EPOCHS" ]]; then
+  if ! [[ "$VIASH_PAR_MAX_EPOCHS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--max_epochs' has to be an integer. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
-if [[ -n "$VIASH_PAR_REFERENCE_LEARNING_RATE" ]]; then
-  if ! [[ "$VIASH_PAR_REFERENCE_LEARNING_RATE" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
-    ViashError '--reference_learning_rate' has to be a double. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_REDUCE_LR_ON_PLATEAU" ]]; then
+  if ! [[ "$VIASH_PAR_REDUCE_LR_ON_PLATEAU" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--reduce_lr_on_plateau' has to be a boolean. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
-if [[ -n "$VIASH_PAR_REFERENCE_REDUCE_LR_ON_PLATEAU" ]]; then
-  if ! [[ "$VIASH_PAR_REFERENCE_REDUCE_LR_ON_PLATEAU" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--reference_reduce_lr_on_plateau' has to be a boolean. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_REFERENCE_LR_PATIENCE" ]]; then
-  if ! [[ "$VIASH_PAR_REFERENCE_LR_PATIENCE" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--reference_lr_patience' has to be an integer. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_REFERENCE_LR_FACTOR" ]]; then
-  if ! [[ "$VIASH_PAR_REFERENCE_LR_FACTOR" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
-    ViashError '--reference_lr_factor' has to be a double. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_LR_FACTOR" ]]; then
+  if ! [[ "$VIASH_PAR_LR_FACTOR" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--lr_factor' has to be a double. Use "--help" to get more information on the parameters.
     exit 1
   fi
   if command -v bc &> /dev/null; then
-    if ! [[ `echo $VIASH_PAR_REFERENCE_LR_FACTOR '>=' 0.0 | bc` -eq 1 ]]; then
-      ViashError '--reference_lr_factor' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
+    if ! [[ `echo $VIASH_PAR_LR_FACTOR '>=' 0.0 | bc` -eq 1 ]]; then
+      ViashError '--lr_factor' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
       exit 1
     fi
   elif command -v awk &> /dev/null; then
-    if ! [[ `awk -v n1=$VIASH_PAR_REFERENCE_LR_FACTOR -v n2=0.0 'BEGIN { print (n1 >= n2) ? "1" : "0" }'` -eq 1 ]]; then
-      ViashError '--reference_lr_factor' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
+    if ! [[ `awk -v n1=$VIASH_PAR_LR_FACTOR -v n2=0.0 'BEGIN { print (n1 >= n2) ? "1" : "0" }'` -eq 1 ]]; then
+      ViashError '--lr_factor' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
       exit 1
     fi
   else
-    ViashWarning '--reference_lr_factor' specifies a minimum value but the value was not verified as neither \'bc\' or \`awk\` are present on the system.
-  fi
-  if command -v bc &> /dev/null; then
-    if ! [[ `echo $VIASH_PAR_REFERENCE_LR_FACTOR '<=' 1.0 | bc` -eq 1 ]]; then
-      ViashError '--reference_lr_factor' has to be less than or equal to 1.0. Use "--help" to get more information on the parameters.
-      exit 1
-    fi
-  elif command -v awk &> /dev/null; then
-    if ! [[ `awk -v n1=$VIASH_PAR_REFERENCE_LR_FACTOR -v n2=1.0 'BEGIN { print (n1 <= n2) ? "1" : "0" }'` -eq 1 ]]; then
-      ViashError '--reference_lr_factor' has be less than or equal to 1.0. Use "--help" to get more information on the parameters.
-      exit 1
-    fi
-  else
-    ViashWarning '--reference_lr_factor' specifies a maximum value but the value was not verified as neither \'bc\' or \'awk\' are present on the system.
+    ViashWarning '--lr_factor' specifies a minimum value but the value was not verified as neither \'bc\' or \`awk\` are present on the system.
   fi
 fi
-if [[ -n "$VIASH_PAR_REFERENCE_EARLY_STOPPING" ]]; then
-  if ! [[ "$VIASH_PAR_REFERENCE_EARLY_STOPPING" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--reference_early_stopping' has to be a boolean. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_REFERENCE_EARLY_STOPPING_PATIENCE" ]]; then
-  if ! [[ "$VIASH_PAR_REFERENCE_EARLY_STOPPING_PATIENCE" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--reference_early_stopping_patience' has to be an integer. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_QUERY_TRAIN_SIZE" ]]; then
-  if ! [[ "$VIASH_PAR_QUERY_TRAIN_SIZE" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
-    ViashError '--query_train_size' has to be a double. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_LR_PATIENCE" ]]; then
+  if ! [[ "$VIASH_PAR_LR_PATIENCE" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--lr_patience' has to be a double. Use "--help" to get more information on the parameters.
     exit 1
   fi
   if command -v bc &> /dev/null; then
-    if ! [[ `echo $VIASH_PAR_QUERY_TRAIN_SIZE '>=' 0.0 | bc` -eq 1 ]]; then
-      ViashError '--query_train_size' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
+    if ! [[ `echo $VIASH_PAR_LR_PATIENCE '>=' 0.0 | bc` -eq 1 ]]; then
+      ViashError '--lr_patience' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
       exit 1
     fi
   elif command -v awk &> /dev/null; then
-    if ! [[ `awk -v n1=$VIASH_PAR_QUERY_TRAIN_SIZE -v n2=0.0 'BEGIN { print (n1 >= n2) ? "1" : "0" }'` -eq 1 ]]; then
-      ViashError '--query_train_size' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
+    if ! [[ `awk -v n1=$VIASH_PAR_LR_PATIENCE -v n2=0.0 'BEGIN { print (n1 >= n2) ? "1" : "0" }'` -eq 1 ]]; then
+      ViashError '--lr_patience' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
       exit 1
     fi
   else
-    ViashWarning '--query_train_size' specifies a minimum value but the value was not verified as neither \'bc\' or \`awk\` are present on the system.
-  fi
-  if command -v bc &> /dev/null; then
-    if ! [[ `echo $VIASH_PAR_QUERY_TRAIN_SIZE '<=' 1.0 | bc` -eq 1 ]]; then
-      ViashError '--query_train_size' has to be less than or equal to 1.0. Use "--help" to get more information on the parameters.
-      exit 1
-    fi
-  elif command -v awk &> /dev/null; then
-    if ! [[ `awk -v n1=$VIASH_PAR_QUERY_TRAIN_SIZE -v n2=1.0 'BEGIN { print (n1 <= n2) ? "1" : "0" }'` -eq 1 ]]; then
-      ViashError '--query_train_size' has be less than or equal to 1.0. Use "--help" to get more information on the parameters.
-      exit 1
-    fi
-  else
-    ViashWarning '--query_train_size' specifies a maximum value but the value was not verified as neither \'bc\' or \'awk\' are present on the system.
-  fi
-fi
-if [[ -n "$VIASH_PAR_QUERY_MAX_EPOCHS" ]]; then
-  if ! [[ "$VIASH_PAR_QUERY_MAX_EPOCHS" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--query_max_epochs' has to be an integer. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_QUERY_LEARNING_RATE" ]]; then
-  if ! [[ "$VIASH_PAR_QUERY_LEARNING_RATE" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
-    ViashError '--query_learning_rate' has to be a double. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_QUERY_REDUCE_LR_ON_PLATEAU" ]]; then
-  if ! [[ "$VIASH_PAR_QUERY_REDUCE_LR_ON_PLATEAU" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--query_reduce_lr_on_plateau' has to be a boolean. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_QUERY_LR_PATIENCE" ]]; then
-  if ! [[ "$VIASH_PAR_QUERY_LR_PATIENCE" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--query_lr_patience' has to be an integer. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_QUERY_LR_FACTOR" ]]; then
-  if ! [[ "$VIASH_PAR_QUERY_LR_FACTOR" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
-    ViashError '--query_lr_factor' has to be a double. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-  if command -v bc &> /dev/null; then
-    if ! [[ `echo $VIASH_PAR_QUERY_LR_FACTOR '>=' 0.0 | bc` -eq 1 ]]; then
-      ViashError '--query_lr_factor' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
-      exit 1
-    fi
-  elif command -v awk &> /dev/null; then
-    if ! [[ `awk -v n1=$VIASH_PAR_QUERY_LR_FACTOR -v n2=0.0 'BEGIN { print (n1 >= n2) ? "1" : "0" }'` -eq 1 ]]; then
-      ViashError '--query_lr_factor' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
-      exit 1
-    fi
-  else
-    ViashWarning '--query_lr_factor' specifies a minimum value but the value was not verified as neither \'bc\' or \`awk\` are present on the system.
-  fi
-  if command -v bc &> /dev/null; then
-    if ! [[ `echo $VIASH_PAR_QUERY_LR_FACTOR '<=' 1.0 | bc` -eq 1 ]]; then
-      ViashError '--query_lr_factor' has to be less than or equal to 1.0. Use "--help" to get more information on the parameters.
-      exit 1
-    fi
-  elif command -v awk &> /dev/null; then
-    if ! [[ `awk -v n1=$VIASH_PAR_QUERY_LR_FACTOR -v n2=1.0 'BEGIN { print (n1 <= n2) ? "1" : "0" }'` -eq 1 ]]; then
-      ViashError '--query_lr_factor' has be less than or equal to 1.0. Use "--help" to get more information on the parameters.
-      exit 1
-    fi
-  else
-    ViashWarning '--query_lr_factor' specifies a maximum value but the value was not verified as neither \'bc\' or \'awk\' are present on the system.
-  fi
-fi
-if [[ -n "$VIASH_PAR_QUERY_EARLY_STOPPING" ]]; then
-  if ! [[ "$VIASH_PAR_QUERY_EARLY_STOPPING" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--query_early_stopping' has to be a boolean. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_QUERY_EARLY_STOPPING_PATIENCE" ]]; then
-  if ! [[ "$VIASH_PAR_QUERY_EARLY_STOPPING_PATIENCE" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--query_early_stopping_patience' has to be an integer. Use "--help" to get more information on the parameters.
-    exit 1
+    ViashWarning '--lr_patience' specifies a minimum value but the value was not verified as neither \'bc\' or \`awk\` are present on the system.
   fi
 fi
 if [[ -n "$VIASH_META_CPUS" ]]; then
@@ -1690,6 +1413,18 @@ if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
   unset IFS
 fi
 
+if [ ! -z "$VIASH_PAR_EARLY_STOPPING_MONITOR" ]; then
+  VIASH_PAR_EARLY_STOPPING_MONITOR_CHOICES=("elbo_validation;reconstruction_loss_validation;kl_local_validation")
+  IFS=';'
+  set -f
+  if ! [[ ";${VIASH_PAR_EARLY_STOPPING_MONITOR_CHOICES[*]};" =~ ";$VIASH_PAR_EARLY_STOPPING_MONITOR;" ]]; then
+    ViashError '--early_stopping_monitor' specified value of \'$VIASH_PAR_EARLY_STOPPING_MONITOR\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
 # create parent directories of output files, if so desired
 if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT")" ]; then
   mkdir -p "$(dirname "$VIASH_PAR_OUTPUT")"
@@ -1705,13 +1440,9 @@ if [ ! -z "$VIASH_PAR_INPUT" ]; then
   VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_INPUT")" )
   VIASH_PAR_INPUT=$(ViashDockerAutodetectMount "$VIASH_PAR_INPUT")
 fi
-if [ ! -z "$VIASH_PAR_SCVI_REFERENCE_MODEL" ]; then
-  VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_SCVI_REFERENCE_MODEL")" )
-  VIASH_PAR_SCVI_REFERENCE_MODEL=$(ViashDockerAutodetectMount "$VIASH_PAR_SCVI_REFERENCE_MODEL")
-fi
-if [ ! -z "$VIASH_PAR_SCANVI_REFERENCE_MODEL" ]; then
-  VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_SCANVI_REFERENCE_MODEL")" )
-  VIASH_PAR_SCANVI_REFERENCE_MODEL=$(ViashDockerAutodetectMount "$VIASH_PAR_SCANVI_REFERENCE_MODEL")
+if [ ! -z "$VIASH_PAR_SCVI_MODEL" ]; then
+  VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_SCVI_MODEL")" )
+  VIASH_PAR_SCVI_MODEL=$(ViashDockerAutodetectMount "$VIASH_PAR_SCVI_MODEL")
 fi
 if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
   VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_OUTPUT")" )
@@ -1790,43 +1521,35 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
-import sys
-import mudata as mu
+import mudata
 import scvi
 import numpy as np
 
-## VIASH START
+### VIASH START
 # The following code has been auto-generated by Viash.
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'var_input_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_INPUT_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'scvi_reference_model': $( if [ ! -z ${VIASH_PAR_SCVI_REFERENCE_MODEL+x} ]; then echo "r'${VIASH_PAR_SCVI_REFERENCE_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'scanvi_reference_model': $( if [ ! -z ${VIASH_PAR_SCANVI_REFERENCE_MODEL+x} ]; then echo "r'${VIASH_PAR_SCANVI_REFERENCE_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'reference_train_size': $( if [ ! -z ${VIASH_PAR_REFERENCE_TRAIN_SIZE+x} ]; then echo "float(r'${VIASH_PAR_REFERENCE_TRAIN_SIZE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'reference_max_epochs': $( if [ ! -z ${VIASH_PAR_REFERENCE_MAX_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_REFERENCE_MAX_EPOCHS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'reference_learning_rate': $( if [ ! -z ${VIASH_PAR_REFERENCE_LEARNING_RATE+x} ]; then echo "float(r'${VIASH_PAR_REFERENCE_LEARNING_RATE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'reference_reduce_lr_on_plateau': $( if [ ! -z ${VIASH_PAR_REFERENCE_REDUCE_LR_ON_PLATEAU+x} ]; then echo "r'${VIASH_PAR_REFERENCE_REDUCE_LR_ON_PLATEAU//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
-  'reference_lr_patience': $( if [ ! -z ${VIASH_PAR_REFERENCE_LR_PATIENCE+x} ]; then echo "int(r'${VIASH_PAR_REFERENCE_LR_PATIENCE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'reference_lr_factor': $( if [ ! -z ${VIASH_PAR_REFERENCE_LR_FACTOR+x} ]; then echo "float(r'${VIASH_PAR_REFERENCE_LR_FACTOR//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'reference_early_stopping': $( if [ ! -z ${VIASH_PAR_REFERENCE_EARLY_STOPPING+x} ]; then echo "r'${VIASH_PAR_REFERENCE_EARLY_STOPPING//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
-  'reference_early_stopping_patience': $( if [ ! -z ${VIASH_PAR_REFERENCE_EARLY_STOPPING_PATIENCE+x} ]; then echo "int(r'${VIASH_PAR_REFERENCE_EARLY_STOPPING_PATIENCE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'query_train_size': $( if [ ! -z ${VIASH_PAR_QUERY_TRAIN_SIZE+x} ]; then echo "float(r'${VIASH_PAR_QUERY_TRAIN_SIZE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'query_max_epochs': $( if [ ! -z ${VIASH_PAR_QUERY_MAX_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_QUERY_MAX_EPOCHS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'query_learning_rate': $( if [ ! -z ${VIASH_PAR_QUERY_LEARNING_RATE+x} ]; then echo "float(r'${VIASH_PAR_QUERY_LEARNING_RATE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'query_reduce_lr_on_plateau': $( if [ ! -z ${VIASH_PAR_QUERY_REDUCE_LR_ON_PLATEAU+x} ]; then echo "r'${VIASH_PAR_QUERY_REDUCE_LR_ON_PLATEAU//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
-  'query_lr_patience': $( if [ ! -z ${VIASH_PAR_QUERY_LR_PATIENCE+x} ]; then echo "int(r'${VIASH_PAR_QUERY_LR_PATIENCE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'query_lr_factor': $( if [ ! -z ${VIASH_PAR_QUERY_LR_FACTOR+x} ]; then echo "float(r'${VIASH_PAR_QUERY_LR_FACTOR//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'query_early_stopping': $( if [ ! -z ${VIASH_PAR_QUERY_EARLY_STOPPING+x} ]; then echo "r'${VIASH_PAR_QUERY_EARLY_STOPPING//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
-  'query_early_stopping_patience': $( if [ ! -z ${VIASH_PAR_QUERY_EARLY_STOPPING_PATIENCE+x} ]; then echo "int(r'${VIASH_PAR_QUERY_EARLY_STOPPING_PATIENCE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'obs_labels': $( if [ ! -z ${VIASH_PAR_OBS_LABELS+x} ]; then echo "r'${VIASH_PAR_OBS_LABELS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'unlabeled_category': $( if [ ! -z ${VIASH_PAR_UNLABELED_CATEGORY+x} ]; then echo "r'${VIASH_PAR_UNLABELED_CATEGORY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'scvi_model': $( if [ ! -z ${VIASH_PAR_SCVI_MODEL+x} ]; then echo "r'${VIASH_PAR_SCVI_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_model': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_obs_predictions': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PREDICTIONS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_obs_probability': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PROBABILITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_obsm_scanvi_embedding': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBSM_SCANVI_EMBEDDING+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBSM_SCANVI_EMBEDDING//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'unknown_celltype': $( if [ ! -z ${VIASH_PAR_UNKNOWN_CELLTYPE+x} ]; then echo "r'${VIASH_PAR_UNKNOWN_CELLTYPE//\'/\'\"\'\"r\'}'"; else echo None; fi )
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'obs_output_predictions': $( if [ ! -z ${VIASH_PAR_OBS_OUTPUT_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OBS_OUTPUT_PREDICTIONS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'obs_output_probabilities': $( if [ ! -z ${VIASH_PAR_OBS_OUTPUT_PROBABILITIES+x} ]; then echo "r'${VIASH_PAR_OBS_OUTPUT_PROBABILITIES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'early_stopping': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'early_stopping_monitor': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_MONITOR+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING_MONITOR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'early_stopping_patience': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_PATIENCE+x} ]; then echo "int(r'${VIASH_PAR_EARLY_STOPPING_PATIENCE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'early_stopping_min_delta': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_MIN_DELTA+x} ]; then echo "float(r'${VIASH_PAR_EARLY_STOPPING_MIN_DELTA//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'max_epochs': $( if [ ! -z ${VIASH_PAR_MAX_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_MAX_EPOCHS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'reduce_lr_on_plateau': $( if [ ! -z ${VIASH_PAR_REDUCE_LR_ON_PLATEAU+x} ]; then echo "r'${VIASH_PAR_REDUCE_LR_ON_PLATEAU//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'lr_factor': $( if [ ! -z ${VIASH_PAR_LR_FACTOR+x} ]; then echo "float(r'${VIASH_PAR_LR_FACTOR//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'lr_patience': $( if [ ! -z ${VIASH_PAR_LR_PATIENCE+x} ]; then echo "float(r'${VIASH_PAR_LR_PATIENCE//\'/\'\"\'\"r\'}')"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1852,131 +1575,85 @@ dep = {
   
 }
 
-## VIASH END
+### VIASH END
+
+import sys
 
 sys.path.append(meta["resources_dir"])
-from setup_logger import setup_logger
-from cross_check_genes import cross_check_genes
+
+from subset_vars import subset_vars
 from set_var_index import set_var_index
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
+from setup_logger import setup_logger
 
 logger = setup_logger()
 
-if (
-    (not par["scvi_reference_model"])
-    and not (par["scanvi_reference_model"])
-    or (par["scvi_reference_model"] and par["scanvi_reference_model"])
-):
-    raise ValueError(
-        "Make sure to provide either an '--scvi_reference_model' or a '--scanvi_reference_model', but not both."
-    )
-
 
 def main():
-    logger.info("Reading the query data")
-    # Read in data
-    input_mdata = mu.read_h5mu(par["input"])
-    input_adata = input_mdata.mod[par["modality"]]
-    input_modality = input_adata.copy()
-    # scANVI requires query and reference gene names to be equivalent
-    input_modality = set_var_index(input_modality, par["var_input_gene_names"])
+    logger.info("Reading input data...")
+    adata = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
 
-    if par["scanvi_reference_model"]:
-        logger.info(
-            f"Loading the pretrained scANVI model from {par['scanvi_reference_model']} and updating it with the query data {par['input']}"
-        )
-        scanvi_query = scvi.model.SCANVI.load_query_data(
-            input_modality,
-            par["scanvi_reference_model"],
-            freeze_classifier=True,
-            inplace_subset_query_vars=True,
-        )
+    if par["var_input"]:
+        # Subset to HVG
+        adata_subset = subset_vars(adata, subset_col=par["var_input"]).copy()
+    else:
+        adata_subset = adata.copy()
 
-    elif par["scvi_reference_model"]:
-        logger.info("Reading in the reference model and associated reference data")
-        scvi_reference_model = scvi.model.SCVI.load(par["scvi_reference_model"])
-        reference = scvi_reference_model.adata
+    # Sanitize gene names and set as index of the AnnData object
+    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
 
-        logger.info("Alligning genes in reference and query dataset")
-        # scANVI requires query and reference gene names to be equivalent
-        reference = set_var_index(reference)
-        # Subset query dataset based on genes present in reference
-        common_ens_ids = cross_check_genes(
-            input_modality.var.index,
-            reference.var.index,
-            min_gene_overlap=par["input_reference_gene_overlap"],
-        )
-        input_modality = input_modality[:, common_ens_ids]
+    logger.info(f"Loading pre-trained scVI model from {par['scvi_model']}")
+    scvi_model = scvi.model.SCVI.load(
+        par["scvi_model"],
+        adata_subset,
+        accelerator="auto",
+        device="auto",
+    )
 
-        logger.info("Instantiating scANVI model from the scVI model")
-        scanvi_ref = scvi.model.SCANVI.from_scvi_model(
-            scvi_reference_model,
-            unlabeled_category=par["unknown_celltype"],
-            labels_key=scvi_reference_model.adata_manager._registry["setup_args"][
-                "labels_key"
-            ],
-        )
+    logger.info("Instantiating scANVI model from scVI model...")
+    vae_uns = scvi.model.SCANVI.from_scvi_model(
+        scvi_model,
+        unlabeled_category=par["unlabeled_category"],
+        labels_key=par["obs_labels"],
+        adata=adata_subset,
+    )
 
-        reference_plan_kwargs = {
-            "lr": par["reference_learning_rate"],
-            "reduce_lr_on_plateau": par["reference_reduce_lr_on_plateau"],
-            "lr_patience": par["reference_lr_patience"],
-            "lr_factor": par["reference_lr_factor"],
-        }
-
-        logger.info("Training scANVI model on reference data with celltype labels")
-
-        scanvi_ref.train(
-            train_size=par["reference_train_size"],
-            max_epochs=par["reference_max_epochs"],
-            early_stopping=par["reference_early_stopping"],
-            early_stopping_patience=par["reference_early_stopping_patience"],
-            plan_kwargs=reference_plan_kwargs,
-            check_val_every_n_epoch=1,
-            accelerator="auto",
-        )
-
-        logger.info(f"Updating scANVI model with query data {par['input']}")
-        scvi.model.SCANVI.prepare_query_anndata(
-            input_modality, scanvi_ref, inplace=True
-        )
-        scanvi_query = scvi.model.SCANVI.load_query_data(input_modality, scanvi_ref)
-
-    logger.info("Training scANVI model with query data")
-    query_plan_kwargs = {
-        "lr": par["query_learning_rate"],
-        "reduce_lr_on_plateau": par["query_reduce_lr_on_plateau"],
-        "lr_patience": par["query_lr_patience"],
-        "lr_factor": par["query_lr_factor"],
+    plan_kwargs = {
+        "reduce_lr_on_plateau": par["reduce_lr_on_plateau"],
+        "lr_patience": par["lr_patience"],
+        "lr_factor": par["lr_factor"],
     }
 
-    scanvi_query.train(
-        train_size=par["query_train_size"],
-        max_epochs=par["query_max_epochs"],
-        early_stopping=par["query_early_stopping"],
-        early_stopping_patience=par["query_early_stopping_patience"],
-        plan_kwargs=query_plan_kwargs,
+    logger.info("Training scANVI model...")
+    # Train the model
+    vae_uns.train(
+        max_epochs=par["max_epochs"],
+        early_stopping=par["early_stopping"],
+        early_stopping_monitor=par["early_stopping_monitor"],
+        early_stopping_patience=par["early_stopping_patience"],
+        early_stopping_min_delta=par["early_stopping_min_delta"],
+        plan_kwargs=plan_kwargs,
         check_val_every_n_epoch=1,
         accelerator="auto",
     )
+    # Note: train_size=1.0 should give better results, but then can't do early_stopping on validation set
 
-    logger.info("Adding latent representation to query data")
-    input_adata.obsm[par["output_obsm_scanvi_embedding"]] = (
-        scanvi_query.get_latent_representation()
+    logger.info("Performing scANVI integration...")
+    # Get the latent output
+    adata.obsm[par["obsm_output"]] = vae_uns.get_latent_representation()
+
+    logger.info("Performing scANVI prediction...")
+    adata.obs[par["obs_output_predictions"]] = vae_uns.predict()
+    adata.obs[par["obs_output_probabilities"]] = np.max(
+        vae_uns.predict(soft=True), axis=1
     )
 
-    logger.info("Running predictions on query data")
-    input_adata.obs[par["output_obs_predictions"]] = scanvi_query.predict(
-        input_modality
+    logger.info("Writing output data...")
+    write_h5ad_to_h5mu_with_compression(
+        par["output"], par["input"], par["modality"], adata, par["output_compression"]
     )
-    input_adata.obs[par["output_obs_probability"]] = np.max(
-        scanvi_query.predict(input_modality, soft=True), axis=1
-    )
-
-    logger.info("Saving output and model")
-    input_mdata.write_h5mu(par["output"], compression=par["output_compression"])
-
     if par["output_model"]:
-        scanvi_query.save(par["output_model"], overwrite=True)
+        vae_uns.save(par["output_model"], overwrite=True)
 
 
 if __name__ == "__main__":
@@ -1994,11 +1671,8 @@ if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
   if [ ! -z "$VIASH_PAR_INPUT" ]; then
     VIASH_PAR_INPUT=$(ViashDockerStripAutomount "$VIASH_PAR_INPUT")
   fi
-  if [ ! -z "$VIASH_PAR_SCVI_REFERENCE_MODEL" ]; then
-    VIASH_PAR_SCVI_REFERENCE_MODEL=$(ViashDockerStripAutomount "$VIASH_PAR_SCVI_REFERENCE_MODEL")
-  fi
-  if [ ! -z "$VIASH_PAR_SCANVI_REFERENCE_MODEL" ]; then
-    VIASH_PAR_SCANVI_REFERENCE_MODEL=$(ViashDockerStripAutomount "$VIASH_PAR_SCANVI_REFERENCE_MODEL")
+  if [ ! -z "$VIASH_PAR_SCVI_MODEL" ]; then
+    VIASH_PAR_SCVI_MODEL=$(ViashDockerStripAutomount "$VIASH_PAR_SCVI_MODEL")
   fi
   if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
     VIASH_PAR_OUTPUT=$(ViashDockerStripAutomount "$VIASH_PAR_OUTPUT")
