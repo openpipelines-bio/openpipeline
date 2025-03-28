@@ -3065,9 +3065,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge",
     "viash_version" : "0.9.0",
-    "git_commit" : "79cb154fb1660b6f232336c98b70bd88b50e6e35",
+    "git_commit" : "5536894f2e688092bab0dae2e45cfa2df77ba613",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2046-g79cb154fb16"
+    "git_tag" : "0.2.0-2047-g5536894f2e6"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3185,10 +3185,27 @@ def main():
             convert_floating=False,
         )
 
+        # pd.convert_dtypes does not convert already existing nullable dtypes
+        # to their native numpy dtypes.
+        # At this point, integer and boolean columns use a nullable dtype; and string columns
+        # might use 'object' or pd.StringDtype. This is OK.
+        # However, for example floating number columns might still use a nullable dtype
+        # from before the call to convert_dtypes. So we need to explicitly cast.
+        col_dtypes = df.select_dtypes(
+            exclude=["integer", "string", "object", "boolean"]
+        ).dtypes.to_dict()
+        numpy_dtypes = {
+            col_name: np.dtype(col_dtype.kind)
+            for col_name, col_dtype in col_dtypes.items()
+            if pd.api.types.is_extension_array_dtype(col_dtype)
+        }
+        df = df.astype(numpy_dtypes)
+
         # Convert leftover 'object' columns to string
         object_cols = df.select_dtypes(include="object").columns.values
         for obj_col in object_cols:
-            df[obj_col].astype(str).astype("category")
+            df[obj_col] = df[obj_col].astype(str).astype("category")
+
         setattr(merged, df_attr, df)
 
     merged.write_h5mu(par["output"], compression=par["output_compression"])

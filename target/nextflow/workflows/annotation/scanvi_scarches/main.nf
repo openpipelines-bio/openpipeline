@@ -3120,61 +3120,8 @@ meta = [
       ]
     },
     {
-      "name" : "Neighbour calculation",
+      "name" : "Leiden clustering options",
       "arguments" : [
-        {
-          "type" : "string",
-          "name" : "--uns_neighbors",
-          "description" : "In which .uns slot to store various neighbor output objects.",
-          "default" : [
-            "scanvi_integration_neighbors"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--obsp_neighbor_distances",
-          "description" : "In which .obsp slot to store the distance matrix between the resulting neighbors.",
-          "default" : [
-            "scanvi_integration_distances"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--obsp_neighbor_connectivities",
-          "description" : "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
-          "default" : [
-            "scanvi_integration_connectivities"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "Clustering options",
-      "arguments" : [
-        {
-          "type" : "string",
-          "name" : "--obs_cluster",
-          "description" : "Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions\nresolutions specified in '--leiden_resolution'.\n",
-          "default" : [
-            "scanvi_integration_leiden"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
         {
           "type" : "double",
           "name" : "--leiden_resolution",
@@ -3183,6 +3130,7 @@ meta = [
             1.0
           ],
           "required" : false,
+          "min" : 0.0,
           "direction" : "input",
           "multiple" : true,
           "multiple_sep" : ";"
@@ -3190,16 +3138,33 @@ meta = [
       ]
     },
     {
-      "name" : "Umap options",
+      "name" : "Neighbor classifier arguments",
       "arguments" : [
         {
           "type" : "string",
-          "name" : "--obsm_umap",
-          "description" : "In which .obsm slot to store the resulting UMAP embedding.",
+          "name" : "--knn_weights",
+          "description" : "Weight function used in prediction. Possible values are:\n`uniform` (all points in each neighborhood are weighted equally) or \n`distance` (weight points by the inverse of their distance)\n",
           "default" : [
-            "X_scanvi_umap"
+            "uniform"
           ],
           "required" : false,
+          "choices" : [
+            "uniform",
+            "distance"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--knn_n_neighbors",
+          "description" : "The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n",
+          "default" : [
+            15
+          ],
+          "required" : false,
+          "min" : 5,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3434,9 +3399,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scanvi_scarches",
     "viash_version" : "0.9.0",
-    "git_commit" : "79cb154fb1660b6f232336c98b70bd88b50e6e35",
+    "git_commit" : "5536894f2e688092bab0dae2e45cfa2df77ba613",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2046-g79cb154fb16"
+    "git_tag" : "0.2.0-2047-g5536894f2e6"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3585,13 +3550,15 @@ workflow run_wf {
                 "modality": "modality",
                 "obsm_input": "output_obsm_integrated",
                 "output": "workflow_output",
-                "uns_neighbors": "uns_neighbors",
-                "obsp_neighbor_distances": "obsp_neighbor_distances",
-                "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
-                "leiden_resolution": "leiden_resolution",
-                "obs_cluster": "obs_cluster",
-                "obsm_umap": "obsm_umap"
+                "leiden_resolution": "leiden_resolution"
             ],
+            args: [
+                "uns_neighbors": "scanvi_integration_neighbors",
+                "obsp_neighbor_distances": "scanvi_integration_distances",
+                "obsp_neighbor_connectivities": "scanvi_integration_connectivities",
+                "obs_cluster": "scanvi_integration_leiden",
+                "obsm_umap": "X_scanvi_umap"
+            ]
             toState: [ "output": "output" ]
         )
         | setState(["output", "output_model"])

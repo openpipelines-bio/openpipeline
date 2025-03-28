@@ -3113,9 +3113,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.9.0",
-    "git_commit" : "79cb154fb1660b6f232336c98b70bd88b50e6e35",
+    "git_commit" : "5536894f2e688092bab0dae2e45cfa2df77ba613",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2046-g79cb154fb16"
+    "git_tag" : "0.2.0-2047-g5536894f2e6"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3220,6 +3220,13 @@ from compress_h5mu import compress_h5mu
 _shared_logger_name = "leiden"
 
 
+# Function to check available space in /dev/shm
+def get_available_shared_memory():
+    shm_path = "/dev/shm"
+    shm_stats = os.statvfs(shm_path)
+    return shm_stats.f_bsize * shm_stats.f_bavail
+
+
 class SharedNumpyMatrix:
     def __init__(
         self,
@@ -3235,6 +3242,13 @@ class SharedNumpyMatrix:
     def from_numpy(
         cls, memory_manager: managers.SharedMemoryManager, array: npt.ArrayLike
     ):
+        available_shared_memory = get_available_shared_memory()
+        n_bytes_required = array.nbytes
+        if available_shared_memory < n_bytes_required:
+            raise ValueError(
+                "Not enough shared memory (/dev/shm) is available to load the data. "
+                f"Required amount: {n_bytes_required}, available: {available_shared_memory}."
+            )
         shm = memory_manager.SharedMemory(size=array.nbytes)
         array_in_shared_memory = np.ndarray(
             array.shape, dtype=array.dtype, buffer=shm.buf

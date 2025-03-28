@@ -360,67 +360,13 @@
 },
     
     
-    "neighbour calculation" : {
-    "title": "Neighbour calculation",
+    "leiden clustering options" : {
+    "title": "Leiden clustering options",
     "type": "object",
     "description": "No description",
     "properties": {
     
         
-                "uns_neighbors": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `scanvi_integration_neighbors`. In which ",
-                "help_text": "Type: `string`, default: `scanvi_integration_neighbors`. In which .uns slot to store various neighbor output objects."
-            ,
-                "default":"scanvi_integration_neighbors"
-            }
-    
-
-        ,
-                "obsp_neighbor_distances": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `scanvi_integration_distances`. In which ",
-                "help_text": "Type: `string`, default: `scanvi_integration_distances`. In which .obsp slot to store the distance matrix between the resulting neighbors."
-            ,
-                "default":"scanvi_integration_distances"
-            }
-    
-
-        ,
-                "obsp_neighbor_connectivities": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `scanvi_integration_connectivities`. In which ",
-                "help_text": "Type: `string`, default: `scanvi_integration_connectivities`. In which .obsp slot to store the connectivities matrix between the resulting neighbors."
-            ,
-                "default":"scanvi_integration_connectivities"
-            }
-    
-
-}
-},
-    
-    
-    "clustering options" : {
-    "title": "Clustering options",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "obs_cluster": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `scanvi_integration_leiden`. Prefix for the ",
-                "help_text": "Type: `string`, default: `scanvi_integration_leiden`. Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for \u0027--obs_cluster\u0027 suffixed with an underscore and one of the resolutions\nresolutions specified in \u0027--leiden_resolution\u0027.\n"
-            ,
-                "default":"scanvi_integration_leiden"
-            }
-    
-
-        ,
                 "leiden_resolution": {
                 "type":
                 "string",
@@ -435,20 +381,33 @@
 },
     
     
-    "umap options" : {
-    "title": "Umap options",
+    "neighbor classifier arguments" : {
+    "title": "Neighbor classifier arguments",
     "type": "object",
     "description": "No description",
     "properties": {
     
         
-                "obsm_umap": {
+                "knn_weights": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `X_scanvi_umap`. In which ",
-                "help_text": "Type: `string`, default: `X_scanvi_umap`. In which .obsm slot to store the resulting UMAP embedding."
+                "description": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction",
+                "help_text": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction. Possible values are:\n`uniform` (all points in each neighborhood are weighted equally) or \n`distance` (weight points by the inverse of their distance)\n",
+                "enum": ["uniform", "distance"]
+            
             ,
-                "default":"X_scanvi_umap"
+                "default":"uniform"
+            }
+    
+
+        ,
+                "knn_n_neighbors": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent",
+                "help_text": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n"
+            ,
+                "default":15
             }
     
 
@@ -496,15 +455,11 @@
     },
 
     {
-    "$ref": "#/definitions/neighbour calculation"
+    "$ref": "#/definitions/leiden clustering options"
     },
 
     {
-    "$ref": "#/definitions/clustering options"
-    },
-
-    {
-    "$ref": "#/definitions/umap options"
+    "$ref": "#/definitions/neighbor classifier arguments"
     },
 
     {
