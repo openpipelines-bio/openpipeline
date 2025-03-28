@@ -6,6 +6,8 @@
 
 * Deprecation of `workflows/annotation/scgpt_integration_knn` component (PR #952).
 
+* `annotate/scanvi`: Remove scarches functionality from this component, as it is already covered in `integrate/scarches` (PR #986). 
+
 ## NEW FUNCTIONALITY
 
 * `dataflow/concatenate_h5mu`: add `modality` parameter (PR #977).
@@ -35,6 +37,8 @@
 * `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
 
 * `from_cellranger_multi_to_h5mu`: add support for `custom` modality (PR #982).
+
+* `integrate/scvi`: Enable passing any .var field for gene name information instead of .var index, using the `--var_gene_names` parameter (PR #986).
 
 # MINOR CHANGES
 
