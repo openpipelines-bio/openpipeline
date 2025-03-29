@@ -6,13 +6,15 @@
 
 * Deprecation of `workflows/annotation/scgpt_integration_knn` component (PR #952).
 
+* `annotate/scanvi`: Remove scarches functionality from this component, as it is already covered in `integrate/scarches` (PR #986). 
+
 ## NEW FUNCTIONALITY
 
 * `dataflow/concatenate_h5mu`: add `modality` parameter (PR #977).
 
 * `filter_with_scrublet`: add `expected_doublet_rate`, `stdev_doublet_rate`, `n_neighbors` and `sim_doublet_ratio` arguments (PR #974).
 
-* `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948, #958).
+* `feature_annotation/aling_query_reference`: Added a component to align a query and reference dataset (PR #948, #958, #972).
 
 * `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
 
@@ -20,7 +22,7 @@
 
 * `scanvi`: enable CUDA acceleration (PR #969).
 
-* `feature_annotation/align_query_reference`: Enable the alignment of multiple layers (PR #972).
+* `workflows/annotation/scvi_knn` workflow: Cell-type annotation based on scVI integration followed by KNN label transfer (PR #954).
 
 * `convert/from_h5ad_to_seurat`: Add component to convert from h5ad to Seurat (PR #980).
 
@@ -35,6 +37,8 @@
 * `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
 
 * `from_cellranger_multi_to_h5mu`: add support for `custom` modality (PR #982).
+
+* `integrate/scvi`: Enable passing any .var field for gene name information instead of .var index, using the `--var_gene_names` parameter (PR #986).
 
 # MINOR CHANGES
 
@@ -55,6 +59,8 @@
 * `process_10xh5/filter_10xh5`: update container base to ubuntu 24.04 (PR #983).
 
 # BUG FIXES
+
+* `cluster/leiden`: Fix an issue where insufficient shared memory (size of `/dev/shm`) causes the processing to hang.  
 
 * `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).
 
