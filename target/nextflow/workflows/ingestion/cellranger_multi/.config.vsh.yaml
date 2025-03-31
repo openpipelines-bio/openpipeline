@@ -744,6 +744,9 @@ info:
   - name: "cellranger_multi_test"
     namespace: "test_workflows/ingestion"
 status: "enabled"
+scope:
+  image: "public"
+  target: "public"
 dependencies:
 - name: "mapping/cellranger_multi"
   alias: "cellranger_multi_component"
@@ -825,8 +828,8 @@ build_info:
   engine: "native"
   output: "target/nextflow/workflows/ingestion/cellranger_multi"
   executable: "target/nextflow/workflows/ingestion/cellranger_multi/main.nf"
-  viash_version: "0.9.0"
-  git_commit: "3b233168326f74eb87f5570f1dca7845bd1e9ca9"
+  viash_version: "0.9.3"
+  git_commit: "cfe3e08b768d3b7254f026930d1d570888f7a492"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/mapping/cellranger_multi"
@@ -838,7 +841,7 @@ package_config:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0"
+  viash_version: "0.9.3"
   source: "src"
   target: "target"
   config_mods:

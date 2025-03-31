@@ -324,6 +324,9 @@ test_resources:
   path: "demuxafy_test_data"
 info: null
 status: "enabled"
+scope:
+  image: "public"
+  target: "public"
 links:
   repository: "https://github.com/openpipelines-bio/openpipeline"
   docker_registry: "ghcr.io"
@@ -438,6 +441,7 @@ engines:
     - "processx"
     - "dplyr"
     bioc_force_install: false
+    warnings_as_errors: true
   entrypoint: []
   cmd: null
 build_info:
@@ -446,8 +450,8 @@ build_info:
   engine: "docker"
   output: "target/executable/genetic_demux/demuxlet"
   executable: "target/executable/genetic_demux/demuxlet/demuxlet"
-  viash_version: "0.9.0"
-  git_commit: "3b233168326f74eb87f5570f1dca7845bd1e9ca9"
+  viash_version: "0.9.3"
+  git_commit: "cfe3e08b768d3b7254f026930d1d570888f7a492"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
@@ -456,7 +460,7 @@ package_config:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0"
+  viash_version: "0.9.3"
   source: "src"
   target: "target"
   config_mods:
