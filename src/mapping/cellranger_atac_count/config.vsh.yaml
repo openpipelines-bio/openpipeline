@@ -69,7 +69,7 @@ engines:
       - type: docker
         run: |
           DEBIAN_FRONTEND=noninteractive apt update \
-          && apt upgrade -y && rm -rf /var/lib/apt/lists/*
+          && apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
 runners:
   - type: executable
   - type: nextflow
