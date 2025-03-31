@@ -42,6 +42,8 @@
 
 # MINOR CHANGES
 
+* Bump viash to `0.9.3` (PR #995).
+
 * Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942 and PR #949). 
 
 * `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
