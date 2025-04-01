@@ -3,8 +3,12 @@ namespace: "integrate"
 description: "Performs reference mapping with scArches"
 authors:
   - __merge__: /src/authors/vladimir_shitov.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ maintainer ]
 argument_groups:
   - name: Inputs
+    description: Arguments related to the input (query) dataset
     arguments:
       - name: "--input"
         alternatives: ["-i"]
@@ -12,20 +16,42 @@ argument_groups:
         description: Input h5mu file to use as a query
         direction: input
         required: true
+      - name: "--layer"
+        type: string
+        description: Layer to be used for scArches, if .X is not to be used.
+        required: false
       - name: "--modality"
         type: string
         default: "rna"
         required: false
+      - name: "--input_obs_batch"
+        type: string
+        description: Name of the .obs column with batch information.
+        required: false
+      - name: "--input_obs_label"
+        type: string
+        description: Name of the .obs column with celltype information.
+        required: false
+      - name: "--input_var_gene_names"
+        type: string
+        description: Name of the .var column with gene names, if the var .index is not to be used.
+        required: false
+      - name: "--input_obs_size_factor"
+        type: string
+        required: false
+        description: |
+          Key in adata.obs for size factor information. Instead of using library size as a size factor,
+          the provided size factor column will be used as offset in the mean of the likelihood.
+          Assumed to be on linear scale.
+
+  - name: Reference
+    arguments:
       - name: "--reference"
         alternatives: ["-r"]
         type: file
-        description: Path to the directory with reference model or a web link. For HLCA use https://zenodo.org/record/6337966/files/HLCA_reference_model.zip
+        description: Path to the directory with reference model or a web link.
         required: true
-      - name: "--dataset_name"
-        type: string
-        default: "test_dataset"
-        required: false
-        description: Name of query dataset to use as a batch name. If not set, name of the input file is used
+
   - name: Outputs
     arguments:
       - name: "--output"
@@ -50,6 +76,17 @@ argument_groups:
         default: "X_integrated_scanvi"
         required: false
         description: "In which .obsm slot to store the resulting integrated embedding."
+      - name: "--obs_output_predictions"
+        type: string
+        default: "scanvi_pred"
+        required: false
+        description: "In which .obs slot to store the resulting label predictions. Only relevant if a scANVI model was provided."
+      - name: "--obs_output_probabilities"
+        type: string
+        default: "scanvi_proba"
+        required: false
+        description: "In which .obs slot to store the probabilities of the label predictions. Only relevant if a scANVI model was provided."
+
   - name: "Early stopping arguments"
     arguments:
       - name: "--early_stopping"
@@ -72,12 +109,13 @@ argument_groups:
         default: 0.0
         description: "Minimum change in the monitored quantity to qualify as an improvement, 
                       i.e. an absolute change of less than min_delta, will count as no improvement."
+
   - name: "Learning parameters"
     arguments:
       - name: "--max_epochs"
         type: integer
         description: "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest."
-        required: true
+        required: false
       - name: "--reduce_lr_on_plateau"
         description: "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus."
         type: boolean
@@ -92,14 +130,18 @@ argument_groups:
         type: double
         default: 30
         min: 0
+
 resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
   - path: /src/utils/compress_h5mu.py
+  - path: /src/utils/set_var_index.py
 test_resources:
   - type: python_script
     path: test.py
+  - path: /resources_test/annotation_test_data/scanvi_model
+  - path: /resources_test/annotation_test_data/scvi_model
   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
   - path: /resources_test/HLCA_reference_model/HLCA_reference_model.zip
 
