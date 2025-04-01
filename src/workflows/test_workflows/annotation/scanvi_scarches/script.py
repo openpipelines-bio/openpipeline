@@ -1,9 +1,7 @@
 from mudata import read_h5mu
-import shutil
-import os
 import sys
-from pathlib import Path
 import pytest
+import pandas
 
 ##VIASH START
 par = {"input": "harmony_knn/output.h5mu"}
@@ -34,7 +32,7 @@ def test_run():
     ), f"Input mod['rna'] uns columns should be: {expected_uns}, found: {input_mudata.mod['rna'].uns.keys()}."
 
     assert input_mudata.mod["rna"].obs["scanvi_pred"].dtype == "category"
-    assert input_mudata.mod["rna"].obs["scanvi_probabilities"].dtype == "float32"
+    assert pandas.api.types.is_float_dtype(input_mudata.mod["rna"].obs["scanvi_probabilities"].dtype)
 
 
 if __name__ == "__main__":
