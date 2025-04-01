@@ -10,7 +10,8 @@
 // files.
 // 
 // Component authors:
-//  * Vladimir Shitov
+//  * Vladimir Shitov (author)
+//  * Dorien Roosen (maintainer)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -3044,6 +3045,9 @@ meta = [
   "authors" : [
     {
       "name" : "Vladimir Shitov",
+      "roles" : [
+        "author"
+      ],
       "info" : {
         "role" : "Contributor",
         "links" : {
@@ -3060,11 +3064,33 @@ meta = [
           }
         ]
       }
+    },
+    {
+      "name" : "Dorien Roosen",
+      "roles" : [
+        "maintainer"
+      ],
+      "info" : {
+        "role" : "Core Team Member",
+        "links" : {
+          "email" : "dorien@data-intuitive.com",
+          "github" : "dorien-er",
+          "linkedin" : "dorien-roosen"
+        },
+        "organizations" : [
+          {
+            "name" : "Data Intuitive",
+            "href" : "https://www.data-intuitive.com",
+            "role" : "Data Scientist"
+          }
+        ]
+      }
     }
   ],
   "argument_groups" : [
     {
       "name" : "Inputs",
+      "description" : "Arguments related to the input (query) dataset",
       "arguments" : [
         {
           "type" : "file",
@@ -3082,6 +3108,15 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--layer",
+          "description" : "Layer to be used for scArches, if .X is not to be used.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--modality",
           "default" : [
             "rna"
@@ -3092,27 +3127,56 @@ meta = [
           "multiple_sep" : ";"
         },
         {
-          "type" : "file",
-          "name" : "--reference",
-          "alternatives" : [
-            "-r"
-          ],
-          "description" : "Path to the directory with reference model or a web link. For HLCA use https://zenodo.org/record/6337966/files/HLCA_reference_model.zip",
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : true,
+          "type" : "string",
+          "name" : "--input_obs_batch",
+          "description" : "Name of the .obs column with batch information.",
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
         },
         {
           "type" : "string",
-          "name" : "--dataset_name",
-          "description" : "Name of query dataset to use as a batch name. If not set, name of the input file is used",
-          "default" : [
-            "test_dataset"
-          ],
+          "name" : "--input_obs_label",
+          "description" : "Name of the .obs column with celltype information.",
           "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--input_var_gene_names",
+          "description" : "Name of the .var column with gene names, if the var .index is not to be used.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--input_obs_size_factor",
+          "description" : "Key in adata.obs for size factor information. Instead of using library size as a size factor,\nthe provided size factor column will be used as offset in the mean of the likelihood.\nAssumed to be on linear scale.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Reference",
+      "arguments" : [
+        {
+          "type" : "file",
+          "name" : "--reference",
+          "alternatives" : [
+            "-r"
+          ],
+          "description" : "Path to the directory with reference model or a web link.",
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : true,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3172,6 +3236,30 @@ meta = [
           "description" : "In which .obsm slot to store the resulting integrated embedding.",
           "default" : [
             "X_integrated_scanvi"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--obs_output_predictions",
+          "description" : "In which .obs slot to store the resulting label predictions. Only relevant if a scANVI model was provided.",
+          "default" : [
+            "scanvi_pred"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--obs_output_probabilities",
+          "description" : "In which .obs slot to store the probabilities of the label predictions. Only relevant if a scANVI model was provided.",
+          "default" : [
+            "scanvi_proba"
           ],
           "required" : false,
           "direction" : "input",
@@ -3244,7 +3332,7 @@ meta = [
           "type" : "integer",
           "name" : "--max_epochs",
           "description" : "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest.",
-          "required" : true,
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3306,6 +3394,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/set_var_index.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3316,6 +3408,14 @@ meta = [
       "type" : "python_script",
       "path" : "test.py",
       "is_executable" : true
+    },
+    {
+      "type" : "file",
+      "path" : "/resources_test/annotation_test_data/scanvi_model"
+    },
+    {
+      "type" : "file",
+      "path" : "/resources_test/annotation_test_data/scvi_model"
     },
     {
       "type" : "file",
@@ -3457,7 +3557,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scarches",
     "viash_version" : "0.9.3",
-    "git_commit" : "56ecf03d228287342b1dc61306cfc075240b62ae",
+    "git_commit" : "079526212768051f436c11d8cc469ffb11152e45",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3502,19 +3602,28 @@ tempscript=".viash_script.py"
 cat > "$tempscript" << VIASHMAIN
 import sys
 import mudata
+from anndata import AnnData
 import scvi
+import pandas as pd
+import numpy as np
 
 ### VIASH START
 # The following code has been auto-generated by Viash.
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_obs_batch': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_BATCH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_obs_label': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_obs_size_factor': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_SIZE_FACTOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'dataset_name': $( if [ ! -z ${VIASH_PAR_DATASET_NAME+x} ]; then echo "r'${VIASH_PAR_DATASET_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'model_output': $( if [ ! -z ${VIASH_PAR_MODEL_OUTPUT+x} ]; then echo "r'${VIASH_PAR_MODEL_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_output_predictions': $( if [ ! -z ${VIASH_PAR_OBS_OUTPUT_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OBS_OUTPUT_PREDICTIONS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_output_probabilities': $( if [ ! -z ${VIASH_PAR_OBS_OUTPUT_PROBABILITIES+x} ]; then echo "r'${VIASH_PAR_OBS_OUTPUT_PROBABILITIES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'early_stopping': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'early_stopping_monitor': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_MONITOR+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING_MONITOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'early_stopping_patience': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_PATIENCE+x} ]; then echo "int(r'${VIASH_PAR_EARLY_STOPPING_PATIENCE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -3552,6 +3661,7 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from set_var_index import set_var_index
 from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
@@ -3583,23 +3693,123 @@ def _detect_base_model(model_path):
     return names_to_models_map[_read_model_name_from_registry(model_path)]
 
 
-def extract_file_name(file_path):
-    """Return the name of the file from path to this file
-
-    Examples
-    --------
-    >>> extract_file_name("resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu")
-    pbmc_1k_protein_v3_mms
+def _validate_obs_metadata_params(model_registry, model_name):
     """
-    slash_position = file_path.rfind("/")
-    dot_position = file_path.rfind(".")
+    Validates .obs metadata par variables that are required by scvi-tools models.
+    
+    This function checks that necessary .obs metadata field names (batch, labels, size factors)
+    specified in the model registry have the required corresponding parameters provided in the input.
+    
+    Parameters
+    ----------
+    model_registry : dict
+        Dictionary containing model configuration and requirements.
+    model_name : str
+        Name of the model being validated.
+    """
+    
+    # Maps the keys of the model registry to their corresponding par keys containing the .obs metadata
+    registry_par_mapper = {
+        "batch_key": "input_obs_batch",
+        "labels_key": "input_obs_label",
+        "size_factor_key": "input_obs_size_factor",
+    }
 
-    return file_path[slash_position + 1 : dot_position]
+    for registry_key, key in registry_par_mapper.items():
+        
+        model_registry_key = model_registry.get(registry_key)
+        par_key = par[key]
+        
+        if model_registry_key and not par_key:
+            if key != "input_obs_label" or not model_registry.get(
+                "unlabeled_category"
+            ):
+                raise ValueError(
+                    f"The provided {model_name} model requires \\`--{key}\\` to be provided."
+                )
+
+        elif par_key and not model_registry_key:
+            logger.warning(
+                f"\\`--{key}\\` was provided but is not used in the provided {model_name} model."
+            )
+
+
+def _align_query_with_registry(adata_query, model_path):
+    """
+    Creates a qeury AnnData object with the expected structure and metadata fields that are aligned with the pre-trained reference model.
+    
+    Parameters
+    ----------
+    adata_query : AnnData
+        The query AnnData object to be aligned with the model structure.
+    model_path : str
+        Path to the directory containing the pre-trained model.
+    
+    Returns
+    -------
+    AnnData
+        A new AnnData object with structure and metadata aligned to match the
+        requirements of the pre-trained model.
+    """
+
+    model = _detect_base_model(model_path)
+    model_name = _read_model_name_from_registry(model_path)
+    model_registry = model.load_registry(model_path)["setup_args"]
+    _validate_obs_metadata_params(model_registry, model_name)
+
+    # Sanitize gene names and set as index of the AnnData object
+    # all scArches VAE models expect gene names to be in the .var index
+    adata_query = set_var_index(adata_query, par["input_var_gene_names"])
+
+    # align layer
+    query_layer = (
+        adata_query.X if not par["layer"] else adata_query.layers[par["layer"]]
+    )
+    var_index = adata_query.var_names.tolist()
+    obs_index = adata_query.obs_names.tolist()
+
+    # align observations
+    query_obs = {}
+
+    ## batch_key, size_factor_key
+    simple_mappings = {
+        "batch_key": "input_obs_batch",  # relevant for AUTOZI, LinearSCVI, PEAKVI, SCANVI, SCVI, TOTALVI, MULTIVI, JaxSCVI
+        "size_factor_key": "input_obs_size_factor",  # relevant for SCANVI, SCVI, TOTALVI, MULTIVI
+    }
+
+    for registry_key, par_key in simple_mappings.items():
+        if model_registry.get(registry_key):
+            query_obs[model_registry[registry_key]] = adata_query.obs[
+                par[par_key]
+            ].tolist()
+
+    ## labels-key, relevant for AUTOZI, CondSCVI, LinearSCVI, PEAKVI, SCANVI, SCVI
+    if model_registry.get("labels_key"):
+        if par["input_obs_label"]:
+            query_obs[model_registry["labels_key"]] = adata_query.obs[
+                par["input_obs_label"]
+            ].tolist()
+        else:
+            adata_query.obs[model_registry["labels_key"]] = model_registry[
+                "unlabeled_category"
+            ]
+            query_obs[model_registry["labels_key"]] = adata_query.obs[
+                model_registry["labels_key"]
+            ].tolist()
+
+    obs = pd.DataFrame(query_obs, index=obs_index)
+    var = pd.DataFrame(index=var_index)
+
+    aligned_query_anndata = AnnData(X=query_layer, obs=obs, var=var)
+    if model_registry["layer"]:
+        aligned_query_anndata.layers[model_registry["layer"]] = query_layer
+
+    return aligned_query_anndata
 
 
 def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1):
     """
-    A function to map the query data to the reference atlas
+    A function to map the query data to the reference atlas.
 
     Input:
         * adata_query: An AnnData object with the query
@@ -3611,17 +3821,30 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
     """
     model = _detect_base_model(model_path)
 
+    # Keys of the AnnData query object need to match the exact keys in the reference model registry
+
+    aligned_adata_query = _align_query_with_registry(
+        adata_query, model_path
+    )
+
     try:
-        model.prepare_query_anndata(adata_query, model_path)
+        model.prepare_query_anndata(aligned_adata_query, model_path)
     except ValueError:
         logger.warning(
             "ValueError thrown when preparing adata for mapping. Clearing .varm field to prevent it"
         )
-        adata_query.varm.clear()
-        model.prepare_query_anndata(adata_query, model_path)
+        aligned_adata_query.varm.clear()
+        try:
+            model.prepare_query_anndata(aligned_adata_query, model_path)
+        except ValueError:
+            raise ValueError(
+                f"Could not perform model.prepare_model_anndata, likely because the model was trained with different var names then were found in the index. \\\\n\\\\nmodel var_names: {model.prepare_query_anndata(aligned_adata_query, model_path, return_reference_var_names=True).tolist()} \\\\n\\\\nquery data var_names: {aligned_adata_query.var_names.tolist()}  "
+            )
 
     # Load query data into the model
-    vae_query = model.load_query_data(adata_query, model_path, freeze_dropout=True)
+    vae_query = model.load_query_data(
+        aligned_adata_query, model_path, freeze_dropout=True
+    )
 
     # Train scArches model for query mapping
     vae_query.train(
@@ -3634,7 +3857,7 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
         accelerator="auto",
     )
 
-    return vae_query, adata_query
+    return vae_query
 
 
 def _convert_object_dtypes_to_strings(adata):
@@ -3707,19 +3930,8 @@ def main():
     adata = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
     adata_query = adata.copy()
 
-    if "dataset" not in adata_query.obs.columns:
-        # Write name of the dataset as batch variable
-        if par["dataset_name"] is None:
-            logger.info("Detecting dataset name")
-            par["dataset_name"] = extract_file_name(par["input"])
-            logger.info(f"Detected {par['dataset_name']}")
-
-        adata_query.obs["dataset"] = par["dataset_name"]
-
     model_path = _get_model_path(par["reference"])
-    vae_query, adata_query = map_to_existing_reference(
-        adata_query, model_path=model_path
-    )
+    vae_query = map_to_existing_reference(adata_query, model_path=model_path)
     model_name = _read_model_name_from_registry(model_path)
 
     # Save info about the used model
@@ -3728,6 +3940,13 @@ def main():
     logger.info("Trying to write latent representation")
     output_key = par["obsm_output"].format(model_name=model_name)
     adata.obsm[output_key] = vae_query.get_latent_representation()
+
+    # In addition to integrating the data, scANVI also performs label annotations
+    if model_name == "SCANVI":
+        adata.obs[par["obs_output_predictions"]] = vae_query.predict()
+        adata.obs[par["obs_output_probabilities"]] = np.max(
+            vae_query.predict(soft=True), axis=1
+        )
 
     logger.info("Converting dtypes")
     adata = _convert_object_dtypes_to_strings(adata)

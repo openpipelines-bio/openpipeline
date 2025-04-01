@@ -26,6 +26,10 @@
 
 * `convert/from_h5ad_to_seurat`: Add component to convert from h5ad to Seurat (PR #980).
 
+* `workflows/annotation/scanvi_scarches` workflow: Cell-type annotation based on scANVI integration and annotation with scArches for reference mapping (PR #898).
+
+* `integrate/scarches`: Implemented functionality to align the query dataset with the model registry and extend functionality to predict labels for scANVI models (PR #898).
+
 ## MAJOR CHANGES
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
