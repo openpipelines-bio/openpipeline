@@ -1,8 +1,5 @@
 from mudata import read_h5mu
-import shutil
-import os
 import sys
-from pathlib import Path
 import pytest
 
 ##VIASH START
@@ -32,18 +29,17 @@ def test_run():
         key in list(input_mudata.mod["rna"].obsp) for key in expected_obsp
     ), f"Input mod['rna'] obsp columns should be: {expected_obsp}, found: {input_mudata.mod['rna'].obsp.keys()}."
 
+    assert (
+        input_mudata.mod["rna"].obs["cell_type_pred"].dtype == "category"
+    ), "Cell type predictions should be of dtype category."
+    assert (
+        input_mudata.mod["rna"].obs["cell_type_probability"].dtype == "float64"
+    ), "Cell type probabilities should be of dtype float64."
 
-    assert input_mudata.mod["rna"].obs["cell_type_pred"].dtype == "category", "Cell type predictions should be of dtype category."
-    assert input_mudata.mod["rna"].obs["cell_type_probability"].dtype == "float64", "Cell type probabilities should be of dtype float64."
-    
-    assert input_mudata.mod["rna"].shape[0] == input_mudata.mod["prot"].shape[0], "Number of observations should be equal in all modalities."
+    assert (
+        input_mudata.mod["rna"].shape[0] == input_mudata.mod["prot"].shape[0]
+    ), "Number of observations should be equal in all modalities."
 
 
 if __name__ == "__main__":
-    HERE_DIR = Path(__file__).resolve().parent
-    from importlib import resources
-    shutil.copyfile(
-        resources.files("openpipeline_testutils").joinpath("conftest.py"),
-        os.path.join(HERE_DIR, "conftest.py"),
-    )
-    sys.exit(pytest.main(["--import-mode=importlib"]))
+    sys.exit(pytest.main([__file__, "--import-mode=importlib"]))
