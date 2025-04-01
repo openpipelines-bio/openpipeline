@@ -1,6 +1,6 @@
 name: "filter_with_scrublet"
 namespace: "filter"
-version: "2.0.0"
+version: "v2.1.0-rc.1"
 authors:
 - name: "Dries De Maeyer"
   roles:
@@ -118,6 +118,45 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+  - type: "double"
+    name: "--expected_doublet_rate"
+    description: "The estimated fraction of doublets as from the experimental setup.\n"
+    info: null
+    required: false
+    min: 0.0
+    max: 1.0
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--stdev_doublet_rate"
+    description: "Uncertainty in the expected doublet rate."
+    info: null
+    required: false
+    min: 0.0
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--n_neighbors"
+    description: "Number of neighbors used to construct the KNN classifier of observed\
+      \ transcriptomes\nand simulated doublets.\n"
+    info: null
+    required: false
+    min: 0
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--sim_doublet_ratio"
+    description: "Number of doublets to simulate relative to the number of observed\n\
+      transcriptomes.\n"
+    info: null
+    required: false
+    min: 0.0
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
   - type: "integer"
     name: "--min_counts"
     description: "The number of minimal UMI counts per cell that have to be present\
@@ -186,6 +225,8 @@ resources:
 - type: "file"
   path: "setup_logger.py"
 - type: "file"
+  path: "compress_h5mu.py"
+- type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
 description: "Doublet detection using the Scrublet method (Wolock, Lopez and Klein,\
@@ -204,11 +245,11 @@ test_resources:
   is_executable: true
 - type: "file"
   path: "pbmc_1k_protein_v3"
-- type: "file"
-  path: "openpipelinetestutils"
-  dest: "openpipelinetestutils"
 info: null
 status: "enabled"
+scope:
+  image: "public"
+  target: "public"
 links:
   repository: "https://github.com/openpipelines-bio/openpipeline"
   docker_registry: "ghcr.io"
@@ -288,7 +329,7 @@ engines:
 - type: "docker"
   id: "docker"
   image: "python:3.10-slim"
-  target_tag: "2.0.0"
+  target_tag: "v2.1.0-rc.1"
   namespace_separator: "/"
   setup:
   - type: "apt"
@@ -309,18 +350,16 @@ engines:
       nelse:  exit(1)\")"
     upgrade: true
   test_setup:
-  - type: "docker"
-    copy:
-    - "openpipelinetestutils /opt/openpipelinetestutils"
-  - type: "python"
-    user: false
+  - type: "apt"
     packages:
-    - "/opt/openpipelinetestutils"
-    upgrade: true
+    - "git"
+    interactive: false
   - type: "python"
     user: false
     packages:
     - "viashpy==0.8.0"
+    github:
+    - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -330,10 +369,10 @@ build_info:
   engine: "docker"
   output: "target/executable/filter/filter_with_scrublet"
   executable: "target/executable/filter/filter_with_scrublet/filter_with_scrublet"
-  viash_version: "0.9.0"
-  git_commit: "54142eaa09a544df06bb989f709dc1c9dcabb6fa"
+  viash_version: "0.9.3"
+  git_commit: "87f6576dc12f1c9790a62ee6412242429e527fe5"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.0.0-rc.1-2-g54142eaa09"
+  git_tag: "2.0.0-rc.1-3-g87f6576dc12"
 package_config:
   name: "openpipeline"
   info:
@@ -341,16 +380,15 @@ package_config:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0"
+  viash_version: "0.9.3"
   source: "src"
   target: "target"
   config_mods:
-  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
-    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
-  - ".version := \"2.0.0\""
-  - ".engines[.type == 'docker'].target_tag := '2.0.0'"
+  - ".version := \"v2.1.0-rc.1\""
+  - ".engines[.type == 'docker'].target_tag := 'v2.1.0-rc.1'"
   organization: "openpipelines-bio"
   links:
     repository: "https://github.com/openpipelines-bio/openpipeline"

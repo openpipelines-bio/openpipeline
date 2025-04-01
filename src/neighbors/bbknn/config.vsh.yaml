@@ -74,6 +74,7 @@ arguments:
 resources:
   - type: python_script
     path: script.py
+  - path: /src/utils/compress_h5mu.py
 test_resources:
   - type: python_script
     path: test.py
@@ -99,4 +100,4 @@ runners:
 - type: executable
 - type: nextflow
   directives:
-    label: [lowcpu, highmem]
+    label: [lowcpu, highmem, middisk]

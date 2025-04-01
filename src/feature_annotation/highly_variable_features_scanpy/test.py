@@ -7,6 +7,7 @@ import pytest
 import re
 import pandas as pd
 
+from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
@@ -17,9 +18,6 @@ meta = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-from setup_logger import setup_logger
-
-logger = setup_logger()
 
 
 @pytest.fixture
@@ -70,6 +68,17 @@ def filter_data_path(tmp_path, input_data):
     return temp_h5mu
 
 
+@pytest.fixture()
+def common_vars_data_path(tmp_path, lognormed_test_data):
+    temp_h5mu = tmp_path / "lognormed_var_input.h5mu"
+    rna_in = lognormed_test_data.mod["rna"]
+    rna_in.var["common_vars"] = False
+    rna_in.var["common_vars"].iloc[:10000] = True
+    rna_in.var["common_vars"] = rna_in.var["common_vars"].astype("boolean")
+    lognormed_test_data.write_h5mu(temp_h5mu)
+    return temp_h5mu
+
+
 def test_filter_with_hvg(run_component, lognormed_test_data_path):
     run_component(
         [
@@ -88,6 +97,80 @@ def test_filter_with_hvg(run_component, lognormed_test_data_path):
     assert os.path.exists("output.h5mu")
     data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in data.mod["rna"].var.columns
+    # Put the output data back into its original shape
+    # so that we can compare it to the input
+    data.mod["rna"].var = data.mod["rna"].var.drop(
+        columns=["filter_with_hvg"], errors="raise"
+    )
+    data.var = data.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
+    del data["rna"].varm["hvg"]
+    assert_annotation_objects_equal(lognormed_test_data_path, data)
+
+
+def test_filter_with_hvg_var_input(run_component, common_vars_data_path):
+    run_component(
+        [
+            "--flavor",
+            "seurat",
+            "--input",
+            common_vars_data_path,
+            "--output",
+            "output.h5mu",
+            "--layer",
+            "log_transformed",
+            "--output_compression",
+            "gzip",
+        ]
+    )
+
+    run_component(
+        [
+            "--flavor",
+            "seurat",
+            "--input",
+            common_vars_data_path,
+            "--output",
+            "common_vars.h5mu",
+            "--layer",
+            "log_transformed",
+            "--output_compression",
+            "gzip",
+            "--var_input",
+            "common_vars",
+        ]
+    )
+
+    mdata = mu.read_h5mu("output.h5mu")
+    common_vars = mu.read_h5mu("common_vars.h5mu")
+
+    # Assert detected HVG are different
+    hvg = mdata.mod["rna"][:, mdata.mod["rna"].var["filter_with_hvg"]].var_names
+    common_vars_hvg = common_vars.mod["rna"][
+        :, common_vars.mod["rna"].var["filter_with_hvg"]
+    ].var_names
+
+    assert len(hvg) != len(
+        common_vars_hvg
+    ), "Number of HVG should be different when var_input is defined"
+
+    # Assert original data is unchanged
+    # Put the output data back into its original shape
+    # so that we can compare it to the input
+    mdata.mod["rna"].var = mdata.mod["rna"].var.drop(
+        columns=["filter_with_hvg"], errors="raise"
+    )
+    mdata.var = mdata.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
+    del mdata["rna"].varm["hvg"]
+
+    common_vars.mod["rna"].var = common_vars.mod["rna"].var.drop(
+        columns=["filter_with_hvg"], errors="raise"
+    )
+    common_vars.var = common_vars.var.drop(
+        columns=["rna:filter_with_hvg"], errors="raise"
+    )
+    del common_vars["rna"].varm["hvg"]
+
+    assert_annotation_objects_equal(mdata, common_vars)
 
 
 def test_filter_with_hvg_batch_with_batch(
@@ -130,6 +213,15 @@ def test_filter_with_hvg_batch_with_batch(
         output_data.mod["rna"].var["filter_with_hvg"],
         check_names=False,
     )
+    # Put the output data back into its original shape
+    # so that we can compare it to the input
+    output_data.mod["rna"].var = output_data.mod["rna"].var.drop(
+        columns=["filter_with_hvg"], errors="raise"
+    )
+    output_data.var = output_data.var.drop(
+        columns=["rna:filter_with_hvg"], errors="raise"
+    )
+    assert_annotation_objects_equal(lognormed_batch_test_data_path, output_data)
 
 
 def test_filter_with_hvg_seurat_v3_requires_n_top_features(run_component, input_path):
@@ -166,6 +258,13 @@ def test_filter_with_hvg_seurat_v3(run_component, input_path):
     assert os.path.exists("output.h5mu")
     data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in data.mod["rna"].var.columns
+    # Put the output data back into its original shape
+    # so that we can compare it to the input
+    data.mod["rna"].var = data.mod["rna"].var.drop(
+        columns=["filter_with_hvg"], errors="raise"
+    )
+    data.var = data.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
+    assert_annotation_objects_equal(input_path, data)
 
 
 def test_filter_with_hvg_cell_ranger(run_component, filter_data_path):
@@ -182,6 +281,14 @@ def test_filter_with_hvg_cell_ranger(run_component, filter_data_path):
     assert os.path.exists("output.h5mu")
     data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in data.mod["rna"].var.columns
+    # Put the output data back into its original shape
+    # so that we can compare it to the input
+    data.mod["rna"].var = data.mod["rna"].var.drop(
+        columns=["filter_with_hvg"], errors="raise"
+    )
+    data.var = data.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
+    del data["rna"].varm["hvg"]
+    assert_annotation_objects_equal(filter_data_path, data)
 
 
 def test_filter_with_hvg_cell_ranger_unfiltered_data_change_error_message(

@@ -1,6 +1,6 @@
 name: "process_samples"
 namespace: "workflows/multiomics"
-version: "2.0.0"
+version: "v2.1.0-rc.1"
 authors:
 - name: "Dries Schaumont"
   roles:
@@ -193,6 +193,26 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+  - type: "double"
+    name: "--rna_min_fraction_ribo"
+    description: "Minimum fraction of UMIs that are mitochondrial."
+    info: null
+    example:
+    - 0.0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--rna_max_fraction_ribo"
+    description: "Maximum fraction of UMIs that are mitochondrial."
+    info: null
+    example:
+    - 0.2
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
 - name: "CITE-seq filtering options"
   arguments:
   - type: "integer"
@@ -326,8 +346,21 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-- name: "Mitochondrial Gene Detection"
+- name: "Mitochondrial & Ribosomal Gene Detection"
   arguments:
+  - type: "string"
+    name: "--var_gene_names"
+    description: ".var column name to be used to detect mitochondrial/ribosomal genes\
+      \ instead of .var_names (default if not set).\nGene names matching with the\
+      \ regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will\
+      \ be \nidentified as mitochondrial or ribosomal genes, respectively. \n"
+    info: null
+    example:
+    - "gene_symbol"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
   - type: "string"
     name: "--var_name_mitochondrial_genes"
     description: "In which .var slot to store a boolean array corresponding the mitochondrial\
@@ -348,24 +381,42 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--var_gene_names"
-    description: ".var column name to be used to detect mitochondrial genes instead\
-      \ of .var_names (default if not set).\nGene names matching with the regex value\
-      \ from --mitochondrial_gene_regex will be identified\nas a mitochondrial gene.\n"
-    info: null
-    example:
-    - "gene_symbol"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
     name: "--mitochondrial_gene_regex"
     description: "Regex string that identifies mitochondrial genes from --var_gene_names.\n\
       By default will detect human and mouse mitochondrial genes from a gene symbol.\n"
     info: null
     default:
     - "^[mM][tT]-"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--var_name_ribosomal_genes"
+    description: "In which .var slot to store a boolean array corresponding the ribosomal\
+      \ genes.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_name_ribosomal_fraction"
+    description: "When specified, write the fraction of counts originating from ribosomal\
+      \ genes \n(based on --ribosomal_gene_regex) to an .obs column with the specified\
+      \ name.\nRequires --var_name_ribosomal_genes.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--ribosomal_gene_regex"
+    description: "Regex string that identifies ribosomal genes from --var_gene_names.\n\
+      By default will detect human and mouse ribosomal genes from a gene symbol.\n"
+    info: null
+    default:
+    - "^[Mm]?[Rr][Pp][LlSs]"
     required: false
     direction: "input"
     multiple: false
@@ -539,9 +590,6 @@ test_resources:
   path: "pbmc_1k_protein_v3"
 - type: "file"
   path: "10x_5k_lung_crispr"
-- type: "file"
-  path: "openpipelinetestutils"
-  dest: "openpipelinetestutils"
 info:
   test_dependencies:
   - name: "move_layer"
@@ -549,6 +597,9 @@ info:
   - name: "remove_modality"
     namespace: "filter"
 status: "enabled"
+scope:
+  image: "public"
+  target: "public"
 dependencies:
 - name: "metadata/add_id"
   repository:
@@ -561,9 +612,6 @@ dependencies:
   repository:
     type: "local"
 - name: "dataflow/concatenate_h5mu"
-  repository:
-    type: "local"
-- name: "transfer/publish"
   repository:
     type: "local"
 - name: "workflows/rna/rna_singlesample"
@@ -651,16 +699,15 @@ build_info:
   engine: "native"
   output: "target/nextflow/workflows/multiomics/process_samples"
   executable: "target/nextflow/workflows/multiomics/process_samples/main.nf"
-  viash_version: "0.9.0"
-  git_commit: "54142eaa09a544df06bb989f709dc1c9dcabb6fa"
+  viash_version: "0.9.3"
+  git_commit: "87f6576dc12f1c9790a62ee6412242429e527fe5"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.0.0-rc.1-2-g54142eaa09"
+  git_tag: "2.0.0-rc.1-3-g87f6576dc12"
   dependencies:
   - "target/nextflow/metadata/add_id"
   - "target/nextflow/workflows/multiomics/split_modalities"
   - "target/nextflow/dataflow/merge"
   - "target/nextflow/dataflow/concatenate_h5mu"
-  - "target/nextflow/transfer/publish"
   - "target/nextflow/workflows/rna/rna_singlesample"
   - "target/nextflow/workflows/prot/prot_singlesample"
   - "target/nextflow/workflows/gdo/gdo_singlesample"
@@ -672,15 +719,14 @@ package_config:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0"
+  viash_version: "0.9.3"
   source: "src"
   target: "target"
   config_mods:
-  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
-    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
-  - ".version := \"2.0.0\""
+  - ".version := \"v2.1.0-rc.1\""
   organization: "openpipelines-bio"
   links:
     repository: "https://github.com/openpipelines-bio/openpipeline"

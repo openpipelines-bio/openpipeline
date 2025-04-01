@@ -16,17 +16,15 @@ meta = {"name": "lognorm"}
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
-logger.info("Reading input mudata")
-mdata = mu.read_h5mu(par["input"])
-mdata.var_names_make_unique()
+logger.info("Reading modality %s from input mudata", par["modality"])
+data = mu.read_h5ad(par["input"], mod=par["modality"])
+assert data.var_names.is_unique, "Expected var_names to be unique."
 
-mod = par["modality"]
-logger.info("Performing log transformation on modality %s", mod)
-data = mdata.mod[mod]
-
+logger.info("Performing log transformation")
 # Make our own copy with not a lot of data
 # this avoid excessive memory usage and accidental overwrites
 input_layer = data.layers[par["input_layer"]] if par["input_layer"] else data.X
@@ -47,4 +45,6 @@ else:
 data.uns["log1p"] = data_for_scanpy.uns["log1p"].copy()
 
 logger.info("Writing to file %s", par["output"])
-mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], par["modality"], data, par["output_compression"]
+)

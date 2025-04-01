@@ -2,6 +2,7 @@
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # layer: "foo"
+# var_input: "foo"
 # output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
 var_name_filter: "filter_with_hvg"

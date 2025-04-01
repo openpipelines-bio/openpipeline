@@ -1,7 +1,4 @@
 from mudata import read_h5mu
-from pathlib import Path
-import shutil
-import os
 import sys
 import pytest
 
@@ -28,9 +25,4 @@ def test_run():
 
 
 if __name__ == "__main__":
-    HERE_DIR = Path(__file__).resolve().parent
-    shutil.copyfile(
-        os.path.join(meta["resources_dir"], "openpipelinetestutils", "conftest.py"),
-        os.path.join(HERE_DIR, "conftest.py"),
-    )
-    sys.exit(pytest.main(["--import-mode=importlib"]))
+    sys.exit(pytest.main([__file__, "--import-mode=importlib"]))

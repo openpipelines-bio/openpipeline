@@ -2,12 +2,13 @@ import sys
 import pytest
 import numpy as np
 from mudata import read_h5mu
+from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
-    "executable": "./target/docker/scaling/scale",
-    "resources_dir": "./resources_test/pbmc_1k_protein_v3/",
-    "config": "./src/scaling/config.vsh.yaml",
+    "executable": "target/docker/scale/scale",
+    "resources_dir": "resources_test",
+    "config": "src/transform/scale/config.vsh.yaml",
 }
 ## VIASH END
 
@@ -54,6 +55,10 @@ def test_scaling_input_layer(
     variance[variance == 0] = 1
     assert np.all(np.isclose(mean, 0, rtol=1e-07, atol=1e-07))
     assert np.all(np.isclose(variance, 1, rtol=1e-03, atol=1e-03))
+    # Remove the output layer in order to
+    # test equality for the other data slots
+    del output_data.mod["rna"].X
+    assert_annotation_objects_equal(input_path, output_data)
 
 
 def test_scaling_output_layer(run_component, random_h5mu_path, input_path):
@@ -87,6 +92,10 @@ def test_scaling_output_layer(run_component, random_h5mu_path, input_path):
     variance[variance == 0] = 1
     assert np.all(np.isclose(mean, 0, rtol=1e-07, atol=1e-07))
     assert np.all(np.isclose(variance, 1, rtol=1e-03, atol=1e-03))
+    # Remove the output layer in order to
+    # test equality for the other data slots
+    del output_data.mod["rna"].layers["scaled"]
+    assert_annotation_objects_equal(input_path, output_data)
 
 
 def test_scaling(run_component, random_h5mu_path, input_path):
@@ -107,6 +116,11 @@ def test_scaling(run_component, random_h5mu_path, input_path):
     variance[variance == 0] = 1
     assert np.all(np.isclose(mean, 0, rtol=1e-07, atol=1e-07))
     assert np.all(np.isclose(variance, 1, rtol=1e-03, atol=1e-03))
+    # Restore the output layer in order to
+    # test equality for the other data slots
+    input_x = read_h5mu(input_path)["rna"].X
+    output_data["rna"].X = input_x
+    assert_annotation_objects_equal(input_path, output_data)
 
 
 def test_scaling_noncenter(run_component, random_h5mu_path, input_path):
@@ -123,6 +137,11 @@ def test_scaling_noncenter(run_component, random_h5mu_path, input_path):
     output_x = output_data.mod["rna"].X
     mean = np.mean(output_x, axis=0, dtype=np.float64)
     assert not np.all(np.isclose(mean, 0, rtol=1e-07, atol=1e-07))
+    # Restore the output layer in order to
+    # test equality for the other data slots
+    input_x = read_h5mu(input_path)["rna"].X
+    output_data["rna"].X = input_x
+    assert_annotation_objects_equal(input_path, output_data)
 
 
 def test_scaling_maxvalue(run_component, random_h5mu_path, input_path):
@@ -138,6 +157,11 @@ def test_scaling_maxvalue(run_component, random_h5mu_path, input_path):
     output_data = read_h5mu(output_file)
     output_x = output_data.mod["rna"].X
     assert np.all(output_x <= 0.5)
+    # Restore the output layer in order to
+    # test equality for the other data slots
+    input_x = read_h5mu(input_path)["rna"].X
+    output_data["rna"].X = input_x
+    assert_annotation_objects_equal(input_path, output_data)
 
 
 def test_scaling_modality(run_component, random_h5mu_path, input_path):
@@ -150,12 +174,7 @@ def test_scaling_modality(run_component, random_h5mu_path, input_path):
         ["--input", input_path, "--output", str(output_file), "--modality", "prot"]
     )
     assert output_file.is_file()
-    input_data = read_h5mu(input_path)
     output_data = read_h5mu(output_file)
-    output_rna = output_data.mod["rna"].X
-    assert np.allclose(
-        input_data.mod["rna"].X.todense(), output_rna.todense(), equal_nan=True
-    )
 
     output_prot = output_data.mod["prot"].X
     mean = np.mean(output_prot, axis=0, dtype=np.float64)
@@ -165,6 +184,11 @@ def test_scaling_modality(run_component, random_h5mu_path, input_path):
     variance[variance == 0] = 1
     assert np.all(np.isclose(mean, 0, rtol=1e-07, atol=1e-07))
     assert np.all(np.isclose(variance, 1, rtol=1e-03, atol=1e-03))
+    # Restore the output layer in order to
+    # test equality for the other data slots
+    input_x = read_h5mu(input_path)["prot"].X
+    output_data["prot"].X = input_x
+    assert_annotation_objects_equal(input_path, output_data)
 
 
 if __name__ == "__main__":

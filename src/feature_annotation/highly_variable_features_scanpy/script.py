@@ -38,25 +38,27 @@ temp_h5mu = "lognormed.h5mu"
 rna_in.obs["batch"] = "A"
 column_index = rna_in.obs.columns.get_indexer(["batch"])
 rna_in.obs.iloc[slice(rna_in.n_obs // 2, None), column_index] = "B"
+rna_in.var["common_vars"] = False
+rna_in.var["common_vars"].iloc[:10000] = True
 mu_in.write_h5mu(temp_h5mu)
 par["input"] = temp_h5mu
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from subset_vars import subset_vars
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
+modality_name = par["modality"]
+data = mu.read_h5ad(par["input"], mod=modality_name)
+assert data.var_names.is_unique, "Expected var_names of input modality to be unique."
 
-mdata = mu.read_h5mu(par["input"])
-mdata.var_names_make_unique()
-
-mod = par["modality"]
-logger.info("Processing modality '%s'", mod)
-data = mdata.mod[mod]
+logger.info("Processing modality '%s'", modality_name)
 
 if par["layer"] and par["layer"] not in data.layers:
     raise ValueError(
-        f"Layer '{par['layer']}' not found in layers for modality '{mod}'. "
+        f"Layer '{par['layer']}' not found in layers for modality '{modality_name}'. "
         f"Found layers are: {','.join(data.layers)}"
     )
 
@@ -93,6 +95,12 @@ if par["flavor"] != "seurat_v3":
         input_anndata.uns["log1p"] = {"base": None}
     elif "log1p" in input_anndata.uns and "base" not in input_anndata.uns["log1p"]:
         input_anndata.uns["log1p"]["base"] = None
+
+# Enable calculating the HVG only on a subset of vars
+# e.g for cell type annotation, only calculate HVG on variables that are common between query and reference
+if par["var_input"]:
+    input_anndata.var[par["var_input"]] = data.var[par["var_input"]]
+    input_anndata = subset_vars(input_anndata, par["var_input"])
 
 logger.info("\tUnfiltered data: %s", data)
 
@@ -131,11 +139,19 @@ if par["flavor"] == "seurat_v3" and not par["n_top_features"]:
 # call function
 try:
     out = sc.pp.highly_variable_genes(**hvg_args)
-    if par["obs_batch_key"] is not None:
+    if par["var_input"] is not None:
+        out.index = input_anndata.var.index
+        out = out.reindex(index=data.var.index, method=None)
+        out.highly_variable = out.highly_variable.fillna(False)
+        assert (
+            out.index == data.var.index
+        ).all(), "Expected output index values to be equivalent to the input index"
+    elif par["obs_batch_key"] is not None:
         out = out.reindex(index=data.var.index, method=None)
         assert (
             out.index == data.var.index
         ).all(), "Expected output index values to be equivalent to the input index"
+
 except ValueError as err:
     if str(err) == "cannot specify integer `bins` when input data contains infinity":
         err.args = (
@@ -160,4 +176,6 @@ if par.get("varm_name", None) is not None and "mean_bin" in out:
     data.varm[par["varm_name"]] = out.drop("mean_bin", axis=1)
 
 logger.info("Writing h5mu to file")
-mdata.write_h5mu(par["output"], compression=par["output_compression"])
+write_h5ad_to_h5mu_with_compression(
+    par["output"], par["input"], modality_name, data, par["output_compression"]
+)

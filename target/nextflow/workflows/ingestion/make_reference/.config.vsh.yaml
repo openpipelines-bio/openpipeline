@@ -1,6 +1,6 @@
 name: "make_reference"
 namespace: "workflows/ingestion"
-version: "2.0.0"
+version: "v2.1.0-rc.1"
 authors:
 - name: "Angela Oliveira Pisco"
   roles:
@@ -295,11 +295,11 @@ test_resources:
   entrypoint: "test_wf"
 - type: "file"
   path: "reference_gencodev41_chr1"
-- type: "file"
-  path: "openpipelinetestutils"
-  dest: "openpipelinetestutils"
 info: null
 status: "enabled"
+scope:
+  image: "public"
+  target: "public"
 dependencies:
 - name: "reference/make_reference"
   alias: "make_reference_component"
@@ -390,10 +390,10 @@ build_info:
   engine: "native"
   output: "target/nextflow/workflows/ingestion/make_reference"
   executable: "target/nextflow/workflows/ingestion/make_reference/main.nf"
-  viash_version: "0.9.0"
-  git_commit: "54142eaa09a544df06bb989f709dc1c9dcabb6fa"
+  viash_version: "0.9.3"
+  git_commit: "87f6576dc12f1c9790a62ee6412242429e527fe5"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.0.0-rc.1-2-g54142eaa09"
+  git_tag: "2.0.0-rc.1-3-g87f6576dc12"
   dependencies:
   - "target/nextflow/reference/make_reference"
   - "target/nextflow/reference/build_bdrhap_reference"
@@ -407,15 +407,14 @@ package_config:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0"
+  viash_version: "0.9.3"
   source: "src"
   target: "target"
   config_mods:
-  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
-    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
-  - ".version := \"2.0.0\""
+  - ".version := \"v2.1.0-rc.1\""
   organization: "openpipelines-bio"
   links:
     repository: "https://github.com/openpipelines-bio/openpipeline"

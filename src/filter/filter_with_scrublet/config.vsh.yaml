@@ -73,12 +73,34 @@ arguments:
     default: "scrublet_doublet_score"
     description: Name of the doublet scores column in the obs slot of the returned object.
   
-  # arguments
-  # this argument wasn't being used so I disabled it.
-  # - name: "--expected_doublet_rate"
-  #   type: double
-  #   description: The estimated fraction of doublets as from the experimental setup. Defaults to 0.056 (5.6%%) per the normal expected 10x doublet rate for a 12k loaded cell experiment.
-  #   default: 0.05
+  - name: "--expected_doublet_rate"
+    type: double
+    required: false
+    min: 0
+    max: 1
+    description: |
+      The estimated fraction of doublets as from the experimental setup.
+
+  - name: "--stdev_doublet_rate"
+    type: double
+    min: 0
+    required: false
+    description: Uncertainty in the expected doublet rate.
+
+  - name: "--n_neighbors"
+    type: integer
+    required: false
+    min: 0
+    description: |
+      Number of neighbors used to construct the KNN classifier of observed transcriptomes
+      and simulated doublets.
+  
+  - name: "--sim_doublet_ratio"
+    type: double
+    min: 0
+    description: |
+      Number of doublets to simulate relative to the number of observed
+      transcriptomes.
 
   - name: "--min_counts"
     type: integer
@@ -114,6 +136,7 @@ resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
 test_resources:
   - type: python_script
     path: test.py

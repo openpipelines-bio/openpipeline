@@ -72,6 +72,16 @@
     
 
         ,
+                "var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`. ",
+                "help_text": "Type: `string`. .var column containing gene names. By default, use the index."
+            
+            }
+    
+
+        ,
                 "var_input": {
                 "type":
                 "string",

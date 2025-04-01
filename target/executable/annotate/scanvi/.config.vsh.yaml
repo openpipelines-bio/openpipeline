@@ -1,7 +1,20 @@
 name: "scanvi"
 namespace: "annotate"
-version: "2.0.0"
+version: "v2.1.0-rc.1"
 authors:
+- name: "Dorien Roosen"
+  roles:
+  - "maintainer"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "dorien@data-intuitive.com"
+      github: "dorien-er"
+      linkedin: "dorien-roosen"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Scientist"
 - name: "Jakub Majercik"
   roles:
   - "author"
@@ -25,16 +38,14 @@ authors:
       role: "Associate Director Data Sciences"
 argument_groups:
 - name: "Inputs"
-  description: "Arguments related to the input (aka query) dataset."
   arguments:
   - type: "file"
     name: "--input"
     alternatives:
     - "-i"
-    description: "Input h5mu file."
+    description: "Input h5mu file. Note that this needs to be the exact same dataset\
+      \ as the --scvi_model was trained on."
     info: null
-    example:
-    - "input.h5mu"
     must_exist: true
     create_parent: true
     required: true
@@ -43,7 +54,6 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--modality"
-    description: "Which modality to process."
     info: null
     default:
     - "rna"
@@ -52,245 +62,89 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--var_input_gene_names"
-    description: ".var field containing the gene names, if the .var index is not to\
-      \ be used."
+    name: "--input_layer"
+    description: "Input layer to use. If None, X is used"
     info: null
     required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "integer"
-    name: "--input_reference_gene_overlap"
-    description: "The minimum number of genes present in both the reference and query\
-      \ datasets.\n"
+  - type: "string"
+    name: "--var_input"
+    description: ".var column containing highly variable genes that were used to train\
+      \ the scVi model. By default, do not subset genes."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--var_gene_names"
+    description: ".var column containing gene names. By default, use the index."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_labels"
+    description: ".obs field containing the labels"
+    info: null
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--unlabeled_category"
+    description: "Value in the --obs_labels field that indicates unlabeled observations\n"
     info: null
     default:
-    - 100
+    - "Unknown"
     required: false
-    min: 1
     direction: "input"
     multiple: false
     multiple_sep: ";"
-- name: "Reference model"
-  description: "Arguments related to the reference model."
+- name: "scVI Model"
   arguments:
   - type: "file"
-    name: "--scvi_reference_model"
-    description: "Pretrained SCVI reference model to initialize the SCANVI model with.\
-      \ The model needs to include the AnnData object used to trained the model stored. "
+    name: "--scvi_model"
+    description: "Pretrained SCVI reference model to initialize the SCANVI model with."
     info: null
     example:
     - "scvi_model.pt"
     must_exist: true
     create_parent: true
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "file"
-    name: "--scanvi_reference_model"
-    description: "Pretrained SCANVI reference model."
-    info: null
-    example:
-    - "scvi_model.pt"
-    must_exist: true
-    create_parent: true
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-- name: "SCANVI reference model training arguments"
-  description: "Arguments related to the reference SCANVI model."
-  arguments:
-  - type: "double"
-    name: "--reference_train_size"
-    description: "Size of training set."
-    info: null
-    default:
-    - 0.9
-    required: false
-    min: 0.0
-    max: 1.0
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "integer"
-    name: "--reference_max_epochs"
-    description: "Maximum number of epochs."
-    info: null
-    default:
-    - 400
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "double"
-    name: "--reference_learning_rate"
-    description: "Learning rate."
-    info: null
-    default:
-    - 0.001
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "boolean"
-    name: "--reference_reduce_lr_on_plateau"
-    description: "Reduce learning rate on plateau."
-    info: null
-    default:
-    - true
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "integer"
-    name: "--reference_lr_patience"
-    description: "Patience for learning rate reduction."
-    info: null
-    default:
-    - 25
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "double"
-    name: "--reference_lr_factor"
-    description: "Factor by which to reduce learning rate."
-    info: null
-    default:
-    - 0.5
-    required: false
-    min: 0.0
-    max: 1.0
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "boolean"
-    name: "--reference_early_stopping"
-    description: "Early stopping."
-    info: null
-    default:
-    - true
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "integer"
-    name: "--reference_early_stopping_patience"
-    description: "Patience for early stopping."
-    info: null
-    default:
-    - 50
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-- name: "SCANVI query model training arguments"
-  description: "Arguments related to the query SCANVI model."
-  arguments:
-  - type: "double"
-    name: "--query_train_size"
-    description: "Size of training set."
-    info: null
-    default:
-    - 0.9
-    required: false
-    min: 0.0
-    max: 1.0
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "integer"
-    name: "--query_max_epochs"
-    description: "Maximum number of epochs."
-    info: null
-    default:
-    - 400
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "double"
-    name: "--query_learning_rate"
-    description: "Learning rate."
-    info: null
-    default:
-    - 0.001
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "boolean"
-    name: "--query_reduce_lr_on_plateau"
-    description: "Reduce learning rate on plateau."
-    info: null
-    default:
-    - true
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "integer"
-    name: "--query_lr_patience"
-    description: "Patience for learning rate reduction."
-    info: null
-    default:
-    - 25
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "double"
-    name: "--query_lr_factor"
-    description: "Factor by which to reduce learning rate."
-    info: null
-    default:
-    - 0.5
-    required: false
-    min: 0.0
-    max: 1.0
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "boolean"
-    name: "--query_early_stopping"
-    description: "Early stopping."
-    info: null
-    default:
-    - true
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "integer"
-    name: "--query_early_stopping_patience"
-    description: "Patience for early stopping."
-    info: null
-    default:
-    - 50
-    required: false
+    required: true
     direction: "input"
     multiple: false
     multiple_sep: ";"
 - name: "Outputs"
-  description: "Arguments related to the output."
   arguments:
   - type: "file"
     name: "--output"
+    alternatives:
+    - "-o"
     description: "Output h5mu file."
     info: null
-    example:
-    - "output.h5mu"
     must_exist: true
     create_parent: true
     required: true
     direction: "output"
     multiple: false
     multiple_sep: ";"
+  - type: "file"
+    name: "--output_model"
+    description: "Folder where the state of the trained model will be saved to."
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
   - type: "string"
     name: "--output_compression"
+    description: "The compression format to be used on the output h5mu object."
     info: null
     example:
     - "gzip"
@@ -301,21 +155,19 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "file"
-    name: "--output_model"
-    description: "Folder where the state of the trained model will be saved to."
+  - type: "string"
+    name: "--obsm_output"
+    description: "In which .obsm slot to store the resulting integrated embedding."
     info: null
-    example:
-    - "model_dir"
-    must_exist: true
-    create_parent: true
+    default:
+    - "X_scanvi_integrated"
     required: false
-    direction: "output"
+    direction: "input"
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--output_obs_predictions"
-    description: "In which `.obs` slots to store the predicted information.\n"
+    name: "--obs_output_predictions"
+    description: "In which .obs slot to store the predicted labels."
     info: null
     default:
     - "scanvi_pred"
@@ -324,32 +176,104 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--output_obs_probability"
-    description: "In which `.obs` slots to store the probability of the predictions.\n"
+    name: "--obs_output_probabilities"
+    description: "In which. obs slot to store the probabilities of the predicted labels."
     info: null
     default:
-    - "scanvi_probability"
+    - "scanvi_proba"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "scANVI training arguments"
+  arguments:
+  - type: "boolean"
+    name: "--early_stopping"
+    description: "Whether to perform early stopping with respect to the validation\
+      \ set."
+    info: null
     required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--output_obsm_scanvi_embedding"
-    description: "In which `.obsm` slots to store the scvi embedding.\n"
+    name: "--early_stopping_monitor"
+    description: "Metric logged during validation set epoch."
     info: null
     default:
-    - "scanvi_embedding"
+    - "elbo_validation"
+    required: false
+    choices:
+    - "elbo_validation"
+    - "reconstruction_loss_validation"
+    - "kl_local_validation"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--early_stopping_patience"
+    description: "Number of validation epochs with no improvement after which training\
+      \ will be stopped."
+    info: null
+    default:
+    - 45
+    required: false
+    min: 1
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--early_stopping_min_delta"
+    description: "Minimum change in the monitored quantity to qualify as an improvement,\
+      \ i.e. an absolute change of less than min_delta, will count as no improvement."
+    info: null
+    default:
+    - 0.0
+    required: false
+    min: 0.0
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--max_epochs"
+    description: "Number of passes through the dataset, defaults to (20000 / number\
+      \ of cells) * 400 or 400; whichever is smallest."
+    info: null
     required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "string"
-    name: "--unknown_celltype"
-    description: "Label for unknown cell types.\n"
+  - type: "boolean"
+    name: "--reduce_lr_on_plateau"
+    description: "Whether to monitor validation loss and reduce learning rate when\
+      \ validation set `lr_scheduler_metric` plateaus."
     info: null
     default:
-    - "Unknown"
+    - true
     required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--lr_factor"
+    description: "Factor to reduce learning rate."
+    info: null
+    default:
+    - 0.6
+    required: false
+    min: 0.0
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--lr_patience"
+    description: "Number of epochs with no improvement after which learning rate will\
+      \ be reduced."
+    info: null
+    default:
+    - 30.0
+    required: false
+    min: 0.0
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -358,32 +282,36 @@ resources:
   path: "script.py"
   is_executable: true
 - type: "file"
-  path: "setup_logger.py"
-- type: "file"
-  path: "cross_check_genes.py"
-- type: "file"
   path: "subset_vars.py"
+- type: "file"
+  path: "compress_h5mu.py"
 - type: "file"
   path: "set_var_index.py"
 - type: "file"
+  path: "setup_logger.py"
+- type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
-description: "Semi-supervised model for single-cell transcriptomics data. A scVI extension\
-  \ that can leverage the cell type knowledge for a subset of the cells present in\
-  \ the data sets to infer the states of the rest of the cells."
+description: "scANVI () is a semi-supervised model for single-cell transcriptomics\
+  \ data. scANVI is an scVI extension that can leverage the cell type knowledge for\
+  \ a subset of the cells present in the data sets to infer the states of the rest\
+  \ of the cells.\nThis component will instantiate a scANVI model from a pre-trained\
+  \ scVI model, integrate the data and perform label prediction.\n"
 test_resources:
 - type: "python_script"
   path: "test.py"
   is_executable: true
 - type: "file"
-  path: "annotation_test_data"
+  path: "scvi_model"
 - type: "file"
-  path: "pbmc_1k_protein_v3"
+  path: "TS_Blood_filtered.h5mu"
 - type: "file"
-  path: "openpipelinetestutils"
-  dest: "openpipelinetestutils"
+  path: "pbmc_1k_protein_v3_mms.h5mu"
 info: null
 status: "enabled"
+scope:
+  image: "public"
+  target: "public"
 links:
   repository: "https://github.com/openpipelines-bio/openpipeline"
   docker_registry: "ghcr.io"
@@ -394,6 +322,11 @@ runners:
 - type: "nextflow"
   id: "nextflow"
   directives:
+    label:
+    - "midcpu"
+    - "midmem"
+    - "gpu"
+    - "highdisk"
     tag: "$id"
   auto:
     simplifyInput: true
@@ -457,42 +390,26 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "python:3.12-slim"
-  target_tag: "2.0.0"
+  image: "nvcr.io/nvidia/pytorch:24.12-py3"
+  target_tag: "v2.1.0-rc.1"
   namespace_separator: "/"
   setup:
-  - type: "apt"
-    packages:
-    - "procps"
-    interactive: false
-  - type: "python"
-    user: false
-    packages:
-    - "scanpy~=1.10.4"
-    upgrade: true
-  - type: "python"
-    user: false
-    packages:
-    - "scvi-tools==1.1.5"
-    upgrade: true
   - type: "python"
     user: false
     packages:
     - "anndata~=0.11.1"
     - "mudata~=0.3.1"
+    - "scanpy~=1.10.4"
     script:
     - "exec(\"try:\\n  import awkward\\nexcept ModuleNotFoundError:\\n  exit(0)\\\
       nelse:  exit(1)\")"
     upgrade: true
-  test_setup:
-  - type: "docker"
-    copy:
-    - "openpipelinetestutils /opt/openpipelinetestutils"
   - type: "python"
     user: false
     packages:
-    - "/opt/openpipelinetestutils"
+    - "scvi-tools~=1.1.5"
     upgrade: true
+  test_setup:
   - type: "python"
     user: false
     packages:
@@ -506,10 +423,10 @@ build_info:
   engine: "docker"
   output: "target/executable/annotate/scanvi"
   executable: "target/executable/annotate/scanvi/scanvi"
-  viash_version: "0.9.0"
-  git_commit: "54142eaa09a544df06bb989f709dc1c9dcabb6fa"
+  viash_version: "0.9.3"
+  git_commit: "87f6576dc12f1c9790a62ee6412242429e527fe5"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.0.0-rc.1-2-g54142eaa09"
+  git_tag: "2.0.0-rc.1-3-g87f6576dc12"
 package_config:
   name: "openpipeline"
   info:
@@ -517,16 +434,15 @@ package_config:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0"
+  viash_version: "0.9.3"
   source: "src"
   target: "target"
   config_mods:
-  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
-    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
-  - ".version := \"2.0.0\""
-  - ".engines[.type == 'docker'].target_tag := '2.0.0'"
+  - ".version := \"v2.1.0-rc.1\""
+  - ".engines[.type == 'docker'].target_tag := 'v2.1.0-rc.1'"
   organization: "openpipelines-bio"
   links:
     repository: "https://github.com/openpipelines-bio/openpipeline"

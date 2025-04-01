@@ -1,8 +1,10 @@
 name: "scarches"
 namespace: "integrate"
-version: "2.0.0"
+version: "v2.1.0-rc.1"
 authors:
 - name: "Vladimir Shitov"
+  roles:
+  - "author"
   info:
     role: "Contributor"
     links:
@@ -14,8 +16,22 @@ authors:
     - name: "Helmholtz Munich"
       href: "https://www.helmholtz-munich.de"
       role: "PhD Candidate"
+- name: "Dorien Roosen"
+  roles:
+  - "maintainer"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "dorien@data-intuitive.com"
+      github: "dorien-er"
+      linkedin: "dorien-roosen"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Scientist"
 argument_groups:
 - name: "Inputs"
+  description: "Arguments related to the input (query) dataset"
   arguments:
   - type: "file"
     name: "--input"
@@ -30,6 +46,14 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
+    name: "--layer"
+    description: "Layer to be used for scArches, if .X is not to be used."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
     name: "--modality"
     info: null
     default:
@@ -38,27 +62,52 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "file"
-    name: "--reference"
-    alternatives:
-    - "-r"
-    description: "Path to the directory with reference model or a web link. For HLCA\
-      \ use https://zenodo.org/record/6337966/files/HLCA_reference_model.zip"
+  - type: "string"
+    name: "--input_obs_batch"
+    description: "Name of the .obs column with batch information."
     info: null
-    must_exist: true
-    create_parent: true
-    required: true
+    required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--dataset_name"
-    description: "Name of query dataset to use as a batch name. If not set, name of\
-      \ the input file is used"
+    name: "--input_obs_label"
+    description: "Name of the .obs column with celltype information."
     info: null
-    default:
-    - "test_dataset"
     required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--input_var_gene_names"
+    description: "Name of the .var column with gene names, if the var .index is not\
+      \ to be used."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--input_obs_size_factor"
+    description: "Key in adata.obs for size factor information. Instead of using library\
+      \ size as a size factor,\nthe provided size factor column will be used as offset\
+      \ in the mean of the likelihood.\nAssumed to be on linear scale.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Reference"
+  arguments:
+  - type: "file"
+    name: "--reference"
+    alternatives:
+    - "-r"
+    description: "Path to the directory with reference model or a web link."
+    info: null
+    must_exist: true
+    create_parent: true
+    required: true
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -107,6 +156,28 @@ argument_groups:
     info: null
     default:
     - "X_integrated_scanvi"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_output_predictions"
+    description: "In which .obs slot to store the resulting label predictions. Only\
+      \ relevant if a scANVI model was provided."
+    info: null
+    default:
+    - "scanvi_pred"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_output_probabilities"
+    description: "In which .obs slot to store the probabilities of the label predictions.\
+      \ Only relevant if a scANVI model was provided."
+    info: null
+    default:
+    - "scanvi_proba"
     required: false
     direction: "input"
     multiple: false
@@ -167,7 +238,7 @@ argument_groups:
     description: "Number of passes through the dataset, defaults to (20000 / number\
       \ of cells) * 400 or 400; whichever is smallest."
     info: null
-    required: true
+    required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -212,6 +283,10 @@ resources:
 - type: "file"
   path: "setup_logger.py"
 - type: "file"
+  path: "compress_h5mu.py"
+- type: "file"
+  path: "set_var_index.py"
+- type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
 description: "Performs reference mapping with scArches"
@@ -220,14 +295,18 @@ test_resources:
   path: "test.py"
   is_executable: true
 - type: "file"
+  path: "scanvi_model"
+- type: "file"
+  path: "scvi_model"
+- type: "file"
   path: "pbmc_1k_protein_v3_mms.h5mu"
 - type: "file"
   path: "HLCA_reference_model.zip"
-- type: "file"
-  path: "openpipelinetestutils"
-  dest: "openpipelinetestutils"
 info: null
 status: "enabled"
+scope:
+  image: "public"
+  target: "public"
 links:
   repository: "https://github.com/openpipelines-bio/openpipeline"
   docker_registry: "ghcr.io"
@@ -241,6 +320,7 @@ runners:
     label:
     - "highmem"
     - "highcpu"
+    - "highdisk"
     tag: "$id"
   auto:
     simplifyInput: true
@@ -304,8 +384,8 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "nvcr.io/nvidia/pytorch:23.09-py3"
-  target_tag: "2.0.0"
+  image: "nvcr.io/nvidia/pytorch:24.12-py3"
+  target_tag: "v2.1.0-rc.1"
   namespace_separator: "/"
   setup:
   - type: "python"
@@ -313,9 +393,7 @@ engines:
     packages:
     - "anndata~=0.11.1"
     - "mudata~=0.3.1"
-    - "scvi-tools~=1.0.3"
-    - "jaxlib<0.4.23"
-    - "jax<0.4.23"
+    - "scvi-tools~=1.1.5"
     script:
     - "exec(\"try:\\n  import awkward\\nexcept ModuleNotFoundError:\\n  exit(0)\\\
       nelse:  exit(1)\")"
@@ -334,10 +412,10 @@ build_info:
   engine: "docker"
   output: "target/nextflow/integrate/scarches"
   executable: "target/nextflow/integrate/scarches/main.nf"
-  viash_version: "0.9.0"
-  git_commit: "54142eaa09a544df06bb989f709dc1c9dcabb6fa"
+  viash_version: "0.9.3"
+  git_commit: "87f6576dc12f1c9790a62ee6412242429e527fe5"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.0.0-rc.1-2-g54142eaa09"
+  git_tag: "2.0.0-rc.1-3-g87f6576dc12"
 package_config:
   name: "openpipeline"
   info:
@@ -345,16 +423,15 @@ package_config:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0"
+  viash_version: "0.9.3"
   source: "src"
   target: "target"
   config_mods:
-  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
-    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
-  - ".version := \"2.0.0\""
-  - ".engines[.type == 'docker'].target_tag := '2.0.0'"
+  - ".version := \"v2.1.0-rc.1\""
+  - ".engines[.type == 'docker'].target_tag := 'v2.1.0-rc.1'"
   organization: "openpipelines-bio"
   links:
     repository: "https://github.com/openpipelines-bio/openpipeline"

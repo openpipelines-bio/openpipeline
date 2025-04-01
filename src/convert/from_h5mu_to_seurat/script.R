@@ -46,7 +46,7 @@ determine_matrix_dims <- function(dataset, indexpointers, indices, rowwise) {
       x_dims <- rev(x_dims)
     }
   }
-  return(x_dims)
+  x_dims
 }
 for (modality_path in modalities) {
   dataset <- open_file[[modality_path]][["X"]]

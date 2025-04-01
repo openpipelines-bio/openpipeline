@@ -1,6 +1,6 @@
 name: "bd_rhapsody"
 namespace: "mapping"
-version: "2.0.0"
+version: "v2.1.0-rc.1"
 authors:
 - name: "Robrecht Cannoodt"
   roles:
@@ -999,9 +999,6 @@ test_resources:
   path: "reference_bd_rhapsody.tar.gz"
 - type: "file"
   path: "raw"
-- type: "file"
-  path: "openpipelinetestutils"
-  dest: "openpipelinetestutils"
 info:
   keywords:
   - "rna-seq"
@@ -1017,6 +1014,9 @@ info:
     documentation: "https://bd-rhapsody-bioinfo-docs.genomics.bd.com"
   license: "Unknown"
 status: "enabled"
+scope:
+  image: "public"
+  target: "public"
 links:
   repository: "https://github.com/openpipelines-bio/openpipeline"
   docker_registry: "ghcr.io"
@@ -1030,6 +1030,7 @@ runners:
     label:
     - "highmem"
     - "highcpu"
+    - "middisk"
     tag: "$id"
   auto:
     simplifyInput: true
@@ -1094,7 +1095,7 @@ engines:
 - type: "docker"
   id: "docker"
   image: "bdgenomics/rhapsody:2.2.1"
-  target_tag: "2.0.0"
+  target_tag: "v2.1.0-rc.1"
   namespace_separator: "/"
   setup:
   - type: "apt"
@@ -1118,10 +1119,10 @@ build_info:
   engine: "docker"
   output: "target/nextflow/mapping/bd_rhapsody"
   executable: "target/nextflow/mapping/bd_rhapsody/main.nf"
-  viash_version: "0.9.0"
-  git_commit: "54142eaa09a544df06bb989f709dc1c9dcabb6fa"
+  viash_version: "0.9.3"
+  git_commit: "87f6576dc12f1c9790a62ee6412242429e527fe5"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.0.0-rc.1-2-g54142eaa09"
+  git_tag: "2.0.0-rc.1-3-g87f6576dc12"
 package_config:
   name: "openpipeline"
   info:
@@ -1129,16 +1130,15 @@ package_config:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0"
+  viash_version: "0.9.3"
   source: "src"
   target: "target"
   config_mods:
-  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
-    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
-  - ".version := \"2.0.0\""
-  - ".engines[.type == 'docker'].target_tag := '2.0.0'"
+  - ".version := \"v2.1.0-rc.1\""
+  - ".engines[.type == 'docker'].target_tag := 'v2.1.0-rc.1'"
   organization: "openpipelines-bio"
   links:
     repository: "https://github.com/openpipelines-bio/openpipeline"
