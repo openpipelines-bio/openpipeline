@@ -8,8 +8,6 @@
 
 * `annotate/scanvi`: Remove scarches functionality from this component, as it is already covered in `integrate/scarches` (PR #986). 
 
-* `reference_mapping/scarches`: moved component from `integrate/scarches`, implemented functionality to align the query dataset with the model registry and extend functionality to predict labels for scANVI models (PR #898).
-
 ## NEW FUNCTIONALITY
 
 * `dataflow/concatenate_h5mu`: add `modality` parameter (PR #977).
@@ -29,6 +27,8 @@
 * `convert/from_h5ad_to_seurat`: Add component to convert from h5ad to Seurat (PR #980).
 
 * `workflows/annotation/scanvi_scarches` workflow: Cell-type annotation based on scANVI integration and annotation with scArches for reference mapping (PR #898).
+
+* `integrate/scarches`: Implemented functionality to align the query dataset with the model registry and extend functionality to predict labels for scANVI models (PR #898).
 
 ## MAJOR CHANGES
 

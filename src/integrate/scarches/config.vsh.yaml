@@ -1,5 +1,5 @@
 name: scarches
-namespace: "reference_mapping"
+namespace: "integrate"
 description: "Performs reference mapping with scArches"
 authors:
   - __merge__: /src/authors/vladimir_shitov.yaml

@@ -66,32 +66,53 @@ def _detect_base_model(model_path):
     return names_to_models_map[_read_model_name_from_registry(model_path)]
 
 
-def _validate_par(model_registry, model_name):
+def _validate_obs_metadata_params(model_registry, model_name):
+    """
+    Validates .obs metadata par variables that are required by scvi-tools models.
+    
+    This function checks that necessary .obs metadata field names (batch, labels, size factors)
+    specified in the model registry have the required corresponding parameters provided in the input.
+    
+    Parameters
+    ----------
+    model_registry : dict
+        Dictionary containing model configuration and requirements.
+    model_name : str
+        Name of the model being validated.
+    """
+    
+    # Maps the keys of the model registry to their corresponding par keys containing the .obs metadata
     registry_par_mapper = {
         "batch_key": "input_obs_batch",
         "labels_key": "input_obs_label",
         "size_factor_key": "input_obs_size_factor",
     }
 
-    for registry_key, par_key in registry_par_mapper.items():
-        if model_registry.get(registry_key) and not par[par_key]:
-            if par_key == "input_obs_label" and model_registry.get(
+    for registry_key, key in registry_par_mapper.items():
+        
+        model_registry_key = model_registry.get(registry_key)
+        par_key = par[key]
+        
+        if model_registry_key and not par_key:
+            if key != "input_obs_label" or not model_registry.get(
                 "unlabeled_category"
             ):
-                continue
-            else:
                 raise ValueError(
-                    f"The provided {model_name} model requires `--{par_key}` to be provided."
+                    f"The provided {model_name} model requires `--{key}` to be provided."
                 )
 
-        elif par[par_key] and not model_registry.get(registry_key):
+        elif par_key and not model_registry_key:
             logger.warning(
-                f"`--{par_key}` was provided but is not used in the provided {model_name} model."
+                f"`--{key}` was provided but is not used in the provided {model_name} model."
             )
 
 
-def _align_query_with_registry(adata_query, model_name, model_registry):
-    _validate_par(model_registry, model_name)
+def _align_query_with_registry(adata_query, model_path):
+
+    model = _detect_base_model(model_path)
+    model_name = _read_model_name_from_registry(model_path)
+    model_registry = model.load_registry(model_path)["setup_args"]
+    _validate_obs_metadata_params(model_registry, model_name)
 
     # Sanitize gene names and set as index of the AnnData object
     # all scArches VAE models expect gene names to be in the .var index
@@ -156,13 +177,13 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
         * adata_query: The AnnData object with the query preprocessed for the mapping to the reference
     """
     model = _detect_base_model(model_path)
-    model_name = _read_model_name_from_registry(model_path)
-    model_registry = model.load_registry(model_path)["setup_args"]
+    # model_name = _read_model_name_from_registry(model_path)
+    # model_registry = model.load_registry(model_path)["setup_args"]
 
     # Keys of the AnnData query object need to match the exact keys in the reference model registry
 
     aligned_adata_query = _align_query_with_registry(
-        adata_query, model_name, model_registry
+        adata_query, model_path
     )
 
     try:
@@ -279,6 +300,7 @@ def main():
     output_key = par["obsm_output"].format(model_name=model_name)
     adata.obsm[output_key] = vae_query.get_latent_representation()
 
+    # In addition to integrating the data, scANVI also performs label annotations
     if model_name == "SCANVI":
         adata.obs[par["obs_output_predictions"]] = vae_query.predict()
         adata.obs[par["obs_output_probabilities"]] = np.max(

@@ -186,7 +186,7 @@ argument_groups:
 dependencies:
   - name: integrate/scvi
   - name: annotate/scanvi
-  - name: reference_mapping/scarches
+  - name: integrate/scarches
   - name: workflows/multiomics/neighbors_leiden_umap
 
 resources:
