@@ -3282,9 +3282,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/svm_annotation",
     "viash_version" : "0.9.0",
-    "git_commit" : "5536894f2e688092bab0dae2e45cfa2df77ba613",
+    "git_commit" : "ea42ecd8587387510ee51bac887780246d37effd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2047-g5536894f2e6"
+    "git_tag" : "0.2.0-2048-gea42ecd8587"
   },
   "package_config" : {
     "name" : "openpipeline",
