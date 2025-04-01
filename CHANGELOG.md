@@ -73,6 +73,9 @@
 * `workflows/annotation/scgpt_annotation` and `workflows/integrate/scgpt_leiden`: Parameterization of HVG flavor with default method `cell_ranger` instead of `seurat_v3` (PR #979).
 
 * `dataflow/merge`: Resolved an issue where merging two MuData objects with overlapping `var` or `obs` columns sometimes resulted in an unsupported nullable dtype (e.g. merging `pd.IntegerDtype` and `pd.FloatDtype`). These columns are now correctly cast to their native numpy dtypes before writing(PR #990).
+
+* `workflows/annotation/harmony_knn`: Only process RNA modality in the workflow (PR #988).
+
 # openpipelines 2.0.0
 
 ## BREAKING CHANGES
