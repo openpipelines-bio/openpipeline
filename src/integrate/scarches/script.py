@@ -108,6 +108,22 @@ def _validate_obs_metadata_params(model_registry, model_name):
 
 
 def _align_query_with_registry(adata_query, model_path):
+    """
+    Creates a qeury AnnData object with the expected structure and metadata fields that are aligned with the pre-trained reference model.
+    
+    Parameters
+    ----------
+    adata_query : AnnData
+        The query AnnData object to be aligned with the model structure.
+    model_path : str
+        Path to the directory containing the pre-trained model.
+    
+    Returns
+    -------
+    AnnData
+        A new AnnData object with structure and metadata aligned to match the
+        requirements of the pre-trained model.
+    """
 
     model = _detect_base_model(model_path)
     model_name = _read_model_name_from_registry(model_path)
@@ -166,7 +182,7 @@ def _align_query_with_registry(adata_query, model_path):
 
 def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1):
     """
-    A function to map the query data to the reference atlas
+    A function to map the query data to the reference atlas.
 
     Input:
         * adata_query: An AnnData object with the query
@@ -177,8 +193,6 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
         * adata_query: The AnnData object with the query preprocessed for the mapping to the reference
     """
     model = _detect_base_model(model_path)
-    # model_name = _read_model_name_from_registry(model_path)
-    # model_registry = model.load_registry(model_path)["setup_args"]
 
     # Keys of the AnnData query object need to match the exact keys in the reference model registry
 
