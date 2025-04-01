@@ -42,12 +42,12 @@ workflow run_wf {
             ]
         )
 
-              | split_modalities.run(
-        fromState: {id, state ->
-          def newState = ["input": state.input, "id": id]
-        },
-        toState: ["output": "output", "output_types": "output_types"]
-      )
+        | split_modalities.run(
+            fromState: {id, state ->
+                def newState = ["input": state.input, "id": id]
+            },
+            toState: ["output": "output", "output_types": "output_types"]
+        )
       | flatMap {id, state ->
         def outputDir = state.output
         def types = readCsv(state.output_types.toUriString())
