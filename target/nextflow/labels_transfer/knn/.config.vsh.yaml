@@ -323,6 +323,9 @@ test_resources:
   path: "pbmc_1k_protein_v3"
 info: null
 status: "enabled"
+scope:
+  image: "public"
+  target: "public"
 links:
   repository: "https://github.com/openpipelines-bio/openpipeline"
   docker_registry: "ghcr.io"
@@ -444,8 +447,8 @@ build_info:
   engine: "docker"
   output: "target/nextflow/labels_transfer/knn"
   executable: "target/nextflow/labels_transfer/knn/main.nf"
-  viash_version: "0.9.0"
-  git_commit: "d3bd73cbc0de2fc0bd5dda03f3e35de2b1b59468"
+  viash_version: "0.9.3"
+  git_commit: "f8ef73e2cb4144496bc3e39575aabf959bb7071d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
@@ -454,7 +457,7 @@ package_config:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0"
+  viash_version: "0.9.3"
   source: "src"
   target: "target"
   config_mods:

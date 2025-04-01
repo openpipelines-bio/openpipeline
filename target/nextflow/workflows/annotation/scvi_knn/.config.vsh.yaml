@@ -410,6 +410,9 @@ info:
   - name: "scvi_knn_test"
     namespace: "test_workflows/annotation"
 status: "enabled"
+scope:
+  image: "public"
+  target: "public"
 dependencies:
 - name: "workflows/integration/scvi_leiden"
   alias: "scvi_leiden_workflow"
@@ -512,8 +515,8 @@ build_info:
   engine: "native"
   output: "target/nextflow/workflows/annotation/scvi_knn"
   executable: "target/nextflow/workflows/annotation/scvi_knn/main.nf"
-  viash_version: "0.9.0"
-  git_commit: "d3bd73cbc0de2fc0bd5dda03f3e35de2b1b59468"
+  viash_version: "0.9.3"
+  git_commit: "f8ef73e2cb4144496bc3e39575aabf959bb7071d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/workflows/integration/scvi_leiden"
@@ -532,7 +535,7 @@ package_config:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.0"
+  viash_version: "0.9.3"
   source: "src"
   target: "target"
   config_mods:
