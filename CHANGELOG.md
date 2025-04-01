@@ -30,19 +30,18 @@
 
 * `integrate/scarches`: Implemented functionality to align the query dataset with the model registry and extend functionality to predict labels for scANVI models (PR #898).
 
+* `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
+
+* `from_cellranger_multi_to_h5mu`: add support for `custom` modality (PR #982).
+
+* `integrate/scvi`: Enable passing any .var field for gene name information instead of .var index, using the `--var_gene_names` parameter (PR #986).
+
 ## MAJOR CHANGES
 
 * Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
 
 * The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
 
-# NEW FUNCTIONALITY 
-
-* `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
-
-* `from_cellranger_multi_to_h5mu`: add support for `custom` modality (PR #982).
-
-* `integrate/scvi`: Enable passing any .var field for gene name information instead of .var index, using the `--var_gene_names` parameter (PR #986).
 
 # MINOR CHANGES
 
