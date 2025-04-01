@@ -1,3 +1,9 @@
+# openpipeluines 3.0.0
+
+# MINOR CHANGES
+
+* Removed `workflows` folder (PR #993).
+
 # openpipelines 2.1.0
 
 ## BREAKING CHANGES
