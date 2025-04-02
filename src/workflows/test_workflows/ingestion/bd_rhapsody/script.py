@@ -39,4 +39,4 @@ def test_run():
 
 
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__]))
+    sys.exit(pytest.main([__file__, "--import-mode=importlib"]))
