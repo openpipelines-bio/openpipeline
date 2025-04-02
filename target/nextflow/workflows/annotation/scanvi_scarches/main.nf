@@ -3515,6 +3515,15 @@ meta = [
       "path" : "/resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
     }
   ],
+  "info" : {
+    "name" : "scANVI - scArches workflow",
+    "test_dependencies" : [
+      {
+        "name" : "scanvi_scarches_test",
+        "namespace" : "test_workflows/annotation"
+      }
+    ]
+  },
   "status" : "enabled",
   "scope" : {
     "image" : "public",
@@ -3634,7 +3643,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scanvi_scarches",
     "viash_version" : "0.9.3",
-    "git_commit" : "aae4b4ca157fb81ecebafe049dc6d055d882dcc9",
+    "git_commit" : "f3f1ef19f9b48f2570dd69be7cc697883dfce2eb",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
