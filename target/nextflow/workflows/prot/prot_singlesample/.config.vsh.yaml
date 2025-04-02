@@ -1,6 +1,6 @@
 name: "prot_singlesample"
 namespace: "workflows/prot"
-version: "v2.1.0-rc.1"
+version: "2.0.0-rc.1"
 authors:
 - name: "Dries De Maeyer"
   roles:
@@ -251,9 +251,9 @@ build_info:
   output: "target/nextflow/workflows/prot/prot_singlesample"
   executable: "target/nextflow/workflows/prot/prot_singlesample/main.nf"
   viash_version: "0.9.3"
-  git_commit: "26c00c397a3542af406bc6f366e785b5ac5c03f5"
+  git_commit: "f7844754a7f22de462f24cc98c2c62967922eeee"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.0.0-rc.1-4-g26c00c397a3"
+  git_tag: "2.0.0-rc.1-5-gf7844754a7f"
   dependencies:
   - "target/nextflow/filter/filter_with_counts"
   - "target/nextflow/filter/do_filter"
@@ -271,7 +271,7 @@ package_config:
   - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
-  - ".version := \"v2.1.0-rc.1\""
+  - ".version := \"2.0.0-rc.1\""
   organization: "openpipelines-bio"
   links:
     repository: "https://github.com/openpipelines-bio/openpipeline"
