@@ -175,7 +175,7 @@ build_info:
   output: "target/executable/convert/from_bd_to_10x_molecular_barcode_tags"
   executable: "target/executable/convert/from_bd_to_10x_molecular_barcode_tags/from_bd_to_10x_molecular_barcode_tags"
   viash_version: "0.9.3"
-  git_commit: "960981a82d750ee4d7e0a35d3a0c86ebacca8f5d"
+  git_commit: "aae4b4ca157fb81ecebafe049dc6d055d882dcc9"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
