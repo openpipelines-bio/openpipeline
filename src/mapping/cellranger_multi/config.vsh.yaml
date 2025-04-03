@@ -47,7 +47,7 @@ test_resources:
   - path: /resources_test/reference_gencodev41_chr1
 engines:
   - type: docker
-    image: ghcr.io/data-intuitive/cellranger:8.0
+    image: ghcr.io/data-intuitive/cellranger:9.0
     setup:
       - type: docker
         run: |

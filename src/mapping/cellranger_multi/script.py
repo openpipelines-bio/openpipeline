@@ -105,6 +105,9 @@ GEX_CONFIG_KEYS = {
     "filter_probes": "filter-probes",
     "gex_r1_length": "r1-length",
     "gex_r2_length": "r2-length",
+    "tenx_cloud_token_path": "tenx-cloud-token-path",
+    "cell_annotation_model": "cell-annotation-model",
+    "emptydrops_minimum_umis": "emptydrops_minimum_umis",
 }
 
 FEATURE_CONFIG_KEYS = {
@@ -151,6 +154,8 @@ SAMPLE_PARAMS_CONFIG_KEYS = {
     "probe_barcode_ids": "probe_barcode_ids",
     "sample_expect_cells": "expect_cells",
     "sample_force_cells": "force_cells",
+    "hashtag_ids": "hashtag_ids",
+    "ocm_barcode_ids": "ocm_barcode_ids",
 }
 
 

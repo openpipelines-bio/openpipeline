@@ -22,6 +22,11 @@ argument_groups:
         required: true
         description: The path to Cell Ranger reference tar.gz file. Can also be a directory.
         example: reference.tar.gz
+      - type: file
+        name: "--feature_reference"
+        required: false
+        description: |
+          Feature reference CSV file, declaring Feature Barcode constructs and associated barcodes
   - name: Outputs
     arguments:
       - type: file
@@ -57,6 +62,7 @@ argument_groups:
           - SC3Pv4: Single Cell 3' v4
           - SC3Pv3LT: Single Cell 3' v3 LT
           - SC3Pv3HT: Single Cell 3' v3 HT
+          - SC5P-R2-v3: Single Cell 5', paired-end/R2-only
           - SC5P-PE-v3: Single Cell 5' paired-end v3 (GEM-X)
           - SC5P-PE: Single Cell 5' paired-end
           - SC5P-R2: Single Cell 5' R2-only
@@ -64,7 +70,18 @@ argument_groups:
           - ARC-v1: for analyzing the Gene Expression portion of Multiome data. 
             NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.
           See https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.
-        choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4, SC3Pv3LT, SC3Pv3HT, SC5P-PE-v3, SC5P-PE, SC5P-R2, SC-FB, ARC-v1 ]
+        choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4, SC3Pv3LT, SC3Pv3HT, SC5P-PE-v3, SC5P-PE, SC5P-R2, SC5P-R2-v3, SC-FB, ARC-v1 ]
+
+      - type: file
+        name: "--tenx_cloud_token_path"
+        description: The 10x Cloud Analysis user token used to enable cell annotation.
+
+      - type: string
+        name: "--cell_annotation_model"
+        description: |
+          "Cell annotation model to use. If auto, uses the default model for the species.
+          If not given, does not run cell annotation."
+        choices: ["auto", "human_pca_v1_beta", "mouse_pca_v1_beta"]
 
       - type: boolean
         name: "--secondary_analysis"
@@ -123,7 +140,7 @@ test_resources:
   - path: /src/utils/setup_logger.py
 engines:
   - type: docker
-    image: ghcr.io/data-intuitive/cellranger:8.0
+    image: ghcr.io/data-intuitive/cellranger:9.0
     setup:
       - type: docker
         run: |
