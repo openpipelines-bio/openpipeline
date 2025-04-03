@@ -459,9 +459,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate scanvi"
-LABEL org.opencontainers.image.created="2025-04-03T12:56:01Z"
+LABEL org.opencontainers.image.created="2025-04-03T13:15:27Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="df9d8cad0f4e33e78ba78e26722c475cb53d35c7"
+LABEL org.opencontainers.image.revision="08cc93fbaa54b6b88548bcb5e14143090d685233"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
