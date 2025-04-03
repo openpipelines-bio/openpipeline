@@ -52,6 +52,8 @@ workflow test_wf {
           "input": "output"
         ]
     )
+
+  output_ch
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain 1 event"
