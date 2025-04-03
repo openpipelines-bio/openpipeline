@@ -109,6 +109,13 @@ jobs:
     - name: Run integration test
       timeout-minutes: 120
       run: |
+        # check if stub runs work
+        export NXF_VER=22.04.5
+        nextflow run . \
+          -main-script "${{ matrix.component.main_script }}" \
+          -entry "${{ matrix.component.entry }}" \
+          -stub -profile no_publish
+
         # todo: replace with viash test command
         export NXF_VER=22.04.5
         nextflow run . \
