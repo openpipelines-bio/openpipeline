@@ -3373,7 +3373,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/tfidf",
     "viash_version" : "0.9.3",
-    "git_commit" : "9c374d7063d1c50a831ca3f9bc60ee7271587291",
+    "git_commit" : "361570d2e4d1a2ec8ac6c618e8a414cb98e1e73d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -114,7 +114,8 @@ jobs:
         nextflow run . \
           -main-script "${{ matrix.component.main_script }}" \
           -entry "${{ matrix.component.entry }}" \
-          -stub -profile no_publish
+          -stub -profile no_publish \
+          -c src/workflows/utils/integration_tests.config
 
         # todo: replace with viash test command
         export NXF_VER=22.04.5

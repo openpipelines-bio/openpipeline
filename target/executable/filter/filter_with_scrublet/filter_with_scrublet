@@ -459,9 +459,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_scrublet"
-LABEL org.opencontainers.image.created="2025-04-03T09:24:40Z"
+LABEL org.opencontainers.image.created="2025-04-03T12:00:23Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="9c374d7063d1c50a831ca3f9bc60ee7271587291"
+LABEL org.opencontainers.image.revision="361570d2e4d1a2ec8ac6c618e8a414cb98e1e73d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
