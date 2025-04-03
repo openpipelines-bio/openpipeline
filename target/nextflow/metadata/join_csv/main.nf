@@ -3361,7 +3361,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/join_csv",
     "viash_version" : "0.9.3",
-    "git_commit" : "e7629d3cbd099333f580fa4521bb3d4d51d46521",
+    "git_commit" : "18681a2e252cc6b03b0eab3c9ee24bae7c737544",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -1,6 +1,6 @@
 process splitStub {
   input:
-    tuple val(id), path(unused)
+    tuple val(id), val(unused)
 
   output:
     tuple val(id), path("stub_h5mus"), path("samples.csv")

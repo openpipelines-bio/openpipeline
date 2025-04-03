@@ -3308,7 +3308,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_h5mu",
     "viash_version" : "0.9.3",
-    "git_commit" : "e7629d3cbd099333f580fa4521bb3d4d51d46521",
+    "git_commit" : "18681a2e252cc6b03b0eab3c9ee24bae7c737544",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3350,7 +3350,7 @@ split_h5mu_component = split_h5mu_component_viashalias.run(key: "split_h5mu_comp
 // user-provided Nextflow code
 process splitStub {
   input:
-    tuple val(id), path(unused)
+    tuple val(id), val(unused)
 
   output:
     tuple val(id), path("stub_h5mus"), path("samples.csv")
