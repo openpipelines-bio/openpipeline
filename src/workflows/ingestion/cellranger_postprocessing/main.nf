@@ -61,7 +61,6 @@ workflow run_wf {
     | map {id, state -> 
       [id, ["output": state.input]]
     }
-    | view {"HERE: $it"}
 
   emit:
   output_ch
