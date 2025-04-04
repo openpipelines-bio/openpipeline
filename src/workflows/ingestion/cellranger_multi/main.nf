@@ -3,7 +3,7 @@ process cellrangerMultiStub {
     tuple val(id), val(unused)
 
   output:
-    tuple val(id), path("raw_dir"), path("*.h5mu", arity: 3), path("samples.csv")
+    tuple val(id), path("raw_dir"), path("*.h5mu"), path("samples.csv")
 
   script:
     """
