@@ -3681,7 +3681,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scvi_knn",
     "viash_version" : "0.9.3",
-    "git_commit" : "86d5f3ee3a22af5e6984ae5f07854eb567167374",
+    "git_commit" : "0daf0e50e4bd3714476dbe171af37e62b7d01966",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3913,6 +3913,14 @@ workflow run_wf {
       // map the integrated query and reference datasets back to the state
       | map {id, state ->
           def outputDir = state.output
+          if (workflow.stubRun) {
+            def output_files = outputDir.listFiles()
+            def new_state = state + [
+                "input": output_files[0],
+                "reference": output_files[1],
+            ]
+            return [id, new_state]
+          }
           def files = readCsv(state.output_files.toUriString())
           def query_file = files.findAll{ dat -> dat.name == 'query' }
           assert query_file.size() == 1, 'there should only be one query file'

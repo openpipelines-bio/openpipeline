@@ -3918,7 +3918,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi",
     "viash_version" : "0.9.3",
-    "git_commit" : "86d5f3ee3a22af5e6984ae5f07854eb567167374",
+    "git_commit" : "0daf0e50e4bd3714476dbe171af37e62b7d01966",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3959,12 +3959,35 @@ include { from_cellranger_multi_to_h5mu } from "${meta.resources_dir}/../../../.
 
 // inner workflow
 // user-provided Nextflow code
+process cellrangerMultiStub {
+  input:
+    tuple val(id), val(unused)
+
+  output:
+    tuple val(id), path("raw_dir"), path("*.h5mu", arity: 3), path("samples.csv")
+
+  script:
+    """
+    echo "This process is not meant to be run without -stub being defined."
+    exit 1
+    """
+
+  stub:
+    """
+    mkdir raw_dir
+    touch ${id}_sample_1.h5mu
+    touch ${id}_sample_2.h5mu
+    touch ${id}_sample_3.h5mu
+    echo -e "sample_name,file\n${id}_sample_1,${id}_sample_1.h5mu\n${id}_sample_2,${id}_sample_2.h5mu\n${id}_sample_3,${id}_sample_3.h5mu" > samples.csv
+    """
+}
+
 workflow run_wf {
   take:
   input_ch
 
   main:
-  output_ch = input_ch
+  cellranger_ch = input_ch
     | cellranger_multi_component.run(
       fromState: [
         "input": "input",
@@ -4019,6 +4042,8 @@ workflow run_wf {
         "input": "output"
       ]
     )
+
+  h5mu_ch = cellranger_ch
     | from_cellranger_multi_to_h5mu.run(
       fromState: {id, state ->
         [
@@ -4033,8 +4058,19 @@ workflow run_wf {
           "output_h5mu": output.output,
           "output_raw": state.output_raw
         ]
-      }
+      },
+      filter: {!workflow.stubRun},
     )
+ 
+  h5mu_stub_ch = cellranger_ch
+    | filter{workflow.stubRun}
+    | map {id, state -> [id, state.input]}
+    | cellrangerMultiStub
+    | map {id, raw_dir, output, output_files ->
+      [id, ["output_raw": raw_dir, "output_h5mu": output, "sample_csv": output_files]]
+    }
+
+  output_ch = h5mu_stub_ch.concat(h5mu_ch)
     | flatMap {id, state ->
       def h5mu_list = state.output_h5mu
       def samples = readCsv(state.sample_csv.toUriString())
