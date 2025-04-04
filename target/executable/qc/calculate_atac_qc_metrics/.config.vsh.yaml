@@ -1,6 +1,6 @@
 name: "calculate_atac_qc_metrics"
 namespace: "qc"
-version: "2.0.0-rc.1"
+version: "v2.1.0-rc.2"
 authors:
 - name: "Vladimir Shitov"
   roles:
@@ -245,7 +245,7 @@ engines:
 - type: "docker"
   id: "docker"
   image: "python:3.11-slim"
-  target_tag: "2.0.0-rc.1"
+  target_tag: "v2.1.0-rc.2"
   namespace_separator: "/"
   setup:
   - type: "apt"
@@ -277,9 +277,9 @@ build_info:
   output: "target/executable/qc/calculate_atac_qc_metrics"
   executable: "target/executable/qc/calculate_atac_qc_metrics/calculate_atac_qc_metrics"
   viash_version: "0.9.3"
-  git_commit: "f7844754a7f22de462f24cc98c2c62967922eeee"
+  git_commit: "21c4fcc12e8c611ced93e668e5e0a2f599d54c55"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.0.0-rc.1-5-gf7844754a7f"
+  git_tag: "2.1.0-rc.1"
 package_config:
   name: "openpipeline"
   info:
@@ -294,8 +294,8 @@ package_config:
   - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
-  - ".version := \"2.0.0-rc.1\""
-  - ".engines[.type == 'docker'].target_tag := '2.0.0-rc.1'"
+  - ".version := \"v2.1.0-rc.2\""
+  - ".engines[.type == 'docker'].target_tag := 'v2.1.0-rc.2'"
   organization: "openpipelines-bio"
   links:
     repository: "https://github.com/openpipelines-bio/openpipeline"

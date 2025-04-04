@@ -182,6 +182,14 @@ workflow run_wf {
       // map the integrated query and reference datasets back to the state
       | map {id, state ->
           def outputDir = state.output
+          if (workflow.stubRun) {
+            def output_files = outputDir.listFiles()
+            def new_state = state + [
+                "input": output_files[0],
+                "reference": output_files[1],
+            ]
+            return [id, new_state]
+          }
           def files = readCsv(state.output_files.toUriString())
           def query_file = files.findAll{ dat -> dat.name == 'query' }
           assert query_file.size() == 1, 'there should only be one query file'
