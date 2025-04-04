@@ -65,8 +65,6 @@
 
 # BUG FIXES
 
-* Fix `-stub` runs for workflows that use the `split_h5mu` component by creating a `workflows/multiomics/split_h5mu` workflow as a wrapper around it (PR #1000).
-
 * `cluster/leiden`: Fix an issue where insufficient shared memory (size of `/dev/shm`) causes the processing to hang.  
 
 * `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).

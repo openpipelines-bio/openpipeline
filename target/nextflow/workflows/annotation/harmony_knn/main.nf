@@ -3464,7 +3464,7 @@ meta = [
       }
     },
     {
-      "name" : "workflows/multiomics/split_h5mu",
+      "name" : "dataflow/split_h5mu",
       "repository" : {
         "type" : "local"
       }
@@ -3600,7 +3600,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/harmony_knn",
     "viash_version" : "0.9.3",
-    "git_commit" : "18681a2e252cc6b03b0eab3c9ee24bae7c737544",
+    "git_commit" : "7aaf45b1d62f5652dca778da3a5e8e9c53d9a31a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3638,7 +3638,7 @@ meta["root_dir"] = getRootDir()
 include { harmony_leiden as harmony_leiden_workflow_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/integration/harmony_leiden/main.nf"
 harmony_leiden_workflow = harmony_leiden_workflow_viashalias.run(key: "harmony_leiden_workflow")
 include { knn } from "${meta.resources_dir}/../../../../nextflow/labels_transfer/knn/main.nf"
-include { split_h5mu } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/split_h5mu/main.nf"
+include { split_h5mu } from "${meta.resources_dir}/../../../../nextflow/dataflow/split_h5mu/main.nf"
 include { concatenate_h5mu } from "${meta.resources_dir}/../../../../nextflow/dataflow/concatenate_h5mu/main.nf"
 include { pca } from "${meta.resources_dir}/../../../../nextflow/dimred/pca/main.nf"
 include { align_query_reference } from "${meta.resources_dir}/../../../../nextflow/feature_annotation/align_query_reference/main.nf"
