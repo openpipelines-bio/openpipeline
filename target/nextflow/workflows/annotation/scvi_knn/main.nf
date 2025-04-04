@@ -3551,7 +3551,7 @@ meta = [
       }
     },
     {
-      "name" : "dataflow/split_h5mu",
+      "name" : "workflows/multiomics/split_h5mu",
       "repository" : {
         "type" : "local"
       }
@@ -3681,7 +3681,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scvi_knn",
     "viash_version" : "0.9.3",
-    "git_commit" : "7aaf45b1d62f5652dca778da3a5e8e9c53d9a31a",
+    "git_commit" : "86d5f3ee3a22af5e6984ae5f07854eb567167374",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3719,7 +3719,7 @@ meta["root_dir"] = getRootDir()
 include { scvi_leiden as scvi_leiden_workflow_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/integration/scvi_leiden/main.nf"
 scvi_leiden_workflow = scvi_leiden_workflow_viashalias.run(key: "scvi_leiden_workflow")
 include { knn } from "${meta.resources_dir}/../../../../nextflow/labels_transfer/knn/main.nf"
-include { split_h5mu } from "${meta.resources_dir}/../../../../nextflow/dataflow/split_h5mu/main.nf"
+include { split_h5mu } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/split_h5mu/main.nf"
 include { concatenate_h5mu } from "${meta.resources_dir}/../../../../nextflow/dataflow/concatenate_h5mu/main.nf"
 include { align_query_reference } from "${meta.resources_dir}/../../../../nextflow/feature_annotation/align_query_reference/main.nf"
 include { highly_variable_features_scanpy } from "${meta.resources_dir}/../../../../nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
