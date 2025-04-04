@@ -203,7 +203,7 @@ dependencies:
   - name: workflows/integration/scvi_leiden
     alias: scvi_leiden_workflow
   - name: labels_transfer/knn
-  - name: dataflow/split_h5mu
+  - name: workflows/multiomics/split_h5mu
   - name: dataflow/concatenate_h5mu
   - name: feature_annotation/align_query_reference
   - name: feature_annotation/highly_variable_features_scanpy

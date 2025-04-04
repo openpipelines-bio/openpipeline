@@ -342,7 +342,7 @@ dependencies:
 - name: "labels_transfer/knn"
   repository:
     type: "local"
-- name: "dataflow/split_h5mu"
+- name: "workflows/multiomics/split_h5mu"
   repository:
     type: "local"
 - name: "dataflow/concatenate_h5mu"
@@ -440,12 +440,12 @@ build_info:
   output: "target/nextflow/workflows/annotation/harmony_knn"
   executable: "target/nextflow/workflows/annotation/harmony_knn/main.nf"
   viash_version: "0.9.3"
-  git_commit: "f3f1ef19f9b48f2570dd69be7cc697883dfce2eb"
+  git_commit: "268af6baf205c8ed19a3d72b45679532899f12f5"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/workflows/integration/harmony_leiden"
   - "target/nextflow/labels_transfer/knn"
-  - "target/nextflow/dataflow/split_h5mu"
+  - "target/nextflow/workflows/multiomics/split_h5mu"
   - "target/nextflow/dataflow/concatenate_h5mu"
   - "target/nextflow/dimred/pca"
   - "target/nextflow/feature_annotation/align_query_reference"

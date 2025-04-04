@@ -3551,7 +3551,7 @@ meta = [
       }
     },
     {
-      "name" : "dataflow/split_h5mu",
+      "name" : "workflows/multiomics/split_h5mu",
       "repository" : {
         "type" : "local"
       }
@@ -3681,7 +3681,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scvi_knn",
     "viash_version" : "0.9.3",
-    "git_commit" : "f3f1ef19f9b48f2570dd69be7cc697883dfce2eb",
+    "git_commit" : "268af6baf205c8ed19a3d72b45679532899f12f5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3719,7 +3719,7 @@ meta["root_dir"] = getRootDir()
 include { scvi_leiden as scvi_leiden_workflow_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/integration/scvi_leiden/main.nf"
 scvi_leiden_workflow = scvi_leiden_workflow_viashalias.run(key: "scvi_leiden_workflow")
 include { knn } from "${meta.resources_dir}/../../../../nextflow/labels_transfer/knn/main.nf"
-include { split_h5mu } from "${meta.resources_dir}/../../../../nextflow/dataflow/split_h5mu/main.nf"
+include { split_h5mu } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/split_h5mu/main.nf"
 include { concatenate_h5mu } from "${meta.resources_dir}/../../../../nextflow/dataflow/concatenate_h5mu/main.nf"
 include { align_query_reference } from "${meta.resources_dir}/../../../../nextflow/feature_annotation/align_query_reference/main.nf"
 include { highly_variable_features_scanpy } from "${meta.resources_dir}/../../../../nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
@@ -3913,6 +3913,14 @@ workflow run_wf {
       // map the integrated query and reference datasets back to the state
       | map {id, state ->
           def outputDir = state.output
+          if (workflow.stubRun) {
+            def output_files = outputDir.listFiles()
+            def new_state = state + [
+                "input": output_files[0],
+                "reference": output_files[1],
+            ]
+            return [id, new_state]
+          }
           def files = readCsv(state.output_files.toUriString())
           def query_file = files.findAll{ dat -> dat.name == 'query' }
           assert query_file.size() == 1, 'there should only be one query file'

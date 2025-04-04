@@ -3517,7 +3517,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.9.3",
-    "git_commit" : "f3f1ef19f9b48f2570dd69be7cc697883dfce2eb",
+    "git_commit" : "268af6baf205c8ed19a3d72b45679532899f12f5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3586,6 +3586,9 @@ workflow run_wf {
       // Split must be called on each item of the input list, so split it into multiple events with unique ids
       // Unique ids are required to run a component
       | flatMap {id, state ->
+        if (workflow.stubRun) {
+          return [[id, state]]
+        } 
         def newEvents = state.input.withIndex().collect{input_file, index -> 
           def newState = state + ["input": input_file, "original_id": id]
           ["${id}_${index}", newState]
