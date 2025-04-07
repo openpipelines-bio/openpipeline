@@ -156,6 +156,7 @@ argument_groups:
           not need to specify a chemistry.
 
   - name: Sample parameters
+    # Corresponds to the [samples] section
     arguments:
       - type: string
         name: --sample_ids
@@ -184,6 +185,7 @@ argument_groups:
           Force pipeline to use this number of cells, bypassing cell detection.
 
   - name: "Feature Barcode library specific arguments"
+    # Corresponds to the [feature] section
     arguments:
       - name: "--feature_reference"
         type: file
@@ -217,6 +219,7 @@ argument_groups:
           according to specific experimental needs. Applicable only to datasets that include a
           CRISPR Guide Capture library.
   - name: Gene expression arguments
+    # Corresponds to the [gene-expression] section
     description: Arguments relevant to the analysis of gene expression data.
     arguments:
       - name: "--gex_reference"
@@ -232,6 +235,15 @@ argument_groups:
         name: "--gex_generate_bam"
         default: false
         description: Whether to generate a BAM file.
+      - type: file
+        name: "--tenx_cloud_token_path"
+        description: The 10x Cloud Analysis user token used to enable cell annotation.
+      - type: string
+        name: "--cell_annotation_model"
+        description: |
+          "Cell annotation model to use. If auto, uses the default model for the species.
+          If not given, does not run cell annotation."
+        choices: ["auto", "human_pca_v1_beta", "mouse_pca_v1_beta"]
       - type: integer
         name: --gex_expect_cells
         example: 3000
@@ -271,11 +283,12 @@ argument_groups:
           to only applicable to Fixed RNA Profiling.
             - auto: Chemistry autodetection (default)
             - threeprime: Single Cell 3'
-            - SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4: Single Cell 3' v1, v2, v3, or v4
-            - SC3Pv3HT: Single Cell 3' v3.1 HT
+            - SC3Pv1, SC3Pv2, SC3Pv3(-polyA), SC3Pv4(-polyA): Single Cell 3' v1, v2, v3, or v4
+            - SC3Pv3HT(-polyA): Single Cell 3' v3.1 HT
             - SC-FB: Single Cell Antibody-only 3' v2 or 5'
             - fiveprime: Single Cell 5'
             - SC5P-PE: Paired-end Single Cell 5'
+            - SC5P-PE-v3: Paired-end Single Cell 5' v3
             - SC5P-R2: R2-only Single Cell 5'
             - SC5P-R2-v3: R2-only Single Cell 5' v3
             - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)
@@ -290,11 +303,12 @@ argument_groups:
             - MFRP-Ab-R1: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode on R1)
             - ARC-v1 for analyzing the Gene Expression portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry, an error is triggered.
           See https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.
-        choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4, SC3Pv3LT, SC3Pv3HT, 
-                  SC5P-PE, SC5P-R2, SC-FB, SC5P-R2-v3, SCP5-PE-v3, SC5PHT, MFRP, MFRP-R1, MFRP-RNA, MFRP-Ab,
+        choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv3-polyA, SC3Pv4, SC3Pv4-polyA, SC3Pv3LT, SC3Pv3HT, SC3Pv3HT-polyA, 
+                  SC5P-PE, SC5P-PE-v3, SC5P-R2, SC-FB, SC5P-R2-v3, SCP5-PE-v3, SC5PHT, MFRP, MFRP-R1, MFRP-RNA, MFRP-Ab,
                   SFRP, MFRP-Ab-R2pos50, MFRP-RNA-R1, MFRP-Ab-R1, ARC-v1]
 
   - name: "VDJ related parameters"
+    # The [vdj] section
     arguments:
       - name: "--vdj_reference"
         type: file
@@ -322,16 +336,18 @@ argument_groups:
           Limit the length of the input Read 2 sequence of V(D)J libraries to the first N bases, where N is a user-supplied value. 
           Trimming occurs before sequencing metrics are computed and therefore, limiting the length of Read 2 may affect Q30 scores
 
-  - name: Cell multiplexing parameters
+  - name: 3' Cell multiplexing parameters (CellPlex Multiplexing)
+    # cell_multiplex_oligo_ids adds to [samples] section
+    # min_assignment_confidence, cmo_set barcode_sample_assignment are added to [gene-expression]
     arguments:
       - type: string
         name: --cell_multiplex_oligo_ids
+        alternatives: [--cmo_ids]
         multiple: true
         description: |
           The Cell Multiplexing oligo IDs used to multiplex this sample. If multiple CMOs were used for a sample,
           separate IDs with a pipe (e.g., CMO301|CMO302). Required for Cell Multiplexing libraries.
         
-      # These end up in the [gene-expression] section
       - type: double
         name: --min_assignment_confidence
         description: | 
@@ -352,8 +368,31 @@ argument_groups:
         description: |
           Path to a barcode-sample assignment CSV file that specifies the barcodes that belong to each sample.
   
-  - name: Fixed RNA profiling paramaters
-    # These end up in the [gene-expression] section
+  - name: Hashtag multiplexing parameters
+    # Is added to [samples]
+    arguments:
+      - name: --hashtag_ids
+        type: string
+        multiple: true
+        description: |
+          The hashtag IDs used to multiplex this sample. If multiple antibody hashtags were used for the same sample,
+          you can separate IDs with a pipe.
+
+  - name: On-chip multiplexing parameters
+    # Is added to [samples]
+    arguments:
+      - name: --ocm_barcode_ids
+        type: string
+        multiple: true
+        # Note: choices is not an option here because multiple values can be added using pipe
+        description: |
+          The OCM barcode IDs used to multiplex this sample. Must be one of OB1, OB2, OB3, OB4.
+          If multiple OCM Barcodes were used for the same sample, you can separate IDs
+          with a pipe (e.g., OB1|OB2).
+
+  - name: Flex multiplexing paramaters
+    # probe_set, filter_probes and emptydrops_minimum_umis end up in [gene-expression]
+    # probe_barcode_ids ends up in [samples]
     arguments:
       - type: file
         name: "--probe_set"
@@ -381,6 +420,7 @@ argument_groups:
           Not filtering will result in UMI counts from all non-deprecated probes,
           including those with predicted off-target activity, to be used in the analysis.
           Probes whose ID is prefixed with DEPRECATED are always excluded from the analysis.
+
       - type: string
         name: "--probe_barcode_ids"
         multiple: true
@@ -391,8 +431,16 @@ argument_groups:
           are separated with a "+" (no spaces). Alternatively, you can specify the Probe Barcode ID alone and
           Cell Ranger's barcode pairing auto-detection algorithm will automatically match to the corresponding Antibody
           Multiplexing Barcode.
+      - type: integer
+        name: --emptydrops_minimum_umis
+        min: 1
+        description: |
+          For singleplex Flex experiments, use this option to adjust the UMI cutoff during the second step of cell calling.
+          Cell Ranger will still perform the full cell calling process but will only evaluate barcodes with UMIs above
+          the threshold you specify.
 
   - name: Antigen Capture (BEAM) libary arguments
+    # These end up in the [antigen-specificity] section
     description: |
       These arguments are recommended if an Antigen Capture (BEAM) library is present. 
       It is needed to calculate the antigen specificity score.
