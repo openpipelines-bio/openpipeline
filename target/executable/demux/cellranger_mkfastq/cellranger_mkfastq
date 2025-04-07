@@ -448,16 +448,16 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM ghcr.io/data-intuitive/cellranger:8.0
+FROM ghcr.io/data-intuitive/cellranger:9.0
 ENTRYPOINT []
 RUN DEBIAN_FRONTEND=noninteractive apt update && \
 apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Samuel D'Souza, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component demux cellranger_mkfastq"
-LABEL org.opencontainers.image.created="2025-04-04T10:11:29Z"
+LABEL org.opencontainers.image.created="2025-04-07T10:38:16Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="268af6baf205c8ed19a3d72b45679532899f12f5"
+LABEL org.opencontainers.image.revision="6e79760ebdbec20050a5ff3948a7745c6d307f7e"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

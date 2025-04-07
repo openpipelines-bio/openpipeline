@@ -1,6 +1,7 @@
 # Inputs
 input: # please fill in - example: ["sample_S1_L001_R1_001.fastq.gz", "sample_S1_L001_R2_001.fastq.gz"]
 reference: # please fill in - example: "reference.tar.gz"
+# feature_reference: "path/to/file"
 
 # Outputs
 # output: "$id.$key.output"
@@ -9,6 +10,8 @@ reference: # please fill in - example: "reference.tar.gz"
 # expect_cells: 3000
 # force_cells: 3000
 chemistry: "auto"
+# tenx_cloud_token_path: "path/to/file"
+# cell_annotation_model: "foo"
 secondary_analysis: false
 generate_bam: true
 include_introns: true

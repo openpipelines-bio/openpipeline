@@ -3537,6 +3537,31 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "file",
+          "name" : "--tenx_cloud_token_path",
+          "description" : "The 10x Cloud Analysis user token used to enable cell annotation.",
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--cell_annotation_model",
+          "description" : "\\"Cell annotation model to use. If auto, uses the default model for the species.\nIf not given, does not run cell annotation.\\"\n",
+          "required" : false,
+          "choices" : [
+            "auto",
+            "human_pca_v1_beta",
+            "mouse_pca_v1_beta"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "integer",
           "name" : "--gex_expect_cells",
           "description" : "Expected number of recovered cells, used as input to cell calling algorithm.\n",
@@ -3593,7 +3618,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--gex_chemistry",
-          "description" : "Assay configuration. Either specify a single value which will be applied to all libraries,\nor a number of values that is equal to the number of libararies. The latter is only applicable\nto only applicable to Fixed RNA Profiling.\n  - auto: Chemistry autodetection (default)\n  - threeprime: Single Cell 3'\n  - SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4: Single Cell 3' v1, v2, v3, or v4\n  - SC3Pv3HT: Single Cell 3' v3.1 HT\n  - SC-FB: Single Cell Antibody-only 3' v2 or 5'\n  - fiveprime: Single Cell 5'\n  - SC5P-PE: Paired-end Single Cell 5'\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only Single Cell 5' v3\n  - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n  - SC5PHT : Single Cell 5' v2 HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP: Fixed RNA Profiling (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA Profiling (Multiplex, Probe Barcode on R1)\n  - MFRP-RNA: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode on R1)\n  - ARC-v1 for analyzing the Gene Expression portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
+          "description" : "Assay configuration. Either specify a single value which will be applied to all libraries,\nor a number of values that is equal to the number of libararies. The latter is only applicable\nto only applicable to Fixed RNA Profiling.\n  - auto: Chemistry autodetection (default)\n  - threeprime: Single Cell 3'\n  - SC3Pv1, SC3Pv2, SC3Pv3(-polyA), SC3Pv4(-polyA): Single Cell 3' v1, v2, v3, or v4\n  - SC3Pv3HT(-polyA): Single Cell 3' v3.1 HT\n  - SC-FB: Single Cell Antibody-only 3' v2 or 5'\n  - fiveprime: Single Cell 5'\n  - SC5P-PE: Paired-end Single Cell 5'\n  - SC5P-PE-v3: Paired-end Single Cell 5' v3\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only Single Cell 5' v3\n  - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n  - SC5PHT : Single Cell 5' v2 HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP: Fixed RNA Profiling (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA Profiling (Multiplex, Probe Barcode on R1)\n  - MFRP-RNA: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode on R1)\n  - ARC-v1 for analyzing the Gene Expression portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
           "default" : [
             "auto"
           ],
@@ -3605,10 +3630,14 @@ meta = [
             "SC3Pv1",
             "SC3Pv2",
             "SC3Pv3",
+            "SC3Pv3-polyA",
             "SC3Pv4",
+            "SC3Pv4-polyA",
             "SC3Pv3LT",
             "SC3Pv3HT",
+            "SC3Pv3HT-polyA",
             "SC5P-PE",
+            "SC5P-PE-v3",
             "SC5P-R2",
             "SC-FB",
             "SC5P-R2-v3",
@@ -3682,11 +3711,14 @@ meta = [
       ]
     },
     {
-      "name" : "Cell multiplexing parameters",
+      "name" : "3' Cell multiplexing parameters (CellPlex Multiplexing)",
       "arguments" : [
         {
           "type" : "string",
           "name" : "--cell_multiplex_oligo_ids",
+          "alternatives" : [
+            "--cmo_ids"
+          ],
           "description" : "The Cell Multiplexing oligo IDs used to multiplex this sample. If multiple CMOs were used for a sample,\nseparate IDs with a pipe (e.g., CMO301|CMO302). Required for Cell Multiplexing libraries.\n",
           "required" : false,
           "direction" : "input",
@@ -3727,7 +3759,35 @@ meta = [
       ]
     },
     {
-      "name" : "Fixed RNA profiling paramaters",
+      "name" : "Hashtag multiplexing parameters",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--hashtag_ids",
+          "description" : "The hashtag IDs used to multiplex this sample. If multiple antibody hashtags were used for the same sample,\nyou can separate IDs with a pipe.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "On-chip multiplexing parameters",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--ocm_barcode_ids",
+          "description" : "The OCM barcode IDs used to multiplex this sample. Must be one of OB1, OB2, OB3, OB4.\nIf multiple OCM Barcodes were used for the same sample, you can separate IDs\nwith a pipe (e.g., OB1|OB2).\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Flex multiplexing paramaters",
       "arguments" : [
         {
           "type" : "file",
@@ -3756,6 +3816,16 @@ meta = [
           "required" : false,
           "direction" : "input",
           "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--emptydrops_minimum_umis",
+          "description" : "For singleplex Flex experiments, use this option to adjust the UMI cutoff during the second step of cell calling.\nCell Ranger will still perform the full cell calling process but will only evaluate barcodes with UMIs above\nthe threshold you specify.\n",
+          "required" : false,
+          "min" : 1,
+          "direction" : "input",
+          "multiple" : false,
           "multiple_sep" : ";"
         }
       ]
@@ -3980,7 +4050,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ghcr.io/data-intuitive/cellranger:8.0",
+      "image" : "ghcr.io/data-intuitive/cellranger:9.0",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -4028,7 +4098,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.9.3",
-    "git_commit" : "268af6baf205c8ed19a3d72b45679532899f12f5",
+    "git_commit" : "6e79760ebdbec20050a5ff3948a7745c6d307f7e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -4114,6 +4184,8 @@ par = {
   'gex_reference': $( if [ ! -z ${VIASH_PAR_GEX_REFERENCE+x} ]; then echo "r'${VIASH_PAR_GEX_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'gex_secondary_analysis': $( if [ ! -z ${VIASH_PAR_GEX_SECONDARY_ANALYSIS+x} ]; then echo "r'${VIASH_PAR_GEX_SECONDARY_ANALYSIS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'gex_generate_bam': $( if [ ! -z ${VIASH_PAR_GEX_GENERATE_BAM+x} ]; then echo "r'${VIASH_PAR_GEX_GENERATE_BAM//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'tenx_cloud_token_path': $( if [ ! -z ${VIASH_PAR_TENX_CLOUD_TOKEN_PATH+x} ]; then echo "r'${VIASH_PAR_TENX_CLOUD_TOKEN_PATH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'cell_annotation_model': $( if [ ! -z ${VIASH_PAR_CELL_ANNOTATION_MODEL+x} ]; then echo "r'${VIASH_PAR_CELL_ANNOTATION_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'gex_expect_cells': $( if [ ! -z ${VIASH_PAR_GEX_EXPECT_CELLS+x} ]; then echo "int(r'${VIASH_PAR_GEX_EXPECT_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'gex_force_cells': $( if [ ! -z ${VIASH_PAR_GEX_FORCE_CELLS+x} ]; then echo "int(r'${VIASH_PAR_GEX_FORCE_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'gex_include_introns': $( if [ ! -z ${VIASH_PAR_GEX_INCLUDE_INTRONS+x} ]; then echo "r'${VIASH_PAR_GEX_INCLUDE_INTRONS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
@@ -4128,9 +4200,12 @@ par = {
   'min_assignment_confidence': $( if [ ! -z ${VIASH_PAR_MIN_ASSIGNMENT_CONFIDENCE+x} ]; then echo "float(r'${VIASH_PAR_MIN_ASSIGNMENT_CONFIDENCE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'cmo_set': $( if [ ! -z ${VIASH_PAR_CMO_SET+x} ]; then echo "r'${VIASH_PAR_CMO_SET//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'barcode_sample_assignment': $( if [ ! -z ${VIASH_PAR_BARCODE_SAMPLE_ASSIGNMENT+x} ]; then echo "r'${VIASH_PAR_BARCODE_SAMPLE_ASSIGNMENT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'hashtag_ids': $( if [ ! -z ${VIASH_PAR_HASHTAG_IDS+x} ]; then echo "r'${VIASH_PAR_HASHTAG_IDS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'ocm_barcode_ids': $( if [ ! -z ${VIASH_PAR_OCM_BARCODE_IDS+x} ]; then echo "r'${VIASH_PAR_OCM_BARCODE_IDS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'probe_set': $( if [ ! -z ${VIASH_PAR_PROBE_SET+x} ]; then echo "r'${VIASH_PAR_PROBE_SET//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'filter_probes': $( if [ ! -z ${VIASH_PAR_FILTER_PROBES+x} ]; then echo "r'${VIASH_PAR_FILTER_PROBES//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'probe_barcode_ids': $( if [ ! -z ${VIASH_PAR_PROBE_BARCODE_IDS+x} ]; then echo "r'${VIASH_PAR_PROBE_BARCODE_IDS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'emptydrops_minimum_umis': $( if [ ! -z ${VIASH_PAR_EMPTYDROPS_MINIMUM_UMIS+x} ]; then echo "int(r'${VIASH_PAR_EMPTYDROPS_MINIMUM_UMIS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'control_id': $( if [ ! -z ${VIASH_PAR_CONTROL_ID+x} ]; then echo "r'${VIASH_PAR_CONTROL_ID//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'mhc_allele': $( if [ ! -z ${VIASH_PAR_MHC_ALLELE+x} ]; then echo "r'${VIASH_PAR_MHC_ALLELE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'check_library_compatibility': $( if [ ! -z ${VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY+x} ]; then echo "r'${VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
@@ -4203,6 +4278,9 @@ GEX_CONFIG_KEYS = {
     "filter_probes": "filter-probes",
     "gex_r1_length": "r1-length",
     "gex_r2_length": "r2-length",
+    "tenx_cloud_token_path": "tenx-cloud-token-path",
+    "cell_annotation_model": "cell-annotation-model",
+    "emptydrops_minimum_umis": "emptydrops_minimum_umis",
 }
 
 FEATURE_CONFIG_KEYS = {
@@ -4249,6 +4327,8 @@ SAMPLE_PARAMS_CONFIG_KEYS = {
     "probe_barcode_ids": "probe_barcode_ids",
     "sample_expect_cells": "expect_cells",
     "sample_force_cells": "force_cells",
+    "hashtag_ids": "hashtag_ids",
+    "ocm_barcode_ids": "ocm_barcode_ids",
 }
 
 

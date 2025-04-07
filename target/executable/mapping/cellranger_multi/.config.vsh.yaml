@@ -423,6 +423,29 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+  - type: "file"
+    name: "--tenx_cloud_token_path"
+    description: "The 10x Cloud Analysis user token used to enable cell annotation."
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--cell_annotation_model"
+    description: "\"Cell annotation model to use. If auto, uses the default model\
+      \ for the species.\nIf not given, does not run cell annotation.\"\n"
+    info: null
+    required: false
+    choices:
+    - "auto"
+    - "human_pca_v1_beta"
+    - "mouse_pca_v1_beta"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
   - type: "integer"
     name: "--gex_expect_cells"
     description: "Expected number of recovered cells, used as input to cell calling\
@@ -482,10 +505,11 @@ argument_groups:
       \ applied to all libraries,\nor a number of values that is equal to the number\
       \ of libararies. The latter is only applicable\nto only applicable to Fixed\
       \ RNA Profiling.\n  - auto: Chemistry autodetection (default)\n  - threeprime:\
-      \ Single Cell 3'\n  - SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4: Single Cell 3' v1, v2,\
-      \ v3, or v4\n  - SC3Pv3HT: Single Cell 3' v3.1 HT\n  - SC-FB: Single Cell Antibody-only\
-      \ 3' v2 or 5'\n  - fiveprime: Single Cell 5'\n  - SC5P-PE: Paired-end Single\
-      \ Cell 5'\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only Single\
+      \ Single Cell 3'\n  - SC3Pv1, SC3Pv2, SC3Pv3(-polyA), SC3Pv4(-polyA): Single\
+      \ Cell 3' v1, v2, v3, or v4\n  - SC3Pv3HT(-polyA): Single Cell 3' v3.1 HT\n\
+      \  - SC-FB: Single Cell Antibody-only 3' v2 or 5'\n  - fiveprime: Single Cell\
+      \ 5'\n  - SC5P-PE: Paired-end Single Cell 5'\n  - SC5P-PE-v3: Paired-end Single\
+      \ Cell 5' v3\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only Single\
       \ Cell 5' v3\n  - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n  - SC5PHT\
       \ : Single Cell 5' v2 HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP:\
       \ Fixed RNA Profiling (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA\
@@ -509,10 +533,14 @@ argument_groups:
     - "SC3Pv1"
     - "SC3Pv2"
     - "SC3Pv3"
+    - "SC3Pv3-polyA"
     - "SC3Pv4"
+    - "SC3Pv4-polyA"
     - "SC3Pv3LT"
     - "SC3Pv3HT"
+    - "SC3Pv3HT-polyA"
     - "SC5P-PE"
+    - "SC5P-PE-v3"
     - "SC5P-R2"
     - "SC-FB"
     - "SC5P-R2-v3"
@@ -579,10 +607,12 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-- name: "Cell multiplexing parameters"
+- name: "3' Cell multiplexing parameters (CellPlex Multiplexing)"
   arguments:
   - type: "string"
     name: "--cell_multiplex_oligo_ids"
+    alternatives:
+    - "--cmo_ids"
     description: "The Cell Multiplexing oligo IDs used to multiplex this sample. If\
       \ multiple CMOs were used for a sample,\nseparate IDs with a pipe (e.g., CMO301|CMO302).\
       \ Required for Cell Multiplexing libraries.\n"
@@ -626,7 +656,30 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-- name: "Fixed RNA profiling paramaters"
+- name: "Hashtag multiplexing parameters"
+  arguments:
+  - type: "string"
+    name: "--hashtag_ids"
+    description: "The hashtag IDs used to multiplex this sample. If multiple antibody\
+      \ hashtags were used for the same sample,\nyou can separate IDs with a pipe.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "On-chip multiplexing parameters"
+  arguments:
+  - type: "string"
+    name: "--ocm_barcode_ids"
+    description: "The OCM barcode IDs used to multiplex this sample. Must be one of\
+      \ OB1, OB2, OB3, OB4.\nIf multiple OCM Barcodes were used for the same sample,\
+      \ you can separate IDs\nwith a pipe (e.g., OB1|OB2).\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "Flex multiplexing paramaters"
   arguments:
   - type: "file"
     name: "--probe_set"
@@ -683,6 +736,18 @@ argument_groups:
     required: false
     direction: "input"
     multiple: true
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--emptydrops_minimum_umis"
+    description: "For singleplex Flex experiments, use this option to adjust the UMI\
+      \ cutoff during the second step of cell calling.\nCell Ranger will still perform\
+      \ the full cell calling process but will only evaluate barcodes with UMIs above\n\
+      the threshold you specify.\n"
+    info: null
+    required: false
+    min: 1
+    direction: "input"
+    multiple: false
     multiple_sep: ";"
 - name: "Antigen Capture (BEAM) libary arguments"
   description: "These arguments are recommended if an Antigen Capture (BEAM) library\
@@ -861,7 +926,7 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "ghcr.io/data-intuitive/cellranger:8.0"
+  image: "ghcr.io/data-intuitive/cellranger:9.0"
   target_tag: "main_build"
   namespace_separator: "/"
   setup:
@@ -896,7 +961,7 @@ build_info:
   output: "target/executable/mapping/cellranger_multi"
   executable: "target/executable/mapping/cellranger_multi/cellranger_multi"
   viash_version: "0.9.3"
-  git_commit: "268af6baf205c8ed19a3d72b45679532899f12f5"
+  git_commit: "6e79760ebdbec20050a5ff3948a7745c6d307f7e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
