@@ -1,3 +1,9 @@
+# openpipelines dev
+
+## BREAKING CHANGES / MAJOR CHANGES?
+
+* `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992).
+
 # openpipelines 2.1.0
 
 ## BREAKING CHANGES
