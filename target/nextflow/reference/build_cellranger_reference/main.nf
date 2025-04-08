@@ -3274,7 +3274,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ghcr.io/data-intuitive/cellranger:8.0",
+      "image" : "ghcr.io/data-intuitive/cellranger:9.0",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3309,7 +3309,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_reference",
     "viash_version" : "0.9.3",
-    "git_commit" : "ebde5cd2476eb352cc49cead6aa8d81348e26cc2",
+    "git_commit" : "b3256dac2f26b79805b438a89a5499d3cd8126fa",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

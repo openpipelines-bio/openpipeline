@@ -35,6 +35,8 @@
 gex_reference: # please fill in - example: "reference_genome.tar.gz"
 gex_secondary_analysis: false
 gex_generate_bam: false
+# tenx_cloud_token_path: "path/to/file"
+# cell_annotation_model: "foo"
 # gex_expect_cells: 3000
 # gex_force_cells: 3000
 gex_include_introns: true
@@ -48,16 +50,23 @@ gex_chemistry: "auto"
 # vdj_r1_length: 123
 # vdj_r2_length: 123
 
-# Cell multiplexing parameters
+# 3' Cell multiplexing parameters (CellPlex Multiplexing)
 # cell_multiplex_oligo_ids: ["foo"]
 # min_assignment_confidence: 123.0
 # cmo_set: "path/to/file"
 # barcode_sample_assignment: "path/to/file"
 
-# Fixed RNA profiling paramaters
+# Hashtag multiplexing parameters
+# hashtag_ids: ["foo"]
+
+# On-chip multiplexing parameters
+# ocm_barcode_ids: ["foo"]
+
+# Flex multiplexing paramaters
 # probe_set: "path/to/file"
 # filter_probes: true
 # probe_barcode_ids: ["foo"]
+# emptydrops_minimum_umis: 123
 
 # Antigen Capture (BEAM) libary arguments
 # control_id: ["foo"]

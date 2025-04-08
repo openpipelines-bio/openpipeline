@@ -3444,6 +3444,31 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "file",
+          "name" : "--tenx_cloud_token_path",
+          "description" : "The 10x Cloud Analysis user token used to enable cell annotation.",
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--cell_annotation_model",
+          "description" : "\\"Cell annotation model to use. If auto, uses the default model for the species.\nIf not given, does not run cell annotation.\\"\n",
+          "required" : false,
+          "choices" : [
+            "auto",
+            "human_pca_v1_beta",
+            "mouse_pca_v1_beta"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "integer",
           "name" : "--gex_expect_cells",
           "description" : "Expected number of recovered cells, used as input to cell calling algorithm.\n",
@@ -3500,7 +3525,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--gex_chemistry",
-          "description" : "Assay configuration. Either specify a single value which will be applied to all libraries,\nor a number of values that is equal to the number of libararies. The latter is only applicable\nto only applicable to Fixed RNA Profiling.\n  - auto: Chemistry autodetection (default)\n  - threeprime: Single Cell 3'\n  - SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4: Single Cell 3' v1, v2, v3, or v4\n  - SC3Pv3HT: Single Cell 3' v3.1 HT\n  - SC-FB: Single Cell Antibody-only 3' v2 or 5'\n  - fiveprime: Single Cell 5'\n  - SC5P-PE: Paired-end Single Cell 5'\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only Single Cell 5' v3\n  - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n  - SC5PHT : Single Cell 5' v2 HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP: Fixed RNA Profiling (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA Profiling (Multiplex, Probe Barcode on R1)\n  - MFRP-RNA: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode on R1)\n  - ARC-v1 for analyzing the Gene Expression portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
+          "description" : "Assay configuration. Either specify a single value which will be applied to all libraries,\nor a number of values that is equal to the number of libararies. The latter is only applicable\nto only applicable to Fixed RNA Profiling.\n  - auto: Chemistry autodetection (default)\n  - threeprime: Single Cell 3'\n  - SC3Pv1, SC3Pv2, SC3Pv3(-polyA), SC3Pv4(-polyA): Single Cell 3' v1, v2, v3, or v4\n  - SC3Pv3HT(-polyA): Single Cell 3' v3.1 HT\n  - SC-FB: Single Cell Antibody-only 3' v2 or 5'\n  - fiveprime: Single Cell 5'\n  - SC5P-PE: Paired-end Single Cell 5'\n  - SC5P-PE-v3: Paired-end Single Cell 5' v3\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only Single Cell 5' v3\n  - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n  - SC5PHT : Single Cell 5' v2 HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP: Fixed RNA Profiling (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA Profiling (Multiplex, Probe Barcode on R1)\n  - MFRP-RNA: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode on R1)\n  - ARC-v1 for analyzing the Gene Expression portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
           "default" : [
             "auto"
           ],
@@ -3512,10 +3537,14 @@ meta = [
             "SC3Pv1",
             "SC3Pv2",
             "SC3Pv3",
+            "SC3Pv3-polyA",
             "SC3Pv4",
+            "SC3Pv4-polyA",
             "SC3Pv3LT",
             "SC3Pv3HT",
+            "SC3Pv3HT-polyA",
             "SC5P-PE",
+            "SC5P-PE-v3",
             "SC5P-R2",
             "SC-FB",
             "SC5P-R2-v3",
@@ -3589,11 +3618,14 @@ meta = [
       ]
     },
     {
-      "name" : "Cell multiplexing parameters",
+      "name" : "3' Cell multiplexing parameters (CellPlex Multiplexing)",
       "arguments" : [
         {
           "type" : "string",
           "name" : "--cell_multiplex_oligo_ids",
+          "alternatives" : [
+            "--cmo_ids"
+          ],
           "description" : "The Cell Multiplexing oligo IDs used to multiplex this sample. If multiple CMOs were used for a sample,\nseparate IDs with a pipe (e.g., CMO301|CMO302). Required for Cell Multiplexing libraries.\n",
           "required" : false,
           "direction" : "input",
@@ -3634,7 +3666,35 @@ meta = [
       ]
     },
     {
-      "name" : "Fixed RNA profiling paramaters",
+      "name" : "Hashtag multiplexing parameters",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--hashtag_ids",
+          "description" : "The hashtag IDs used to multiplex this sample. If multiple antibody hashtags were used for the same sample,\nyou can separate IDs with a pipe.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "On-chip multiplexing parameters",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--ocm_barcode_ids",
+          "description" : "The OCM barcode IDs used to multiplex this sample. Must be one of OB1, OB2, OB3, OB4.\nIf multiple OCM Barcodes were used for the same sample, you can separate IDs\nwith a pipe (e.g., OB1|OB2).\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Flex multiplexing paramaters",
       "arguments" : [
         {
           "type" : "file",
@@ -3663,6 +3723,16 @@ meta = [
           "required" : false,
           "direction" : "input",
           "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--emptydrops_minimum_umis",
+          "description" : "For singleplex Flex experiments, use this option to adjust the UMI cutoff during the second step of cell calling.\nCell Ranger will still perform the full cell calling process but will only evaluate barcodes with UMIs above\nthe threshold you specify.\n",
+          "required" : false,
+          "min" : 1,
+          "direction" : "input",
+          "multiple" : false,
           "multiple_sep" : ";"
         }
       ]
@@ -3918,7 +3988,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi",
     "viash_version" : "0.9.3",
-    "git_commit" : "ebde5cd2476eb352cc49cead6aa8d81348e26cc2",
+    "git_commit" : "b3256dac2f26b79805b438a89a5499d3cd8126fa",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
