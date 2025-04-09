@@ -36,10 +36,9 @@ jobs:
           TAG_OR_BRANCH_NAME=${INPUT_TAG:-"${{ github.ref_name }}"}
           echo "tag=$TAG_OR_BRANCH_NAME" >> $GITHUB_OUTPUT
 
-      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v6
+      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@fix-incorrect-argument
         with:
           project_directory: openpipelines
-          src: src
           query: '^(?!workflows|test_workflows)'
           output_dir: ../website/components/modules/
           dest_path: "{namespace}/{name}.qmd"
@@ -49,10 +48,9 @@ jobs:
           clean: true
 
 
-      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v6
+      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@fix-incorrect-argument
         with:
           project_directory: openpipelines
-          src: src
           query: '^workflows'
           output_dir: ../website/components/
           dest_path: "{namespace}/{name}.qmd"
