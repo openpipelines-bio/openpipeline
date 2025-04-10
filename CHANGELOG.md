@@ -78,7 +78,7 @@
 
 * `workflows/annotation/harmony_knn`: Only process RNA modality in the workflow (PR #988).
 
-* Documentation CI: Fix building the documentation using CI (PR #1002).
+* Documentation CI: Fix building the documentation using CI (PR #1003).
 
 # openpipelines 2.0.0
 
