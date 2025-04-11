@@ -3475,7 +3475,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc",
     "viash_version" : "0.9.3",
-    "git_commit" : "a12ec391d9ed24279c8749edcc4637a6f9b1f7af",
+    "git_commit" : "a6431ea631bd639f4a761274f9a732a4837d6a0e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
