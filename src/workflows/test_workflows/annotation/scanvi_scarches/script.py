@@ -14,10 +14,7 @@ def test_run():
     input_mudata = read_h5mu(par["input"])
     expected_obsm = ["X_integrated_scanvi", "X_scanvi_umap"]
     expected_obs = ["scanvi_pred", "scanvi_probabilities"]
-    expected_obsp = [
-        "scanvi_integration_distances",
-        "scanvi_integration_connectivities",
-    ]
+    expected_obsp = ["scanvi_integration_distances", "scanvi_integration_connectivities"]
     expected_uns = ["scanvi_integration_neighbors"]
 
     assert "rna" in list(input_mudata.mod.keys()), "Input should contain rna modality."
@@ -35,10 +32,8 @@ def test_run():
     ), f"Input mod['rna'] uns columns should be: {expected_uns}, found: {input_mudata.mod['rna'].uns.keys()}."
 
     assert input_mudata.mod["rna"].obs["scanvi_pred"].dtype == "category"
-    assert pandas.api.types.is_float_dtype(
-        input_mudata.mod["rna"].obs["scanvi_probabilities"].dtype
-    )
+    assert pandas.api.types.is_float_dtype(input_mudata.mod["rna"].obs["scanvi_probabilities"].dtype)
 
 
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__, "--import-mode=importlib"]))
+    sys.exit(pytest.main(["--import-mode=importlib"]))

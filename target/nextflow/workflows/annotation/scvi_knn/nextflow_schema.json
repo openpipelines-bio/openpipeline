@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
 "title": "scvi_knn",
-"description": "\"Cell type annotation workflow that performs scVI integration of reference and query dataset followed by KNN label transfer. \nThe query and reference datasets are expected to be pre-processed in the same way, for example with the `process_samples` workflow of OpenPipeline.\nNote that this workflow will integrate the reference dataset from scratch and integrate the query dataset in the same embedding space. \nThe workflow does not currently output the trained SCVI reference model.\"\n",
+"description": "Cell type annotation workflow that performs scVI integration of reference and query dataset followed by KNN label transfer. \nThe query and reference datasets are expected to be pre-processed in the same way, for example with the `process_samples` workflow of OpenPipeline.\nNote that this workflow will integrate the reference dataset from scratch and integrate the query dataset in the same embedding space. \nThe workflow does not currently output the trained SCVI reference model.\n",
 "type": "object",
 "definitions": {
 

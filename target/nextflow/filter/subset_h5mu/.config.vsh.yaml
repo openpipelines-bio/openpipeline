@@ -1,6 +1,6 @@
 name: "subset_h5mu"
 namespace: "filter"
-version: "v2.1.0-rc.2"
+version: "2.1.0"
 authors:
 - name: "Dries Schaumont"
   roles:
@@ -173,7 +173,7 @@ engines:
 - type: "docker"
   id: "docker"
   image: "python:3.12-slim"
-  target_tag: "v2.1.0-rc.2"
+  target_tag: "2.1.0"
   namespace_separator: "/"
   setup:
   - type: "apt"
@@ -204,11 +204,12 @@ build_info:
   output: "target/nextflow/filter/subset_h5mu"
   executable: "target/nextflow/filter/subset_h5mu/main.nf"
   viash_version: "0.9.3"
-  git_commit: "21c4fcc12e8c611ced93e668e5e0a2f599d54c55"
+  git_commit: "fffe1938e474bc2ab79cd96127b5aabdec5acd12"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.1.0-rc.1"
+  git_tag: "2.1.0-rc.1-1-gfffe1938e47"
 package_config:
   name: "openpipeline"
+  version: "v2.1.0-rc.1"
   info:
     test_resources:
     - type: "s3"
@@ -221,8 +222,8 @@ package_config:
   - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
-  - ".version := \"v2.1.0-rc.2\""
-  - ".engines[.type == 'docker'].target_tag := 'v2.1.0-rc.2'"
+  - ".version := \"2.1.0\""
+  - ".engines[.type == 'docker'].target_tag := '2.1.0'"
   organization: "openpipelines-bio"
   links:
     repository: "https://github.com/openpipelines-bio/openpipeline"

@@ -18,9 +18,6 @@ workflow run_wf {
       // Split must be called on each item of the input list, so split it into multiple events with unique ids
       // Unique ids are required to run a component
       | flatMap {id, state ->
-        if (workflow.stubRun) {
-          return [[id, state]]
-        } 
         def newEvents = state.input.withIndex().collect{input_file, index -> 
           def newState = state + ["input": input_file, "original_id": id]
           ["${id}_${index}", newState]

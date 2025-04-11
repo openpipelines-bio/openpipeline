@@ -1,10 +1,10 @@
 name: "scvi_knn"
 namespace: "workflows/annotation"
 description: |
-  "Cell type annotation workflow that performs scVI integration of reference and query dataset followed by KNN label transfer. 
+  Cell type annotation workflow that performs scVI integration of reference and query dataset followed by KNN label transfer. 
   The query and reference datasets are expected to be pre-processed in the same way, for example with the `process_samples` workflow of OpenPipeline.
   Note that this workflow will integrate the reference dataset from scratch and integrate the query dataset in the same embedding space. 
-  The workflow does not currently output the trained SCVI reference model."
+  The workflow does not currently output the trained SCVI reference model.
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]
@@ -203,7 +203,7 @@ dependencies:
   - name: workflows/integration/scvi_leiden
     alias: scvi_leiden_workflow
   - name: labels_transfer/knn
-  - name: workflows/multiomics/split_h5mu
+  - name: dataflow/split_h5mu
   - name: dataflow/concatenate_h5mu
   - name: feature_annotation/align_query_reference
   - name: feature_annotation/highly_variable_features_scanpy

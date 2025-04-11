@@ -113,7 +113,7 @@ workflow run_wf {
               "obsp_neighbor_connectivities": "scanvi_integration_connectivities",
               "obs_cluster": "scanvi_integration_leiden",
               "obsm_umap": "X_scanvi_umap"
-          ],
+          ]
           toState: [ "output": "output" ]
         )
         | setState(["output", "output_model"])

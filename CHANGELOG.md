@@ -42,7 +42,6 @@
 
 * The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
 
-
 # MINOR CHANGES
 
 * Bump viash to `0.9.3` (PR #995).
@@ -65,8 +64,6 @@
 
 # BUG FIXES
 
-* Fix `-stub` runs (PR #1000).
-
 * `cluster/leiden`: Fix an issue where insufficient shared memory (size of `/dev/shm`) causes the processing to hang.  
 
 * `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).
@@ -77,9 +74,11 @@
 
 * `workflows/annotation/scgpt_annotation` and `workflows/integrate/scgpt_leiden`: Parameterization of HVG flavor with default method `cell_ranger` instead of `seurat_v3` (PR #979).
 
-* `dataflow/merge`: Resolved an issue where merging two MuData objects with overlapping `var` or `obs` columns sometimes resulted in an unsupported nullable dtype (e.g. merging `pd.IntegerDtype` and `pd.FloatDtype`). These columns are now correctly cast to their native numpy dtypes before writing(PR #990).
+* `dataflow/merge`: Resolved an issue where merging two MuData objects with overlapping `var` or `obs` columns sometimes resulted in an unsupported nullable dtype (PR #990), for instance when merging `pd.IntegerDtype` and `pd.FloatDtype`. These columns are now correctly cast to their native numpy dtypes before writing.
 
 * `workflows/annotation/harmony_knn`: Only process RNA modality in the workflow (PR #988).
+
+* Documentation CI: Fix building the documentation using CI (PR #1003).
 
 # openpipelines 2.0.0
 
