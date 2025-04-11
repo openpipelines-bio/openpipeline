@@ -7,6 +7,12 @@ authors:
   - __merge__: /src/authors/weiwei_schultz.yaml
     roles: [ contributor ]
 
+info:
+  name: "scANVI - scArches workflow"
+  test_dependencies:
+    - name: scanvi_scarches_test
+      namespace: test_workflows/annotation
+
 argument_groups:
   - name: Query Input
     arguments:
