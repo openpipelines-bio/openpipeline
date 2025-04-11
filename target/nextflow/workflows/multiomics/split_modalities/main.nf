@@ -3278,9 +3278,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities",
     "viash_version" : "0.9.3",
-    "git_commit" : "fffe1938e474bc2ab79cd96127b5aabdec5acd12",
+    "git_commit" : "55f86665377e4cab2bb472e5dba68ae9d6c68d21",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "2.1.0-rc.1-1-gfffe1938e47"
+    "git_tag" : "2.1.0-rc.1-2-g55f86665377"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3322,7 +3322,7 @@ split_modalities_component = split_modalities_component_viashalias.run(key: "spl
 // user-provided Nextflow code
 process splitStub {
   input:
-    tuple val(id), path(unused)
+    tuple val(id), val(unused)
 
   output:
     tuple val(id), path("stub_h5mus"), path("modalities.csv")

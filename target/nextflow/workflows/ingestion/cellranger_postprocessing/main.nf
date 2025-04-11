@@ -3361,9 +3361,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_postprocessing",
     "viash_version" : "0.9.3",
-    "git_commit" : "fffe1938e474bc2ab79cd96127b5aabdec5acd12",
+    "git_commit" : "55f86665377e4cab2bb472e5dba68ae9d6c68d21",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "2.1.0-rc.1-1-gfffe1938e47"
+    "git_tag" : "2.1.0-rc.1-2-g55f86665377"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3411,9 +3411,15 @@ workflow run_wf {
   main:
   output_ch = input_ch
     | map{id, state ->
-      assert (state.perform_correction || state.min_genes != null || state.min_counts != null):
-        "Either perform_correct, min_genes or min_counts should be specified!"
-      [id, state]
+      def output_state
+      if (!workflow.stubRun) {
+        assert (state.perform_correction || state.min_genes != null || state.min_counts != null):
+          "Either perform_correct, min_genes or min_counts should be specified!"
+        output_state = state
+      } else {
+        output_state = state + ["perform_correction": true, "min_genes": 1, "min_counts": 1]
+      }
+      [id, output_state]
     }
     // Make sure there is not conflict between the output from this workflow
     // And the output from any of the components

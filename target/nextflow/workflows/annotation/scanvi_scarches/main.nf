@@ -3515,6 +3515,15 @@ meta = [
       "path" : "/resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
     }
   ],
+  "info" : {
+    "name" : "scANVI - scArches workflow",
+    "test_dependencies" : [
+      {
+        "name" : "scanvi_scarches_test",
+        "namespace" : "test_workflows/annotation"
+      }
+    ]
+  },
   "status" : "enabled",
   "scope" : {
     "image" : "public",
@@ -3634,9 +3643,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scanvi_scarches",
     "viash_version" : "0.9.3",
-    "git_commit" : "fffe1938e474bc2ab79cd96127b5aabdec5acd12",
+    "git_commit" : "55f86665377e4cab2bb472e5dba68ae9d6c68d21",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "2.1.0-rc.1-1-gfffe1938e47"
+    "git_tag" : "2.1.0-rc.1-2-g55f86665377"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3793,7 +3802,7 @@ workflow run_wf {
               "obsp_neighbor_connectivities": "scanvi_integration_connectivities",
               "obs_cluster": "scanvi_integration_leiden",
               "obsm_umap": "X_scanvi_umap"
-          ]
+          ],
           toState: [ "output": "output" ]
         )
         | setState(["output", "output_model"])
