@@ -114,4 +114,4 @@ viash run src/integrate/scanvi/config.vsh.yaml --engine docker -- \
 
 rm "${OUT}/scanvi_output.h5mu"
 rm "${OUT}/scvi_output.h5mu"
-=rm -r "${OUT}/Pretrained_model/"
+rm -r "${OUT}/Pretrained_model/"

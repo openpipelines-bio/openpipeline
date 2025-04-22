@@ -61,6 +61,9 @@ cellranger count \
   --fastqs="$fastq_dir" \
   --transcriptome="$par_reference" \
   --include-introns="$par_include_introns" \
+  ${par_feature_reference:+--feature-ref=$par_feature_reference} \
+  ${par_cell_annotation_model:+--cell-annotation-model=$par_cell_annotation_model} \
+  ${par_tenx_cloud_token_path:+--tenx-cloud-token-path=$par_tenx_cloud_token_path} \
   ${meta_cpus:+--localcores=$meta_cpus} \
   ${meta_memory_gb:+--localmem=$((meta_memory_gb-2))} \
   ${par_expect_cells:+--expect-cells=$par_expect_cells} \

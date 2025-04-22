@@ -1,6 +1,10 @@
 # openpipeluines 3.0.0
 
-# MINOR CHANGES
+## MAJOR CHANGES?
+
+* `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992).
+
+## MINOR CHANGES
 
 * Removed `workflows` folder (PR #993).
 
@@ -32,13 +36,9 @@
 
 * `convert/from_h5ad_to_seurat`: Add component to convert from h5ad to Seurat (PR #980).
 
-## MAJOR CHANGES
+* `workflows/annotation/scanvi_scarches` workflow: Cell-type annotation based on scANVI integration and annotation with scArches for reference mapping (PR #898).
 
-* Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
-
-* The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
-
-# NEW FUNCTIONALITY 
+* `integrate/scarches`: Implemented functionality to align the query dataset with the model registry and extend functionality to predict labels for scANVI models (PR #898).
 
 * `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
 
@@ -46,7 +46,16 @@
 
 * `integrate/scvi`: Enable passing any .var field for gene name information instead of .var index, using the `--var_gene_names` parameter (PR #986).
 
+## MAJOR CHANGES
+
+* Several components: when a component processes a single modality, only that modality is read into memory (PR #944)
+
+* The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
+
+
 # MINOR CHANGES
+
+* Bump viash to `0.9.3` (PR #995).
 
 * Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942 and PR #949). 
 
@@ -66,6 +75,8 @@
 
 # BUG FIXES
 
+* Fix `-stub` runs (PR #1000).
+
 * `cluster/leiden`: Fix an issue where insufficient shared memory (size of `/dev/shm`) causes the processing to hang.  
 
 * `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).
@@ -77,6 +88,9 @@
 * `workflows/annotation/scgpt_annotation` and `workflows/integrate/scgpt_leiden`: Parameterization of HVG flavor with default method `cell_ranger` instead of `seurat_v3` (PR #979).
 
 * `dataflow/merge`: Resolved an issue where merging two MuData objects with overlapping `var` or `obs` columns sometimes resulted in an unsupported nullable dtype (e.g. merging `pd.IntegerDtype` and `pd.FloatDtype`). These columns are now correctly cast to their native numpy dtypes before writing(PR #990).
+
+* `workflows/annotation/harmony_knn`: Only process RNA modality in the workflow (PR #988).
+
 # openpipelines 2.0.0
 
 ## BREAKING CHANGES

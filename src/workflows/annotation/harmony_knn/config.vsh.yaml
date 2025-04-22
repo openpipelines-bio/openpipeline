@@ -175,12 +175,14 @@ dependencies:
   - name: workflows/integration/harmony_leiden
     alias: harmony_leiden_workflow
   - name: labels_transfer/knn
-  - name: dataflow/split_h5mu
+  - name: workflows/multiomics/split_h5mu
   - name: dataflow/concatenate_h5mu
   - name: dimred/pca
   - name: feature_annotation/align_query_reference
   - name: feature_annotation/highly_variable_features_scanpy
   - name: transform/delete_layer
+  - name: workflows/multiomics/split_modalities
+  - name: dataflow/merge
 
 resources:
   - type: nextflow_script
