@@ -30,6 +30,16 @@ jobs:
     # Check if the documentation renders but do not publish
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          path: openpipelines
+
+      - uses: actions/checkout@v4
+        with:
+          repository: openpipelines-bio/website
+          path: website
+          token: ${{ secrets.GTHB_PAT }}
+    
       - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v6
         with:
           project_directory: openpipelines
@@ -39,7 +49,7 @@ jobs:
           dest_path: "{namespace}/{name}.qmd"
           viash_pro_token: ${{ secrets.GTHB_PAT }}
           tools_version: main_build
-          ref: "${{ steps.get_tag.outputs.tag }}"
+          ref: "integration_build"
           clean: true
 
 
@@ -52,7 +62,7 @@ jobs:
           dest_path: "{namespace}/{name}.qmd"
           viash_pro_token: ${{ secrets.GTHB_PAT }}
           tools_version: main_build
-          ref: "${{ steps.get_tag.outputs.tag }}"
+          ref: "integration_build"
           clean: true
 
 
