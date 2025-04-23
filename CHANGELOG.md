@@ -1,6 +1,6 @@
 # openpipelines 3.0.0
 
-## MAJOR CHANGES?
+## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992).
 
