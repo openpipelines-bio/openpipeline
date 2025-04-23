@@ -18,7 +18,6 @@ jobs:
   # Build and create containers
   build:
     uses: ./.github/workflows/main-build.yml
-    needs: [documentation_render_check]
     with:
       push_containers: ${{ github.event_name == 'schedule' || inputs.push_containers }}
       version: 'integration_build'
@@ -27,12 +26,14 @@ jobs:
     secrets: inherit
 
   documentation_render_check:
+    needs: ["build"]
     name: "Check if documentation renders"
     # Check if the documentation renders but do not publish
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: integration_build
           path: openpipelines
 
       - uses: actions/checkout@v4
@@ -86,7 +87,7 @@ jobs:
   # phase 3
   integration_test:
     runs-on: ubuntu-latest
-    needs: [ build, sync_s3 ]
+    needs: [ sync_s3, documentation_render_check ]
     if: "${{ needs.build.outputs.workflow_matrix != '[]' }}"
 
     strategy:
