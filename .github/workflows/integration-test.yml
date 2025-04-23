@@ -25,6 +25,37 @@ jobs:
       deploy_branch: 'integration_build'
     secrets: inherit
 
+  documentation_render_check:
+    name: "Check if documentation renders"
+    # Check if the documentation renders but do not publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v6
+        with:
+          project_directory: openpipelines
+          src: src
+          query: '^(?!workflows|test_workflows)'
+          output_dir: ../website/components/modules/
+          dest_path: "{namespace}/{name}.qmd"
+          viash_pro_token: ${{ secrets.GTHB_PAT }}
+          tools_version: main_build
+          ref: "${{ steps.get_tag.outputs.tag }}"
+          clean: true
+
+
+      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v6
+        with:
+          project_directory: openpipelines
+          src: src
+          query: '^workflows'
+          output_dir: ../website/components/
+          dest_path: "{namespace}/{name}.qmd"
+          viash_pro_token: ${{ secrets.GTHB_PAT }}
+          tools_version: main_build
+          ref: "${{ steps.get_tag.outputs.tag }}"
+          clean: true
+
+
   # Synchronize S3 Bucket and create cache for per-component runs
   sync_s3:
     env:
@@ -46,7 +77,7 @@ jobs:
   # phase 3
   integration_test:
     runs-on: ubuntu-latest
-    needs: [ build, sync_s3 ]
+    needs: [ build, sync_s3, documentation_render_check ]
     if: "${{ needs.build.outputs.workflow_matrix != '[]' }}"
 
     strategy:
