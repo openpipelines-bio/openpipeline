@@ -1,4 +1,4 @@
-# openpipeluines 3.0.0
+# openpipelines 3.0.0
 
 ## MAJOR CHANGES?
 
@@ -6,7 +6,7 @@
 
 ## MINOR CHANGES
 
-* Removed `workflows` folder (PR #993).
+* Remove `workflows` directory (PR #993). The workflows which were at one point in this directory were all deprecated and moved to `src/workflows`.
 
 # openpipelines 2.1.0
 
