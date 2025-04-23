@@ -3401,7 +3401,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/bpcells_regress_out",
     "viash_version" : "0.9.3",
-    "git_commit" : "c75d19a4107117952fa3ce113cdb176cb90ea20a",
+    "git_commit" : "ea8898bebf903459c8582af27cc74420f16ce584",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
