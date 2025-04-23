@@ -26,6 +26,7 @@ jobs:
     secrets: inherit
 
   documentation_render_check:
+    name: "Check if documentation renders"
     # Check if the documentation renders but do not publish
     runs-on: ubuntu-latest
     steps:
@@ -76,7 +77,7 @@ jobs:
   # phase 3
   integration_test:
     runs-on: ubuntu-latest
-    needs: [ build, sync_s3 ]
+    needs: [ build, sync_s3, documentation_render_check ]
     if: "${{ needs.build.outputs.workflow_matrix != '[]' }}"
 
     strategy:
