@@ -2,9 +2,9 @@
 
 ## BUG FIXES
 
-* Add support for nextflow versions starting major version 25.01 (PR #).
+* Add support for nextflow versions starting major version 25.01 (PR #1007).
 
-* Fix an issue where an interger being passed to a argument with `type: double` would causes an error (PR #). 
+* Fix an issue where an interger being passed to a argument with `type: double` would causes an error (PR #1007). 
 
 # openpipelines 1.0.4
 
