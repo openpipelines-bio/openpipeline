@@ -1,7 +1,7 @@
 functionality:
   name: "scvelo"
   namespace: "velocity"
-  version: "1.0.4"
+  version: "1.0.5"
   authors:
   - name: "Dries Schaumont"
     roles:
@@ -281,7 +281,7 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/velocity/scvelo"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/velocity/scvelo/scvelo"
-  viash_version: "0.8.6"
-  git_commit: "74f972ebfd45203c74b6d58897e1f5d5b80afe0f"
+  viash_version: "0.8.8"
+  git_commit: "bfe311bb5542f97dfe80b20a3e47a02800708f43"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "1.0.3-3-g74f972ebfd"
+  git_tag: "1.0.4-3-gbfe311bb554"
