@@ -230,10 +230,7 @@ def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
         metrics_file = pd.read_csv(
             list(metrics_files.values())[0], decimal=".", quotechar='"', thousands=","
         )
-        sample_ids = metrics_file[
-            (metrics_file["Metric Name"] == "Sample ID")
-            & (metrics_file["Grouped By"] == "Probe barcode ID")
-        ]
+        sample_ids = metrics_file[metrics_file["Metric Name"] == "Sample ID"]
         barcode_sample_mapping = (
             sample_ids.loc[:, ["Group Name", "Metric Value"]]
             .set_index("Group Name")

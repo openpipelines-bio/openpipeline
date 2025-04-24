@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_cellranger_multi_to_h5mu"
-LABEL org.opencontainers.image.created="2025-04-23T06:52:25Z"
+LABEL org.opencontainers.image.created="2025-04-24T09:08:27Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3172ada0add63f9b62d3f71bb222a8c178ddcf2c"
+LABEL org.opencontainers.image.revision="194afe660f7971f965848d67a1b45e1305b0254d"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1398,10 +1398,7 @@ def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
         metrics_file = pd.read_csv(
             list(metrics_files.values())[0], decimal=".", quotechar='"', thousands=","
         )
-        sample_ids = metrics_file[
-            (metrics_file["Metric Name"] == "Sample ID")
-            & (metrics_file["Grouped By"] == "Probe barcode ID")
-        ]
+        sample_ids = metrics_file[metrics_file["Metric Name"] == "Sample ID"]
         barcode_sample_mapping = (
             sample_ids.loc[:, ["Group Name", "Metric Value"]]
             .set_index("Group Name")

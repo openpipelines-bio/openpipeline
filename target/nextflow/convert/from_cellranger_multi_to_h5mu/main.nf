@@ -3327,7 +3327,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu",
     "viash_version" : "0.9.3",
-    "git_commit" : "3172ada0add63f9b62d3f71bb222a8c178ddcf2c",
+    "git_commit" : "194afe660f7971f965848d67a1b45e1305b0254d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3627,10 +3627,7 @@ def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
         metrics_file = pd.read_csv(
             list(metrics_files.values())[0], decimal=".", quotechar='"', thousands=","
         )
-        sample_ids = metrics_file[
-            (metrics_file["Metric Name"] == "Sample ID")
-            & (metrics_file["Grouped By"] == "Probe barcode ID")
-        ]
+        sample_ids = metrics_file[metrics_file["Metric Name"] == "Sample ID"]
         barcode_sample_mapping = (
             sample_ids.loc[:, ["Group Name", "Metric Value"]]
             .set_index("Group Name")
