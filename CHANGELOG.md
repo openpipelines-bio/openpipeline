@@ -2,15 +2,11 @@
 
 ## MAJOR CHANGES
 
-* `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992).
+* `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
 
 ## MINOR CHANGES
 
 * Remove `workflows` directory (PR #993). The workflows which were at one point in this directory were all deprecated and moved to `src/workflows`.
-
-## BUG FIXES
-
-* `from_cellranger_multi_to_h5mu`: fix processing of multiplexed data when CMO or sample hashing were used (PR #1006).
 
 # openpipelines 2.1.0
 
