@@ -2,7 +2,7 @@
 
 ## MAJOR CHANGES
 
-* `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992).
+* `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
 
 ## MINOR CHANGES
 
