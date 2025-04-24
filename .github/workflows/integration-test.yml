@@ -46,7 +46,7 @@ jobs:
   # phase 3
   integration_test:
     runs-on: ubuntu-latest
-    needs: [ build, sync_s3 ]
+    needs: [ sync_s3, build, documentation_render_check ]
     if: "${{ needs.build.outputs.workflow_matrix != '[]' }}"
 
     strategy:
