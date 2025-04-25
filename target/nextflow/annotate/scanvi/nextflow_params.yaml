@@ -1,0 +1,44 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# var_input_gene_names: "foo"
+input_reference_gene_overlap: 100
+
+# Reference model
+# scvi_reference_model: "scvi_model.pt"
+# scanvi_reference_model: "scvi_model.pt"
+
+# SCANVI reference model training arguments
+reference_train_size: 0.9
+reference_max_epochs: 400
+reference_learning_rate: 0.001
+reference_reduce_lr_on_plateau: true
+reference_lr_patience: 25
+reference_lr_factor: 0.5
+reference_early_stopping: true
+reference_early_stopping_patience: 50
+
+# SCANVI query model training arguments
+query_train_size: 0.9
+query_max_epochs: 400
+query_learning_rate: 0.001
+query_reduce_lr_on_plateau: true
+query_lr_patience: 25
+query_lr_factor: 0.5
+query_early_stopping: true
+query_early_stopping_patience: 50
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+# output_model: "$id.$key.output_model"
+output_obs_predictions: "scanvi_pred"
+output_obs_probability: "scanvi_probability"
+output_obsm_scanvi_embedding: "scanvi_embedding"
+unknown_celltype: "Unknown"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments
