@@ -1,3 +1,11 @@
+# openpipelines 2.1.1
+
+## BUG FIXES
+
+* Add support for nextflow versions starting major version 25.01 (PR #1009).
+
+* Fix an issue where an interger being passed to a argument with `type: double` resulted in an error (PR #1009). 
+
 # openpipelines 2.1.0
 
 ## BREAKING CHANGES

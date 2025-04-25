@@ -1,6 +1,6 @@
 name: "freemuxlet"
 namespace: "genetic_demux"
-version: "2.1.0"
+version: "2.1.1"
 authors:
 - name: "Xichen Wu"
   roles:
@@ -366,26 +366,26 @@ build_info:
   engine: "docker"
   output: "target/executable/genetic_demux/freemuxlet"
   executable: "target/executable/genetic_demux/freemuxlet/freemuxlet"
-  viash_version: "0.9.3"
-  git_commit: "f80e3d205424a1767687afba3d44764c72ff3d02"
+  viash_version: "0.9.4"
+  git_commit: "3a5b206afcc9cf3c54e01148212863dbdfe7811d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.1.0-rc.1-3-gf80e3d20542"
+  git_tag: "2.1.0-2-g3a5b206afcc"
 package_config:
   name: "openpipeline"
-  version: "v2.1.0"
+  version: "v2.1.1"
   info:
     test_resources:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.3"
+  viash_version: "0.9.4"
   source: "src"
   target: "target"
   config_mods:
   - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
     \ := 'includeConfig(\"nextflow_labels.config\")'"
-  - ".version := \"2.1.0\""
+  - ".version := \"2.1.1\""
   - ".engines[.type == 'docker'].target_tag := '2.1.0'"
   organization: "openpipelines-bio"
   links:
