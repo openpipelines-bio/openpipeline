@@ -1,0 +1,537 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "scvi",
+"description": "Performs scvi integration as done in the human lung cell atlas https://github.com/LungCellAtlas/HLCA",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required. Input h5mu file",
+                "help_text": "Type: `file`, required. Input h5mu file"
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. ",
+                "help_text": "Type: `string`, default: `rna`. "
+            ,
+                "default":"rna"
+            }
+    
+
+        ,
+                "input_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Input layer to use",
+                "help_text": "Type: `string`. Input layer to use. If None, X is used"
+            
+            }
+    
+
+        ,
+                "obs_batch": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `sample_id`. Column name discriminating between your batches",
+                "help_text": "Type: `string`, default: `sample_id`. Column name discriminating between your batches."
+            ,
+                "default":"sample_id"
+            }
+    
+
+        ,
+                "var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`. ",
+                "help_text": "Type: `string`. .var column containing gene names. By default, use the index."
+            
+            }
+    
+
+        ,
+                "var_input": {
+                "type":
+                "string",
+                "description": "Type: `string`. ",
+                "help_text": "Type: `string`. .var column containing highly variable genes. By default, do not subset genes."
+            
+            }
+    
+
+        ,
+                "obs_labels": {
+                "type":
+                "string",
+                "description": "Type: `string`. Key in adata",
+                "help_text": "Type: `string`. Key in adata.obs for label information. Categories will automatically be \nconverted into integer categories and saved to adata.obs[\u0027_scvi_labels\u0027].\nIf None, assigns the same label to all the data.\n"
+            
+            }
+    
+
+        ,
+                "obs_size_factor": {
+                "type":
+                "string",
+                "description": "Type: `string`. Key in adata",
+                "help_text": "Type: `string`. Key in adata.obs for size factor information. Instead of using library size as a size factor,\nthe provided size factor column will be used as offset in the mean of the likelihood.\nAssumed to be on linear scale.\n"
+            
+            }
+    
+
+        ,
+                "obs_categorical_covariate": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. Keys in adata",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. Keys in adata.obs that correspond to categorical data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space).\nThus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.\n"
+            
+            }
+    
+
+        ,
+                "obs_continuous_covariate": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. Keys in adata",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. Keys in adata.obs that correspond to continuous data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space). Thus, these should not be\nused for biologically-relevant factors that you do _not_ want to correct for.\n"
+            
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file."
+            ,
+                "default":"$id.$key.output.output"
+            }
+    
+
+        ,
+                "output_model": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output_model.output_model`. Folder where the state of the trained model will be saved to",
+                "help_text": "Type: `file`, default: `$id.$key.output_model.output_model`. Folder where the state of the trained model will be saved to."
+            ,
+                "default":"$id.$key.output_model.output_model"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+        ,
+                "obsm_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `X_scvi_integrated`. In which ",
+                "help_text": "Type: `string`, default: `X_scvi_integrated`. In which .obsm slot to store the resulting integrated embedding."
+            ,
+                "default":"X_scvi_integrated"
+            }
+    
+
+}
+},
+    
+    
+    "scvi options" : {
+    "title": "SCVI options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "n_hidden_nodes": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `128`. Number of nodes per hidden layer",
+                "help_text": "Type: `integer`, default: `128`. Number of nodes per hidden layer."
+            ,
+                "default":128
+            }
+    
+
+        ,
+                "n_dimensions_latent_space": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `30`. Dimensionality of the latent space",
+                "help_text": "Type: `integer`, default: `30`. Dimensionality of the latent space."
+            ,
+                "default":30
+            }
+    
+
+        ,
+                "n_hidden_layers": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `2`. Number of hidden layers used for encoder and decoder neural-networks",
+                "help_text": "Type: `integer`, default: `2`. Number of hidden layers used for encoder and decoder neural-networks."
+            ,
+                "default":2
+            }
+    
+
+        ,
+                "dropout_rate": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.1`. Dropout rate for the neural networks",
+                "help_text": "Type: `double`, default: `0.1`. Dropout rate for the neural networks."
+            ,
+                "default":0.1
+            }
+    
+
+        ,
+                "dispersion": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `gene`, choices: ``gene`, `gene-batch`, `gene-label`, `gene-cell``. Set the behavior for the dispersion for negative binomial distributions:\n- gene: dispersion parameter of negative binomial is constant per gene across cells\n- gene-batch: dispersion can differ between different batches\n- gene-label: dispersion can differ between different labels\n- gene-cell:  dispersion can differ for every gene in every cell\n",
+                "help_text": "Type: `string`, default: `gene`, choices: ``gene`, `gene-batch`, `gene-label`, `gene-cell``. Set the behavior for the dispersion for negative binomial distributions:\n- gene: dispersion parameter of negative binomial is constant per gene across cells\n- gene-batch: dispersion can differ between different batches\n- gene-label: dispersion can differ between different labels\n- gene-cell:  dispersion can differ for every gene in every cell\n",
+                "enum": ["gene", "gene-batch", "gene-label", "gene-cell"]
+            
+            ,
+                "default":"gene"
+            }
+    
+
+        ,
+                "gene_likelihood": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `nb`, choices: ``nb`, `zinb`, `poisson``. Model used to generate the expression data from a count-based likelihood distribution",
+                "help_text": "Type: `string`, default: `nb`, choices: ``nb`, `zinb`, `poisson``. Model used to generate the expression data from a count-based likelihood distribution.\n- nb: Negative binomial distribution\n- zinb: Zero-inflated negative binomial distribution\n- poisson: Poisson distribution\n",
+                "enum": ["nb", "zinb", "poisson"]
+            
+            ,
+                "default":"nb"
+            }
+    
+
+}
+},
+    
+    
+    "variational auto-encoder model options" : {
+    "title": "Variational auto-encoder model options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "use_layer_normalization": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `both`, choices: ``encoder`, `decoder`, `none`, `both``. Neural networks for which to enable layer normalization",
+                "help_text": "Type: `string`, default: `both`, choices: ``encoder`, `decoder`, `none`, `both``. Neural networks for which to enable layer normalization. \n",
+                "enum": ["encoder", "decoder", "none", "both"]
+            
+            ,
+                "default":"both"
+            }
+    
+
+        ,
+                "use_batch_normalization": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `none`, choices: ``encoder`, `decoder`, `none`, `both``. Neural networks for which to enable batch normalization",
+                "help_text": "Type: `string`, default: `none`, choices: ``encoder`, `decoder`, `none`, `both``. Neural networks for which to enable batch normalization. \n",
+                "enum": ["encoder", "decoder", "none", "both"]
+            
+            ,
+                "default":"none"
+            }
+    
+
+        ,
+                "encode_covariates": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_false`, default: `true`. Whether to concatenate covariates to expression in encoder",
+                "help_text": "Type: `boolean_false`, default: `true`. Whether to concatenate covariates to expression in encoder"
+            ,
+                "default":true
+            }
+    
+
+        ,
+                "deeply_inject_covariates": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. Whether to concatenate covariates into output of hidden layers in encoder/decoder",
+                "help_text": "Type: `boolean_true`, default: `false`. Whether to concatenate covariates into output of hidden layers in encoder/decoder. \nThis option only applies when n_layers \u003e 1. The covariates are concatenated to\nthe input of subsequent hidden layers.\n"
+            ,
+                "default":false
+            }
+    
+
+        ,
+                "use_observed_lib_size": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. Use observed library size for RNA as scaling factor in mean of conditional distribution",
+                "help_text": "Type: `boolean_true`, default: `false`. Use observed library size for RNA as scaling factor in mean of conditional distribution.\n"
+            ,
+                "default":false
+            }
+    
+
+}
+},
+    
+    
+    "early stopping arguments" : {
+    "title": "Early stopping arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "early_stopping": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`. Whether to perform early stopping with respect to the validation set",
+                "help_text": "Type: `boolean`. Whether to perform early stopping with respect to the validation set."
+            
+            }
+    
+
+        ,
+                "early_stopping_monitor": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `elbo_validation`, choices: ``elbo_validation`, `reconstruction_loss_validation`, `kl_local_validation``. Metric logged during validation set epoch",
+                "help_text": "Type: `string`, default: `elbo_validation`, choices: ``elbo_validation`, `reconstruction_loss_validation`, `kl_local_validation``. Metric logged during validation set epoch.",
+                "enum": ["elbo_validation", "reconstruction_loss_validation", "kl_local_validation"]
+            
+            ,
+                "default":"elbo_validation"
+            }
+    
+
+        ,
+                "early_stopping_patience": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `45`. Number of validation epochs with no improvement after which training will be stopped",
+                "help_text": "Type: `integer`, default: `45`. Number of validation epochs with no improvement after which training will be stopped."
+            ,
+                "default":45
+            }
+    
+
+        ,
+                "early_stopping_min_delta": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.0`. Minimum change in the monitored quantity to qualify as an improvement, i",
+                "help_text": "Type: `double`, default: `0.0`. Minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than min_delta, will count as no improvement."
+            ,
+                "default":0.0
+            }
+    
+
+}
+},
+    
+    
+    "learning parameters" : {
+    "title": "Learning parameters",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "max_epochs": {
+                "type":
+                "integer",
+                "description": "Type: `integer`. Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest",
+                "help_text": "Type: `integer`. Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest."
+            
+            }
+    
+
+        ,
+                "reduce_lr_on_plateau": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus",
+                "help_text": "Type: `boolean`, default: `true`. Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus."
+            ,
+                "default":true
+            }
+    
+
+        ,
+                "lr_factor": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.6`. Factor to reduce learning rate",
+                "help_text": "Type: `double`, default: `0.6`. Factor to reduce learning rate."
+            ,
+                "default":0.6
+            }
+    
+
+        ,
+                "lr_patience": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced",
+                "help_text": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced."
+            ,
+                "default":30.0
+            }
+    
+
+}
+},
+    
+    
+    "data validition" : {
+    "title": "Data validition",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "n_obs_min_count": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `0`. Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training",
+                "help_text": "Type: `integer`, default: `0`. Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training."
+            ,
+                "default":0
+            }
+    
+
+        ,
+                "n_var_min_count": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `0`. Minimum number of genes threshold ensuring that every var_input filter has sufficient observations (genes) for model training",
+                "help_text": "Type: `integer`, default: `0`. Minimum number of genes threshold ensuring that every var_input filter has sufficient observations (genes) for model training."
+            ,
+                "default":0
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/scvi options"
+    },
+
+    {
+    "$ref": "#/definitions/variational auto-encoder model options"
+    },
+
+    {
+    "$ref": "#/definitions/early stopping arguments"
+    },
+
+    {
+    "$ref": "#/definitions/learning parameters"
+    },
+
+    {
+    "$ref": "#/definitions/data validition"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}

@@ -1,0 +1,320 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "qc",
+"description": "A pipeline to add basic qc statistics to a MuData ",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "id": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `foo`. ID of the sample",
+                "help_text": "Type: `string`, required, example: `foo`. ID of the sample."
+            
+            }
+    
+
+        ,
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `input.h5mu`. Path to the sample",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. Path to the sample."
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. Which modality to process",
+                "help_text": "Type: `string`, default: `rna`. Which modality to process."
+            ,
+                "default":"rna"
+            }
+    
+
+        ,
+                "layer": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `raw_counts`. Layer to calculate qc metrics for",
+                "help_text": "Type: `string`, example: `raw_counts`. Layer to calculate qc metrics for."
+            
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
+            ,
+                "default":"$id.$key.output.h5mu"
+            }
+    
+
+}
+},
+    
+    
+    "mitochondrial & ribosomal gene detection" : {
+    "title": "Mitochondrial & Ribosomal Gene Detection",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gene_symbol`. ",
+                "help_text": "Type: `string`, example: `gene_symbol`. .var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as mitochondrial or ribosomal genes, respectively.\n"
+            
+            }
+    
+
+        ,
+                "var_name_mitochondrial_genes": {
+                "type":
+                "string",
+                "description": "Type: `string`. In which ",
+                "help_text": "Type: `string`. In which .var slot to store a boolean array corresponding the mitochondrial genes.\n"
+            
+            }
+    
+
+        ,
+                "obs_name_mitochondrial_fraction": {
+                "type":
+                "string",
+                "description": "Type: `string`. ",
+                "help_text": "Type: `string`. .Obs slot to store the fraction of reads found to be mitochondrial. Defaults to \u0027fraction_\u0027 suffixed by the value of --var_name_mitochondrial_genes\n"
+            
+            }
+    
+
+        ,
+                "mitochondrial_gene_regex": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `^[mM][tT]-`. Regex string that identifies mitochondrial genes from --var_gene_names",
+                "help_text": "Type: `string`, default: `^[mM][tT]-`. Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n"
+            ,
+                "default":"^[mM][tT]-"
+            }
+    
+
+        ,
+                "var_name_ribosomal_genes": {
+                "type":
+                "string",
+                "description": "Type: `string`. In which ",
+                "help_text": "Type: `string`. In which .var slot to store a boolean array corresponding the ribosomal genes.\n"
+            
+            }
+    
+
+        ,
+                "obs_name_ribosomal_fraction": {
+                "type":
+                "string",
+                "description": "Type: `string`. When specified, write the fraction of counts originating from ribosomal genes \n(based on --ribosomal_gene_regex) to an ",
+                "help_text": "Type: `string`. When specified, write the fraction of counts originating from ribosomal genes \n(based on --ribosomal_gene_regex) to an .obs column with the specified name.\nRequires --var_name_ribosomal_genes.\n"
+            
+            }
+    
+
+        ,
+                "ribosomal_gene_regex": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `^[Mm]?[Rr][Pp][LlSs]`. Regex string that identifies ribosomal genes from --var_gene_names",
+                "help_text": "Type: `string`, default: `^[Mm]?[Rr][Pp][LlSs]`. Regex string that identifies ribosomal genes from --var_gene_names.\nBy default will detect human and mouse ribosomal genes from a gene symbol.\n"
+            ,
+                "default":"^[Mm]?[Rr][Pp][LlSs]"
+            }
+    
+
+}
+},
+    
+    
+    "qc metrics calculation options" : {
+    "title": "QC metrics calculation options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "var_qc_metrics": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from ",
+                "help_text": "Type: List of `string`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes. Defaults to the value from\n--var_name_mitochondrial_genes.\n"
+            
+            }
+    
+
+        ,
+                "top_n_vars": {
+                "type":
+                "string",
+                "description": "Type: List of `integer`, default: `50,100,200,500`, multiple_sep: `\",\"`. Number of top vars to be used to calculate cumulative proportions",
+                "help_text": "Type: List of `integer`, default: `50,100,200,500`, multiple_sep: `\",\"`. Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n"
+            ,
+                "default":"50,100,200,500"
+            }
+    
+
+        ,
+                "output_obs_num_nonzero_vars": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `num_nonzero_vars`. Name of column in ",
+                "help_text": "Type: `string`, default: `num_nonzero_vars`. Name of column in .obs describing, for each observation, the number of stored values\n(including explicit zeroes). In other words, the name of the column that counts\nfor each row the number of columns that contain data.\n"
+            ,
+                "default":"num_nonzero_vars"
+            }
+    
+
+        ,
+                "output_obs_total_counts_vars": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `total_counts`. Name of the column for ",
+                "help_text": "Type: `string`, default: `total_counts`. Name of the column for .obs describing, for each observation (row),\nthe sum of the stored values in the columns.\n"
+            ,
+                "default":"total_counts"
+            }
+    
+
+        ,
+                "output_var_num_nonzero_obs": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `num_nonzero_obs`. Name of column describing, for each feature, the number of stored values\n(including explicit zeroes)",
+                "help_text": "Type: `string`, default: `num_nonzero_obs`. Name of column describing, for each feature, the number of stored values\n(including explicit zeroes). In other words, the name of the column that counts\nfor each column the number of rows that contain data.\n"
+            ,
+                "default":"num_nonzero_obs"
+            }
+    
+
+        ,
+                "output_var_total_counts_obs": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `total_counts`. Name of the column in ",
+                "help_text": "Type: `string`, default: `total_counts`. Name of the column in .var describing, for each feature (column),\nthe sum of the stored values in the rows.\n"
+            ,
+                "default":"total_counts"
+            }
+    
+
+        ,
+                "output_var_obs_mean": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `obs_mean`. Name of the column in ",
+                "help_text": "Type: `string`, default: `obs_mean`. Name of the column in .obs providing the mean of the values in each row.\n"
+            ,
+                "default":"obs_mean"
+            }
+    
+
+        ,
+                "output_var_pct_dropout": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `pct_dropout`. Name of the column in ",
+                "help_text": "Type: `string`, default: `pct_dropout`. Name of the column in .obs providing for each feature the percentage of\nobservations the feature does not appear on (i.e. is missing). Same as `--output_var_num_nonzero_obs`\nbut percentage based.\n"
+            ,
+                "default":"pct_dropout"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/mitochondrial & ribosomal gene detection"
+    },
+
+    {
+    "$ref": "#/definitions/qc metrics calculation options"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}
