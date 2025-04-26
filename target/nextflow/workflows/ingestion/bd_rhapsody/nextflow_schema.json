@@ -74,10 +74,10 @@
                 "output_raw": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. The unprocessed output directory containing all the outputs from the pipeline",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. The unprocessed output directory containing all the outputs from the pipeline."
+                "description": "Type: `file`, required, default: `$id.$key.output_raw`, example: `output_dir`. The unprocessed output directory containing all the outputs from the pipeline",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_raw`, example: `output_dir`. The unprocessed output directory containing all the outputs from the pipeline."
             ,
-                "default":"$id.$key.output_raw.output_raw"
+                "default":"$id.$key.output_raw"
             }
     
 

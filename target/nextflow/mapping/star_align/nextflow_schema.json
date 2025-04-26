@@ -53,10 +53,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `/path/to/foo`. Path to output directory",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `/path/to/foo`. Path to output directory. Corresponds to the --outFileNamePrefix argument in the STAR command."
+                "description": "Type: `file`, required, default: `$id.$key.output`, example: `/path/to/foo`. Path to output directory",
+                "help_text": "Type: `file`, required, default: `$id.$key.output`, example: `/path/to/foo`. Path to output directory. Corresponds to the --outFileNamePrefix argument in the STAR command."
             ,
-                "default":"$id.$key.output.output"
+                "default":"$id.$key.output"
             }
     
 

@@ -33,10 +33,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.output`. The query data in ",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.output`. The query data in .h5mu format with predicted labels transfered from the reference."
+                "description": "Type: `file`, required, default: `$id.$key.output`. The query data in ",
+                "help_text": "Type: `file`, required, default: `$id.$key.output`. The query data in .h5mu format with predicted labels transfered from the reference."
             ,
-                "default":"$id.$key.output.output"
+                "default":"$id.$key.output"
             }
     
 

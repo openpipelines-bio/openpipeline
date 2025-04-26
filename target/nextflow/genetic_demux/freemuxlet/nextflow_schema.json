@@ -249,10 +249,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.output`, example: `freemux`. Output directory",
-                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `freemux`. Output directory"
+                "description": "Type: `file`, default: `$id.$key.output`, example: `freemux`. Output directory",
+                "help_text": "Type: `file`, default: `$id.$key.output`, example: `freemux`. Output directory"
             ,
-                "default":"$id.$key.output.output"
+                "default":"$id.$key.output"
             }
     
 

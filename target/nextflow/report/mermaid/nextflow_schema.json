@@ -43,10 +43,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.output`. Generated network as output",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Generated network as output."
+                "description": "Type: `file`, required, default: `$id.$key.output`. Generated network as output",
+                "help_text": "Type: `file`, required, default: `$id.$key.output`. Generated network as output."
             ,
-                "default":"$id.$key.output.output"
+                "default":"$id.$key.output"
             }
     
 

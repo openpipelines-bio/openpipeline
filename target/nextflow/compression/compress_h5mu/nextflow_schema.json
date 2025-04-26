@@ -43,10 +43,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.output`. location of output file",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.output`. location of output file."
+                "description": "Type: `file`, required, default: `$id.$key.output`. location of output file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output`. location of output file."
             ,
-                "default":"$id.$key.output.output"
+                "default":"$id.$key.output"
             }
     
 

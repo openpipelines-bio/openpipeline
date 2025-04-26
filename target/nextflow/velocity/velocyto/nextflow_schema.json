@@ -74,10 +74,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.output`. Velocyto loom file",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Velocyto loom file"
+                "description": "Type: `file`, required, default: `$id.$key.output`. Velocyto loom file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output`. Velocyto loom file"
             ,
-                "default":"$id.$key.output.output"
+                "default":"$id.$key.output"
             }
     
 
