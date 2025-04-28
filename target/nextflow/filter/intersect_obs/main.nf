@@ -3317,7 +3317,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/intersect_obs",
     "viash_version" : "0.9.3",
-    "git_commit" : "21752103007e6f46802bce67fe390c24ddca744e",
+    "git_commit" : "8b64d6504597038a76157f5ca2ddcbb4a3f9eafb",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
