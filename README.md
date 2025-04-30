@@ -80,7 +80,7 @@ Openpipelines is now available on [Viash Hub](https://www.viash-hub.com/packages
 
 ## Execution using the nextflow executable
 
-Executing a workflow  is a bit more involved and requires familo. 
+Executing a workflow  is a bit more involved and requires familiarity with the command line interface (CLI). 
 
 ### Setup
 
