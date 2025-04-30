@@ -27,9 +27,13 @@ In terms of workflows, the following functionality is provided:
 * Integration: Clustering, integration and batch correction using single and multimodal methods.
 * Downstream analysis workflows
 
-## Example Usage
+## Guided execution using Viash Hub (CLI and Seqera cloud)
 
-Here, some of the workflows from the Openpipeline repertoire will be demonstrated. 
+Openpipelines is now available on [Viash Hub](https://www.viash-hub.com/packages/openpipeline/latest). Viash Hub provides a list of components and workflows, together with a graphical interface that guides you through the steps of running a workflow or standalone component. Intstructions are provided for using a local viash or nextflow executable (requires using a linux based OS), but connecting to a Seqera cloud instance is also supported. 
+
+## Execution using the nextflow executable
+
+Executing a workflow  is a bit more involved and requires familo. 
 
 ### Setup
 
@@ -51,6 +55,7 @@ A reference of workflows and modules is also provided in the [documentation](htt
 
 A list of workflows arguments can be consulted in multiple ways
 
+* On [Viash Hub](https://www.viash-hub.com/packages/openpipeline/latest) 
 * In the [reference documentation](https://openpipelines.bio/components/)
 * The config YAML file lists the argument for each workflow and component
 * In the `target/nextflow` folder, a nextflow schema JSON file (`nextflow_schema.json`) is provided next to each workflow `.nf` file.
@@ -169,4 +174,14 @@ nextflow run openpipelines-bio/openpipeline \
     -profile docker \
     -params-file "<path to your parameter YAML file>"
     --publish_dir "<path to output directory>"
+```
+
+
+## Executing standalone components using the Viash executable
+
+Another option to execute individual modules on the CLI is to use `viash run`. All you need to do is download viash, clone the Openpipeline repository and point viash to a config file. However, keep in mind that using `viash run` for workflows is currently not supported. Please see `viash run --help` for more information on how to use the command, but here is an example:
+
+
+```bash
+viash run --engine docker src/mapping/cellranger_multi/config.vsh.yaml --help
 ```
