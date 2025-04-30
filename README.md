@@ -21,10 +21,10 @@ Openpipelines execute a list of predefined tasks. These descrete steps are also 
 In terms of workflows, the following functionality is provided:
 
 * Demultiplexing: conversion of raw sequencing data to FASTQ objects.
-* Ingestion: Read mapping and generating a count matrix.
-* Single sample processing: cell filtering and doublet detection.
-* Multisample processing: Count transformation, normalization, QC metric calulations.
-* Integration: Clustering, integration and batch correction using single and multimodal methods.
+* [Ingestion](https://openpipelines.bio/fundamentals/architecture.html#sec-ingestion): Read mapping and generating a count matrix.
+* [Single sample processing](https://openpipelines.bio/fundamentals/architecture.html#sec-single-sample): cell filtering and doublet detection.
+* [Multisample processing](https://openpipelines.bio/fundamentals/architecture.html#sec-multisample-processing): Count transformation, normalization, QC metric calulations.
+* [Integration](https://openpipelines.bio/fundamentals/architecture.html#sec-intergration): Clustering, integration and batch correction using single and multimodal methods.
 * Downstream analysis workflows
 
 ```mermaid
