@@ -37,7 +37,7 @@ flowchart LR
   subgraph ingestion[Step 2: Ingestion]
     direction LR
     10x_ingestion[10x Ingestion]
-    bd_ingestion[BD Rhapsody\nIngestion]
+    bd_ingestion[BD Rhapsody<br>Ingestion]
     own_h5mu[Own H5MU]
   end
   ingestion
@@ -64,11 +64,11 @@ flowchart LR
   
   subgraph downstream[Step 5: Downstream]
     direction LR
-    celltype_annotation[Cell Type\nAnnotation]
-    markergenes[Marker Genes\nAnalysis]
-    differential[Differential\nExpression]
-    gene_signature_analysis[Gene Signature\nAnalysis]
-    ccc[Cell-Cell\nCommunication]
+    celltype_annotation[Cell Type<br>Annotation]
+    markergenes[Marker Genes<br>Analysis]
+    differential[Differential<br>Expression]
+    gene_signature_analysis[Gene Signature<br>Analysis]
+    ccc[Cell-Cell<br>Communication]
   end
 
   demultiplexing --> ingestion --> process_samples --> integration --> downstream
