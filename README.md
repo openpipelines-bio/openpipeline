@@ -109,7 +109,7 @@ nextflow run openpipelines-bio/openpipeline \
     --demultiplexer "mkfastq"
 ```
 
-## Mapping and read counting
+### Mapping and read counting
 
 FASTQ files can be mapped to a reference genome and the resulting mapped reads can be counted in order to generate a count matrix. Both `BD Rhapsody` and `Cell Ranger` are supported. Here, we demonstrate using Cell Ranger multi on test data available at `s3://openpipelines-data/10x_5k_anticmv`. 
 
@@ -144,7 +144,7 @@ nextflow run openpipelines-bio/openpipeline \
     --publish_dir "<path to output directory>"
 ```
 
-## Filtering, normalization, clustering, dimensionality reduction and QC calculations (w/o integration)
+### Filtering, normalization, clustering, dimensionality reduction and QC calculations (w/o integration)
 
 Once you have an MuData object for each of your samples, you can process it into a multisample file that is ready for integration and other downstream analyses. This can be done using the `process_samples` workflow. Here is an example, but please keep in mind that the exact parameters that need to be provided differ depending on you data. A lot of functionality for this pipeline can be customized, including the name of the output slots where data is being stored. 
 
@@ -177,7 +177,7 @@ nextflow run openpipelines-bio/openpipeline \
 ```
 
 
-## Executing standalone components using the Viash executable
+### Executing standalone components using the Viash executable
 
 Another option to execute individual modules on the CLI is to use `viash run`. All you need to do is download viash, clone the Openpipeline repository and point viash to a config file. However, keep in mind that using `viash run` for workflows is currently not supported. Please see `viash run --help` for more information on how to use the command, but here is an example:
 
