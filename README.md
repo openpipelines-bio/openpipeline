@@ -27,6 +27,53 @@ In terms of workflows, the following functionality is provided:
 * Integration: Clustering, integration and batch correction using single and multimodal methods.
 * Downstream analysis workflows
 
+```mermaid
+flowchart LR
+  subgraph demultiplexing [Step 1: Demultiplexing]
+    direction LR
+    cellranger_mkfastq[Cell Ranger mkfastq]
+    bclconvert[BCL Convert]
+  end
+  subgraph ingestion[Step 2: Ingestion]
+    direction LR
+    10x_ingestion[10x Ingestion]
+    bd_ingestion[BD Rhapsody\nIngestion]
+    own_h5mu[Own H5MU]
+  end
+  ingestion
+
+  subgraph process_samples[Step 3: Process Samples]
+    direction LR
+    gex[GEX]
+    atac[ATAC]
+    adt[ADT]
+    vdj[VDJ]
+    other[Other]
+  end
+  process_samples
+
+  %% Integration and downstream
+  subgraph integration[Step 4: Integration]
+    direction LR
+    harmony[Harmony]
+    scvi[scVI]
+    scanvi[scanVI]
+    etc[...]
+  end
+  integration[Integration]
+  
+  subgraph downstream[Step 5: Downstream]
+    direction LR
+    celltype_annotation[Cell Type\nAnnotation]
+    markergenes[Marker Genes\nAnalysis]
+    differential[Differential\nExpression]
+    gene_signature_analysis[Gene Signature\nAnalysis]
+    ccc[Cell-Cell\nCommunication]
+  end
+
+  demultiplexing --> ingestion --> process_samples --> integration --> downstream
+```
+
 ## Guided execution using Viash Hub (CLI and Seqera cloud)
 
 Openpipelines is now available on [Viash Hub](https://www.viash-hub.com/packages/openpipeline/latest). Viash Hub provides a list of components and workflows, together with a graphical interface that guides you through the steps of running a workflow or standalone component. Intstructions are provided for using a local viash or nextflow executable (requires using a linux based OS), but connecting to a Seqera cloud instance is also supported. 
