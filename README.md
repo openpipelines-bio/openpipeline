@@ -51,7 +51,7 @@ while components that execute individual workflow steps are
 
 A reference of workflows and modules is also provided in the [documentation](https://openpipelines.bio/components/).
 
-### Retreiving a list of a workflow parameters
+### Retrieving a list of a workflow parameters
 
 A list of workflows arguments can be consulted in multiple ways
 
