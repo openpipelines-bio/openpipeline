@@ -177,7 +177,7 @@ nextflow run openpipelines-bio/openpipeline \
 ```
 
 
-### Executing standalone components using the Viash executable
+## Executing standalone components using the Viash executable
 
 Another option to execute individual modules on the CLI is to use `viash run`. All you need to do is download viash, clone the Openpipeline repository and point viash to a config file. However, keep in mind that using `viash run` for workflows is currently not supported. Please see `viash run --help` for more information on how to use the command, but here is an example:
 
