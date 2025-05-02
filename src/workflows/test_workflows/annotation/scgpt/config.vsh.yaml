@@ -1,7 +1,6 @@
 name: "scgpt_annotation_test"
 namespace: "test_workflows/annotation"
 scope: "test"
-scope: "public"
 description: "This component test the output of the the scgpt_annotation workflow."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
