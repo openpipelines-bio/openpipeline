@@ -2,7 +2,7 @@
 
 ## BREAKING CHANGES
 
-* `tar_extract` has been deprecated and will be removed in a future release (PR #).
+* `tar_extract` has been deprecated and will be removed in a future release (PR #1014).
 
 ## MAJOR CHANGES
 
