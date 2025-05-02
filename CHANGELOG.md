@@ -4,6 +4,8 @@
 
 * `split_h5mu_train_test`: rename `compression` argument to `output_compression` (PR #1017)
 
+* `delimit_fraction`: remove unused `layer` argument (PR #)
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
