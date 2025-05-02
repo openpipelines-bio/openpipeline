@@ -35,7 +35,7 @@ def test_compress_h5mu(run_component, tmp_path, compression_type):
             str(input_file),
             "--output",
             str(output_file),
-            "--compression",
+            "--output_compression",
             compression_type,
         ]
     )

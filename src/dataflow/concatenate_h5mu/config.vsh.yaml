@@ -27,6 +27,8 @@ arguments:
       If specified, must be of same length as `--input`.
     required: false
   - name: "--output"
+    description: |
+      Output location for the concatenated MuData object file.
     alternatives: ["-o"]
     type: file
     direction: output

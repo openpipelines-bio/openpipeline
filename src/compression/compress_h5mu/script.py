@@ -13,4 +13,4 @@ sys.path.append(meta["resources_dir"])
 from compress_h5mu import compress_h5mu
 
 if __name__ == "__main__":
-    compress_h5mu(par["input"], par["output"], compression=par["compression"])
+    compress_h5mu(par["input"], par["output"], compression=par["output_compression"])

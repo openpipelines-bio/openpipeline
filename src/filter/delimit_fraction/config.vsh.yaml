@@ -17,13 +17,10 @@ argument_groups:
         example: input.h5mu
 
       - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process.
         type: string
         default: "rna"
-        required: false
-
-      - name: "--layer"
-        type: string
-        example: "raw_counts"
         required: false
 
       - name: "--obs_fraction_column"

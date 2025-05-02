@@ -41,6 +41,8 @@ argument_groups:
     description: Arguments related to how the output will be written.
     arguments:
       - name: "--output"
+        description: |
+          Location of the output MuData file.
         alternatives: ["-o"]
         type: file
         direction: output

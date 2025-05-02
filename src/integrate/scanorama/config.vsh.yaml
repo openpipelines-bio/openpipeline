@@ -15,6 +15,8 @@ arguments:
     direction: input
     required: true
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "rna"
     required: false

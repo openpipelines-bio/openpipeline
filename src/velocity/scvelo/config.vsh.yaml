@@ -20,14 +20,23 @@ argument_groups:
         required: true
         type: string
       - name: "--layer_spliced"
+        description: |
+          Name of the layer to store the spliced abundances in. Will be used as key in the .layer attribute of the
+          output MuData object.
         type: string
         required: false
         default: "spliced"
       - name: "--layer_unspliced"
+        description: |
+          Name of the layer to store the unspliced abundances in.
+          Will be used as key in the .layer attribute of the output MuData object.
         type: string
         required: false
         default: "unspliced"
       - name: "--layer_ambiguous"
+        description: |
+          Name of the layer to store the abundances in for which no fate was determined.
+          Will be used as key in the .layer attribute of the output MuData object.
         type: string
         required: false
         default: "ambiguous"

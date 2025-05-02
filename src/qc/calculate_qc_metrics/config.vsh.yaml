@@ -32,10 +32,14 @@ argument_groups:
         required: true
         example: input.h5mu
       - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process. 
         type: string
         default: "rna"
         required: false
       - name: "--layer"
+        description: |
+          Layer from modality to use as input data. If not provided the .X attribute is used.
         type: string
         example: "raw_counts"
         required: false

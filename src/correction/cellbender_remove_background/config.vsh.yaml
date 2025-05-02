@@ -46,6 +46,8 @@ argument_groups:
         type: string
         default: "cellbender_cell_size"
       - name: "--obs_droplet_efficiency"
+        description: |
+          Name of the column in the .obs dataframe to store the droplet efficiencies in.
         type: string
         default: "cellbender_droplet_efficiency"
       - name: "--obs_latent_scale"
