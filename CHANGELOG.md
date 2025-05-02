@@ -2,9 +2,9 @@
 
 ## BREAKING CHANGES
 
-* `split_h5mu_train_test`: rename `compression` argument to `output_compression` (PR #1017)
+* `split_h5mu_train_test` and `compress_h5mu`: rename `compression` argument to `output_compression` (PR #1017, PR #1018)
 
-* `delimit_fraction`: remove unused `layer` argument (PR #)
+* `delimit_fraction`: remove unused `layer` argument (PR #1018)
 
 ## MAJOR CHANGES
 
