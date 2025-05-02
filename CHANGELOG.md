@@ -1,5 +1,9 @@
 # openpipelines 3.0.0
 
+## BREAKING CHANGES
+
+* `tar_extract` has been deprecated and will be removed in a future release (PR #).
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
