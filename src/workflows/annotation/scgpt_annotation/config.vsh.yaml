@@ -15,7 +15,6 @@ info:
   test_dependencies:
     - name: scgpt_annotation_test
       namespace: test_workflows/annotation
-scope: "public"
 
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml

@@ -6,10 +6,8 @@ info:
   test_dependencies:
     - name: move_layer
       namespace: transform
-scope: "public"
     - name: remove_modality
       namespace: filter
-scope: "public"
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author, maintainer ]

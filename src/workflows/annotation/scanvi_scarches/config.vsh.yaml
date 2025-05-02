@@ -13,7 +13,6 @@ info:
   test_dependencies:
     - name: scanvi_scarches_test
       namespace: test_workflows/annotation
-scope: "public"
 
 argument_groups:
   - name: Query Input

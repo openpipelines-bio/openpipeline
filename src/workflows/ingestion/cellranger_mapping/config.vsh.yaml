@@ -7,7 +7,6 @@ info:
   test_dependencies:
     - name: cellranger_mapping_test
       namespace: test_workflows/ingestion
-scope: "public"
 authors:
   - __merge__: /src/authors/angela_pisco.yaml
     roles: [ author ]

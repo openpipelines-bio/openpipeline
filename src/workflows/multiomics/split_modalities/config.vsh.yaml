@@ -9,7 +9,6 @@ info:
   test_dependencies:
     - name: split_modalities_test
       namespace: test_workflows/multiomics
-scope: "public"
 argument_groups:
   - name: Inputs
     arguments:

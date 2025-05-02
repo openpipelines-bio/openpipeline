@@ -9,7 +9,6 @@ info:
   test_dependencies:
     - name: qc_test
       namespace: test_workflows/qc
-scope: "public"
 argument_groups:
   - name: Inputs
     arguments:
