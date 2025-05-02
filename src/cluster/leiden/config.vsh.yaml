@@ -47,7 +47,6 @@ arguments:
       Name of the .obsm key under which to add the cluster labels.
       The name of the columns in the matrix will correspond to the resolutions.
     default: "leiden"
-__merge__: [., /src/base/h5_compression_argument.yaml]
 
     # todo: add uns_params
     # example: uns["leiden"] = {'params': {'n_iterations': -1, 'random_state': 0, 'resolution': 1.0}}
@@ -61,6 +60,8 @@ __merge__: [., /src/base/h5_compression_argument.yaml]
     default: [1]
     required: true
     multiple: true
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

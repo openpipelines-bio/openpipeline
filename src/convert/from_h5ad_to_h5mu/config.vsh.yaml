@@ -25,7 +25,7 @@ arguments:
     description: Output MuData file.
     default: output.h5mu
     direction: output
-  __merge__: [., /src/base/h5_compression_argument.yaml]
+__merge__: [., /src/base/h5_compression_argument.yaml]
 
 
 resources:

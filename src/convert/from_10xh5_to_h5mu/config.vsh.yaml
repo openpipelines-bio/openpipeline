@@ -32,7 +32,7 @@ argument_groups:
         type: string
         description: Name of the .uns slot under which to QC metrics (if any).
         default: "metrics_cellranger"
-__merge__: [., /src/base/h5_compression_argument.yaml]
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Arguments
     arguments:
