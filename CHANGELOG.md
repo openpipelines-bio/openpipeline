@@ -8,6 +8,10 @@
 
 * Remove `workflows` directory (PR #993). The workflows which were at one point in this directory were all deprecated and moved to `src/workflows`.
 
+## BUG FIXES
+
+* Bump viash to 0.9.4. This adds support for nextflow versions starting major version 25.01 and fixes an issue where an integer being passed to a argument with `type: double` resulted in an error (PR #).
+
 # openpipelines 2.1.0
 
 ## BREAKING CHANGES
