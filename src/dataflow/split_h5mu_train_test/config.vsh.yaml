@@ -41,11 +41,7 @@ argument_groups:
         direction: output
         required: false
         example: output_val.h5mu
-      - name: "--compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
   - name: Split arguments
     description: Model arguments.
     arguments:

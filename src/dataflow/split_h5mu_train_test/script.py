@@ -12,7 +12,7 @@ par = {
     "output_train": "train.h5mu",
     "output_val": "val.h5mu",
     "output_test": "test.h5mu",
-    "compression": "gzip",
+    "output_compression": "gzip",
     "shuffle": True,
 }
 ### VIASH END
@@ -60,7 +60,7 @@ def main():
         val_mudata = mu.MuData({par["modality"]: val_modality})
         test_mudata = mu.MuData({par["modality"]: test_modality})
 
-        val_mudata.write_h5mu(par["output_val"], compression=par["compression"])
+        val_mudata.write_h5mu(par["output_val"], compression=par["output_compression"])
 
     else:
         train_modality = input_modality[train_idx].copy()
@@ -69,8 +69,8 @@ def main():
         train_mudata = mu.MuData({par["modality"]: train_modality})
         test_mudata = mu.MuData({par["modality"]: test_modality})
 
-    train_mudata.write_h5mu(par["output_train"], compression=par["compression"])
-    test_mudata.write_h5mu(par["output_test"], compression=par["compression"])
+    train_mudata.write_h5mu(par["output_train"], compression=par["output_compression"])
+    test_mudata.write_h5mu(par["output_test"], compression=par["output_compression"])
 
 
 if __name__ == "__main__":
