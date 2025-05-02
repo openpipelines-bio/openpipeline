@@ -1,5 +1,6 @@
 name: "cellranger_postprocessing_test"
 namespace: "test_workflows/ingestion"
+scope: "public"
 description: "This component test the output of the integration test of the cellranger postprocessing workflow."
 authors:
   - __merge__: /src/authors/jakub_majercik.yaml

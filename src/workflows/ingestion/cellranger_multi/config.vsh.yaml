@@ -1,11 +1,13 @@
 name: "cellranger_multi"
 namespace: "workflows/ingestion"
+scope: "public"
 description: "A pipeline for running Cell Ranger multi."
 info:
   name: Cell Ranger multi
   test_dependencies:
     - name: cellranger_multi_test
       namespace: test_workflows/ingestion
+scope: "public"
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author ]

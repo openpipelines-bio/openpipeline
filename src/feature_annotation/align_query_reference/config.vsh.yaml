@@ -1,5 +1,6 @@
 name: align_query_reference
 namespace: feature_annotation
+scope: "public"
 description: |
   Alignment of a query and reference dataset by:
   * Alignment of layers

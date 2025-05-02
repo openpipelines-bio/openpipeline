@@ -1,5 +1,6 @@
 name: "neighbors_leiden_umap"
 namespace: "workflows/multiomics"
+scope: "public"
 description: "Performs neighborhood search, leiden clustering and run umap on an integrated embedding."
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml

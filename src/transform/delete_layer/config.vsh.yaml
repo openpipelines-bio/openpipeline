@@ -1,5 +1,6 @@
 name: delete_layer
 namespace: "transform"
+scope: "public"
 description: |
   Delete an anndata layer from one or more modalities.
 authors:

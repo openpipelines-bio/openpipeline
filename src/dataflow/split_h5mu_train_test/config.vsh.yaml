@@ -1,5 +1,6 @@
 name: split_h5mu_train_test
 namespace: dataflow
+scope: "public"
 description: Split mudata object into training and testing (and validation) datasets based on observations into separate mudata objects.
 authors:
   - __merge__: /src/authors/jakub_majercik.yaml

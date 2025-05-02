@@ -1,5 +1,6 @@
 name: svm_annotation
 namespace: annotate
+scope: "public"
 description: Automated cell type annotation tool for scRNA-seq datasets on the basis of SVMs.
 authors:
   - __merge__: /src/authors/jakub_majercik.yaml

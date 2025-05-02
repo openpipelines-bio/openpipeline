@@ -1,5 +1,6 @@
 name: "from_10xmtx_to_h5mu"
 namespace: "convert"
+scope: "public"
 description: |
   Converts a 10x mtx into an h5mu file.
 authors:

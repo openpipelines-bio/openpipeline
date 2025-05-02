@@ -1,5 +1,6 @@
 name: embedding
 namespace: scgpt
+scope: "public"
 description: |
   Generation of cell embeddings for the integration of single cell transcriptomic count data using scGPT.
 authors:

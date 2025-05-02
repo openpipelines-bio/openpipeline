@@ -1,5 +1,6 @@
 name: highly_variable_features_scanpy
 namespace: feature_annotation
+scope: "public"
 description: |
   Annotate highly variable features [Satija15] [Zheng17] [Stuart19].
 

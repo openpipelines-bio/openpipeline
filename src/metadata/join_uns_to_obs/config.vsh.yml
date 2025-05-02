@@ -1,5 +1,6 @@
 name: join_uns_to_obs
 namespace: "metadata"
+scope: "public"
 description: "Join a data frame of length 1 (1 row index value) in .uns containing metadata to the .obs of a mudata file."
 arguments:
   - name: "--input"

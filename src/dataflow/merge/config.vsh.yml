@@ -1,5 +1,6 @@
 name: merge
 namespace: "dataflow"
+scope: "public"
 description: |
   Combine one or more single-modality .h5mu files together into one .h5mu file.
 authors:

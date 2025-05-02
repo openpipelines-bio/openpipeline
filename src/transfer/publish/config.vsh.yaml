@@ -1,5 +1,6 @@
 name: publish
 namespace: "transfer"
+scope: "public"
 description: Publish an artifact and optionally rename with parameters
 authors:
   - __merge__: /src/authors/toni_verbeiren.yaml

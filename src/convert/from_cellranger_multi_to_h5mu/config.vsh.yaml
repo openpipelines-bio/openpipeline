@@ -1,5 +1,6 @@
 name: "from_cellranger_multi_to_h5mu"
 namespace: "convert"
+scope: "public"
 description: |
   Converts the output from cellranger multi to a single .h5mu file.
   By default, will map the following library type names to modality names:

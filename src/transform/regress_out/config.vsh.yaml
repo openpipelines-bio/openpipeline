@@ -1,5 +1,6 @@
 name: regress_out
 namespace: "transform"
+scope: "public"
 description: |
   Regress out (mostly) unwanted sources of variation.
   Uses simple linear regression. This is inspired by Seurat's regressOut function in R [Satija15]. 

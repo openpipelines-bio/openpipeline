@@ -1,5 +1,6 @@
 name: "split_modalities"
 namespace: "workflows/multiomics"
+scope: "public"
 description: "A pipeline to split a multimodal mudata files into several unimodal mudata files."
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
@@ -8,6 +9,7 @@ info:
   test_dependencies:
     - name: split_modalities_test
       namespace: test_workflows/multiomics
+scope: "public"
 argument_groups:
   - name: Inputs
     arguments:

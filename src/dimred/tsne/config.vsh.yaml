@@ -1,5 +1,6 @@
 name: tsne
 namespace: "dimred"
+scope: "public"
 description: |
   t-SNE (t-Distributed Stochastic Neighbor Embedding) is a dimensionality reduction technique used to visualize high-dimensional data in a low-dimensional space, revealing patterns and clusters by preserving local data similarities.
 authors:

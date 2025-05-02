@@ -1,5 +1,6 @@
 name: remove_modality
 namespace: "filter"
+scope: "public"
 description: |
   Remove a modality from a .h5mu file
 authors:

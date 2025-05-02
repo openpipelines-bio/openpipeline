@@ -1,5 +1,6 @@
 name: intersect_obs
 namespace: "filter"
+scope: "public"
 description: |
   Create an intersection between two or more modalities.
   

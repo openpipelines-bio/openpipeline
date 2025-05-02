@@ -1,5 +1,6 @@
 name: find_neighbors
 namespace: "neighbors"
+scope: "public"
 description: |
   Compute a neighborhood graph of observations [McInnes18].
 

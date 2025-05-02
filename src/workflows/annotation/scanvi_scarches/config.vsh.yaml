@@ -1,5 +1,6 @@
 name: "scanvi_scarches"
 namespace: "workflows/annotation"
+scope: "public"
 description: "Cell type annotation workflow using ScanVI with scArches for reference mapping."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
@@ -12,6 +13,7 @@ info:
   test_dependencies:
     - name: scanvi_scarches_test
       namespace: test_workflows/annotation
+scope: "public"
 
 argument_groups:
   - name: Query Input

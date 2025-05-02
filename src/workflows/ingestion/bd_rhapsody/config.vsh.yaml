@@ -1,10 +1,12 @@
 name: "bd_rhapsody"
 namespace: "workflows/ingestion"
+scope: "public"
 info:
   name: "BD Rhapsody"
   test_dependencies:
     - name: bd_rhapsody_test
       namespace: test_workflows/ingestion
+scope: "public"
 description: |
     BD Rhapsody Sequence Analysis CWL pipeline v2.2.1
 

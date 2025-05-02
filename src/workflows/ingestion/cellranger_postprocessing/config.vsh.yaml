@@ -1,13 +1,16 @@
 name: "cellranger_postprocessing"
 namespace: "workflows/ingestion"
+scope: "public"
 description: "Post-processing Cell Ranger datasets."
 info:
   name: Cell Ranger post-processing
   test_dependencies:
     - name: from_10xh5_to_h5mu
       namespace: convert
+scope: "public"
     - name: cellranger_postprocessing_test
       namespace: test_workflows/ingestion
+scope: "public"
 authors:
   - __merge__: /src/authors/angela_pisco.yaml
     roles: [ author ]
