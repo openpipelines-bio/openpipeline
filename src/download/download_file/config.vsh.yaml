@@ -1,6 +1,6 @@
 name: "download_file"
 namespace: "download"
-scope: "public"
+scope: "test"
 description: |
   Download a file.
 usage: |

@@ -1,6 +1,6 @@
 name: "split_h5mu"
 namespace: "workflows/multiomics"
-scope: "public"
+scope: "private"
 description: "Split the samples of a single modality from a .h5mu (multimodal) sample into seperate .h5mu files based on the values of an .obs column of this modality. "
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
