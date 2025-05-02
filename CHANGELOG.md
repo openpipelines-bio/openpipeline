@@ -10,7 +10,7 @@
 
 ## BUG FIXES
 
-* Bump viash to 0.9.4. This adds support for nextflow versions starting major version 25.01 and fixes an issue where an integer being passed to a argument with `type: double` resulted in an error (PR #).
+* Bump viash to 0.9.4. This adds support for nextflow versions starting major version 25.01 and fixes an issue where an integer being passed to a argument with `type: double` resulted in an error (PR #1016).
 
 # openpipelines 2.1.0
 
