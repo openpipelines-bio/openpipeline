@@ -30,7 +30,7 @@ argument_groups:
         description: "Output h5mu file."
         required: true
         example: output.h5mu
-  __merge__: [., /src/base/h5_compression_argument.yaml]
+__merge__: [., /src/base/h5_compression_argument.yaml]
 
 resources:
   - type: python_script

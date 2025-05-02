@@ -23,7 +23,7 @@ arguments:
     description: Output AnnData file.
     default: output.h5ad
     direction: output
-  __merge__: [., /src/base/h5_compression_argument.yaml]
+__merge__: [., /src/base/h5_compression_argument.yaml]
 
 
 resources:
