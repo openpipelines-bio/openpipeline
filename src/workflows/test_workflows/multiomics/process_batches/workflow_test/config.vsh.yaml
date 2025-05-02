@@ -1,5 +1,6 @@
 name: "workflow_test"
 namespace: "test_workflows/multiomics/process_batches"
+scope: "test"
 scope: "public"
 description: "This component tests the output of the integration test of process_batches test_wf."
 authors:

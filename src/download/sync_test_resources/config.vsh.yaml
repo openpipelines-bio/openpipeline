@@ -1,6 +1,6 @@
 name: "sync_test_resources"
 namespace: "download"
-scope: "public"
+scope: "test"
 description: Sync test resources to the local filesystem
 usage: |
   sync_test_resources
