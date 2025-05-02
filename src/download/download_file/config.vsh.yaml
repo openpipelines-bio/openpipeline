@@ -1,5 +1,6 @@
 name: "download_file"
 namespace: "download"
+status: "deprecated"
 description: |
   Download a file.
 usage: |
