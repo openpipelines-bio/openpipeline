@@ -1,5 +1,9 @@
 # openpipelines 3.0.0
 
+## BREAKING CHANGES
+
+* `split_h5mu_train_test`: rename `compression` argument to `output_compression` (PR #1017)
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
