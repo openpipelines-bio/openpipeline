@@ -43,7 +43,7 @@ In terms of workflows, the following functionality is provided:
   multimodal methods.
 - Downstream analysis workflows
 
-``` mermaid
+``` mermaid lang="mermaid"
 flowchart LR
   demultiplexing["Step 1: Demultiplexing"]
   ingestion["Step 2: Ingestion"]
