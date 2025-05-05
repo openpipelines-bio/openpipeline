@@ -55,10 +55,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.h5ad`. Output AnnData file",
-                "help_text": "Type: `file`, default: `$id.$key.output.h5ad`. Output AnnData file."
+                "description": "Type: `file`, default: `output.h5ad`. Output AnnData file",
+                "help_text": "Type: `file`, default: `output.h5ad`. Output AnnData file."
             ,
-                "default":"$id.$key.output.h5ad"
+                "default":"output.h5ad"
             }
     
 

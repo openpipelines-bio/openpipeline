@@ -63,10 +63,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `cellranger_reference`. Output folder",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `cellranger_reference`. Output folder"
+                "description": "Type: `file`, required, default: `$id.$key.output`, example: `cellranger_reference`. Output folder",
+                "help_text": "Type: `file`, required, default: `$id.$key.output`, example: `cellranger_reference`. Output folder"
             ,
-                "default":"$id.$key.output.output"
+                "default":"$id.$key.output"
             }
     
 

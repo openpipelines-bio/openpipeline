@@ -95,10 +95,10 @@
                 "output_model": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_model.output_model`, example: `output_dir`. Folder where the state of the trained model will be saved to",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_model.output_model`, example: `output_dir`. Folder where the state of the trained model will be saved to."
+                "description": "Type: `file`, required, default: `$id.$key.output_model`, example: `output_dir`. Folder where the state of the trained model will be saved to",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_model`, example: `output_dir`. Folder where the state of the trained model will be saved to."
             ,
-                "default":"$id.$key.output_model.output_model"
+                "default":"$id.$key.output_model"
             }
     
 

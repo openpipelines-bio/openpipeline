@@ -63,10 +63,10 @@
                 "output_dir": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_dir.output_dir`, example: `output_dir`. The unprocessed output directory containing all the outputs from the pipeline",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_dir.output_dir`, example: `output_dir`. The unprocessed output directory containing all the outputs from the pipeline."
+                "description": "Type: `file`, required, default: `$id.$key.output_dir`, example: `output_dir`. The unprocessed output directory containing all the outputs from the pipeline",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_dir`, example: `output_dir`. The unprocessed output directory containing all the outputs from the pipeline."
             ,
-                "default":"$id.$key.output_dir.output_dir"
+                "default":"$id.$key.output_dir"
             }
     
 

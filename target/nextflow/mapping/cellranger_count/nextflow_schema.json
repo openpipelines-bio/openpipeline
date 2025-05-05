@@ -73,10 +73,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `/path/to/output`. The folder to store the alignment results",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `/path/to/output`. The folder to store the alignment results."
+                "description": "Type: `file`, required, default: `$id.$key.output`, example: `/path/to/output`. The folder to store the alignment results",
+                "help_text": "Type: `file`, required, default: `$id.$key.output`, example: `/path/to/output`. The folder to store the alignment results."
             ,
-                "default":"$id.$key.output.output"
+                "default":"$id.$key.output"
             }
     
 

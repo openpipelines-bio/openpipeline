@@ -3405,6 +3405,7 @@ meta = [
       }
     }
   ],
+  "license" : "MIT",
   "links" : {
     "repository" : "https://github.com/openpipelines-bio/openpipeline",
     "docker_registry" : "ghcr.io"
@@ -3493,11 +3494,13 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scanorama_leiden",
     "viash_version" : "0.9.3",
-    "git_commit" : "194afe660f7971f965848d67a1b45e1305b0254d",
+    "git_commit" : "db150dc2dccf4c3165bfd757c7db34aec0c53421",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
     "name" : "openpipeline",
+    "summary" : "Best-practice workflows for single-cell multi-omics analyses.\n",
+    "description" : "OpenPipelines are extensible single cell analysis pipelines for reproducible and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\nIn terms of workflows, the following has been made available, but keep in mind that\nindividual tools and functionality can be executed as standalone components as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample processing: cell filtering and doublet detection.\n  * Multisample processing: Count transformation, normalization, QC metric calulations.\n  * Integration: Clustering, integration and batch correction using single and multimodal methods.\n  * Downstream analysis workflows\n",
     "info" : {
       "test_resources" : [
         {
@@ -3511,9 +3514,14 @@ meta = [
     "source" : "/home/runner/work/openpipeline/openpipeline/src",
     "target" : "/home/runner/work/openpipeline/openpipeline/target",
     "config_mods" : [
-      ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n.runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script := 'includeConfig(\\"nextflow_labels.config\\")'",
+      ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n.runners[.type == 'nextflow'].config.script := 'includeConfig(\\"nextflow_labels.config\\")'",
       ".version := \\"main_build\\""
     ],
+    "keywords" : [
+      "single-cell",
+      "multimodal"
+    ],
+    "license" : "MIT",
     "organization" : "openpipelines-bio",
     "links" : {
       "repository" : "https://github.com/openpipelines-bio/openpipeline",

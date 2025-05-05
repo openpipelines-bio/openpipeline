@@ -114,10 +114,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file."
+                "description": "Type: `file`, required, default: `$id.$key.output`. Output h5mu file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output`. Output h5mu file."
             ,
-                "default":"$id.$key.output.output"
+                "default":"$id.$key.output"
             }
     
 
@@ -137,10 +137,10 @@
                 "model_output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.model_output.model_output`. Output directory for model",
-                "help_text": "Type: `file`, default: `$id.$key.model_output.model_output`. Output directory for model"
+                "description": "Type: `file`, default: `model`. Output directory for model",
+                "help_text": "Type: `file`, default: `model`. Output directory for model"
             ,
-                "default":"$id.$key.model_output.model_output"
+                "default":"model"
             }
     
 

@@ -106,10 +106,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.output`. Output directory",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Output directory. If it does not exist, will be created."
+                "description": "Type: `file`, required, default: `$id.$key.output`. Output directory",
+                "help_text": "Type: `file`, required, default: `$id.$key.output`. Output directory. If it does not exist, will be created."
             ,
-                "default":"$id.$key.output.output"
+                "default":"$id.$key.output"
             }
     
 
@@ -117,10 +117,10 @@
                 "output_h5mu": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_h5mu.output_h5mu`. Output mudata file",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_h5mu.output_h5mu`. Output mudata file."
+                "description": "Type: `file`, required, default: `$id.$key.output_h5mu`. Output mudata file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_h5mu`. Output mudata file."
             ,
-                "default":"$id.$key.output_h5mu.output_h5mu"
+                "default":"$id.$key.output_h5mu"
             }
     
 

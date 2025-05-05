@@ -55,10 +55,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.h5mu`. Output MuData file",
-                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`. Output MuData file."
+                "description": "Type: `file`, default: `output.h5mu`. Output MuData file",
+                "help_text": "Type: `file`, default: `output.h5mu`. Output MuData file."
             ,
-                "default":"$id.$key.output.h5mu"
+                "default":"output.h5mu"
             }
     
 
