@@ -2,7 +2,7 @@
 
 ## BREAKING CHANGES
 
-* `transfer/publish`: remove component after deprecating it in 2.1.0 (PR #).
+* `transfer/publish`: remove component after deprecating it in 2.1.0 (PR #1019).
 
 ## MAJOR CHANGES
 
