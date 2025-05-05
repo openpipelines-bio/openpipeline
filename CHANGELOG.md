@@ -2,7 +2,7 @@
 
 ## BREAKING CHANGES
 
-* Removed `split_h5mu_train_test` component.
+* Removed `split_h5mu_train_test` component (PR #1020).
 
 ## MAJOR CHANGES
 
