@@ -44,7 +44,7 @@ In terms of workflows, the following functionality is provided:
   multimodal methods.
 - Downstream analysis workflows
 
-`mermaid lang='mermaid' flowchart LR   demultiplexing[Step 1: Demultiplexing]   ingestion[Step 2: Ingestion]   process_sampless[Step 3: Process Samples]   integration[Step 4: Integration]   downstream[Step 5: Downstream]   demultiplexing --> ingestion --> process_samples --> integration --> downstream`
+`mermaid lang='mermaid' flowchart LR   demultiplexing["Step 1: Demultiplexing"]   ingestion["Step 2: Ingestion"]   process_samples["Step 3: Process Samples"]   integration["Step 4: Integration"]   downstream["Step 5: Downstream"]   demultiplexing --> ingestion --> process_samples --> integration --> downstream`
 
 ## Guided execution using Viash Hub (CLI and Seqera cloud)
 

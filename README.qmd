@@ -32,13 +32,14 @@ In terms of workflows, the following functionality is provided:
 * [Integration](https://openpipelines.bio/fundamentals/architecture.html#sec-intergration): Clustering, integration and batch correction using single and multimodal methods.
 * Downstream analysis workflows
 
+
 ```mermaid lang='mermaid'
 flowchart LR
-  demultiplexing[Step 1: Demultiplexing]
-  ingestion[Step 2: Ingestion]
-  process_sampless[Step 3: Process Samples]
-  integration[Step 4: Integration]
-  downstream[Step 5: Downstream]
+  demultiplexing["Step 1: Demultiplexing"]
+  ingestion["Step 2: Ingestion"]
+  process_samples["Step 3: Process Samples"]
+  integration["Step 4: Integration"]
+  downstream["Step 5: Downstream"]
   demultiplexing --> ingestion --> process_samples --> integration --> downstream
 ```
 
