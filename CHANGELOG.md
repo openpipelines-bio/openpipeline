@@ -2,7 +2,7 @@
 
 ## BREAKING CHANGES
 
-* `split_h5mu_train_test`: rename `compression` argument to `output_compression` (PR #1017)
+* Removed `split_h5mu_train_test` component (PR #1020).
 
 ## MAJOR CHANGES
 
