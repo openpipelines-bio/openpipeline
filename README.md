@@ -44,7 +44,15 @@ In terms of workflows, the following functionality is provided:
   multimodal methods.
 - Downstream analysis workflows
 
-`mermaid lang='mermaid' flowchart LR   demultiplexing["Step 1: Demultiplexing"]   ingestion["Step 2: Ingestion"]   process_samples["Step 3: Process Samples"]   integration["Step 4: Integration"]   downstream["Step 5: Downstream"]   demultiplexing --> ingestion --> process_samples --> integration --> downstream`
+```mermaid
+flowchart LR
+  demultiplexing["Step 1: Demultiplexing"]
+  ingestion["Step 2: Ingestion"]
+  process_samples["Step 3: Process Samples"]
+  integration["Step 4: Integration"]
+  downstream["Step 5: Downstream"]
+  demultiplexing-->ingestion-->process_samples-->integration-->downstream
+```
 
 ## Guided execution using Viash Hub (CLI and Seqera cloud)
 
@@ -64,10 +72,11 @@ with the command line interface (CLI).
 ### Setup
 
 In order to use the workflows in this package on your local computer,
-you’ll need to do the following: \* Install
-[nextflow](https://www.nextflow.io/docs/latest/install.html) \* Install
-a nextflow compatible executor. This workflow provides a profile for
-[docker](https://docs.docker.com/get-started/).
+you’ll need to do the following:
+
+- Install [nextflow](https://www.nextflow.io/docs/latest/install.html)
+- Install a nextflow compatible executor. This workflow provides a
+  profile for [docker](https://docs.docker.com/get-started/).
 
 ### Location of the workflow scripts
 
@@ -85,7 +94,7 @@ A reference of workflows and modules is also provided in the
 
 ### Retrieving a list of a workflow parameters
 
-A list of workflows arguments can be consulted in multiple ways
+A list of workflows arguments can be consulted in multiple ways:
 
 - On [Viash Hub](https://www.viash-hub.com/packages/openpipeline/latest)
 - In the [reference
@@ -107,9 +116,11 @@ nextflow run openpipelines-bio/openpipeline \
 
 Nextflow’s labels can be used to specify the amount of resources a
 process can use. This workflow uses the following labels for CPU, memory
-and disk: \* `lowmem`, `lowmem`, `midmem`, `highmem`, `veryhighmem` \*
-`lowcpu`, `lowcpu`, `midcpu`, `highcpu`, `veryhighcpu` \* `lowdisk`,
-`middisk`, `highdisk`, `veryhighdisk`
+and disk:
+
+- `lowmem`, `lowmem`, `midmem`, `highmem`, `veryhighmem`
+- `lowcpu`, `lowcpu`, `midcpu`, `highcpu`, `veryhighcpu`
+- `lowdisk`, `middisk`, `highdisk`, `veryhighdisk`
 
 The defaults for these labels can be found at
 `src/workflows/utils/labels.config`. Nextflow checks that the specified
