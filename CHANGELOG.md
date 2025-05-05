@@ -1,5 +1,9 @@
 # openpipelines 3.0.0
 
+## BREAKING CHANGES
+
+* Removed `split_h5mu_train_test` component (PR #1020).
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
