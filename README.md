@@ -2,9 +2,8 @@
 
 # OpenPipeline
 
-OpenPipeline are extensible single cell analysis pipelines for
-reproducible and large-scale single cell processing using Viash and
-Nextflow.
+Extensible single cell analysis pipelines for reproducible and
+large-scale single cell processing using Viash and Nextflow.
 
 [![ViashHub](https://img.shields.io/badge/ViashHub-openpipeline-7a4baa.svg)](https://www.viash-hub.com/packages/openpipeline)
 [![GitHub](https://img.shields.io/badge/GitHub-viash--hub%2Fopenpipeline-blue.svg)](https://github.com/openpipelines-bio/openpipeline)
