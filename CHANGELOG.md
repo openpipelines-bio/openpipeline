@@ -1,5 +1,9 @@
 # openpipelines 3.0.0
 
+## BREAKING CHANGES
+
+* `transfer/publish`: remove component after deprecating it in 2.1.0 (PR #).
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
