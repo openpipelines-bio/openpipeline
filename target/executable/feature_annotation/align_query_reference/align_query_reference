@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component feature_annotation align_query_reference"
-LABEL org.opencontainers.image.created="2025-05-05T19:27:08Z"
+LABEL org.opencontainers.image.created="2025-05-06T17:17:34Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7e44cdf66415ed53f892c6109e6fd6b83d9c9a64"
+LABEL org.opencontainers.image.revision="be993b86673d38cb50d1d791d91a938553b0c589"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -694,11 +694,6 @@ function ViashHelp {
   echo "        example: output_reference.h5mu"
   echo "        Aligned reference data."
   echo ""
-  echo "    --output_compression"
-  echo "        type: string"
-  echo "        example: gzip"
-  echo "        choices: [ gzip, lzf ]"
-  echo ""
   echo "    --output_layer"
   echo "        type: string"
   echo "        default: _counts"
@@ -747,6 +742,13 @@ function ViashHelp {
   echo "        default: _common_vars"
   echo "        Name of the .var column in the output query and reference datasets"
   echo "        containing the boolean array indicating the common variables."
+  echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        Compression format to use for the output AnnData and/or Mudata objects."
+  echo "        By default no compression is applied."
   echo ""
   echo "Arguments:"
   echo "    Arguments related to the alignment of the input and reference datasets."
@@ -1023,17 +1025,6 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT_REFERENCE=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_compression)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output_compression=*)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         --output_layer)
             [ -n "$VIASH_PAR_OUTPUT_LAYER" ] && ViashError Bad arguments for option \'--output_layer\': \'$VIASH_PAR_OUTPUT_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_LAYER="$2"
@@ -1120,6 +1111,17 @@ while [[ $# -gt 0 ]]; do
         --output_var_common_genes=*)
             [ -n "$VIASH_PAR_OUTPUT_VAR_COMMON_GENES" ] && ViashError Bad arguments for option \'--output_var_common_genes=*\': \'$VIASH_PAR_OUTPUT_VAR_COMMON_GENES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_VAR_COMMON_GENES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --input_reference_gene_overlap)
@@ -1680,7 +1682,6 @@ par = {
   'reference_id': $( if [ ! -z ${VIASH_PAR_REFERENCE_ID+x} ]; then echo "r'${VIASH_PAR_REFERENCE_ID//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_query': $( if [ ! -z ${VIASH_PAR_OUTPUT_QUERY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_QUERY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_reference': $( if [ ! -z ${VIASH_PAR_OUTPUT_REFERENCE+x} ]; then echo "r'${VIASH_PAR_OUTPUT_REFERENCE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_layer_lognormalized': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_var_gene_names': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1689,6 +1690,7 @@ par = {
   'output_obs_id': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_ID+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_ID//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_var_index': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_INDEX+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_INDEX//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_var_common_genes': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_COMMON_GENES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_COMMON_GENES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'align_layers_raw_counts': $( if [ ! -z ${VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS+x} ]; then echo "r'${VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'align_layers_lognormalized_counts': $( if [ ! -z ${VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS+x} ]; then echo "r'${VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),

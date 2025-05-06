@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component metadata grep_annotation_column"
-LABEL org.opencontainers.image.created="2025-05-05T19:27:08Z"
+LABEL org.opencontainers.image.created="2025-05-06T17:17:33Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7e44cdf66415ed53f892c6109e6fd6b83d9c9a64"
+LABEL org.opencontainers.image.revision="be993b86673d38cb50d1d791d91a938553b0c589"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -622,12 +622,6 @@ function ViashHelp {
   echo "        type: file, output, file must exist"
   echo "        example: output.h5mu"
   echo ""
-  echo "    --output_compression"
-  echo "        type: string"
-  echo "        example: gzip"
-  echo "        choices: [ gzip, lzf ]"
-  echo "        The compression format to be used on the output h5mu object."
-  echo ""
   echo "    --output_match_column"
   echo "        type: string, required parameter"
   echo "        Name of the column to write the result to."
@@ -636,6 +630,13 @@ function ViashHelp {
   echo "        type: string"
   echo "        For the opposite axis, name of the column to write the fraction of"
   echo "        observations that matches to the pattern."
+  echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        Compression format to use for the output AnnData and/or Mudata objects."
+  echo "        By default no compression is applied."
   echo ""
   echo "Query options:"
   echo "    Options related to the query"
@@ -773,17 +774,6 @@ while [[ $# -gt 0 ]]; do
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_compression)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output_compression=*)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         --output_match_column)
             [ -n "$VIASH_PAR_OUTPUT_MATCH_COLUMN" ] && ViashError Bad arguments for option \'--output_match_column\': \'$VIASH_PAR_OUTPUT_MATCH_COLUMN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_MATCH_COLUMN="$2"
@@ -804,6 +794,17 @@ while [[ $# -gt 0 ]]; do
         --output_fraction_column=*)
             [ -n "$VIASH_PAR_OUTPUT_FRACTION_COLUMN" ] && ViashError Bad arguments for option \'--output_fraction_column=*\': \'$VIASH_PAR_OUTPUT_FRACTION_COLUMN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_FRACTION_COLUMN=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --regex_pattern)
@@ -1236,9 +1237,9 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'matrix': $( if [ ! -z ${VIASH_PAR_MATRIX+x} ]; then echo "r'${VIASH_PAR_MATRIX//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_match_column': $( if [ ! -z ${VIASH_PAR_OUTPUT_MATCH_COLUMN+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MATCH_COLUMN//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_fraction_column': $( if [ ! -z ${VIASH_PAR_OUTPUT_FRACTION_COLUMN+x} ]; then echo "r'${VIASH_PAR_OUTPUT_FRACTION_COLUMN//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'regex_pattern': $( if [ ! -z ${VIASH_PAR_REGEX_PATTERN+x} ]; then echo "r'${VIASH_PAR_REGEX_PATTERN//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {

@@ -7,8 +7,8 @@ vocab_file: # please fill in - example: "resources_test/scgpt/vocab.json"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 output_var_filter: "id_in_vocab"
+# output_compression: "gzip"
 
 # Arguments
 pad_token: "<pad>"

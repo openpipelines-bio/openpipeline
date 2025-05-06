@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow concatenate_h5mu"
-LABEL org.opencontainers.image.created="2025-05-05T19:27:10Z"
+LABEL org.opencontainers.image.created="2025-05-06T17:17:36Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7e44cdf66415ed53f892c6109e6fd6b83d9c9a64"
+LABEL org.opencontainers.image.revision="be993b86673d38cb50d1d791d91a938553b0c589"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -606,12 +606,6 @@ function ViashHelp {
   echo "        type: file, output, file must exist"
   echo "        example: output.h5mu"
   echo ""
-  echo "    --output_compression"
-  echo "        type: string"
-  echo "        example: gzip"
-  echo "        choices: [ gzip, lzf ]"
-  echo "        The compression format to be used on the output h5mu object."
-  echo ""
   echo "    --obs_sample_name"
   echo "        type: string"
   echo "        default: sample_id"
@@ -648,6 +642,13 @@ function ViashHelp {
   echo "        unique element in only 1 sample)"
   echo "          - make_unique: identical to 'unique', but keys which are not unique"
   echo "        are made unique by prefixing them with the sample id."
+  echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        Compression format to use for the output AnnData and/or Mudata objects."
+  echo "        By default no compression is applied."
   echo ""
   echo "Viash built in Computational Requirements:"
   echo "    ---cpus=INT"
@@ -776,17 +777,6 @@ while [[ $# -gt 0 ]]; do
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_compression)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output_compression=*)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         --obs_sample_name)
             [ -n "$VIASH_PAR_OBS_SAMPLE_NAME" ] && ViashError Bad arguments for option \'--obs_sample_name\': \'$VIASH_PAR_OBS_SAMPLE_NAME\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBS_SAMPLE_NAME="$2"
@@ -818,6 +808,17 @@ while [[ $# -gt 0 ]]; do
         --uns_merge_mode=*)
             [ -n "$VIASH_PAR_UNS_MERGE_MODE" ] && ViashError Bad arguments for option \'--uns_merge_mode=*\': \'$VIASH_PAR_UNS_MERGE_MODE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_UNS_MERGE_MODE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---engine)
@@ -1119,18 +1120,6 @@ if [[ -n "$VIASH_META_MEMORY_PIB" ]]; then
 fi
 
 # check whether value is belongs to a set of choices
-if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
-  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip;lzf")
-  IFS=';'
-  set -f
-  if ! [[ ";${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]};" =~ ";$VIASH_PAR_OUTPUT_COMPRESSION;" ]]; then
-    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-  set +f
-  unset IFS
-fi
-
 if [ ! -z "$VIASH_PAR_OTHER_AXIS_MODE" ]; then
   VIASH_PAR_OTHER_AXIS_MODE_CHOICES=("same;unique;first;only;concat;move")
   IFS=';'
@@ -1149,6 +1138,18 @@ if [ ! -z "$VIASH_PAR_UNS_MERGE_MODE" ]; then
   set -f
   if ! [[ ";${VIASH_PAR_UNS_MERGE_MODE_CHOICES[*]};" =~ ";$VIASH_PAR_UNS_MERGE_MODE;" ]]; then
     ViashError '--uns_merge_mode' specified value of \'$VIASH_PAR_UNS_MERGE_MODE\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
+if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
+  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip;lzf")
+  IFS=';'
+  set -f
+  if ! [[ ";${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]};" =~ ";$VIASH_PAR_OUTPUT_COMPRESSION;" ]]; then
+    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
     exit 1
   fi
   set +f
@@ -1266,10 +1267,10 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'input_id': $( if [ ! -z ${VIASH_PAR_INPUT_ID+x} ]; then echo "r'${VIASH_PAR_INPUT_ID//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_sample_name': $( if [ ! -z ${VIASH_PAR_OBS_SAMPLE_NAME+x} ]; then echo "r'${VIASH_PAR_OBS_SAMPLE_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'other_axis_mode': $( if [ ! -z ${VIASH_PAR_OTHER_AXIS_MODE+x} ]; then echo "r'${VIASH_PAR_OTHER_AXIS_MODE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'uns_merge_mode': $( if [ ! -z ${VIASH_PAR_UNS_MERGE_MODE+x} ]; then echo "r'${VIASH_PAR_UNS_MERGE_MODE//\'/\'\"\'\"r\'}'"; else echo None; fi )
+  'uns_merge_mode': $( if [ ! -z ${VIASH_PAR_UNS_MERGE_MODE+x} ]; then echo "r'${VIASH_PAR_UNS_MERGE_MODE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),

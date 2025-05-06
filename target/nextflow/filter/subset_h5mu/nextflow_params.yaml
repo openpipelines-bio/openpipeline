@@ -2,8 +2,8 @@
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 # number_of_observations: 5
+# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

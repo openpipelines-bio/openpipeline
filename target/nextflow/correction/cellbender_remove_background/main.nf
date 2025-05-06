@@ -3090,21 +3090,6 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--output_compression",
-          "example" : [
-            "gzip"
-          ],
-          "required" : false,
-          "choices" : [
-            "gzip",
-            "lzf"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
           "name" : "--layer_output",
           "description" : "Output layer",
           "default" : [
@@ -3188,6 +3173,22 @@ meta = [
             "cellbender_gene_expression_encoding"
           ],
           "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_compression",
+          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "example" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3689,7 +3690,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background",
     "viash_version" : "0.9.4",
-    "git_commit" : "7e44cdf66415ed53f892c6109e6fd6b83d9c9a64",
+    "git_commit" : "be993b86673d38cb50d1d791d91a938553b0c589",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3754,7 +3755,6 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer_output': $( if [ ! -z ${VIASH_PAR_LAYER_OUTPUT+x} ]; then echo "r'${VIASH_PAR_LAYER_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_background_fraction': $( if [ ! -z ${VIASH_PAR_OBS_BACKGROUND_FRACTION+x} ]; then echo "r'${VIASH_PAR_OBS_BACKGROUND_FRACTION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_cell_probability': $( if [ ! -z ${VIASH_PAR_OBS_CELL_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OBS_CELL_PROBABILITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3763,6 +3763,7 @@ par = {
   'obs_latent_scale': $( if [ ! -z ${VIASH_PAR_OBS_LATENT_SCALE+x} ]; then echo "r'${VIASH_PAR_OBS_LATENT_SCALE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_ambient_expression': $( if [ ! -z ${VIASH_PAR_VAR_AMBIENT_EXPRESSION+x} ]; then echo "r'${VIASH_PAR_VAR_AMBIENT_EXPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_gene_expression_encoding': $( if [ ! -z ${VIASH_PAR_OBSM_GENE_EXPRESSION_ENCODING+x} ]; then echo "r'${VIASH_PAR_OBSM_GENE_EXPRESSION_ENCODING//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'expected_cells_from_qc': $( if [ ! -z ${VIASH_PAR_EXPECTED_CELLS_FROM_QC+x} ]; then echo "r'${VIASH_PAR_EXPECTED_CELLS_FROM_QC//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'expected_cells': $( if [ ! -z ${VIASH_PAR_EXPECTED_CELLS+x} ]; then echo "int(r'${VIASH_PAR_EXPECTED_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'total_droplets_included': $( if [ ! -z ${VIASH_PAR_TOTAL_DROPLETS_INCLUDED+x} ]; then echo "int(r'${VIASH_PAR_TOTAL_DROPLETS_INCLUDED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),

@@ -20,9 +20,9 @@ unknown_celltype: "Unknown"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 output_obs_predictions: "onclass_pred"
 output_obs_probability: "onclass_prob"
+# output_compression: "gzip"
 
 # Model arguments
 # model: "foo"

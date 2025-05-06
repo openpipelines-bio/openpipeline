@@ -3119,9 +3119,15 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "boolean_true",
+          "name" : "--make_observation_keys_unique",
+          "description" : "Join the id to the .obs index (.obs_names).",
+          "direction" : "input"
+        },
+        {
           "type" : "string",
           "name" : "--output_compression",
-          "description" : "The compression format to be used on the output h5mu object.",
+          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
           "example" : [
             "gzip"
           ],
@@ -3133,12 +3139,6 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        },
-        {
-          "type" : "boolean_true",
-          "name" : "--make_observation_keys_unique",
-          "description" : "Join the id to the .obs index (.obs_names).",
-          "direction" : "input"
         }
       ]
     }
@@ -3318,7 +3318,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id",
     "viash_version" : "0.9.4",
-    "git_commit" : "7e44cdf66415ed53f892c6109e6fd6b83d9c9a64",
+    "git_commit" : "be993b86673d38cb50d1d791d91a938553b0c589",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3379,8 +3379,8 @@ par = {
   'input_id': $( if [ ! -z ${VIASH_PAR_INPUT_ID+x} ]; then echo "r'${VIASH_PAR_INPUT_ID//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_output': $( if [ ! -z ${VIASH_PAR_OBS_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBS_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'make_observation_keys_unique': $( if [ ! -z ${VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE+x} ]; then echo "r'${VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
+  'make_observation_keys_unique': $( if [ ! -z ${VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE+x} ]; then echo "r'${VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),

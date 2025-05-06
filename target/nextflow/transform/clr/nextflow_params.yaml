@@ -2,10 +2,10 @@
 input: # please fill in - example: "input.h5mu"
 modality: "prot"
 # output: "output.h5mu"
-# output_compression: "gzip"
 # input_layer: "foo"
 # output_layer: "foo"
 axis: 0
+# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

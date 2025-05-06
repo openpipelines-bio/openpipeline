@@ -456,9 +456,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Dorien Roosen, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component feature_annotation score_genes_cell_cycle_scanpy"
-LABEL org.opencontainers.image.created="2025-05-05T19:27:08Z"
+LABEL org.opencontainers.image.created="2025-05-06T17:17:34Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7e44cdf66415ed53f892c6109e6fd6b83d9c9a64"
+LABEL org.opencontainers.image.revision="be993b86673d38cb50d1d791d91a938553b0c589"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -658,12 +658,6 @@ function ViashHelp {
   echo "        example: output_file.h5mu"
   echo "        Output h5mu file"
   echo ""
-  echo "    --output_compression"
-  echo "        type: string"
-  echo "        example: gzip"
-  echo "        choices: [ gzip, lzf ]"
-  echo "        The compression format to be used on the output h5mu object."
-  echo ""
   echo "    --obs_phase"
   echo "        type: string"
   echo "        default: phase"
@@ -681,6 +675,13 @@ function ViashHelp {
   echo "        default: G2M_score"
   echo "        The name of the column in the obs attribute of the adata object that"
   echo "        will store the g2m phase score."
+  echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        Compression format to use for the output AnnData and/or Mudata objects."
+  echo "        By default no compression is applied."
   echo ""
   echo "Arguments:"
   echo "    --n_bins"
@@ -888,17 +889,6 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_compression)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output_compression=*)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         --obs_phase)
             [ -n "$VIASH_PAR_OBS_PHASE" ] && ViashError Bad arguments for option \'--obs_phase\': \'$VIASH_PAR_OBS_PHASE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBS_PHASE="$2"
@@ -930,6 +920,17 @@ while [[ $# -gt 0 ]]; do
         --obs_g2m_score=*)
             [ -n "$VIASH_PAR_OBS_G2M_SCORE" ] && ViashError Bad arguments for option \'--obs_g2m_score=*\': \'$VIASH_PAR_OBS_G2M_SCORE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBS_G2M_SCORE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --n_bins)
@@ -1434,10 +1435,10 @@ par = {
   'gene_pool': $( if [ ! -z ${VIASH_PAR_GENE_POOL+x} ]; then echo "r'${VIASH_PAR_GENE_POOL//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'gene_pool_file': $( if [ ! -z ${VIASH_PAR_GENE_POOL_FILE+x} ]; then echo "r'${VIASH_PAR_GENE_POOL_FILE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_phase': $( if [ ! -z ${VIASH_PAR_OBS_PHASE+x} ]; then echo "r'${VIASH_PAR_OBS_PHASE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_s_score': $( if [ ! -z ${VIASH_PAR_OBS_S_SCORE+x} ]; then echo "r'${VIASH_PAR_OBS_S_SCORE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_g2m_score': $( if [ ! -z ${VIASH_PAR_OBS_G2M_SCORE+x} ]; then echo "r'${VIASH_PAR_OBS_G2M_SCORE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'n_bins': $( if [ ! -z ${VIASH_PAR_N_BINS+x} ]; then echo "int(r'${VIASH_PAR_N_BINS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'random_state': $( if [ ! -z ${VIASH_PAR_RANDOM_STATE+x} ]; then echo "int(r'${VIASH_PAR_RANDOM_STATE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'allow_missing_genes': $( if [ ! -z ${VIASH_PAR_ALLOW_MISSING_GENES+x} ]; then echo "r'${VIASH_PAR_ALLOW_MISSING_GENES//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi )

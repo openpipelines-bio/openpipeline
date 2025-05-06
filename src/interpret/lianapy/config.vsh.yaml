@@ -19,11 +19,6 @@ arguments:
     description: Output h5mu file.
     direction: output
     required: true
-  - name: "--output_compression"
-    type: string
-    choices: ["gzip", "lzf"]
-    default: "gzip"
-    required: false
   - name: "--modality"
     type: string
     default: "rna"
@@ -73,6 +68,7 @@ arguments:
     default: 100
     required: false
     description: "Number of permutations for the permutation test. Note that this is relevant only for permutation-based methods - e.g. 'CellPhoneDB"
+__merge__: [., /src/base/h5_compression_argument.yaml]
 resources:
   - type: python_script
     path: script.py

@@ -3142,22 +3142,6 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--output_compression",
-          "description" : "The compression format to be used on the output h5mu object.",
-          "example" : [
-            "gzip"
-          ],
-          "required" : false,
-          "choices" : [
-            "gzip",
-            "lzf"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
           "name" : "--modality",
           "description" : "The modality to run this component on.",
           "default" : [
@@ -3197,6 +3181,22 @@ meta = [
             "X_regressed"
           ],
           "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_compression",
+          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "example" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3397,7 +3397,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/bpcells_regress_out",
     "viash_version" : "0.9.4",
-    "git_commit" : "7e44cdf66415ed53f892c6109e6fd6b83d9c9a64",
+    "git_commit" : "be993b86673d38cb50d1d791d91a938553b0c589",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3462,11 +3462,11 @@ mudata <- reticulate::import("mudata")
 par <- list(
   "input" = $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_INPUT" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
   "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
-  "output_compression" = $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT_COMPRESSION" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
   "modality" = $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_MODALITY" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
   "obs_keys" = $( if [ ! -z ${VIASH_PAR_OBS_KEYS+x} ]; then echo -n "strsplit('"; echo -n "$VIASH_PAR_OBS_KEYS" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "', split = ';')[[1]]"; else echo NULL; fi ),
   "input_layer" = $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_INPUT_LAYER" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
-  "output_layer" = $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT_LAYER" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi )
+  "output_layer" = $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT_LAYER" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "output_compression" = $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT_COMPRESSION" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi )
 )
 meta <- list(
   "name" = $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo -n "'"; echo -n "$VIASH_META_NAME" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),

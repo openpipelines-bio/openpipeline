@@ -41,17 +41,6 @@
     
 
         ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `gzip`, example: `gzip`. The compression algorithm to use for the output h5mu file",
-                "help_text": "Type: `string`, default: `gzip`, example: `gzip`. The compression algorithm to use for the output h5mu file.\n"
-            ,
-                "default":"gzip"
-            }
-    
-
-        ,
                 "output_obs_predictions": {
                 "type":
                 "string",
@@ -70,6 +59,18 @@
                 "help_text": "Type: `string`, default: `scgpt_probability`. The name of the adata.obs column to write the probabilities of the predicted cell type labels to.\n"
             ,
                 "default":"scgpt_probability"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
             }
     
 

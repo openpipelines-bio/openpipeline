@@ -3122,21 +3122,6 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--output_compression",
-          "example" : [
-            "gzip"
-          ],
-          "required" : false,
-          "choices" : [
-            "gzip",
-            "lzf"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
           "name" : "--obsm_name",
           "description" : "Name of the .obsm key under which to add the cluster labels.\nThe name of the columns in the matrix will correspond to the resolutions.\n",
           "default" : [
@@ -3157,6 +3142,22 @@ meta = [
           "required" : true,
           "direction" : "input",
           "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_compression",
+          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "example" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
+          "direction" : "input",
+          "multiple" : false,
           "multiple_sep" : ";"
         }
       ]
@@ -3344,7 +3345,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.9.4",
-    "git_commit" : "7e44cdf66415ed53f892c6109e6fd6b83d9c9a64",
+    "git_commit" : "be993b86673d38cb50d1d791d91a938553b0c589",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3420,9 +3421,9 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsp_connectivities': $( if [ ! -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then echo "r'${VIASH_PAR_OBSP_CONNECTIVITIES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_name': $( if [ ! -z ${VIASH_PAR_OBSM_NAME+x} ]; then echo "r'${VIASH_PAR_OBSM_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'resolution': $( if [ ! -z ${VIASH_PAR_RESOLUTION+x} ]; then echo "list(map(float, r'${VIASH_PAR_RESOLUTION//\\'/\\'\\"\\'\\"r\\'}'.split(';')))"; else echo None; fi )
+  'resolution': $( if [ ! -z ${VIASH_PAR_RESOLUTION+x} ]; then echo "list(map(float, r'${VIASH_PAR_RESOLUTION//\\'/\\'\\"\\'\\"r\\'}'.split(';')))"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),

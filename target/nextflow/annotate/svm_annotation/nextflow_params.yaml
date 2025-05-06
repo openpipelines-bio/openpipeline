@@ -14,9 +14,9 @@ reference_obs_target: # please fill in - example: "foo"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 output_obs_prediction: "svm_pred"
 output_obs_probability: "svm_probability"
+# output_compression: "gzip"
 
 # Model arguments
 # model: "pretrained_model.pkl"

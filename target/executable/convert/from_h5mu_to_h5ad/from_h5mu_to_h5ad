@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5mu_to_h5ad"
-LABEL org.opencontainers.image.created="2025-05-05T19:27:11Z"
+LABEL org.opencontainers.image.created="2025-05-06T17:17:37Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7e44cdf66415ed53f892c6109e6fd6b83d9c9a64"
+LABEL org.opencontainers.image.revision="be993b86673d38cb50d1d791d91a938553b0c589"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -599,9 +599,10 @@ function ViashHelp {
   echo ""
   echo "    --output_compression"
   echo "        type: string"
-  echo "        default: gzip"
+  echo "        example: gzip"
   echo "        choices: [ gzip, lzf ]"
-  echo "        The compression format to be used on the final h5ad object."
+  echo "        Compression format to use for the output AnnData and/or Mudata objects."
+  echo "        By default no compression is applied."
   echo ""
   echo "Viash built in Computational Requirements:"
   echo "    ---cpus=INT"
@@ -914,9 +915,6 @@ if [ -z ${VIASH_PAR_MODALITY+x} ]; then
 fi
 if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
   VIASH_PAR_OUTPUT="output.h5ad"
-fi
-if [ -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then
-  VIASH_PAR_OUTPUT_COMPRESSION="gzip"
 fi
 
 # check whether required files exist

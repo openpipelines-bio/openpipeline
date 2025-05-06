@@ -4,7 +4,6 @@ modality: "rna"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 layer_output: "cellbender_corrected"
 obs_background_fraction: "cellbender_background_fraction"
 obs_cell_probability: "cellbender_cell_probability"
@@ -13,6 +12,7 @@ obs_droplet_efficiency: "cellbender_droplet_efficiency"
 obs_latent_scale: "cellbender_latent_scale"
 var_ambient_expression: "cellbender_ambient_expression"
 obsm_gene_expression_encoding: "cellbender_gene_expression_encoding"
+# output_compression: "gzip"
 
 # Arguments
 expected_cells_from_qc: false

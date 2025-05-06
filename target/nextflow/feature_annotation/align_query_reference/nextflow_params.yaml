@@ -20,7 +20,6 @@ reference_id: "reference"
 # Outputs
 # output_query: "$id.$key.output_query.h5mu"
 # output_reference: "$id.$key.output_reference.h5mu"
-# output_compression: "gzip"
 output_layer: "_counts"
 output_layer_lognormalized: "_log_normalized"
 output_var_gene_names: "_gene_names"
@@ -29,6 +28,7 @@ output_obs_label: "_cell_type"
 output_obs_id: "_dataset"
 output_var_index: "_ori_var_index"
 output_var_common_genes: "_common_vars"
+# output_compression: "gzip"
 
 # Arguments
 input_reference_gene_overlap: 100

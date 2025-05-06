@@ -3134,8 +3134,17 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--obs_name_filter",
+          "description" : "In which .obs slot to store a boolean array corresponding to which observations should be removed.",
+          "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--output_compression",
-          "description" : "The compression format to be used on the output h5mu object.",
+          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
           "example" : [
             "gzip"
           ],
@@ -3144,15 +3153,6 @@ meta = [
             "gzip",
             "lzf"
           ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--obs_name_filter",
-          "description" : "In which .obs slot to store a boolean array corresponding to which observations should be removed.",
-          "required" : true,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3372,7 +3372,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/delimit_fraction",
     "viash_version" : "0.9.4",
-    "git_commit" : "7e44cdf66415ed53f892c6109e6fd6b83d9c9a64",
+    "git_commit" : "be993b86673d38cb50d1d791d91a938553b0c589",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3437,8 +3437,8 @@ par = {
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_fraction_column': $( if [ ! -z ${VIASH_PAR_OBS_FRACTION_COLUMN+x} ]; then echo "r'${VIASH_PAR_OBS_FRACTION_COLUMN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'min_fraction': $( if [ ! -z ${VIASH_PAR_MIN_FRACTION+x} ]; then echo "float(r'${VIASH_PAR_MIN_FRACTION//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'max_fraction': $( if [ ! -z ${VIASH_PAR_MAX_FRACTION+x} ]; then echo "float(r'${VIASH_PAR_MAX_FRACTION//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }

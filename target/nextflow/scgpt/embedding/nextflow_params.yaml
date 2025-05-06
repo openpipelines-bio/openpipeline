@@ -13,8 +13,8 @@ obsm_padding_mask: "padding_mask"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 obsm_embeddings: "X_scGPT"
+# output_compression: "gzip"
 
 # Arguments
 pad_token: "<pad>"

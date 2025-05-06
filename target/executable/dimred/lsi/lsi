@@ -459,9 +459,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Sarah Ouologuem, Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component dimred lsi"
-LABEL org.opencontainers.image.created="2025-05-05T19:27:06Z"
+LABEL org.opencontainers.image.created="2025-05-06T17:17:32Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7e44cdf66415ed53f892c6109e6fd6b83d9c9a64"
+LABEL org.opencontainers.image.revision="be993b86673d38cb50d1d791d91a938553b0c589"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -623,12 +623,6 @@ function ViashHelp {
   echo "        example: output.h5mu"
   echo "        Output h5mu file."
   echo ""
-  echo "    --output_compression"
-  echo "        type: string"
-  echo "        default: gzip"
-  echo "        choices: [ gzip, lzf ]"
-  echo "        The compression format to be used on the output h5mu object."
-  echo ""
   echo "    --obsm_output"
   echo "        type: string"
   echo "        default: X_lsi"
@@ -647,6 +641,13 @@ function ViashHelp {
   echo "    --overwrite"
   echo "        type: boolean_true"
   echo "        Allow overwriting .obsm, .varm and .uns slots."
+  echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        Compression format to use for the output AnnData and/or Mudata objects."
+  echo "        By default no compression is applied."
   echo ""
   echo "Viash built in Computational Requirements:"
   echo "    ---cpus=INT"
@@ -787,17 +788,6 @@ while [[ $# -gt 0 ]]; do
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_compression)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output_compression=*)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         --obsm_output)
             [ -n "$VIASH_PAR_OBSM_OUTPUT" ] && ViashError Bad arguments for option \'--obsm_output\': \'$VIASH_PAR_OBSM_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBSM_OUTPUT="$2"
@@ -834,6 +824,17 @@ while [[ $# -gt 0 ]]; do
         --overwrite)
             [ -n "$VIASH_PAR_OVERWRITE" ] && ViashError Bad arguments for option \'--overwrite\': \'$VIASH_PAR_OVERWRITE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OVERWRITE=true
+            shift 1
+            ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---engine)
@@ -1048,9 +1049,6 @@ if [ -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then
 fi
 if [ -z ${VIASH_PAR_SCALE_EMBEDDINGS+x} ]; then
   VIASH_PAR_SCALE_EMBEDDINGS="true"
-fi
-if [ -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then
-  VIASH_PAR_OUTPUT_COMPRESSION="gzip"
 fi
 if [ -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then
   VIASH_PAR_OBSM_OUTPUT="X_lsi"
@@ -1281,11 +1279,11 @@ par = {
   'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int(r'${VIASH_PAR_NUM_COMPONENTS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'scale_embeddings': $( if [ ! -z ${VIASH_PAR_SCALE_EMBEDDINGS+x} ]; then echo "r'${VIASH_PAR_SCALE_EMBEDDINGS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'varm_output': $( if [ ! -z ${VIASH_PAR_VARM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_VARM_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'uns_output': $( if [ ! -z ${VIASH_PAR_UNS_OUTPUT+x} ]; then echo "r'${VIASH_PAR_UNS_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'overwrite': $( if [ ! -z ${VIASH_PAR_OVERWRITE+x} ]; then echo "r'${VIASH_PAR_OVERWRITE//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi )
+  'overwrite': $( if [ ! -z ${VIASH_PAR_OVERWRITE+x} ]; then echo "r'${VIASH_PAR_OVERWRITE//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),

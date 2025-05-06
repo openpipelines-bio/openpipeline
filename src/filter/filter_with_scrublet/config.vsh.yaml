@@ -52,13 +52,6 @@ arguments:
     direction: output
     example: output.h5mu
 
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
-
   - name: "--obs_name_filter"
     type: string
     default: "filter_with_scrublet"
@@ -132,6 +125,8 @@ arguments:
     description: |
       When scrublet fails to automatically determine the double score threshold, 
       allow the component to continue and set the output columns to NA.
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

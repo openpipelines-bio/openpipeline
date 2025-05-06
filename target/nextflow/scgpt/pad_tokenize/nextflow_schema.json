@@ -114,18 +114,6 @@
     
 
         ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression type for the output file",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression type for the output file.\n",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-        ,
                 "obsm_gene_tokens": {
                 "type":
                 "string",
@@ -155,6 +143,18 @@
                 "help_text": "Type: `string`, default: `padding_mask`. The key of the .obsm array containing the padding mask.\n"
             ,
                 "default":"padding_mask"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
             }
     
 

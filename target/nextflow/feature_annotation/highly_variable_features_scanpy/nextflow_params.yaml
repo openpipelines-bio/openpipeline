@@ -4,7 +4,6 @@ modality: "rna"
 # layer: "foo"
 # var_input: "foo"
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 var_name_filter: "filter_with_hvg"
 varm_name: "hvg"
 flavor: "seurat"
@@ -16,6 +15,7 @@ min_disp: 0.5
 span: 0.3
 n_bins: 20
 # obs_batch_key: "foo"
+# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
