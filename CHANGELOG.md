@@ -2,6 +2,8 @@
 
 ## BREAKING CHANGES
 
+* `transfer/publish`: remove component after deprecating it in 2.1.0 (PR #1019).
+
 * Removed `split_h5mu_train_test` component (PR #1020).
 
 ## MAJOR CHANGES
