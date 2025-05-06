@@ -1,5 +1,9 @@
 # openpipelines 3.0.0
 
+## BREAKING CHANGES
+
+* Removed `split_h5mu_train_test` component (PR #1020).
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
@@ -7,6 +11,10 @@
 ## MINOR CHANGES
 
 * Remove `workflows` directory (PR #993). The workflows which were at one point in this directory were all deprecated and moved to `src/workflows`.
+
+## BUG FIXES
+
+* Bump viash to 0.9.4. This adds support for nextflow versions starting major version 25.01 and fixes an issue where an integer being passed to a argument with `type: double` resulted in an error (PR #1016).
 
 # openpipelines 2.1.0
 
