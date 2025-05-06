@@ -1,0 +1,150 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "build_cellranger_arc_reference",
+"description": "Build a Cell Ranger-arc and -atac compatible reference folder from user-supplied genome FASTA and gene GTF files. Creates a new folder named after the genome.",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "genome_fasta": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `genome_sequence.fa.gz`. Reference genome fasta",
+                "help_text": "Type: `file`, required, example: `genome_sequence.fa.gz`. Reference genome fasta."
+            
+            }
+    
+
+        ,
+                "annotation_gtf": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `annotation.gtf.gz`. Reference annotation",
+                "help_text": "Type: `file`, required, example: `annotation.gtf.gz`. Reference annotation."
+            
+            }
+    
+
+        ,
+                "motifs_file": {
+                "type":
+                "string",
+                "description": "Type: `file`, example: `JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified`. Transcription factor motifs in JASPAR format",
+                "help_text": "Type: `file`, example: `JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified`. Transcription factor motifs in JASPAR format. See https://support.10xgenomics.com/single-cell-multiome-atac-gex/software/pipelines/latest/advanced/references"
+            
+            }
+    
+
+        ,
+                "non_nuclear_contigs": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, default: `chrM`, example: `chrM`, multiple_sep: `\";\"`. Name(s) of contig(s) that do not have any chromatin structure, for example, mitochondria or plastids",
+                "help_text": "Type: List of `string`, default: `chrM`, example: `chrM`, multiple_sep: `\";\"`. Name(s) of contig(s) that do not have any chromatin structure, for example, mitochondria or plastids. These contigs are excluded from peak calling since the entire contig will be \"open\" due to a lack of chromatin structure. Leave empty if there are no such contigs."
+            ,
+                "default":"chrM"
+            }
+    
+
+        ,
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output`, example: `cellranger_reference`. Output folder",
+                "help_text": "Type: `file`, required, default: `$id.$key.output`, example: `cellranger_reference`. Output folder"
+            ,
+                "default":"$id.$key.output"
+            }
+    
+
+        ,
+                "genome": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, default: `output`, example: `GRCh38`. Name of the genome",
+                "help_text": "Type: `string`, required, default: `output`, example: `GRCh38`. Name of the genome. This will be the name of the intermediate output folder"
+            ,
+                "default":"output"
+            }
+    
+
+        ,
+                "organism": {
+                "type":
+                "string",
+                "description": "Type: `string`. Name of the organism",
+                "help_text": "Type: `string`. Name of the organism. This is displayed in the web summary but is otherwise not used in the analysis."
+            
+            }
+    
+
+        ,
+                "subset_regex": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `(ERCC-00002|chr1)`. Will subset the reference chromosomes using the given regex",
+                "help_text": "Type: `string`, example: `(ERCC-00002|chr1)`. Will subset the reference chromosomes using the given regex."
+            
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/arguments"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}
