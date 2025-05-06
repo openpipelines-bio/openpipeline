@@ -1,8 +1,0 @@
-# Arguments
-input: # please fill in - example: ["sample_paths"]
-# output: "output.h5mu"
-# output_compression: "gzip"
-
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
