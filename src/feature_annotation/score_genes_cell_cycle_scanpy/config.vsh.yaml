@@ -95,12 +95,6 @@ argument_groups:
           Output h5mu file
         required: true
         example: output_file.h5mu
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--obs_phase"
         type: string
         description: |
@@ -119,6 +113,7 @@ argument_groups:
           The name of the column in the obs attribute of the adata object that will store the g2m phase score.
         required: false
         default: "G2M_score"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Arguments
     arguments:
