@@ -39,13 +39,6 @@ arguments:
     required: true
     example: output.h5mu
 
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
-
   - name: "--obsm_output"
     type: string
     default: "X_pca"
@@ -70,6 +63,9 @@ arguments:
   - name: "--overwrite"
     type: boolean_true
     description: "Allow overwriting .obsm, .varm and .uns slots."
+
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

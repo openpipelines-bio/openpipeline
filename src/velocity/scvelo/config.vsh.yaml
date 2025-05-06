@@ -43,12 +43,8 @@ argument_groups:
         type: file
         direction: output
         description: "Output mudata file."
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
   - name: "Filtering and normalization"
     description: Arguments for filtering, normalization an log transform (see scvelo.pp.filter_and_normalize function)
     arguments:
