@@ -2,7 +2,7 @@
 
 ## DOCUMENTATION
 
-* Update README (PR #, backported from PR #1012)
+* Update README (PR #1022, backported from PR #1012)
 
 # openpipelines 2.1.1
 
