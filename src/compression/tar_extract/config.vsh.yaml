@@ -1,5 +1,6 @@
 name: tar_extract
 namespace: compression
+scope: "public"
 description: Extract files from a tar archive
 arguments:
   - name: "--input"

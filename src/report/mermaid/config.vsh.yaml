@@ -1,5 +1,6 @@
 name: mermaid
 namespace: "report"
+scope: "public"
 description: |
   Generates a network from mermaid code.
 authors:

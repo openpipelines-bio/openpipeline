@@ -1,5 +1,6 @@
 name: samtools_sort
 namespace: mapping
+scope: "public"
 description: |
   Sort and (optionally) index alignments.
   

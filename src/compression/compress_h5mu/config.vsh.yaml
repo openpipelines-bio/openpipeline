@@ -1,5 +1,6 @@
 name: compress_h5mu
 namespace: "compression"
+scope: "public"
 description: |
   Compress a MuData file. 
 authors:

@@ -1,5 +1,6 @@
 name: star_align
 namespace: mapping
+scope: "public"
 description: Align fastq files using STAR.
 authors:
   - __merge__: /src/authors/angela_pisco.yaml

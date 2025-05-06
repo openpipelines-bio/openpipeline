@@ -1,5 +1,6 @@
 name: build_star_reference
 namespace: reference
+scope: "public"
 description: Create a reference for STAR from a set of fasta files.
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml

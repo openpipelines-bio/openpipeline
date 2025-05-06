@@ -1,5 +1,6 @@
 name: split_modalities
 namespace: "dataflow"
+scope: "public"
 description: |
   Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
 authors:

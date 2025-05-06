@@ -1,5 +1,6 @@
 name: "bbknn_leiden"
 namespace: "workflows/integration"
+scope: "public"
 description: "Run bbknn followed by leiden clustering and run umap on the result."
 info:
   test_dependencies:

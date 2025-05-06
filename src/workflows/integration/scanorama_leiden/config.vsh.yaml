@@ -1,5 +1,6 @@
 name: "scanorama_leiden"
 namespace: "workflows/integration"
+scope: "public"
 description: "Run scanorama integration followed by neighbour calculations, leiden clustering and run umap on the result."
 authors:
   - __merge__: /src/authors/mauro_saporita.yaml

@@ -1,5 +1,6 @@
 name: "split_modalities"
 namespace: "workflows/multiomics"
+scope: "private"
 description: "A pipeline to split a multimodal mudata files into several unimodal mudata files."
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml

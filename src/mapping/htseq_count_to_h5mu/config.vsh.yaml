@@ -1,5 +1,6 @@
 name: htseq_count_to_h5mu
 namespace: mapping
+scope: "public"
 description: |
   Convert the htseq table to a h5mu.
 authors:

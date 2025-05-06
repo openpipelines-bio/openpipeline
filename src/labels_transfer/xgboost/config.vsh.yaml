@@ -1,5 +1,6 @@
 name: xgboost
 namespace: "labels_transfer"
+scope: "public"
 description: "Performs label transfer from reference to query using XGBoost classifier"
 info:
   method_id: XGBClassifier

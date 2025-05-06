@@ -1,5 +1,6 @@
 name: "qc_test"
 namespace: "test_workflows/qc"
+scope: "test"
 description: "This component test the output of the integration test of the QC workflow."
 authors:
   - __merge__: /src/authors/jakub_majercik.yaml

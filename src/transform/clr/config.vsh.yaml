@@ -1,5 +1,6 @@
 name: clr
 namespace: "transform"
+scope: "public"
 description: |
   Perform CLR normalization on CITE-seq data (Stoeckius et al., 2017).
 authors:

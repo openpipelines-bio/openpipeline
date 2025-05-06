@@ -1,5 +1,6 @@
 name: scanorama
 namespace: "integrate"
+scope: "public"
 description: |
   Use Scanorama to integrate different experiments.
 authors:

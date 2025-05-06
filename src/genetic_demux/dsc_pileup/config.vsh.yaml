@@ -1,5 +1,6 @@
 name: dsc_pileup
 namespace: genetic_demux
+scope: "public"
 description: |
   Dsc-pileup is a software tool to pileup reads and corresponding base quality 
   for each overlapping SNPs and each barcode. By using pileup files,

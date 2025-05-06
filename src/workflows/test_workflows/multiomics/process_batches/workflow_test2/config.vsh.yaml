@@ -1,5 +1,6 @@
 name: "workflow_test2"
 namespace: "test_workflows/multiomics/process_batches"
+scope: "test"
 description: "This component tests the output of the integration test of process_batches test_wf2."
 authors:
   - __merge__: /src/authors/kai_waldrant.yaml

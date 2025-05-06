@@ -1,5 +1,6 @@
 name: "scvi_knn"
 namespace: "workflows/annotation"
+scope: "public"
 description: |
   "Cell type annotation workflow that performs scVI integration of reference and query dataset followed by KNN label transfer. 
   The query and reference datasets are expected to be pre-processed in the same way, for example with the `process_samples` workflow of OpenPipeline.

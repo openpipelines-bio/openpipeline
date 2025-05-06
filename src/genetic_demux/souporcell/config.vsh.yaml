@@ -1,5 +1,6 @@
 name: souporcell
 namespace: genetic_demux
+scope: "public"
 description: "souporcell is a method for clustering mixed-genotype scRNAseq experiments by individual."
 authors:
   - __merge__: /src/authors/xichen_wu.yaml

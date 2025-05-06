@@ -1,5 +1,6 @@
 name: move_layer
 namespace: "transform"
+scope: "public"
 description: "Move a data matrix stored at the .layers or .X attributes in a MuData object to another layer."
 arguments:
   - name: "--input"

@@ -1,5 +1,6 @@
 name: "process_samples"
 namespace: "workflows/multiomics"
+scope: "public"
 description: "A pipeline to analyse multiple multiomics samples."
 info:
   test_dependencies:

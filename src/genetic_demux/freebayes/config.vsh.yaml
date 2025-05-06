@@ -1,5 +1,6 @@
 name: freebayes
 namespace: genetic_demux
+scope: "public"
 description: |
   Freebayes is a Bayesian genetic variant detector designed to
   find small polymorphisms, specifically SNPs.

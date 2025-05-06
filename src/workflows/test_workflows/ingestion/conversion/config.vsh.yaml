@@ -1,5 +1,6 @@
 name: "conversion_test"
 namespace: "test_workflows/ingestion"
+scope: "test"
 description: "This component test the output of the integration test of the conversion workflow."
 authors:
   - __merge__: /src/authors/jakub_majercik.yaml

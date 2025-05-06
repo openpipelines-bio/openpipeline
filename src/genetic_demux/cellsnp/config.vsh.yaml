@@ -1,5 +1,6 @@
 name: cellsnp
 namespace: genetic_demux
+scope: "public"
 description: "cellSNP aims to pileup the expressed alleles in single-cell or bulk RNA-seq data. It can be directly used for donor deconvolution in multiplexed single-cell RNA-seq data, particularly with vireo."
 authors:
   - __merge__: /src/authors/xichen_wu.yaml

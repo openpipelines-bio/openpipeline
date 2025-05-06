@@ -1,5 +1,6 @@
 name: pad_tokenize
 namespace: "scgpt"
+scope: "public"
 description: |
   Tokenize and pad a batch of data for scGPT integration zero-shot inference or fine-tuning.
 authors:

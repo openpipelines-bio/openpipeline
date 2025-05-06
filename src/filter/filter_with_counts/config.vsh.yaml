@@ -1,5 +1,6 @@
 name: filter_with_counts
 namespace: "filter"
+scope: "public"
 description: |
   Filter scRNA-seq data based on the primary QC metrics. 
   This is based on both the UMI counts, the gene counts 

@@ -1,5 +1,6 @@
 name: bcl2fastq
 namespace: demux
+scope: "public"
 description: |
   Convert bcl files to fastq files using bcl2fastq.
 authors:

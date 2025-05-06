@@ -1,5 +1,6 @@
 name: popv
 namespace: "annotate"
+scope: "public"
 description: "Performs popular major vote cell typing on single cell sequence data using multiple algorithms. Note that this is a one-shot version of PopV."
 authors:
   - __merge__: /src/authors/matthias_beyens.yaml

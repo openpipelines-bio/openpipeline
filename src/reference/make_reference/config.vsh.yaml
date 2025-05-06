@@ -1,5 +1,6 @@
 name: make_reference
 namespace: reference
+scope: "public"
 description: |
   Preprocess and build a transcriptome reference.
 
