@@ -1,3 +1,9 @@
+# openpipelines 2.1.2
+
+## DOCUMENTATION
+
+* Update README (PR #1024, backported from #1012).
+
 # openpipelines 2.1.1
 
 ## BUG FIXES
