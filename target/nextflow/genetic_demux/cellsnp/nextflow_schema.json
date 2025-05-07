@@ -1,0 +1,323 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "cellsnp",
+"description": "cellSNP aims to pileup the expressed alleles in single-cell or bulk RNA-seq data. It can be directly used for donor deconvolution in multiplexed single-cell RNA-seq data, particularly with vireo.",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "input" : {
+    "title": "Input",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "sam_file": {
+                "type":
+                "string",
+                "description": "Type: `file`. Indexed sam/bam file(s), comma separated multiple samples",
+                "help_text": "Type: `file`. Indexed sam/bam file(s), comma separated multiple samples. Mode 1a \u0026 2a: one sam/bam file with single cell. Mode 1b \u0026 2b: one or multiple bulk sam/bam files, no barcodes needed, but sample ids and regionsVCF."
+            
+            }
+    
+
+        ,
+                "sam_index_file": {
+                "type":
+                "string",
+                "description": "Type: `file`. Input SAM/BAM Index file, problem with samFileList",
+                "help_text": "Type: `file`. Input SAM/BAM Index file, problem with samFileList."
+            
+            }
+    
+
+        ,
+                "sam_fileList": {
+                "type":
+                "string",
+                "description": "Type: `file`. A list file containing bam files, each per line, for Mode 1b \u0026 2b",
+                "help_text": "Type: `file`. A list file containing bam files, each per line, for Mode 1b \u0026 2b."
+            
+            }
+    
+
+        ,
+                "regions_vcf": {
+                "type":
+                "string",
+                "description": "Type: `file`. A vcf file listing all candidate SNPs, for fetch each variants",
+                "help_text": "Type: `file`. A vcf file listing all candidate SNPs, for fetch each variants. If None, pileup the genome. Needed for bulk samples."
+            
+            }
+    
+
+        ,
+                "targets_vcf": {
+                "type":
+                "string",
+                "description": "Type: `file`. Similar as --regions_vcf, but the next position is accessed by streaming rather than indexing/jumping (like -T in samtools/bcftools mpileup)",
+                "help_text": "Type: `file`. Similar as --regions_vcf, but the next position is accessed by streaming rather than indexing/jumping (like -T in samtools/bcftools mpileup)."
+            
+            }
+    
+
+        ,
+                "barcode_file": {
+                "type":
+                "string",
+                "description": "Type: `file`. A plain file listing all effective cell barcode",
+                "help_text": "Type: `file`. A plain file listing all effective cell barcode."
+            
+            }
+    
+
+        ,
+                "sample_list": {
+                "type":
+                "string",
+                "description": "Type: `file`. A list file containing sample IDs, each per line",
+                "help_text": "Type: `file`. A list file containing sample IDs, each per line."
+            
+            }
+    
+
+        ,
+                "sample_ids": {
+                "type":
+                "string",
+                "description": "Type: `string`. Comma separated sample ids",
+                "help_text": "Type: `string`. Comma separated sample ids."
+            
+            }
+    
+
+        ,
+                "genotype": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. If use, do genotyping in addition to counting",
+                "help_text": "Type: `boolean_true`, default: `false`. If use, do genotyping in addition to counting."
+            ,
+                "default":false
+            }
+    
+
+        ,
+                "gzip": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. If use, the output files will be zipped into BGZF format",
+                "help_text": "Type: `boolean_true`, default: `false`. If use, the output files will be zipped into BGZF format."
+            ,
+                "default":false
+            }
+    
+
+        ,
+                "print_skip_snps": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. If use, the SNPs skipped when loading VCF will be printed",
+                "help_text": "Type: `boolean_true`, default: `false`. If use, the SNPs skipped when loading VCF will be printed."
+            ,
+                "default":false
+            }
+    
+
+        ,
+                "chrom": {
+                "type":
+                "string",
+                "description": "Type: `string`. The chromosomes to use in integer format 1-22, comma separated",
+                "help_text": "Type: `string`. The chromosomes to use in integer format 1-22, comma separated"
+            
+            }
+    
+
+        ,
+                "cell_tag": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `CB`. Tag for cell barcodes, turn off with None",
+                "help_text": "Type: `string`, default: `CB`. Tag for cell barcodes, turn off with None."
+            ,
+                "default":"CB"
+            }
+    
+
+        ,
+                "umi_tag": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `Auto`. Tag for UMI: UR, Auto, None",
+                "help_text": "Type: `string`, default: `Auto`. Tag for UMI: UR, Auto, None. For Auto mode, use UR if barcodes is inputted, otherwise use None. None mode means no UMI but read counts."
+            ,
+                "default":"Auto"
+            }
+    
+
+        ,
+                "min_count": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `20`. Minimum aggragated count",
+                "help_text": "Type: `integer`, default: `20`. Minimum aggragated count."
+            ,
+                "default":20
+            }
+    
+
+        ,
+                "min_maf": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.0`. Minimum minor allele frequency",
+                "help_text": "Type: `double`, default: `0.0`. Minimum minor allele frequency."
+            ,
+                "default":0.0
+            }
+    
+
+        ,
+                "doublet_gl": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. If use, keep doublet GT likelihood, i",
+                "help_text": "Type: `boolean_true`, default: `false`. If use, keep doublet GT likelihood, i.e., GT=0.5 and GT=1.5."
+            ,
+                "default":false
+            }
+    
+
+        ,
+                "incl_flag": {
+                "type":
+                "string",
+                "description": "Type: `string`. Required flags: skip reads with all mask bits unset",
+                "help_text": "Type: `string`. Required flags: skip reads with all mask bits unset."
+            
+            }
+    
+
+        ,
+                "excl_flag": {
+                "type":
+                "string",
+                "description": "Type: `string`. Filter flags: skip reads with any mask bits set [UNMAP,SECONDARY,QCFAIL (when use UMI) or UNMAP,SECONDARY,QCFAIL,DUP (otherwise)]",
+                "help_text": "Type: `string`. Filter flags: skip reads with any mask bits set [UNMAP,SECONDARY,QCFAIL (when use UMI) or UNMAP,SECONDARY,QCFAIL,DUP (otherwise)]"
+            
+            }
+    
+
+        ,
+                "count_orphan": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. If use, do not skip anomalous read pairs",
+                "help_text": "Type: `boolean_true`, default: `false`. If use, do not skip anomalous read pairs."
+            ,
+                "default":false
+            }
+    
+
+        ,
+                "min_mapq": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `20`. Minimum MAPQ for read filtering",
+                "help_text": "Type: `integer`, default: `20`. Minimum MAPQ for read filtering."
+            ,
+                "default":20
+            }
+    
+
+        ,
+                "min_len": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `30`. Minimum mapped length for read filtering",
+                "help_text": "Type: `integer`, default: `30`. Minimum mapped length for read filtering."
+            ,
+                "default":30
+            }
+    
+
+}
+},
+    
+    
+    "output" : {
+    "title": "Output",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output`, example: `cellsnp_out`. Output directory for VCF and sparse matrices",
+                "help_text": "Type: `file`, default: `$id.$key.output`, example: `cellsnp_out`. Output directory for VCF and sparse matrices."
+            ,
+                "default":"$id.$key.output"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/input"
+    },
+
+    {
+    "$ref": "#/definitions/output"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}

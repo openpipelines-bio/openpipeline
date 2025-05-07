@@ -1,0 +1,54 @@
+# Inputs
+input: # please fill in - example: "path/to/file"
+modality: "rna"
+# input_layer: "foo"
+obs_batch: "sample_id"
+# var_gene_names: "foo"
+# var_input: "foo"
+# obs_labels: "foo"
+# obs_size_factor: "foo"
+# obs_categorical_covariate: ["foo"]
+# obs_continuous_covariate: ["foo"]
+
+# Outputs
+# output: "$id.$key.output"
+# output_model: "$id.$key.output_model"
+# output_compression: "gzip"
+obsm_output: "X_scvi_integrated"
+
+# SCVI options
+n_hidden_nodes: 128
+n_dimensions_latent_space: 30
+n_hidden_layers: 2
+dropout_rate: 0.1
+dispersion: "gene"
+gene_likelihood: "nb"
+
+# Variational auto-encoder model options
+use_layer_normalization: "both"
+use_batch_normalization: "none"
+encode_covariates: true
+deeply_inject_covariates: false
+use_observed_lib_size: false
+
+# Early stopping arguments
+# early_stopping: true
+early_stopping_monitor: "elbo_validation"
+early_stopping_patience: 45
+early_stopping_min_delta: 0.0
+
+# Learning parameters
+# max_epochs: 123
+reduce_lr_on_plateau: true
+lr_factor: 0.6
+lr_patience: 30.0
+
+# Data validition
+n_obs_min_count: 0
+n_var_min_count: 0
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments

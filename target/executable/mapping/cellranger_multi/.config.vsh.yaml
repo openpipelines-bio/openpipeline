@@ -1,0 +1,940 @@
+name: "cellranger_multi"
+namespace: "mapping"
+version: "2.1.2"
+authors:
+- name: "Angela Oliveira Pisco"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      github: "aopisco"
+      orcid: "0000-0003-0142-2355"
+      linkedin: "aopisco"
+    organizations:
+    - name: "Insitro"
+      href: "https://insitro.com"
+      role: "Director of Computational Biology"
+    - name: "Open Problems"
+      href: "https://openproblems.bio"
+      role: "Core Member"
+- name: "Robrecht Cannoodt"
+  roles:
+  - "author"
+  - "maintainer"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "robrecht@data-intuitive.com"
+      github: "rcannood"
+      orcid: "0000-0003-3641-729X"
+      linkedin: "robrechtcannoodt"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Science Engineer"
+    - name: "Open Problems"
+      href: "https://openproblems.bio"
+      role: "Core Member"
+- name: "Dries De Maeyer"
+  roles:
+  - "author"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "ddemaeyer@gmail.com"
+      github: "ddemaeyer"
+      linkedin: "dries-de-maeyer-b46a814"
+    organizations:
+    - name: "Janssen Pharmaceuticals"
+      href: "https://www.janssen.com"
+      role: "Principal Scientist"
+- name: "Weiwei Schultz"
+  roles:
+  - "contributor"
+  info:
+    role: "Contributor"
+    organizations:
+    - name: "Janssen R&D US"
+      role: "Associate Director Data Sciences"
+- name: "Dorien Roosen"
+  roles:
+  - "author"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "dorien@data-intuitive.com"
+      github: "dorien-er"
+      linkedin: "dorien-roosen"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Scientist"
+argument_groups:
+- name: "Input files"
+  arguments:
+  - type: "file"
+    name: "--input"
+    description: "The FASTQ files to be analyzed. FASTQ files should conform to the\
+      \ naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane\
+      \ Number]_[Read Type]_001.fastq.gz`\n"
+    info: null
+    example:
+    - "mysample_S1_L001_R1_001.fastq.gz"
+    - "mysample_S1_L001_R2_001.fastq.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "Feature type-specific input files"
+  description: "Helper functionality to allow feature type-specific input files, without\
+    \ the need to specify\nlibrary_type or library_id. The library_id will be inferred\
+    \ from the input paths.\n"
+  arguments:
+  - type: "file"
+    name: "--gex_input"
+    description: "The FASTQ files to be analyzed for Gene Expression. FASTQ files\
+      \ should conform to the\nnaming conventions of bcl2fastq and mkfastq:\n`[Sample\
+      \ Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+    info: null
+    example:
+    - "mysample_S1_L001_R1_001.fastq.gz"
+    - "mysample_S1_L001_R2_001.fastq.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--abc_input"
+    description: "The FASTQ files to be analyzed for Antibody Capture. FASTQ files\
+      \ should conform to \nthe naming conventions of bcl2fastq and mkfastq:\n`[Sample\
+      \ Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+    info: null
+    example:
+    - "mysample_S1_L001_R1_001.fastq.gz"
+    - "mysample_S1_L001_R2_001.fastq.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--cgc_input"
+    description: "The FASTQ files to be analyzed for CRISPR Guide Capture. FASTQ files\
+      \ should conform to\nthe naming conventions of bcl2fastq and mkfastq:\n`[Sample\
+      \ Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+    info: null
+    example:
+    - "mysample_S1_L001_R1_001.fastq.gz"
+    - "mysample_S1_L001_R2_001.fastq.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--mux_input"
+    description: "The FASTQ files to be analyzed for Multiplexing Capture. FASTQ files\
+      \ should conform to\nthe naming conventions of bcl2fastq and mkfastq:\n`[Sample\
+      \ Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+    info: null
+    example:
+    - "mysample_S1_L001_R1_001.fastq.gz"
+    - "mysample_S1_L001_R2_001.fastq.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--vdj_input"
+    description: "The FASTQ files to be analyzed for VDJ. FASTQ files should conform\
+      \ to the\nnaming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample\
+      \ Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+    info: null
+    example:
+    - "mysample_S1_L001_R1_001.fastq.gz"
+    - "mysample_S1_L001_R2_001.fastq.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--vdj_t_input"
+    description: "The FASTQ files to be analyzed for VDJ-T. FASTQ files should conform\
+      \ to the naming\nconventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample\
+      \ Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+    info: null
+    example:
+    - "mysample_S1_L001_R1_001.fastq.gz"
+    - "mysample_S1_L001_R2_001.fastq.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--vdj_t_gd_input"
+    description: "The FASTQ files to be analyzed for VDJ-T-GD. FASTQ files should\
+      \ conform to\nthe naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample\
+      \ Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+    info: null
+    example:
+    - "mysample_S1_L001_R1_001.fastq.gz"
+    - "mysample_S1_L001_R2_001.fastq.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--vdj_b_input"
+    description: "The FASTQ files to be analyzed for VDJ-B. FASTQ files should conform\
+      \ to\nthe naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample\
+      \ Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+    info: null
+    example:
+    - "mysample_S1_L001_R1_001.fastq.gz"
+    - "mysample_S1_L001_R2_001.fastq.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--agc_input"
+    description: "The FASTQ files to be analyzed for Antigen Capture. FASTQ files\
+      \ should conform to\nthe naming conventions of bcl2fastq and mkfastq:\n`[Sample\
+      \ Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+    info: null
+    example:
+    - "mysample_S1_L001_R1_001.fastq.gz"
+    - "mysample_S1_L001_R2_001.fastq.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "Library arguments"
+  arguments:
+  - type: "string"
+    name: "--library_id"
+    description: "The Illumina sample name to analyze. This must exactly match the\
+      \ 'Sample Name'part\nof the FASTQ files specified in the `--input` argument.\n"
+    info: null
+    example:
+    - "mysample1"
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "string"
+    name: "--library_type"
+    description: "The underlying feature type of the library.\n"
+    info: null
+    example:
+    - "Gene Expression"
+    required: false
+    choices:
+    - "Gene Expression"
+    - "VDJ"
+    - "VDJ-T"
+    - "VDJ-B"
+    - "VDJ-T-GD"
+    - "Antibody Capture"
+    - "CRISPR Guide Capture"
+    - "Multiplexing Capture"
+    - "Antigen Capture"
+    - "Custom"
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "string"
+    name: "--library_subsample"
+    description: "The rate at which reads from the provided FASTQ files are sampled.\n\
+      Must be strictly greater than 0 and less than or equal to 1.\n"
+    info: null
+    example:
+    - "0.5"
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "string"
+    name: "--library_lanes"
+    description: "Lanes associated with this sample. Defaults to using all lanes."
+    info: null
+    example:
+    - "1-4"
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "string"
+    name: "--library_chemistry"
+    description: "Only applicable to FRP. Library-specific assay configuration. By\
+      \ default,\nthe assay configuration is detected automatically. Typically, users\
+      \ will\nnot need to specify a chemistry.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Sample parameters"
+  arguments:
+  - type: "string"
+    name: "--sample_ids"
+    alternatives:
+    - "--cell_multiplex_sample_id"
+    description: "A name to identify a multiplexed sample. Must be alphanumeric with\
+      \ hyphens and/or underscores,\nand less than 64 characters. Required for Cell\
+      \ Multiplexing libraries.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "string"
+    name: "--sample_description"
+    alternatives:
+    - "--cell_multiplex_description"
+    description: "A description for the sample."
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--sample_expect_cells"
+    description: "Expected number of recovered cells, used as input to cell calling\
+      \ algorithm.\n"
+    info: null
+    example:
+    - 3000
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--sample_force_cells"
+    description: "Force pipeline to use this number of cells, bypassing cell detection.\n"
+    info: null
+    example:
+    - 3000
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "Feature Barcode library specific arguments"
+  arguments:
+  - type: "file"
+    name: "--feature_reference"
+    description: "Path to the Feature reference CSV file, declaring Feature Barcode\
+      \ constructs and associated barcodes.\nRequired only for Antibody Capture or\
+      \ CRISPR Guide Capture libraries.\nSee https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-ref\
+      \ for more information.\"\n"
+    info: null
+    example:
+    - "feature_reference.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--feature_r1_length"
+    description: "Limit the length of the input Read 1 sequence of V(D)J libraries\
+      \ to the first N bases,\nwhere N is the user-supplied value. Note that the length\
+      \ includes the Barcode and UMI\nsequences so do not set this below 26.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--feature_r2_length"
+    description: "Limit the length of the input Read 2 sequence of V(D)J libraries\
+      \ to the first N bases,\nwhere N is a user-supplied value. Trimming occurs before\
+      \ sequencing metrics are computed\nand therefore, limiting the length of Read\
+      \ 2 may affect Q30 scores.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--min_crispr_umi"
+    description: "Set the minimum number of CRISPR guide RNA UMIs required for protospacer\
+      \ detection.\nIf a lower or higher sensitivity is desired for detection, this\
+      \ value can be customized\naccording to specific experimental needs. Applicable\
+      \ only to datasets that include a\nCRISPR Guide Capture library.\n"
+    info: null
+    required: false
+    min: 1
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Gene expression arguments"
+  description: "Arguments relevant to the analysis of gene expression data."
+  arguments:
+  - type: "file"
+    name: "--gex_reference"
+    description: "Genome refence index built by Cell Ranger mkref."
+    info: null
+    example:
+    - "reference_genome.tar.gz"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--gex_secondary_analysis"
+    description: "Whether or not to run the secondary analysis e.g. clustering."
+    info: null
+    default:
+    - false
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--gex_generate_bam"
+    description: "Whether to generate a BAM file."
+    info: null
+    default:
+    - false
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--gex_expect_cells"
+    description: "Expected number of recovered cells, used as input to cell calling\
+      \ algorithm.\n"
+    info: null
+    example:
+    - 3000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--gex_force_cells"
+    description: "Force pipeline to use this number of cells, bypassing cell detection.\n"
+    info: null
+    example:
+    - 3000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--gex_include_introns"
+    description: "Whether or not to include intronic reads in counts.\nThis option\
+      \ does not apply to Fixed RNA Profiling analysis.\n"
+    info: null
+    default:
+    - true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--gex_r1_length"
+    description: "Limit the length of the input Read 1 sequence of V(D)J libraries\
+      \ to the first N bases,\nwhere N is the user-supplied value. Note that the length\
+      \ includes the Barcode and UMI\nsequences so do not set this below 26.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--gex_r2_length"
+    description: "Limit the length of the input Read 2 sequence of V(D)J libraries\
+      \ to the first N bases,\nwhere N is a user-supplied value. Trimming occurs before\
+      \ sequencing metrics are computed\nand therefore, limiting the length of Read\
+      \ 2 may affect Q30 scores.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--gex_chemistry"
+    description: "Assay configuration. Either specify a single value which will be\
+      \ applied to all libraries,\nor a number of values that is equal to the number\
+      \ of libararies. The latter is only applicable\nto only applicable to Fixed\
+      \ RNA Profiling.\n  - auto: Chemistry autodetection (default)\n  - threeprime:\
+      \ Single Cell 3'\n  - SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4: Single Cell 3' v1, v2,\
+      \ v3, or v4\n  - SC3Pv3HT: Single Cell 3' v3.1 HT\n  - SC-FB: Single Cell Antibody-only\
+      \ 3' v2 or 5'\n  - fiveprime: Single Cell 5'\n  - SC5P-PE: Paired-end Single\
+      \ Cell 5'\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only Single\
+      \ Cell 5' v3\n  - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n  - SC5PHT\
+      \ : Single Cell 5' v2 HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP:\
+      \ Fixed RNA Profiling (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA\
+      \ Profiling (Multiplex, Probe Barcode on R1)\n  - MFRP-RNA: Fixed RNA Profiling\
+      \ (Multiplex, RNA, Probe Barcode on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex,\
+      \ Antibody, Probe Barcode at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling\
+      \ (Multiplex, Antibody, Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA\
+      \ Profiling (Multiplex, RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA\
+      \ Profiling (Multiplex, Antibody, Probe Barcode on R1)\n  - ARC-v1 for analyzing\
+      \ the Gene Expression portion of Multiome data. If Cell Ranger auto-detects\
+      \ ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry-\
+      \ for more information.\n"
+    info: null
+    default:
+    - "auto"
+    required: false
+    choices:
+    - "auto"
+    - "threeprime"
+    - "fiveprime"
+    - "SC3Pv1"
+    - "SC3Pv2"
+    - "SC3Pv3"
+    - "SC3Pv4"
+    - "SC3Pv3LT"
+    - "SC3Pv3HT"
+    - "SC5P-PE"
+    - "SC5P-R2"
+    - "SC-FB"
+    - "SC5P-R2-v3"
+    - "SCP5-PE-v3"
+    - "SC5PHT"
+    - "MFRP"
+    - "MFRP-R1"
+    - "MFRP-RNA"
+    - "MFRP-Ab"
+    - "SFRP"
+    - "MFRP-Ab-R2pos50"
+    - "MFRP-RNA-R1"
+    - "MFRP-Ab-R1"
+    - "ARC-v1"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "VDJ related parameters"
+  arguments:
+  - type: "file"
+    name: "--vdj_reference"
+    description: "VDJ refence index built by Cell Ranger mkref."
+    info: null
+    example:
+    - "reference_vdj.tar.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--vdj_inner_enrichment_primers"
+    description: "V(D)J Immune Profiling libraries: if inner enrichment primers other\
+      \ than those provided \nin the 10x Genomics kits are used, they need to be specified\
+      \ here as a\ntext file with one primer per line.\n"
+    info: null
+    example:
+    - "enrichment_primers.txt"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--vdj_r1_length"
+    description: "Limit the length of the input Read 1 sequence of V(D)J libraries\
+      \ to the first N bases, where N is the user-supplied value.\nNote that the length\
+      \ includes the Barcode and UMI sequences so do not set this below 26.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--vdj_r2_length"
+    description: "Limit the length of the input Read 2 sequence of V(D)J libraries\
+      \ to the first N bases, where N is a user-supplied value. \nTrimming occurs\
+      \ before sequencing metrics are computed and therefore, limiting the length\
+      \ of Read 2 may affect Q30 scores\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Cell multiplexing parameters"
+  arguments:
+  - type: "string"
+    name: "--cell_multiplex_oligo_ids"
+    description: "The Cell Multiplexing oligo IDs used to multiplex this sample. If\
+      \ multiple CMOs were used for a sample,\nseparate IDs with a pipe (e.g., CMO301|CMO302).\
+      \ Required for Cell Multiplexing libraries.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "double"
+    name: "--min_assignment_confidence"
+    description: "The minimum estimated likelihood to call a sample as tagged with\
+      \ a Cell Multiplexing Oligo (CMO) instead of \"Unassigned\".\nUsers may wish\
+      \ to tolerate a higher rate of mis-assignment in order to obtain more singlets\
+      \ to include in their analysis,\nor a lower rate of mis-assignment at the cost\
+      \ of obtaining fewer singlets.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--cmo_set"
+    description: "Path to a custom CMO set CSV file, declaring CMO constructs and\
+      \ associated barcodes. If the default CMO reference IDs that are built into\n\
+      the Cell Ranger software are required, this option does not need to be used.\n"
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--barcode_sample_assignment"
+    description: "Path to a barcode-sample assignment CSV file that specifies the\
+      \ barcodes that belong to each sample.\n"
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Fixed RNA profiling paramaters"
+  arguments:
+  - type: "file"
+    name: "--probe_set"
+    description: "A probe set reference CSV file. It specifies the sequences used\
+      \ as a reference for probe alignment and the gene ID associated with each probe.\n\
+      It must include 4 columns (probe file format 1.0.0): gene_id,probe_seq,probe_id,included,region\
+      \ and an optional 5th column (probe file format 1.0.1).\n- gene_id: The Ensembl\
+      \ gene identifier targeted by the probe.\n- probe_seq: The nucleotide sequence\
+      \ of the probe, which is complementary to the transcript sequence.\n- probe_id:\
+      \ The probe identifier, whose format is described in Probe identifiers.\n- included:\
+      \ A TRUE or FALSE flag specifying whether the probe is included in the filtered\
+      \ counts matrix output or excluded by the probe filter. \n            See filter-probes\
+      \ option of cellranger multi. All probes of a gene must be marked TRUE in the\
+      \ included column for that gene to be included.\n- region: Present only in v1.0.1\
+      \ probe set reference CSV. The gene boundary targeted by the probe. Accepted\
+      \ values are spliced or unspliced.\n\nThe file also contains a number of required\
+      \ metadata fields in the header in the format #key=value:\n- panel_name: The\
+      \ name of the probe set.\n- panel_type: Always predesigned for predesigned probe\
+      \ sets.\n- reference_genome: The reference genome build used for probe design.\n\
+      - reference_version: The version of the Cell Ranger reference transcriptome\
+      \ used for probe design.\n- probe_set_file_format: The version of the probe\
+      \ set file format specification that this file conforms to.\n"
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--filter_probes"
+    description: "If 'false', include all non-deprecated probes listed in the probe\
+      \ set reference CSV file.\nIf 'true' or not set, probes that are predicted to\
+      \ have off-target activity to homologous genes are excluded from analysis.\n\
+      Not filtering will result in UMI counts from all non-deprecated probes,\nincluding\
+      \ those with predicted off-target activity, to be used in the analysis.\nProbes\
+      \ whose ID is prefixed with DEPRECATED are always excluded from the analysis.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--probe_barcode_ids"
+    description: "The Fixed RNA Probe Barcode ID used for this sample, and for multiplex\
+      \ GEX + Antibody Capture libraries,\nthe corresponding Antibody Multiplexing\
+      \ Barcode IDs. 10x recommends specifying both barcodes (e.g., BC001+AB001)\n\
+      when an Antibody Capture library is present. The barcode pair order is BC+AB\
+      \ and they\nare separated with a \"+\" (no spaces). Alternatively, you can specify\
+      \ the Probe Barcode ID alone and\nCell Ranger's barcode pairing auto-detection\
+      \ algorithm will automatically match to the corresponding Antibody\nMultiplexing\
+      \ Barcode.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "Antigen Capture (BEAM) libary arguments"
+  description: "These arguments are recommended if an Antigen Capture (BEAM) library\
+    \ is present. \nIt is needed to calculate the antigen specificity score.\n"
+  arguments:
+  - type: "string"
+    name: "--control_id"
+    description: "A user-defined ID for any negative controls used in the T/BCR Antigen\
+      \ Capture assay. Must match id specified in the feature reference CSV.\nMay\
+      \ only include ASCII characters and must not use whitespace, slash, quote, or\
+      \ comma characters. \nEach ID must be unique and must not collide with a gene\
+      \ identifier from the transcriptome.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "string"
+    name: "--mhc_allele"
+    description: "The MHC allele for TCR Antigen Capture libraries. Must match mhc_allele\
+      \ name specified in the Feature Reference CSV.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "General arguments"
+  description: "These arguments are applicable to all library types.\n"
+  arguments:
+  - type: "boolean"
+    name: "--check_library_compatibility"
+    description: "Optional. This option allows users to disable the check that evaluates\
+      \ 10x Barcode overlap between\nibraries when multiple libraries are specified\
+      \ (e.g., Gene Expression + Antibody Capture). Setting\nthis option to false\
+      \ will disable the check across all library combinations. We recommend running\n\
+      this check (default), however if the pipeline errors out, users can bypass the\
+      \ check to generate\noutputs for troubleshooting.\n"
+    info: null
+    default:
+    - true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Outputs"
+  arguments:
+  - type: "file"
+    name: "--output"
+    description: "The folder to store the alignment results."
+    info: null
+    example:
+    - "/path/to/output"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+- name: "Executor arguments"
+  arguments:
+  - type: "boolean_true"
+    name: "--dryrun"
+    description: "If true, the output directory will only contain the CWL input files,\
+      \ but the pipeline itself will not be executed."
+    info: null
+    direction: "input"
+resources:
+- type: "python_script"
+  path: "script.py"
+  is_executable: true
+- type: "file"
+  path: "setup_logger.py"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Align fastq files using Cell Ranger multi."
+test_resources:
+- type: "python_script"
+  path: "test.py"
+  is_executable: true
+- type: "file"
+  path: "10x_5k_anticmv/raw/"
+  dest: "10x_5k_anticmv/raw/"
+- type: "file"
+  path: "10x_5k_lung_crispr/raw/"
+  dest: "10x_5k_lung_crispr/raw/"
+- type: "file"
+  path: "10x_5k_beam/raw/"
+  dest: "10x_5k_beam/raw/"
+- type: "file"
+  path: "10x_5k_fixed/raw"
+  dest: "10x_5k_fixed/raw"
+- type: "file"
+  path: "raw"
+- type: "file"
+  path: "reference_gencodev41_chr1"
+info: null
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "veryhighmem"
+    - "highcpu"
+    - "highdisk"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "ghcr.io/data-intuitive/cellranger:8.0"
+  target_tag: "2.1.0"
+  namespace_separator: "/"
+  setup:
+  - type: "docker"
+    run:
+    - "DEBIAN_FRONTEND=noninteractive apt update && \\\napt upgrade -y && apt install\
+      \ -y procps && rm -rf /var/lib/apt/lists/*\n"
+  - type: "python"
+    user: false
+    packages:
+    - "pandas"
+    - "pyyaml"
+    upgrade: true
+  test_setup:
+  - type: "apt"
+    packages:
+    - "git"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.8.0"
+    github:
+    - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/mapping/cellranger_multi/config.vsh.yaml"
+  runner: "executable"
+  engine: "docker"
+  output: "target/executable/mapping/cellranger_multi"
+  executable: "target/executable/mapping/cellranger_multi/cellranger_multi"
+  viash_version: "0.9.4"
+  git_commit: "a0c9522486585774f76416150f8a3291409b5363"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "2.1.1-2-ga0c95224865"
+package_config:
+  name: "openpipeline"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+  viash_version: "0.9.4"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"2.1.2\""
+  - ".engines[.type == 'docker'].target_tag := '2.1.0'"
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"
