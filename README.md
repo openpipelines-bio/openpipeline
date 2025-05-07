@@ -12,7 +12,7 @@ License](https://img.shields.io/github/license/openpipelines-bio/openpipeline.sv
 [![GitHub
 Issues](https://img.shields.io/github/issues/openpipelines-bio/openpipeline.svg)](https://github.com/openpipelines-bio/openpipeline/issues)
 [![Viash
-version](https://img.shields.io/badge/Viash-v0.9.3-blue.svg)](https://viash.io)
+version](https://img.shields.io/badge/Viash-v0.9.4-blue.svg)](https://viash.io)
 
 ## Documentation
 
@@ -43,7 +43,7 @@ In terms of workflows, the following functionality is provided:
   multimodal methods.
 - Downstream analysis workflows
 
-``` mermaid lang="mermaid"
+``` mermaid
 flowchart LR
   demultiplexing["Step 1: Demultiplexing"]
   ingestion["Step 2: Ingestion"]
@@ -106,7 +106,7 @@ A list of workflows arguments can be consulted in multiple ways:
 
 ``` bash
 nextflow run openpipelines-bio/openpipeline \
-    -r 2.1.1 \
+    -r 2.1.2 \
     -main-script target/nextflow/workflows/ingestion/demux/main.nf \
     --help
 ```
@@ -151,7 +151,7 @@ out yourself, test data is available at
 
 ``` bash
 nextflow run openpipelines-bio/openpipeline \
-    -r 2.1.1 \
+    -r 2.1.2 \
     -main-script target/nextflow/workflows/ingestion/demux/main.nf \
     -c "<path to resource config file>" \
     -profile docker \
@@ -195,7 +195,7 @@ You can pass this file to nextflow using `-params-file`
 
 ``` bash
 nextflow run openpipelines-bio/openpipeline \
-    -r 2.1.1 \
+    -r 2.1.2 \
     -main-script target/nextflow/workflows/ingestion/cellranger_multi/main.nf \
     -c "<path to resource config file>" \
     -profile docker \
@@ -236,7 +236,7 @@ together by listing those outside the `param_list` block.
 
 ``` bash
 nextflow run openpipelines-bio/openpipeline \
-    -r 2.1.1 \
+    -r 2.1.2 \
     -main-script target/nextflow/workflows/multiomics/process_samples/main.nf \
     -c "<path to resource config file>" \
     -profile docker \
