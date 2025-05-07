@@ -103,11 +103,6 @@ argument_groups:
             The format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).
           slots:
             __merge__: file_output_slots.yaml
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--output_modality"
         description: "Which modality to store the output in."
         type: string
@@ -117,6 +112,8 @@ argument_groups:
         description: "Which layer to store the raw counts in. If not provided, the .X layer will be used."
         type: string
         required: false
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

@@ -3154,22 +3154,6 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--output_compression",
-          "description" : "The compression format to be used on the output h5mu object.",
-          "example" : [
-            "gzip"
-          ],
-          "required" : false,
-          "choices" : [
-            "gzip",
-            "lzf"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
           "name" : "--uns_output",
           "description" : "Mandatory .uns slot to store various neighbor output objects.",
           "default" : [
@@ -3233,6 +3217,22 @@ meta = [
           "name" : "--n_trim",
           "description" : "Trim the neighbours of each cell to these many top connectivities. May help with population independence and improve the tidiness of clustering. The lower the value the more independent the individual populations, at the cost of more conserved batch effect. If `None` (default), sets the parameter value automatically to 10 times `neighbors_within_batch` times the number of batches. Set to 0 to skip.",
           "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_compression",
+          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "example" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3409,7 +3409,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/bbknn",
     "viash_version" : "0.9.4",
-    "git_commit" : "cab2181f76138600ed61c61313e19dbf006cc115",
+    "git_commit" : "a8206d3e6ea1d0bd346aab07f95ded8fcaa4c1fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3471,13 +3471,13 @@ par = {
   'obsm_input': $( if [ ! -z ${VIASH_PAR_OBSM_INPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_batch': $( if [ ! -z ${VIASH_PAR_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_output': $( if [ ! -z ${VIASH_PAR_UNS_OUTPUT+x} ]; then echo "r'${VIASH_PAR_UNS_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsp_distances': $( if [ ! -z ${VIASH_PAR_OBSP_DISTANCES+x} ]; then echo "r'${VIASH_PAR_OBSP_DISTANCES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsp_connectivities': $( if [ ! -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then echo "r'${VIASH_PAR_OBSP_CONNECTIVITIES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'n_neighbors_within_batch': $( if [ ! -z ${VIASH_PAR_N_NEIGHBORS_WITHIN_BATCH+x} ]; then echo "int(r'${VIASH_PAR_N_NEIGHBORS_WITHIN_BATCH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'n_pcs': $( if [ ! -z ${VIASH_PAR_N_PCS+x} ]; then echo "int(r'${VIASH_PAR_N_PCS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'n_trim': $( if [ ! -z ${VIASH_PAR_N_TRIM+x} ]; then echo "int(r'${VIASH_PAR_N_TRIM//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+  'n_trim': $( if [ ! -z ${VIASH_PAR_N_TRIM+x} ]; then echo "int(r'${VIASH_PAR_N_TRIM//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),

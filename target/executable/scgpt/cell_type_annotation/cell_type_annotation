@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt cell_type_annotation"
-LABEL org.opencontainers.image.created="2025-05-06T03:01:48Z"
+LABEL org.opencontainers.image.created="2025-05-07T03:02:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cab2181f76138600ed61c61313e19dbf006cc115"
+LABEL org.opencontainers.image.revision="a8206d3e6ea1d0bd346aab07f95ded8fcaa4c1fe"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -642,12 +642,6 @@ function ViashHelp {
   echo "        example: output.h5mu"
   echo "        The output mudata file."
   echo ""
-  echo "    --output_compression"
-  echo "        type: string"
-  echo "        default: gzip"
-  echo "        example: gzip"
-  echo "        The compression algorithm to use for the output h5mu file."
-  echo ""
   echo "    --output_obs_predictions"
   echo "        type: string"
   echo "        default: scgpt_pred"
@@ -658,6 +652,13 @@ function ViashHelp {
   echo "        default: scgpt_probability"
   echo "        The name of the adata.obs column to write the probabilities of the"
   echo "        predicted cell type labels to."
+  echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        Compression format to use for the output AnnData and/or Mudata objects."
+  echo "        By default no compression is applied."
   echo ""
   echo "Arguments:"
   echo "    --pad_token"
@@ -860,17 +861,6 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_compression)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output_compression=*)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         --output_obs_predictions)
             [ -n "$VIASH_PAR_OUTPUT_OBS_PREDICTIONS" ] && ViashError Bad arguments for option \'--output_obs_predictions\': \'$VIASH_PAR_OUTPUT_OBS_PREDICTIONS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_OBS_PREDICTIONS="$2"
@@ -891,6 +881,17 @@ while [[ $# -gt 0 ]]; do
         --output_obs_probability=*)
             [ -n "$VIASH_PAR_OUTPUT_OBS_PROBABILITY" ] && ViashError Bad arguments for option \'--output_obs_probability=*\': \'$VIASH_PAR_OUTPUT_OBS_PROBABILITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_OBS_PROBABILITY=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --pad_token)
@@ -1190,9 +1191,6 @@ fi
 if [ -z ${VIASH_PAR_OBSM_TOKENIZED_VALUES+x} ]; then
   VIASH_PAR_OBSM_TOKENIZED_VALUES="values_tokenized"
 fi
-if [ -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then
-  VIASH_PAR_OUTPUT_COMPRESSION="gzip"
-fi
 if [ -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then
   VIASH_PAR_OUTPUT_OBS_PREDICTIONS="scgpt_pred"
 fi
@@ -1337,6 +1335,19 @@ if [[ -n "$VIASH_META_MEMORY_PIB" ]]; then
   fi
 fi
 
+# check whether value is belongs to a set of choices
+if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
+  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip;lzf")
+  IFS=';'
+  set -f
+  if ! [[ ";${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]};" =~ ";$VIASH_PAR_OUTPUT_COMPRESSION;" ]]; then
+    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
 # create parent directories of output files, if so desired
 if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT")" ]; then
   mkdir -p "$(dirname "$VIASH_PAR_OUTPUT")"
@@ -1463,9 +1474,9 @@ par = {
   'obsm_gene_tokens': $( if [ ! -z ${VIASH_PAR_OBSM_GENE_TOKENS+x} ]; then echo "r'${VIASH_PAR_OBSM_GENE_TOKENS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_tokenized_values': $( if [ ! -z ${VIASH_PAR_OBSM_TOKENIZED_VALUES+x} ]; then echo "r'${VIASH_PAR_OBSM_TOKENIZED_VALUES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_obs_predictions': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PREDICTIONS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_obs_probability': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PROBABILITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'pad_value': $( if [ ! -z ${VIASH_PAR_PAD_VALUE+x} ]; then echo "int(r'${VIASH_PAR_PAD_VALUE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'n_input_bins': $( if [ ! -z ${VIASH_PAR_N_INPUT_BINS+x} ]; then echo "int(r'${VIASH_PAR_N_INPUT_BINS//\'/\'\"\'\"r\'}')"; else echo None; fi ),

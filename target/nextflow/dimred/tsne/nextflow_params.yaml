@@ -5,8 +5,8 @@ use_rep: # please fill in - example: "X_pca"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 obsm_output: "X_tsne"
+# output_compression: "gzip"
 
 # Arguments
 n_pcs: 50

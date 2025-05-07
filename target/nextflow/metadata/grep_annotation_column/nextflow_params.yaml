@@ -7,9 +7,9 @@ modality: # please fill in - example: "rna"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 output_match_column: # please fill in - example: "foo"
 # output_fraction_column: "foo"
+# output_compression: "gzip"
 
 # Query options
 regex_pattern: # please fill in - example: "^[mM][tT]-"

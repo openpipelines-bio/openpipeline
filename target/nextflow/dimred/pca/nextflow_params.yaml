@@ -4,12 +4,12 @@ modality: "rna"
 # layer: "foo"
 # var_input: "filter_with_hvg"
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 obsm_output: "X_pca"
 varm_output: "pca_loadings"
 uns_output: "pca_variance"
 # num_components: 25
 overwrite: false
+# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

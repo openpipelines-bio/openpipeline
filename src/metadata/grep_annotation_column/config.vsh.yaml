@@ -45,12 +45,6 @@ argument_groups:
         type: file
         direction: output
         example: "output.h5mu"
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--output_match_column"
         type: string
         required: true
@@ -61,6 +55,8 @@ argument_groups:
         description: | 
           For the opposite axis, name of the column to write the fraction of 
           observations that matches to the pattern.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
   - name: Query options
     description: Options related to the query
     arguments:

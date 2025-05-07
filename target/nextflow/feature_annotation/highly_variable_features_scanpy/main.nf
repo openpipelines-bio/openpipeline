@@ -3151,22 +3151,6 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--output_compression",
-          "description" : "The compression format to be used on the output h5mu object.",
-          "example" : [
-            "gzip"
-          ],
-          "required" : false,
-          "choices" : [
-            "gzip",
-            "lzf"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
           "name" : "--var_name_filter",
           "description" : "In which .var slot to store a boolean array corresponding to which observations should be filtered out.",
           "default" : [
@@ -3289,6 +3273,22 @@ meta = [
           "name" : "--obs_batch_key",
           "description" : "If specified, highly-variable features are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific features and acts as a lightweight batch correction method. \nFor all flavors, features are first sorted by how many batches they are a HVG. For dispersion-based flavors \nties are broken by normalized dispersion. If flavor = 'seurat_v3', ties are broken by the median (across\nbatches) rank based on within-batch normalized variance.\n",
           "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_compression",
+          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "example" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3474,7 +3474,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.9.4",
-    "git_commit" : "cab2181f76138600ed61c61313e19dbf006cc115",
+    "git_commit" : "a8206d3e6ea1d0bd346aab07f95ded8fcaa4c1fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3539,7 +3539,6 @@ par = {
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_name_filter': $( if [ ! -z ${VIASH_PAR_VAR_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_VAR_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'varm_name': $( if [ ! -z ${VIASH_PAR_VARM_NAME+x} ]; then echo "r'${VIASH_PAR_VARM_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'flavor': $( if [ ! -z ${VIASH_PAR_FLAVOR+x} ]; then echo "r'${VIASH_PAR_FLAVOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3550,7 +3549,8 @@ par = {
   'max_disp': $( if [ ! -z ${VIASH_PAR_MAX_DISP+x} ]; then echo "float(r'${VIASH_PAR_MAX_DISP//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'span': $( if [ ! -z ${VIASH_PAR_SPAN+x} ]; then echo "float(r'${VIASH_PAR_SPAN//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'n_bins': $( if [ ! -z ${VIASH_PAR_N_BINS+x} ]; then echo "int(r'${VIASH_PAR_N_BINS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'obs_batch_key': $( if [ ! -z ${VIASH_PAR_OBS_BATCH_KEY+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH_KEY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'obs_batch_key': $( if [ ! -z ${VIASH_PAR_OBS_BATCH_KEY+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH_KEY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),

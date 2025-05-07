@@ -8,10 +8,10 @@ input_obsm_binned_counts: "binned_counts"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 obsm_gene_tokens: "gene_id_tokens"
 obsm_tokenized_values: "values_tokenized"
 obsm_padding_mask: "padding_mask"
+# output_compression: "gzip"
 
 # Arguments
 pad_token: "<pad>"

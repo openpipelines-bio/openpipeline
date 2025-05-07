@@ -84,18 +84,6 @@
     
 
         ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-        ,
                 "uns_output": {
                 "type":
                 "string",
@@ -156,6 +144,18 @@
                 "integer",
                 "description": "Type: `integer`. Trim the neighbours of each cell to these many top connectivities",
                 "help_text": "Type: `integer`. Trim the neighbours of each cell to these many top connectivities. May help with population independence and improve the tidiness of clustering. The lower the value the more independent the individual populations, at the cost of more conserved batch effect. If `None` (default), sets the parameter value automatically to 10 times `neighbors_within_batch` times the number of batches. Set to 0 to skip."
+            
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
+            
             
             }
     

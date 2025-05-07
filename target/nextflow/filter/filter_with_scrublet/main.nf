@@ -3142,22 +3142,6 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--output_compression",
-          "description" : "The compression format to be used on the output h5mu object.",
-          "example" : [
-            "gzip"
-          ],
-          "required" : false,
-          "choices" : [
-            "gzip",
-            "lzf"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
           "name" : "--obs_name_filter",
           "description" : "In which .obs slot to store a boolean array corresponding to which observations should be filtered out.",
           "default" : [
@@ -3292,6 +3276,22 @@ meta = [
           "name" : "--allow_automatic_threshold_detection_fail",
           "description" : "When scrublet fails to automatically determine the double score threshold, \nallow the component to continue and set the output columns to NA.\n",
           "direction" : "input"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_compression",
+          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "example" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     }
@@ -3482,7 +3482,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.9.4",
-    "git_commit" : "cab2181f76138600ed61c61313e19dbf006cc115",
+    "git_commit" : "a8206d3e6ea1d0bd346aab07f95ded8fcaa4c1fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3545,7 +3545,6 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'do_subset': $( if [ ! -z ${VIASH_PAR_DO_SUBSET+x} ]; then echo "r'${VIASH_PAR_DO_SUBSET//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'obs_name_doublet_score': $( if [ ! -z ${VIASH_PAR_OBS_NAME_DOUBLET_SCORE+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_DOUBLET_SCORE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3558,7 +3557,8 @@ par = {
   'min_gene_variablity_percent': $( if [ ! -z ${VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT+x} ]; then echo "float(r'${VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'num_pca_components': $( if [ ! -z ${VIASH_PAR_NUM_PCA_COMPONENTS+x} ]; then echo "int(r'${VIASH_PAR_NUM_PCA_COMPONENTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'distance_metric': $( if [ ! -z ${VIASH_PAR_DISTANCE_METRIC+x} ]; then echo "r'${VIASH_PAR_DISTANCE_METRIC//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'allow_automatic_threshold_detection_fail': $( if [ ! -z ${VIASH_PAR_ALLOW_AUTOMATIC_THRESHOLD_DETECTION_FAIL+x} ]; then echo "r'${VIASH_PAR_ALLOW_AUTOMATIC_THRESHOLD_DETECTION_FAIL//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
+  'allow_automatic_threshold_detection_fail': $( if [ ! -z ${VIASH_PAR_ALLOW_AUTOMATIC_THRESHOLD_DETECTION_FAIL+x} ]; then echo "r'${VIASH_PAR_ALLOW_AUTOMATIC_THRESHOLD_DETECTION_FAIL//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),

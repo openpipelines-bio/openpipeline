@@ -3256,21 +3256,6 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--output_compression",
-          "example" : [
-            "gzip"
-          ],
-          "required" : false,
-          "choices" : [
-            "gzip",
-            "lzf"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
           "name" : "--output_obs_predictions",
           "description" : "In which `.obs` slots to store the predicted information.\n",
           "default" : [
@@ -3289,6 +3274,22 @@ meta = [
             "onclass_prob"
           ],
           "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_compression",
+          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "example" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3511,7 +3512,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/onclass",
     "viash_version" : "0.9.4",
-    "git_commit" : "cab2181f76138600ed61c61313e19dbf006cc115",
+    "git_commit" : "a8206d3e6ea1d0bd346aab07f95ded8fcaa4c1fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3587,9 +3588,9 @@ par = {
   'reference_var_input': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'unknown_celltype': $( if [ ! -z ${VIASH_PAR_UNKNOWN_CELLTYPE+x} ]; then echo "r'${VIASH_PAR_UNKNOWN_CELLTYPE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_obs_predictions': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PREDICTIONS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_obs_probability': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PROBABILITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'max_iter': $( if [ ! -z ${VIASH_PAR_MAX_ITER+x} ]; then echo "int(r'${VIASH_PAR_MAX_ITER//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }

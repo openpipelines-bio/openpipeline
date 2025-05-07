@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component metadata add_id"
-LABEL org.opencontainers.image.created="2025-05-06T03:01:47Z"
+LABEL org.opencontainers.image.created="2025-05-07T03:02:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cab2181f76138600ed61c61313e19dbf006cc115"
+LABEL org.opencontainers.image.revision="a8206d3e6ea1d0bd346aab07f95ded8fcaa4c1fe"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -602,15 +602,16 @@ function ViashHelp {
   echo "        type: file, output, file must exist"
   echo "        example: output.h5mu"
   echo ""
+  echo "    --make_observation_keys_unique"
+  echo "        type: boolean_true"
+  echo "        Join the id to the .obs index (.obs_names)."
+  echo ""
   echo "    --output_compression"
   echo "        type: string"
   echo "        example: gzip"
   echo "        choices: [ gzip, lzf ]"
-  echo "        The compression format to be used on the output h5mu object."
-  echo ""
-  echo "    --make_observation_keys_unique"
-  echo "        type: boolean_true"
-  echo "        Join the id to the .obs index (.obs_names)."
+  echo "        Compression format to use for the output AnnData and/or Mudata objects."
+  echo "        By default no compression is applied."
   echo ""
   echo "Viash built in Computational Requirements:"
   echo "    ---cpus=INT"
@@ -718,6 +719,11 @@ while [[ $# -gt 0 ]]; do
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
+        --make_observation_keys_unique)
+            [ -n "$VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE" ] && ViashError Bad arguments for option \'--make_observation_keys_unique\': \'$VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE=true
+            shift 1
+            ;;
         --output_compression)
             [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_COMPRESSION="$2"
@@ -727,11 +733,6 @@ while [[ $# -gt 0 ]]; do
         --output_compression=*)
             [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --make_observation_keys_unique)
-            [ -n "$VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE" ] && ViashError Bad arguments for option \'--make_observation_keys_unique\': \'$VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE=true
             shift 1
             ;;
         ---engine)
@@ -1139,8 +1140,8 @@ par = {
   'input_id': $( if [ ! -z ${VIASH_PAR_INPUT_ID+x} ]; then echo "r'${VIASH_PAR_INPUT_ID//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_output': $( if [ ! -z ${VIASH_PAR_OBS_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBS_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'make_observation_keys_unique': $( if [ ! -z ${VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE+x} ]; then echo "r'${VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi )
+  'make_observation_keys_unique': $( if [ ! -z ${VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE+x} ]; then echo "r'${VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),

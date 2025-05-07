@@ -3104,9 +3104,21 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "integer",
+          "name" : "--number_of_observations",
+          "description" : "Number of observations to be selected from the h5mu file.",
+          "example" : [
+            5
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "string",
           "name" : "--output_compression",
-          "description" : "The compression format to be used on the output h5mu object.",
+          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
           "example" : [
             "gzip"
           ],
@@ -3115,18 +3127,6 @@ meta = [
             "gzip",
             "lzf"
           ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "integer",
-          "name" : "--number_of_observations",
-          "description" : "Number of observations to be selected from the h5mu file.",
-          "example" : [
-            5
-          ],
-          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3299,7 +3299,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/subset_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "cab2181f76138600ed61c61313e19dbf006cc115",
+    "git_commit" : "a8206d3e6ea1d0bd346aab07f95ded8fcaa4c1fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3357,8 +3357,8 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'number_of_observations': $( if [ ! -z ${VIASH_PAR_NUMBER_OF_OBSERVATIONS+x} ]; then echo "int(r'${VIASH_PAR_NUMBER_OF_OBSERVATIONS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+  'number_of_observations': $( if [ ! -z ${VIASH_PAR_NUMBER_OF_OBSERVATIONS+x} ]; then echo "int(r'${VIASH_PAR_NUMBER_OF_OBSERVATIONS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),

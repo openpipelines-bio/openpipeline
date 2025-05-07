@@ -93,18 +93,6 @@
     
 
         ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-        ,
                 "obsm_output": {
                 "type":
                 "string",
@@ -112,6 +100,18 @@
                 "help_text": "Type: `string`, default: `X_densmap`. The .obsm key to use for storing the densMAP results.."
             ,
                 "default":"X_densmap"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
             }
     
 

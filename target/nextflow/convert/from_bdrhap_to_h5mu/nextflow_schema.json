@@ -70,12 +70,22 @@
             }
     
 
-        ,
+}
+},
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
                 "output_compression": {
                 "type":
                 "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
                 "enum": ["gzip", "lzf"]
             
             
@@ -115,6 +125,10 @@
 
     {
     "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/arguments"
     },
 
     {

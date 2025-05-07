@@ -92,18 +92,6 @@
     
 
         ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-        ,
                 "obs_phase": {
                 "type":
                 "string",
@@ -133,6 +121,18 @@
                 "help_text": "Type: `string`, default: `G2M_score`. The name of the column in the obs attribute of the adata object that will store the g2m phase score.\n"
             ,
                 "default":"G2M_score"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
             }
     
 

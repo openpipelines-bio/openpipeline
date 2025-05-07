@@ -3272,21 +3272,6 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--output_compression",
-          "example" : [
-            "gzip"
-          ],
-          "required" : false,
-          "choices" : [
-            "gzip",
-            "lzf"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
           "name" : "--output_layer",
           "description" : "Name of the aligned layer containing raw counts in the output query and reference datasets.",
           "default" : [
@@ -3377,6 +3362,22 @@ meta = [
             "_common_vars"
           ],
           "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_compression",
+          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "example" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3632,7 +3633,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/align_query_reference",
     "viash_version" : "0.9.4",
-    "git_commit" : "cab2181f76138600ed61c61313e19dbf006cc115",
+    "git_commit" : "a8206d3e6ea1d0bd346aab07f95ded8fcaa4c1fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3705,7 +3706,6 @@ par = {
   'reference_id': $( if [ ! -z ${VIASH_PAR_REFERENCE_ID+x} ]; then echo "r'${VIASH_PAR_REFERENCE_ID//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_query': $( if [ ! -z ${VIASH_PAR_OUTPUT_QUERY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_QUERY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_reference': $( if [ ! -z ${VIASH_PAR_OUTPUT_REFERENCE+x} ]; then echo "r'${VIASH_PAR_OUTPUT_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_layer_lognormalized': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER_LOGNORMALIZED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_var_gene_names': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3714,6 +3714,7 @@ par = {
   'output_obs_id': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_ID+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_ID//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_var_index': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_INDEX+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_INDEX//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_var_common_genes': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_COMMON_GENES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_COMMON_GENES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'align_layers_raw_counts': $( if [ ! -z ${VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS+x} ]; then echo "r'${VIASH_PAR_ALIGN_LAYERS_RAW_COUNTS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'align_layers_lognormalized_counts': $( if [ ! -z ${VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS+x} ]; then echo "r'${VIASH_PAR_ALIGN_LAYERS_LOGNORMALIZED_COUNTS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),

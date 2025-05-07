@@ -6,8 +6,8 @@ obsm_pca: # please fill in - example: "foo"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 obsm_output: "X_densmap"
+# output_compression: "gzip"
 
 # Arguments UMAP
 min_dist: 0.5

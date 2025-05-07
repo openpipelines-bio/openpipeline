@@ -165,18 +165,6 @@
     
 
         ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression algorithm to use for the output h5mu file",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression algorithm to use for the output h5mu file.\n",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-        ,
                 "obsm_embeddings": {
                 "type":
                 "string",
@@ -184,6 +172,18 @@
                 "help_text": "Type: `string`, default: `X_scGPT`. The name of the adata.obsm array to which scGPT embeddings will be written.\n"
             ,
                 "default":"X_scGPT"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
             }
     
 

@@ -41,18 +41,6 @@
     
 
         ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-        ,
                 "output_files": {
                 "type":
                 "string",
@@ -60,6 +48,18 @@
                 "help_text": "Type: `file`, required, default: `$id.$key.output_files.csv`, example: `sample_files.csv`. A csv containing the base filename and obs feature by which it was split."
             ,
                 "default":"$id.$key.output_files.csv"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
             }
     
 

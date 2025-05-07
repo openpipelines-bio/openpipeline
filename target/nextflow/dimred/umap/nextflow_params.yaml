@@ -5,8 +5,8 @@ uns_neighbors: "neighbors"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 obsm_output: "umap"
+# output_compression: "gzip"
 
 # Arguments
 min_dist: 0.5

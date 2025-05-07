@@ -228,18 +228,6 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--output_compression"
-    info: null
-    example:
-    - "gzip"
-    required: false
-    choices:
-    - "gzip"
-    - "lzf"
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
     name: "--output_obs_predictions"
     description: "In which `.obs` slots to store the predicted information.\n"
     info: null
@@ -256,6 +244,20 @@ argument_groups:
     default:
     - "celltypist_probability"
     required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_compression"
+    description: "Compression format to use for the output AnnData and/or Mudata objects.\n\
+      By default no compression is applied.\n"
+    info: null
+    example:
+    - "gzip"
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -417,7 +419,7 @@ build_info:
   output: "target/nextflow/annotate/celltypist"
   executable: "target/nextflow/annotate/celltypist/main.nf"
   viash_version: "0.9.4"
-  git_commit: "cab2181f76138600ed61c61313e19dbf006cc115"
+  git_commit: "a8206d3e6ea1d0bd346aab07f95ded8fcaa4c1fe"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

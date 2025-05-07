@@ -457,9 +457,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component qc calculate_atac_qc_metrics"
-LABEL org.opencontainers.image.created="2025-05-06T03:01:45Z"
+LABEL org.opencontainers.image.created="2025-05-07T03:02:59Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cab2181f76138600ed61c61313e19dbf006cc115"
+LABEL org.opencontainers.image.revision="a8206d3e6ea1d0bd346aab07f95ded8fcaa4c1fe"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -658,7 +658,8 @@ function ViashHelp {
   echo "        type: string"
   echo "        example: gzip"
   echo "        choices: [ gzip, lzf ]"
-  echo "        The compression format to be used on the output h5mu object."
+  echo "        Compression format to use for the output AnnData and/or Mudata objects."
+  echo "        By default no compression is applied."
   echo ""
   echo "Viash built in Computational Requirements:"
   echo "    ---cpus=INT"

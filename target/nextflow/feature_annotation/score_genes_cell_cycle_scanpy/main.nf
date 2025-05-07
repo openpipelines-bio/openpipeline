@@ -3267,22 +3267,6 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--output_compression",
-          "description" : "The compression format to be used on the output h5mu object.",
-          "example" : [
-            "gzip"
-          ],
-          "required" : false,
-          "choices" : [
-            "gzip",
-            "lzf"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
           "name" : "--obs_phase",
           "description" : "The name of the column in the obs attribute of the adata object that will store the cell cycle phase annotation.\n",
           "default" : [
@@ -3313,6 +3297,22 @@ meta = [
             "G2M_score"
           ],
           "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_compression",
+          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "example" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3517,7 +3517,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/score_genes_cell_cycle_scanpy",
     "viash_version" : "0.9.4",
-    "git_commit" : "cab2181f76138600ed61c61313e19dbf006cc115",
+    "git_commit" : "a8206d3e6ea1d0bd346aab07f95ded8fcaa4c1fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3587,10 +3587,10 @@ par = {
   'gene_pool': $( if [ ! -z ${VIASH_PAR_GENE_POOL+x} ]; then echo "r'${VIASH_PAR_GENE_POOL//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'gene_pool_file': $( if [ ! -z ${VIASH_PAR_GENE_POOL_FILE+x} ]; then echo "r'${VIASH_PAR_GENE_POOL_FILE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_phase': $( if [ ! -z ${VIASH_PAR_OBS_PHASE+x} ]; then echo "r'${VIASH_PAR_OBS_PHASE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_s_score': $( if [ ! -z ${VIASH_PAR_OBS_S_SCORE+x} ]; then echo "r'${VIASH_PAR_OBS_S_SCORE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_g2m_score': $( if [ ! -z ${VIASH_PAR_OBS_G2M_SCORE+x} ]; then echo "r'${VIASH_PAR_OBS_G2M_SCORE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'n_bins': $( if [ ! -z ${VIASH_PAR_N_BINS+x} ]; then echo "int(r'${VIASH_PAR_N_BINS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'random_state': $( if [ ! -z ${VIASH_PAR_RANDOM_STATE+x} ]; then echo "int(r'${VIASH_PAR_RANDOM_STATE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'allow_missing_genes': $( if [ ! -z ${VIASH_PAR_ALLOW_MISSING_GENES+x} ]; then echo "r'${VIASH_PAR_ALLOW_MISSING_GENES//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )

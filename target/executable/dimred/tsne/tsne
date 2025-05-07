@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component dimred tsne"
-LABEL org.opencontainers.image.created="2025-05-06T03:01:48Z"
+LABEL org.opencontainers.image.created="2025-05-07T03:02:54Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cab2181f76138600ed61c61313e19dbf006cc115"
+LABEL org.opencontainers.image.revision="a8206d3e6ea1d0bd346aab07f95ded8fcaa4c1fe"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -605,16 +605,17 @@ function ViashHelp {
   echo "        example: output.h5mu"
   echo "        Output h5mu file."
   echo ""
-  echo "    --output_compression"
-  echo "        type: string"
-  echo "        example: gzip"
-  echo "        choices: [ gzip, lzf ]"
-  echo "        The compression format to be used on the output h5mu object."
-  echo ""
   echo "    --obsm_output"
   echo "        type: string"
   echo "        default: X_tsne"
   echo "        The .obsm key to use for storing the tSNE results."
+  echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        Compression format to use for the output AnnData and/or Mudata objects."
+  echo "        By default no compression is applied."
   echo ""
   echo "Arguments:"
   echo "    --n_pcs"
@@ -766,17 +767,6 @@ while [[ $# -gt 0 ]]; do
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_compression)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output_compression=*)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         --obsm_output)
             [ -n "$VIASH_PAR_OBSM_OUTPUT" ] && ViashError Bad arguments for option \'--obsm_output\': \'$VIASH_PAR_OBSM_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBSM_OUTPUT="$2"
@@ -786,6 +776,17 @@ while [[ $# -gt 0 ]]; do
         --obsm_output=*)
             [ -n "$VIASH_PAR_OBSM_OUTPUT" ] && ViashError Bad arguments for option \'--obsm_output=*\': \'$VIASH_PAR_OBSM_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBSM_OUTPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --n_pcs)
@@ -1327,8 +1328,8 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'use_rep': $( if [ ! -z ${VIASH_PAR_USE_REP+x} ]; then echo "r'${VIASH_PAR_USE_REP//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'n_pcs': $( if [ ! -z ${VIASH_PAR_N_PCS+x} ]; then echo "int(r'${VIASH_PAR_N_PCS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'perplexity': $( if [ ! -z ${VIASH_PAR_PERPLEXITY+x} ]; then echo "float(r'${VIASH_PAR_PERPLEXITY//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'min_dist': $( if [ ! -z ${VIASH_PAR_MIN_DIST+x} ]; then echo "float(r'${VIASH_PAR_MIN_DIST//\'/\'\"\'\"r\'}')"; else echo None; fi ),

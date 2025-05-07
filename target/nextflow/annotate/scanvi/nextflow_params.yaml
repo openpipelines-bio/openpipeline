@@ -13,10 +13,10 @@ scvi_model: # please fill in - example: "scvi_model.pt"
 # Outputs
 # output: "$id.$key.output"
 # output_model: "$id.$key.output_model"
-# output_compression: "gzip"
 obsm_output: "X_scanvi_integrated"
 obs_output_predictions: "scanvi_pred"
 obs_output_probabilities: "scanvi_proba"
+# output_compression: "gzip"
 
 # scANVI training arguments
 # early_stopping: true

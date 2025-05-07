@@ -72,18 +72,6 @@
     
 
         ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-        ,
                 "layer_output": {
                 "type":
                 "string",
@@ -146,6 +134,18 @@
                 "help_text": "Type: `string`, default: `cellbender_latent_gene_encoding`. "
             ,
                 "default":"cellbender_latent_gene_encoding"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
             }
     
 

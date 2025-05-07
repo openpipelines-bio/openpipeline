@@ -36,12 +36,6 @@ argument_groups:
         description: Output h5mu file.
         direction: output
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--do_subset"
         type: boolean_true
         description: Whether to subset before storing the output.
@@ -54,7 +48,7 @@ argument_groups:
         type: string
         default: "filter_with_counts"
         description: In which .var slot to store a boolean array corresponding to which variables should be removed.
-
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Arguments
     arguments:

@@ -41,18 +41,6 @@
     
 
         ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-        ,
                 "output_modality": {
                 "type":
                 "string",
@@ -69,6 +57,18 @@
                 "string",
                 "description": "Type: `string`. Which layer to store the raw counts in",
                 "help_text": "Type: `string`. Which layer to store the raw counts in. If not provided, the .X layer will be used."
+            
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
+            
             
             }
     

@@ -51,18 +51,6 @@
     
 
         ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-        ,
                 "modality": {
                 "type":
                 "string",
@@ -99,6 +87,18 @@
                 "string",
                 "description": "Type: `string`, example: `X_regressed`. The layer of the adata object containing the regressed count data",
                 "help_text": "Type: `string`, example: `X_regressed`. The layer of the adata object containing the regressed count data.\nIf not provided, the X attribute of the adata object will be used.\n"
+            
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
+            
             
             }
     

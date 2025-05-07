@@ -51,19 +51,6 @@
     
 
         ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `gzip`, choices: ``gzip`, `lzf``. ",
-                "help_text": "Type: `string`, default: `gzip`, choices: ``gzip`, `lzf``. ",
-                "enum": ["gzip", "lzf"]
-            
-            ,
-                "default":"gzip"
-            }
-    
-
-        ,
                 "modality": {
                 "type":
                 "string",
@@ -172,6 +159,18 @@
                 "help_text": "Type: `integer`, default: `100`. Number of permutations for the permutation test. Note that this is relevant only for permutation-based methods - e.g. \u0027CellPhoneDB"
             ,
                 "default":100
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
             }
     
 

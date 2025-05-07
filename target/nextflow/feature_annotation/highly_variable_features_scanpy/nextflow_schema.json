@@ -82,18 +82,6 @@
     
 
         ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-        ,
                 "var_name_filter": {
                 "type":
                 "string",
@@ -209,6 +197,18 @@
                 "string",
                 "description": "Type: `string`. If specified, highly-variable features are selected within each batch separately and merged",
                 "help_text": "Type: `string`. If specified, highly-variable features are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific features and acts as a lightweight batch correction method. \nFor all flavors, features are first sorted by how many batches they are a HVG. For dispersion-based flavors \nties are broken by normalized dispersion. If flavor = \u0027seurat_v3\u0027, ties are broken by the median (across\nbatches) rank based on within-batch normalized variance.\n"
+            
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
+            
             
             }
     

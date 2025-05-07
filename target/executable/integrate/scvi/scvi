@@ -459,9 +459,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Malte D. Luecken, Dries Schaumont, Matthias Beyens"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scvi"
-LABEL org.opencontainers.image.created="2025-05-06T03:01:43Z"
+LABEL org.opencontainers.image.created="2025-05-07T03:02:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cab2181f76138600ed61c61313e19dbf006cc115"
+LABEL org.opencontainers.image.revision="a8206d3e6ea1d0bd346aab07f95ded8fcaa4c1fe"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -654,16 +654,17 @@ function ViashHelp {
   echo "        type: file, output, file must exist"
   echo "        Folder where the state of the trained model will be saved to."
   echo ""
-  echo "    --output_compression"
-  echo "        type: string"
-  echo "        example: gzip"
-  echo "        choices: [ gzip, lzf ]"
-  echo "        The compression format to be used on the output h5mu object."
-  echo ""
   echo "    --obsm_output"
   echo "        type: string"
   echo "        default: X_scvi_integrated"
   echo "        In which .obsm slot to store the resulting integrated embedding."
+  echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        Compression format to use for the output AnnData and/or Mudata objects."
+  echo "        By default no compression is applied."
   echo ""
   echo "SCVI options:"
   echo "    --n_hidden_nodes"
@@ -1008,17 +1009,6 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT_MODEL=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_compression)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output_compression=*)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         --obsm_output)
             [ -n "$VIASH_PAR_OBSM_OUTPUT" ] && ViashError Bad arguments for option \'--obsm_output\': \'$VIASH_PAR_OBSM_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBSM_OUTPUT="$2"
@@ -1028,6 +1018,17 @@ while [[ $# -gt 0 ]]; do
         --obsm_output=*)
             [ -n "$VIASH_PAR_OBSM_OUTPUT" ] && ViashError Bad arguments for option \'--obsm_output=*\': \'$VIASH_PAR_OBSM_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBSM_OUTPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --n_hidden_nodes)
@@ -1917,8 +1918,8 @@ par = {
   'obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CONTINUOUS_COVARIATE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_model': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'n_hidden_nodes': $( if [ ! -z ${VIASH_PAR_N_HIDDEN_NODES+x} ]; then echo "int(r'${VIASH_PAR_N_HIDDEN_NODES//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'n_dimensions_latent_space': $( if [ ! -z ${VIASH_PAR_N_DIMENSIONS_LATENT_SPACE+x} ]; then echo "int(r'${VIASH_PAR_N_DIMENSIONS_LATENT_SPACE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'n_hidden_layers': $( if [ ! -z ${VIASH_PAR_N_HIDDEN_LAYERS+x} ]; then echo "int(r'${VIASH_PAR_N_HIDDEN_LAYERS//\'/\'\"\'\"r\'}')"; else echo None; fi ),

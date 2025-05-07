@@ -23,6 +23,28 @@
 
     
     
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+}
+},
+    
+    
     "input" : {
     "title": "Input",
     "type": "object",
@@ -111,18 +133,6 @@
             }
     
 
-        ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
 }
 },
     
@@ -149,6 +159,10 @@
 }
 },
 "allOf": [
+
+    {
+    "$ref": "#/definitions/arguments"
+    },
 
     {
     "$ref": "#/definitions/input"

@@ -102,18 +102,6 @@
     
 
         ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-        ,
                 "output_var_filter": {
                 "type":
                 "string",
@@ -121,6 +109,18 @@
                 "help_text": "Type: `string`, default: `id_in_vocab`. In which .var slot to store a boolean array corresponding to which observations should be filtered out based on HVG and model vocabulary."
             ,
                 "default":"id_in_vocab"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
             }
     
 

@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow split_h5mu"
-LABEL org.opencontainers.image.created="2025-05-06T03:01:46Z"
+LABEL org.opencontainers.image.created="2025-05-07T03:02:58Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cab2181f76138600ed61c61313e19dbf006cc115"
+LABEL org.opencontainers.image.revision="a8206d3e6ea1d0bd346aab07f95ded8fcaa4c1fe"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -613,17 +613,18 @@ function ViashHelp {
   echo "        example: /path/to/output"
   echo "        Output directory containing multiple h5mu files."
   echo ""
-  echo "    --output_compression"
-  echo "        type: string"
-  echo "        example: gzip"
-  echo "        choices: [ gzip, lzf ]"
-  echo "        The compression format to be used on the output h5mu object."
-  echo ""
   echo "    --output_files"
   echo "        type: file, required parameter, output, file must exist"
   echo "        example: sample_files.csv"
   echo "        A csv containing the base filename and obs feature by which it was"
   echo "        split."
+  echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        Compression format to use for the output AnnData and/or Mudata objects."
+  echo "        By default no compression is applied."
   echo ""
   echo "Viash built in Computational Requirements:"
   echo "    ---cpus=INT"
@@ -729,17 +730,6 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_compression)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output_compression=*)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         --output_files)
             [ -n "$VIASH_PAR_OUTPUT_FILES" ] && ViashError Bad arguments for option \'--output_files\': \'$VIASH_PAR_OUTPUT_FILES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_FILES="$2"
@@ -749,6 +739,17 @@ while [[ $# -gt 0 ]]; do
         --output_files=*)
             [ -n "$VIASH_PAR_OUTPUT_FILES" ] && ViashError Bad arguments for option \'--output_files=*\': \'$VIASH_PAR_OUTPUT_FILES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_FILES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---engine)
@@ -1187,8 +1188,8 @@ par = {
   'drop_obs_nan': $( if [ ! -z ${VIASH_PAR_DROP_OBS_NAN+x} ]; then echo "r'${VIASH_PAR_DROP_OBS_NAN//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'ensure_unique_filenames': $( if [ ! -z ${VIASH_PAR_ENSURE_UNIQUE_FILENAMES+x} ]; then echo "r'${VIASH_PAR_ENSURE_UNIQUE_FILENAMES//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_files': $( if [ ! -z ${VIASH_PAR_OUTPUT_FILES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_FILES//\'/\'\"\'\"r\'}'"; else echo None; fi )
+  'output_files': $( if [ ! -z ${VIASH_PAR_OUTPUT_FILES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_FILES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
