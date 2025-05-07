@@ -116,10 +116,10 @@
                 "reference_model_path": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.reference_model_path.reference_model_path`. Directory with the reference model",
-                "help_text": "Type: `file`, default: `$id.$key.reference_model_path.reference_model_path`. Directory with the reference model. If not exists, trained model will be saved there"
+                "description": "Type: `file`, default: `totalvi_model_reference`. Directory with the reference model",
+                "help_text": "Type: `file`, default: `totalvi_model_reference`. Directory with the reference model. If not exists, trained model will be saved there"
             ,
-                "default":"$id.$key.reference_model_path.reference_model_path"
+                "default":"totalvi_model_reference"
             }
     
 
@@ -127,10 +127,10 @@
                 "query_model_path": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.query_model_path.query_model_path`. Directory, where the query model will be saved",
-                "help_text": "Type: `file`, default: `$id.$key.query_model_path.query_model_path`. Directory, where the query model will be saved"
+                "description": "Type: `file`, default: `totalvi_model_query`. Directory, where the query model will be saved",
+                "help_text": "Type: `file`, default: `totalvi_model_query`. Directory, where the query model will be saved"
             ,
-                "default":"$id.$key.query_model_path.query_model_path"
+                "default":"totalvi_model_query"
             }
     
 

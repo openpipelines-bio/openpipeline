@@ -33,10 +33,10 @@
                 "output_raw": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. The raw output folder",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. The raw output folder."
+                "description": "Type: `file`, required, default: `$id.$key.output_raw`, example: `output_dir`. The raw output folder",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_raw`, example: `output_dir`. The raw output folder."
             ,
-                "default":"$id.$key.output_raw.output_raw"
+                "default":"$id.$key.output_raw"
             }
     
 

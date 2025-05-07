@@ -54,10 +54,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.output`. Path to the directory where the resources will be synced to",
-                "help_text": "Type: `file`, default: `$id.$key.output.output`. Path to the directory where the resources will be synced to."
+                "description": "Type: `file`, default: `.`. Path to the directory where the resources will be synced to",
+                "help_text": "Type: `file`, default: `.`. Path to the directory where the resources will be synced to."
             ,
-                "default":"$id.$key.output.output"
+                "default":"."
             }
     
 

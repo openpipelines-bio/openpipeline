@@ -43,10 +43,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.output`, example: `report`. Create report in the specified output directory",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.output`, example: `report`. Create report in the specified output directory."
+                "description": "Type: `file`, required, default: `$id.$key.output`, example: `report`. Create report in the specified output directory",
+                "help_text": "Type: `file`, required, default: `$id.$key.output`, example: `report`. Create report in the specified output directory."
             ,
-                "default":"$id.$key.output.output"
+                "default":"$id.$key.output"
             }
     
 

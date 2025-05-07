@@ -89,10 +89,10 @@
                 "output_model": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output_model.output_model`. Path to the resulting scANVI model that was updated with query data",
-                "help_text": "Type: `file`, default: `$id.$key.output_model.output_model`. Path to the resulting scANVI model that was updated with query data."
+                "description": "Type: `file`, default: `$id.$key.output_model`. Path to the resulting scANVI model that was updated with query data",
+                "help_text": "Type: `file`, default: `$id.$key.output_model`. Path to the resulting scANVI model that was updated with query data."
             ,
-                "default":"$id.$key.output_model.output_model"
+                "default":"$id.$key.output_model"
             }
     
 

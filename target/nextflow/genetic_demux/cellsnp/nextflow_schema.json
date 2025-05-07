@@ -274,10 +274,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.output`, example: `cellsnp_out`. Output directory for VCF and sparse matrices",
-                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `cellsnp_out`. Output directory for VCF and sparse matrices."
+                "description": "Type: `file`, default: `$id.$key.output`, example: `cellsnp_out`. Output directory for VCF and sparse matrices",
+                "help_text": "Type: `file`, default: `$id.$key.output`, example: `cellsnp_out`. Output directory for VCF and sparse matrices."
             ,
-                "default":"$id.$key.output.output"
+                "default":"$id.$key.output"
             }
     
 

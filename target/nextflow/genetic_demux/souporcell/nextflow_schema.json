@@ -199,10 +199,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.output`, example: `souporcell_out`. name of directory to place souporcell files",
-                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `souporcell_out`. name of directory to place souporcell files"
+                "description": "Type: `file`, default: `$id.$key.output`, example: `souporcell_out`. name of directory to place souporcell files",
+                "help_text": "Type: `file`, default: `$id.$key.output`, example: `souporcell_out`. name of directory to place souporcell files"
             ,
-                "default":"$id.$key.output.output"
+                "default":"$id.$key.output"
             }
     
 

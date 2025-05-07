@@ -44,10 +44,10 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.h5mu`. Path to the output file",
-                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`. Path to the output file."
+                "description": "Type: `file`, default: `output.h5mu`. Path to the output file",
+                "help_text": "Type: `file`, default: `output.h5mu`. Path to the output file."
             ,
-                "default":"$id.$key.output.h5mu"
+                "default":"output.h5mu"
             }
     
 
