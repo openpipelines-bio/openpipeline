@@ -80,7 +80,7 @@ A list of workflows arguments can be consulted in multiple ways:
 
 ```bash
 nextflow run openpipelines-bio/openpipeline \
-    -r 2.1.1 \
+    -r 2.1.2 \
     -main-script target/nextflow/workflows/ingestion/demux/main.nf \
     --help
 ```
@@ -116,7 +116,7 @@ Here, generating FASTQ files from raw sequencing data is demonstrated, based on 
 
 ```bash
 nextflow run openpipelines-bio/openpipeline \
-    -r 2.1.1 \
+    -r 2.1.2 \
     -main-script target/nextflow/workflows/ingestion/demux/main.nf \
     -c "<path to resource config file>" \
     -profile docker \
@@ -154,7 +154,7 @@ You can pass this file to nextflow using `-params-file`
 
 ```bash
 nextflow run openpipelines-bio/openpipeline \
-    -r 2.1.1 \
+    -r 2.1.2 \
     -main-script target/nextflow/workflows/ingestion/cellranger_multi/main.nf \
     -c "<path to resource config file>" \
     -profile docker \
@@ -186,7 +186,7 @@ In order to provide multiple samples to the pipeline, `param_list` is used. Usin
 
 ```bash
 nextflow run openpipelines-bio/openpipeline \
-    -r 2.1.1 \
+    -r 2.1.2 \
     -main-script target/nextflow/workflows/multiomics/process_samples/main.nf \
     -c "<path to resource config file>" \
     -profile docker \
