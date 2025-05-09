@@ -454,9 +454,9 @@ RUN pip install --upgrade pip && \
   python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 LABEL org.opencontainers.image.description="Companion container for running component transform move_layer"
-LABEL org.opencontainers.image.created="2025-05-08T03:03:54Z"
+LABEL org.opencontainers.image.created="2025-05-09T03:03:08Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0a860786bcd28eeb0bec6c22760464ecbd66a965"
+LABEL org.opencontainers.image.revision="d5432abbeb03c652c5237810577b3fffe60d7a7b"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
