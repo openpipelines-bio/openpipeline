@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "samtools_sort",
+  "description": "Sort and (optionally) index alignments.\n\nReads are sorted by leftmost coordinates, or by read name when `--sort_by_read_names` is used.\n\nAn appropriate `@HD-SO` sort order header tag will be added or an existing one updated if necessary.\n\nNote that to generate an index file (by specifying `--output_bai`), the default coordinate sort must be used.\nThus the `--sort_by_read_names` and `--sort_by <TAG>` options are incompatible with `--output_bai`. \n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
+        }
+      }
+    },
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [],
+        "minimizer_cluster": {
+          "type": "boolean",
+          "description": "Sort unmapped reads (those in chromosome \"*\") by their sequence minimiser (Schleimer et al",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "minimizer_kmer": {
+          "type": "integer",
+          "description": "Sets the kmer size to be used in the -M option",
+          "help_text": "Type: `integer`, multiple: `False`, example: `20`. "
+        },
+        "sort_by_read_names": {
+          "type": "boolean",
+          "description": "Sort by read names (i",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "sort_by": {
+          "type": "string",
+          "description": "Sort first by this value in the alignment tag, then by position or name (if also using -n)",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "no_pg": {
+          "type": "boolean",
+          "description": "Do not add a @PG line to the header of the output file",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
+    },
+    "input": {
+      "title": "Input",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [
+          "input"
+        ],
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Path to the SAM/BAM/CRAM files containing the mapped reads",
+          "help_text": "Type: `file`, multiple: `False`, required, example: `input.bam`. "
+        }
+      }
+    },
+    "output": {
+      "title": "Output",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [
+          "output_bam"
+        ],
+        "output_bam": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Filename to output the counts to",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_bam.bam`, example: `output.bam`. ",
+          "default": "$id.$key.output_bam.bam"
+        },
+        "output_bai": {
+          "type": "string",
+          "format": "path",
+          "description": "BAI-format index for BAM file",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_bai.bai`, example: `output.bam.bai`. ",
+          "default": "$id.$key.output_bai.bai"
+        },
+        "output_format": {
+          "type": "string",
+          "description": "The output format",
+          "help_text": "Type: `string`, multiple: `False`, example: `bam`, choices: ``sam`, `bam`, `cram``. ",
+          "enum": [
+            "sam",
+            "bam",
+            "cram"
+          ]
+        },
+        "compression": {
+          "type": "integer",
+          "description": "Compression level, from 0 (uncompressed) to 9 (best",
+          "help_text": "Type: `integer`, multiple: `False`, example: `5`. "
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "required": [],
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/arguments"
+    },
+    {
+      "$ref": "#/definitions/input"
+    },
+    {
+      "$ref": "#/definitions/output"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "filter_with_counts",
+  "description": "Filter scRNA-seq data based on the primary QC metrics. \nThis is based on both the UMI counts, the gene counts \nand the mitochondrial genes (genes starting with mt/MT).\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [
+          "input"
+        ],
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, example: `input.h5mu`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "default": "rna"
+        },
+        "layer": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, example: `raw_counts`. "
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [],
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "do_subset": {
+          "type": "boolean",
+          "description": "Whether to subset before storing the output",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "obs_name_filter": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`, default: `filter_with_counts`. ",
+          "default": "filter_with_counts"
+        },
+        "var_name_filter": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`, default: `filter_with_counts`. ",
+          "default": "filter_with_counts"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects",
+          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [],
+        "min_counts": {
+          "type": "integer",
+          "description": "Minimum number of counts captured per cell",
+          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+        },
+        "max_counts": {
+          "type": "integer",
+          "description": "Maximum number of counts captured per cell",
+          "help_text": "Type: `integer`, multiple: `False`, example: `5000000`. "
+        },
+        "min_genes_per_cell": {
+          "type": "integer",
+          "description": "Minimum of non-zero values per cell",
+          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+        },
+        "max_genes_per_cell": {
+          "type": "integer",
+          "description": "Maximum of non-zero values per cell",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1500000`. "
+        },
+        "min_cells_per_gene": {
+          "type": "integer",
+          "description": "Minimum of non-zero values per gene",
+          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "required": [],
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/inputs"
+    },
+    {
+      "$ref": "#/definitions/outputs"
+    },
+    {
+      "$ref": "#/definitions/arguments"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
+}

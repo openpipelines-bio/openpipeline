@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "scsplit",
+  "description": "scsplit is a genotype-free demultiplexing methode of pooled single-cell RNA-seq, using a hidden state model for identifying genetically distinct samples within a mixed population.",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
+        }
+      }
+    },
+    "input": {
+      "title": "Input",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [],
+        "vcf": {
+          "type": "string",
+          "format": "path",
+          "description": "VCF from mixed BAM",
+          "help_text": "Type: `file`, multiple: `False`. "
+        },
+        "bam": {
+          "type": "string",
+          "format": "path",
+          "description": "mixed sample BAM",
+          "help_text": "Type: `file`, multiple: `False`. "
+        },
+        "bar": {
+          "type": "string",
+          "format": "path",
+          "description": "barcodes whitelist",
+          "help_text": "Type: `file`, multiple: `False`. "
+        },
+        "tag": {
+          "type": "string",
+          "description": "tag for barcode",
+          "help_text": "Type: `string`, multiple: `False`, default: `CB`. ",
+          "default": "CB"
+        },
+        "com": {
+          "type": "string",
+          "format": "path",
+          "description": "common SNVs",
+          "help_text": "Type: `file`, multiple: `False`. "
+        },
+        "num": {
+          "type": "integer",
+          "description": "expected number of mixed samples",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "sub": {
+          "type": "integer",
+          "description": "maximum number of subpopulations in autodetect mode",
+          "help_text": "Type: `integer`, multiple: `False`, default: `10`. ",
+          "default": 10
+        },
+        "ems": {
+          "type": "integer",
+          "description": "number of EM repeats to avoid local maximum",
+          "help_text": "Type: `integer`, multiple: `False`, default: `30`. ",
+          "default": 30
+        },
+        "dbl": {
+          "type": "number",
+          "description": "correction for doublets",
+          "help_text": "Type: `double`, multiple: `False`. "
+        },
+        "vcf_known": {
+          "type": "string",
+          "format": "path",
+          "description": "known individual genotypes to limit distinguishing variants to available variants, so that users do not need to redo genotyping on selected variants, otherwise any variants could be selected as distinguishing variants",
+          "help_text": "Type: `file`, multiple: `False`. "
+        },
+        "geno": {
+          "type": "boolean",
+          "description": "generate sample genotypes based on the split result",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
+    },
+    "output": {
+      "title": "Output",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [],
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output directory",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output`, example: `scSplit_out`. ",
+          "default": "$id.$key.output"
+        },
+        "ref": {
+          "type": "string",
+          "description": "output Ref count matrix",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "alt": {
+          "type": "string",
+          "description": "output Alt count matrix",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "psc": {
+          "type": "string",
+          "description": "generated P(S|C)",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "required": [],
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/input"
+    },
+    {
+      "$ref": "#/definitions/output"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
+}

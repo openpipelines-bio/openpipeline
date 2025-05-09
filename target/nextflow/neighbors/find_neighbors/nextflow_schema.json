@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "find_neighbors",
+  "description": "Compute a neighborhood graph of observations [McInnes18].\n\nThe neighbor search efficiency of this heavily relies on UMAP [McInnes18], which also provides a method for estimating connectivities of data points - the connectivity of the manifold (method=='umap'). If method=='gauss', connectivities are computed according to [Coifman05], in the adaption of [Haghverdi16].\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
+        }
+      }
+    },
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [
+          "input"
+        ],
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, example: `input.h5mu`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "default": "rna"
+        },
+        "obsm_input": {
+          "type": "string",
+          "description": "Which ",
+          "help_text": "Type: `string`, multiple: `False`, default: `X_pca`. ",
+          "default": "X_pca"
+        },
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file containing the found neighbors",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "uns_output": {
+          "type": "string",
+          "description": "Mandatory ",
+          "help_text": "Type: `string`, multiple: `False`, default: `neighbors`. ",
+          "default": "neighbors"
+        },
+        "obsp_distances": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`, default: `distances`. ",
+          "default": "distances"
+        },
+        "obsp_connectivities": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`, default: `connectivities`. ",
+          "default": "connectivities"
+        },
+        "metric": {
+          "type": "string",
+          "description": "The distance metric to be used in the generation of the nearest neighborhood network",
+          "help_text": "Type: `string`, multiple: `False`, default: `euclidean`, choices: ``cityblock`, `cosine`, `euclidean`, `l1`, `l2`, `manhattan`, `braycurtis`, `canberra`, `chebyshev`, `correlation`, `dice`, `hamming`, `jaccard`, `kulsinski`, `mahalanobis`, `minkowski`, `rogerstanimoto`, `russellrao`, `seuclidean`, `sokalmichener`, `sokalsneath`, `sqeuclidean`, `yule``. ",
+          "enum": [
+            "cityblock",
+            "cosine",
+            "euclidean",
+            "l1",
+            "l2",
+            "manhattan",
+            "braycurtis",
+            "canberra",
+            "chebyshev",
+            "correlation",
+            "dice",
+            "hamming",
+            "jaccard",
+            "kulsinski",
+            "mahalanobis",
+            "minkowski",
+            "rogerstanimoto",
+            "russellrao",
+            "seuclidean",
+            "sokalmichener",
+            "sokalsneath",
+            "sqeuclidean",
+            "yule"
+          ],
+          "default": "euclidean"
+        },
+        "num_neighbors": {
+          "type": "integer",
+          "description": "The size of local neighborhood (in terms of number of neighboring data points) used for manifold approximation",
+          "help_text": "Type: `integer`, multiple: `False`, default: `15`. ",
+          "default": 15
+        },
+        "seed": {
+          "type": "integer",
+          "description": "A random seed",
+          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
+          "default": 0
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects",
+          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "required": [],
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/arguments"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
+}

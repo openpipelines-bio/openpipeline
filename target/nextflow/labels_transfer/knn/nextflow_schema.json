@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "knn",
+  "description": "This component performs label transfer from reference to query using a K-Neirest Neighbors classifier.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [
+          "output"
+        ],
+        "output": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "The query data in ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`. ",
+          "default": "$id.$key.output"
+        },
+        "output_obs_predictions": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "In which `",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "output_obs_probability": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "In which `",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects",
+          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "input dataset (query) arguments": {
+      "title": "Input dataset (query) arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [],
+        "input_obsm_distances": {
+          "type": "string",
+          "description": "The `",
+          "help_text": "Type: `string`, multiple: `False`, example: `bbknn_distances`. "
+        }
+      }
+    },
+    "reference dataset arguments": {
+      "title": "Reference dataset arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [],
+        "reference_obsm_distances": {
+          "type": "string",
+          "description": "The `",
+          "help_text": "Type: `string`, multiple: `False`, example: `bbknn_distances`. "
+        }
+      }
+    },
+    "knn label transfer arguments": {
+      "title": "KNN label transfer arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [],
+        "weights": {
+          "type": "string",
+          "description": "Weight function used in prediction",
+          "help_text": "Type: `string`, multiple: `False`, default: `uniform`, choices: ``uniform`, `distance`, `gaussian``. ",
+          "enum": [
+            "uniform",
+            "distance",
+            "gaussian"
+          ],
+          "default": "uniform"
+        },
+        "n_neighbors": {
+          "type": "integer",
+          "description": "The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent",
+          "help_text": "Type: `integer`, multiple: `False`, default: `15`. ",
+          "default": 15
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "required": [],
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/outputs"
+    },
+    {
+      "$ref": "#/definitions/input dataset (query) arguments"
+    },
+    {
+      "$ref": "#/definitions/reference dataset arguments"
+    },
+    {
+      "$ref": "#/definitions/input dataset (query) arguments"
+    },
+    {
+      "$ref": "#/definitions/reference dataset arguments"
+    },
+    {
+      "$ref": "#/definitions/knn label transfer arguments"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "bcl2fastq",
+  "description": "Convert bcl files to fastq files using bcl2fastq.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
+        }
+      }
+    },
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [
+          "input",
+          "sample_sheet",
+          "output"
+        ],
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input run directory",
+          "help_text": "Type: `file`, multiple: `False`, required, example: `bcl_dir`. "
+        },
+        "sample_sheet": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Pointer to the sample sheet",
+          "help_text": "Type: `file`, multiple: `False`, required, example: `SampleSheet.csv`. "
+        },
+        "output": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Output directory containig fastq files",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, example: `fastq_dir`. ",
+          "default": "$id.$key.output"
+        },
+        "reports": {
+          "type": "string",
+          "format": "path",
+          "description": "Reports directory",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.reports`, example: `reports_dir`. ",
+          "default": "$id.$key.reports"
+        },
+        "ignore_missing": {
+          "type": "boolean",
+          "description": "",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "required": [],
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/arguments"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
+}

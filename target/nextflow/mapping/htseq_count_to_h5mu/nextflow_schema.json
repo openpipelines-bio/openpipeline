@@ -65,11 +65,11 @@
         },
         "input_counts": {
           "items": {
-            "type": "string",
-            "format": "path",
-            "exists": true
+            "type": "string"
           },
           "type": "array",
+          "format": "path",
+          "exists": true,
           "description": "The counts as a TSV file as output by HTSeq",
           "help_text": "Type: `file`, multiple: `True`, required, example: `counts.tsv`. "
         },
