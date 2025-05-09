@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "make_params",
+  "description": "Looks for files in a directory and turn it in a params file.",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
+        }
+      }
+    },
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [
+          "base_dir",
+          "pattern",
+          "output"
+        ],
+        "base_dir": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Base directory to search recursively",
+          "help_text": "Type: `file`, multiple: `False`, required, example: `/path/to/dir`. "
+        },
+        "pattern": {
+          "type": "string",
+          "description": "An optional regular expression",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `*.fastq.gz`. "
+        },
+        "n_dirname_drop": {
+          "type": "integer",
+          "description": "For every matched file, the parent directory will be traversed N times",
+          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
+          "default": 0
+        },
+        "n_basename_id": {
+          "type": "integer",
+          "description": "The unique identifiers will consist of at least N dirnames",
+          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
+          "default": 0
+        },
+        "id_name": {
+          "type": "string",
+          "description": "The name for storing the identifier field in the yaml",
+          "help_text": "Type: `string`, multiple: `False`, default: `id`. ",
+          "default": "id"
+        },
+        "path_name": {
+          "type": "string",
+          "description": "The name for storing the path field in the yaml",
+          "help_text": "Type: `string`, multiple: `False`, default: `path`. ",
+          "default": "path"
+        },
+        "group_name": {
+          "type": "string",
+          "description": "Top level name for the group of entries",
+          "help_text": "Type: `string`, multiple: `False`, example: `param_list`. "
+        },
+        "output": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Output YAML file",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.yaml`, example: `params.yaml`. ",
+          "default": "$id.$key.output.yaml"
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "required": [],
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/arguments"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
+}

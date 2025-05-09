@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "lianapy",
+  "description": "Performs LIANA integration based as described in https://github.com/saezlab/liana-py",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
+        }
+      }
+    },
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [
+          "input",
+          "output",
+          "groupby"
+        ],
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required. "
+        },
+        "output": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Output h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`. ",
+          "default": "$id.$key.output"
+        },
+        "modality": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "default": "rna"
+        },
+        "layer": {
+          "type": "string",
+          "description": "Layer in anndata",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "groupby": {
+          "type": "string",
+          "description": "The key of the observations grouping to consider",
+          "help_text": "Type: `string`, multiple: `False`, required. "
+        },
+        "resource_name": {
+          "type": "string",
+          "description": "Name of the resource to be loaded and use for ligand-receptor inference",
+          "help_text": "Type: `string`, multiple: `False`, default: `consensus`, choices: ``baccin2019`, `cellcall`, `cellchatdb`, `cellinker`, `cellphonedb`, `celltalkdb`, `connectomedb2020`, `consensus`, `embrace`, `guide2pharma`, `hpmr`, `icellnet`, `italk`, `kirouac2010`, `lrdb`, `mouseconsensus`, `ramilowski2015``. ",
+          "enum": [
+            "baccin2019",
+            "cellcall",
+            "cellchatdb",
+            "cellinker",
+            "cellphonedb",
+            "celltalkdb",
+            "connectomedb2020",
+            "consensus",
+            "embrace",
+            "guide2pharma",
+            "hpmr",
+            "icellnet",
+            "italk",
+            "kirouac2010",
+            "lrdb",
+            "mouseconsensus",
+            "ramilowski2015"
+          ],
+          "default": "consensus"
+        },
+        "gene_symbol": {
+          "type": "string",
+          "description": "Column name in var DataFrame in which gene symbol are stored",
+          "help_text": "Type: `string`, multiple: `False`, default: `gene_symbol`. ",
+          "default": "gene_symbol"
+        },
+        "expr_prop": {
+          "type": "number",
+          "description": "Minimum expression proportion for the ligands/receptors (and their subunits) in the corresponding cell identities",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.1`. ",
+          "default": 0.1
+        },
+        "min_cells": {
+          "type": "integer",
+          "description": "Minimum cells per cell identity ('groupby') to be considered for downstream analysis",
+          "help_text": "Type: `integer`, multiple: `False`, default: `5`. ",
+          "default": 5
+        },
+        "aggregate_method": {
+          "type": "string",
+          "description": "Method aggregation approach, one of ['mean', 'rra'], where 'mean' represents the mean rank, while 'rra' is the RobustRankAggregate (Kolde et al",
+          "help_text": "Type: `string`, multiple: `False`, default: `rra`, choices: ``mean`, `rra``. ",
+          "enum": [
+            "mean",
+            "rra"
+          ],
+          "default": "rra"
+        },
+        "return_all_lrs": {
+          "type": "boolean",
+          "description": "Bool whether to return all LRs, or only those that surpass the 'expr_prop' threshold",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "n_perms": {
+          "type": "integer",
+          "description": "Number of permutations for the permutation test",
+          "help_text": "Type: `integer`, multiple: `False`, default: `100`. ",
+          "default": 100
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects",
+          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "required": [],
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/arguments"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
+}

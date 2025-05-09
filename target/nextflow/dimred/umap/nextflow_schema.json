@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "umap",
+  "description": "UMAP (Uniform Manifold Approximation and Projection) is a manifold learning technique suitable for visualizing high-dimensional data. Besides tending to be faster than tSNE, it optimizes the embedding such that it best reflects the topology of the data, which we represent throughout Scanpy using a neighborhood graph. tSNE, by contrast, optimizes the distribution of nearest-neighbor distances in the embedding such that these best match the distribution of distances in the high-dimensional space. We use the implementation of umap-learn [McInnes18]. For a few comparisons of UMAP with tSNE, see this preprint.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [
+          "input"
+        ],
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, example: `input.h5mu`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "default": "rna"
+        },
+        "uns_neighbors": {
+          "type": "string",
+          "description": "The `",
+          "help_text": "Type: `string`, multiple: `False`, default: `neighbors`. ",
+          "default": "neighbors"
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [
+          "output"
+        ],
+        "output": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Output h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "obsm_output": {
+          "type": "string",
+          "description": "The pre/postfix under which to store the UMAP results",
+          "help_text": "Type: `string`, multiple: `False`, default: `umap`. ",
+          "default": "umap"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects",
+          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [],
+        "min_dist": {
+          "type": "number",
+          "description": "The effective minimum distance between embedded points",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.5`. ",
+          "default": 0.5
+        },
+        "spread": {
+          "type": "number",
+          "description": "The effective scale of embedded points",
+          "help_text": "Type: `double`, multiple: `False`, default: `1.0`. ",
+          "default": 1.0
+        },
+        "num_components": {
+          "type": "integer",
+          "description": "The number of dimensions of the embedding",
+          "help_text": "Type: `integer`, multiple: `False`, default: `2`. ",
+          "default": 2
+        },
+        "max_iter": {
+          "type": "integer",
+          "description": "The number of iterations (epochs) of the optimization",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "alpha": {
+          "type": "number",
+          "description": "The initial learning rate for the embedding optimization",
+          "help_text": "Type: `double`, multiple: `False`, default: `1.0`. ",
+          "default": 1.0
+        },
+        "gamma": {
+          "type": "number",
+          "description": "Weighting applied to negative samples in low dimensional embedding optimization",
+          "help_text": "Type: `double`, multiple: `False`, default: `1.0`. ",
+          "default": 1.0
+        },
+        "negative_sample_rate": {
+          "type": "integer",
+          "description": "The number of negative edge/1-simplex samples to use per positive edge/1-simplex sample in optimizing the low dimensional embedding",
+          "help_text": "Type: `integer`, multiple: `False`, default: `5`. ",
+          "default": 5
+        },
+        "init_pos": {
+          "type": "string",
+          "description": "How to initialize the low dimensional embedding",
+          "help_text": "Type: `string`, multiple: `False`, default: `spectral`. ",
+          "default": "spectral"
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "required": [],
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/inputs"
+    },
+    {
+      "$ref": "#/definitions/outputs"
+    },
+    {
+      "$ref": "#/definitions/arguments"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
+}

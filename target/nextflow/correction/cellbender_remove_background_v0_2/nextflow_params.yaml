@@ -1,0 +1,33 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+layer_output: "corrected"
+obs_latent_rt_efficiency: "latent_rt_efficiency"
+obs_latent_cell_probability: "latent_cell_probability"
+obs_latent_scale: "latent_scale"
+var_ambient_expression: "ambient_expression"
+obsm_latent_gene_encoding: "cellbender_latent_gene_encoding"
+# output_compression: "gzip"
+
+# Arguments
+# expected_cells: 1000
+# total_droplets_included: 25000
+expected_cells_from_qc: true
+model: "full"
+epochs: 150
+low_count_threshold: 15
+z_dim: 100
+z_layers: [500]
+training_fraction: 0.9
+empty_drop_training_fraction: 0.5
+fpr: [0.01]
+exclude_antibody_capture: false
+# learning_rate: 1.0E-4
+cuda: false
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

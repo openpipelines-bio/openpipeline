@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "rna_singlesample",
+  "description": "Processing unimodal single-sample RNA transcriptomics data.",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
+        }
+      }
+    },
+    "input": {
+      "title": "Input",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [
+          "id",
+          "input"
+        ],
+        "id": {
+          "type": "string",
+          "description": "ID of the sample",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `foo`. "
+        },
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Path to the sample",
+          "help_text": "Type: `file`, multiple: `False`, required, example: `dataset.h5mu`. "
+        },
+        "layer": {
+          "type": "string",
+          "description": "Input layer to start from",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "output": {
+      "title": "Output",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [
+          "output"
+        ],
+        "output": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Destination path to the output",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "default": "$id.$key.output.h5mu"
+        }
+      }
+    },
+    "filtering options": {
+      "title": "Filtering options",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [],
+        "min_counts": {
+          "type": "integer",
+          "description": "Minimum number of counts captured per cell",
+          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+        },
+        "max_counts": {
+          "type": "integer",
+          "description": "Maximum number of counts captured per cell",
+          "help_text": "Type: `integer`, multiple: `False`, example: `5000000`. "
+        },
+        "min_genes_per_cell": {
+          "type": "integer",
+          "description": "Minimum of non-zero values per cell",
+          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+        },
+        "max_genes_per_cell": {
+          "type": "integer",
+          "description": "Maximum of non-zero values per cell",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1500000`. "
+        },
+        "min_cells_per_gene": {
+          "type": "integer",
+          "description": "Minimum of non-zero values per gene",
+          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+        },
+        "min_fraction_mito": {
+          "type": "number",
+          "description": "Minimum fraction of UMIs that are mitochondrial",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.0`. "
+        },
+        "max_fraction_mito": {
+          "type": "number",
+          "description": "Maximum fraction of UMIs that are mitochondrial",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.2`. "
+        },
+        "min_fraction_ribo": {
+          "type": "number",
+          "description": "Minimum fraction of UMIs that are ribosomal",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.0`. "
+        },
+        "max_fraction_ribo": {
+          "type": "number",
+          "description": "Maximum fraction of UMIs that are ribosomal",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.2`. "
+        }
+      }
+    },
+    "mitochondrial & ribosomal gene detection": {
+      "title": "Mitochondrial & Ribosomal Gene Detection",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [],
+        "var_gene_names": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, example: `gene_symbol`. "
+        },
+        "var_name_mitochondrial_genes": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "obs_name_mitochondrial_fraction": {
+          "type": "string",
+          "description": "When specified, write the fraction of counts originating from mitochondrial genes \n(based on --mitochondrial_gene_regex) to an ",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "mitochondrial_gene_regex": {
+          "type": "string",
+          "description": "Regex string that identifies mitochondrial genes from --var_gene_names",
+          "help_text": "Type: `string`, multiple: `False`, default: `^[mM][tT]-`. ",
+          "default": "^[mM][tT]-"
+        },
+        "var_name_ribosomal_genes": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "obs_name_ribosomal_fraction": {
+          "type": "string",
+          "description": "When specified, write the fraction of counts originating from ribosomal genes \n(based on --ribosomal_gene_regex) to an ",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "ribosomal_gene_regex": {
+          "type": "string",
+          "description": "Regex string that identifies ribosomal genes from --var_gene_names",
+          "help_text": "Type: `string`, multiple: `False`, default: `^[Mm]?[Rr][Pp][LlSs]`. ",
+          "default": "^[Mm]?[Rr][Pp][LlSs]"
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "required": [],
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/input"
+    },
+    {
+      "$ref": "#/definitions/output"
+    },
+    {
+      "$ref": "#/definitions/filtering options"
+    },
+    {
+      "$ref": "#/definitions/mitochondrial & ribosomal gene detection"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
+}

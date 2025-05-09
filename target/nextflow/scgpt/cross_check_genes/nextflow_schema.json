@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cross_check_genes",
+  "description": "Cross-check genes with pre-trained scGPT model.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [
+          "input",
+          "vocab_file"
+        ],
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "The input h5mu file containing of pre-processed data",
+          "help_text": "Type: `file`, multiple: `False`, required, example: `input.h5mu`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "The modality key of the MuData object containing the RNA AnnData object",
+          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "default": "rna"
+        },
+        "vocab_file": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Model vocabulary file path",
+          "help_text": "Type: `file`, multiple: `False`, required, example: `resources_test/scgpt/vocab.json`. "
+        },
+        "input_var_gene_names": {
+          "type": "string",
+          "description": "The name of the adata",
+          "help_text": "Type: `string`, multiple: `False`, example: `gene_name`. "
+        },
+        "var_input": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [
+          "output"
+        ],
+        "output": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "The output cross-checked anndata file",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "output_var_filter": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`, default: `id_in_vocab`. ",
+          "default": "id_in_vocab"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects",
+          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "required": [],
+        "pad_token": {
+          "type": "string",
+          "description": "The padding token used in the model",
+          "help_text": "Type: `string`, multiple: `False`, default: `<pad>`. ",
+          "default": "<pad>"
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "required": [],
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/inputs"
+    },
+    {
+      "$ref": "#/definitions/outputs"
+    },
+    {
+      "$ref": "#/definitions/arguments"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
+}
