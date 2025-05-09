@@ -215,22 +215,22 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/output"
+      "$ref": "#/$defs/output"
     },
     {
-      "$ref": "#/definitions/filtering highly variable features"
+      "$ref": "#/$defs/filtering highly variable features"
     },
     {
-      "$ref": "#/definitions/qc metrics calculation options"
+      "$ref": "#/$defs/qc metrics calculation options"
     },
     {
-      "$ref": "#/definitions/rna scaling options"
+      "$ref": "#/$defs/rna scaling options"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

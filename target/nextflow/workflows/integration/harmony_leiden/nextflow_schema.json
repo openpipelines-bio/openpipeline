@@ -189,25 +189,25 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/neighbour calculation"
+      "$ref": "#/$defs/neighbour calculation"
     },
     {
-      "$ref": "#/definitions/harmony integration options"
+      "$ref": "#/$defs/harmony integration options"
     },
     {
-      "$ref": "#/definitions/clustering options"
+      "$ref": "#/$defs/clustering options"
     },
     {
-      "$ref": "#/definitions/umap options"
+      "$ref": "#/$defs/umap options"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

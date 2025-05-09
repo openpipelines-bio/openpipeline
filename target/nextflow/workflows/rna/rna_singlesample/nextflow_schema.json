@@ -178,19 +178,19 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/input"
+      "$ref": "#/$defs/input"
     },
     {
-      "$ref": "#/definitions/output"
+      "$ref": "#/$defs/output"
     },
     {
-      "$ref": "#/definitions/filtering options"
+      "$ref": "#/$defs/filtering options"
     },
     {
-      "$ref": "#/definitions/mitochondrial & ribosomal gene detection"
+      "$ref": "#/$defs/mitochondrial & ribosomal gene detection"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

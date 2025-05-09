@@ -192,19 +192,19 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/mitochondrial & ribosomal gene detection"
+      "$ref": "#/$defs/mitochondrial & ribosomal gene detection"
     },
     {
-      "$ref": "#/definitions/qc metrics calculation options"
+      "$ref": "#/$defs/qc metrics calculation options"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

@@ -127,16 +127,16 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/arguments"
+      "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/definitions/input"
+      "$ref": "#/$defs/input"
     },
     {
-      "$ref": "#/definitions/output"
+      "$ref": "#/$defs/output"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

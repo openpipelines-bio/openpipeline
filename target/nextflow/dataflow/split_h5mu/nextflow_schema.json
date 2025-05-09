@@ -111,13 +111,13 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/input & specifications"
+      "$ref": "#/$defs/input & specifications"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

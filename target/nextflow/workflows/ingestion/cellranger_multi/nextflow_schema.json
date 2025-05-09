@@ -559,49 +559,49 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/input files"
+      "$ref": "#/$defs/input files"
     },
     {
-      "$ref": "#/definitions/feature type-specific input files"
+      "$ref": "#/$defs/feature type-specific input files"
     },
     {
-      "$ref": "#/definitions/library arguments"
+      "$ref": "#/$defs/library arguments"
     },
     {
-      "$ref": "#/definitions/sample parameters"
+      "$ref": "#/$defs/sample parameters"
     },
     {
-      "$ref": "#/definitions/feature barcode library specific arguments"
+      "$ref": "#/$defs/feature barcode library specific arguments"
     },
     {
-      "$ref": "#/definitions/gene expression arguments"
+      "$ref": "#/$defs/gene expression arguments"
     },
     {
-      "$ref": "#/definitions/vdj related parameters"
+      "$ref": "#/$defs/vdj related parameters"
     },
     {
-      "$ref": "#/definitions/3' cell multiplexing parameters (cellplex multiplexing)"
+      "$ref": "#/$defs/3' cell multiplexing parameters (cellplex multiplexing)"
     },
     {
-      "$ref": "#/definitions/hashtag multiplexing parameters"
+      "$ref": "#/$defs/hashtag multiplexing parameters"
     },
     {
-      "$ref": "#/definitions/on-chip multiplexing parameters"
+      "$ref": "#/$defs/on-chip multiplexing parameters"
     },
     {
-      "$ref": "#/definitions/flex multiplexing paramaters"
+      "$ref": "#/$defs/flex multiplexing paramaters"
     },
     {
-      "$ref": "#/definitions/antigen capture (beam) libary arguments"
+      "$ref": "#/$defs/antigen capture (beam) libary arguments"
     },
     {
-      "$ref": "#/definitions/general arguments"
+      "$ref": "#/$defs/general arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

@@ -1288,79 +1288,79 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/input/output"
+      "$ref": "#/$defs/input/output"
     },
     {
-      "$ref": "#/definitions/run parameters"
+      "$ref": "#/$defs/run parameters"
     },
     {
-      "$ref": "#/definitions/genome parameters"
+      "$ref": "#/$defs/genome parameters"
     },
     {
-      "$ref": "#/definitions/splice junctions database"
+      "$ref": "#/$defs/splice junctions database"
     },
     {
-      "$ref": "#/definitions/variation parameters"
+      "$ref": "#/$defs/variation parameters"
     },
     {
-      "$ref": "#/definitions/read parameters"
+      "$ref": "#/$defs/read parameters"
     },
     {
-      "$ref": "#/definitions/read clipping"
+      "$ref": "#/$defs/read clipping"
     },
     {
-      "$ref": "#/definitions/limits"
+      "$ref": "#/$defs/limits"
     },
     {
-      "$ref": "#/definitions/output: general"
+      "$ref": "#/$defs/output: general"
     },
     {
-      "$ref": "#/definitions/output: sam and bam"
+      "$ref": "#/$defs/output: sam and bam"
     },
     {
-      "$ref": "#/definitions/bam processing"
+      "$ref": "#/$defs/bam processing"
     },
     {
-      "$ref": "#/definitions/output wiggle"
+      "$ref": "#/$defs/output wiggle"
     },
     {
-      "$ref": "#/definitions/output filtering"
+      "$ref": "#/$defs/output filtering"
     },
     {
-      "$ref": "#/definitions/output splice junctions (sj.out.tab)"
+      "$ref": "#/$defs/output splice junctions (sj.out.tab)"
     },
     {
-      "$ref": "#/definitions/output filtering: splice junctions"
+      "$ref": "#/$defs/output filtering: splice junctions"
     },
     {
-      "$ref": "#/definitions/scoring"
+      "$ref": "#/$defs/scoring"
     },
     {
-      "$ref": "#/definitions/alignments and seeding"
+      "$ref": "#/$defs/alignments and seeding"
     },
     {
-      "$ref": "#/definitions/paired-end reads"
+      "$ref": "#/$defs/paired-end reads"
     },
     {
-      "$ref": "#/definitions/windows, anchors, binning"
+      "$ref": "#/$defs/windows, anchors, binning"
     },
     {
-      "$ref": "#/definitions/chimeric alignments"
+      "$ref": "#/$defs/chimeric alignments"
     },
     {
-      "$ref": "#/definitions/quantification of annotations"
+      "$ref": "#/$defs/quantification of annotations"
     },
     {
-      "$ref": "#/definitions/2-pass mapping"
+      "$ref": "#/$defs/2-pass mapping"
     },
     {
-      "$ref": "#/definitions/wasp parameters"
+      "$ref": "#/$defs/wasp parameters"
     },
     {
-      "$ref": "#/definitions/starsolo (single cell rna-seq) parameters"
+      "$ref": "#/$defs/starsolo (single cell rna-seq) parameters"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

@@ -217,28 +217,28 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/highly variable features detection"
+      "$ref": "#/$defs/highly variable features detection"
     },
     {
-      "$ref": "#/definitions/qc metrics calculation options"
+      "$ref": "#/$defs/qc metrics calculation options"
     },
     {
-      "$ref": "#/definitions/pca options"
+      "$ref": "#/$defs/pca options"
     },
     {
-      "$ref": "#/definitions/clr options"
+      "$ref": "#/$defs/clr options"
     },
     {
-      "$ref": "#/definitions/rna scaling options"
+      "$ref": "#/$defs/rna scaling options"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

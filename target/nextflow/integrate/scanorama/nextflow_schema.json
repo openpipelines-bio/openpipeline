@@ -123,10 +123,10 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/arguments"
+      "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

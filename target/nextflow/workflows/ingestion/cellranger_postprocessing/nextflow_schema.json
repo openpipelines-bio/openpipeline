@@ -110,19 +110,19 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/correction arguments"
+      "$ref": "#/$defs/correction arguments"
     },
     {
-      "$ref": "#/definitions/filtering arguments"
+      "$ref": "#/$defs/filtering arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

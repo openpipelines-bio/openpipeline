@@ -309,37 +309,37 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/general totalvi options"
+      "$ref": "#/$defs/general totalvi options"
     },
     {
-      "$ref": "#/definitions/totalvi integration options rna"
+      "$ref": "#/$defs/totalvi integration options rna"
     },
     {
-      "$ref": "#/definitions/totalvi integration options adt"
+      "$ref": "#/$defs/totalvi integration options adt"
     },
     {
-      "$ref": "#/definitions/neighbour calculation rna"
+      "$ref": "#/$defs/neighbour calculation rna"
     },
     {
-      "$ref": "#/definitions/neighbour calculation adt"
+      "$ref": "#/$defs/neighbour calculation adt"
     },
     {
-      "$ref": "#/definitions/clustering options rna"
+      "$ref": "#/$defs/clustering options rna"
     },
     {
-      "$ref": "#/definitions/clustering options adt"
+      "$ref": "#/$defs/clustering options adt"
     },
     {
-      "$ref": "#/definitions/umap options"
+      "$ref": "#/$defs/umap options"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

@@ -259,31 +259,31 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/query input"
+      "$ref": "#/$defs/query input"
     },
     {
-      "$ref": "#/definitions/model input"
+      "$ref": "#/$defs/model input"
     },
     {
-      "$ref": "#/definitions/padding arguments"
+      "$ref": "#/$defs/padding arguments"
     },
     {
-      "$ref": "#/definitions/hvg subset arguments"
+      "$ref": "#/$defs/hvg subset arguments"
     },
     {
-      "$ref": "#/definitions/tokenization arguments"
+      "$ref": "#/$defs/tokenization arguments"
     },
     {
-      "$ref": "#/definitions/embedding arguments"
+      "$ref": "#/$defs/embedding arguments"
     },
     {
-      "$ref": "#/definitions/binning arguments"
+      "$ref": "#/$defs/binning arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

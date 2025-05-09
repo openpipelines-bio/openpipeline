@@ -213,25 +213,25 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/arguments"
+      "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/definitions/star settings"
+      "$ref": "#/$defs/star settings"
     },
     {
-      "$ref": "#/definitions/bd rhapsody settings"
+      "$ref": "#/$defs/bd rhapsody settings"
     },
     {
-      "$ref": "#/definitions/cellranger arc options"
+      "$ref": "#/$defs/cellranger arc options"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

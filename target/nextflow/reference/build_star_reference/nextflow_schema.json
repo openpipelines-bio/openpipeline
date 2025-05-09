@@ -83,13 +83,13 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/input/output"
+      "$ref": "#/$defs/input/output"
     },
     {
-      "$ref": "#/definitions/genome indexing arguments"
+      "$ref": "#/$defs/genome indexing arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

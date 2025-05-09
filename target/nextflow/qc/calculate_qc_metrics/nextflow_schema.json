@@ -159,19 +159,19 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/metrics added to .obs"
+      "$ref": "#/$defs/metrics added to .obs"
     },
     {
-      "$ref": "#/definitions/metrics added to .var"
+      "$ref": "#/$defs/metrics added to .var"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

@@ -294,28 +294,28 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/query input"
+      "$ref": "#/$defs/query input"
     },
     {
-      "$ref": "#/definitions/reference input"
+      "$ref": "#/$defs/reference input"
     },
     {
-      "$ref": "#/definitions/hvg subset arguments"
+      "$ref": "#/$defs/hvg subset arguments"
     },
     {
-      "$ref": "#/definitions/scvi integration options"
+      "$ref": "#/$defs/scvi integration options"
     },
     {
-      "$ref": "#/definitions/leiden clustering options"
+      "$ref": "#/$defs/leiden clustering options"
     },
     {
-      "$ref": "#/definitions/neighbor classifier arguments"
+      "$ref": "#/$defs/neighbor classifier arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

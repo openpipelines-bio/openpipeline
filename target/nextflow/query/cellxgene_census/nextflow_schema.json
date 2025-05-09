@@ -170,22 +170,22 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/input database"
+      "$ref": "#/$defs/input database"
     },
     {
-      "$ref": "#/definitions/cell query"
+      "$ref": "#/$defs/cell query"
     },
     {
-      "$ref": "#/definitions/filter cells by grouping"
+      "$ref": "#/$defs/filter cells by grouping"
     },
     {
-      "$ref": "#/definitions/count filtering"
+      "$ref": "#/$defs/count filtering"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

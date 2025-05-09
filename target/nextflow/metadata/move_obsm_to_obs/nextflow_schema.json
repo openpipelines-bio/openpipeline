@@ -90,13 +90,13 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/mudata input"
+      "$ref": "#/$defs/mudata input"
     },
     {
-      "$ref": "#/definitions/mudata output"
+      "$ref": "#/$defs/mudata output"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

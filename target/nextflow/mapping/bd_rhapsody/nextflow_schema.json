@@ -625,55 +625,55 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/references"
+      "$ref": "#/$defs/references"
     },
     {
-      "$ref": "#/definitions/multiplex outputs"
+      "$ref": "#/$defs/multiplex outputs"
     },
     {
-      "$ref": "#/definitions/vdj outputs"
+      "$ref": "#/$defs/vdj outputs"
     },
     {
-      "$ref": "#/definitions/atac-seq outputs"
+      "$ref": "#/$defs/atac-seq outputs"
     },
     {
-      "$ref": "#/definitions/abseq cell calling outputs"
+      "$ref": "#/$defs/abseq cell calling outputs"
     },
     {
-      "$ref": "#/definitions/putative cell calling settings"
+      "$ref": "#/$defs/putative cell calling settings"
     },
     {
-      "$ref": "#/definitions/intronic reads settings"
+      "$ref": "#/$defs/intronic reads settings"
     },
     {
-      "$ref": "#/definitions/multiplex settings"
+      "$ref": "#/$defs/multiplex settings"
     },
     {
-      "$ref": "#/definitions/vdj arguments"
+      "$ref": "#/$defs/vdj arguments"
     },
     {
-      "$ref": "#/definitions/atac options"
+      "$ref": "#/$defs/atac options"
     },
     {
-      "$ref": "#/definitions/additional options"
+      "$ref": "#/$defs/additional options"
     },
     {
-      "$ref": "#/definitions/advanced options"
+      "$ref": "#/$defs/advanced options"
     },
     {
-      "$ref": "#/definitions/cwl-runner arguments"
+      "$ref": "#/$defs/cwl-runner arguments"
     },
     {
-      "$ref": "#/definitions/undocumented arguments"
+      "$ref": "#/$defs/undocumented arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }
