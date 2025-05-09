@@ -22,11 +22,11 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "input",
+        "modality"
+      ],
       "properties": {
-        "required": [
-          "input",
-          "modality"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -68,11 +68,11 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output",
+        "output_h5mu"
+      ],
       "properties": {
-        "required": [
-          "output",
-          "output_h5mu"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -104,8 +104,8 @@
       "title": "Filtering and normalization",
       "type": "object",
       "description": "Arguments for filtering, normalization an log transform (see scvelo.pp.filter_and_normalize function)",
+      "required": [],
       "properties": {
-        "required": [],
         "min_counts": {
           "type": "integer",
           "description": "Minimum number of counts required for a gene to pass filtering (spliced)",
@@ -153,8 +153,8 @@
       "title": "Fitting parameters",
       "type": "object",
       "description": "Arguments for fitting the data",
+      "required": [],
       "properties": {
-        "required": [],
         "n_principal_components": {
           "type": "integer",
           "description": "Number of principal components to use for calculating moments",
@@ -172,8 +172,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

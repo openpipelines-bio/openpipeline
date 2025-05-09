@@ -22,8 +22,8 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "output_compression": {
           "type": "string",
           "description": "Compression format to use for the output AnnData and/or Mudata objects",
@@ -39,13 +39,13 @@
       "title": "Input",
       "type": "object",
       "description": "No description",
+      "required": [
+        "input",
+        "input_obsp_key",
+        "input_obs_key",
+        "input_obs_value"
+      ],
       "properties": {
-        "required": [
-          "input",
-          "input_obsp_key",
-          "input_obs_key",
-          "input_obs_value"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -80,10 +80,10 @@
       "title": "Output",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output_obsm_key"
+      ],
       "properties": {
-        "required": [
-          "output_obsm_key"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -102,8 +102,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

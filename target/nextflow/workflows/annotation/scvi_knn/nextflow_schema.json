@@ -22,10 +22,10 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output"
+      ],
       "properties": {
-        "required": [
-          "output"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -62,12 +62,12 @@
       "title": "Query Input",
       "type": "object",
       "description": "No description",
+      "required": [
+        "id",
+        "input",
+        "input_obs_batch_label"
+      ],
       "properties": {
-        "required": [
-          "id",
-          "input",
-          "input_obs_batch_label"
-        ],
         "id": {
           "type": "string",
           "description": "ID of the sample",
@@ -124,12 +124,12 @@
       "title": "Reference input",
       "type": "object",
       "description": "No description",
+      "required": [
+        "reference",
+        "reference_obs_target",
+        "reference_obs_batch_label"
+      ],
       "properties": {
-        "required": [
-          "reference",
-          "reference_obs_target",
-          "reference_obs_batch_label"
-        ],
         "reference": {
           "type": "string",
           "format": "path",
@@ -168,8 +168,8 @@
       "title": "HVG subset arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "n_hvg": {
           "type": "integer",
           "description": "Number of highly variable genes to subset for",
@@ -182,8 +182,8 @@
       "title": "scVI integration options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "scvi_early_stopping": {
           "type": "boolean",
           "description": "Whether to perform early stopping with respect to the validation set",
@@ -241,8 +241,8 @@
       "title": "Leiden clustering options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "leiden_resolution": {
           "items": {
             "type": "number"
@@ -258,8 +258,8 @@
       "title": "Neighbor classifier arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "knn_weights": {
           "type": "string",
           "description": "Weight function used in prediction",
@@ -282,8 +282,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

@@ -22,11 +22,11 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "id",
+        "input"
+      ],
       "properties": {
-        "required": [
-          "id",
-          "input"
-        ],
         "id": {
           "type": "string",
           "description": "ID of the sample",
@@ -66,10 +66,10 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output"
+      ],
       "properties": {
-        "required": [
-          "output"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -90,12 +90,12 @@
       "title": "Model",
       "type": "object",
       "description": "No description",
+      "required": [
+        "model",
+        "model_vocab",
+        "model_config"
+      ],
       "properties": {
-        "required": [
-          "model",
-          "model_vocab",
-          "model_config"
-        ],
         "model": {
           "type": "string",
           "format": "path",
@@ -128,8 +128,8 @@
       "title": "Padding arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "pad_token": {
           "type": "string",
           "description": "Token used for padding",
@@ -148,8 +148,8 @@
       "title": "HVG subset arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "n_hvg": {
           "type": "integer",
           "description": "Number of highly variable genes to subset for",
@@ -172,8 +172,8 @@
       "title": "Tokenization arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "max_seq_len": {
           "type": "integer",
           "description": "The maximum sequence length of the tokenized data",
@@ -185,8 +185,8 @@
       "title": "Embedding arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "dsbn": {
           "type": "boolean",
           "description": "Apply domain-specific batch normalization\n",
@@ -205,8 +205,8 @@
       "title": "Binning arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "n_input_bins": {
           "type": "integer",
           "description": "The number of bins to discretize the data into; When no value is provided, data won't be binned",
@@ -224,8 +224,8 @@
       "title": "Clustering arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "leiden_resolution": {
           "items": {
             "type": "number"
@@ -241,8 +241,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

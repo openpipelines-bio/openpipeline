@@ -22,11 +22,11 @@
       "title": "Input/Output",
       "type": "object",
       "description": "No description",
+      "required": [
+        "genome_fasta",
+        "output"
+      ],
       "properties": {
-        "required": [
-          "genome_fasta",
-          "output"
-        ],
         "genome_fasta": {
           "items": {
             "type": "string"
@@ -57,8 +57,8 @@
       "title": "Genome indexing arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "genomeSAindexNbases": {
           "type": "integer",
           "description": "Length (bases) of the SA pre-indexing string",
@@ -71,8 +71,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

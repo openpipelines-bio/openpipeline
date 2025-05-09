@@ -22,12 +22,12 @@
       "title": "Input/Output",
       "type": "object",
       "description": "No description",
+      "required": [
+        "input",
+        "reference",
+        "output"
+      ],
       "properties": {
-        "required": [
-          "input",
-          "reference",
-          "output"
-        ],
         "input": {
           "items": {
             "type": "string"
@@ -59,8 +59,8 @@
       "title": "Run Parameters",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "runRNGseed": {
           "type": "integer",
           "description": "random number generator seed",
@@ -72,8 +72,8 @@
       "title": "Genome Parameters",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "genomeLoad": {
           "type": "string",
           "description": "mode of shared memory usage for the genome files",
@@ -118,8 +118,8 @@
       "title": "Splice Junctions Database",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "sjdbFileChrStartEnd": {
           "items": {
             "type": "string"
@@ -191,8 +191,8 @@
       "title": "Variation parameters",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "varVCFfile": {
           "type": "string",
           "description": "path to the VCF file that contains variation data",
@@ -204,8 +204,8 @@
       "title": "Read Parameters",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "readFilesType": {
           "type": "string",
           "description": "format of input read files\n\n- Fastx       ",
@@ -267,8 +267,8 @@
       "title": "Read Clipping",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "clipAdapterType": {
           "type": "string",
           "description": "adapter clipping type\n\n- Hamming ",
@@ -320,8 +320,8 @@
       "title": "Limits",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "limitGenomeGenerateRAM": {
           "type": "string",
           "description": "maximum available RAM (bytes) for genome generation",
@@ -371,8 +371,8 @@
       "title": "Output: general",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "outTmpKeep": {
           "type": "string",
           "description": "whether to keep the temporary files after STAR runs is finished\n\n- None ",
@@ -404,8 +404,8 @@
       "title": "Output: SAM and BAM",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "outSAMtype": {
           "items": {
             "type": "string"
@@ -543,8 +543,8 @@
       "title": "BAM processing",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "bamRemoveDuplicatesType": {
           "type": "string",
           "description": "mark duplicates in the BAM file, for now only works with (i) sorted BAM fed with inputBAMfile, and (ii) for paired-end alignments only\n\n- -                       ",
@@ -561,8 +561,8 @@
       "title": "Output Wiggle",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "outWigType": {
           "items": {
             "type": "string"
@@ -592,8 +592,8 @@
       "title": "Output Filtering",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "outFilterType": {
           "type": "string",
           "description": "type of filtering\n\n- Normal  ",
@@ -660,8 +660,8 @@
       "title": "Output splice junctions (SJ.out.tab)",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "outSJtype": {
           "type": "string",
           "description": "type of splice junction output\n\n- Standard    ",
@@ -673,8 +673,8 @@
       "title": "Output Filtering: Splice Junctions",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "outSJfilterReads": {
           "type": "string",
           "description": "which reads to consider for collapsed splice junctions output\n\n- All     ",
@@ -726,8 +726,8 @@
       "title": "Scoring",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "scoreGap": {
           "type": "integer",
           "description": "splice junction penalty (independent on intron motif)",
@@ -784,8 +784,8 @@
       "title": "Alignments and Seeding",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "seedSearchStartLmax": {
           "type": "integer",
           "description": "defines the search start point through the read - the read is split into pieces no longer than this value",
@@ -915,8 +915,8 @@
       "title": "Paired-End reads",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "peOverlapNbasesMin": {
           "type": "integer",
           "description": "minimum number of overlapping bases to trigger mates merging and realignment",
@@ -933,8 +933,8 @@
       "title": "Windows, Anchors, Binning",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "winAnchorMultimapNmax": {
           "type": "integer",
           "description": "max number of loci anchors are allowed to map to",
@@ -971,8 +971,8 @@
       "title": "Chimeric Alignments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "chimOutType": {
           "items": {
             "type": "string"
@@ -1055,8 +1055,8 @@
       "title": "Quantification of Annotations",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "quantMode": {
           "items": {
             "type": "string"
@@ -1081,8 +1081,8 @@
       "title": "2-pass Mapping",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "twopassMode": {
           "type": "string",
           "description": "2-pass mapping mode",
@@ -1099,8 +1099,8 @@
       "title": "WASP parameters",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "waspOutputMode": {
           "type": "string",
           "description": "WASP allele-specific output type",
@@ -1112,8 +1112,8 @@
       "title": "STARsolo (single cell RNA-seq) parameters",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "soloType": {
           "items": {
             "type": "string"
@@ -1276,8 +1276,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

@@ -22,12 +22,12 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "id",
+        "input",
+        "reference"
+      ],
       "properties": {
-        "required": [
-          "id",
-          "input",
-          "reference"
-        ],
         "id": {
           "type": "string",
           "description": "ID of the sample",
@@ -70,10 +70,10 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output"
+      ],
       "properties": {
-        "required": [
-          "output"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -102,8 +102,8 @@
       "title": "General TotalVI Options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "obs_batch": {
           "type": "string",
           "description": "",
@@ -145,8 +145,8 @@
       "title": "TotalVI integration options RNA",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "rna_reference_modality": {
           "type": "string",
           "description": "",
@@ -165,8 +165,8 @@
       "title": "TotalVI integration options ADT",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "prot_reference_modality": {
           "type": "string",
           "description": "Name of the modality containing proteins in the reference",
@@ -185,8 +185,8 @@
       "title": "Neighbour calculation RNA",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "rna_uns_neighbors": {
           "type": "string",
           "description": "In which ",
@@ -211,8 +211,8 @@
       "title": "Neighbour calculation ADT",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "prot_uns_neighbors": {
           "type": "string",
           "description": "In which ",
@@ -237,8 +237,8 @@
       "title": "Clustering options RNA",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "rna_obs_cluster": {
           "type": "string",
           "description": "Prefix for the ",
@@ -260,8 +260,8 @@
       "title": "Clustering options ADT",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "prot_obs_cluster": {
           "type": "string",
           "description": "Prefix for the ",
@@ -283,8 +283,8 @@
       "title": "Umap options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "obsm_umap": {
           "type": "string",
           "description": "In which ",
@@ -297,8 +297,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

@@ -22,8 +22,8 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "reads": {
           "items": {
             "type": "string"
@@ -48,11 +48,11 @@
       "title": "Outputs",
       "type": "object",
       "description": "Outputs",
+      "required": [
+        "output",
+        "output_raw"
+      ],
       "properties": {
-        "required": [
-          "output",
-          "output_raw"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -75,8 +75,8 @@
       "title": "References",
       "type": "object",
       "description": "Assay type will be inferred from the provided reference(s).\nDo not provide both reference_archive and targeted_reference at the same time.\n  \nValid reference input combinations:\n  - reference_archive: WTA only\n  - reference_archive & abseq_reference: WTA + AbSeq\n  - reference_archive & supplemental_reference: WTA + extra transgenes\n  - reference_archive & abseq_reference & supplemental_reference: WTA + AbSeq + extra transgenes\n  - reference_archive: WTA + ATAC or ATAC only\n  - reference_archive & supplemental_reference: WTA + ATAC + extra transgenes\n  - targeted_reference: Targeted only\n  - targeted_reference & abseq_reference: Targeted + AbSeq\n  - abseq_reference: AbSeq only\n\nThe reference_archive can be generated with the `reference/build_bdrhap_reference` component.\nAlternatively, BD also provides standard references which can be downloaded from these locations:\n\n  - Human: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Human_WTA_2023-02.tar.gz\n  - Mouse: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Mouse_WTA_2023-02.tar.gz\n",
+      "required": [],
       "properties": {
-        "required": [],
         "reference_archive": {
           "type": "string",
           "format": "path",
@@ -116,8 +116,8 @@
       "title": "Putative Cell Calling Settings",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "cell_calling_data": {
           "type": "string",
           "description": "Specify the dataset to be used for putative cell calling: mRNA, AbSeq, ATAC, mRNA_and_ATAC\n  \nFor putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above",
@@ -163,8 +163,8 @@
       "title": "Intronic Reads Settings",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "exclude_intronic_reads": {
           "type": "boolean",
           "description": "By default, the flag is false, and reads aligned to exons and introns are considered and represented in molecule counts",
@@ -176,8 +176,8 @@
       "title": "Multiplex Settings",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "sample_tags_version": {
           "type": "string",
           "description": "Specify the version of the Sample Tags used in the run:\n\n* If Sample Tag Multiplexing was done, specify the appropriate version: human, mouse, flex, nuclei_includes_mrna, nuclei_atac_only\n* If this is an SMK + Nuclei mRNA run or an SMK + Multiomic ATAC-Seq (WTA+ATAC-Seq) run (and not an SMK + ATAC-Seq only run), choose the \"nuclei_includes_mrna\" option",
@@ -204,8 +204,8 @@
       "title": "VDJ arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "vdj_version": {
           "type": "string",
           "description": "If VDJ was done, specify the appropriate option: human, mouse, humanBCR, humanTCR, mouseBCR, mouseTCR\n",
@@ -225,8 +225,8 @@
       "title": "ATAC options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "predefined_atac_peaks": {
           "type": "string",
           "format": "path",
@@ -239,8 +239,8 @@
       "title": "Additional options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "run_name": {
           "type": "string",
           "description": "Specify a run name to use as the output file base name",
@@ -264,8 +264,8 @@
       "title": "Advanced options",
       "type": "object",
       "description": "NOTE: Only change these if you are really sure about what you are doing\n",
+      "required": [],
       "properties": {
-        "required": [],
         "custom_star_params": {
           "type": "string",
           "description": "Modify STAR alignment parameters - Set this parameter to fully override default STAR mapping parameters used in the pipeline",
@@ -282,8 +282,8 @@
       "title": "CWL-runner arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "parallel": {
           "type": "boolean",
           "description": "Run jobs in parallel",
@@ -302,8 +302,8 @@
       "title": "Undocumented arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "abseq_umi": {
           "type": "integer",
           "description": "",
@@ -335,8 +335,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

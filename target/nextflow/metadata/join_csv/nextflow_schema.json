@@ -22,10 +22,10 @@
       "title": "MuData Input",
       "type": "object",
       "description": "No description",
+      "required": [
+        "input"
+      ],
       "properties": {
-        "required": [
-          "input"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -55,10 +55,10 @@
       "title": "MuData Output",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output"
+      ],
       "properties": {
-        "required": [
-          "output"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -82,10 +82,10 @@
       "title": "Metadata Input",
       "type": "object",
       "description": "No description",
+      "required": [
+        "input_csv"
+      ],
       "properties": {
-        "required": [
-          "input_csv"
-        ],
         "input_csv": {
           "type": "string",
           "format": "path",
@@ -105,8 +105,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

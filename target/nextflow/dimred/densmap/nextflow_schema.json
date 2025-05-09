@@ -22,11 +22,11 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "input",
+        "obsm_pca"
+      ],
       "properties": {
-        "required": [
-          "input",
-          "obsm_pca"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -57,10 +57,10 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output"
+      ],
       "properties": {
-        "required": [
-          "output"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -90,8 +90,8 @@
       "title": "Arguments UMAP",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "min_dist": {
           "type": "number",
           "description": "The effective minimum distance between embedded points",
@@ -151,8 +151,8 @@
       "title": "Arguments densMAP",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "lambda": {
           "type": "number",
           "description": "Controls the regularization weight of the density correlation term in densMAP",
@@ -177,8 +177,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

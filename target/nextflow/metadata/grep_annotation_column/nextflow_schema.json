@@ -22,11 +22,11 @@
       "title": "Inputs",
       "type": "object",
       "description": "Arguments related to the input dataset.",
+      "required": [
+        "input",
+        "modality"
+      ],
       "properties": {
-        "required": [
-          "input",
-          "modality"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -64,10 +64,10 @@
       "title": "Outputs",
       "type": "object",
       "description": "Arguments related to how the output will be written.",
+      "required": [
+        "output_match_column"
+      ],
       "properties": {
-        "required": [
-          "output_match_column"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -100,10 +100,10 @@
       "title": "Query options",
       "type": "object",
       "description": "Options related to the query",
+      "required": [
+        "regex_pattern"
+      ],
       "properties": {
-        "required": [
-          "regex_pattern"
-        ],
         "regex_pattern": {
           "type": "string",
           "description": "Regex to use to match with the input column",
@@ -115,8 +115,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

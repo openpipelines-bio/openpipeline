@@ -22,11 +22,11 @@
       "title": "Inputs",
       "type": "object",
       "description": "Input dataset (query) arguments",
+      "required": [
+        "input",
+        "input_obs_batch"
+      ],
       "properties": {
-        "required": [
-          "input",
-          "input_obs_batch"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -77,8 +77,8 @@
       "title": "Outputs",
       "type": "object",
       "description": "Output arguments.",
+      "required": [],
       "properties": {
-        "required": [],
         "output_query": {
           "type": "string",
           "format": "path",
@@ -156,8 +156,8 @@
       "title": "Arguments",
       "type": "object",
       "description": "Arguments related to the alignment of the input and reference datasets.",
+      "required": [],
       "properties": {
-        "required": [],
         "input_reference_gene_overlap": {
           "type": "integer",
           "description": "The minimum number of genes present in both the reference and query datasets",
@@ -200,10 +200,10 @@
       "title": "Reference",
       "type": "object",
       "description": "Arguments related to the reference dataset.",
+      "required": [
+        "reference_obs_batch"
+      ],
       "properties": {
-        "required": [
-          "reference_obs_batch"
-        ],
         "reference": {
           "type": "string",
           "format": "path",
@@ -247,8 +247,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

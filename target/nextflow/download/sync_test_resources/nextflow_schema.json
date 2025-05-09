@@ -22,8 +22,8 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "input": {
           "type": "string",
           "format": "path",
@@ -37,8 +37,8 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "output": {
           "type": "string",
           "format": "path",
@@ -52,8 +52,8 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "quiet": {
           "type": "boolean",
           "description": "Displays the operations that would be performed using the specified command without actually running them",
@@ -86,8 +86,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

@@ -22,11 +22,11 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "id",
+        "input"
+      ],
       "properties": {
-        "required": [
-          "id",
-          "input"
-        ],
         "id": {
           "type": "string",
           "description": "ID of the concatenated file",
@@ -50,10 +50,10 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output"
+      ],
       "properties": {
-        "required": [
-          "output"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -68,8 +68,8 @@
       "title": "QC metrics calculation options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "var_qc_metrics": {
           "items": {
             "type": "string"
@@ -129,8 +129,8 @@
       "title": "CLR arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "clr_axis": {
           "type": "integer",
           "description": "Axis across which CLR is performed",
@@ -143,8 +143,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

@@ -22,12 +22,12 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "id",
+        "input",
+        "reference"
+      ],
       "properties": {
-        "required": [
-          "id",
-          "input",
-          "reference"
-        ],
         "id": {
           "type": "string",
           "description": "ID of the sample",
@@ -56,11 +56,11 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output_raw",
+        "output_h5mu"
+      ],
       "properties": {
-        "required": [
-          "output_raw",
-          "output_h5mu"
-        ],
         "output_raw": {
           "type": "string",
           "format": "path",
@@ -99,8 +99,8 @@
       "title": "Cell Ranger arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "expect_cells": {
           "type": "integer",
           "description": "Expected number of recovered cells, used as input to cell calling algorithm",
@@ -149,8 +149,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

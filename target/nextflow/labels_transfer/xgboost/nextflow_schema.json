@@ -22,10 +22,10 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output"
+      ],
       "properties": {
-        "required": [
-          "output"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -65,10 +65,10 @@
       "title": "Input dataset (query) arguments",
       "type": "object",
       "description": "No description",
+      "required": [
+        "input"
+      ],
       "properties": {
-        "required": [
-          "input"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -93,8 +93,8 @@
       "title": "Reference dataset arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "reference": {
           "type": "string",
           "format": "path",
@@ -121,8 +121,8 @@
       "title": "Execution arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "force_retrain": {
           "type": "boolean",
           "description": "Retrain models on the reference even if model_output directory already has trained classifiers",
@@ -160,8 +160,8 @@
       "title": "Learning parameters",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "learning_rate": {
           "type": "number",
           "description": "Step size shrinkage used in update to prevents overfitting",
@@ -250,8 +250,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

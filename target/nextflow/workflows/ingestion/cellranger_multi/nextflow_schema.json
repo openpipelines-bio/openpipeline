@@ -22,11 +22,11 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output_raw",
+        "output_h5mu"
+      ],
       "properties": {
-        "required": [
-          "output_raw",
-          "output_h5mu"
-        ],
         "output_raw": {
           "type": "string",
           "format": "path",
@@ -55,8 +55,8 @@
       "title": "Input files",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "input": {
           "items": {
             "type": "string"
@@ -72,8 +72,8 @@
       "title": "Feature type-specific input files",
       "type": "object",
       "description": "Helper functionality to allow feature type-specific input files, without the need to specify\nlibrary_type or library_id. The library_id will be inferred from the input paths.\n",
+      "required": [],
       "properties": {
-        "required": [],
         "gex_input": {
           "items": {
             "type": "string"
@@ -161,8 +161,8 @@
       "title": "Library arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "library_id": {
           "items": {
             "type": "string"
@@ -206,8 +206,8 @@
       "title": "Sample parameters",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "sample_ids": {
           "items": {
             "type": "string"
@@ -246,8 +246,8 @@
       "title": "Feature Barcode library specific arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "feature_reference": {
           "type": "string",
           "format": "path",
@@ -275,10 +275,10 @@
       "title": "Gene expression arguments",
       "type": "object",
       "description": "Arguments relevant to the analysis of gene expression data.",
+      "required": [
+        "gex_reference"
+      ],
       "properties": {
-        "required": [
-          "gex_reference"
-        ],
         "gex_reference": {
           "type": "string",
           "format": "path",
@@ -382,8 +382,8 @@
       "title": "VDJ related parameters",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "vdj_reference": {
           "type": "string",
           "format": "path",
@@ -412,8 +412,8 @@
       "title": "3' Cell multiplexing parameters (CellPlex Multiplexing)",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "cell_multiplex_oligo_ids": {
           "items": {
             "type": "string"
@@ -445,8 +445,8 @@
       "title": "Hashtag multiplexing parameters",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "hashtag_ids": {
           "items": {
             "type": "string"
@@ -461,8 +461,8 @@
       "title": "On-chip multiplexing parameters",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "ocm_barcode_ids": {
           "items": {
             "type": "string"
@@ -477,8 +477,8 @@
       "title": "Flex multiplexing paramaters",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "probe_set": {
           "type": "string",
           "format": "path",
@@ -509,8 +509,8 @@
       "title": "Antigen Capture (BEAM) libary arguments",
       "type": "object",
       "description": "These arguments are recommended if an Antigen Capture (BEAM) library is present. \nIt is needed to calculate the antigen specificity score.\n",
+      "required": [],
       "properties": {
-        "required": [],
         "control_id": {
           "items": {
             "type": "string"
@@ -533,8 +533,8 @@
       "title": "General arguments",
       "type": "object",
       "description": "These arguments are applicable to all library types.\n",
+      "required": [],
       "properties": {
-        "required": [],
         "check_library_compatibility": {
           "type": "boolean",
           "description": "Optional",
@@ -547,8 +547,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

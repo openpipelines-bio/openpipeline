@@ -22,11 +22,11 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "id",
+        "input"
+      ],
       "properties": {
-        "required": [
-          "id",
-          "input"
-        ],
         "id": {
           "type": "string",
           "description": "ID of the sample",
@@ -60,10 +60,10 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output"
+      ],
       "properties": {
-        "required": [
-          "output"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -78,8 +78,8 @@
       "title": "Sample ID options",
       "type": "object",
       "description": "Options for adding the id to .obs on the MuData object. Having a sample \nid present in a requirement of several components for this pipeline.\n",
+      "required": [],
       "properties": {
-        "required": [],
         "add_id_to_obs": {
           "type": "boolean",
           "description": "Add the value passed with --id to ",
@@ -104,8 +104,8 @@
       "title": "RNA filtering options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "rna_min_counts": {
           "type": "integer",
           "description": "Minimum number of counts captured per cell",
@@ -157,8 +157,8 @@
       "title": "CITE-seq filtering options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "prot_min_counts": {
           "type": "integer",
           "description": "Minimum number of counts per cell",
@@ -190,8 +190,8 @@
       "title": "GDO filtering options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "gdo_min_counts": {
           "type": "integer",
           "description": "Minimum number of counts per cell",
@@ -223,8 +223,8 @@
       "title": "Highly variable features detection",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "highly_variable_features_var_output": {
           "type": "string",
           "description": "In which ",
@@ -243,8 +243,8 @@
       "title": "Mitochondrial & Ribosomal Gene Detection",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "var_gene_names": {
           "type": "string",
           "description": "",
@@ -288,8 +288,8 @@
       "title": "QC metrics calculation options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "var_qc_metrics": {
           "items": {
             "type": "string"
@@ -313,8 +313,8 @@
       "title": "PCA options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "pca_overwrite": {
           "type": "boolean",
           "description": "Allow overwriting slots for PCA output",
@@ -327,8 +327,8 @@
       "title": "CLR options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "clr_axis": {
           "type": "integer",
           "description": "Axis to perform the CLR transformation on",
@@ -341,8 +341,8 @@
       "title": "RNA Scaling options",
       "type": "object",
       "description": "Options for enabling scaling of the log-normalized data to unit variance and zero mean.\nThe scaled data will be output a different layer and representation with reduced dimensions\nwill be created and stored in addition to the non-scaled data.\n",
+      "required": [],
       "properties": {
-        "required": [],
         "rna_enable_scaling": {
           "type": "boolean",
           "description": "Enable scaling for the RNA modality",
@@ -396,8 +396,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

@@ -22,12 +22,12 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "id",
+        "genome_fasta",
+        "transcriptome_gtf"
+      ],
       "properties": {
-        "required": [
-          "id",
-          "genome_fasta",
-          "transcriptome_gtf"
-        ],
         "id": {
           "type": "string",
           "description": "ID of the reference",
@@ -59,8 +59,8 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "target": {
           "items": {
             "type": "string"
@@ -118,8 +118,8 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "subset_regex": {
           "type": "string",
           "description": "Will subset the reference chromosomes using the given regex",
@@ -131,8 +131,8 @@
       "title": "STAR Settings",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "star_genome_sa_index_nbases": {
           "type": "integer",
           "description": "Length (bases) of the SA pre-indexing string",
@@ -145,8 +145,8 @@
       "title": "BD Rhapsody Settings",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "bdrhap_mitochondrial_contigs": {
           "items": {
             "type": "string"
@@ -179,8 +179,8 @@
       "title": "Cellranger ARC options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "motifs_file": {
           "type": "string",
           "format": "path",
@@ -201,8 +201,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

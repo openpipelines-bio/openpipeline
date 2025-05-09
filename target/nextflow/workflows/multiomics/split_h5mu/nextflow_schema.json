@@ -22,11 +22,11 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output",
+        "output_files"
+      ],
       "properties": {
-        "required": [
-          "output",
-          "output_files"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -58,11 +58,11 @@
       "title": "Input & specifications",
       "type": "object",
       "description": "No description",
+      "required": [
+        "input",
+        "obs_feature"
+      ],
       "properties": {
-        "required": [
-          "input",
-          "obs_feature"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -99,8 +99,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

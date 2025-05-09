@@ -22,10 +22,10 @@
       "title": "Outputs",
       "type": "object",
       "description": "Output arguments.",
+      "required": [
+        "output"
+      ],
       "properties": {
-        "required": [
-          "output"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -60,8 +60,8 @@
       "title": "Input database",
       "type": "object",
       "description": "Open CellxGene Census by version or URI.",
+      "required": [],
       "properties": {
-        "required": [],
         "input_uri": {
           "type": "string",
           "description": "If specified, a URI containing the Census SOMA objects",
@@ -84,11 +84,11 @@
       "title": "Cell query",
       "type": "object",
       "description": "Arguments related to the query.",
+      "required": [
+        "species",
+        "obs_value_filter"
+      ],
       "properties": {
-        "required": [
-          "species",
-          "obs_value_filter"
-        ],
         "species": {
           "type": "string",
           "description": "The organism to query, usually one of `Homo sapiens` or `Mus musculus`",
@@ -105,8 +105,8 @@
       "title": "Filter cells by grouping",
       "type": "object",
       "description": "Filter groups with fewer than X number of cells.",
+      "required": [],
       "properties": {
-        "required": [],
         "cell_filter_grouping": {
           "items": {
             "type": "string"
@@ -126,8 +126,8 @@
       "title": "Count filtering",
       "type": "object",
       "description": "Arguments related to filtering cells and genes by counts.",
+      "required": [],
       "properties": {
-        "required": [],
         "cell_filter_min_genes": {
           "type": "integer",
           "description": "Remove cells with less than this number of genes",
@@ -158,8 +158,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

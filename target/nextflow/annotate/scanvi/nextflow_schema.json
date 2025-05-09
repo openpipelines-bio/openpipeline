@@ -22,11 +22,11 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "input",
+        "obs_labels"
+      ],
       "properties": {
-        "required": [
-          "input",
-          "obs_labels"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -72,10 +72,10 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output"
+      ],
       "properties": {
-        "required": [
-          "output"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -124,10 +124,10 @@
       "title": "scVI Model",
       "type": "object",
       "description": "No description",
+      "required": [
+        "scvi_model"
+      ],
       "properties": {
-        "required": [
-          "scvi_model"
-        ],
         "scvi_model": {
           "type": "string",
           "format": "path",
@@ -141,8 +141,8 @@
       "title": "scANVI training arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "early_stopping": {
           "type": "boolean",
           "description": "Whether to perform early stopping with respect to the validation set",
@@ -200,8 +200,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

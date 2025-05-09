@@ -22,10 +22,10 @@
       "title": "Inputs",
       "type": "object",
       "description": "Input dataset (query) arguments",
+      "required": [
+        "input"
+      ],
       "properties": {
-        "required": [
-          "input"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -61,8 +61,8 @@
       "title": "Outputs",
       "type": "object",
       "description": "Output arguments.",
+      "required": [],
       "properties": {
-        "required": [],
         "output": {
           "type": "string",
           "format": "path",
@@ -97,8 +97,8 @@
       "title": "Reference",
       "type": "object",
       "description": "Arguments related to the reference dataset.",
+      "required": [],
       "properties": {
-        "required": [],
         "reference": {
           "type": "string",
           "format": "path",
@@ -132,8 +132,8 @@
       "title": "Model arguments",
       "type": "object",
       "description": "Model arguments.",
+      "required": [],
       "properties": {
-        "required": [],
         "model": {
           "type": "string",
           "format": "path",
@@ -182,8 +182,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

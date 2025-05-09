@@ -22,11 +22,11 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "genome_fasta",
+        "gtf"
+      ],
       "properties": {
-        "required": [
-          "genome_fasta",
-          "gtf"
-        ],
         "genome_fasta": {
           "items": {
             "type": "string"
@@ -62,10 +62,10 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "reference_archive"
+      ],
       "properties": {
-        "required": [
-          "reference_archive"
-        ],
         "reference_archive": {
           "type": "string",
           "format": "path",
@@ -80,8 +80,8 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "mitochondrial_contigs": {
           "items": {
             "type": "string"
@@ -114,8 +114,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

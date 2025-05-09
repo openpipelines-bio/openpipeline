@@ -22,11 +22,11 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "id",
+        "input"
+      ],
       "properties": {
-        "required": [
-          "id",
-          "input"
-        ],
         "id": {
           "type": "string",
           "description": "ID of the concatenated file",
@@ -56,10 +56,10 @@
       "title": "Output",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output"
+      ],
       "properties": {
-        "required": [
-          "output"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -74,8 +74,8 @@
       "title": "Filtering highly variable features",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "highly_variable_features_var_output": {
           "type": "string",
           "description": "In which ",
@@ -110,8 +110,8 @@
       "title": "QC metrics calculation options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "var_qc_metrics": {
           "items": {
             "type": "string"
@@ -172,8 +172,8 @@
       "title": "RNA Scaling options",
       "type": "object",
       "description": "Options for enabling scaling of the log-normalized data to unit variance and zero mean.\nThe scaled data will be output a different layer and representation with reduced dimensions\nwill be created and stored in addition to the non-scaled data.\n",
+      "required": [],
       "properties": {
-        "required": [],
         "enable_scaling": {
           "type": "boolean",
           "description": "Enable scaling for the RNA modality",
@@ -203,8 +203,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

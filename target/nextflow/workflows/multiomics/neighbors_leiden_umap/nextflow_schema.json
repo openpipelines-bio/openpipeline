@@ -22,11 +22,11 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "input",
+        "obsm_input"
+      ],
       "properties": {
-        "required": [
-          "input",
-          "obsm_input"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -51,10 +51,10 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output"
+      ],
       "properties": {
-        "required": [
-          "output"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -69,12 +69,12 @@
       "title": "Neighbour calculation",
       "type": "object",
       "description": "No description",
+      "required": [
+        "uns_neighbors",
+        "obsp_neighbor_distances",
+        "obsp_neighbor_connectivities"
+      ],
       "properties": {
-        "required": [
-          "uns_neighbors",
-          "obsp_neighbor_distances",
-          "obsp_neighbor_connectivities"
-        ],
         "uns_neighbors": {
           "type": "string",
           "description": "In which ",
@@ -96,8 +96,8 @@
       "title": "Clustering options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "obs_cluster": {
           "type": "string",
           "description": "Prefix for the ",
@@ -118,8 +118,8 @@
       "title": "Umap options",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "obsm_umap": {
           "type": "string",
           "description": "In which ",
@@ -131,8 +131,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

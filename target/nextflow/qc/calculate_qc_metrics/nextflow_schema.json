@@ -22,10 +22,10 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "input"
+      ],
       "properties": {
-        "required": [
-          "input"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -50,8 +50,8 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "output": {
           "type": "string",
           "format": "path",
@@ -74,8 +74,8 @@
       "title": "Metrics added to .obs",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "var_qc_metrics": {
           "items": {
             "type": "string"
@@ -115,8 +115,8 @@
       "title": "Metrics added to .var",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "output_var_num_nonzero_obs": {
           "type": "string",
           "description": "Name of column describing, for each feature, the number of stored values\n(including explicit zeroes)",
@@ -147,8 +147,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

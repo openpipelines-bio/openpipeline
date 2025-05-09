@@ -22,10 +22,10 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "input"
+      ],
       "properties": {
-        "required": [
-          "input"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -55,10 +55,10 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output"
+      ],
       "properties": {
-        "required": [
-          "output"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -100,8 +100,8 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "n_bins": {
           "type": "integer",
           "description": "Number of expression level bins for sampling",
@@ -126,8 +126,8 @@
       "title": "Gene list inputs",
       "type": "object",
       "description": "The gene list inputs can be provided as a list of gene symbols or as a file containing a list of gene symbols. The gene list file should be formatted as a single column with gene symbols.\n\nMake sure that the gene list inputs are consistent with the gene names in the adata object as provided by the --var_gene_names argument.\n",
+      "required": [],
       "properties": {
-        "required": [],
         "s_genes": {
           "items": {
             "type": "string"
@@ -176,8 +176,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

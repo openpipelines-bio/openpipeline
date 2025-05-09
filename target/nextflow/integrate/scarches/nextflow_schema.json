@@ -22,10 +22,10 @@
       "title": "Inputs",
       "type": "object",
       "description": "Arguments related to the input (query) dataset",
+      "required": [
+        "input"
+      ],
       "properties": {
-        "required": [
-          "input"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -70,10 +70,10 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
+      "required": [
+        "output"
+      ],
       "properties": {
-        "required": [
-          "output"
-        ],
         "output": {
           "type": "string",
           "format": "path",
@@ -122,10 +122,10 @@
       "title": "Reference",
       "type": "object",
       "description": "No description",
+      "required": [
+        "reference"
+      ],
       "properties": {
-        "required": [
-          "reference"
-        ],
         "reference": {
           "type": "string",
           "format": "path",
@@ -139,8 +139,8 @@
       "title": "Early stopping arguments",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "early_stopping": {
           "type": "boolean",
           "description": "Whether to perform early stopping with respect to the validation set",
@@ -175,8 +175,8 @@
       "title": "Learning parameters",
       "type": "object",
       "description": "No description",
+      "required": [],
       "properties": {
-        "required": [],
         "max_epochs": {
           "type": "integer",
           "description": "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest",
@@ -206,8 +206,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",

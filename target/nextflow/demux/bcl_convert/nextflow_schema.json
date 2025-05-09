@@ -22,12 +22,12 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
+      "required": [
+        "input",
+        "sample_sheet",
+        "output"
+      ],
       "properties": {
-        "required": [
-          "input",
-          "sample_sheet",
-          "output"
-        ],
         "input": {
           "type": "string",
           "format": "path",
@@ -90,8 +90,8 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "required": [],
       "properties": {
-        "required": [],
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory",
