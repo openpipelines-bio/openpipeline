@@ -3432,7 +3432,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cross_check_genes",
     "viash_version" : "0.9.4",
-    "git_commit" : "d5432abbeb03c652c5237810577b3fffe60d7a7b",
+    "git_commit" : "6105a3683b6e6c308beb713b205609323a14c989",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
