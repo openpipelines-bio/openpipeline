@@ -3304,7 +3304,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "9eccdee3650ff15b594ee21647b994cddac7475e",
+    "git_commit" : "871774e0385f1f8ec0f6768adb6e8299658f6b6a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
