@@ -22,57 +22,54 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Output directory from a Cell Ranger count run",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input_dir`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input_dir`. "
         },
         "filtered_h5": {
           "type": "string",
           "format": "path",
           "description": "",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.filtered_h5.h5`, example: `filtered_feature_bc_matrix.h5`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.filtered_h5.h5`, direction: `output`, example: `filtered_feature_bc_matrix.h5`. ",
           "default": "$id.$key.filtered_h5.h5"
         },
         "metrics_summary": {
           "type": "string",
           "format": "path",
           "description": "",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.metrics_summary.csv`, example: `metrics_summary.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.metrics_summary.csv`, direction: `output`, example: `metrics_summary.csv`. ",
           "default": "$id.$key.metrics_summary.csv"
         },
         "molecule_info": {
           "type": "string",
           "format": "path",
           "description": "",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.molecule_info.h5`, example: `molecule_info.h5`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.molecule_info.h5`, direction: `output`, example: `molecule_info.h5`. ",
           "default": "$id.$key.molecule_info.h5"
         },
         "bam": {
           "type": "string",
           "format": "path",
           "description": "",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.bam.bam`, example: `possorted_genome_bam.bam`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.bam.bam`, direction: `output`, example: `possorted_genome_bam.bam`. ",
           "default": "$id.$key.bam.bam"
         },
         "bai": {
           "type": "string",
           "format": "path",
           "description": "",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.bai.bai`, example: `possorted_genome_bam.bam.bai`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.bai.bai`, direction: `output`, example: `possorted_genome_bam.bam.bai`. ",
           "default": "$id.$key.bai.bai"
         },
         "raw_h5": {
           "type": "string",
           "format": "path",
           "description": "",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.raw_h5.h5`, example: `raw_feature_bc_matrix.h5`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.raw_h5.h5`, direction: `output`, example: `raw_feature_bc_matrix.h5`. ",
           "default": "$id.$key.raw_h5.h5"
         }
       }
@@ -81,7 +78,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

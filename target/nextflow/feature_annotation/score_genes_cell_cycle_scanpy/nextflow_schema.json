@@ -22,16 +22,13 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input_file.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input_file.h5mu`. "
         },
         "modality": {
           "type": "string",
@@ -55,16 +52,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output h5mu file\n",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output_file.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output_file.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "obs_phase": {
@@ -100,7 +93,6 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "n_bins": {
           "type": "integer",
@@ -126,7 +118,6 @@
       "title": "Gene list inputs",
       "type": "object",
       "description": "The gene list inputs can be provided as a list of gene symbols or as a file containing a list of gene symbols. The gene list file should be formatted as a single column with gene symbols.\n\nMake sure that the gene list inputs are consistent with the gene names in the adata object as provided by the --var_gene_names argument.\n",
-      "required": [],
       "properties": {
         "s_genes": {
           "items": {
@@ -134,13 +125,13 @@
           },
           "type": "array",
           "description": "List of gene symbols for scoring s phase genes",
-          "help_text": "Type: `string`, multiple: `True`, example: `gene1;gene2;gene3`. "
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"gene1\";\"gene2\";\"gene3\"]`. "
         },
         "s_genes_file": {
           "type": "string",
           "format": "path",
           "description": "Path to a ",
-          "help_text": "Type: `file`, multiple: `False`, example: `s_gene_list.txt`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `s_gene_list.txt`. "
         },
         "g2m_genes": {
           "items": {
@@ -148,13 +139,13 @@
           },
           "type": "array",
           "description": "List of gene symbols for scoring g2m phase genes",
-          "help_text": "Type: `string`, multiple: `True`, example: `gene1;gene2;gene3`. "
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"gene1\";\"gene2\";\"gene3\"]`. "
         },
         "g2m_genes_file": {
           "type": "string",
           "format": "path",
           "description": "Path to a ",
-          "help_text": "Type: `file`, multiple: `False`, example: `g2m_gene_list.txt`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `g2m_gene_list.txt`. "
         },
         "gene_pool": {
           "items": {
@@ -162,13 +153,13 @@
           },
           "type": "array",
           "description": "List of gene symbols for sampling the reference set",
-          "help_text": "Type: `string`, multiple: `True`, example: `gene1;gene2;gene3`. "
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"gene1\";\"gene2\";\"gene3\"]`. "
         },
         "gene_pool_file": {
           "type": "string",
           "format": "path",
           "description": "File with genes for sampling the reference set",
-          "help_text": "Type: `file`, multiple: `False`, example: `gene_pool.txt`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `gene_pool.txt`. "
         }
       }
     },
@@ -176,7 +167,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

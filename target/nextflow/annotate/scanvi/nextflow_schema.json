@@ -22,17 +22,13 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input",
-        "obs_labels"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
         },
         "modality": {
           "type": "string",
@@ -72,23 +68,19 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`. ",
           "default": "$id.$key.output"
         },
         "output_model": {
           "type": "string",
           "format": "path",
           "description": "Folder where the state of the trained model will be saved to",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_model`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_model`, direction: `output`. ",
           "default": "$id.$key.output_model"
         },
         "obsm_output": {
@@ -124,16 +116,13 @@
       "title": "scVI Model",
       "type": "object",
       "description": "No description",
-      "required": [
-        "scvi_model"
-      ],
       "properties": {
         "scvi_model": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Pretrained SCVI reference model to initialize the SCANVI model with",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `scvi_model.pt`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `scvi_model.pt`. "
         }
       }
     },
@@ -141,7 +130,6 @@
       "title": "scANVI training arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "early_stopping": {
           "type": "boolean",
@@ -200,7 +188,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

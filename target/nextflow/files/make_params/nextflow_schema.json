@@ -22,18 +22,13 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "base_dir",
-        "pattern",
-        "output"
-      ],
       "properties": {
         "base_dir": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Base directory to search recursively",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `/path/to/dir`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `/path/to/dir`. "
         },
         "pattern": {
           "type": "string",
@@ -72,9 +67,8 @@
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output YAML file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.yaml`, example: `params.yaml`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.yaml`, direction: `output`, example: `params.yaml`. ",
           "default": "$id.$key.output.yaml"
         }
       }
@@ -83,7 +77,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

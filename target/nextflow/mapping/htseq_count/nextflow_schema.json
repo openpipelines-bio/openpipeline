@@ -22,7 +22,6 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "order": {
           "type": "string",
@@ -62,7 +61,7 @@
           },
           "type": "array",
           "description": "GTF attribute to be used as feature ID (default, suitable for Ensembl GTF files: gene_id)",
-          "help_text": "Type: `string`, multiple: `True`, example: `gene_id`. "
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"gene_id\"]`. "
         },
         "additional_attributes": {
           "items": {
@@ -70,7 +69,7 @@
           },
           "type": "array",
           "description": "Additional feature attributes (suitable for Ensembl GTF files: gene_name)",
-          "help_text": "Type: `string`, multiple: `True`, example: `gene_name`. "
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"gene_name\"]`. "
         },
         "add_chromosome_info": {
           "type": "boolean",
@@ -131,10 +130,6 @@
       "title": "Input",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input",
-        "reference"
-      ],
       "properties": {
         "input": {
           "items": {
@@ -144,14 +139,14 @@
           "format": "path",
           "exists": true,
           "description": "Path to the SAM/BAM files containing the mapped reads",
-          "help_text": "Type: `file`, multiple: `True`, required, example: `mysample1.BAM;mysample2.BAM`. "
+          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `[\"mysample1.BAM\";\"mysample2.BAM\"]`. "
         },
         "reference": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Path to the GTF file containing the features",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `reference.gtf`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `reference.gtf`. "
         }
       }
     },
@@ -159,16 +154,12 @@
       "title": "Output",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Filename to output the counts to",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.tsv`, example: `htseq-count.tsv`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.tsv`, direction: `output`, example: `htseq-count.tsv`. ",
           "default": "$id.$key.output.tsv"
         },
         "output_delimiter": {
@@ -183,7 +174,7 @@
           "type": "array",
           "format": "path",
           "description": "Write out all SAM alignment records into SAM/BAM files (one per input file needed), \nannotating each line with its feature assignment (as an optional field with tag 'XF')",
-          "help_text": "Type: `file`, multiple: `True`, default: `$id.$key.output_sam_*.BAM`, example: `mysample1_out.BAM;mysample2_out.BAM`. ",
+          "help_text": "Type: `file`, multiple: `True`, default: `$id.$key.output_sam_*.BAM`, direction: `output`, example: `[\"mysample1_out.BAM\";\"mysample2_out.BAM\"]`. ",
           "default": "$id.$key.output_sam_*.BAM"
         },
         "output_sam_format": {
@@ -201,7 +192,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

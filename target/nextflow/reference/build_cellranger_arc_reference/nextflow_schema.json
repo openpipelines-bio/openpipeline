@@ -22,32 +22,26 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "genome_fasta",
-        "annotation_gtf",
-        "output",
-        "genome"
-      ],
       "properties": {
         "genome_fasta": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Reference genome fasta",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `genome_sequence.fa.gz`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `genome_sequence.fa.gz`. "
         },
         "annotation_gtf": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Reference annotation",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `annotation.gtf.gz`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `annotation.gtf.gz`. "
         },
         "motifs_file": {
           "type": "string",
           "format": "path",
           "description": "Transcription factor motifs in JASPAR format",
-          "help_text": "Type: `file`, multiple: `False`, example: `JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified`. "
         },
         "non_nuclear_contigs": {
           "items": {
@@ -55,15 +49,14 @@
           },
           "type": "array",
           "description": "Name(s) of contig(s) that do not have any chromatin structure, for example, mitochondria or plastids",
-          "help_text": "Type: `string`, multiple: `True`, default: `chrM`, example: `chrM`. ",
-          "default": "chrM"
+          "help_text": "Type: `string`, multiple: `True`, default: `[\"chrM\"]`, example: `[\"chrM\"]`. ",
+          "default": "[\"chrM\"]"
         },
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output folder",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, example: `cellranger_reference`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`, example: `cellranger_reference`. ",
           "default": "$id.$key.output"
         },
         "genome": {
@@ -88,7 +81,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

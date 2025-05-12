@@ -22,10 +22,6 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input",
-        "reference"
-      ],
       "properties": {
         "input": {
           "items": {
@@ -35,20 +31,20 @@
           "format": "path",
           "exists": true,
           "description": "The fastq",
-          "help_text": "Type: `file`, multiple: `True`, required, example: `sample_S1_L001_R1_001.fastq.gz;sample_S1_L001_R2_001.fastq.gz`. "
+          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `[\"sample_S1_L001_R1_001.fastq.gz\";\"sample_S1_L001_R2_001.fastq.gz\"]`. "
         },
         "reference": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "The path to Cell Ranger reference tar",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `reference.tar.gz`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `reference.tar.gz`. "
         },
         "feature_reference": {
           "type": "string",
           "format": "path",
           "description": "Feature reference CSV file, declaring Feature Barcode constructs and associated barcodes\n",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         }
       }
     },
@@ -56,16 +52,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "The folder to store the alignment results",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, example: `/path/to/output`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`, example: `/path/to/output`. ",
           "default": "$id.$key.output"
         }
       }
@@ -74,7 +66,6 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "expect_cells": {
           "type": "integer",
@@ -113,7 +104,7 @@
           "type": "string",
           "format": "path",
           "description": "The 10x Cloud Analysis user token used to enable cell annotation",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "cell_annotation_model": {
           "type": "string",
@@ -159,7 +150,7 @@
           },
           "type": "array",
           "description": "Only use FASTQs from selected lanes",
-          "help_text": "Type: `integer`, multiple: `True`, example: `1;2;3`. "
+          "help_text": "Type: `integer`, multiple: `True`, example: `[1;2;3]`. "
         },
         "library_compatibility_check": {
           "type": "boolean",
@@ -178,7 +169,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

@@ -22,25 +22,20 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input",
-        "csv",
-        "output"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Path of Illumina BCL run folder",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `/path/to/bcl`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `/path/to/bcl`. "
         },
         "csv": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "The path to the simple layout sample sheet",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `SampleSheet.csv`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `SampleSheet.csv`. "
         },
         "lanes": {
           "items": {
@@ -48,7 +43,7 @@
           },
           "type": "array",
           "description": "bcl2fastq option",
-          "help_text": "Type: `string`, multiple: `True`, example: `1,3`. "
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"1,3\"]`. "
         },
         "use_bases_mask": {
           "items": {
@@ -56,7 +51,7 @@
           },
           "type": "array",
           "description": "bcl2fastq option",
-          "help_text": "Type: `string`, multiple: `True`, example: `y50n,I6n,Y50n`. "
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"y50n,I6n,Y50n\"]`. "
         },
         "delete_undetermined": {
           "type": "boolean",
@@ -73,16 +68,15 @@
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "The folder to store the demux results",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `fastqs`, example: `/path/to/output`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `fastqs`, direction: `output`, example: `/path/to/output`. ",
           "default": "fastqs"
         },
         "reports": {
           "type": "string",
           "format": "path",
           "description": "Reports directory",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.reports`, example: `reports_dir`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.reports`, direction: `output`, example: `reports_dir`. ",
           "default": "$id.$key.reports"
         }
       }
@@ -91,7 +85,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

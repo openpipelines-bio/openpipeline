@@ -22,11 +22,6 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "id",
-        "input",
-        "input_type"
-      ],
       "properties": {
         "id": {
           "type": "string",
@@ -38,7 +33,7 @@
           "format": "path",
           "exists": true,
           "description": "Path to the sample",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
         },
         "input_type": {
           "type": "string",
@@ -56,13 +51,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
           "description": "Name or template for the output files",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         }
       }
@@ -71,7 +65,6 @@
       "title": "Conversion from h5ad",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "modality": {
           "items": {
@@ -87,7 +80,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

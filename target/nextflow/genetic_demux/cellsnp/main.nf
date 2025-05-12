@@ -3468,9 +3468,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/cellsnp",
     "viash_version" : "0.9.4",
-    "git_commit" : "eb04aa90bb4d5e5ad5c22683cf267af8081c1865",
+    "git_commit" : "cb39428a38439c4d7664134811c44a539348b3e6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2025-geb04aa90bb4"
+    "git_tag" : "0.2.0-2026-gcb39428a384"
   },
   "package_config" : {
     "name" : "openpipeline",

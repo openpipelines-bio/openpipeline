@@ -22,10 +22,6 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "genome_fasta",
-        "gtf"
-      ],
       "properties": {
         "genome_fasta": {
           "items": {
@@ -35,7 +31,7 @@
           "format": "path",
           "exists": true,
           "description": "Reference genome file in FASTA or FASTA",
-          "help_text": "Type: `file`, multiple: `True`, required, example: `genome_sequence.fa.gz`. "
+          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `[\"genome_sequence.fa.gz\"]`. "
         },
         "gtf": {
           "items": {
@@ -45,7 +41,7 @@
           "format": "path",
           "exists": true,
           "description": "File path to the transcript annotation files in GTF or GTF",
-          "help_text": "Type: `file`, multiple: `True`, required, example: `transcriptome_annotation.gtf.gz`. "
+          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `[\"transcriptome_annotation.gtf.gz\"]`. "
         },
         "extra_sequences": {
           "items": {
@@ -54,7 +50,7 @@
           "type": "array",
           "format": "path",
           "description": "File path to additional sequences in FASTA format to use when building the STAR index",
-          "help_text": "Type: `file`, multiple: `True`. "
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`. "
         }
       }
     },
@@ -62,16 +58,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "reference_archive"
-      ],
       "properties": {
         "reference_archive": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "A Compressed archive containing the Reference Genome Index and annotation GTF files",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.reference_archive.gz`, example: `reference.tar.gz`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.reference_archive.gz`, direction: `output`, example: `reference.tar.gz`. ",
           "default": "$id.$key.reference_archive.gz"
         }
       }
@@ -80,7 +72,6 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "mitochondrial_contigs": {
           "items": {
@@ -88,8 +79,8 @@
           },
           "type": "array",
           "description": "Names of the Mitochondrial contigs in the provided Reference Genome",
-          "help_text": "Type: `string`, multiple: `True`, default: `chrM;chrMT;M;MT`. ",
-          "default": "chrM;chrMT;M;MT"
+          "help_text": "Type: `string`, multiple: `True`, default: `[\"chrM\";\"chrMT\";\"M\";\"MT\"]`. ",
+          "default": "[\"chrM\";\"chrMT\";\"M\";\"MT\"]"
         },
         "filtering_off": {
           "type": "boolean",
@@ -114,7 +105,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

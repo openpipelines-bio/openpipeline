@@ -22,17 +22,13 @@
       "title": "Inputs",
       "type": "object",
       "description": "Input dataset (query) arguments",
-      "required": [
-        "input",
-        "input_obs_batch"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "The input (query) data to be labeled",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
         },
         "modality": {
           "type": "string",
@@ -77,20 +73,19 @@
       "title": "Outputs",
       "type": "object",
       "description": "Output arguments.",
-      "required": [],
       "properties": {
         "output_query": {
           "type": "string",
           "format": "path",
           "description": "Aligned query data",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_query.h5mu`, example: `output_query.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_query.h5mu`, direction: `output`, example: `output_query.h5mu`. ",
           "default": "$id.$key.output_query.h5mu"
         },
         "output_reference": {
           "type": "string",
           "format": "path",
           "description": "Aligned reference data",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_reference.h5mu`, example: `output_reference.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_reference.h5mu`, direction: `output`, example: `output_reference.h5mu`. ",
           "default": "$id.$key.output_reference.h5mu"
         },
         "output_layer": {
@@ -156,7 +151,6 @@
       "title": "Arguments",
       "type": "object",
       "description": "Arguments related to the alignment of the input and reference datasets.",
-      "required": [],
       "properties": {
         "input_reference_gene_overlap": {
           "type": "integer",
@@ -200,15 +194,12 @@
       "title": "Reference",
       "type": "object",
       "description": "Arguments related to the reference dataset.",
-      "required": [
-        "reference_obs_batch"
-      ],
       "properties": {
         "reference": {
           "type": "string",
           "format": "path",
           "description": "The reference data to train the CellTypist classifiers on",
-          "help_text": "Type: `file`, multiple: `False`, example: `reference.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `reference.h5mu`. "
         },
         "reference_layer": {
           "type": "string",
@@ -247,7 +238,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

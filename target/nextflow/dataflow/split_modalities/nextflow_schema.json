@@ -22,34 +22,27 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input",
-        "output",
-        "output_types"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Path to a single ",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `sample_path`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `sample_path`, direction: `input`. ",
           "default": "sample_path"
         },
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output directory containing multiple h5mu files",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, example: `/path/to/output`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`, example: `/path/to/output`. ",
           "default": "$id.$key.output"
         },
         "output_types": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "A csv containing the base filename and modality type per output file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_types.csv`, example: `types.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_types.csv`, direction: `output`, example: `types.csv`. ",
           "default": "$id.$key.output_types.csv"
         },
         "output_compression": {
@@ -67,7 +60,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

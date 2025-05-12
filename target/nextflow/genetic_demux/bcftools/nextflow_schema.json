@@ -22,9 +22,6 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "vcf"
-      ],
       "properties": {
         "vcf": {
           "items": {
@@ -34,7 +31,7 @@
           "format": "path",
           "exists": true,
           "description": "VCF files, must have the same sample columns appearing in the same order",
-          "help_text": "Type: `file`, multiple: `True`, required. "
+          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`. "
         },
         "concat": {
           "type": "boolean",
@@ -58,7 +55,7 @@
           "type": "string",
           "format": "path",
           "description": "bcftools output directory",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output`, example: `bcftools_out`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output`, direction: `output`, example: `bcftools_out`. ",
           "default": "$id.$key.output"
         }
       }
@@ -67,7 +64,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

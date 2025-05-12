@@ -22,9 +22,6 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "items": {
@@ -34,8 +31,8 @@
           "format": "path",
           "exists": true,
           "description": "Input h5ad files",
-          "help_text": "Type: `file`, multiple: `True`, required, default: `input.h5ad`. ",
-          "default": "input.h5ad"
+          "help_text": "Type: `file`, multiple: `True`, required, default: `[\"input.h5ad\"]`, direction: `input`. ",
+          "default": "[\"input.h5ad\"]"
         },
         "modality": {
           "items": {
@@ -43,14 +40,14 @@
           },
           "type": "array",
           "description": "",
-          "help_text": "Type: `string`, multiple: `True`, default: `rna`. ",
-          "default": "rna"
+          "help_text": "Type: `string`, multiple: `True`, default: `[\"rna\"]`. ",
+          "default": "[\"rna\"]"
         },
         "output": {
           "type": "string",
           "format": "path",
           "description": "Output MuData file",
-          "help_text": "Type: `file`, multiple: `False`, default: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `output.h5mu`, direction: `output`. ",
           "default": "output.h5mu"
         },
         "output_compression": {
@@ -68,7 +65,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

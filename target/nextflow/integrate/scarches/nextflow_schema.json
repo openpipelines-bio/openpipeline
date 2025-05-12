@@ -22,16 +22,13 @@
       "title": "Inputs",
       "type": "object",
       "description": "Arguments related to the input (query) dataset",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Input h5mu file to use as a query",
-          "help_text": "Type: `file`, multiple: `False`, required. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
         },
         "layer": {
           "type": "string",
@@ -70,23 +67,19 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`. ",
           "default": "$id.$key.output"
         },
         "model_output": {
           "type": "string",
           "format": "path",
           "description": "Output directory for model",
-          "help_text": "Type: `file`, multiple: `False`, default: `model`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `model`, direction: `output`. ",
           "default": "model"
         },
         "obsm_output": {
@@ -122,16 +115,13 @@
       "title": "Reference",
       "type": "object",
       "description": "No description",
-      "required": [
-        "reference"
-      ],
       "properties": {
         "reference": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Path to the directory with reference model or a web link",
-          "help_text": "Type: `file`, multiple: `False`, required. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
         }
       }
     },
@@ -139,7 +129,6 @@
       "title": "Early stopping arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "early_stopping": {
           "type": "boolean",
@@ -175,7 +164,6 @@
       "title": "Learning parameters",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "max_epochs": {
           "type": "integer",
@@ -206,7 +194,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

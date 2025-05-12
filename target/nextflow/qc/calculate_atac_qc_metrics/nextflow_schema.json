@@ -22,22 +22,19 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
         },
         "fragments_path": {
           "type": "string",
           "format": "path",
           "description": "Path to the fragments file",
-          "help_text": "Type: `file`, multiple: `False`, example: `fragments.tsv.gz`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `fragments.tsv.gz`. "
         },
         "modality": {
           "type": "string",
@@ -80,13 +77,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
           "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "output_compression": {
@@ -104,7 +100,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

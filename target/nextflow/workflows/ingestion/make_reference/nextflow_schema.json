@@ -22,11 +22,6 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "id",
-        "genome_fasta",
-        "transcriptome_gtf"
-      ],
       "properties": {
         "id": {
           "type": "string",
@@ -38,20 +33,20 @@
           "format": "path",
           "exists": true,
           "description": "Reference genome fasta",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz`. "
         },
         "transcriptome_gtf": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Reference transcriptome annotation",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz`. "
         },
         "ercc": {
           "type": "string",
           "format": "path",
           "description": "ERCC sequence and annotation file",
-          "help_text": "Type: `file`, multiple: `False`, example: `https:/assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `https:/assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip`. "
         }
       }
     },
@@ -59,7 +54,6 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "target": {
           "items": {
@@ -67,49 +61,49 @@
           },
           "type": "array",
           "description": "Which reference indices to generate",
-          "help_text": "Type: `string`, multiple: `True`, default: `star`, choices: ``cellranger`, `cellranger_arc`, `bd_rhapsody`, `star``. ",
-          "default": "star"
+          "help_text": "Type: `string`, multiple: `True`, default: `[\"star\"]`, choices: ``cellranger`, `cellranger_arc`, `bd_rhapsody`, `star``. ",
+          "default": "[\"star\"]"
         },
         "output_fasta": {
           "type": "string",
           "format": "path",
           "description": "Output genome sequence fasta",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_fasta.gz`, example: `genome_sequence.fa.gz`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_fasta.gz`, direction: `output`, example: `genome_sequence.fa.gz`. ",
           "default": "$id.$key.output_fasta.gz"
         },
         "output_gtf": {
           "type": "string",
           "format": "path",
           "description": "Output transcriptome annotation gtf",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_gtf.gz`, example: `transcriptome_annotation.gtf.gz`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_gtf.gz`, direction: `output`, example: `transcriptome_annotation.gtf.gz`. ",
           "default": "$id.$key.output_gtf.gz"
         },
         "output_cellranger": {
           "type": "string",
           "format": "path",
           "description": "Output index",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_cellranger.gz`, example: `cellranger_index.tar.gz`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_cellranger.gz`, direction: `output`, example: `cellranger_index.tar.gz`. ",
           "default": "$id.$key.output_cellranger.gz"
         },
         "output_cellranger_arc": {
           "type": "string",
           "format": "path",
           "description": "Output index",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_cellranger_arc.gz`, example: `cellranger_index_arc.tar.gz`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_cellranger_arc.gz`, direction: `output`, example: `cellranger_index_arc.tar.gz`. ",
           "default": "$id.$key.output_cellranger_arc.gz"
         },
         "output_bd_rhapsody": {
           "type": "string",
           "format": "path",
           "description": "Output index",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_bd_rhapsody.gz`, example: `bdrhap_index.tar.gz`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_bd_rhapsody.gz`, direction: `output`, example: `bdrhap_index.tar.gz`. ",
           "default": "$id.$key.output_bd_rhapsody.gz"
         },
         "output_star": {
           "type": "string",
           "format": "path",
           "description": "Output index",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_star.gz`, example: `star_index.tar.gz`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_star.gz`, direction: `output`, example: `star_index.tar.gz`. ",
           "default": "$id.$key.output_star.gz"
         }
       }
@@ -118,7 +112,6 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "subset_regex": {
           "type": "string",
@@ -131,7 +124,6 @@
       "title": "STAR Settings",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "star_genome_sa_index_nbases": {
           "type": "integer",
@@ -145,7 +137,6 @@
       "title": "BD Rhapsody Settings",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "bdrhap_mitochondrial_contigs": {
           "items": {
@@ -153,8 +144,8 @@
           },
           "type": "array",
           "description": "Names of the Mitochondrial contigs in the provided Reference Genome",
-          "help_text": "Type: `string`, multiple: `True`, default: `chrM;chrMT;M;MT`. ",
-          "default": "chrM;chrMT;M;MT"
+          "help_text": "Type: `string`, multiple: `True`, default: `[\"chrM\";\"chrMT\";\"M\";\"MT\"]`. ",
+          "default": "[\"chrM\";\"chrMT\";\"M\";\"MT\"]"
         },
         "bdrhap_filtering_off": {
           "type": "boolean",
@@ -179,13 +170,12 @@
       "title": "Cellranger ARC options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "motifs_file": {
           "type": "string",
           "format": "path",
           "description": "Path to file containing transcription factor motifs in JASPAR format",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "non_nuclear_contigs": {
           "items": {
@@ -201,7 +191,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

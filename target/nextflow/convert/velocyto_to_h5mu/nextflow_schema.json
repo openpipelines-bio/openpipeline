@@ -22,22 +22,19 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input_loom"
-      ],
       "properties": {
         "input_loom": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Path to the input loom file",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input.loom`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.loom`. "
         },
         "input_h5mu": {
           "type": "string",
           "format": "path",
           "description": "If a MuData file is provided,",
-          "help_text": "Type: `file`, multiple: `False`, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `input.h5mu`. "
         },
         "modality": {
           "type": "string",
@@ -51,13 +48,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
           "description": "Path to the output MuData file",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "layer_spliced": {
@@ -93,7 +89,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

@@ -22,10 +22,6 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "id",
-        "input"
-      ],
       "properties": {
         "id": {
           "type": "string",
@@ -37,7 +33,7 @@
           "format": "path",
           "exists": true,
           "description": "Path to the sample",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
         },
         "rna_layer": {
           "type": "string",
@@ -60,16 +56,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Destination path to the output",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         }
       }
@@ -78,7 +70,6 @@
       "title": "Sample ID options",
       "type": "object",
       "description": "Options for adding the id to .obs on the MuData object. Having a sample \nid present in a requirement of several components for this pipeline.\n",
-      "required": [],
       "properties": {
         "add_id_to_obs": {
           "type": "boolean",
@@ -104,7 +95,6 @@
       "title": "RNA filtering options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "rna_min_counts": {
           "type": "integer",
@@ -157,7 +147,6 @@
       "title": "CITE-seq filtering options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "prot_min_counts": {
           "type": "integer",
@@ -190,7 +179,6 @@
       "title": "GDO filtering options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "gdo_min_counts": {
           "type": "integer",
@@ -223,7 +211,6 @@
       "title": "Highly variable features detection",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "highly_variable_features_var_output": {
           "type": "string",
@@ -243,7 +230,6 @@
       "title": "Mitochondrial & Ribosomal Gene Detection",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "var_gene_names": {
           "type": "string",
@@ -288,7 +274,6 @@
       "title": "QC metrics calculation options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "var_qc_metrics": {
           "items": {
@@ -296,7 +281,7 @@
           },
           "type": "array",
           "description": "Keys to select a boolean (containing only True or False) column from ",
-          "help_text": "Type: `string`, multiple: `True`, example: `ercc,highly_variable`. "
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"ercc,highly_variable\"]`. "
         },
         "top_n_vars": {
           "items": {
@@ -304,8 +289,8 @@
           },
           "type": "array",
           "description": "Number of top vars to be used to calculate cumulative proportions",
-          "help_text": "Type: `integer`, multiple: `True`, default: `50,100,200,500`. ",
-          "default": "50,100,200,500"
+          "help_text": "Type: `integer`, multiple: `True`, default: `[50,100,200,500]`. ",
+          "default": "[50,100,200,500]"
         }
       }
     },
@@ -313,7 +298,6 @@
       "title": "PCA options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "pca_overwrite": {
           "type": "boolean",
@@ -327,7 +311,6 @@
       "title": "CLR options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "clr_axis": {
           "type": "integer",
@@ -341,7 +324,6 @@
       "title": "RNA Scaling options",
       "type": "object",
       "description": "Options for enabling scaling of the log-normalized data to unit variance and zero mean.\nThe scaled data will be output a different layer and representation with reduced dimensions\nwill be created and stored in addition to the non-scaled data.\n",
-      "required": [],
       "properties": {
         "rna_enable_scaling": {
           "type": "boolean",
@@ -396,7 +378,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

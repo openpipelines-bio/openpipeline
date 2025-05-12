@@ -22,16 +22,13 @@
       "title": "Inputs",
       "type": "object",
       "description": "Arguments related to the input (aka query) dataset.",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
         },
         "modality": {
           "type": "string",
@@ -71,16 +68,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "Output arguments.",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "output_compression": {
@@ -98,9 +91,6 @@
       "title": "Arguments",
       "type": "object",
       "description": "Other arguments.",
-      "required": [
-        "methods"
-      ],
       "properties": {
         "methods": {
           "items": {
@@ -108,7 +98,7 @@
           },
           "type": "array",
           "description": "Methods to call cell types",
-          "help_text": "Type: `string`, multiple: `True`, required, example: `knn_on_scvi;scanvi`, choices: ``celltypist`, `knn_on_bbknn`, `knn_on_scanorama`, `knn_on_scvi`, `onclass`, `rf`, `scanvi`, `svm``. "
+          "help_text": "Type: `string`, multiple: `True`, required, example: `[\"knn_on_scvi\";\"scanvi\"]`, choices: ``celltypist`, `knn_on_bbknn`, `knn_on_scanorama`, `knn_on_scvi`, `onclass`, `rf`, `scanvi`, `svm``. "
         }
       }
     },
@@ -116,16 +106,13 @@
       "title": "Reference",
       "type": "object",
       "description": "Arguments related to the reference dataset.",
-      "required": [
-        "reference"
-      ],
       "properties": {
         "reference": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "User-provided reference tissue",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `TS_Bladder_filtered.h5ad`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `TS_Bladder_filtered.h5ad`. "
         },
         "reference_layer": {
           "type": "string",
@@ -150,7 +137,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

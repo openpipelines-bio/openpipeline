@@ -22,16 +22,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "The output mudata file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "output_obs_predictions": {
@@ -61,7 +57,6 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "pad_token": {
           "type": "string",
@@ -104,32 +99,27 @@
       "title": "Model input",
       "type": "object",
       "description": "No description",
-      "required": [
-        "model",
-        "model_config",
-        "model_vocab"
-      ],
       "properties": {
         "model": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "The model file containing checkpoints and cell type label mapper",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `best_model.pt`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `best_model.pt`. "
         },
         "model_config": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "The model configuration file",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `args.json`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `args.json`. "
         },
         "model_vocab": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Model vocabulary file directory",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `vocab.json`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `vocab.json`. "
         },
         "finetuned_checkpoints_key": {
           "type": "string",
@@ -149,16 +139,13 @@
       "title": "Query input",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "The input h5mu file containing of data that have been pre-processed (normalized, binned, genes cross-checked and tokenized)",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `scgpt_preprocess_ouput.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `scgpt_preprocess_ouput.h5mu`. "
         },
         "modality": {
           "type": "string",
@@ -189,7 +176,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

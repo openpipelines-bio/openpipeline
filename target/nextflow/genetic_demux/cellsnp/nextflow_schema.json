@@ -22,49 +22,48 @@
       "title": "Input",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "sam_file": {
           "type": "string",
           "format": "path",
           "description": "Indexed sam/bam file(s), comma separated multiple samples",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "sam_index_file": {
           "type": "string",
           "format": "path",
           "description": "Input SAM/BAM Index file, problem with samFileList",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "sam_fileList": {
           "type": "string",
           "format": "path",
           "description": "A list file containing bam files, each per line, for Mode 1b & 2b",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "regions_vcf": {
           "type": "string",
           "format": "path",
           "description": "A vcf file listing all candidate SNPs, for fetch each variants",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "targets_vcf": {
           "type": "string",
           "format": "path",
           "description": "Similar as --regions_vcf, but the next position is accessed by streaming rather than indexing/jumping (like -T in samtools/bcftools mpileup)",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "barcode_file": {
           "type": "string",
           "format": "path",
           "description": "A plain file listing all effective cell barcode",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "sample_list": {
           "type": "string",
           "format": "path",
           "description": "A list file containing sample IDs, each per line",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "sample_ids": {
           "type": "string",
@@ -158,13 +157,12 @@
       "title": "Output",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
           "description": "Output directory for VCF and sparse matrices",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output`, example: `cellsnp_out`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output`, direction: `output`, example: `cellsnp_out`. ",
           "default": "$id.$key.output"
         }
       }
@@ -173,7 +171,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

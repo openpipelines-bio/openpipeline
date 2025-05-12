@@ -22,24 +22,19 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input",
-        "output"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "The directory created by `multi_star`",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `/path/to/foo`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `/path/to/foo`. "
         },
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "output_compression": {
@@ -57,7 +52,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

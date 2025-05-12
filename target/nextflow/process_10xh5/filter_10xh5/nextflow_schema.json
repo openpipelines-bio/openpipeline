@@ -22,24 +22,19 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input",
-        "output"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "An h5 file from the 10x genomics website",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `pbmc_1k_protein_v3_raw_feature_bc_matrix.h5`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `pbmc_1k_protein_v3_raw_feature_bc_matrix.h5`. "
         },
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output h5 file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5`, example: `pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5`, direction: `output`, example: `pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5`. ",
           "default": "$id.$key.output.h5"
         },
         "min_library_size": {
@@ -60,7 +55,7 @@
           },
           "type": "array",
           "description": "Specify which feature types will never be filtered out",
-          "help_text": "Type: `string`, multiple: `True`, example: `Antibody Capture`. "
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"Antibody Capture\"]`. "
         },
         "verbose": {
           "type": "boolean",
@@ -74,7 +69,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

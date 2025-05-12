@@ -22,11 +22,6 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "id",
-        "input",
-        "reference"
-      ],
       "properties": {
         "id": {
           "type": "string",
@@ -38,7 +33,7 @@
           "format": "path",
           "exists": true,
           "description": "Path to the sample",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `dataset.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `dataset.h5mu`. "
         },
         "layer": {
           "type": "string",
@@ -62,7 +57,7 @@
           "format": "path",
           "exists": true,
           "description": "Input h5mu file with reference data to train the TOTALVI model",
-          "help_text": "Type: `file`, multiple: `False`, required. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
         }
       }
     },
@@ -70,30 +65,26 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Destination path to the output",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "reference_model_path": {
           "type": "string",
           "format": "path",
           "description": "Directory with the reference model",
-          "help_text": "Type: `file`, multiple: `False`, default: `totalvi_model_reference`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `totalvi_model_reference`, direction: `output`. ",
           "default": "totalvi_model_reference"
         },
         "query_model_path": {
           "type": "string",
           "format": "path",
           "description": "Directory, where the query model will be saved",
-          "help_text": "Type: `file`, multiple: `False`, default: `totalvi_model_query`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `totalvi_model_query`, direction: `output`. ",
           "default": "totalvi_model_query"
         }
       }
@@ -102,7 +93,6 @@
       "title": "General TotalVI Options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "obs_batch": {
           "type": "string",
@@ -145,7 +135,6 @@
       "title": "TotalVI integration options RNA",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "rna_reference_modality": {
           "type": "string",
@@ -165,7 +154,6 @@
       "title": "TotalVI integration options ADT",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "prot_reference_modality": {
           "type": "string",
@@ -185,7 +173,6 @@
       "title": "Neighbour calculation RNA",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "rna_uns_neighbors": {
           "type": "string",
@@ -211,7 +198,6 @@
       "title": "Neighbour calculation ADT",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "prot_uns_neighbors": {
           "type": "string",
@@ -237,7 +223,6 @@
       "title": "Clustering options RNA",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "rna_obs_cluster": {
           "type": "string",
@@ -251,8 +236,8 @@
           },
           "type": "array",
           "description": "Control the coarseness of the clustering",
-          "help_text": "Type: `double`, multiple: `True`, default: `1.0`. ",
-          "default": "1.0"
+          "help_text": "Type: `double`, multiple: `True`, default: `[1.0]`. ",
+          "default": "[1.0]"
         }
       }
     },
@@ -260,7 +245,6 @@
       "title": "Clustering options ADT",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "prot_obs_cluster": {
           "type": "string",
@@ -274,8 +258,8 @@
           },
           "type": "array",
           "description": "Control the coarseness of the clustering",
-          "help_text": "Type: `double`, multiple: `True`, default: `1.0`. ",
-          "default": "1.0"
+          "help_text": "Type: `double`, multiple: `True`, default: `[1.0]`. ",
+          "default": "[1.0]"
         }
       }
     },
@@ -283,7 +267,6 @@
       "title": "Umap options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "obsm_umap": {
           "type": "string",
@@ -297,7 +280,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

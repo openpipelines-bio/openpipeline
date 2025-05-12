@@ -22,25 +22,19 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input",
-        "output",
-        "obs_covariates"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
         },
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`. ",
           "default": "$id.$key.output"
         },
         "modality": {
@@ -67,8 +61,8 @@
           },
           "type": "array",
           "description": "Diversity clustering penalty parameter",
-          "help_text": "Type: `double`, multiple: `True`, default: `2.0`. ",
-          "default": "2.0"
+          "help_text": "Type: `double`, multiple: `True`, default: `[2.0]`. ",
+          "default": "[2.0]"
         },
         "obs_covariates": {
           "items": {
@@ -76,7 +70,7 @@
           },
           "type": "array",
           "description": "The ",
-          "help_text": "Type: `string`, multiple: `True`, required, example: `batch;sample`. "
+          "help_text": "Type: `string`, multiple: `True`, required, example: `[\"batch\";\"sample\"]`. "
         },
         "output_compression": {
           "type": "string",
@@ -93,7 +87,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

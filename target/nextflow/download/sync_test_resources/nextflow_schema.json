@@ -22,13 +22,12 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "description": "Path to the _viash",
-          "help_text": "Type: `file`, multiple: `False`, default: `_viash.yaml`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `_viash.yaml`, direction: `input`. ",
           "default": "_viash.yaml"
         }
       }
@@ -37,13 +36,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
           "description": "Path to the directory where the resources will be synced to",
-          "help_text": "Type: `file`, multiple: `False`, default: `.`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `.`, direction: `output`. ",
           "default": "."
         }
       }
@@ -52,7 +50,6 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "quiet": {
           "type": "boolean",
@@ -86,7 +83,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

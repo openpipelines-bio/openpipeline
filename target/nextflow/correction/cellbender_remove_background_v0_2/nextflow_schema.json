@@ -22,16 +22,13 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
         },
         "modality": {
           "type": "string",
@@ -45,16 +42,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Full count matrix as an h5mu file, with background RNA removed",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "layer_output": {
@@ -108,7 +101,6 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "expected_cells": {
           "type": "integer",
@@ -162,8 +154,8 @@
           },
           "type": "array",
           "description": "Dimension of hidden layers in the encoder for z",
-          "help_text": "Type: `integer`, multiple: `True`, default: `500`. ",
-          "default": "500"
+          "help_text": "Type: `integer`, multiple: `True`, default: `[500]`. ",
+          "default": "[500]"
         },
         "training_fraction": {
           "type": "number",
@@ -183,8 +175,8 @@
           },
           "type": "array",
           "description": "Target false positive rate in (0, 1)",
-          "help_text": "Type: `double`, multiple: `True`, default: `0.01`. ",
-          "default": "0.01"
+          "help_text": "Type: `double`, multiple: `True`, default: `[0.01]`. ",
+          "default": "[0.01]"
         },
         "exclude_antibody_capture": {
           "type": "boolean",
@@ -209,7 +201,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

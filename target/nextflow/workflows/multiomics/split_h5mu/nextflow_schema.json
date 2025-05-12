@@ -22,17 +22,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output",
-        "output_files"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output directory containing multiple h5mu files",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, example: `/path/to/output`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`, example: `/path/to/output`. ",
           "default": "$id.$key.output"
         },
         "output_compression": {
@@ -47,9 +42,8 @@
         "output_files": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "A csv containing the base filename and obs feature by which it was split",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_files.csv`, example: `sample_files.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_files.csv`, direction: `output`, example: `sample_files.csv`. ",
           "default": "$id.$key.output_files.csv"
         }
       }
@@ -58,17 +52,13 @@
       "title": "Input & specifications",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input",
-        "obs_feature"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Path to a single ",
-          "help_text": "Type: `file`, multiple: `False`, required. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
         },
         "modality": {
           "type": "string",
@@ -99,7 +89,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

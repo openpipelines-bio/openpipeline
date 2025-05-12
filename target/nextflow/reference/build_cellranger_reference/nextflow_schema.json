@@ -22,25 +22,20 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "genome_fasta",
-        "transcriptome_gtf",
-        "output"
-      ],
       "properties": {
         "genome_fasta": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Reference genome fasta",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `genome_sequence.fa.gz`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `genome_sequence.fa.gz`. "
         },
         "transcriptome_gtf": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Reference transcriptome annotation",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `transcriptome_annotation.gtf.gz`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `transcriptome_annotation.gtf.gz`. "
         },
         "reference_version": {
           "type": "string",
@@ -50,9 +45,8 @@
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output folder",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, example: `cellranger_reference`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`, example: `cellranger_reference`. ",
           "default": "$id.$key.output"
         }
       }
@@ -61,7 +55,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

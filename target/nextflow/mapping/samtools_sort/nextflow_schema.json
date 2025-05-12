@@ -22,7 +22,6 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "minimizer_cluster": {
           "type": "boolean",
@@ -58,16 +57,13 @@
       "title": "Input",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Path to the SAM/BAM/CRAM files containing the mapped reads",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input.bam`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.bam`. "
         }
       }
     },
@@ -75,23 +71,19 @@
       "title": "Output",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output_bam"
-      ],
       "properties": {
         "output_bam": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Filename to output the counts to",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_bam.bam`, example: `output.bam`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_bam.bam`, direction: `output`, example: `output.bam`. ",
           "default": "$id.$key.output_bam.bam"
         },
         "output_bai": {
           "type": "string",
           "format": "path",
           "description": "BAI-format index for BAM file",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_bai.bai`, example: `output.bam.bai`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_bai.bai`, direction: `output`, example: `output.bam.bai`. ",
           "default": "$id.$key.output_bai.bai"
         },
         "output_format": {
@@ -115,7 +107,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

@@ -22,16 +22,13 @@
       "title": "Inputs",
       "type": "object",
       "description": "Input dataset (query) arguments",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "The input (query) data to be labeled",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
         },
         "modality": {
           "type": "string",
@@ -61,13 +58,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "Output arguments.",
-      "required": [],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
           "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "output_obs_predictions": {
@@ -97,13 +93,12 @@
       "title": "Reference",
       "type": "object",
       "description": "Arguments related to the reference dataset.",
-      "required": [],
       "properties": {
         "reference": {
           "type": "string",
           "format": "path",
           "description": "The reference data to train the CellTypist classifiers on",
-          "help_text": "Type: `file`, multiple: `False`, example: `reference.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `reference.h5mu`. "
         },
         "reference_layer": {
           "type": "string",
@@ -132,13 +127,12 @@
       "title": "Model arguments",
       "type": "object",
       "description": "Model arguments.",
-      "required": [],
       "properties": {
         "model": {
           "type": "string",
           "format": "path",
           "description": "Pretrained model in pkl format",
-          "help_text": "Type: `file`, multiple: `False`, example: `pretrained_model.pkl`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `pretrained_model.pkl`. "
         },
         "feature_selection": {
           "type": "boolean",
@@ -182,7 +176,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

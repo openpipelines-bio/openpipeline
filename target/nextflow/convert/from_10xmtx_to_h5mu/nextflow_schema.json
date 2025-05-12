@@ -22,22 +22,19 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Input mtx folder",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input_dir_containing_gz_files`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input_dir_containing_gz_files`. "
         },
         "output": {
           "type": "string",
           "format": "path",
           "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "output_compression": {
@@ -55,7 +52,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

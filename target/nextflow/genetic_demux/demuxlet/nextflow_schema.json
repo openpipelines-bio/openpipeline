@@ -22,13 +22,12 @@
       "title": "Input",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "sam": {
           "type": "string",
           "format": "path",
           "description": "Input SAM/BAM/CRAM file",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "tag_group": {
           "type": "string",
@@ -51,7 +50,7 @@
           "type": "string",
           "format": "path",
           "description": "Input VCF/BCF file, containing the individual genotypes (GT), posterior probability (GP), or genotype likelihood (PL)",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "field": {
           "type": "string",
@@ -182,13 +181,12 @@
       "title": "Output",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
           "description": "Output directory",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output`, example: `demux`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output`, direction: `output`, example: `demux`. ",
           "default": "$id.$key.output"
         },
         "out": {
@@ -202,7 +200,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

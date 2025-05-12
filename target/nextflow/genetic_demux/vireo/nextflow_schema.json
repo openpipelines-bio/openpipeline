@@ -22,13 +22,12 @@
       "title": "Input",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "cell_data": {
           "type": "string",
           "format": "path",
           "description": "The cell genotype file in VCF format or cellSNP folder with sparse matrices",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "n_donor": {
           "type": "integer",
@@ -40,13 +39,13 @@
           "type": "string",
           "format": "path",
           "description": "The cell genotype files in vartrix outputs",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "donor_file": {
           "type": "string",
           "format": "path",
           "description": "The donor genotype file in VCF format",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "geno_tag": {
           "type": "string",
@@ -122,13 +121,12 @@
       "title": "Output",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
           "description": "Output directory",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output`, example: `vireo`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output`, direction: `output`, example: `vireo`. ",
           "default": "$id.$key.output"
         }
       }
@@ -137,7 +135,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

@@ -22,39 +22,33 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input",
-        "sample_sheet",
-        "output"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Path to the (untarred) BCL files",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `/path/to/bcl`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `/path/to/bcl`. "
         },
         "sample_sheet": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "The path to the sample sheet",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `SampleSheet.csv`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `SampleSheet.csv`. "
         },
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "The folder to store the demux results",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `fastqs`, example: `/path/to/output`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `fastqs`, direction: `output`, example: `/path/to/output`. ",
           "default": "fastqs"
         },
         "reports": {
           "type": "string",
           "format": "path",
           "description": "Reports directory",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.reports`, example: `reports_dir`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.reports`, direction: `output`, example: `reports_dir`. ",
           "default": "$id.$key.reports"
         }
       }
@@ -63,7 +57,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

@@ -22,16 +22,13 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
         },
         "modality": {
           "type": "string",
@@ -92,23 +89,19 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`. ",
           "default": "$id.$key.output"
         },
         "output_model": {
           "type": "string",
           "format": "path",
           "description": "Folder where the state of the trained model will be saved to",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_model`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_model`, direction: `output`. ",
           "default": "$id.$key.output_model"
         },
         "obsm_output": {
@@ -132,7 +125,6 @@
       "title": "SCVI options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "n_hidden_nodes": {
           "type": "integer",
@@ -187,7 +179,6 @@
       "title": "Variational auto-encoder model options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "use_layer_normalization": {
           "type": "string",
@@ -237,7 +228,6 @@
       "title": "Early stopping arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "early_stopping": {
           "type": "boolean",
@@ -273,7 +263,6 @@
       "title": "Learning parameters",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "max_epochs": {
           "type": "integer",
@@ -304,7 +293,6 @@
       "title": "Data validition",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "n_obs_min_count": {
           "type": "integer",
@@ -324,7 +312,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

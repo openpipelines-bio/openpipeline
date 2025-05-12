@@ -22,16 +22,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "The query data in ",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`. ",
           "default": "$id.$key.output"
         },
         "output_obs_predictions": {
@@ -65,7 +61,6 @@
       "title": "Input dataset (query) arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "input_obsm_distances": {
           "type": "string",
@@ -78,7 +73,6 @@
       "title": "Reference dataset arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "reference_obsm_distances": {
           "type": "string",
@@ -91,7 +85,6 @@
       "title": "KNN label transfer arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "weights": {
           "type": "string",
@@ -116,7 +109,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

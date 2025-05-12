@@ -22,16 +22,13 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Input folder",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input_dir_containing_modalities`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input_dir_containing_modalities`. "
         },
         "output": {
           "items": {
@@ -40,14 +37,14 @@
           "type": "array",
           "format": "path",
           "description": "Locations for the output files",
-          "help_text": "Type: `file`, multiple: `True`, default: `$id.$key.output_*.h5mu`, example: `*.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `True`, default: `$id.$key.output_*.h5mu`, direction: `output`, example: `[\"*.h5mu\"]`. ",
           "default": "$id.$key.output_*.h5mu"
         },
         "sample_csv": {
           "type": "string",
           "format": "path",
           "description": "CSV file describing the sample name per output file",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.sample_csv.csv`, example: `samples.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.sample_csv.csv`, direction: `output`, example: `samples.csv`. ",
           "default": "$id.$key.sample_csv.csv"
         },
         "uns_metrics": {
@@ -71,7 +68,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

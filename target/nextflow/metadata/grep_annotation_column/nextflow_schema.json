@@ -22,17 +22,13 @@
       "title": "Inputs",
       "type": "object",
       "description": "Arguments related to the input dataset.",
-      "required": [
-        "input",
-        "modality"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Path to the input ",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `sample_path`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `sample_path`. "
         },
         "input_column": {
           "type": "string",
@@ -64,15 +60,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "Arguments related to how the output will be written.",
-      "required": [
-        "output_match_column"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
           "description": "",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "output_match_column": {
@@ -100,9 +93,6 @@
       "title": "Query options",
       "type": "object",
       "description": "Options related to the query",
-      "required": [
-        "regex_pattern"
-      ],
       "properties": {
         "regex_pattern": {
           "type": "string",
@@ -115,7 +105,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

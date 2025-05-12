@@ -22,17 +22,13 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input",
-        "input_id"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Path to the input ",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `sample_path`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `sample_path`. "
         },
         "input_id": {
           "type": "string",
@@ -49,7 +45,7 @@
           "type": "string",
           "format": "path",
           "description": "",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "make_observation_keys_unique": {
@@ -73,7 +69,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

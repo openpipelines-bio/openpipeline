@@ -22,22 +22,19 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Input SAM or BAM file",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input.bam`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.bam`. "
         },
         "output": {
           "type": "string",
           "format": "path",
           "description": "Output alignment file",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.sam`, example: `output.sam`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.sam`, direction: `output`, example: `output.sam`. ",
           "default": "$id.$key.output.sam"
         },
         "bam": {
@@ -57,7 +54,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

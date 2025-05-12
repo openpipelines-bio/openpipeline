@@ -22,10 +22,6 @@
       "title": "Arguments",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input",
-        "output"
-      ],
       "properties": {
         "input": {
           "items": {
@@ -35,14 +31,13 @@
           "format": "path",
           "exists": true,
           "description": "Inputs for MultiQC",
-          "help_text": "Type: `file`, multiple: `True`, required, example: `input.txt`. "
+          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `[\"input.txt\"]`. "
         },
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Create report in the specified output directory",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, example: `report`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`, example: `report`. ",
           "default": "$id.$key.output"
         }
       }
@@ -51,7 +46,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

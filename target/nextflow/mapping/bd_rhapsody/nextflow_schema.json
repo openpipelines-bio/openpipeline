@@ -22,7 +22,6 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "reads": {
           "items": {
@@ -31,7 +30,7 @@
           "type": "array",
           "format": "path",
           "description": "Reads (optional) - Path to your FASTQ",
-          "help_text": "Type: `file`, multiple: `True`, example: `WTALibrary_S1_L001_R1_001.fastq.gz;WTALibrary_S1_L001_R2_001.fastq.gz`. "
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"WTALibrary_S1_L001_R1_001.fastq.gz\";\"WTALibrary_S1_L001_R2_001.fastq.gz\"]`. "
         },
         "reads_atac": {
           "items": {
@@ -40,7 +39,7 @@
           "type": "array",
           "format": "path",
           "description": "Path to your FASTQ",
-          "help_text": "Type: `file`, multiple: `True`, example: `ATACLibrary_S2_L001_R1_001.fastq.gz;ATACLibrary_S2_L001_R2_001.fastq.gz;ATACLibrary_S2_L001_I2_001.fastq.gz`. "
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"ATACLibrary_S2_L001_R1_001.fastq.gz\";\"ATACLibrary_S2_L001_R2_001.fastq.gz\";\"ATACLibrary_S2_L001_I2_001.fastq.gz\"]`. "
         }
       }
     },
@@ -48,107 +47,103 @@
       "title": "Outputs",
       "type": "object",
       "description": "Outputs for all pipeline runs",
-      "required": [
-        "output_dir"
-      ],
       "properties": {
         "output_dir": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "The unprocessed output directory containing all the outputs from the pipeline",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_dir`, example: `output_dir`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_dir`, direction: `output`, example: `output_dir`. ",
           "default": "$id.$key.output_dir"
         },
         "output_seurat": {
           "type": "string",
           "format": "path",
           "description": "Single-cell analysis tool inputs",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_seurat.rds`, example: `output_seurat.rds`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_seurat.rds`, direction: `output`, example: `output_seurat.rds`. ",
           "default": "$id.$key.output_seurat.rds"
         },
         "output_mudata": {
           "type": "string",
           "format": "path",
           "description": "",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_mudata.h5mu`, example: `output_mudata.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_mudata.h5mu`, direction: `output`, example: `output_mudata.h5mu`. ",
           "default": "$id.$key.output_mudata.h5mu"
         },
         "metrics_summary": {
           "type": "string",
           "format": "path",
           "description": "Metrics Summary",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.metrics_summary.csv`, example: `metrics_summary.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.metrics_summary.csv`, direction: `output`, example: `metrics_summary.csv`. ",
           "default": "$id.$key.metrics_summary.csv"
         },
         "pipeline_report": {
           "type": "string",
           "format": "path",
           "description": "Pipeline Report",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.pipeline_report.html`, example: `pipeline_report.html`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.pipeline_report.html`, direction: `output`, example: `pipeline_report.html`. ",
           "default": "$id.$key.pipeline_report.html"
         },
         "rsec_mols_per_cell": {
           "type": "string",
           "format": "path",
           "description": "Molecules per bioproduct per cell bassed on RSEC",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.rsec_mols_per_cell.zip`, example: `RSEC_MolsPerCell_MEX.zip`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.rsec_mols_per_cell.zip`, direction: `output`, example: `RSEC_MolsPerCell_MEX.zip`. ",
           "default": "$id.$key.rsec_mols_per_cell.zip"
         },
         "dbec_mols_per_cell": {
           "type": "string",
           "format": "path",
           "description": "Molecules per bioproduct per cell bassed on DBEC",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.dbec_mols_per_cell.zip`, example: `DBEC_MolsPerCell_MEX.zip`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.dbec_mols_per_cell.zip`, direction: `output`, example: `DBEC_MolsPerCell_MEX.zip`. ",
           "default": "$id.$key.dbec_mols_per_cell.zip"
         },
         "rsec_mols_per_cell_unfiltered": {
           "type": "string",
           "format": "path",
           "description": "Unfiltered tables containing all cell labels with 10 reads",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.rsec_mols_per_cell_unfiltered.zip`, example: `RSEC_MolsPerCell_Unfiltered_MEX.zip`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.rsec_mols_per_cell_unfiltered.zip`, direction: `output`, example: `RSEC_MolsPerCell_Unfiltered_MEX.zip`. ",
           "default": "$id.$key.rsec_mols_per_cell_unfiltered.zip"
         },
         "bam": {
           "type": "string",
           "format": "path",
           "description": "Alignment file of R2 with associated R1 annotations for Bioproduct",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.bam.bam`, example: `BioProduct.bam`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.bam.bam`, direction: `output`, example: `BioProduct.bam`. ",
           "default": "$id.$key.bam.bam"
         },
         "bam_index": {
           "type": "string",
           "format": "path",
           "description": "Index file for the alignment file",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.bam_index.bai`, example: `BioProduct.bam.bai`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.bam_index.bai`, direction: `output`, example: `BioProduct.bam.bai`. ",
           "default": "$id.$key.bam_index.bai"
         },
         "bioproduct_stats": {
           "type": "string",
           "format": "path",
           "description": "Bioproduct Stats",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.bioproduct_stats.csv`, example: `Bioproduct_Stats.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.bioproduct_stats.csv`, direction: `output`, example: `Bioproduct_Stats.csv`. ",
           "default": "$id.$key.bioproduct_stats.csv"
         },
         "dimred_tsne": {
           "type": "string",
           "format": "path",
           "description": "t-SNE dimensionality reduction coordinates per cell index",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.dimred_tsne.csv`, example: `tSNE_coordinates.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.dimred_tsne.csv`, direction: `output`, example: `tSNE_coordinates.csv`. ",
           "default": "$id.$key.dimred_tsne.csv"
         },
         "dimred_umap": {
           "type": "string",
           "format": "path",
           "description": "UMAP dimensionality reduction coordinates per cell index",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.dimred_umap.csv`, example: `UMAP_coordinates.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.dimred_umap.csv`, direction: `output`, example: `UMAP_coordinates.csv`. ",
           "default": "$id.$key.dimred_umap.csv"
         },
         "immune_cell_classification": {
           "type": "string",
           "format": "path",
           "description": "Immune Cell Classification",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.immune_cell_classification.csv`, example: `Immune_Cell_Classification.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.immune_cell_classification.csv`, direction: `output`, example: `Immune_Cell_Classification.csv`. ",
           "default": "$id.$key.immune_cell_classification.csv"
         }
       }
@@ -157,13 +152,12 @@
       "title": "References",
       "type": "object",
       "description": "Assay type will be inferred from the provided reference(s).\nDo not provide both reference_archive and targeted_reference at the same time.\n  \nValid reference input combinations:\n  - reference_archive: WTA only\n  - reference_archive & abseq_reference: WTA + AbSeq\n  - reference_archive & supplemental_reference: WTA + extra transgenes\n  - reference_archive & abseq_reference & supplemental_reference: WTA + AbSeq + extra transgenes\n  - reference_archive: WTA + ATAC or ATAC only\n  - reference_archive & supplemental_reference: WTA + ATAC + extra transgenes\n  - targeted_reference: Targeted only\n  - targeted_reference & abseq_reference: Targeted + AbSeq\n  - abseq_reference: AbSeq only\n\nThe reference_archive can be generated with the bd_rhapsody_make_reference component.\nAlternatively, BD also provides standard references which can be downloaded from these locations:\n\n  - Human: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Human_WTA_2023-02.tar.gz\n  - Mouse: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Mouse_WTA_2023-02.tar.gz\n",
-      "required": [],
       "properties": {
         "reference_archive": {
           "type": "string",
           "format": "path",
           "description": "Path to Rhapsody WTA Reference in the tar",
-          "help_text": "Type: `file`, multiple: `False`, example: `RhapRef_Human_WTA_2023-02.tar.gz`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `RhapRef_Human_WTA_2023-02.tar.gz`. "
         },
         "targeted_reference": {
           "items": {
@@ -172,7 +166,7 @@
           "type": "array",
           "format": "path",
           "description": "Path to the targeted reference file in FASTA format",
-          "help_text": "Type: `file`, multiple: `True`, example: `BD_Rhapsody_Immune_Response_Panel_Hs.fasta`. "
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"BD_Rhapsody_Immune_Response_Panel_Hs.fasta\"]`. "
         },
         "abseq_reference": {
           "items": {
@@ -181,7 +175,7 @@
           "type": "array",
           "format": "path",
           "description": "Path to the AbSeq reference file in FASTA format",
-          "help_text": "Type: `file`, multiple: `True`, example: `AbSeq_reference.fasta`. "
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"AbSeq_reference.fasta\"]`. "
         },
         "supplemental_reference": {
           "items": {
@@ -190,7 +184,7 @@
           "type": "array",
           "format": "path",
           "description": "Path to the supplemental reference file in FASTA format",
-          "help_text": "Type: `file`, multiple: `True`, example: `supplemental_reference.fasta`. "
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"supplemental_reference.fasta\"]`. "
         }
       }
     },
@@ -198,20 +192,19 @@
       "title": "Multiplex outputs",
       "type": "object",
       "description": "Outputs when multiplex option is selected",
-      "required": [],
       "properties": {
         "sample_tag_metrics": {
           "type": "string",
           "format": "path",
           "description": "Sample Tag Metrics",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.sample_tag_metrics.csv`, example: `Sample_Tag_Metrics.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.sample_tag_metrics.csv`, direction: `output`, example: `Sample_Tag_Metrics.csv`. ",
           "default": "$id.$key.sample_tag_metrics.csv"
         },
         "sample_tag_calls": {
           "type": "string",
           "format": "path",
           "description": "Sample Tag Calls",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.sample_tag_calls.csv`, example: `Sample_Tag_Calls.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.sample_tag_calls.csv`, direction: `output`, example: `Sample_Tag_Calls.csv`. ",
           "default": "$id.$key.sample_tag_calls.csv"
         },
         "sample_tag_counts": {
@@ -221,14 +214,14 @@
           "type": "array",
           "format": "path",
           "description": "Sample Tag Counts",
-          "help_text": "Type: `file`, multiple: `True`, default: `$id.$key.sample_tag_counts_*.zip`, example: `Sample_Tag1.zip`. ",
+          "help_text": "Type: `file`, multiple: `True`, default: `$id.$key.sample_tag_counts_*.zip`, direction: `output`, example: `[\"Sample_Tag1.zip\"]`. ",
           "default": "$id.$key.sample_tag_counts_*.zip"
         },
         "sample_tag_counts_unassigned": {
           "type": "string",
           "format": "path",
           "description": "Sample Tag Counts Unassigned",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.sample_tag_counts_unassigned.zip`, example: `Multiplet_and_Undetermined.zip`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.sample_tag_counts_unassigned.zip`, direction: `output`, example: `Multiplet_and_Undetermined.zip`. ",
           "default": "$id.$key.sample_tag_counts_unassigned.zip"
         }
       }
@@ -237,41 +230,40 @@
       "title": "VDJ Outputs",
       "type": "object",
       "description": "Outputs when VDJ option selected",
-      "required": [],
       "properties": {
         "vdj_metrics": {
           "type": "string",
           "format": "path",
           "description": "VDJ Metrics",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.vdj_metrics.csv`, example: `VDJ_Metrics.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.vdj_metrics.csv`, direction: `output`, example: `VDJ_Metrics.csv`. ",
           "default": "$id.$key.vdj_metrics.csv"
         },
         "vdj_per_cell": {
           "type": "string",
           "format": "path",
           "description": "VDJ Per Cell",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.vdj_per_cell.csv`, example: `VDJ_perCell.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.vdj_per_cell.csv`, direction: `output`, example: `VDJ_perCell.csv`. ",
           "default": "$id.$key.vdj_per_cell.csv"
         },
         "vdj_per_cell_uncorrected": {
           "type": "string",
           "format": "path",
           "description": "VDJ Per Cell Uncorrected",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.vdj_per_cell_uncorrected.csv`, example: `VDJ_perCell_uncorrected.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.vdj_per_cell_uncorrected.csv`, direction: `output`, example: `VDJ_perCell_uncorrected.csv`. ",
           "default": "$id.$key.vdj_per_cell_uncorrected.csv"
         },
         "vdj_dominant_contigs": {
           "type": "string",
           "format": "path",
           "description": "VDJ Dominant Contigs",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.vdj_dominant_contigs.csv`, example: `VDJ_Dominant_Contigs_AIRR.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.vdj_dominant_contigs.csv`, direction: `output`, example: `VDJ_Dominant_Contigs_AIRR.csv`. ",
           "default": "$id.$key.vdj_dominant_contigs.csv"
         },
         "vdj_unfiltered_contigs": {
           "type": "string",
           "format": "path",
           "description": "VDJ Unfiltered Contigs",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.vdj_unfiltered_contigs.csv`, example: `VDJ_Unfiltered_Contigs_AIRR.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.vdj_unfiltered_contigs.csv`, direction: `output`, example: `VDJ_Unfiltered_Contigs_AIRR.csv`. ",
           "default": "$id.$key.vdj_unfiltered_contigs.csv"
         }
       }
@@ -280,97 +272,96 @@
       "title": "ATAC-Seq outputs",
       "type": "object",
       "description": "Outputs when ATAC-Seq option selected",
-      "required": [],
       "properties": {
         "atac_metrics": {
           "type": "string",
           "format": "path",
           "description": "ATAC Metrics",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_metrics.csv`, example: `ATAC_Metrics.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_metrics.csv`, direction: `output`, example: `ATAC_Metrics.csv`. ",
           "default": "$id.$key.atac_metrics.csv"
         },
         "atac_metrics_json": {
           "type": "string",
           "format": "path",
           "description": "ATAC Metrics JSON",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_metrics_json.json`, example: `ATAC_Metrics.json`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_metrics_json.json`, direction: `output`, example: `ATAC_Metrics.json`. ",
           "default": "$id.$key.atac_metrics_json.json"
         },
         "atac_fragments": {
           "type": "string",
           "format": "path",
           "description": "ATAC Fragments",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_fragments.gz`, example: `ATAC_Fragments.bed.gz`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_fragments.gz`, direction: `output`, example: `ATAC_Fragments.bed.gz`. ",
           "default": "$id.$key.atac_fragments.gz"
         },
         "atac_fragments_index": {
           "type": "string",
           "format": "path",
           "description": "Index of ATAC Fragments",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_fragments_index.tbi`, example: `ATAC_Fragments.bed.gz.tbi`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_fragments_index.tbi`, direction: `output`, example: `ATAC_Fragments.bed.gz.tbi`. ",
           "default": "$id.$key.atac_fragments_index.tbi"
         },
         "atac_transposase_sites": {
           "type": "string",
           "format": "path",
           "description": "ATAC Transposase Sites",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_transposase_sites.gz`, example: `ATAC_Transposase_Sites.bed.gz`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_transposase_sites.gz`, direction: `output`, example: `ATAC_Transposase_Sites.bed.gz`. ",
           "default": "$id.$key.atac_transposase_sites.gz"
         },
         "atac_transposase_sites_index": {
           "type": "string",
           "format": "path",
           "description": "Index of ATAC Transposase Sites",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_transposase_sites_index.tbi`, example: `ATAC_Transposase_Sites.bed.gz.tbi`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_transposase_sites_index.tbi`, direction: `output`, example: `ATAC_Transposase_Sites.bed.gz.tbi`. ",
           "default": "$id.$key.atac_transposase_sites_index.tbi"
         },
         "atac_peaks": {
           "type": "string",
           "format": "path",
           "description": "ATAC Peaks",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_peaks.gz`, example: `ATAC_Peaks.bed.gz`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_peaks.gz`, direction: `output`, example: `ATAC_Peaks.bed.gz`. ",
           "default": "$id.$key.atac_peaks.gz"
         },
         "atac_peaks_index": {
           "type": "string",
           "format": "path",
           "description": "Index of ATAC Peaks",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_peaks_index.tbi`, example: `ATAC_Peaks.bed.gz.tbi`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_peaks_index.tbi`, direction: `output`, example: `ATAC_Peaks.bed.gz.tbi`. ",
           "default": "$id.$key.atac_peaks_index.tbi"
         },
         "atac_peak_annotation": {
           "type": "string",
           "format": "path",
           "description": "ATAC Peak Annotation",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_peak_annotation.gz`, example: `peak_annotation.tsv.gz`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_peak_annotation.gz`, direction: `output`, example: `peak_annotation.tsv.gz`. ",
           "default": "$id.$key.atac_peak_annotation.gz"
         },
         "atac_cell_by_peak": {
           "type": "string",
           "format": "path",
           "description": "ATAC Cell by Peak",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_cell_by_peak.zip`, example: `ATAC_Cell_by_Peak_MEX.zip`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_cell_by_peak.zip`, direction: `output`, example: `ATAC_Cell_by_Peak_MEX.zip`. ",
           "default": "$id.$key.atac_cell_by_peak.zip"
         },
         "atac_cell_by_peak_unfiltered": {
           "type": "string",
           "format": "path",
           "description": "ATAC Cell by Peak Unfiltered",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_cell_by_peak_unfiltered.zip`, example: `ATAC_Cell_by_Peak_Unfiltered_MEX.zip`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_cell_by_peak_unfiltered.zip`, direction: `output`, example: `ATAC_Cell_by_Peak_Unfiltered_MEX.zip`. ",
           "default": "$id.$key.atac_cell_by_peak_unfiltered.zip"
         },
         "atac_bam": {
           "type": "string",
           "format": "path",
           "description": "ATAC BAM",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_bam.bam`, example: `ATAC.bam`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_bam.bam`, direction: `output`, example: `ATAC.bam`. ",
           "default": "$id.$key.atac_bam.bam"
         },
         "atac_bam_index": {
           "type": "string",
           "format": "path",
           "description": "Index of ATAC BAM",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_bam_index.bai`, example: `ATAC.bam.bai`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.atac_bam_index.bai`, direction: `output`, example: `ATAC.bam.bai`. ",
           "default": "$id.$key.atac_bam_index.bai"
         }
       }
@@ -379,13 +370,12 @@
       "title": "AbSeq Cell Calling outputs",
       "type": "object",
       "description": "Outputs when Cell Calling Abseq is selected",
-      "required": [],
       "properties": {
         "protein_aggregates_experimental": {
           "type": "string",
           "format": "path",
           "description": "Protein Aggregates Experimental",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.protein_aggregates_experimental.csv`, example: `Protein_Aggregates_Experimental.csv`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.protein_aggregates_experimental.csv`, direction: `output`, example: `Protein_Aggregates_Experimental.csv`. ",
           "default": "$id.$key.protein_aggregates_experimental.csv"
         }
       }
@@ -394,7 +384,6 @@
       "title": "Putative Cell Calling Settings",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "cell_calling_data": {
           "type": "string",
@@ -441,7 +430,6 @@
       "title": "Intronic Reads Settings",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "exclude_intronic_reads": {
           "type": "boolean",
@@ -454,7 +442,6 @@
       "title": "Multiplex Settings",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "sample_tags_version": {
           "type": "string",
@@ -474,7 +461,7 @@
           },
           "type": "array",
           "description": "Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics",
-          "help_text": "Type: `string`, multiple: `True`, example: `4-mySample;9-myOtherSample;6-alsoThisSample`. "
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"4-mySample\";\"9-myOtherSample\";\"6-alsoThisSample\"]`. "
         }
       }
     },
@@ -482,7 +469,6 @@
       "title": "VDJ arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "vdj_version": {
           "type": "string",
@@ -503,13 +489,12 @@
       "title": "ATAC options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "predefined_atac_peaks": {
           "type": "string",
           "format": "path",
           "description": "An optional BED file containing pre-established chromatin accessibility peak regions for generating the ATAC cell-by-peak matrix",
-          "help_text": "Type: `file`, multiple: `False`, example: `predefined_peaks.bed`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `predefined_peaks.bed`. "
         }
       }
     },
@@ -517,7 +502,6 @@
       "title": "Additional options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "run_name": {
           "type": "string",
@@ -542,7 +526,6 @@
       "title": "Advanced options",
       "type": "object",
       "description": "NOTE: Only change these if you are really sure about what you are doing\n",
-      "required": [],
       "properties": {
         "custom_star_params": {
           "type": "string",
@@ -560,7 +543,6 @@
       "title": "CWL-runner arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "parallel": {
           "type": "boolean",
@@ -580,7 +562,6 @@
       "title": "Undocumented arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "abseq_umi": {
           "type": "integer",
@@ -613,7 +594,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

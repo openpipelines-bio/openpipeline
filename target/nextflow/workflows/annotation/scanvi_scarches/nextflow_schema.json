@@ -22,16 +22,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "The query data in ",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "output_obs_predictions": {
@@ -65,7 +61,7 @@
           "type": "string",
           "format": "path",
           "description": "Path to the resulting scANVI model that was updated with query data",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_model`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_model`, direction: `output`. ",
           "default": "$id.$key.output_model"
         }
       }
@@ -74,11 +70,6 @@
       "title": "Query Input",
       "type": "object",
       "description": "No description",
-      "required": [
-        "id",
-        "input",
-        "input_obs_batch_label"
-      ],
       "properties": {
         "id": {
           "type": "string",
@@ -90,7 +81,7 @@
           "format": "path",
           "exists": true,
           "description": "Input dataset consisting of the (unlabeled) query observations",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
         },
         "modality": {
           "type": "string",
@@ -124,18 +115,13 @@
       "title": "Reference input",
       "type": "object",
       "description": "No description",
-      "required": [
-        "reference",
-        "reference_obs_target",
-        "reference_obs_batch_label"
-      ],
       "properties": {
         "reference": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Reference dataset consisting of the labeled observations to train the KNN classifier on",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `reference.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `reference.h5mu`. "
         },
         "reference_obs_target": {
           "type": "string",
@@ -174,7 +160,6 @@
       "title": "scVI, scANVI and scArches training options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "early_stopping": {
           "type": "boolean",
@@ -233,7 +218,6 @@
       "title": "Leiden clustering options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "leiden_resolution": {
           "items": {
@@ -241,8 +225,8 @@
           },
           "type": "array",
           "description": "Control the coarseness of the clustering",
-          "help_text": "Type: `double`, multiple: `True`, default: `1.0`. ",
-          "default": "1.0"
+          "help_text": "Type: `double`, multiple: `True`, default: `[1.0]`. ",
+          "default": "[1.0]"
         }
       }
     },
@@ -250,7 +234,6 @@
       "title": "Neighbor classifier arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "knn_weights": {
           "type": "string",
@@ -274,7 +257,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

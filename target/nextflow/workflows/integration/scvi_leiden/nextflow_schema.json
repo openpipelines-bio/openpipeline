@@ -22,10 +22,6 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "id",
-        "input"
-      ],
       "properties": {
         "id": {
           "type": "string",
@@ -37,7 +33,7 @@
           "format": "path",
           "exists": true,
           "description": "Path to the sample",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `dataset.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `dataset.h5mu`. "
         },
         "layer": {
           "type": "string",
@@ -56,25 +52,19 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output",
-        "output_model"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Destination path to the output",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "output_model": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Folder where the state of the trained model will be saved to",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_model`, example: `output_dir`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_model`, direction: `output`, example: `output_dir`. ",
           "default": "$id.$key.output_model"
         }
       }
@@ -83,7 +73,6 @@
       "title": "Neighbour calculation",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "uns_neighbors": {
           "type": "string",
@@ -109,9 +98,6 @@
       "title": "Scvi integration options",
       "type": "object",
       "description": "No description",
-      "required": [
-        "obs_batch"
-      ],
       "properties": {
         "obs_batch": {
           "type": "string",
@@ -186,7 +172,6 @@
       "title": "Clustering options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "obs_cluster": {
           "type": "string",
@@ -200,8 +185,8 @@
           },
           "type": "array",
           "description": "Control the coarseness of the clustering",
-          "help_text": "Type: `double`, multiple: `True`, default: `1.0`. ",
-          "default": "1.0"
+          "help_text": "Type: `double`, multiple: `True`, default: `[1.0]`. ",
+          "default": "[1.0]"
         }
       }
     },
@@ -209,7 +194,6 @@
       "title": "Umap options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "obsm_umap": {
           "type": "string",
@@ -223,7 +207,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

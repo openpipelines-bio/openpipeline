@@ -22,16 +22,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "Output arguments.",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "output_modality": {
@@ -60,7 +56,6 @@
       "title": "Input database",
       "type": "object",
       "description": "Open CellxGene Census by version or URI.",
-      "required": [],
       "properties": {
         "input_uri": {
           "type": "string",
@@ -84,10 +79,6 @@
       "title": "Cell query",
       "type": "object",
       "description": "Arguments related to the query.",
-      "required": [
-        "species",
-        "obs_value_filter"
-      ],
       "properties": {
         "species": {
           "type": "string",
@@ -105,7 +96,6 @@
       "title": "Filter cells by grouping",
       "type": "object",
       "description": "Filter groups with fewer than X number of cells.",
-      "required": [],
       "properties": {
         "cell_filter_grouping": {
           "items": {
@@ -113,7 +103,7 @@
           },
           "type": "array",
           "description": "A subset of 'obs' columns by which to group the cells for filtering",
-          "help_text": "Type: `string`, multiple: `True`, example: `dataset_id;tissue;assay;disease;cell_type`. "
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"dataset_id\";\"tissue\";\"assay\";\"disease\";\"cell_type\"]`. "
         },
         "cell_filter_minimum_count": {
           "type": "integer",
@@ -126,7 +116,6 @@
       "title": "Count filtering",
       "type": "object",
       "description": "Arguments related to filtering cells and genes by counts.",
-      "required": [],
       "properties": {
         "cell_filter_min_genes": {
           "type": "integer",
@@ -158,7 +147,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

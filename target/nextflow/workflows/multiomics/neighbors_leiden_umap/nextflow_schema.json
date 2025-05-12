@@ -22,17 +22,13 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "input",
-        "obsm_input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Path to the sample",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `dataset.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `dataset.h5mu`. "
         },
         "obsm_input": {
           "type": "string",
@@ -51,16 +47,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Destination path to the output",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         }
       }
@@ -69,11 +61,6 @@
       "title": "Neighbour calculation",
       "type": "object",
       "description": "No description",
-      "required": [
-        "uns_neighbors",
-        "obsp_neighbor_distances",
-        "obsp_neighbor_connectivities"
-      ],
       "properties": {
         "uns_neighbors": {
           "type": "string",
@@ -96,7 +83,6 @@
       "title": "Clustering options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "obs_cluster": {
           "type": "string",
@@ -109,8 +95,8 @@
           },
           "type": "array",
           "description": "Control the coarseness of the clustering",
-          "help_text": "Type: `double`, multiple: `True`, default: `1.0`. ",
-          "default": "1.0"
+          "help_text": "Type: `double`, multiple: `True`, default: `[1.0]`. ",
+          "default": "[1.0]"
         }
       }
     },
@@ -118,7 +104,6 @@
       "title": "Umap options",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "obsm_umap": {
           "type": "string",
@@ -131,7 +116,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

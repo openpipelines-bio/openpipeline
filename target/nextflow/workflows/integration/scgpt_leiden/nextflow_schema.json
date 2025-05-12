@@ -22,10 +22,6 @@
       "title": "Inputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "id",
-        "input"
-      ],
       "properties": {
         "id": {
           "type": "string",
@@ -37,7 +33,7 @@
           "format": "path",
           "exists": true,
           "description": "Path to the input file",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
         },
         "modality": {
           "type": "string",
@@ -66,16 +62,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "No description",
-      "required": [
-        "output"
-      ],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Output file path",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "obsm_integrated": {
@@ -90,32 +82,27 @@
       "title": "Model",
       "type": "object",
       "description": "No description",
-      "required": [
-        "model",
-        "model_vocab",
-        "model_config"
-      ],
       "properties": {
         "model": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Path to scGPT model file",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `resources_test/scgpt/best_model.pt`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `resources_test/scgpt/best_model.pt`. "
         },
         "model_vocab": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Path to scGPT model vocabulary file",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `resources_test/scgpt/vocab.json`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `resources_test/scgpt/vocab.json`. "
         },
         "model_config": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "Path to scGPT model config file",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `args.json`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `args.json`. "
         },
         "finetuned_checkpoints_key": {
           "type": "string",
@@ -128,7 +115,6 @@
       "title": "Padding arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "pad_token": {
           "type": "string",
@@ -148,7 +134,6 @@
       "title": "HVG subset arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "n_hvg": {
           "type": "integer",
@@ -172,7 +157,6 @@
       "title": "Tokenization arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "max_seq_len": {
           "type": "integer",
@@ -185,7 +169,6 @@
       "title": "Embedding arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "dsbn": {
           "type": "boolean",
@@ -205,7 +188,6 @@
       "title": "Binning arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "n_input_bins": {
           "type": "integer",
@@ -224,7 +206,6 @@
       "title": "Clustering arguments",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "leiden_resolution": {
           "items": {
@@ -232,8 +213,8 @@
           },
           "type": "array",
           "description": "Control the coarseness of the clustering",
-          "help_text": "Type: `double`, multiple: `True`, default: `1.0`. ",
-          "default": "1.0"
+          "help_text": "Type: `double`, multiple: `True`, default: `[1.0]`. ",
+          "default": "[1.0]"
         }
       }
     },
@@ -241,7 +222,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

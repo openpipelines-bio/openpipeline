@@ -22,16 +22,13 @@
       "title": "Inputs",
       "type": "object",
       "description": "Input dataset (query) arguments",
-      "required": [
-        "input"
-      ],
       "properties": {
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "The input (query) data to be labeled",
-          "help_text": "Type: `file`, multiple: `False`, required, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
         },
         "modality": {
           "type": "string",
@@ -61,13 +58,12 @@
       "title": "Outputs",
       "type": "object",
       "description": "Output arguments.",
-      "required": [],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
           "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
           "default": "$id.$key.output.h5mu"
         },
         "output_obs_predictions": {
@@ -97,32 +93,27 @@
       "title": "Ongoloty",
       "type": "object",
       "description": "Ontology input files",
-      "required": [
-        "cl_nlp_emb_file",
-        "cl_ontology_file",
-        "cl_obo_file"
-      ],
       "properties": {
         "cl_nlp_emb_file": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "The ",
-          "help_text": "Type: `file`, multiple: `False`, required. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
         },
         "cl_ontology_file": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "The ",
-          "help_text": "Type: `file`, multiple: `False`, required. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
         },
         "cl_obo_file": {
           "type": "string",
           "format": "path",
           "exists": true,
           "description": "The ",
-          "help_text": "Type: `file`, multiple: `False`, required. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
         }
       }
     },
@@ -130,15 +121,12 @@
       "title": "Reference",
       "type": "object",
       "description": "Arguments related to the reference dataset.",
-      "required": [
-        "reference_obs_target"
-      ],
       "properties": {
         "reference": {
           "type": "string",
           "format": "path",
           "description": "The reference data to train the CellTypist classifiers on",
-          "help_text": "Type: `file`, multiple: `False`, example: `reference.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `reference.h5mu`. "
         },
         "reference_layer": {
           "type": "string",
@@ -172,7 +160,6 @@
       "title": "Model arguments",
       "type": "object",
       "description": "Model arguments",
-      "required": [],
       "properties": {
         "model": {
           "type": "string",
@@ -191,7 +178,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",

@@ -22,31 +22,30 @@
       "title": "Input",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "fasta": {
           "type": "string",
           "format": "path",
           "description": "reference fasta file",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "bam": {
           "type": "string",
           "format": "path",
           "description": "cellranger bam",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "bam_index": {
           "type": "string",
           "format": "path",
           "description": "cellranger bam index",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "barcodes": {
           "type": "string",
           "format": "path",
           "description": "barcodes",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "clusters": {
           "type": "integer",
@@ -86,13 +85,13 @@
           "type": "string",
           "format": "path",
           "description": "common variant loci or known variant loci vcf, must be vs same reference fasta",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "known_genotypes": {
           "type": "string",
           "format": "path",
           "description": "known variants per clone in population vcf mode, must be ",
-          "help_text": "Type: `file`, multiple: `False`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "known_genotypes_sample_names": {
           "type": "string",
@@ -117,13 +116,12 @@
       "title": "Output",
       "type": "object",
       "description": "No description",
-      "required": [],
       "properties": {
         "output": {
           "type": "string",
           "format": "path",
           "description": "name of directory to place souporcell files",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output`, example: `souporcell_out`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output`, direction: `output`, example: `souporcell_out`. ",
           "default": "$id.$key.output"
         }
       }
@@ -132,7 +130,6 @@
       "title": "Nextflow input-output arguments",
       "type": "object",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-      "required": [],
       "properties": {
         "publish_dir": {
           "type": "string",
