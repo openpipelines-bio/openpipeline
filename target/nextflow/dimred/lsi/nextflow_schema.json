@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "lsi",
   "description": "Runs Latent Semantic Indexing. Computes cell embeddings, feature loadings and singular values. Uses the implementation of scipy.\n",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -28,12 +28,12 @@
           "format": "path",
           "exists": true,
           "description": "Path to input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "modality": {
           "type": "string",
-          "description": "On which modality to run LSI on",
-          "help_text": "Type: `string`, multiple: `False`, default: `atac`. ",
+          "description": "On which modality to run LSI on.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"atac\"`. ",
           "default": "atac"
         },
         "layer": {
@@ -43,7 +43,7 @@
         },
         "var_input": {
           "type": "string",
-          "description": "Column name in ",
+          "description": "Column name in .var matrix that will be used to select which genes to run the LSI on",
           "help_text": "Type: `string`, multiple: `False`. "
         }
       }
@@ -56,38 +56,38 @@
         "output": {
           "type": "string",
           "format": "path",
-          "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         },
         "obsm_output": {
           "type": "string",
-          "description": "In which ",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_lsi`. ",
+          "description": "In which .obsm slot to store the resulting embedding.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_lsi\"`. ",
           "default": "X_lsi"
         },
         "varm_output": {
           "type": "string",
-          "description": "In which ",
-          "help_text": "Type: `string`, multiple: `False`, default: `lsi`. ",
+          "description": "In which .varm slot to store the resulting loadings matrix.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"lsi\"`. ",
           "default": "lsi"
         },
         "uns_output": {
           "type": "string",
-          "description": "In which ",
-          "help_text": "Type: `string`, multiple: `False`, default: `lsi`. ",
+          "description": "In which .uns slot to store the stdev.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"lsi\"`. ",
           "default": "lsi"
         },
         "overwrite": {
           "type": "boolean",
-          "description": "Allow overwriting ",
+          "description": "Allow overwriting .obsm, .varm and .uns slots.",
           "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
           "default": false
         },
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects",
-          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
@@ -102,13 +102,13 @@
       "properties": {
         "num_components": {
           "type": "integer",
-          "description": "Number of components to compute",
+          "description": "Number of components to compute.",
           "help_text": "Type: `integer`, multiple: `False`, default: `50`. ",
           "default": 50
         },
         "scale_embeddings": {
           "type": "boolean",
-          "description": "Scale embeddings to zero mean and unit variance",
+          "description": "Scale embeddings to zero mean and unit variance.",
           "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
           "default": true
         }
@@ -121,24 +121,24 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/lsi options"
+      "$ref": "#/$defs/lsi options"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

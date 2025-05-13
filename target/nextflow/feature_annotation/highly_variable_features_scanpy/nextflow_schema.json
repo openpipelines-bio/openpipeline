@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "highly_variable_features_scanpy",
   "description": "Annotate highly variable features [Satija15] [Zheng17] [Stuart19].\n\nExpects logarithmized data, except when flavor='seurat_v3' in which count data is expected.\n\nDepending on flavor, this reproduces the R-implementations of Seurat [Satija15], Cell Ranger [Zheng17], and Seurat v3 [Stuart19].\n\nFor the dispersion-based methods ([Satija15] and [Zheng17]), the normalized dispersion is obtained by scaling with the mean and standard deviation of the dispersions for features falling into a given bin for mean expression of features. This means that for each bin of mean expression, highly variable features are selected.\n\nFor [Stuart19], a normalized variance for each feature is computed. First, the data are standardized (i.e., z-score normalization per feature) with a regularized standard deviation. Next, the normalized variance is computed as the variance of each feature after the transformation. Features are ranked by the normalized variance.\n",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -28,47 +28,47 @@
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "modality": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
           "default": "rna"
         },
         "layer": {
           "type": "string",
-          "description": "use adata",
+          "description": "use adata.layers[layer] for expression values instead of adata.X.",
           "help_text": "Type: `string`, multiple: `False`. "
         },
         "var_input": {
           "type": "string",
-          "description": "If specified, use boolean array in adata",
+          "description": "If specified, use boolean array in adata.var[var_input] to calculate hvg on subset of vars.\n",
           "help_text": "Type: `string`, multiple: `False`. "
         },
         "output": {
           "type": "string",
           "format": "path",
-          "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         },
         "var_name_filter": {
           "type": "string",
-          "description": "In which ",
-          "help_text": "Type: `string`, multiple: `False`, default: `filter_with_hvg`. ",
+          "description": "In which .var slot to store a boolean array corresponding to which observations should be filtered out.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"filter_with_hvg\"`. ",
           "default": "filter_with_hvg"
         },
         "varm_name": {
           "type": "string",
-          "description": "In which ",
-          "help_text": "Type: `string`, multiple: `False`, default: `hvg`. ",
+          "description": "In which .varm slot to store additional metadata.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"hvg\"`. ",
           "default": "hvg"
         },
         "flavor": {
           "type": "string",
           "description": "Choose the flavor for identifying highly variable features",
-          "help_text": "Type: `string`, multiple: `False`, default: `seurat`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"seurat\"`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. ",
           "enum": [
             "seurat",
             "cell_ranger",
@@ -106,7 +106,7 @@
         },
         "span": {
           "type": "number",
-          "description": "The fraction of the data (cells) used when estimating the variance in the loess model fit if flavor='seurat_v3'",
+          "description": "The fraction of the data (cells) used when estimating the variance in the loess model fit if flavor='seurat_v3'.",
           "help_text": "Type: `double`, multiple: `False`, default: `0.3`. ",
           "default": 0.3
         },
@@ -123,8 +123,8 @@
         },
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects",
-          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
@@ -139,18 +139,18 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/arguments"
+      "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

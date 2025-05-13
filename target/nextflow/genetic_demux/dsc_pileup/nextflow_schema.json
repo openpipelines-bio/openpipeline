@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "dsc_pileup",
   "description": "Dsc-pileup is a software tool to pileup reads and corresponding base quality \nfor each overlapping SNPs and each barcode. By using pileup files,\nit would allow us to run demuxlet/freemuxlet pretty fast multiple times\nwithout going over the BAM file again.\n",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -32,82 +32,82 @@
         "tag_group": {
           "type": "string",
           "description": "Tag representing readgroup or cell barcodes, in the case to partition the BAM file into multiple groups",
-          "help_text": "Type: `string`, multiple: `False`, default: `CB`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"CB\"`. ",
           "default": "CB"
         },
         "tag_umi": {
           "type": "string",
           "description": "Tag representing UMIs",
-          "help_text": "Type: `string`, multiple: `False`, default: `UB`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"UB\"`. ",
           "default": "UB"
         },
         "exclude_flag": {
           "type": "integer",
-          "description": "SAM/BAM FLAGs to be excluded",
+          "description": "SAM/BAM FLAGs to be excluded.",
           "help_text": "Type: `integer`, multiple: `False`, default: `1796`. ",
           "default": 1796
         },
         "vcf": {
           "type": "string",
           "format": "path",
-          "description": "Input VCF/BCF file for dsc-pileup, containing the AC and AN field",
+          "description": "Input VCF/BCF file for dsc-pileup, containing the AC and AN field.",
           "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "sm": {
           "type": "string",
-          "description": "List of sample IDs to compare to (default: use all)",
+          "description": "List of sample IDs to compare to (default: use all).",
           "help_text": "Type: `string`, multiple: `False`. "
         },
         "sm_list": {
           "type": "string",
-          "description": "File containing the list of sample IDs to compare",
+          "description": "File containing the list of sample IDs to compare.",
           "help_text": "Type: `string`, multiple: `False`. "
         },
         "sam_verbose": {
           "type": "integer",
-          "description": "Verbose message frequency for SAM/BAM/CRAM",
+          "description": "Verbose message frequency for SAM/BAM/CRAM.",
           "help_text": "Type: `integer`, multiple: `False`, default: `1000000`. ",
           "default": 1000000
         },
         "vcf_verbose": {
           "type": "integer",
-          "description": "Verbose message frequency for VCF/BCF",
+          "description": "Verbose message frequency for VCF/BCF.",
           "help_text": "Type: `integer`, multiple: `False`, default: `1000`. ",
           "default": 1000
         },
         "skip_umi": {
           "type": "boolean",
-          "description": "Do not generate [prefix]",
+          "description": "Do not generate [prefix].umi.gz file, which stores the regions covered by each barcode/UMI pair.",
           "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
           "default": false
         },
         "cap_bq": {
           "type": "integer",
-          "description": "Maximum base quality (higher BQ will be capped)",
+          "description": "Maximum base quality (higher BQ will be capped).",
           "help_text": "Type: `integer`, multiple: `False`, default: `40`. ",
           "default": 40
         },
         "min_bq": {
           "type": "integer",
-          "description": "Minimum base quality to consider (lower BQ will be skipped)",
+          "description": "Minimum base quality to consider (lower BQ will be skipped).",
           "help_text": "Type: `integer`, multiple: `False`, default: `13`. ",
           "default": 13
         },
         "min_mq": {
           "type": "integer",
-          "description": "Minimum mapping quality to consider (lower MQ will be ignored)",
+          "description": "Minimum mapping quality to consider (lower MQ will be ignored).",
           "help_text": "Type: `integer`, multiple: `False`, default: `20`. ",
           "default": 20
         },
         "min_td": {
           "type": "integer",
-          "description": "Minimum distance to the tail (lower will be ignored)",
+          "description": "Minimum distance to the tail (lower will be ignored).",
           "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
           "default": 0
         },
         "excl_flag": {
           "type": "integer",
-          "description": "SAM/BAM FLAGs to be excluded for SNP overlapping Read filtering Options",
+          "description": "SAM/BAM FLAGs to be excluded for SNP overlapping Read filtering Options.",
           "help_text": "Type: `integer`, multiple: `False`, default: `3844`. ",
           "default": 3844
         },
@@ -118,19 +118,19 @@
         },
         "min_total": {
           "type": "integer",
-          "description": "Minimum number of total reads for a droplet/cell to be considered",
+          "description": "Minimum number of total reads for a droplet/cell to be considered.",
           "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
           "default": 0
         },
         "min_uniq": {
           "type": "integer",
-          "description": "Minimum number of unique reads (determined by UMI/SNP pair) for a droplet/cell to be considered",
+          "description": "Minimum number of unique reads (determined by UMI/SNP pair) for a droplet/cell to be considered.",
           "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
           "default": 0
         },
         "min_snp": {
           "type": "integer",
-          "description": "Minimum number of SNPs with coverage for a droplet/cell to be considered",
+          "description": "Minimum number of SNPs with coverage for a droplet/cell to be considered.",
           "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
           "default": 0
         }
@@ -145,13 +145,13 @@
           "type": "string",
           "format": "path",
           "description": "Output directory",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output`, direction: `output`, example: `demux`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output\"`, direction: `output`, example: `\"demux\"`. ",
           "default": "$id.$key.output"
         },
         "out": {
           "type": "string",
           "description": "dsc-pileup output file prefix",
-          "help_text": "Type: `string`, multiple: `False`, example: `demuxlet_dsc`. "
+          "help_text": "Type: `string`, multiple: `False`, example: `\"demuxlet_dsc\"`. "
         }
       }
     },
@@ -162,21 +162,21 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/input"
+      "$ref": "#/$defs/input"
     },
     {
-      "$ref": "#/definitions/output"
+      "$ref": "#/$defs/output"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "from_bdrhap_to_h5mu",
   "description": "Convert the output of a BD Rhapsody pipeline v2.x to a MuData h5 file.\n",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -25,15 +25,15 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "A sample ID",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `my_id`. "
+          "description": "A sample ID.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"my_id\"`. "
         },
         "input": {
           "type": "string",
           "format": "path",
           "exists": true,
-          "description": "The output h5mu of a BD Rhapsody workflow",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `sample.h5mu`. "
+          "description": "The output h5mu of a BD Rhapsody workflow.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"sample.h5mu\"`. "
         }
       }
     },
@@ -45,8 +45,8 @@
         "output": {
           "type": "string",
           "format": "path",
-          "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         }
       }
@@ -58,8 +58,8 @@
       "properties": {
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects",
-          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
@@ -74,24 +74,24 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/arguments"
+      "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

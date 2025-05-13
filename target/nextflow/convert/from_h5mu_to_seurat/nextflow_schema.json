@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "from_h5mu_to_seurat",
   "description": "Converts an h5mu file into a Seurat file.\n\nRestrictions:\n  - Only the intersection of cells is currently loaded into the Seurat object due to the object structure limitation.\n  - Multimodal embeddings (global .obsm slot) are loaded with the assay.used field set to the default assay.\n  - Embeddings names are changed in order to comply with R & Seurat requirements and conventions.\n  - Feature names with underscores ('_') are automatically replaced with dashes ('-')\n  - Seurat does not support global variables metadata /var.\n",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -28,13 +28,13 @@
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "output": {
           "type": "string",
           "format": "path",
           "description": "Output Seurat file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.rds`, direction: `output`, example: `output.rds`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.rds\"`, direction: `output`, example: `\"output.rds\"`. ",
           "default": "$id.$key.output.rds"
         }
       }
@@ -46,18 +46,18 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/arguments"
+      "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

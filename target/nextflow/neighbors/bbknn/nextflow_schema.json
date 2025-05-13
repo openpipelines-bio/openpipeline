@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "bbknn",
   "description": "BBKNN network generation\n",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -33,55 +33,55 @@
         "modality": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
           "default": "rna"
         },
         "obsm_input": {
           "type": "string",
-          "description": "The dimensionality reduction in `",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_pca`. ",
+          "description": "The dimensionality reduction in `.obsm` to use for neighbour detection",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_pca\"`. ",
           "default": "X_pca"
         },
         "obs_batch": {
           "type": "string",
-          "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `batch`. ",
+          "description": ".obs column name discriminating between your batches.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"batch\"`. ",
           "default": "batch"
         },
         "output": {
           "type": "string",
           "format": "path",
-          "description": "Output ",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
+          "description": "Output .h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         },
         "uns_output": {
           "type": "string",
-          "description": "Mandatory ",
-          "help_text": "Type: `string`, multiple: `False`, default: `neighbors`. ",
+          "description": "Mandatory .uns slot to store various neighbor output objects.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"neighbors\"`. ",
           "default": "neighbors"
         },
         "obsp_distances": {
           "type": "string",
-          "description": "In which ",
-          "help_text": "Type: `string`, multiple: `False`, default: `distances`. ",
+          "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"distances\"`. ",
           "default": "distances"
         },
         "obsp_connectivities": {
           "type": "string",
-          "description": "In which ",
-          "help_text": "Type: `string`, multiple: `False`, default: `connectivities`. ",
+          "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"connectivities\"`. ",
           "default": "connectivities"
         },
         "n_neighbors_within_batch": {
           "type": "integer",
-          "description": "How many top neighbours to report for each batch; total number of neighbours in the initial k-nearest-neighbours computation will be this number times the number of batches",
+          "description": "How many top neighbours to report for each batch; total number of neighbours in the initial k-nearest-neighbours computation will be this number times the number of batches.",
           "help_text": "Type: `integer`, multiple: `False`, default: `3`. ",
           "default": 3
         },
         "n_pcs": {
           "type": "integer",
-          "description": "How many dimensions (in case of PCA, principal components) to use in the analysis",
+          "description": "How many dimensions (in case of PCA, principal components) to use in the analysis.",
           "help_text": "Type: `integer`, multiple: `False`, default: `50`. ",
           "default": 50
         },
@@ -92,8 +92,8 @@
         },
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects",
-          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
@@ -108,18 +108,18 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/arguments"
+      "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

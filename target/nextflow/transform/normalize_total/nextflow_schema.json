@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "normalize_total",
   "description": "Normalize counts per cell.\n\nNormalize each cell by total counts over all genes, so that every cell has the same total count after normalization. If choosing target_sum=1e6, this is CPM normalization.\n\nIf exclude_highly_expressed=True, very highly expressed genes are excluded from the computation of the normalization factor (size factor) for each cell. This is meaningful as these can strongly influence the resulting normalized values for all other genes [Weinreb17].\n",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -28,12 +28,12 @@
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "modality": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
           "default": "rna"
         },
         "input_layer": {
@@ -44,8 +44,8 @@
         "output": {
           "type": "string",
           "format": "path",
-          "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `output.h5mu`, direction: `output`. ",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"output.h5mu\"`, direction: `output`. ",
           "default": "output.h5mu"
         },
         "output_layer": {
@@ -55,7 +55,7 @@
         },
         "target_sum": {
           "type": "integer",
-          "description": "If None, after normalization, each observation (cell) has a total count equal to the median of total counts for observations (cells) before normalization",
+          "description": "If None, after normalization, each observation (cell) has a total count equal to the median of total counts for observations (cells) before normalization.",
           "help_text": "Type: `integer`, multiple: `False`. "
         },
         "exclude_highly_expressed": {
@@ -66,8 +66,8 @@
         },
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects",
-          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
@@ -82,18 +82,18 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/arguments"
+      "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

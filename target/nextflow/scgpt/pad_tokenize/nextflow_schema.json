@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "pad_tokenize",
   "description": "Tokenize and pad a batch of data for scGPT integration zero-shot inference or fine-tuning.\n",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -27,37 +27,37 @@
           "type": "string",
           "format": "path",
           "exists": true,
-          "description": "The input h5mu file of pre-processed data",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+          "description": "The input h5mu file of pre-processed data.\n",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "modality": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
           "default": "rna"
         },
         "model_vocab": {
           "type": "string",
           "format": "path",
           "exists": true,
-          "description": "Path to model vocabulary file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `vocab.json`. "
+          "description": "Path to model vocabulary file.\n",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"vocab.json\"`. "
         },
         "var_gene_names": {
           "type": "string",
-          "description": "The name of the ",
+          "description": "The name of the .var column containing gene names",
           "help_text": "Type: `string`, multiple: `False`. "
         },
         "var_input": {
           "type": "string",
-          "description": "The name of the adata",
-          "help_text": "Type: `string`, multiple: `False`, default: `id_in_vocab`. ",
+          "description": "The name of the adata.var column containing boolean mask for vocabulary-cross checked and/or highly variable genes.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"id_in_vocab\"`. ",
           "default": "id_in_vocab"
         },
         "input_obsm_binned_counts": {
           "type": "string",
-          "description": "The name of the ",
-          "help_text": "Type: `string`, multiple: `False`, default: `binned_counts`. ",
+          "description": "The name of the .obsm field containing the binned counts to be padded and tokenized.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"binned_counts\"`. ",
           "default": "binned_counts"
         }
       }
@@ -70,32 +70,32 @@
         "output": {
           "type": "string",
           "format": "path",
-          "description": "The output h5mu file containing obsm arrays for gene tokens, tokenized data and padding mask",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
+          "description": "The output h5mu file containing obsm arrays for gene tokens, tokenized data and padding mask.\n",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         },
         "obsm_gene_tokens": {
           "type": "string",
-          "description": "The key of the ",
-          "help_text": "Type: `string`, multiple: `False`, default: `gene_id_tokens`, example: `values.pt`. ",
+          "description": "The key of the .obsm array containing the gene token ids\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"gene_id_tokens\"`, example: `\"values.pt\"`. ",
           "default": "gene_id_tokens"
         },
         "obsm_tokenized_values": {
           "type": "string",
-          "description": "The key of the ",
-          "help_text": "Type: `string`, multiple: `False`, default: `values_tokenized`. ",
+          "description": "The key of the .obsm array containing the count values of the tokenized genes\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"values_tokenized\"`. ",
           "default": "values_tokenized"
         },
         "obsm_padding_mask": {
           "type": "string",
-          "description": "The key of the ",
-          "help_text": "Type: `string`, multiple: `False`, default: `padding_mask`. ",
+          "description": "The key of the .obsm array containing the padding mask.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"padding_mask\"`. ",
           "default": "padding_mask"
         },
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects",
-          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
@@ -110,13 +110,13 @@
       "properties": {
         "pad_token": {
           "type": "string",
-          "description": "Token used for padding",
-          "help_text": "Type: `string`, multiple: `False`, default: `<pad>`. ",
+          "description": "Token used for padding.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"<pad>\"`. ",
           "default": "<pad>"
         },
         "pad_value": {
           "type": "integer",
-          "description": "The value of the padding token",
+          "description": "The value of the padding token.\n",
           "help_text": "Type: `integer`, multiple: `False`, default: `-2`. ",
           "default": -2
         },
@@ -134,24 +134,24 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/arguments"
+      "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

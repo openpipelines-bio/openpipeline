@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "densmap",
   "description": "A modification of UMAP that adds an extra cost term in order to preserve information \nabout the relative local density of the data. It is performed on the same inputs as UMAP.\n",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -28,23 +28,23 @@
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "modality": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
           "default": "rna"
         },
         "uns_neighbors": {
           "type": "string",
-          "description": "The `",
-          "help_text": "Type: `string`, multiple: `False`, default: `neighbors`. ",
+          "description": "The `.uns` neighbors slot as output by the `find_neighbors` component.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"neighbors\"`. ",
           "default": "neighbors"
         },
         "obsm_pca": {
           "type": "string",
-          "description": "The slot in `",
+          "description": "The slot in `.obsm` where the PCA results are stored.\n",
           "help_text": "Type: `string`, multiple: `False`, required. "
         }
       }
@@ -57,20 +57,20 @@
         "output": {
           "type": "string",
           "format": "path",
-          "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         },
         "obsm_output": {
           "type": "string",
-          "description": "The ",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_densmap`. ",
+          "description": "The .obsm key to use for storing the densMAP results..",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_densmap\"`. ",
           "default": "X_densmap"
         },
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects",
-          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
@@ -97,7 +97,7 @@
         },
         "num_components": {
           "type": "integer",
-          "description": "The number of dimensions of the embedding",
+          "description": "The number of dimensions of the embedding.",
           "help_text": "Type: `integer`, multiple: `False`, default: `2`. ",
           "default": 2
         },
@@ -109,7 +109,7 @@
         },
         "alpha": {
           "type": "number",
-          "description": "The initial learning rate for the embedding optimization",
+          "description": "The initial learning rate for the embedding optimization.",
           "help_text": "Type: `double`, multiple: `False`, default: `1.0`. ",
           "default": 1.0
         },
@@ -128,7 +128,7 @@
         "init_pos": {
           "type": "string",
           "description": "How to initialize the low dimensional embedding",
-          "help_text": "Type: `string`, multiple: `False`, default: `spectral`, choices: ``paga`, `spectral`, `random``. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"spectral\"`, choices: ``paga`, `spectral`, `random``. ",
           "enum": [
             "paga",
             "spectral",
@@ -157,7 +157,7 @@
         },
         "var_shift": {
           "type": "number",
-          "description": "A small constant added to the variance of local radii in the embedding when calculating \nthe density correlation objective to prevent numerical instability from dividing by a \nsmall number",
+          "description": "A small constant added to the variance of local radii in the embedding when calculating \nthe density correlation objective to prevent numerical instability from dividing by a \nsmall number.\n",
           "help_text": "Type: `double`, multiple: `False`, default: `0.1`. ",
           "default": 0.1
         }
@@ -170,27 +170,27 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/arguments umap"
+      "$ref": "#/$defs/arguments umap"
     },
     {
-      "$ref": "#/definitions/arguments densmap"
+      "$ref": "#/$defs/arguments densmap"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

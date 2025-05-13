@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "tsne",
   "description": "t-SNE (t-Distributed Stochastic Neighbor Embedding) is a dimensionality reduction technique used to visualize high-dimensional data in a low-dimensional space, revealing patterns and clusters by preserving local data similarities.\n",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -28,18 +28,18 @@
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "modality": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, required, default: `rna`. ",
+          "help_text": "Type: `string`, multiple: `False`, required, default: `\"rna\"`. ",
           "default": "rna"
         },
         "use_rep": {
           "type": "string",
-          "description": "The `",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `X_pca`. "
+          "description": "The `.obsm` slot to use as input for the tSNE computation.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"X_pca\"`. "
         }
       }
     },
@@ -51,20 +51,20 @@
         "output": {
           "type": "string",
           "format": "path",
-          "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         },
         "obsm_output": {
           "type": "string",
-          "description": "The ",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_tsne`. ",
+          "description": "The .obsm key to use for storing the tSNE results.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_tsne\"`. ",
           "default": "X_tsne"
         },
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects",
-          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
@@ -79,7 +79,7 @@
       "properties": {
         "n_pcs": {
           "type": "integer",
-          "description": "The number of principal components to use for the tSNE computation",
+          "description": "The number of principal components to use for the tSNE computation.",
           "help_text": "Type: `integer`, multiple: `False`, default: `50`. ",
           "default": 50
         },
@@ -97,8 +97,8 @@
         },
         "metric": {
           "type": "string",
-          "description": "Distance metric to calculate neighbors on",
-          "help_text": "Type: `string`, multiple: `False`, default: `euclidean`. ",
+          "description": "Distance metric to calculate neighbors on.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"euclidean\"`. ",
           "default": "euclidean"
         },
         "early_exaggeration": {
@@ -115,7 +115,7 @@
         },
         "random_state": {
           "type": "integer",
-          "description": "The random seed to use for the tSNE computation",
+          "description": "The random seed to use for the tSNE computation.",
           "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
           "default": 0
         }
@@ -128,24 +128,24 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/arguments"
+      "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

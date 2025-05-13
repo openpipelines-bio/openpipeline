@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "vireo",
   "description": "Vireo is primarily designed for demultiplexing cells into donors by modelling of expressed alleles.",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -26,19 +26,19 @@
         "cell_data": {
           "type": "string",
           "format": "path",
-          "description": "The cell genotype file in VCF format or cellSNP folder with sparse matrices",
+          "description": "The cell genotype file in VCF format or cellSNP folder with sparse matrices.",
           "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "n_donor": {
           "type": "integer",
-          "description": "Number of donors to demultiplex; can be larger than provided in donor_file",
+          "description": "Number of donors to demultiplex; can be larger than provided in donor_file.",
           "help_text": "Type: `integer`, multiple: `False`, default: `2`. ",
           "default": 2
         },
         "vartrix_data": {
           "type": "string",
           "format": "path",
-          "description": "The cell genotype files in vartrix outputs",
+          "description": "The cell genotype files in vartrix outputs.",
           "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
         },
         "donor_file": {
@@ -49,8 +49,8 @@
         },
         "geno_tag": {
           "type": "string",
-          "description": "The tag for donor genotype",
-          "help_text": "Type: `string`, multiple: `False`, default: `PL`, choices: ``GT`, `GP`, `PL``. ",
+          "description": "The tag for donor genotype.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"PL\"`, choices: ``GT`, `GP`, `PL``. ",
           "enum": [
             "GT",
             "GP",
@@ -60,19 +60,19 @@
         },
         "no_doublet": {
           "type": "boolean",
-          "description": "If use, not checking doublets",
+          "description": "If use, not checking doublets.",
           "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
           "default": false
         },
         "n_init": {
           "type": "integer",
-          "description": "Number of random initializations, when GT needs to learn",
+          "description": "Number of random initializations, when GT needs to learn.",
           "help_text": "Type: `integer`, multiple: `False`, default: `50`. ",
           "default": 50
         },
         "extra_donor": {
           "type": "integer",
-          "description": "Number of extra donor in pre-cluster, when GT needs to learn",
+          "description": "Number of extra donor in pre-cluster, when GT needs to learn.",
           "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
           "default": 0
         },
@@ -83,19 +83,19 @@
         },
         "force_learn_gt": {
           "type": "boolean",
-          "description": "If use, treat donor GT as prior only",
+          "description": "If use, treat donor GT as prior only.",
           "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
           "default": false
         },
         "ase_mode": {
           "type": "boolean",
-          "description": "If use, turn on SNP specific allelic ratio",
+          "description": "If use, turn on SNP specific allelic ratio.",
           "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
           "default": false
         },
         "no_plot": {
           "type": "boolean",
-          "description": "If use, turn off plotting GT distance",
+          "description": "If use, turn off plotting GT distance.",
           "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
           "default": false
         },
@@ -106,12 +106,12 @@
         },
         "cell_range": {
           "type": "string",
-          "description": "Range of cells to process",
+          "description": "Range of cells to process.",
           "help_text": "Type: `string`, multiple: `False`. "
         },
         "call_ambient_rnas": {
           "type": "boolean",
-          "description": "If use, detect ambient RNAs in each cell",
+          "description": "If use, detect ambient RNAs in each cell.",
           "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
           "default": false
         }
@@ -126,7 +126,7 @@
           "type": "string",
           "format": "path",
           "description": "Output directory",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output`, direction: `output`, example: `vireo`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output\"`, direction: `output`, example: `\"vireo\"`. ",
           "default": "$id.$key.output"
         }
       }
@@ -138,21 +138,21 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/input"
+      "$ref": "#/$defs/input"
     },
     {
-      "$ref": "#/definitions/output"
+      "$ref": "#/$defs/output"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

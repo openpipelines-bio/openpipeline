@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "scvi",
   "description": "Performs scvi integration as done in the human lung cell atlas https://github.com/LungCellAtlas/HLCA",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -33,7 +33,7 @@
         "modality": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
           "default": "rna"
         },
         "input_layer": {
@@ -43,58 +43,44 @@
         },
         "obs_batch": {
           "type": "string",
-          "description": "Column name discriminating between your batches",
-          "help_text": "Type: `string`, multiple: `False`, default: `sample_id`. ",
+          "description": "Column name discriminating between your batches.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"sample_id\"`. ",
           "default": "sample_id"
         },
         "var_gene_names": {
           "type": "string",
-          "description": "",
+          "description": ".var column containing gene names",
           "help_text": "Type: `string`, multiple: `False`. "
         },
         "var_input": {
           "type": "string",
-          "description": "",
+          "description": ".var column containing highly variable genes",
           "help_text": "Type: `string`, multiple: `False`. "
         },
         "obs_labels": {
           "type": "string",
-          "description": "Key in adata",
+          "description": "Key in adata.obs for label information",
           "help_text": "Type: `string`, multiple: `False`. "
         },
         "obs_size_factor": {
           "type": "string",
-          "description": "Key in adata",
+          "description": "Key in adata.obs for size factor information",
           "help_text": "Type: `string`, multiple: `False`. "
         },
         "obs_categorical_covariate": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          ],
-          "description": "Keys in adata",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keys in adata.obs that correspond to categorical data",
           "help_text": "Type: `string`, multiple: `True`. "
         },
         "obs_continuous_covariate": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          ],
-          "description": "Keys in adata",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keys in adata.obs that correspond to continuous data",
           "help_text": "Type: `string`, multiple: `True`. "
         }
       }
@@ -107,27 +93,27 @@
         "output": {
           "type": "string",
           "format": "path",
-          "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`. ",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`. ",
           "default": "$id.$key.output"
         },
         "output_model": {
           "type": "string",
           "format": "path",
-          "description": "Folder where the state of the trained model will be saved to",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_model`, direction: `output`. ",
+          "description": "Folder where the state of the trained model will be saved to.",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output_model\"`, direction: `output`. ",
           "default": "$id.$key.output_model"
         },
         "obsm_output": {
           "type": "string",
-          "description": "In which ",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_scvi_integrated`. ",
+          "description": "In which .obsm slot to store the resulting integrated embedding.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_scvi_integrated\"`. ",
           "default": "X_scvi_integrated"
         },
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects",
-          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
@@ -142,32 +128,32 @@
       "properties": {
         "n_hidden_nodes": {
           "type": "integer",
-          "description": "Number of nodes per hidden layer",
+          "description": "Number of nodes per hidden layer.",
           "help_text": "Type: `integer`, multiple: `False`, default: `128`. ",
           "default": 128
         },
         "n_dimensions_latent_space": {
           "type": "integer",
-          "description": "Dimensionality of the latent space",
+          "description": "Dimensionality of the latent space.",
           "help_text": "Type: `integer`, multiple: `False`, default: `30`. ",
           "default": 30
         },
         "n_hidden_layers": {
           "type": "integer",
-          "description": "Number of hidden layers used for encoder and decoder neural-networks",
+          "description": "Number of hidden layers used for encoder and decoder neural-networks.",
           "help_text": "Type: `integer`, multiple: `False`, default: `2`. ",
           "default": 2
         },
         "dropout_rate": {
           "type": "number",
-          "description": "Dropout rate for the neural networks",
+          "description": "Dropout rate for the neural networks.",
           "help_text": "Type: `double`, multiple: `False`, default: `0.1`. ",
           "default": 0.1
         },
         "dispersion": {
           "type": "string",
           "description": "Set the behavior for the dispersion for negative binomial distributions:\n- gene: dispersion parameter of negative binomial is constant per gene across cells\n- gene-batch: dispersion can differ between different batches\n- gene-label: dispersion can differ between different labels\n- gene-cell:  dispersion can differ for every gene in every cell\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `gene`, choices: ``gene`, `gene-batch`, `gene-label`, `gene-cell``. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"gene\"`, choices: ``gene`, `gene-batch`, `gene-label`, `gene-cell``. ",
           "enum": [
             "gene",
             "gene-batch",
@@ -178,8 +164,8 @@
         },
         "gene_likelihood": {
           "type": "string",
-          "description": "Model used to generate the expression data from a count-based likelihood distribution",
-          "help_text": "Type: `string`, multiple: `False`, default: `nb`, choices: ``nb`, `zinb`, `poisson``. ",
+          "description": "Model used to generate the expression data from a count-based likelihood distribution.\n- nb: Negative binomial distribution\n- zinb: Zero-inflated negative binomial distribution\n- poisson: Poisson distribution\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"nb\"`, choices: ``nb`, `zinb`, `poisson``. ",
           "enum": [
             "nb",
             "zinb",
@@ -197,7 +183,7 @@
         "use_layer_normalization": {
           "type": "string",
           "description": "Neural networks for which to enable layer normalization",
-          "help_text": "Type: `string`, multiple: `False`, default: `both`, choices: ``encoder`, `decoder`, `none`, `both``. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"both\"`, choices: ``encoder`, `decoder`, `none`, `both``. ",
           "enum": [
             "encoder",
             "decoder",
@@ -209,7 +195,7 @@
         "use_batch_normalization": {
           "type": "string",
           "description": "Neural networks for which to enable batch normalization",
-          "help_text": "Type: `string`, multiple: `False`, default: `none`, choices: ``encoder`, `decoder`, `none`, `both``. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"none\"`, choices: ``encoder`, `decoder`, `none`, `both``. ",
           "enum": [
             "encoder",
             "decoder",
@@ -232,7 +218,7 @@
         },
         "use_observed_lib_size": {
           "type": "boolean",
-          "description": "Use observed library size for RNA as scaling factor in mean of conditional distribution",
+          "description": "Use observed library size for RNA as scaling factor in mean of conditional distribution.\n",
           "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
           "default": false
         }
@@ -245,13 +231,13 @@
       "properties": {
         "early_stopping": {
           "type": "boolean",
-          "description": "Whether to perform early stopping with respect to the validation set",
+          "description": "Whether to perform early stopping with respect to the validation set.",
           "help_text": "Type: `boolean`, multiple: `False`. "
         },
         "early_stopping_monitor": {
           "type": "string",
-          "description": "Metric logged during validation set epoch",
-          "help_text": "Type: `string`, multiple: `False`, default: `elbo_validation`, choices: ``elbo_validation`, `reconstruction_loss_validation`, `kl_local_validation``. ",
+          "description": "Metric logged during validation set epoch.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"elbo_validation\"`, choices: ``elbo_validation`, `reconstruction_loss_validation`, `kl_local_validation``. ",
           "enum": [
             "elbo_validation",
             "reconstruction_loss_validation",
@@ -261,13 +247,13 @@
         },
         "early_stopping_patience": {
           "type": "integer",
-          "description": "Number of validation epochs with no improvement after which training will be stopped",
+          "description": "Number of validation epochs with no improvement after which training will be stopped.",
           "help_text": "Type: `integer`, multiple: `False`, default: `45`. ",
           "default": 45
         },
         "early_stopping_min_delta": {
           "type": "number",
-          "description": "Minimum change in the monitored quantity to qualify as an improvement, i",
+          "description": "Minimum change in the monitored quantity to qualify as an improvement, i.e",
           "help_text": "Type: `double`, multiple: `False`, default: `0.0`. ",
           "default": 0.0
         }
@@ -280,24 +266,24 @@
       "properties": {
         "max_epochs": {
           "type": "integer",
-          "description": "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest",
+          "description": "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest.",
           "help_text": "Type: `integer`, multiple: `False`. "
         },
         "reduce_lr_on_plateau": {
           "type": "boolean",
-          "description": "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus",
+          "description": "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus.",
           "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
           "default": true
         },
         "lr_factor": {
           "type": "number",
-          "description": "Factor to reduce learning rate",
+          "description": "Factor to reduce learning rate.",
           "help_text": "Type: `double`, multiple: `False`, default: `0.6`. ",
           "default": 0.6
         },
         "lr_patience": {
           "type": "number",
-          "description": "Number of epochs with no improvement after which learning rate will be reduced",
+          "description": "Number of epochs with no improvement after which learning rate will be reduced.",
           "help_text": "Type: `double`, multiple: `False`, default: `30.0`. ",
           "default": 30.0
         }
@@ -310,13 +296,13 @@
       "properties": {
         "n_obs_min_count": {
           "type": "integer",
-          "description": "Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training",
+          "description": "Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training.",
           "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
           "default": 0
         },
         "n_var_min_count": {
           "type": "integer",
-          "description": "Minimum number of genes threshold ensuring that every var_input filter has sufficient observations (genes) for model training",
+          "description": "Minimum number of genes threshold ensuring that every var_input filter has sufficient observations (genes) for model training.",
           "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
           "default": 0
         }
@@ -329,36 +315,36 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/scvi options"
+      "$ref": "#/$defs/scvi options"
     },
     {
-      "$ref": "#/definitions/variational auto-encoder model options"
+      "$ref": "#/$defs/variational auto-encoder model options"
     },
     {
-      "$ref": "#/definitions/early stopping arguments"
+      "$ref": "#/$defs/early stopping arguments"
     },
     {
-      "$ref": "#/definitions/learning parameters"
+      "$ref": "#/$defs/learning parameters"
     },
     {
-      "$ref": "#/definitions/data validition"
+      "$ref": "#/$defs/data validition"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

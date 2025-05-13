@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "make_reference",
   "description": "Preprocess and build a transcriptome reference.\n\nExample input files are:\n  - `genome_fasta`: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz\n  - `transcriptome_gtf`: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz\n  - `ercc`: https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip\n",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -28,38 +28,38 @@
           "format": "path",
           "exists": true,
           "description": "Reference genome fasta",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `genome_fasta.fa.gz`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"genome_fasta.fa.gz\"`. "
         },
         "transcriptome_gtf": {
           "type": "string",
           "format": "path",
           "exists": true,
-          "description": "Reference transcriptome annotation",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `transcriptome.gtf.gz`. "
+          "description": "Reference transcriptome annotation.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"transcriptome.gtf.gz\"`. "
         },
         "ercc": {
           "type": "string",
           "format": "path",
-          "description": "ERCC sequence and annotation file",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `ercc.zip`. "
+          "description": "ERCC sequence and annotation file.",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"ercc.zip\"`. "
         },
         "subset_regex": {
           "type": "string",
-          "description": "Will subset the reference chromosomes using the given regex",
-          "help_text": "Type: `string`, multiple: `False`, example: `(ERCC-00002|chr1)`. "
+          "description": "Will subset the reference chromosomes using the given regex.",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"(ERCC-00002|chr1)\"`. "
         },
         "output_fasta": {
           "type": "string",
           "format": "path",
-          "description": "Output genome sequence fasta",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_fasta.gz`, direction: `output`, example: `genome_sequence.fa.gz`. ",
+          "description": "Output genome sequence fasta.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output_fasta.gz\"`, direction: `output`, example: `\"genome_sequence.fa.gz\"`. ",
           "default": "$id.$key.output_fasta.gz"
         },
         "output_gtf": {
           "type": "string",
           "format": "path",
-          "description": "Output transcriptome annotation gtf",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_gtf.gz`, direction: `output`, example: `transcriptome_annotation.gtf.gz`. ",
+          "description": "Output transcriptome annotation gtf.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output_gtf.gz\"`, direction: `output`, example: `\"transcriptome_annotation.gtf.gz\"`. ",
           "default": "$id.$key.output_gtf.gz"
         }
       }
@@ -71,18 +71,18 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/arguments"
+      "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

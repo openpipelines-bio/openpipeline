@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "build_cellranger_reference",
   "description": "Build a Cell Ranger-compatible reference folder from user-supplied genome FASTA and gene GTF files. Creates a new folder named after the genome.",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -27,15 +27,15 @@
           "type": "string",
           "format": "path",
           "exists": true,
-          "description": "Reference genome fasta",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `genome_sequence.fa.gz`. "
+          "description": "Reference genome fasta.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"genome_sequence.fa.gz\"`. "
         },
         "transcriptome_gtf": {
           "type": "string",
           "format": "path",
           "exists": true,
-          "description": "Reference transcriptome annotation",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `transcriptome_annotation.gtf.gz`. "
+          "description": "Reference transcriptome annotation.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"transcriptome_annotation.gtf.gz\"`. "
         },
         "reference_version": {
           "type": "string",
@@ -46,7 +46,7 @@
           "type": "string",
           "format": "path",
           "description": "Output folder",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`, example: `cellranger_reference`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`, example: `\"cellranger_reference\"`. ",
           "default": "$id.$key.output"
         }
       }
@@ -58,18 +58,18 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/arguments"
+      "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

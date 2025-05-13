@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "calculate_atac_qc_metrics",
   "description": "Add basic ATAC quality control metrics to an .h5mu file.\n\nThe metrics are comparable to what scanpy.pp.calculate_qc_metrics output,\nalthough they have slightly different names:\n\nObs metrics (name in this component -> name in scanpy):\n  - n_features_per_cell -> n_genes_by_counts\n  - total_fragment_counts -> total_counts\n    \n",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -28,28 +28,28 @@
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "fragments_path": {
           "type": "string",
           "format": "path",
           "description": "Path to the fragments file",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `fragments.tsv.gz`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"fragments.tsv.gz\"`. "
         },
         "modality": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `atac`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"atac\"`. ",
           "default": "atac"
         },
         "layer": {
           "type": "string",
-          "description": "Layer at `",
-          "help_text": "Type: `string`, multiple: `False`, example: `raw_counts`. "
+          "description": "Layer at `.layers` to use for the calculation",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"raw_counts\"`. "
         },
         "n_fragments_for_nucleosome_signal": {
           "type": "integer",
-          "description": "Number of fragments to use per cell for nucleosome signal calculation",
+          "description": "Number of fragments to use per cell for nucleosome signal calculation.\nTakes very long to calculate, for a test run lower value (e.g",
           "help_text": "Type: `integer`, multiple: `False`, default: `100000`. ",
           "default": 100000
         },
@@ -61,7 +61,7 @@
         },
         "n_tss": {
           "type": "integer",
-          "description": "Number of the transcription start sites to calculate TSS enrichment score",
+          "description": "Number of the transcription start sites to calculate TSS enrichment score.\nSee https://www.sc-best-practices.org/chromatin_accessibility/quality_control.html#tss-enrichment\nfor more information\n",
           "help_text": "Type: `integer`, multiple: `False`, default: `3000`. ",
           "default": 3000
         },
@@ -81,14 +81,14 @@
         "output": {
           "type": "string",
           "format": "path",
-          "description": "Output h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         },
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects",
-          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
@@ -103,21 +103,21 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

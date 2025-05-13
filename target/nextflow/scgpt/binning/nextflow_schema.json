@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "binning",
   "description": "Conversion of (pre-processed) expression count data into relative values (bins) to address scale differences across sequencing batches.\n",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -27,24 +27,24 @@
           "type": "string",
           "format": "path",
           "exists": true,
-          "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+          "description": "Input h5mu file.\n",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "modality": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
           "default": "rna"
         },
         "input_layer": {
           "type": "string",
-          "description": "Mudata layer (key from ",
+          "description": "Mudata layer (key from .layers) to use as input data for binning",
           "help_text": "Type: `string`, multiple: `False`. "
         },
         "var_input": {
           "type": "string",
-          "description": "The name of the adata",
-          "help_text": "Type: `string`, multiple: `False`, default: `id_in_vocab`. ",
+          "description": "The name of the adata.var column containing boolean mask for vocabulary-cross checked and/or highly variable genes.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"id_in_vocab\"`. ",
           "default": "id_in_vocab"
         },
         "n_input_bins": {
@@ -64,24 +64,24 @@
           "type": "string",
           "format": "path",
           "description": "The output h5mu file containing the binned data",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         },
         "output_obsm_binned_counts": {
           "type": "string",
-          "description": "The name of the adata layer to write the binned data to",
-          "help_text": "Type: `string`, multiple: `False`, default: `binned_counts`. ",
+          "description": "The name of the adata layer to write the binned data to.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"binned_counts\"`. ",
           "default": "binned_counts"
         },
         "seed": {
           "type": "integer",
-          "description": "Seed for random number generation",
+          "description": "Seed for random number generation.\n",
           "help_text": "Type: `integer`, multiple: `False`. "
         },
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects",
-          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
@@ -96,21 +96,21 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }

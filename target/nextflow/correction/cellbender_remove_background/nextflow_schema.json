@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "cellbender_remove_background",
   "description": "Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.\n\nThis module removes counts due to ambient RNA molecules and random barcode swapping from (raw) UMI-based scRNA-seq count matrices. \nAt the moment, only the count matrices produced by the CellRanger count pipeline is supported. Support for additional tools and protocols \nwill be added in the future. A quick start tutorial can be found here.\n\nFleming et al. 2022, bioRxiv.\n",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "Dataset input": {
       "title": "Dataset input",
       "type": "object",
@@ -12,9 +12,9 @@
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "default": "",
+          "type": "object",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$"
+          "mimetype": "text/csv"
         }
       }
     },
@@ -28,12 +28,12 @@
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "modality": {
           "type": "string",
-          "description": "List of modalities to process",
-          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "description": "List of modalities to process.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
           "default": "rna"
         }
       }
@@ -47,61 +47,61 @@
           "type": "string",
           "format": "path",
           "description": "Full count matrix as an h5mu file, with background RNA removed",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         },
         "layer_output": {
           "type": "string",
           "description": "Output layer",
-          "help_text": "Type: `string`, multiple: `False`, default: `cellbender_corrected`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"cellbender_corrected\"`. ",
           "default": "cellbender_corrected"
         },
         "obs_background_fraction": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `cellbender_background_fraction`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"cellbender_background_fraction\"`. ",
           "default": "cellbender_background_fraction"
         },
         "obs_cell_probability": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `cellbender_cell_probability`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"cellbender_cell_probability\"`. ",
           "default": "cellbender_cell_probability"
         },
         "obs_cell_size": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `cellbender_cell_size`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"cellbender_cell_size\"`. ",
           "default": "cellbender_cell_size"
         },
         "obs_droplet_efficiency": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `cellbender_droplet_efficiency`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"cellbender_droplet_efficiency\"`. ",
           "default": "cellbender_droplet_efficiency"
         },
         "obs_latent_scale": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `cellbender_latent_scale`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"cellbender_latent_scale\"`. ",
           "default": "cellbender_latent_scale"
         },
         "var_ambient_expression": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `cellbender_ambient_expression`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"cellbender_ambient_expression\"`. ",
           "default": "cellbender_ambient_expression"
         },
         "obsm_gene_expression_encoding": {
           "type": "string",
           "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `cellbender_gene_expression_encoding`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"cellbender_gene_expression_encoding\"`. ",
           "default": "cellbender_gene_expression_encoding"
         },
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects",
-          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
@@ -122,7 +122,7 @@
         },
         "expected_cells": {
           "type": "integer",
-          "description": "Number of cells expected in the dataset (a rough estimate within a factor of 2 is sufficient)",
+          "description": "Number of cells expected in the dataset (a rough estimate within a factor of 2 is sufficient).",
           "help_text": "Type: `integer`, multiple: `False`, example: `1000`. "
         },
         "total_droplets_included": {
@@ -132,18 +132,18 @@
         },
         "force_cell_umi_prior": {
           "type": "integer",
-          "description": "Ignore CellBender's heuristic prior estimation, and use this prior for UMI counts in cells",
+          "description": "Ignore CellBender's heuristic prior estimation, and use this prior for UMI counts in cells.",
           "help_text": "Type: `integer`, multiple: `False`. "
         },
         "force_empty_umi_prior": {
           "type": "integer",
-          "description": "Ignore CellBender's heuristic prior estimation, and use this prior for UMI counts in empty droplets",
+          "description": "Ignore CellBender's heuristic prior estimation, and use this prior for UMI counts in empty droplets.",
           "help_text": "Type: `integer`, multiple: `False`. "
         },
         "model": {
           "type": "string",
-          "description": "Which model is being used for count data",
-          "help_text": "Type: `string`, multiple: `False`, default: `full`, choices: ``naive`, `simple`, `ambient`, `swapping`, `full``. ",
+          "description": "Which model is being used for count data.\n\n* 'naive' subtracts the estimated ambient profile.\n* 'simple' does not model either ambient RNA or random barcode swapping (for debugging purposes -- not recommended).\n* 'ambient' assumes background RNA is incorporated into droplets.\n* 'swapping' assumes background RNA comes from random barcode swapping (via PCR chimeras).\n* 'full' uses a combined ambient and swapping model.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"full\"`, choices: ``naive`, `simple`, `ambient`, `swapping`, `full``. ",
           "enum": [
             "naive",
             "simple",
@@ -155,7 +155,7 @@
         },
         "epochs": {
           "type": "integer",
-          "description": "Number of epochs to train",
+          "description": "Number of epochs to train.",
           "help_text": "Type: `integer`, multiple: `False`, default: `150`. ",
           "default": 150
         },
@@ -167,81 +167,57 @@
         },
         "z_dim": {
           "type": "integer",
-          "description": "Dimension of latent variable z",
+          "description": "Dimension of latent variable z.\n",
           "help_text": "Type: `integer`, multiple: `False`, default: `64`. ",
           "default": 64
         },
         "z_layers": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "integer"
-              }
-            }
-          ],
-          "description": "Dimension of hidden layers in the encoder for z",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Dimension of hidden layers in the encoder for z.\n",
           "help_text": "Type: `integer`, multiple: `True`, default: `[512]`. ",
-          "default": "[512]"
+          "default": [
+            512
+          ]
         },
         "training_fraction": {
           "type": "number",
-          "description": "Training detail: the fraction of the data used for training",
+          "description": "Training detail: the fraction of the data used for training.\nThe rest is never seen by the inference algorithm",
           "help_text": "Type: `double`, multiple: `False`, default: `0.9`. ",
           "default": 0.9
         },
         "empty_drop_training_fraction": {
           "type": "number",
-          "description": "Training detail: the fraction of the training data each epoch that \nis drawn (randomly sampled) from surely empty droplets",
+          "description": "Training detail: the fraction of the training data each epoch that \nis drawn (randomly sampled) from surely empty droplets.\n",
           "help_text": "Type: `double`, multiple: `False`, default: `0.2`. ",
           "default": 0.2
         },
         "ignore_features": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "integer"
-              }
-            }
-          ],
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
           "description": "Integer indices of features to ignore entirely",
           "help_text": "Type: `integer`, multiple: `True`. "
         },
         "fpr": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "number"
-              }
-            }
-          ],
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
           "description": "Target 'delta' false positive rate in [0, 1)",
           "help_text": "Type: `double`, multiple: `True`, default: `[0.01]`. ",
-          "default": "[0.01]"
+          "default": [
+            0.01
+          ]
         },
         "exclude_feature_types": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          ],
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
           "description": "Feature types to ignore during the analysis",
           "help_text": "Type: `string`, multiple: `True`. "
         },
@@ -253,18 +229,18 @@
         },
         "learning_rate": {
           "type": "number",
-          "description": "Training detail: lower learning rate for inference",
+          "description": "Training detail: lower learning rate for inference.\nA OneCycle learning rate schedule is used, where the\nupper learning rate is ten times this value",
           "help_text": "Type: `double`, multiple: `False`, default: `1.0E-4`. ",
-          "default": 0.0001
+          "default": 0.00010
         },
         "final_elbo_fail_fraction": {
           "type": "number",
-          "description": "Training is considered to have failed if \n(best_test_ELBO - final_test_ELBO)/(best_test_ELBO - initial_test_ELBO) > FINAL_ELBO_FAIL_FRACTION",
+          "description": "Training is considered to have failed if \n(best_test_ELBO - final_test_ELBO)/(best_test_ELBO - initial_test_ELBO) > FINAL_ELBO_FAIL_FRACTION.\nTraining will automatically re-run if --num-training-tries > 1.\nBy default, will not fail training based on final_training_ELBO.\n",
           "help_text": "Type: `double`, multiple: `False`. "
         },
         "epoch_elbo_fail_fraction": {
           "type": "number",
-          "description": "Training is considered to have failed if \n(previous_epoch_test_ELBO - current_epoch_test_ELBO)/(previous_epoch_test_ELBO - initial_train_ELBO) > EPOCH_ELBO_FAIL_FRACTION",
+          "description": "Training is considered to have failed if \n(previous_epoch_test_ELBO - current_epoch_test_ELBO)/(previous_epoch_test_ELBO - initial_train_ELBO) > EPOCH_ELBO_FAIL_FRACTION.\nTraining will automatically re-run if --num-training-tries > 1.\nBy default, will not fail training based on epoch_training_ELBO.\n",
           "help_text": "Type: `double`, multiple: `False`. "
         },
         "num_training_tries": {
@@ -281,7 +257,7 @@
         },
         "posterior_batch_size": {
           "type": "integer",
-          "description": "Training detail: size of batches when creating the posterior",
+          "description": "Training detail: size of batches when creating the posterior.\nReduce this to avoid running out of GPU memory creating the posterior\n(will be slower).\n",
           "help_text": "Type: `integer`, multiple: `False`, default: `128`. ",
           "default": 128
         },
@@ -297,18 +273,18 @@
         },
         "alpha": {
           "type": "number",
-          "description": "Tunable parameter alpha for the PRq posterior regularization method\n(not normally used: see documentation)",
+          "description": "Tunable parameter alpha for the PRq posterior regularization method\n(not normally used: see documentation).\n",
           "help_text": "Type: `double`, multiple: `False`. "
         },
         "q": {
           "type": "number",
-          "description": "Tunable parameter q for the CDF threshold estimation method (not\nnormally used: see documentation)",
+          "description": "Tunable parameter q for the CDF threshold estimation method (not\nnormally used: see documentation).\n",
           "help_text": "Type: `double`, multiple: `False`. "
         },
         "estimator": {
           "type": "string",
           "description": "Output denoised count estimation method",
-          "help_text": "Type: `string`, multiple: `False`, default: `mckp`, choices: ``map`, `mean`, `cdf`, `sample`, `mckp``. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"mckp\"`, choices: ``map`, `mean`, `cdf`, `sample`, `mckp``. ",
           "enum": [
             "map",
             "mean",
@@ -320,7 +296,7 @@
         },
         "estimator_multiple_cpu": {
           "type": "boolean",
-          "description": "Including the flag --estimator-multiple-cpu will use more than one\nCPU to compute the MCKP output count estimator in parallel (does nothing\nfor other estimators)",
+          "description": "Including the flag --estimator-multiple-cpu will use more than one\nCPU to compute the MCKP output count estimator in parallel (does nothing\nfor other estimators).\n",
           "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
           "default": false
         },
@@ -331,13 +307,13 @@
         },
         "debug": {
           "type": "boolean",
-          "description": "Including the flag --debug will log extra messages useful for debugging",
+          "description": "Including the flag --debug will log extra messages useful for debugging.\n",
           "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
           "default": false
         },
         "cuda": {
           "type": "boolean",
-          "description": "Including the flag --cuda will run the inference on a\nGPU",
+          "description": "Including the flag --cuda will run the inference on a\nGPU.\n",
           "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
           "default": false
         }
@@ -350,24 +326,24 @@
       "properties": {
         "publish_dir": {
           "type": "string",
-          "description": "Path to an output directory",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
         }
       }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/definitions/outputs"
+      "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/definitions/arguments"
+      "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/definitions/nextflow input-output arguments"
+      "$ref": "#/$defs/nextflow input-output arguments"
     }
   ]
 }
