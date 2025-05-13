@@ -1,0 +1,293 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "densmap",
+"description": "A modification of UMAP that adds an extra cost term in order to preserve information \nabout the relative local density of the data. It is performed on the same inputs as UMAP.\n",
+"type": "object",
+"$defs": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "oneOf": [
+                    {"format": "file-path", "mimetype": "text/csv", "pattern": "^\\S+\\.csv$"},
+                    {"type": "string"},
+                    {"items": { "type": "object" }, "type": "array"}
+                ]
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":"string",
+                "format": "path",
+                    "exists": true,"description": "Input h5mu file",
+                "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":"string",
+                "description": "",
+                "help_text": "Type: `string`, multiple: `False`, default: `rna`. "
+            ,
+                "default": "rna"
+            }
+    
+
+        ,
+                "uns_neighbors": {
+                "type":"string",
+                "description": "The `",
+                "help_text": "Type: `string`, multiple: `False`, default: `neighbors`. "
+            ,
+                "default": "neighbors"
+            }
+    
+
+        ,
+                "obsm_pca": {
+                "type":"string",
+                "description": "The slot in `",
+                "help_text": "Type: `string`, multiple: `False`, required. "
+            
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":"string",
+                "format": "path",
+                    "description": "Output h5mu file",
+                "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. "
+            ,
+                "default": "$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "obsm_output": {
+                "type":"string",
+                "description": "The ",
+                "help_text": "Type: `string`, multiple: `False`, default: `X_densmap`. "
+            ,
+                "default": "X_densmap"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":"string",
+                "description": "Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+}
+},
+    
+    
+    "arguments umap" : {
+    "title": "Arguments UMAP",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "min_dist": {
+                "type":"number",
+                "description": "The effective minimum distance between embedded points",
+                "help_text": "Type: `double`, multiple: `False`, default: `0.5`. "
+            ,
+                "default": 0.5
+            }
+    
+
+        ,
+                "spread": {
+                "type":"number",
+                "description": "The effective scale of embedded points",
+                "help_text": "Type: `double`, multiple: `False`, default: `1.0`. "
+            ,
+                "default": 1.0
+            }
+    
+
+        ,
+                "num_components": {
+                "type":"integer",
+                "description": "The number of dimensions of the embedding",
+                "help_text": "Type: `integer`, multiple: `False`, default: `2`. "
+            ,
+                "default": 2
+            }
+    
+
+        ,
+                "max_iter": {
+                "type":"integer",
+                "description": "The number of iterations (epochs) of the optimization",
+                "help_text": "Type: `integer`, multiple: `False`, default: `0`. "
+            ,
+                "default": 0
+            }
+    
+
+        ,
+                "alpha": {
+                "type":"number",
+                "description": "The initial learning rate for the embedding optimization",
+                "help_text": "Type: `double`, multiple: `False`, default: `1.0`. "
+            ,
+                "default": 1.0
+            }
+    
+
+        ,
+                "gamma": {
+                "type":"number",
+                "description": "Weighting applied to negative samples in low dimensional embedding optimization",
+                "help_text": "Type: `double`, multiple: `False`, default: `1.0`. "
+            ,
+                "default": 1.0
+            }
+    
+
+        ,
+                "negative_sample_rate": {
+                "type":"integer",
+                "description": "The number of negative samples to select per positive sample\nin the optimization process",
+                "help_text": "Type: `integer`, multiple: `False`, default: `5`. "
+            ,
+                "default": 5
+            }
+    
+
+        ,
+                "init_pos": {
+                "type":"string",
+                "description": "How to initialize the low dimensional embedding",
+                "help_text": "Type: `string`, multiple: `False`, default: `spectral`, choices: ``paga`, `spectral`, `random``. ",
+                "enum": ["paga", "spectral", "random"]
+            
+            ,
+                "default": "spectral"
+            }
+    
+
+}
+},
+    
+    
+    "arguments densmap" : {
+    "title": "Arguments densMAP",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "lambda": {
+                "type":"number",
+                "description": "Controls the regularization weight of the density correlation term in densMAP",
+                "help_text": "Type: `double`, multiple: `False`, default: `2.0`. "
+            ,
+                "default": 2.0
+            }
+    
+
+        ,
+                "fraction": {
+                "type":"number",
+                "description": "Controls the fraction of epochs (between 0 and 1) where the density-augmented objective \nis used in densMAP",
+                "help_text": "Type: `double`, multiple: `False`, default: `0.3`. "
+            ,
+                "default": 0.3
+            }
+    
+
+        ,
+                "var_shift": {
+                "type":"number",
+                "description": "A small constant added to the variance of local radii in the embedding when calculating \nthe density correlation objective to prevent numerical instability from dividing by a \nsmall number",
+                "help_text": "Type: `double`, multiple: `False`, default: `0.1`. "
+            ,
+                "default": 0.1
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":"string",
+                "description": "Path to an output directory",
+                "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/$defs/inputs"
+    },
+
+    {
+    "$ref": "#/$defs/outputs"
+    },
+
+    {
+    "$ref": "#/$defs/arguments umap"
+    },
+
+    {
+    "$ref": "#/$defs/arguments densmap"
+    },
+
+    {
+    "$ref": "#/$defs/nextflow input-output arguments"
+    }
+]
+}

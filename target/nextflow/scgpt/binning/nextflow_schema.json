@@ -1,0 +1,172 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "binning",
+"description": "Conversion of (pre-processed) expression count data into relative values (bins) to address scale differences across sequencing batches.\n",
+"type": "object",
+"$defs": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "oneOf": [
+                    {"format": "file-path", "mimetype": "text/csv", "pattern": "^\\S+\\.csv$"},
+                    {"type": "string"},
+                    {"items": { "type": "object" }, "type": "array"}
+                ]
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":"string",
+                "format": "path",
+                    "exists": true,"description": "Input h5mu file",
+                "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":"string",
+                "description": "",
+                "help_text": "Type: `string`, multiple: `False`, default: `rna`. "
+            ,
+                "default": "rna"
+            }
+    
+
+        ,
+                "input_layer": {
+                "type":"string",
+                "description": "Mudata layer (key from ",
+                "help_text": "Type: `string`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "var_input": {
+                "type":"string",
+                "description": "The name of the adata",
+                "help_text": "Type: `string`, multiple: `False`, default: `id_in_vocab`. "
+            ,
+                "default": "id_in_vocab"
+            }
+    
+
+        ,
+                "n_input_bins": {
+                "type":"integer",
+                "description": "The number of bins to discretize the data into",
+                "help_text": "Type: `integer`, multiple: `False`, default: `51`. "
+            ,
+                "default": 51
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":"string",
+                "format": "path",
+                    "description": "The output h5mu file containing the binned data",
+                "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. "
+            ,
+                "default": "$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "output_obsm_binned_counts": {
+                "type":"string",
+                "description": "The name of the adata layer to write the binned data to",
+                "help_text": "Type: `string`, multiple: `False`, default: `binned_counts`. "
+            ,
+                "default": "binned_counts"
+            }
+    
+
+        ,
+                "seed": {
+                "type":"integer",
+                "description": "Seed for random number generation",
+                "help_text": "Type: `integer`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":"string",
+                "description": "Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":"string",
+                "description": "Path to an output directory",
+                "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/$defs/inputs"
+    },
+
+    {
+    "$ref": "#/$defs/outputs"
+    },
+
+    {
+    "$ref": "#/$defs/nextflow input-output arguments"
+    }
+]
+}

@@ -1,0 +1,358 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "demuxlet",
+"description": "Demuxlet is a software tool to deconvolute sample identity and identify multiplets when\nmultiple samples are pooled by barcoded single cell sequencing. If external genotyping data\nfor each sample is available (e.g. from SNP arrays), demuxlet would be recommended. Be careful\nthat the parameters on the github is not in line with the newest help version.\n",
+"type": "object",
+"$defs": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "oneOf": [
+                    {"format": "file-path", "mimetype": "text/csv", "pattern": "^\\S+\\.csv$"},
+                    {"type": "string"},
+                    {"items": { "type": "object" }, "type": "array"}
+                ]
+            }
+        }
+    },
+
+    
+    
+    "input" : {
+    "title": "Input",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "sam": {
+                "type":"string",
+                "format": "path",
+                    "description": "Input SAM/BAM/CRAM file",
+                "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+            
+            }
+    
+
+        ,
+                "tag_group": {
+                "type":"string",
+                "description": "Tag representing readgroup or cell barcodes, in the case to partition the BAM file into multiple groups",
+                "help_text": "Type: `string`, multiple: `False`, default: `CB`. "
+            ,
+                "default": "CB"
+            }
+    
+
+        ,
+                "tag_umi": {
+                "type":"string",
+                "description": "Tag representing UMIs",
+                "help_text": "Type: `string`, multiple: `False`, default: `UB`. "
+            ,
+                "default": "UB"
+            }
+    
+
+        ,
+                "plp": {
+                "type":"string",
+                "description": "Input pileup format",
+                "help_text": "Type: `string`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "vcf": {
+                "type":"string",
+                "format": "path",
+                    "description": "Input VCF/BCF file, containing the individual genotypes (GT), posterior probability (GP), or genotype likelihood (PL)",
+                "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+            
+            }
+    
+
+        ,
+                "field": {
+                "type":"string",
+                "description": "FORMAT field to extract the genotype, likelihood, or posterior from",
+                "help_text": "Type: `string`, multiple: `False`, default: `GT`. "
+            ,
+                "default": "GT"
+            }
+    
+
+        ,
+                "geno_error_offset": {
+                "type":"number",
+                "description": "Offset of genotype error rate",
+                "help_text": "Type: `double`, multiple: `False`, default: `0.1`. "
+            ,
+                "default": 0.1
+            }
+    
+
+        ,
+                "geno_error_coeff": {
+                "type":"number",
+                "description": "Slope of genotype error rate",
+                "help_text": "Type: `double`, multiple: `False`, default: `0.0`. "
+            ,
+                "default": 0.0
+            }
+    
+
+        ,
+                "r2_info": {
+                "type":"string",
+                "description": "INFO field name representing R2 value",
+                "help_text": "Type: `string`, multiple: `False`, default: `R2`. "
+            ,
+                "default": "R2"
+            }
+    
+
+        ,
+                "min_mac": {
+                "type":"integer",
+                "description": "Minimum minor allele frequency",
+                "help_text": "Type: `integer`, multiple: `False`, default: `1`. "
+            ,
+                "default": 1
+            }
+    
+
+        ,
+                "min_call_rate": {
+                "type":"number",
+                "description": "Minimum call rate",
+                "help_text": "Type: `double`, multiple: `False`, default: `0.5`. "
+            ,
+                "default": 0.5
+            }
+    
+
+        ,
+                "alpha": {
+                "type":"string",
+                "description": "Grid of alpha to search for (default is 0",
+                "help_text": "Type: `string`, multiple: `False`, default: `0.5`. "
+            ,
+                "default": "0.5"
+            }
+    
+
+        ,
+                "doublet_prior": {
+                "type":"number",
+                "description": "Prior of doublet",
+                "help_text": "Type: `double`, multiple: `False`, default: `0.5`. "
+            ,
+                "default": 0.5
+            }
+    
+
+        ,
+                "sm": {
+                "type":"string",
+                "description": "List of sample IDs to compare to (default: use all)",
+                "help_text": "Type: `string`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "sm_list": {
+                "type":"string",
+                "description": "File containing the list of sample IDs to compare",
+                "help_text": "Type: `string`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "sam_verbose": {
+                "type":"integer",
+                "description": "Verbose message frequency for SAM/BAM/CRAM",
+                "help_text": "Type: `integer`, multiple: `False`, default: `1000000`. "
+            ,
+                "default": 1000000
+            }
+    
+
+        ,
+                "vcf_verbose": {
+                "type":"integer",
+                "description": "Verbose message frequency for VCF/BCF",
+                "help_text": "Type: `integer`, multiple: `False`, default: `1000`. "
+            ,
+                "default": 1000
+            }
+    
+
+        ,
+                "cap_bq": {
+                "type":"integer",
+                "description": "Maximum base quality (higher BQ will be capped)",
+                "help_text": "Type: `integer`, multiple: `False`, default: `20`. "
+            ,
+                "default": 20
+            }
+    
+
+        ,
+                "min_bq": {
+                "type":"integer",
+                "description": "Minimum base quality to consider (lower BQ will be skipped)",
+                "help_text": "Type: `integer`, multiple: `False`, default: `13`. "
+            ,
+                "default": 13
+            }
+    
+
+        ,
+                "min_mq": {
+                "type":"integer",
+                "description": "Minimum mapping quality to consider (lower MQ will be ignored)",
+                "help_text": "Type: `integer`, multiple: `False`, default: `20`. "
+            ,
+                "default": 20
+            }
+    
+
+        ,
+                "min_td": {
+                "type":"integer",
+                "description": "Minimum distance to the tail (lower will be ignored)",
+                "help_text": "Type: `integer`, multiple: `False`, default: `0`. "
+            ,
+                "default": 0
+            }
+    
+
+        ,
+                "excl_flag": {
+                "type":"integer",
+                "description": "SAM/BAM FLAGs to be excluded",
+                "help_text": "Type: `integer`, multiple: `False`, default: `3844`. "
+            ,
+                "default": 3844
+            }
+    
+
+        ,
+                "group_list": {
+                "type":"string",
+                "description": "List of tag readgroup/cell barcode to consider in this run",
+                "help_text": "Type: `string`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "min_total": {
+                "type":"integer",
+                "description": "Minimum number of total reads for a droplet/cell to be considered",
+                "help_text": "Type: `integer`, multiple: `False`, default: `0`. "
+            ,
+                "default": 0
+            }
+    
+
+        ,
+                "min_snp": {
+                "type":"integer",
+                "description": "Minimum number of SNPs with coverage for a droplet/cell to be considered",
+                "help_text": "Type: `integer`, multiple: `False`, default: `0`. "
+            ,
+                "default": 0
+            }
+    
+
+        ,
+                "min_umi": {
+                "type":"integer",
+                "description": "Minimum number of UMIs for a droplet/cell to be considered",
+                "help_text": "Type: `integer`, multiple: `False`, default: `0`. "
+            ,
+                "default": 0
+            }
+    
+
+}
+},
+    
+    
+    "output" : {
+    "title": "Output",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":"string",
+                "format": "path",
+                    "description": "Output directory",
+                "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output`, direction: `output`, example: `demux`. "
+            ,
+                "default": "$id.$key.output"
+            }
+    
+
+        ,
+                "out": {
+                "type":"string",
+                "description": "demuxlet output file prefix",
+                "help_text": "Type: `string`, multiple: `False`, example: `demuxlet`. "
+            
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":"string",
+                "description": "Path to an output directory",
+                "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/$defs/input"
+    },
+
+    {
+    "$ref": "#/$defs/output"
+    },
+
+    {
+    "$ref": "#/$defs/nextflow input-output arguments"
+    }
+]
+}

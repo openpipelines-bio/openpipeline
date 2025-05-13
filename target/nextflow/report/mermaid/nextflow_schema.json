@@ -1,0 +1,130 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "mermaid",
+"description": "Generates a network from mermaid code.\n",
+"type": "object",
+"$defs": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "oneOf": [
+                    {"format": "file-path", "mimetype": "text/csv", "pattern": "^\\S+\\.csv$"},
+                    {"type": "string"},
+                    {"items": { "type": "object" }, "type": "array"}
+                ]
+            }
+        }
+    },
+
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":"string",
+                "format": "path",
+                    "exists": true,"description": "Input directory",
+                "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
+            
+            }
+    
+
+        ,
+                "output": {
+                "type":"string",
+                "format": "path",
+                    "description": "Generated network as output",
+                "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`. "
+            ,
+                "default": "$id.$key.output"
+            }
+    
+
+        ,
+                "output_format": {
+                "type":"string",
+                "description": "Output format for the generated image",
+                "help_text": "Type: `string`, multiple: `False`, choices: ``svg`, `png`, `pdf``. ",
+                "enum": ["svg", "png", "pdf"]
+            
+            
+            }
+    
+
+        ,
+                "width": {
+                "type":"integer",
+                "description": "Width of the page",
+                "help_text": "Type: `integer`, multiple: `False`, default: `800`. "
+            ,
+                "default": 800
+            }
+    
+
+        ,
+                "height": {
+                "type":"integer",
+                "description": "Height of the page",
+                "help_text": "Type: `integer`, multiple: `False`, default: `600`. "
+            ,
+                "default": 600
+            }
+    
+
+        ,
+                "background_color": {
+                "type":"string",
+                "description": "Background color for pngs/svgs (not pdfs)",
+                "help_text": "Type: `string`, multiple: `False`, default: `white`, example: `#F0F0F0`. "
+            ,
+                "default": "white"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":"string",
+                "description": "Path to an output directory",
+                "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/$defs/arguments"
+    },
+
+    {
+    "$ref": "#/$defs/nextflow input-output arguments"
+    }
+]
+}

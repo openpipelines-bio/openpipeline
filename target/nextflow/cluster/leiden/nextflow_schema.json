@@ -1,0 +1,141 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "leiden",
+"description": "Cluster cells using the [Leiden algorithm] [Traag18] implemented in the [Scanpy framework] [Wolf18]. \nLeiden is an improved version of the [Louvain algorithm] [Blondel08]. \nIt has been proposed for single-cell analysis by [Levine15] [Levine15]. \nThis requires having ran `neighbors/find_neighbors` or `neighbors/bbknn` first.\n\n[Blondel08]: Blondel et al. (2008), Fast unfolding of communities in large networks, J. Stat. Mech.  \n[Levine15]: Levine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals Progenitor-like Cells that Correlate with Prognosis, Cell.  \n[Traag18]: Traag et al. (2018), From Louvain to Leiden: guaranteeing well-connected communities arXiv.  \n[Wolf18]: Wolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology.  \n",
+"type": "object",
+"$defs": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "oneOf": [
+                    {"format": "file-path", "mimetype": "text/csv", "pattern": "^\\S+\\.csv$"},
+                    {"type": "string"},
+                    {"items": { "type": "object" }, "type": "array"}
+                ]
+            }
+        }
+    },
+
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":"string",
+                "format": "path",
+                    "exists": true,"description": "Input file",
+                "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":"string",
+                "description": "",
+                "help_text": "Type: `string`, multiple: `False`, default: `rna`. "
+            ,
+                "default": "rna"
+            }
+    
+
+        ,
+                "obsp_connectivities": {
+                "type":"string",
+                "description": "In which ",
+                "help_text": "Type: `string`, multiple: `False`, default: `connectivities`. "
+            ,
+                "default": "connectivities"
+            }
+    
+
+        ,
+                "output": {
+                "type":"string",
+                "format": "path",
+                    "description": "Output file",
+                "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. "
+            ,
+                "default": "$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "obsm_name": {
+                "type":"string",
+                "description": "Name of the ",
+                "help_text": "Type: `string`, multiple: `False`, default: `leiden`. "
+            ,
+                "default": "leiden"
+            }
+    
+
+        ,
+                "resolution": {
+                "items": { "type":"number"},
+                "type": "array",
+                "description": "A parameter value controlling the coarseness of the clustering",
+                "help_text": "Type: `double`, multiple: `True`, required, default: `[1.0]`. "
+            ,
+                "default": "[1.0]"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":"string",
+                "description": "Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":"string",
+                "description": "Path to an output directory",
+                "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/$defs/arguments"
+    },
+
+    {
+    "$ref": "#/$defs/nextflow input-output arguments"
+    }
+]
+}

@@ -1,0 +1,108 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "from_bd_to_10x_molecular_barcode_tags",
+"description": "Convert the molecular barcode sequence SAM tag from BD format (MA) to 10X format (UB).\n",
+"type": "object",
+"$defs": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "oneOf": [
+                    {"format": "file-path", "mimetype": "text/csv", "pattern": "^\\S+\\.csv$"},
+                    {"type": "string"},
+                    {"items": { "type": "object" }, "type": "array"}
+                ]
+            }
+        }
+    },
+
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":"string",
+                "format": "path",
+                    "exists": true,"description": "Input SAM or BAM file",
+                "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.bam`. "
+            
+            }
+    
+
+        ,
+                "output": {
+                "type":"string",
+                "format": "path",
+                    "description": "Output alignment file",
+                "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.sam`, direction: `output`, example: `output.sam`. "
+            ,
+                "default": "$id.$key.output.sam"
+            }
+    
+
+        ,
+                "bam": {
+                "type":"boolean",
+                "description": "Output a BAM file",
+                "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. "
+            ,
+                "default": false
+            }
+    
+
+        ,
+                "threads": {
+                "type":"integer",
+                "description": "Number of threads",
+                "help_text": "Type: `integer`, multiple: `False`. "
+            
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":"string",
+                "description": "Path to an output directory",
+                "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/$defs/arguments"
+    },
+
+    {
+    "$ref": "#/$defs/nextflow input-output arguments"
+    }
+]
+}

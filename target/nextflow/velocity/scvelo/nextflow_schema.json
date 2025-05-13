@@ -1,0 +1,293 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "scvelo",
+"description": "No description",
+"type": "object",
+"$defs": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "oneOf": [
+                    {"format": "file-path", "mimetype": "text/csv", "pattern": "^\\S+\\.csv$"},
+                    {"type": "string"},
+                    {"items": { "type": "object" }, "type": "array"}
+                ]
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":"string",
+                "format": "path",
+                    "exists": true,"description": "Input MuData file",
+                "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
+            
+            }
+    
+
+        ,
+                "counts_layer": {
+                "type":"string",
+                "description": "Name of the counts layer, if not specified, X is used",
+                "help_text": "Type: `string`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":"string",
+                "description": "Input modality",
+                "help_text": "Type: `string`, multiple: `False`, required. "
+            
+            }
+    
+
+        ,
+                "layer_spliced": {
+                "type":"string",
+                "description": "",
+                "help_text": "Type: `string`, multiple: `False`, default: `spliced`. "
+            ,
+                "default": "spliced"
+            }
+    
+
+        ,
+                "layer_unspliced": {
+                "type":"string",
+                "description": "",
+                "help_text": "Type: `string`, multiple: `False`, default: `unspliced`. "
+            ,
+                "default": "unspliced"
+            }
+    
+
+        ,
+                "layer_ambiguous": {
+                "type":"string",
+                "description": "",
+                "help_text": "Type: `string`, multiple: `False`, default: `ambiguous`. "
+            ,
+                "default": "ambiguous"
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":"string",
+                "format": "path",
+                    "description": "Output directory",
+                "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`. "
+            ,
+                "default": "$id.$key.output"
+            }
+    
+
+        ,
+                "output_h5mu": {
+                "type":"string",
+                "format": "path",
+                    "description": "Output mudata file",
+                "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_h5mu`, direction: `output`. "
+            ,
+                "default": "$id.$key.output_h5mu"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":"string",
+                "description": "Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+}
+},
+    
+    
+    "filtering and normalization" : {
+    "title": "Filtering and normalization",
+    "type": "object",
+    "description": "Arguments for filtering, normalization an log transform (see scvelo.pp.filter_and_normalize function)",
+    "properties": {
+    
+        
+                "min_counts": {
+                "type":"integer",
+                "description": "Minimum number of counts required for a gene to pass filtering (spliced)",
+                "help_text": "Type: `integer`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "min_counts_u": {
+                "type":"integer",
+                "description": "Minimum number of counts required for a gene to pass filtering (unspliced)",
+                "help_text": "Type: `integer`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "min_cells": {
+                "type":"integer",
+                "description": "Minimum number of cells expressed required to pass filtering (spliced)",
+                "help_text": "Type: `integer`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "min_cells_u": {
+                "type":"integer",
+                "description": "Minimum number of cells expressed required to pass filtering (unspliced)",
+                "help_text": "Type: `integer`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "min_shared_counts": {
+                "type":"integer",
+                "description": "Minimum number of counts (both unspliced and spliced) required for a gene",
+                "help_text": "Type: `integer`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "min_shared_cells": {
+                "type":"integer",
+                "description": "Minimum number of cells required to be expressed (both unspliced and spliced)",
+                "help_text": "Type: `integer`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "n_top_genes": {
+                "type":"integer",
+                "description": "Number of genes to keep",
+                "help_text": "Type: `integer`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "log_transform": {
+                "type":"boolean",
+                "description": "Do not log transform counts",
+                "help_text": "Type: `boolean`, multiple: `False`, default: `true`. "
+            ,
+                "default": true
+            }
+    
+
+}
+},
+    
+    
+    "fitting parameters" : {
+    "title": "Fitting parameters",
+    "type": "object",
+    "description": "Arguments for fitting the data",
+    "properties": {
+    
+        
+                "n_principal_components": {
+                "type":"integer",
+                "description": "Number of principal components to use for calculating moments",
+                "help_text": "Type: `integer`, multiple: `False`. "
+            
+            }
+    
+
+        ,
+                "n_neighbors": {
+                "type":"integer",
+                "description": "Number of neighbors to use",
+                "help_text": "Type: `integer`, multiple: `False`, default: `30`. "
+            ,
+                "default": 30
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":"string",
+                "description": "Path to an output directory",
+                "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/$defs/inputs"
+    },
+
+    {
+    "$ref": "#/$defs/outputs"
+    },
+
+    {
+    "$ref": "#/$defs/filtering and normalization"
+    },
+
+    {
+    "$ref": "#/$defs/fitting parameters"
+    },
+
+    {
+    "$ref": "#/$defs/nextflow input-output arguments"
+    }
+]
+}
