@@ -1,237 +1,156 @@
 {
-"$schema": "https://json-schema.org/draft/2020-12/schema",
-"title": "highly_variable_features_scanpy",
-"description": "Annotate highly variable features [Satija15] [Zheng17] [Stuart19].\n\nExpects logarithmized data, except when flavor=\u0027seurat_v3\u0027 in which count data is expected.\n\nDepending on flavor, this reproduces the R-implementations of Seurat [Satija15], Cell Ranger [Zheng17], and Seurat v3 [Stuart19].\n\nFor the dispersion-based methods ([Satija15] and [Zheng17]), the normalized dispersion is obtained by scaling with the mean and standard deviation of the dispersions for features falling into a given bin for mean expression of features. This means that for each bin of mean expression, highly variable features are selected.\n\nFor [Stuart19], a normalized variance for each feature is computed. First, the data are standardized (i.e., z-score normalization per feature) with a regularized standard deviation. Next, the normalized variance is computed as the variance of each feature after the transformation. Features are ranked by the normalized variance.\n",
-"type": "object",
-"$defs": {
-
-    
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "highly_variable_features_scanpy",
+  "description": "Annotate highly variable features [Satija15] [Zheng17] [Stuart19].\n\nExpects logarithmized data, except when flavor='seurat_v3' in which count data is expected.\n\nDepending on flavor, this reproduces the R-implementations of Seurat [Satija15], Cell Ranger [Zheng17], and Seurat v3 [Stuart19].\n\nFor the dispersion-based methods ([Satija15] and [Zheng17]), the normalized dispersion is obtained by scaling with the mean and standard deviation of the dispersions for features falling into a given bin for mean expression of features. This means that for each bin of mean expression, highly variable features are selected.\n\nFor [Stuart19], a normalized variance for each feature is computed. First, the data are standardized (i.e., z-score normalization per feature) with a regularized standard deviation. Next, the normalized variance is computed as the variance of each feature after the transformation. Features are ranked by the normalized variance.\n",
+  "type": "object",
+  "definitions": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "oneOf": [
-                    {"format": "file-path", "mimetype": "text/csv", "pattern": "^\\S+\\.csv$"},
-                    {"type": "string"},
-                    {"items": { "type": "object" }, "type": "array"}
-                ]
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
         }
+      }
     },
-
-    
-    
-    "arguments" : {
-    "title": "Arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "input": {
-                "type":"string",
-                "format": "path",
-                    "exists": true,"description": "Input h5mu file",
-                "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
-            
-            }
-    
-
-        ,
-                "modality": {
-                "type":"string",
-                "description": "",
-                "help_text": "Type: `string`, multiple: `False`, default: `rna`. "
-            ,
-                "default": "rna"
-            }
-    
-
-        ,
-                "layer": {
-                "type":"string",
-                "description": "use adata",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "var_input": {
-                "type":"string",
-                "description": "If specified, use boolean array in adata",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "output": {
-                "type":"string",
-                "format": "path",
-                    "description": "Output h5mu file",
-                "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. "
-            ,
-                "default": "$id.$key.output.h5mu"
-            }
-    
-
-        ,
-                "var_name_filter": {
-                "type":"string",
-                "description": "In which ",
-                "help_text": "Type: `string`, multiple: `False`, default: `filter_with_hvg`. "
-            ,
-                "default": "filter_with_hvg"
-            }
-    
-
-        ,
-                "varm_name": {
-                "type":"string",
-                "description": "In which ",
-                "help_text": "Type: `string`, multiple: `False`, default: `hvg`. "
-            ,
-                "default": "hvg"
-            }
-    
-
-        ,
-                "flavor": {
-                "type":"string",
-                "description": "Choose the flavor for identifying highly variable features",
-                "help_text": "Type: `string`, multiple: `False`, default: `seurat`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. ",
-                "enum": ["seurat", "cell_ranger", "seurat_v3"]
-            
-            ,
-                "default": "seurat"
-            }
-    
-
-        ,
-                "n_top_features": {
-                "type":"integer",
-                "description": "Number of highly-variable features to keep",
-                "help_text": "Type: `integer`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "min_mean": {
-                "type":"number",
-                "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
-                "help_text": "Type: `double`, multiple: `False`, default: `0.0125`. "
-            ,
-                "default": 0.0125
-            }
-    
-
-        ,
-                "max_mean": {
-                "type":"number",
-                "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
-                "help_text": "Type: `double`, multiple: `False`, default: `3.0`. "
-            ,
-                "default": 3.0
-            }
-    
-
-        ,
-                "min_disp": {
-                "type":"number",
-                "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
-                "help_text": "Type: `double`, multiple: `False`, default: `0.5`. "
-            ,
-                "default": 0.5
-            }
-    
-
-        ,
-                "max_disp": {
-                "type":"number",
-                "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
-                "help_text": "Type: `double`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "span": {
-                "type":"number",
-                "description": "The fraction of the data (cells) used when estimating the variance in the loess model fit if flavor=\u0027seurat_v3\u0027",
-                "help_text": "Type: `double`, multiple: `False`, default: `0.3`. "
-            ,
-                "default": 0.3
-            }
-    
-
-        ,
-                "n_bins": {
-                "type":"integer",
-                "description": "Number of bins for binning the mean feature expression",
-                "help_text": "Type: `integer`, multiple: `False`, default: `20`. "
-            ,
-                "default": 20
-            }
-    
-
-        ,
-                "obs_batch_key": {
-                "type":"string",
-                "description": "If specified, highly-variable features are selected within each batch separately and merged",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":"string",
-                "description": "Compression format to use for the output AnnData and/or Mudata objects",
-                "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":"string",
-                "description": "Path to an output directory",
-                "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/$defs/arguments"
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "default": "rna"
+        },
+        "layer": {
+          "type": "string",
+          "description": "use adata",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "var_input": {
+          "type": "string",
+          "description": "If specified, use boolean array in adata",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "var_name_filter": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`, default: `filter_with_hvg`. ",
+          "default": "filter_with_hvg"
+        },
+        "varm_name": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`, default: `hvg`. ",
+          "default": "hvg"
+        },
+        "flavor": {
+          "type": "string",
+          "description": "Choose the flavor for identifying highly variable features",
+          "help_text": "Type: `string`, multiple: `False`, default: `seurat`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. ",
+          "enum": [
+            "seurat",
+            "cell_ranger",
+            "seurat_v3"
+          ],
+          "default": "seurat"
+        },
+        "n_top_features": {
+          "type": "integer",
+          "description": "Number of highly-variable features to keep",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "min_mean": {
+          "type": "number",
+          "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.0125`. ",
+          "default": 0.0125
+        },
+        "max_mean": {
+          "type": "number",
+          "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
+          "help_text": "Type: `double`, multiple: `False`, default: `3.0`. ",
+          "default": 3.0
+        },
+        "min_disp": {
+          "type": "number",
+          "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.5`. ",
+          "default": 0.5
+        },
+        "max_disp": {
+          "type": "number",
+          "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
+          "help_text": "Type: `double`, multiple: `False`. "
+        },
+        "span": {
+          "type": "number",
+          "description": "The fraction of the data (cells) used when estimating the variance in the loess model fit if flavor='seurat_v3'",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.3`. ",
+          "default": 0.3
+        },
+        "n_bins": {
+          "type": "integer",
+          "description": "Number of bins for binning the mean feature expression",
+          "help_text": "Type: `integer`, multiple: `False`, default: `20`. ",
+          "default": 20
+        },
+        "obs_batch_key": {
+          "type": "string",
+          "description": "If specified, highly-variable features are selected within each batch separately and merged",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects",
+          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/arguments"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
 }

@@ -1,342 +1,226 @@
 {
-"$schema": "https://json-schema.org/draft/2020-12/schema",
-"title": "scarches",
-"description": "Performs reference mapping with scArches",
-"type": "object",
-"$defs": {
-
-    
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "scarches",
+  "description": "Performs reference mapping with scArches",
+  "type": "object",
+  "definitions": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "oneOf": [
-                    {"format": "file-path", "mimetype": "text/csv", "pattern": "^\\S+\\.csv$"},
-                    {"type": "string"},
-                    {"items": { "type": "object" }, "type": "array"}
-                ]
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
         }
+      }
     },
-
-    
-    
-    "inputs" : {
-    "title": "Inputs",
-    "type": "object",
-    "description": "Arguments related to the input (query) dataset",
-    "properties": {
-    
-        
-                "input": {
-                "type":"string",
-                "format": "path",
-                    "exists": true,"description": "Input h5mu file to use as a query",
-                "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
-            
-            }
-    
-
-        ,
-                "layer": {
-                "type":"string",
-                "description": "Layer to be used for scArches, if ",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "modality": {
-                "type":"string",
-                "description": "",
-                "help_text": "Type: `string`, multiple: `False`, default: `rna`. "
-            ,
-                "default": "rna"
-            }
-    
-
-        ,
-                "input_obs_batch": {
-                "type":"string",
-                "description": "Name of the ",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "input_obs_label": {
-                "type":"string",
-                "description": "Name of the ",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "input_var_gene_names": {
-                "type":"string",
-                "description": "Name of the ",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "input_obs_size_factor": {
-                "type":"string",
-                "description": "Key in adata",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-}
-},
-    
-    
-    "outputs" : {
-    "title": "Outputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output": {
-                "type":"string",
-                "format": "path",
-                    "description": "Output h5mu file",
-                "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`. "
-            ,
-                "default": "$id.$key.output"
-            }
-    
-
-        ,
-                "model_output": {
-                "type":"string",
-                "format": "path",
-                    "description": "Output directory for model",
-                "help_text": "Type: `file`, multiple: `False`, default: `model`, direction: `output`. "
-            ,
-                "default": "model"
-            }
-    
-
-        ,
-                "obsm_output": {
-                "type":"string",
-                "description": "In which ",
-                "help_text": "Type: `string`, multiple: `False`, default: `X_integrated_scanvi`. "
-            ,
-                "default": "X_integrated_scanvi"
-            }
-    
-
-        ,
-                "obs_output_predictions": {
-                "type":"string",
-                "description": "In which ",
-                "help_text": "Type: `string`, multiple: `False`, default: `scanvi_pred`. "
-            ,
-                "default": "scanvi_pred"
-            }
-    
-
-        ,
-                "obs_output_probabilities": {
-                "type":"string",
-                "description": "In which ",
-                "help_text": "Type: `string`, multiple: `False`, default: `scanvi_proba`. "
-            ,
-                "default": "scanvi_proba"
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":"string",
-                "description": "Compression format to use for the output AnnData and/or Mudata objects",
-                "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
-    "reference" : {
-    "title": "Reference",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "reference": {
-                "type":"string",
-                "format": "path",
-                    "exists": true,"description": "Path to the directory with reference model or a web link",
-                "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
-            
-            }
-    
-
-}
-},
-    
-    
-    "early stopping arguments" : {
-    "title": "Early stopping arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "early_stopping": {
-                "type":"boolean",
-                "description": "Whether to perform early stopping with respect to the validation set",
-                "help_text": "Type: `boolean`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "early_stopping_monitor": {
-                "type":"string",
-                "description": "Metric logged during validation set epoch",
-                "help_text": "Type: `string`, multiple: `False`, default: `elbo_validation`, choices: ``elbo_validation`, `reconstruction_loss_validation`, `kl_local_validation``. ",
-                "enum": ["elbo_validation", "reconstruction_loss_validation", "kl_local_validation"]
-            
-            ,
-                "default": "elbo_validation"
-            }
-    
-
-        ,
-                "early_stopping_patience": {
-                "type":"integer",
-                "description": "Number of validation epochs with no improvement after which training will be stopped",
-                "help_text": "Type: `integer`, multiple: `False`, default: `45`. "
-            ,
-                "default": 45
-            }
-    
-
-        ,
-                "early_stopping_min_delta": {
-                "type":"number",
-                "description": "Minimum change in the monitored quantity to qualify as an improvement, i",
-                "help_text": "Type: `double`, multiple: `False`, default: `0.0`. "
-            ,
-                "default": 0.0
-            }
-    
-
-}
-},
-    
-    
-    "learning parameters" : {
-    "title": "Learning parameters",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "max_epochs": {
-                "type":"integer",
-                "description": "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest",
-                "help_text": "Type: `integer`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "reduce_lr_on_plateau": {
-                "type":"boolean",
-                "description": "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus",
-                "help_text": "Type: `boolean`, multiple: `False`, default: `true`. "
-            ,
-                "default": true
-            }
-    
-
-        ,
-                "lr_factor": {
-                "type":"number",
-                "description": "Factor to reduce learning rate",
-                "help_text": "Type: `double`, multiple: `False`, default: `0.6`. "
-            ,
-                "default": 0.6
-            }
-    
-
-        ,
-                "lr_patience": {
-                "type":"number",
-                "description": "Number of epochs with no improvement after which learning rate will be reduced",
-                "help_text": "Type: `double`, multiple: `False`, default: `30.0`. "
-            ,
-                "default": 30.0
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":"string",
-                "description": "Path to an output directory",
-                "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/$defs/inputs"
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "Arguments related to the input (query) dataset",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file to use as a query",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
+        },
+        "layer": {
+          "type": "string",
+          "description": "Layer to be used for scArches, if ",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "default": "rna"
+        },
+        "input_obs_batch": {
+          "type": "string",
+          "description": "Name of the ",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "input_obs_label": {
+          "type": "string",
+          "description": "Name of the ",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "input_var_gene_names": {
+          "type": "string",
+          "description": "Name of the ",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "input_obs_size_factor": {
+          "type": "string",
+          "description": "Key in adata",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/outputs"
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`. ",
+          "default": "$id.$key.output"
+        },
+        "model_output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output directory for model",
+          "help_text": "Type: `file`, multiple: `False`, default: `model`, direction: `output`. ",
+          "default": "model"
+        },
+        "obsm_output": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`, default: `X_integrated_scanvi`. ",
+          "default": "X_integrated_scanvi"
+        },
+        "obs_output_predictions": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`, default: `scanvi_pred`. ",
+          "default": "scanvi_pred"
+        },
+        "obs_output_probabilities": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`, default: `scanvi_proba`. ",
+          "default": "scanvi_proba"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects",
+          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/reference"
+    "reference": {
+      "title": "Reference",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "reference": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Path to the directory with reference model or a web link",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/early stopping arguments"
+    "early stopping arguments": {
+      "title": "Early stopping arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "early_stopping": {
+          "type": "boolean",
+          "description": "Whether to perform early stopping with respect to the validation set",
+          "help_text": "Type: `boolean`, multiple: `False`. "
+        },
+        "early_stopping_monitor": {
+          "type": "string",
+          "description": "Metric logged during validation set epoch",
+          "help_text": "Type: `string`, multiple: `False`, default: `elbo_validation`, choices: ``elbo_validation`, `reconstruction_loss_validation`, `kl_local_validation``. ",
+          "enum": [
+            "elbo_validation",
+            "reconstruction_loss_validation",
+            "kl_local_validation"
+          ],
+          "default": "elbo_validation"
+        },
+        "early_stopping_patience": {
+          "type": "integer",
+          "description": "Number of validation epochs with no improvement after which training will be stopped",
+          "help_text": "Type: `integer`, multiple: `False`, default: `45`. ",
+          "default": 45
+        },
+        "early_stopping_min_delta": {
+          "type": "number",
+          "description": "Minimum change in the monitored quantity to qualify as an improvement, i",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.0`. ",
+          "default": 0.0
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/learning parameters"
+    "learning parameters": {
+      "title": "Learning parameters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "max_epochs": {
+          "type": "integer",
+          "description": "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "reduce_lr_on_plateau": {
+          "type": "boolean",
+          "description": "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
+        },
+        "lr_factor": {
+          "type": "number",
+          "description": "Factor to reduce learning rate",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.6`. ",
+          "default": 0.6
+        },
+        "lr_patience": {
+          "type": "number",
+          "description": "Number of epochs with no improvement after which learning rate will be reduced",
+          "help_text": "Type: `double`, multiple: `False`, default: `30.0`. ",
+          "default": 30.0
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/inputs"
+    },
+    {
+      "$ref": "#/definitions/outputs"
+    },
+    {
+      "$ref": "#/definitions/reference"
+    },
+    {
+      "$ref": "#/definitions/early stopping arguments"
+    },
+    {
+      "$ref": "#/definitions/learning parameters"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
 }

@@ -1,286 +1,185 @@
 {
-"$schema": "https://json-schema.org/draft/2020-12/schema",
-"title": "totalvi",
-"description": "Performs mapping to the reference by totalvi model: https://docs.scvi-tools.org/en/stable/tutorials/notebooks/scarches_scvi_tools.html#Reference-mapping-with-TOTALVI",
-"type": "object",
-"$defs": {
-
-    
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "totalvi",
+  "description": "Performs mapping to the reference by totalvi model: https://docs.scvi-tools.org/en/stable/tutorials/notebooks/scarches_scvi_tools.html#Reference-mapping-with-TOTALVI",
+  "type": "object",
+  "definitions": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "oneOf": [
-                    {"format": "file-path", "mimetype": "text/csv", "pattern": "^\\S+\\.csv$"},
-                    {"type": "string"},
-                    {"items": { "type": "object" }, "type": "array"}
-                ]
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
         }
+      }
     },
-
-    
-    
-    "inputs" : {
-    "title": "Inputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "input": {
-                "type":"string",
-                "format": "path",
-                    "exists": true,"description": "Input h5mu file with query data to integrate with reference",
-                "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
-            
-            }
-    
-
-        ,
-                "reference": {
-                "type":"string",
-                "format": "path",
-                    "exists": true,"description": "Input h5mu file with reference data to train the TOTALVI model",
-                "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
-            
-            }
-    
-
-        ,
-                "force_retrain": {
-                "type":"boolean",
-                "description": "If true, retrain the model and save it to reference_model_path",
-                "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. "
-            ,
-                "default": false
-            }
-    
-
-        ,
-                "query_modality": {
-                "type":"string",
-                "description": "",
-                "help_text": "Type: `string`, multiple: `False`, default: `rna`. "
-            ,
-                "default": "rna"
-            }
-    
-
-        ,
-                "query_proteins_modality": {
-                "type":"string",
-                "description": "Name of the modality in the input (query) h5mu file containing protein data",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "reference_modality": {
-                "type":"string",
-                "description": "",
-                "help_text": "Type: `string`, multiple: `False`, default: `rna`. "
-            ,
-                "default": "rna"
-            }
-    
-
-        ,
-                "reference_proteins_modality": {
-                "type":"string",
-                "description": "Name of the modality containing proteins in the reference",
-                "help_text": "Type: `string`, multiple: `False`, default: `prot`. "
-            ,
-                "default": "prot"
-            }
-    
-
-        ,
-                "input_layer": {
-                "type":"string",
-                "description": "Input layer to use",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "obs_batch": {
-                "type":"string",
-                "description": "Column name discriminating between your batches",
-                "help_text": "Type: `string`, multiple: `False`, default: `sample_id`. "
-            ,
-                "default": "sample_id"
-            }
-    
-
-        ,
-                "var_input": {
-                "type":"string",
-                "description": "",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-}
-},
-    
-    
-    "outputs" : {
-    "title": "Outputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output": {
-                "type":"string",
-                "format": "path",
-                    "description": "Output h5mu file",
-                "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`. "
-            ,
-                "default": "$id.$key.output"
-            }
-    
-
-        ,
-                "obsm_output": {
-                "type":"string",
-                "description": "In which ",
-                "help_text": "Type: `string`, multiple: `False`, default: `X_integrated_totalvi`. "
-            ,
-                "default": "X_integrated_totalvi"
-            }
-    
-
-        ,
-                "obsm_normalized_rna_output": {
-                "type":"string",
-                "description": "In which ",
-                "help_text": "Type: `string`, multiple: `False`, default: `X_totalvi_normalized_rna`. "
-            ,
-                "default": "X_totalvi_normalized_rna"
-            }
-    
-
-        ,
-                "obsm_normalized_protein_output": {
-                "type":"string",
-                "description": "In which ",
-                "help_text": "Type: `string`, multiple: `False`, default: `X_totalvi_normalized_protein`. "
-            ,
-                "default": "X_totalvi_normalized_protein"
-            }
-    
-
-        ,
-                "reference_model_path": {
-                "type":"string",
-                "format": "path",
-                    "description": "Directory with the reference model",
-                "help_text": "Type: `file`, multiple: `False`, default: `totalvi_model_reference`, direction: `output`. "
-            ,
-                "default": "totalvi_model_reference"
-            }
-    
-
-        ,
-                "query_model_path": {
-                "type":"string",
-                "format": "path",
-                    "description": "Directory, where the query model will be saved",
-                "help_text": "Type: `file`, multiple: `False`, default: `totalvi_model_query`, direction: `output`. "
-            ,
-                "default": "totalvi_model_query"
-            }
-    
-
-}
-},
-    
-    
-    "learning parameters" : {
-    "title": "Learning parameters",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "max_epochs": {
-                "type":"integer",
-                "description": "Number of passes through the dataset",
-                "help_text": "Type: `integer`, multiple: `False`, default: `400`. "
-            ,
-                "default": 400
-            }
-    
-
-        ,
-                "max_query_epochs": {
-                "type":"integer",
-                "description": "Number of passes through the dataset, when fine-tuning model for query",
-                "help_text": "Type: `integer`, multiple: `False`, default: `200`. "
-            ,
-                "default": 200
-            }
-    
-
-        ,
-                "weight_decay": {
-                "type":"number",
-                "description": "Weight decay, when fine-tuning model for query",
-                "help_text": "Type: `double`, multiple: `False`, default: `0.0`. "
-            ,
-                "default": 0.0
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":"string",
-                "description": "Path to an output directory",
-                "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/$defs/inputs"
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file with query data to integrate with reference",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
+        },
+        "reference": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file with reference data to train the TOTALVI model",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
+        },
+        "force_retrain": {
+          "type": "boolean",
+          "description": "If true, retrain the model and save it to reference_model_path",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "query_modality": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "default": "rna"
+        },
+        "query_proteins_modality": {
+          "type": "string",
+          "description": "Name of the modality in the input (query) h5mu file containing protein data",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "reference_modality": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "default": "rna"
+        },
+        "reference_proteins_modality": {
+          "type": "string",
+          "description": "Name of the modality containing proteins in the reference",
+          "help_text": "Type: `string`, multiple: `False`, default: `prot`. ",
+          "default": "prot"
+        },
+        "input_layer": {
+          "type": "string",
+          "description": "Input layer to use",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "obs_batch": {
+          "type": "string",
+          "description": "Column name discriminating between your batches",
+          "help_text": "Type: `string`, multiple: `False`, default: `sample_id`. ",
+          "default": "sample_id"
+        },
+        "var_input": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/outputs"
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`. ",
+          "default": "$id.$key.output"
+        },
+        "obsm_output": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`, default: `X_integrated_totalvi`. ",
+          "default": "X_integrated_totalvi"
+        },
+        "obsm_normalized_rna_output": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`, default: `X_totalvi_normalized_rna`. ",
+          "default": "X_totalvi_normalized_rna"
+        },
+        "obsm_normalized_protein_output": {
+          "type": "string",
+          "description": "In which ",
+          "help_text": "Type: `string`, multiple: `False`, default: `X_totalvi_normalized_protein`. ",
+          "default": "X_totalvi_normalized_protein"
+        },
+        "reference_model_path": {
+          "type": "string",
+          "format": "path",
+          "description": "Directory with the reference model",
+          "help_text": "Type: `file`, multiple: `False`, default: `totalvi_model_reference`, direction: `output`. ",
+          "default": "totalvi_model_reference"
+        },
+        "query_model_path": {
+          "type": "string",
+          "format": "path",
+          "description": "Directory, where the query model will be saved",
+          "help_text": "Type: `file`, multiple: `False`, default: `totalvi_model_query`, direction: `output`. ",
+          "default": "totalvi_model_query"
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/learning parameters"
+    "learning parameters": {
+      "title": "Learning parameters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "max_epochs": {
+          "type": "integer",
+          "description": "Number of passes through the dataset",
+          "help_text": "Type: `integer`, multiple: `False`, default: `400`. ",
+          "default": 400
+        },
+        "max_query_epochs": {
+          "type": "integer",
+          "description": "Number of passes through the dataset, when fine-tuning model for query",
+          "help_text": "Type: `integer`, multiple: `False`, default: `200`. ",
+          "default": 200
+        },
+        "weight_decay": {
+          "type": "number",
+          "description": "Weight decay, when fine-tuning model for query",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.0`. ",
+          "default": 0.0
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/inputs"
+    },
+    {
+      "$ref": "#/definitions/outputs"
+    },
+    {
+      "$ref": "#/definitions/learning parameters"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
 }

@@ -1,130 +1,99 @@
 {
-"$schema": "https://json-schema.org/draft/2020-12/schema",
-"title": "delete_layer",
-"description": "Delete an anndata layer from one or more modalities.\n",
-"type": "object",
-"$defs": {
-
-    
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "delete_layer",
+  "description": "Delete an anndata layer from one or more modalities.\n",
+  "type": "object",
+  "definitions": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "oneOf": [
-                    {"format": "file-path", "mimetype": "text/csv", "pattern": "^\\S+\\.csv$"},
-                    {"type": "string"},
-                    {"items": { "type": "object" }, "type": "array"}
-                ]
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
         }
+      }
     },
-
-    
-    
-    "arguments" : {
-    "title": "Arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "input": {
-                "type":"string",
-                "format": "path",
-                    "exists": true,"description": "Input h5mu file",
-                "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
-            
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "default": "rna"
+        },
+        "layer": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
-    
-
-        ,
-                "modality": {
-                "type":"string",
-                "description": "",
-                "help_text": "Type: `string`, multiple: `False`, default: `rna`. "
-            ,
-                "default": "rna"
-            }
-    
-
-        ,
-                "layer": {
-                "items": { "type":"string"},
-                "type": "array",
-                "description": "Input layer to remove",
-                "help_text": "Type: `string`, multiple: `True`, required. "
-            
-            }
-    
-
-        ,
-                "output": {
-                "type":"string",
-                "format": "path",
-                    "description": "Output h5mu file",
-                "help_text": "Type: `file`, multiple: `False`, required, default: `output.h5mu`, direction: `output`. "
-            ,
-                "default": "output.h5mu"
-            }
-    
-
-        ,
-                "missing_ok": {
-                "type":"boolean",
-                "description": "Do not raise an error if the layer does not exist for all modalities",
-                "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. "
-            ,
-                "default": false
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":"string",
-                "description": "Compression format to use for the output AnnData and/or Mudata objects",
-                "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":"string",
-                "description": "Path to an output directory",
-                "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/$defs/arguments"
+          ],
+          "description": "Input layer to remove",
+          "help_text": "Type: `string`, multiple: `True`, required. "
+        },
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `output.h5mu`, direction: `output`. ",
+          "default": "output.h5mu"
+        },
+        "missing_ok": {
+          "type": "boolean",
+          "description": "Do not raise an error if the layer does not exist for all modalities",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects",
+          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/arguments"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
 }

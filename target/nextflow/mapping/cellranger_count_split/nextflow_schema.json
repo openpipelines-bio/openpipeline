@@ -1,144 +1,98 @@
 {
-"$schema": "https://json-schema.org/draft/2020-12/schema",
-"title": "cellranger_count_split",
-"description": "Split 10x Cell Ranger output directory into separate output fields.",
-"type": "object",
-"$defs": {
-
-    
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "cellranger_count_split",
+  "description": "Split 10x Cell Ranger output directory into separate output fields.",
+  "type": "object",
+  "definitions": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "oneOf": [
-                    {"format": "file-path", "mimetype": "text/csv", "pattern": "^\\S+\\.csv$"},
-                    {"type": "string"},
-                    {"items": { "type": "object" }, "type": "array"}
-                ]
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
         }
+      }
     },
-
-    
-    
-    "arguments" : {
-    "title": "Arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "input": {
-                "type":"string",
-                "format": "path",
-                    "exists": true,"description": "Output directory from a Cell Ranger count run",
-                "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input_dir`. "
-            
-            }
-    
-
-        ,
-                "filtered_h5": {
-                "type":"string",
-                "format": "path",
-                    "description": "",
-                "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.filtered_h5.h5`, direction: `output`, example: `filtered_feature_bc_matrix.h5`. "
-            ,
-                "default": "$id.$key.filtered_h5.h5"
-            }
-    
-
-        ,
-                "metrics_summary": {
-                "type":"string",
-                "format": "path",
-                    "description": "",
-                "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.metrics_summary.csv`, direction: `output`, example: `metrics_summary.csv`. "
-            ,
-                "default": "$id.$key.metrics_summary.csv"
-            }
-    
-
-        ,
-                "molecule_info": {
-                "type":"string",
-                "format": "path",
-                    "description": "",
-                "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.molecule_info.h5`, direction: `output`, example: `molecule_info.h5`. "
-            ,
-                "default": "$id.$key.molecule_info.h5"
-            }
-    
-
-        ,
-                "bam": {
-                "type":"string",
-                "format": "path",
-                    "description": "",
-                "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.bam.bam`, direction: `output`, example: `possorted_genome_bam.bam`. "
-            ,
-                "default": "$id.$key.bam.bam"
-            }
-    
-
-        ,
-                "bai": {
-                "type":"string",
-                "format": "path",
-                    "description": "",
-                "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.bai.bai`, direction: `output`, example: `possorted_genome_bam.bam.bai`. "
-            ,
-                "default": "$id.$key.bai.bai"
-            }
-    
-
-        ,
-                "raw_h5": {
-                "type":"string",
-                "format": "path",
-                    "description": "",
-                "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.raw_h5.h5`, direction: `output`, example: `raw_feature_bc_matrix.h5`. "
-            ,
-                "default": "$id.$key.raw_h5.h5"
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":"string",
-                "description": "Path to an output directory",
-                "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/$defs/arguments"
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Output directory from a Cell Ranger count run",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input_dir`. "
+        },
+        "filtered_h5": {
+          "type": "string",
+          "format": "path",
+          "description": "",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.filtered_h5.h5`, direction: `output`, example: `filtered_feature_bc_matrix.h5`. ",
+          "default": "$id.$key.filtered_h5.h5"
+        },
+        "metrics_summary": {
+          "type": "string",
+          "format": "path",
+          "description": "",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.metrics_summary.csv`, direction: `output`, example: `metrics_summary.csv`. ",
+          "default": "$id.$key.metrics_summary.csv"
+        },
+        "molecule_info": {
+          "type": "string",
+          "format": "path",
+          "description": "",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.molecule_info.h5`, direction: `output`, example: `molecule_info.h5`. ",
+          "default": "$id.$key.molecule_info.h5"
+        },
+        "bam": {
+          "type": "string",
+          "format": "path",
+          "description": "",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.bam.bam`, direction: `output`, example: `possorted_genome_bam.bam`. ",
+          "default": "$id.$key.bam.bam"
+        },
+        "bai": {
+          "type": "string",
+          "format": "path",
+          "description": "",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.bai.bai`, direction: `output`, example: `possorted_genome_bam.bam.bai`. ",
+          "default": "$id.$key.bai.bai"
+        },
+        "raw_h5": {
+          "type": "string",
+          "format": "path",
+          "description": "",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.raw_h5.h5`, direction: `output`, example: `raw_feature_bc_matrix.h5`. ",
+          "default": "$id.$key.raw_h5.h5"
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/arguments"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
 }

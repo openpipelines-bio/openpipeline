@@ -1,317 +1,205 @@
 {
-"$schema": "https://json-schema.org/draft/2020-12/schema",
-"title": "celltypist",
-"description": "Automated cell type annotation tool for scRNA-seq datasets on the basis of logistic regression classifiers optimised by the stochastic gradient descent algorithm.",
-"type": "object",
-"$defs": {
-
-    
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "celltypist",
+  "description": "Automated cell type annotation tool for scRNA-seq datasets on the basis of logistic regression classifiers optimised by the stochastic gradient descent algorithm.",
+  "type": "object",
+  "definitions": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "oneOf": [
-                    {"format": "file-path", "mimetype": "text/csv", "pattern": "^\\S+\\.csv$"},
-                    {"type": "string"},
-                    {"items": { "type": "object" }, "type": "array"}
-                ]
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$"
         }
+      }
     },
-
-    
-    
-    "inputs" : {
-    "title": "Inputs",
-    "type": "object",
-    "description": "Input dataset (query) arguments",
-    "properties": {
-    
-        
-                "input": {
-                "type":"string",
-                "format": "path",
-                    "exists": true,"description": "The input (query) data to be labeled",
-                "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
-            
-            }
-    
-
-        ,
-                "modality": {
-                "type":"string",
-                "description": "Which modality to process",
-                "help_text": "Type: `string`, multiple: `False`, default: `rna`. "
-            ,
-                "default": "rna"
-            }
-    
-
-        ,
-                "input_layer": {
-                "type":"string",
-                "description": "The layer in the input data containing log normalized counts to be used for cell type annotation if ",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "input_var_gene_names": {
-                "type":"string",
-                "description": "The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "input_reference_gene_overlap": {
-                "type":"integer",
-                "description": "The minimum number of genes present in both the reference and query datasets",
-                "help_text": "Type: `integer`, multiple: `False`, default: `100`. "
-            ,
-                "default": 100
-            }
-    
-
-}
-},
-    
-    
-    "outputs" : {
-    "title": "Outputs",
-    "type": "object",
-    "description": "Output arguments.",
-    "properties": {
-    
-        
-                "output": {
-                "type":"string",
-                "format": "path",
-                    "description": "Output h5mu file",
-                "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. "
-            ,
-                "default": "$id.$key.output.h5mu"
-            }
-    
-
-        ,
-                "output_obs_predictions": {
-                "type":"string",
-                "description": "In which `",
-                "help_text": "Type: `string`, multiple: `False`, default: `celltypist_pred`. "
-            ,
-                "default": "celltypist_pred"
-            }
-    
-
-        ,
-                "output_obs_probability": {
-                "type":"string",
-                "description": "In which `",
-                "help_text": "Type: `string`, multiple: `False`, default: `celltypist_probability`. "
-            ,
-                "default": "celltypist_probability"
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":"string",
-                "description": "Compression format to use for the output AnnData and/or Mudata objects",
-                "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
-    "reference" : {
-    "title": "Reference",
-    "type": "object",
-    "description": "Arguments related to the reference dataset.",
-    "properties": {
-    
-        
-                "reference": {
-                "type":"string",
-                "format": "path",
-                    "description": "The reference data to train the CellTypist classifiers on",
-                "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `reference.h5mu`. "
-            
-            }
-    
-
-        ,
-                "reference_layer": {
-                "type":"string",
-                "description": "The layer in the reference data to be used for cell type annotation if ",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "reference_obs_target": {
-                "type":"string",
-                "description": "The name of the adata obs column in the reference data containing cell type annotations",
-                "help_text": "Type: `string`, multiple: `False`, default: `cell_ontology_class`. "
-            ,
-                "default": "cell_ontology_class"
-            }
-    
-
-        ,
-                "reference_var_gene_names": {
-                "type":"string",
-                "description": "The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-        ,
-                "reference_var_input": {
-                "type":"string",
-                "description": "",
-                "help_text": "Type: `string`, multiple: `False`. "
-            
-            }
-    
-
-}
-},
-    
-    
-    "model arguments" : {
-    "title": "Model arguments",
-    "type": "object",
-    "description": "Model arguments.",
-    "properties": {
-    
-        
-                "model": {
-                "type":"string",
-                "format": "path",
-                    "description": "Pretrained model in pkl format",
-                "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `pretrained_model.pkl`. "
-            
-            }
-    
-
-        ,
-                "feature_selection": {
-                "type":"boolean",
-                "description": "Whether to perform feature selection",
-                "help_text": "Type: `boolean`, multiple: `False`, default: `false`. "
-            ,
-                "default": false
-            }
-    
-
-        ,
-                "majority_voting": {
-                "type":"boolean",
-                "description": "Whether to refine the predicted labels by running the majority voting classifier after over-clustering",
-                "help_text": "Type: `boolean`, multiple: `False`, default: `false`. "
-            ,
-                "default": false
-            }
-    
-
-        ,
-                "C": {
-                "type":"number",
-                "description": "Inverse of regularization strength in logistic regression",
-                "help_text": "Type: `double`, multiple: `False`, default: `1.0`. "
-            ,
-                "default": 1.0
-            }
-    
-
-        ,
-                "max_iter": {
-                "type":"integer",
-                "description": "Maximum number of iterations before reaching the minimum of the cost function",
-                "help_text": "Type: `integer`, multiple: `False`, default: `1000`. "
-            ,
-                "default": 1000
-            }
-    
-
-        ,
-                "use_SGD": {
-                "type":"boolean",
-                "description": "Whether to use the stochastic gradient descent algorithm",
-                "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. "
-            ,
-                "default": false
-            }
-    
-
-        ,
-                "min_prop": {
-                "type":"number",
-                "description": "\"For the dominant cell type within a subcluster, the minimum proportion of cells required to \nsupport naming of the subcluster by this cell type",
-                "help_text": "Type: `double`, multiple: `False`, default: `0.0`. "
-            ,
-                "default": 0.0
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":"string",
-                "description": "Path to an output directory",
-                "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/$defs/inputs"
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "Input dataset (query) arguments",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "The input (query) data to be labeled",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality to process",
+          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "default": "rna"
+        },
+        "input_layer": {
+          "type": "string",
+          "description": "The layer in the input data containing log normalized counts to be used for cell type annotation if ",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "input_var_gene_names": {
+          "type": "string",
+          "description": "The name of the adata var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "input_reference_gene_overlap": {
+          "type": "integer",
+          "description": "The minimum number of genes present in both the reference and query datasets",
+          "help_text": "Type: `integer`, multiple: `False`, default: `100`. ",
+          "default": 100
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/outputs"
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "Output arguments.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "output_obs_predictions": {
+          "type": "string",
+          "description": "In which `",
+          "help_text": "Type: `string`, multiple: `False`, default: `celltypist_pred`. ",
+          "default": "celltypist_pred"
+        },
+        "output_obs_probability": {
+          "type": "string",
+          "description": "In which `",
+          "help_text": "Type: `string`, multiple: `False`, default: `celltypist_probability`. ",
+          "default": "celltypist_probability"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects",
+          "help_text": "Type: `string`, multiple: `False`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/reference"
+    "reference": {
+      "title": "Reference",
+      "type": "object",
+      "description": "Arguments related to the reference dataset.",
+      "properties": {
+        "reference": {
+          "type": "string",
+          "format": "path",
+          "description": "The reference data to train the CellTypist classifiers on",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `reference.h5mu`. "
+        },
+        "reference_layer": {
+          "type": "string",
+          "description": "The layer in the reference data to be used for cell type annotation if ",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "reference_obs_target": {
+          "type": "string",
+          "description": "The name of the adata obs column in the reference data containing cell type annotations",
+          "help_text": "Type: `string`, multiple: `False`, default: `cell_ontology_class`. ",
+          "default": "cell_ontology_class"
+        },
+        "reference_var_gene_names": {
+          "type": "string",
+          "description": "The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "reference_var_input": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/model arguments"
+    "model arguments": {
+      "title": "Model arguments",
+      "type": "object",
+      "description": "Model arguments.",
+      "properties": {
+        "model": {
+          "type": "string",
+          "format": "path",
+          "description": "Pretrained model in pkl format",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `pretrained_model.pkl`. "
+        },
+        "feature_selection": {
+          "type": "boolean",
+          "description": "Whether to perform feature selection",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "majority_voting": {
+          "type": "boolean",
+          "description": "Whether to refine the predicted labels by running the majority voting classifier after over-clustering",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "C": {
+          "type": "number",
+          "description": "Inverse of regularization strength in logistic regression",
+          "help_text": "Type: `double`, multiple: `False`, default: `1.0`. ",
+          "default": 1.0
+        },
+        "max_iter": {
+          "type": "integer",
+          "description": "Maximum number of iterations before reaching the minimum of the cost function",
+          "help_text": "Type: `integer`, multiple: `False`, default: `1000`. ",
+          "default": 1000
+        },
+        "use_SGD": {
+          "type": "boolean",
+          "description": "Whether to use the stochastic gradient descent algorithm",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "min_prop": {
+          "type": "number",
+          "description": "\"For the dominant cell type within a subcluster, the minimum proportion of cells required to \nsupport naming of the subcluster by this cell type",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.0`. ",
+          "default": 0.0
+        }
+      }
     },
-
-    {
-    "$ref": "#/$defs/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/inputs"
+    },
+    {
+      "$ref": "#/definitions/outputs"
+    },
+    {
+      "$ref": "#/definitions/reference"
+    },
+    {
+      "$ref": "#/definitions/model arguments"
+    },
+    {
+      "$ref": "#/definitions/nextflow input-output arguments"
+    }
+  ]
 }
