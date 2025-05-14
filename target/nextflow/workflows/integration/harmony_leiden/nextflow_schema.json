@@ -138,7 +138,7 @@
           "default": "harmony_integration_leiden"
         },
         "leiden_resolution": {
-          "type": null,
+          "type": "aray",
           "items": {
             "type": "number"
           },
@@ -147,6 +147,12 @@
           "default": [
             1.0
           ]
+        },
+        "leiden_resolution": {
+          "type": "string",
+          "description": "Control the coarseness of the clustering",
+          "help_text": "Type: `double`, multiple: `True`, default: `[1.0]`. ",
+          "default": "1.0"
         }
       }
     },
