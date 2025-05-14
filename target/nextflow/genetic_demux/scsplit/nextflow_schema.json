@@ -11,6 +11,7 @@
       "properties": {
         "param_list": {
           "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
           "default": "",
           "format": "file-path",
           "mimetype": "text/csv"

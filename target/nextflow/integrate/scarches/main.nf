@@ -3553,9 +3553,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scarches",
     "viash_version" : "0.9.4",
-    "git_commit" : "9566200950b9944c8fe75b6e250227ecf9ddf62e",
+    "git_commit" : "01b729f3b0da8b02ecc64a874de826c65dc08788",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2035-g9566200950b"
+    "git_tag" : "0.2.0-2036-g01b729f3b0d"
   },
   "package_config" : {
     "name" : "openpipeline",
