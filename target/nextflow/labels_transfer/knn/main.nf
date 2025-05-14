@@ -3595,9 +3595,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/knn",
     "viash_version" : "0.9.4",
-    "git_commit" : "01b729f3b0da8b02ecc64a874de826c65dc08788",
+    "git_commit" : "2150247fd1ca4c31e4f757557db006730acdec03",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2036-g01b729f3b0d"
+    "git_tag" : "0.2.0-2044-g2150247fd1c"
   },
   "package_config" : {
     "name" : "openpipeline",
