@@ -233,6 +233,7 @@ engines:
       __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
     - type: python
       packages:
+        - jax[cuda]
         - scvi-tools~=1.1.5
   test_setup:
     - type: python
@@ -240,7 +241,7 @@ engines:
 
 runners:
 - type: executable
-  # docker_run_args: ["--gpus all"]
+  docker_run_args: ["--gpus all"]
 - type: nextflow
   directives:
     label: [midcpu, midmem, gpu, highdisk]
