@@ -2,11 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "harmony_leiden",
   "description": "Run harmony integration followed by neighbour calculations, leiden clustering and run umap on the result.",
-  "type": "any_as_text",
+  "type": null,
   "$defs": {
     "Dataset input": {
       "title": "Dataset input",
-      "type": "any_as_text",
+      "type": null,
       "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
@@ -20,7 +20,7 @@
     },
     "inputs": {
       "title": "Inputs",
-      "type": "any_as_text",
+      "type": null,
       "description": "No description",
       "properties": {
         "id": {
@@ -51,7 +51,7 @@
     },
     "outputs": {
       "title": "Outputs",
-      "type": "any_as_text",
+      "type": null,
       "description": "No description",
       "properties": {
         "output": {
@@ -65,7 +65,7 @@
     },
     "neighbour calculation": {
       "title": "Neighbour calculation",
-      "type": "any_as_text",
+      "type": null,
       "description": "No description",
       "properties": {
         "uns_neighbors": {
@@ -90,7 +90,7 @@
     },
     "harmony integration options": {
       "title": "Harmony integration options",
-      "type": "any_as_text",
+      "type": null,
       "description": "No description",
       "properties": {
         "embedding": {
@@ -106,7 +106,7 @@
           "default": "X_pca_integrated"
         },
         "obs_covariates": {
-          "type": "any_as_text",
+          "type": null,
           "items": {
             "type": "string"
           },
@@ -114,7 +114,7 @@
           "help_text": "Type: `string`, multiple: `True`, required, example: `[\"batch\";\"sample\"]`. "
         },
         "theta": {
-          "type": "any_as_text",
+          "type": null,
           "items": {
             "type": "number"
           },
@@ -128,7 +128,7 @@
     },
     "clustering options": {
       "title": "Clustering options",
-      "type": "any_as_text",
+      "type": null,
       "description": "No description",
       "properties": {
         "obs_cluster": {
@@ -138,7 +138,7 @@
           "default": "harmony_integration_leiden"
         },
         "leiden_resolution": {
-          "type": "any_as_text",
+          "type": null,
           "items": {
             "type": "number"
           },
@@ -152,7 +152,7 @@
     },
     "umap options": {
       "title": "Umap options",
-      "type": "any_as_text",
+      "type": null,
       "description": "No description",
       "properties": {
         "obsm_umap": {
@@ -165,7 +165,7 @@
     },
     "nextflow input-output arguments": {
       "title": "Nextflow input-output arguments",
-      "type": "any_as_text",
+      "type": null,
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
