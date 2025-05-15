@@ -20,6 +20,8 @@
 
 * Fix running `neigbors_leiden_umap` workflow with `-stub` enabled (PR #1026).
 
+* Add missing CUDA enabled `jaxlib` to components that use `scvi-tools` (`scanvi`, `scarches`, `scvi` and `totalvi`) (PR #1028)
+
 # openpipelines 2.1.0
 
 ## BREAKING CHANGES
