@@ -155,7 +155,19 @@
             "type": "string"
           },
           "description": "The underlying feature type of the library.\n",
-          "help_text": "Type: `string`, multiple: `True`, example: `[\"Gene Expression\"]`, choices: ``Gene Expression`, `VDJ`, `VDJ-T`, `VDJ-B`, `VDJ-T-GD`, `Antibody Capture`, `CRISPR Guide Capture`, `Multiplexing Capture`, `Antigen Capture`, `Custom``. "
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"Gene Expression\"]`, choices: ``Gene Expression`, `VDJ`, `VDJ-T`, `VDJ-B`, `VDJ-T-GD`, `Antibody Capture`, `CRISPR Guide Capture`, `Multiplexing Capture`, `Antigen Capture`, `Custom``. ",
+          "enum": [
+            "Gene Expression",
+            "VDJ",
+            "VDJ-T",
+            "VDJ-B",
+            "VDJ-T-GD",
+            "Antibody Capture",
+            "CRISPR Guide Capture",
+            "Multiplexing Capture",
+            "Antigen Capture",
+            "Custom"
+          ]
         },
         "library_subsample": {
           "type": "array",

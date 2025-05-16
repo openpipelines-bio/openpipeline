@@ -98,7 +98,17 @@
             "type": "string"
           },
           "description": "Methods to call cell types",
-          "help_text": "Type: `string`, multiple: `True`, required, example: `[\"knn_on_scvi\";\"scanvi\"]`, choices: ``celltypist`, `knn_on_bbknn`, `knn_on_scanorama`, `knn_on_scvi`, `onclass`, `rf`, `scanvi`, `svm``. "
+          "help_text": "Type: `string`, multiple: `True`, required, example: `[\"knn_on_scvi\";\"scanvi\"]`, choices: ``celltypist`, `knn_on_bbknn`, `knn_on_scanorama`, `knn_on_scvi`, `onclass`, `rf`, `scanvi`, `svm``. ",
+          "enum": [
+            "celltypist",
+            "knn_on_bbknn",
+            "knn_on_scanorama",
+            "knn_on_scvi",
+            "onclass",
+            "rf",
+            "scanvi",
+            "svm"
+          ]
         }
       }
     },
