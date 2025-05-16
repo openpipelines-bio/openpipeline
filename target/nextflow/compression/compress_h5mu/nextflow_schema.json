@@ -51,15 +51,14 @@
     
 
         ,
-                "compression": {
+                "output_compression": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `gzip`, choices: ``lzf`, `gzip``. Compression type",
-                "help_text": "Type: `string`, default: `gzip`, choices: ``lzf`, `gzip``. Compression type.",
-                "enum": ["lzf", "gzip"]
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+                "enum": ["gzip", "lzf"]
             
-            ,
-                "default":"gzip"
+            
             }
     
 

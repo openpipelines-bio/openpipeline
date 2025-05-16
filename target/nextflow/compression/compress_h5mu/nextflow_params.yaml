@@ -1,7 +1,7 @@
 # Arguments
 input: # please fill in - example: "sample_path"
 # output: "$id.$key.output"
-compression: "gzip"
+# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

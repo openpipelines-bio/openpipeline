@@ -43,8 +43,8 @@
                 "modality": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, required, multiple_sep: `\";\"`. ",
-                "help_text": "Type: List of `string`, required, multiple_sep: `\";\"`. "
+                "description": "Type: List of `string`, required, multiple_sep: `\";\"`. Name(s) of the modality to remove\n",
+                "help_text": "Type: List of `string`, required, multiple_sep: `\";\"`. Name(s) of the modality to remove\n"
             
             }
     

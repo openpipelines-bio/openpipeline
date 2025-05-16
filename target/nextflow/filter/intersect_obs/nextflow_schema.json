@@ -43,8 +43,8 @@
                 "modalities": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, required, example: `rna;prot`, multiple_sep: `\";\"`. ",
-                "help_text": "Type: List of `string`, required, example: `rna;prot`, multiple_sep: `\";\"`. "
+                "description": "Type: List of `string`, required, example: `rna;prot`, multiple_sep: `\";\"`. Which modalities from the input MuData file to process",
+                "help_text": "Type: List of `string`, required, example: `rna;prot`, multiple_sep: `\";\"`. Which modalities from the input MuData file to process.\n"
             
             }
     

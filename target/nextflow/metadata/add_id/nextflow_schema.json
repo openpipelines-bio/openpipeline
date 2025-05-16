@@ -64,8 +64,8 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
-                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. "
+                "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Name of output MuData file",
+                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Name of output MuData file.\n"
             ,
                 "default":"$id.$key.output.h5mu"
             }

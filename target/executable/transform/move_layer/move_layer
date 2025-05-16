@@ -454,9 +454,9 @@ RUN pip install --upgrade pip && \
   python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 LABEL org.opencontainers.image.description="Companion container for running component transform move_layer"
-LABEL org.opencontainers.image.created="2025-05-13T12:33:14Z"
+LABEL org.opencontainers.image.created="2025-05-16T07:36:22Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="86d8ce1bf022e5930820c4e42e02cba2412e3fae"
+LABEL org.opencontainers.image.revision="36677bf4ab091cf5b0841f11e2c2824fe74b11ae"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -588,9 +588,13 @@ function ViashHelp {
   echo "    --modality"
   echo "        type: string"
   echo "        default: rna"
+  echo "        Which modality from the input MuData file to process."
   echo ""
   echo "    --input_layer"
   echo "        type: string"
+  echo "        Input layer to move to a new output location. If specified, will be used"
+  echo "        to select a key from .layers,"
+  echo "        otherwise .X is used."
   echo ""
   echo "    -o, --output"
   echo "        type: file, required parameter, output, file must exist"
@@ -599,6 +603,9 @@ function ViashHelp {
   echo ""
   echo "    --output_layer"
   echo "        type: string"
+  echo "        Destination location for the layer. If not provided, .X will be used,"
+  echo "        Otherwise, will be the key for the .layers attribute in the output"
+  echo "        MuData file."
   echo ""
   echo "    --output_compression"
   echo "        type: string"

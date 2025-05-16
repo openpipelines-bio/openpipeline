@@ -43,8 +43,8 @@
                 "modality": {
                 "type":
                 "string",
-                "description": "Type: `string`, required, default: `rna`. ",
-                "help_text": "Type: `string`, required, default: `rna`. "
+                "description": "Type: `string`, required, default: `rna`. Which modality from the input MuData file to process",
+                "help_text": "Type: `string`, required, default: `rna`. Which modality from the input MuData file to process.\n"
             ,
                 "default":"rna"
             }

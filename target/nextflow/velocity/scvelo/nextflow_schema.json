@@ -63,8 +63,8 @@
                 "layer_spliced": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `spliced`. ",
-                "help_text": "Type: `string`, default: `spliced`. "
+                "description": "Type: `string`, default: `spliced`. Name of the layer to store the spliced abundances in",
+                "help_text": "Type: `string`, default: `spliced`. Name of the layer to store the spliced abundances in. Will be used as key in the .layer attribute of the\noutput MuData object.\n"
             ,
                 "default":"spliced"
             }
@@ -74,8 +74,8 @@
                 "layer_unspliced": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `unspliced`. ",
-                "help_text": "Type: `string`, default: `unspliced`. "
+                "description": "Type: `string`, default: `unspliced`. Name of the layer to store the unspliced abundances in",
+                "help_text": "Type: `string`, default: `unspliced`. Name of the layer to store the unspliced abundances in.\nWill be used as key in the .layer attribute of the output MuData object.\n"
             ,
                 "default":"unspliced"
             }
@@ -85,8 +85,8 @@
                 "layer_ambiguous": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `ambiguous`. ",
-                "help_text": "Type: `string`, default: `ambiguous`. "
+                "description": "Type: `string`, default: `ambiguous`. Name of the layer to store the abundances in for which no fate was determined",
+                "help_text": "Type: `string`, default: `ambiguous`. Name of the layer to store the abundances in for which no fate was determined.\nWill be used as key in the .layer attribute of the output MuData object.\n"
             ,
                 "default":"ambiguous"
             }

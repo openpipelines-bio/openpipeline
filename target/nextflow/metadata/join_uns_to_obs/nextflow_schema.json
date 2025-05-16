@@ -43,8 +43,8 @@
                 "modality": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `rna`. ",
-                "help_text": "Type: `string`, default: `rna`. "
+                "description": "Type: `string`, default: `rna`. Which modality from the input MuData file to process",
+                "help_text": "Type: `string`, default: `rna`. Which modality from the input MuData file to process.\n"
             ,
                 "default":"rna"
             }
@@ -54,8 +54,8 @@
                 "uns_key": {
                 "type":
                 "string",
-                "description": "Type: `string`, required. ",
-                "help_text": "Type: `string`, required. "
+                "description": "Type: `string`, required. Lookup key from ",
+                "help_text": "Type: `string`, required. Lookup key from .uns pointing to the input data.\n"
             
             }
     

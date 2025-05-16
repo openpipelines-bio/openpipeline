@@ -119,8 +119,8 @@
                 "obs_droplet_efficiency": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `cellbender_droplet_efficiency`. ",
-                "help_text": "Type: `string`, default: `cellbender_droplet_efficiency`. "
+                "description": "Type: `string`, default: `cellbender_droplet_efficiency`. Name of the column in the ",
+                "help_text": "Type: `string`, default: `cellbender_droplet_efficiency`. Name of the column in the .obs dataframe to store the droplet efficiencies in.\n"
             ,
                 "default":"cellbender_droplet_efficiency"
             }

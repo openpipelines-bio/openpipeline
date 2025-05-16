@@ -461,9 +461,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component annotate svm_annotation"
-LABEL org.opencontainers.image.created="2025-05-13T12:33:11Z"
+LABEL org.opencontainers.image.created="2025-05-16T07:36:26Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="86d8ce1bf022e5930820c4e42e02cba2412e3fae"
+LABEL org.opencontainers.image.revision="36677bf4ab091cf5b0841f11e2c2824fe74b11ae"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -632,6 +632,7 @@ function ViashHelp {
   echo ""
   echo "    --reference_obs_target"
   echo "        type: string, required parameter"
+  echo "        Key in .obs attribute of reference modality with cell-type information."
   echo ""
   echo "    --reference_var_gene_names"
   echo "        type: string"

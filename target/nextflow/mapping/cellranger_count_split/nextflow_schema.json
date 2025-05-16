@@ -43,8 +43,8 @@
                 "filtered_h5": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.filtered_h5.h5`, example: `filtered_feature_bc_matrix.h5`. ",
-                "help_text": "Type: `file`, default: `$id.$key.filtered_h5.h5`, example: `filtered_feature_bc_matrix.h5`. "
+                "description": "Type: `file`, default: `$id.$key.filtered_h5.h5`, example: `filtered_feature_bc_matrix.h5`. Output path for the h5 file storing the filtered counts",
+                "help_text": "Type: `file`, default: `$id.$key.filtered_h5.h5`, example: `filtered_feature_bc_matrix.h5`. Output path for the h5 file storing the filtered counts.\n"
             ,
                 "default":"$id.$key.filtered_h5.h5"
             }
@@ -54,8 +54,8 @@
                 "metrics_summary": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.metrics_summary.csv`, example: `metrics_summary.csv`. ",
-                "help_text": "Type: `file`, default: `$id.$key.metrics_summary.csv`, example: `metrics_summary.csv`. "
+                "description": "Type: `file`, default: `$id.$key.metrics_summary.csv`, example: `metrics_summary.csv`. Where to store the \u0027metrics_summary\u0027 CSV file",
+                "help_text": "Type: `file`, default: `$id.$key.metrics_summary.csv`, example: `metrics_summary.csv`. Where to store the \u0027metrics_summary\u0027 CSV file.\n"
             ,
                 "default":"$id.$key.metrics_summary.csv"
             }
@@ -65,8 +65,8 @@
                 "molecule_info": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.molecule_info.h5`, example: `molecule_info.h5`. ",
-                "help_text": "Type: `file`, default: `$id.$key.molecule_info.h5`, example: `molecule_info.h5`. "
+                "description": "Type: `file`, default: `$id.$key.molecule_info.h5`, example: `molecule_info.h5`. Where to store Cell Ranger\u0027s \u0027molecule_info",
+                "help_text": "Type: `file`, default: `$id.$key.molecule_info.h5`, example: `molecule_info.h5`. Where to store Cell Ranger\u0027s \u0027molecule_info.h5\u0027 file.\n"
             ,
                 "default":"$id.$key.molecule_info.h5"
             }
@@ -76,8 +76,8 @@
                 "bam": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.bam.bam`, example: `possorted_genome_bam.bam`. ",
-                "help_text": "Type: `file`, default: `$id.$key.bam.bam`, example: `possorted_genome_bam.bam`. "
+                "description": "Type: `file`, default: `$id.$key.bam.bam`, example: `possorted_genome_bam.bam`. Location of output BAM files",
+                "help_text": "Type: `file`, default: `$id.$key.bam.bam`, example: `possorted_genome_bam.bam`. Location of output BAM files.\n"
             ,
                 "default":"$id.$key.bam.bam"
             }
@@ -87,8 +87,8 @@
                 "bai": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.bai.bai`, example: `possorted_genome_bam.bam.bai`. ",
-                "help_text": "Type: `file`, default: `$id.$key.bai.bai`, example: `possorted_genome_bam.bam.bai`. "
+                "description": "Type: `file`, default: `$id.$key.bai.bai`, example: `possorted_genome_bam.bam.bai`. Where to store the BAM index files",
+                "help_text": "Type: `file`, default: `$id.$key.bai.bai`, example: `possorted_genome_bam.bam.bai`. Where to store the BAM index files.\n"
             ,
                 "default":"$id.$key.bai.bai"
             }
@@ -98,8 +98,8 @@
                 "raw_h5": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.raw_h5.h5`, example: `raw_feature_bc_matrix.h5`. ",
-                "help_text": "Type: `file`, default: `$id.$key.raw_h5.h5`, example: `raw_feature_bc_matrix.h5`. "
+                "description": "Type: `file`, default: `$id.$key.raw_h5.h5`, example: `raw_feature_bc_matrix.h5`. Output path for the h5 file storing the raw counts",
+                "help_text": "Type: `file`, default: `$id.$key.raw_h5.h5`, example: `raw_feature_bc_matrix.h5`. Output path for the h5 file storing the raw counts.\n"
             ,
                 "default":"$id.$key.raw_h5.h5"
             }

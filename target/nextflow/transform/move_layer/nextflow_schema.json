@@ -43,8 +43,8 @@
                 "modality": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `rna`. ",
-                "help_text": "Type: `string`, default: `rna`. "
+                "description": "Type: `string`, default: `rna`. Which modality from the input MuData file to process",
+                "help_text": "Type: `string`, default: `rna`. Which modality from the input MuData file to process.\n"
             ,
                 "default":"rna"
             }
@@ -54,8 +54,8 @@
                 "input_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`. ",
-                "help_text": "Type: `string`. "
+                "description": "Type: `string`. Input layer to move to a new output location",
+                "help_text": "Type: `string`. Input layer to move to a new output location. If specified, will be used to select a key from .layers,\notherwise .X is used.\n"
             
             }
     
@@ -75,8 +75,8 @@
                 "output_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`. ",
-                "help_text": "Type: `string`. "
+                "description": "Type: `string`. Destination location for the layer",
+                "help_text": "Type: `string`. Destination location for the layer. If not provided, .X will be used,\nOtherwise, will be the key for the .layers attribute in the output MuData file.\n"
             
             }
     

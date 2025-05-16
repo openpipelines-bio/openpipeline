@@ -3109,6 +3109,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--modality",
+          "description" : "Which modality from the input MuData file to process.\n",
           "default" : [
             "rna"
           ],
@@ -3120,6 +3121,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--layer",
+          "description" : "Location of the count matrix. If specified, will be used to select a key from .layers,\notherwise .X is used.\n",
           "example" : [
             "raw_counts"
           ],
@@ -3430,7 +3432,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts",
     "viash_version" : "0.9.4",
-    "git_commit" : "86d8ce1bf022e5930820c4e42e02cba2412e3fae",
+    "git_commit" : "36677bf4ab091cf5b0841f11e2c2824fe74b11ae",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

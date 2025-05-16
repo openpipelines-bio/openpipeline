@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component filter delimit_fraction"
-LABEL org.opencontainers.image.created="2025-05-13T12:33:16Z"
+LABEL org.opencontainers.image.created="2025-05-16T07:36:27Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="86d8ce1bf022e5930820c4e42e02cba2412e3fae"
+LABEL org.opencontainers.image.revision="36677bf4ab091cf5b0841f11e2c2824fe74b11ae"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -592,10 +592,7 @@ function ViashHelp {
   echo "    --modality"
   echo "        type: string"
   echo "        default: rna"
-  echo ""
-  echo "    --layer"
-  echo "        type: string"
-  echo "        example: raw_counts"
+  echo "        Which modality from the input MuData file to process."
   echo ""
   echo "    --obs_fraction_column"
   echo "        type: string, required parameter"
@@ -706,17 +703,6 @@ while [[ $# -gt 0 ]]; do
         --modality=*)
             [ -n "$VIASH_PAR_MODALITY" ] && ViashError Bad arguments for option \'--modality=*\': \'$VIASH_PAR_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_MODALITY=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --layer)
-            [ -n "$VIASH_PAR_LAYER" ] && ViashError Bad arguments for option \'--layer\': \'$VIASH_PAR_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_LAYER="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --layer. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --layer=*)
-            [ -n "$VIASH_PAR_LAYER" ] && ViashError Bad arguments for option \'--layer=*\': \'$VIASH_PAR_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_LAYER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --obs_fraction_column)
@@ -1256,7 +1242,6 @@ from pandas.api.types import is_float_dtype
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_fraction_column': $( if [ ! -z ${VIASH_PAR_OBS_FRACTION_COLUMN+x} ]; then echo "r'${VIASH_PAR_OBS_FRACTION_COLUMN//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\'/\'\"\'\"r\'}'"; else echo None; fi ),

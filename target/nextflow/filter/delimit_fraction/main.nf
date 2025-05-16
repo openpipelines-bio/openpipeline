@@ -3082,19 +3082,9 @@ meta = [
         {
           "type" : "string",
           "name" : "--modality",
+          "description" : "Which modality from the input MuData file to process.\n",
           "default" : [
             "rna"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--layer",
-          "example" : [
-            "raw_counts"
           ],
           "required" : false,
           "direction" : "input",
@@ -3372,7 +3362,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/delimit_fraction",
     "viash_version" : "0.9.4",
-    "git_commit" : "86d8ce1bf022e5930820c4e42e02cba2412e3fae",
+    "git_commit" : "36677bf4ab091cf5b0841f11e2c2824fe74b11ae",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3434,7 +3424,6 @@ from pandas.api.types import is_float_dtype
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_fraction_column': $( if [ ! -z ${VIASH_PAR_OBS_FRACTION_COLUMN+x} ]; then echo "r'${VIASH_PAR_OBS_FRACTION_COLUMN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),

@@ -43,8 +43,8 @@
                 "modality": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `prot`. ",
-                "help_text": "Type: `string`, default: `prot`. "
+                "description": "Type: `string`, default: `prot`. Which modality from the input MuData file to process",
+                "help_text": "Type: `string`, default: `prot`. Which modality from the input MuData file to process.\n"
             ,
                 "default":"prot"
             }

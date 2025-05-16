@@ -43,8 +43,8 @@
                 "modality": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `rna`. ",
-                "help_text": "Type: `string`, default: `rna`. "
+                "description": "Type: `string`, default: `rna`. Which modality from the input MuData file to process",
+                "help_text": "Type: `string`, default: `rna`. Which modality from the input MuData file to process.\n"
             ,
                 "default":"rna"
             }
@@ -85,8 +85,8 @@
                 "base": {
                 "type":
                 "number",
-                "description": "Type: `double`, example: `2.0`. ",
-                "help_text": "Type: `double`, example: `2.0`. "
+                "description": "Type: `double`, example: `2.0`. Base of the logarithm",
+                "help_text": "Type: `double`, example: `2.0`. Base of the logarithm. Natural logarithm is used by default.\n"
             
             }
     

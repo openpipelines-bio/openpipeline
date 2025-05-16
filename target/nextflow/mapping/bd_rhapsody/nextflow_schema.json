@@ -874,8 +874,8 @@
                 "write_filtered_reads": {
                 "type":
                 "boolean",
-                "description": "Type: `boolean`. ",
-                "help_text": "Type: `boolean`. "
+                "description": "Type: `boolean`. Output processed FASTQ reads",
+                "help_text": "Type: `boolean`. Output processed FASTQ reads."
             
             }
     

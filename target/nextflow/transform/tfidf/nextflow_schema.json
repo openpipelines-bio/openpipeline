@@ -43,8 +43,8 @@
                 "modality": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `atac`. ",
-                "help_text": "Type: `string`, default: `atac`. "
+                "description": "Type: `string`, default: `atac`. Which modality from the input MuData file to process",
+                "help_text": "Type: `string`, default: `atac`. Which modality from the input MuData file to process.\n"
             ,
                 "default":"atac"
             }

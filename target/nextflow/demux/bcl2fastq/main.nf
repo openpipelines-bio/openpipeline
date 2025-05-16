@@ -3132,6 +3132,7 @@ meta = [
         {
           "type" : "boolean_true",
           "name" : "--ignore_missing",
+          "description" : "Interpret missing *.bcl files as no call (N), interpret missing control files as not-set\ncontrol bits and fill in with zeros when *.stats files are missing.\n",
           "direction" : "input"
         }
       ]
@@ -3276,7 +3277,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl2fastq",
     "viash_version" : "0.9.4",
-    "git_commit" : "86d8ce1bf022e5930820c4e42e02cba2412e3fae",
+    "git_commit" : "36677bf4ab091cf5b0841f11e2c2824fe74b11ae",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

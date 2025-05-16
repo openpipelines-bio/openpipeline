@@ -3096,6 +3096,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--layer_spliced",
+          "description" : "Name of the layer to store the spliced abundances in. Will be used as key in the .layer attribute of the\noutput MuData object.\n",
           "default" : [
             "spliced"
           ],
@@ -3107,6 +3108,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--layer_unspliced",
+          "description" : "Name of the layer to store the unspliced abundances in.\nWill be used as key in the .layer attribute of the output MuData object.\n",
           "default" : [
             "unspliced"
           ],
@@ -3118,6 +3120,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--layer_ambiguous",
+          "description" : "Name of the layer to store the abundances in for which no fate was determined.\nWill be used as key in the .layer attribute of the output MuData object.\n",
           "default" : [
             "ambiguous"
           ],
@@ -3462,7 +3465,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/scvelo",
     "viash_version" : "0.9.4",
-    "git_commit" : "86d8ce1bf022e5930820c4e42e02cba2412e3fae",
+    "git_commit" : "36677bf4ab091cf5b0841f11e2c2824fe74b11ae",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

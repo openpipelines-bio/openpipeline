@@ -1,7 +1,6 @@
 # Inputs
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-# layer: "raw_counts"
 obs_fraction_column: # please fill in - example: "fraction_mitochondrial"
 
 # Outputs

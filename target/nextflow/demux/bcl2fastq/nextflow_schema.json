@@ -75,8 +75,8 @@
                 "ignore_missing": {
                 "type":
                 "boolean",
-                "description": "Type: `boolean_true`, default: `false`. ",
-                "help_text": "Type: `boolean_true`, default: `false`. "
+                "description": "Type: `boolean_true`, default: `false`. Interpret missing *",
+                "help_text": "Type: `boolean_true`, default: `false`. Interpret missing *.bcl files as no call (N), interpret missing control files as not-set\ncontrol bits and fill in with zeros when *.stats files are missing.\n"
             ,
                 "default":false
             }

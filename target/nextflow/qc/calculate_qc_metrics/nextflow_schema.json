@@ -43,8 +43,8 @@
                 "modality": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `rna`. ",
-                "help_text": "Type: `string`, default: `rna`. "
+                "description": "Type: `string`, default: `rna`. Which modality from the input MuData file to process",
+                "help_text": "Type: `string`, default: `rna`. Which modality from the input MuData file to process. \n"
             ,
                 "default":"rna"
             }
@@ -54,8 +54,8 @@
                 "layer": {
                 "type":
                 "string",
-                "description": "Type: `string`, example: `raw_counts`. ",
-                "help_text": "Type: `string`, example: `raw_counts`. "
+                "description": "Type: `string`, example: `raw_counts`. Layer from modality to use as input data",
+                "help_text": "Type: `string`, example: `raw_counts`. Layer from modality to use as input data. If not provided the .X attribute is used.\n"
             
             }
     

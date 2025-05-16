@@ -170,8 +170,8 @@
                 "reference_obs_target": {
                 "type":
                 "string",
-                "description": "Type: `string`, required. ",
-                "help_text": "Type: `string`, required. "
+                "description": "Type: `string`, required. Key in ",
+                "help_text": "Type: `string`, required. Key in .obs attribute of reference modality with cell-type information.\n"
             
             }
     
