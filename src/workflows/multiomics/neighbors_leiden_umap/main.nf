@@ -5,8 +5,10 @@ workflow run_wf {
   main:
   output_ch = input_ch
     | map {id, state ->
-      assert (state.leiden_resolution.isEmpty() || state.obs_cluster?.trim()):
-        "When leiden_resolution is set, obs_cluster must also be defined."
+      if (!workflow.stubRun) {
+        assert (state.leiden_resolution.isEmpty() || state.obs_cluster?.trim()):
+          "When leiden_resolution is set, obs_cluster must also be defined."
+      }
       [id, state]
     }
     | map {id, state ->

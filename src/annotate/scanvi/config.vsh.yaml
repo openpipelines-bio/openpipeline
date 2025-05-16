@@ -148,6 +148,7 @@ engines:
       __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
     - type: python
       packages:
+        - jax[cuda]
         - scvi-tools~=1.1.5
   test_setup:
     - type: python
