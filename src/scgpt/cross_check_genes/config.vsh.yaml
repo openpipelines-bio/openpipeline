@@ -55,15 +55,11 @@ argument_groups:
         example: output.h5mu
         description: |
           The output cross-checked anndata file.
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--output_var_filter"
         type: string
         default: "id_in_vocab"
         description: In which .var slot to store a boolean array corresponding to which observations should be filtered out based on HVG and model vocabulary.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Arguments
     arguments:

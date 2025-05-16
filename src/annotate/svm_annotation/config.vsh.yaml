@@ -52,6 +52,9 @@ argument_groups:
         type: string
         description:
         required: true
+        description: |
+          Key in .obs attribute of reference modality with cell-type information.
+
       - name:  "--reference_var_gene_names"
         type: string
         required: false
@@ -71,11 +74,6 @@ argument_groups:
         description: Output h5mu file.
         direction: output
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--output_obs_prediction"
         type: string
         default: svm_pred
@@ -88,6 +86,7 @@ argument_groups:
         required: false
         description: |
           In which `.obs` slots to store the probability of the predictions.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Model arguments
     description: Model arguments.

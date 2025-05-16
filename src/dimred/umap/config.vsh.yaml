@@ -16,6 +16,8 @@ argument_groups:
         example: input.h5mu
 
       - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process.
         type: string
         default: "rna"
         required: false
@@ -35,17 +37,11 @@ argument_groups:
         required: true
         example: output.h5mu
 
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
-
       - name: "--obsm_output"
         type: string
         description: The pre/postfix under which to store the UMAP results.
         default: "umap"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
     
   - name: Arguments
     arguments:

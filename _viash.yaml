@@ -1,4 +1,4 @@
-viash_version: 0.9.3
+viash_version: 0.9.4
 
 source: src
 target: target
@@ -6,6 +6,23 @@ target: target
 # Note: this causes the docker images to be renamed
 name: openpipeline
 organization: openpipelines-bio
+summary: |
+  Best-practice workflows for single-cell multi-omics analyses.
+  
+description: |
+  OpenPipelines are extensible single cell analysis pipelines for reproducible and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).
+
+  In terms of workflows, the following has been made available, but keep in mind that
+  individual tools and functionality can be executed as standalone components as well.
+
+    * Demultiplexing: conversion of raw sequencing data to FASTQ objects.
+    * Ingestion: Read mapping and generating a count matrix.
+    * Single sample processing: cell filtering and doublet detection.
+    * Multisample processing: Count transformation, normalization, QC metric calulations.
+    * Integration: Clustering, integration and batch correction using single and multimodal methods.
+    * Downstream analysis workflows
+license: MIT
+keywords: [single-cell, multimodal]
 
 links:
   repository: https://github.com/openpipelines-bio/openpipeline
@@ -22,5 +39,4 @@ info:
 
 config_mods: |
   .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}
-  .runners[.type == 'nextflow'].directives.tag := '$id'
   .runners[.type == 'nextflow'].config.script := 'includeConfig("nextflow_labels.config")'

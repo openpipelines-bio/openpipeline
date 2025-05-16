@@ -18,6 +18,8 @@ argument_groups:
         direction: input
         required: true
       - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process.
         type: string
         default: "rna"
         required: false
@@ -83,17 +85,13 @@ argument_groups:
         description: Folder where the state of the trained model will be saved to.
         required: false
         direction: output
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--obsm_output"
         type: string
         default: "X_scvi_integrated"
         required: false
         description: "In which .obsm slot to store the resulting integrated embedding."
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
   - name: "SCVI options"
     arguments:
       - name: --n_hidden_nodes
@@ -237,6 +235,7 @@ engines:
       __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
     - type: python
       packages:
+        - jax[cuda]
         - scvi-tools~=1.1.5
   test_setup:
     - type: python

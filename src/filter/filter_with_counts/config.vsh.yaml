@@ -21,11 +21,17 @@ argument_groups:
         example: input.h5mu
 
       - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process.
         type: string
         default: "rna"
         required: false
 
       - name: "--layer"
+        description: |
+        description: |
+          Location of the count matrix. If specified, will be used to select a key from .layers,
+          otherwise .X is used.
         type: string
         example: "raw_counts"
         required: false
@@ -36,12 +42,6 @@ argument_groups:
         description: Output h5mu file.
         direction: output
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--do_subset"
         type: boolean_true
         description: Whether to subset before storing the output.
@@ -54,7 +54,7 @@ argument_groups:
         type: string
         default: "filter_with_counts"
         description: In which .var slot to store a boolean array corresponding to which variables should be removed.
-
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Arguments
     arguments:

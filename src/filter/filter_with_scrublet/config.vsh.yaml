@@ -36,6 +36,8 @@ arguments:
     example: input.h5mu
 
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "rna"
     required: false
@@ -51,13 +53,6 @@ arguments:
     description: Output h5mu file.
     direction: output
     example: output.h5mu
-
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
 
   - name: "--obs_name_filter"
     type: string
@@ -132,6 +127,8 @@ arguments:
     description: |
       When scrublet fails to automatically determine the double score threshold, 
       allow the component to continue and set the output columns to NA.
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

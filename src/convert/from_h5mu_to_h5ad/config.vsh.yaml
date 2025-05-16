@@ -14,6 +14,8 @@ arguments:
     direction: input
     required: true
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "rna"
     required: false
@@ -23,11 +25,9 @@ arguments:
     description: Output AnnData file.
     default: output.h5ad
     direction: output
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the final h5ad object.
-    default: "gzip"
-    choices: ["gzip", "lzf"]
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
+
 resources:
   - type: python_script
     path: script.py

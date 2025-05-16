@@ -21,6 +21,8 @@ argument_groups:
         description: |
           The input h5mu file of pre-processed data.
       - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process.
         type: string
         default: "rna"
         required: false
@@ -57,12 +59,6 @@ argument_groups:
           The output h5mu file containing obsm arrays for gene tokens, tokenized data and padding mask.
         direction: output
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        example: "gzip"
-        choices: ["gzip", "lzf"]
-        description: |
-          The compression type for the output file.
       - name: "--obsm_gene_tokens"
         type: string
         default: "gene_id_tokens"
@@ -79,6 +75,7 @@ argument_groups:
         default: padding_mask
         description: |
           The key of the .obsm array containing the padding mask.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Arguments
     arguments:

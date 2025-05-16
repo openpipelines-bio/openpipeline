@@ -14,6 +14,8 @@ arguments:
     required: true
     example: input.h5mu
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "prot"
     required: false
@@ -24,12 +26,6 @@ arguments:
     direction: output
     required: true
     default: output.h5mu
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
   - name: "--input_layer"
     type: string
     description: "Input layer to use. By default, .X is used."
@@ -45,6 +41,8 @@ arguments:
     default: 0
     required: false
     choices: [0, 1]
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

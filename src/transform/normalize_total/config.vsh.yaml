@@ -22,6 +22,8 @@ arguments:
     example: input.h5mu
 
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "rna"
     required: false
@@ -39,13 +41,6 @@ arguments:
     required: true
     default: output.h5mu
 
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
-
   - name: "--output_layer"
     type: string
     description: Output layer to use. By default, use X.
@@ -59,6 +54,7 @@ arguments:
   - name: "--exclude_highly_expressed"
     type: boolean_true
     description: Exclude (very) highly expressed genes for the computation of the normalization factor (size factor) for each cell. A gene is considered highly expressed, if it has more than max_fraction of the total counts in at least one cell. The not-excluded genes will sum up to target_sum.
+__merge__: [., /src/base/h5_compression_argument.yaml]
 resources:
   - type: python_script
     path: script.py

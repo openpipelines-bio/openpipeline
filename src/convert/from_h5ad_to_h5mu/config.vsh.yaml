@@ -15,6 +15,9 @@ arguments:
     required: true
     multiple: true
   - name: "--modality"
+    description: |
+      List of names to use for the modalities. Will be used as the keys in the .mod attribute in the output MuData object
+      The number of items provided for this argument equal the number of input files (--input) and their order should match.
     type: string
     default: "rna"
     required: false
@@ -25,11 +28,9 @@ arguments:
     description: Output MuData file.
     default: output.h5mu
     direction: output
-  - name: "--output_compression"
-    type: string
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
+
 resources:
   - type: python_script
     path: script.py

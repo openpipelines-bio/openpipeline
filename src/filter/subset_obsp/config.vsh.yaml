@@ -15,6 +15,8 @@ argument_groups:
       required: true
       example: input.h5mu
     - name: "--modality"
+      description: |
+        Which modality from the input MuData file to process.
       type: string
       default: "rna"
       required: false
@@ -41,12 +43,7 @@ argument_groups:
       type: string
       required: true
       description: The .obsm key to store the subset in.
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
+__merge__: [., /src/base/h5_compression_argument.yaml]
 
 resources:
   - type: python_script

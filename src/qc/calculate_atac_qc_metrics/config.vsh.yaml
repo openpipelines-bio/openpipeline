@@ -31,6 +31,8 @@ argument_groups:
         required: false
         example: fragments.tsv.gz
       - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process.
         type: string
         default: "atac"
         required: false
@@ -78,12 +80,8 @@ argument_groups:
         description: Output h5mu file.
         direction: output
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

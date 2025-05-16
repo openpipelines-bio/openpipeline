@@ -15,6 +15,8 @@ arguments:
     direction: input
     required: true
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "rna"
     required: false
@@ -25,12 +27,6 @@ arguments:
     direction: output
     required: true
     default: "output.h5ad"
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
   - name: "--obs_batch"
     type: string
     description: Column name discriminating between your batches.
@@ -63,6 +59,7 @@ arguments:
     type: double
     description: "Alignment score minimum cutoff"
     default: 0.1
+__merge__: [., /src/base/h5_compression_argument.yaml]
 resources:
   - type: python_script
     path: script.py
