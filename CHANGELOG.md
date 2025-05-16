@@ -10,6 +10,8 @@
 
 * `delimit_fraction`: remove unused `layer` argument (PR #1018).
 
+* `download_file` has been deprecated and will be removed in openpipeline 3.0 (PR #1015).
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
