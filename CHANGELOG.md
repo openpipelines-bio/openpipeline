@@ -6,6 +6,10 @@
 
 * `tar_extract` has been deprecated and will be removed in openpipeline 4.0 (PR #1014). Use [vsh://toolbox/bgzip](https://www.viash-hub.com/packages/toolbox/latest/components/bgzip) instead.
 
+* `compress_h5mu`: rename `compression` argument to `output_compression` (PR #1017, PR #1018).
+
+* `delimit_fraction`: remove unused `layer` argument (PR #1018).
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
@@ -15,6 +19,8 @@
 * Remove `workflows` directory (PR #993). The workflows which were at one point in this directory were all deprecated and moved to `src/workflows`.
 
 * Move output file compression argument for AnnData and MuData files to a base config file (`src/base/h5_compression_argument.yaml`) (PR #1017).
+
+* Add missing descriptions to components and arguments (PR #1018).
 
 ## BUG FIXES
 
