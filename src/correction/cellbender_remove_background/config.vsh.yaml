@@ -32,11 +32,6 @@ argument_groups:
         direction: output
         required: true
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--layer_output"
         description: Output layer
         type: string
@@ -62,6 +57,8 @@ argument_groups:
       - name: "--obsm_gene_expression_encoding"
         type: string
         default: "cellbender_gene_expression_encoding"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
   - name: Arguments
     arguments:
       # custom arg

@@ -80,11 +80,8 @@ argument_groups:
         direction: output
         required: true
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
       # - name: "--output_models"
       #   type: file
       #   direction: output

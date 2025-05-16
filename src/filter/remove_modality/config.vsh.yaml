@@ -21,12 +21,8 @@ arguments:
     description: Output h5mu file.
     direction: output
     example: output.h5mu
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

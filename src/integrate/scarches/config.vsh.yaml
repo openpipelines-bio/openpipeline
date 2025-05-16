@@ -60,12 +60,6 @@ argument_groups:
         description: Output h5mu file.
         direction: output
         required: true
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--model_output"
         type: file
         default: "model"
@@ -86,6 +80,7 @@ argument_groups:
         default: "scanvi_proba"
         required: false
         description: "In which .obs slot to store the probabilities of the label predictions. Only relevant if a scANVI model was provided."
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: "Early stopping arguments"
     arguments:
@@ -152,6 +147,7 @@ engines:
     - type: python
       __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
       packages:
+        - jax[cuda]
         - scvi-tools~=1.1.5
   test_setup:
     - type: python

@@ -2,6 +2,8 @@
 
 ## BREAKING CHANGES
 
+* Removed `split_h5mu_train_test` component (PR #1020).
+
 * `tar_extract` has been deprecated and will be removed in a future release (PR #1014).
 
 ## MAJOR CHANGES
@@ -11,6 +13,16 @@
 ## MINOR CHANGES
 
 * Remove `workflows` directory (PR #993). The workflows which were at one point in this directory were all deprecated and moved to `src/workflows`.
+
+* Move output file compression argument for AnnData and MuData files to a base config file (`src/base/h5_compression_argument.yaml`) (PR #1017).
+
+## BUG FIXES
+
+* Bump viash to 0.9.4. This adds support for nextflow versions starting major version 25.01 and fixes an issue where an integer being passed to a argument with `type: double` resulted in an error (PR #1016).
+
+* Fix running `neigbors_leiden_umap` workflow with `-stub` enabled (PR #1026).
+
+* Add missing CUDA enabled `jaxlib` to components that use `scvi-tools` (`scanvi`, `scarches`, `scvi` and `totalvi`) (PR #1028)
 
 # openpipelines 2.1.0
 

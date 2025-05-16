@@ -58,13 +58,6 @@ argument_groups:
         required: true
         example: output.h5mu
 
-      - name: "--output_compression"
-        type: string
-        default: "gzip"
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-
       - name: "--obsm_output"
         type: string
         default: "X_lsi"
@@ -86,7 +79,7 @@ argument_groups:
       - name: "--overwrite"
         type: boolean_true
         description: Allow overwriting .obsm, .varm and .uns slots.
-
+    __merge__: [., /src/base/h5_compression_argument.yaml]
     
 resources:
   - type: python_script

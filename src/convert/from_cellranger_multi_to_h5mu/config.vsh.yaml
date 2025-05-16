@@ -41,15 +41,12 @@ arguments:
     description: CSV file describing the sample name per output file
     direction: output
     example: "samples.csv"
-  - name: "--output_compression"
-    type: string
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
   - name: "--uns_metrics"
     type: string
     description: Name of the .uns slot under which to QC metrics (if any).
     default: "metrics_cellranger"
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

@@ -51,13 +51,6 @@ argument_groups:
         required: true
         description: |
           The output h5mu file containing the binned data.    
-      - name: "--output_compression"
-        type: string
-        example: "gzip"
-        required: false
-        choices: ["gzip", "lzf"]
-        description: |
-          The compression algorithm to use for the output h5mu file.
       - name: "--output_obsm_binned_counts"
         type: string
         default: "binned_counts"
@@ -67,6 +60,8 @@ argument_groups:
         type: integer
         description: |
           Seed for random number generation.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
 
 resources:
   - type: python_script
