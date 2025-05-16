@@ -4,7 +4,7 @@
 
 * Removed `split_h5mu_train_test` component (PR #1020).
 
-* `tar_extract` has been deprecated and will be removed in a future release (PR #1014).
+* `tar_extract` has been deprecated and will be removed in openpipeline 4.0 (PR #1014). Use [vsh://toolbox/bgzip](https://www.viash-hub.com/packages/toolbox/latest/components/bgzip) instead.
 
 ## MAJOR CHANGES
 
