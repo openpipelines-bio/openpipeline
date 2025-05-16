@@ -115,11 +115,6 @@ argument_groups:
         description: Aligned reference data.
         direction: output
         example: output_reference.h5mu
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--output_layer"
         type: string
         default: "_counts"
@@ -152,6 +147,7 @@ argument_groups:
         type: string
         default: "_common_vars"
         description: Name of the .var column in the output query and reference datasets containing the boolean array indicating the common variables.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Arguments
     description: Arguments related to the alignment of the input and reference datasets.

@@ -1,6 +1,7 @@
 name: tar_extract
 namespace: compression
-scope: "public"
+scope: public
+status: deprecated
 description: Extract files from a tar archive
 arguments:
   - name: "--input"

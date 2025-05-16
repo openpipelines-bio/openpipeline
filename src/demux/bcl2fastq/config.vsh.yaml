@@ -33,6 +33,9 @@ arguments:
     description: Reports directory
     example: reports_dir
   - name: "--ignore_missing"
+    description: |
+      Interpret missing *.bcl files as no call (N), interpret missing control files as not-set
+      control bits and fill in with zeros when *.stats files are missing.
     type: boolean_true
 resources:
   - type: bash_script

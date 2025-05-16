@@ -24,19 +24,17 @@ arguments:
     description: "Name of the .obs column where to store the id."
     default: "sample_id"
   - name: "--output"
+    description: |
+      Name of output MuData file.
     alternatives: ["-o"]
     type: file
     direction: output
     example: "output.h5mu"
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
   - name: "--make_observation_keys_unique"
     type: boolean_true
     description: Join the id to the .obs index (.obs_names).
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

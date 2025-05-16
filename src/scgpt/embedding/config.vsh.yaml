@@ -21,6 +21,9 @@ argument_groups:
         description: |
           The input h5mu file containing tokenized gene and count data. 
       - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process.
+
         type: string
         default: "rna"
         required: false
@@ -85,19 +88,12 @@ argument_groups:
           Path to output anndata file containing pre-processed data as well as scGPT embeddings.
         direction: output
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        example: "gzip"
-        required: false
-        choices: ["gzip", "lzf"]
-        description: |
-          The compression algorithm to use for the output h5mu file.
       - name: "--obsm_embeddings"
         type: string
         default: "X_scGPT"
         description: |
           The name of the adata.obsm array to which scGPT embeddings will be written.
-
+    __merge__: [., /src/base/h5_compression_argument.yaml]
   - name: Arguments
     arguments:
       - name: "--pad_token"

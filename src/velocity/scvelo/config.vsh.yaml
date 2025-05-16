@@ -21,14 +21,23 @@ argument_groups:
         required: true
         type: string
       - name: "--layer_spliced"
+        description: |
+          Name of the layer to store the spliced abundances in. Will be used as key in the .layer attribute of the
+          output MuData object.
         type: string
         required: false
         default: "spliced"
       - name: "--layer_unspliced"
+        description: |
+          Name of the layer to store the unspliced abundances in.
+          Will be used as key in the .layer attribute of the output MuData object.
         type: string
         required: false
         default: "unspliced"
       - name: "--layer_ambiguous"
+        description: |
+          Name of the layer to store the abundances in for which no fate was determined.
+          Will be used as key in the .layer attribute of the output MuData object.
         type: string
         required: false
         default: "ambiguous"
@@ -44,12 +53,8 @@ argument_groups:
         type: file
         direction: output
         description: "Output mudata file."
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
   - name: "Filtering and normalization"
     description: Arguments for filtering, normalization an log transform (see scvelo.pp.filter_and_normalize function)
     arguments:

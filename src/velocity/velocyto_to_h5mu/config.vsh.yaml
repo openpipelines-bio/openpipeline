@@ -36,12 +36,6 @@ argument_groups:
         description: Path to the output MuData file.
         example: output.h5mu
         direction: output
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--layer_spliced"
         type: string
         description: Output layer for the spliced reads.
@@ -54,6 +48,7 @@ argument_groups:
         type: string
         description: Output layer for the ambiguous reads.
         default: velo_ambiguous
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 resources:
   - type: python_script
     path: script.py

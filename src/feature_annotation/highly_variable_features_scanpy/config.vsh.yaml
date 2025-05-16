@@ -26,6 +26,8 @@ arguments:
     example: input.h5mu
 
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "rna"
     required: false
@@ -44,13 +46,6 @@ arguments:
     description: Output h5mu file.
     direction: output
     example: output.h5mu
-
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
 
   - name: "--var_name_filter"
     type: string
@@ -113,6 +108,9 @@ arguments:
       For all flavors, features are first sorted by how many batches they are a HVG. For dispersion-based flavors 
       ties are broken by normalized dispersion. If flavor = 'seurat_v3', ties are broken by the median (across
       batches) rank based on within-batch normalized variance.
+  
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

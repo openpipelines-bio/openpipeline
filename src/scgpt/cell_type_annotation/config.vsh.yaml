@@ -51,6 +51,8 @@ argument_groups:
         description: |
           The input h5mu file containing of data that have been pre-processed (normalized, binned, genes cross-checked and tokenized).
       - name: "--modality"
+        description:
+          Which modality from the input MuData file to process. 
         type: string
         default: "rna"
         required: false
@@ -79,13 +81,6 @@ argument_groups:
         example: output.h5mu
         description: |
           The output mudata file.
-      - name: "--output_compression"
-        type: string
-        example: "gzip"
-        required: false
-        default: gzip
-        description: |
-          The compression algorithm to use for the output h5mu file.
       - name: "--output_obs_predictions"
         type: string
         default: "scgpt_pred"
@@ -98,6 +93,7 @@ argument_groups:
         required: false
         description: |
           The name of the adata.obs column to write the probabilities of the predicted cell type labels to.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Arguments
     arguments:

@@ -621,6 +621,8 @@ argument_groups:
       info:
         config_key: VDJ_VGene_Evalue
     - name: --write_filtered_reads
+      description:
+        Output processed FASTQ reads.
       type: boolean
       multiple: false
       info:
