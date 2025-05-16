@@ -3432,6 +3432,7 @@ meta = [
           "packages" : [
             "anndata~=0.11.1",
             "mudata~=0.3.1",
+            "jax[cuda]",
             "scvi-tools~=1.1.5"
           ],
           "script" : [
@@ -3458,7 +3459,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi",
     "viash_version" : "0.9.4",
-    "git_commit" : "689cecc54c79593adcda8150d4255b2881e627f7",
+    "git_commit" : "c50a5a401cd9ccc144240180b0c4f5228f12db19",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

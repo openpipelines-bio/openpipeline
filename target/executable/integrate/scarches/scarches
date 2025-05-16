@@ -450,14 +450,14 @@ function ViashDockerfile {
 FROM nvcr.io/nvidia/pytorch:24.12-py3
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scvi-tools~=1.1.5" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "jax[cuda]" "scvi-tools~=1.1.5" && \
   python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov, Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scarches"
-LABEL org.opencontainers.image.created="2025-05-15T03:02:58Z"
+LABEL org.opencontainers.image.created="2025-05-16T03:04:03Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="689cecc54c79593adcda8150d4255b2881e627f7"
+LABEL org.opencontainers.image.revision="c50a5a401cd9ccc144240180b0c4f5228f12db19"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

@@ -457,9 +457,9 @@ RUN wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component download sync_test_resources"
-LABEL org.opencontainers.image.created="2025-05-15T03:03:00Z"
+LABEL org.opencontainers.image.created="2025-05-16T03:04:04Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="689cecc54c79593adcda8150d4255b2881e627f7"
+LABEL org.opencontainers.image.revision="c50a5a401cd9ccc144240180b0c4f5228f12db19"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
