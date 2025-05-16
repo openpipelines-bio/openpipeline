@@ -52,6 +52,9 @@ argument_groups:
         type: string
         description:
         required: true
+        description: |
+          Key in .obs attribute of reference modality with cell-type information.
+
       - name:  "--reference_var_gene_names"
         type: string
         required: false

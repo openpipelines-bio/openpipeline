@@ -23,6 +23,8 @@ arguments:
     description: "Name of the .obs column where to store the id."
     default: "sample_id"
   - name: "--output"
+    description: |
+      Name of output MuData file.
     alternatives: ["-o"]
     type: file
     direction: output

@@ -2,7 +2,17 @@
 
 ## BREAKING CHANGES
 
+* `transfer/publish`: remove component after deprecating it in 2.1.0 (PR #1019).
+
 * Removed `split_h5mu_train_test` component (PR #1020).
+
+* `tar_extract` has been deprecated and will be removed in openpipeline 4.0 (PR #1014). Use [vsh://toolbox/bgzip](https://www.viash-hub.com/packages/toolbox/latest/components/bgzip) instead.
+
+* `compress_h5mu`: rename `compression` argument to `output_compression` (PR #1017, PR #1018).
+
+* `delimit_fraction`: remove unused `layer` argument (PR #1018).
+
+* `download_file` has been deprecated and will be removed in openpipeline 3.0 (PR #1015).
 
 ## MAJOR CHANGES
 
@@ -14,11 +24,15 @@
 
 * Move output file compression argument for AnnData and MuData files to a base config file (`src/base/h5_compression_argument.yaml`) (PR #1017).
 
+* Add missing descriptions to components and arguments (PR #1018).
+
 ## BUG FIXES
 
 * Bump viash to 0.9.4. This adds support for nextflow versions starting major version 25.01 and fixes an issue where an integer being passed to a argument with `type: double` resulted in an error (PR #1016).
 
 * Fix running `neigbors_leiden_umap` workflow with `-stub` enabled (PR #1026).
+
+* Add missing CUDA enabled `jaxlib` to components that use `scvi-tools` (`scanvi`, `scarches`, `scvi` and `totalvi`) (PR #1028)
 
 # openpipelines 2.1.0
 
