@@ -34,6 +34,8 @@
 
 * Add missing CUDA enabled `jaxlib` to components that use `scvi-tools` (`scanvi`, `scarches`, `scvi` and `totalvi`) (PR #1028)
 
+* Added missing `gpu` label to `scarches` component (PR #1027).
+
 # openpipelines 2.1.0
 
 ## BREAKING CHANGES
