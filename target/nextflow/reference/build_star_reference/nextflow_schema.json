@@ -1,123 +1,88 @@
 {
-"$schema": "http://json-schema.org/draft-07/schema",
-"title": "build_star_reference",
-"description": "Create a reference for STAR from a set of fasta files.",
-"type": "object",
-"definitions": {
-
-    
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "build_star_reference",
+  "description": "Create a reference for STAR from a set of fasta files.",
+  "type": "object",
+  "$defs": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "format": "file-path",
-                "mimetype": "text/csv",
-                "pattern": "^\\S+\\.csv$"
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
         }
+      }
     },
-
-    
-    
-    "input/output" : {
-    "title": "Input/Output",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "genome_fasta": {
-                "type":
-                "string",
-                "description": "Type: List of `file`, required, example: `chr1.fasta;chr2.fasta`, multiple_sep: `\";\"`. The fasta files to be included in the reference",
-                "help_text": "Type: List of `file`, required, example: `chr1.fasta;chr2.fasta`, multiple_sep: `\";\"`. The fasta files to be included in the reference. Corresponds to the --genomeFastaFiles argument in the STAR command."
-            
-            }
-    
-
-        ,
-                "transcriptome_gtf": {
-                "type":
-                "string",
-                "description": "Type: `file`. Specifies the path to the file with annotated transcripts in the standard GTF\nformat",
-                "help_text": "Type: `file`. Specifies the path to the file with annotated transcripts in the standard GTF\nformat. STAR will extract splice junctions from this file and use them to greatly improve\naccuracy of the mapping. Corresponds to the --sjdbGTFfile argument in the STAR command.\n"
-            
-            }
-    
-
-        ,
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output`, example: `/path/to/foo`. Path to output directory",
-                "help_text": "Type: `file`, required, default: `$id.$key.output`, example: `/path/to/foo`. Path to output directory. Corresponds to the --genomeDir argument in the STAR command."
-            ,
-                "default":"$id.$key.output"
-            }
-    
-
-}
-},
-    
-    
-    "genome indexing arguments" : {
-    "title": "Genome indexing arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "genomeSAindexNbases": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `14`. Length (bases) of the SA pre-indexing string",
-                "help_text": "Type: `integer`, default: `14`. Length (bases) of the SA pre-indexing string. Typically between 10 and 15.\nLonger strings will use much more memory, but allow faster searches. For small\ngenomes, the parameter {genomeSAindexNbases must be scaled down to\nmin(14, log2(GenomeLength)/2 - 1).\n"
-            ,
-                "default":14
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/definitions/input/output"
+    "input/output": {
+      "title": "Input/Output",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "genome_fasta": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "exists": true,
+          "description": "The fasta files to be included in the reference",
+          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `[\"chr1.fasta\";\"chr2.fasta\"]`. "
+        },
+        "transcriptome_gtf": {
+          "type": "string",
+          "format": "path",
+          "description": "Specifies the path to the file with annotated transcripts in the standard GTF\nformat",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        },
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Path to output directory",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`, example: `\"/path/to/foo\"`. ",
+          "default": "$id.$key.output"
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/genome indexing arguments"
+    "genome indexing arguments": {
+      "title": "Genome indexing arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "genomeSAindexNbases": {
+          "type": "integer",
+          "description": "Length (bases) of the SA pre-indexing string",
+          "help_text": "Type: `integer`, multiple: `False`, default: `14`. ",
+          "default": 14
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/input/output"
+    },
+    {
+      "$ref": "#/$defs/genome indexing arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
 }

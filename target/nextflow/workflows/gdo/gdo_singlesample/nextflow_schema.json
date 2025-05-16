@@ -1,186 +1,118 @@
 {
-"$schema": "http://json-schema.org/draft-07/schema",
-"title": "gdo_singlesample",
-"description": "Processing unimodal single-sample guide-derived oligonucleotide (GDO) data.",
-"type": "object",
-"definitions": {
-
-    
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "gdo_singlesample",
+  "description": "Processing unimodal single-sample guide-derived oligonucleotide (GDO) data.",
+  "type": "object",
+  "$defs": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "format": "file-path",
-                "mimetype": "text/csv",
-                "pattern": "^\\S+\\.csv$"
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
         }
+      }
     },
-
-    
-    
-    "input" : {
-    "title": "Input",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "id": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `foo`. ID of the sample",
-                "help_text": "Type: `string`, required, example: `foo`. ID of the sample."
-            
-            }
-    
-
-        ,
-                "input": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `dataset.h5mu`. Path to the sample",
-                "help_text": "Type: `file`, required, example: `dataset.h5mu`. Path to the sample."
-            
-            }
-    
-
-        ,
-                "layer": {
-                "type":
-                "string",
-                "description": "Type: `string`. Input layer to start from",
-                "help_text": "Type: `string`. Input layer to start from. By default, .X will be used."
-            
-            }
-    
-
-}
-},
-    
-    
-    "output" : {
-    "title": "Output",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
-            ,
-                "default":"$id.$key.output.h5mu"
-            }
-    
-
-}
-},
-    
-    
-    "filtering options" : {
-    "title": "Filtering options",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "min_counts": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, example: `200`. Minimum number of counts captured per cell",
-                "help_text": "Type: `integer`, example: `200`. Minimum number of counts captured per cell."
-            
-            }
-    
-
-        ,
-                "max_counts": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, example: `5000000`. Maximum number of counts captured per cell",
-                "help_text": "Type: `integer`, example: `5000000`. Maximum number of counts captured per cell."
-            
-            }
-    
-
-        ,
-                "min_guides_per_cell": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, example: `200`. Minimum of non-zero values per cell",
-                "help_text": "Type: `integer`, example: `200`. Minimum of non-zero values per cell."
-            
-            }
-    
-
-        ,
-                "max_guides_per_cell": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, example: `1500000`. Maximum of non-zero values per cell",
-                "help_text": "Type: `integer`, example: `1500000`. Maximum of non-zero values per cell."
-            
-            }
-    
-
-        ,
-                "min_cells_per_guide": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, example: `3`. Minimum of non-zero values per gene",
-                "help_text": "Type: `integer`, example: `3`. Minimum of non-zero values per gene."
-            
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/definitions/input"
+    "input": {
+      "title": "Input",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID of the sample.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"foo\"`. "
+        },
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Path to the sample.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"dataset.h5mu\"`. "
+        },
+        "layer": {
+          "type": "string",
+          "description": "Input layer to start from",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/output"
+    "output": {
+      "title": "Output",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Destination path to the output.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/filtering options"
+    "filtering options": {
+      "title": "Filtering options",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "min_counts": {
+          "type": "integer",
+          "description": "Minimum number of counts captured per cell.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+        },
+        "max_counts": {
+          "type": "integer",
+          "description": "Maximum number of counts captured per cell.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `5000000`. "
+        },
+        "min_guides_per_cell": {
+          "type": "integer",
+          "description": "Minimum of non-zero values per cell.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+        },
+        "max_guides_per_cell": {
+          "type": "integer",
+          "description": "Maximum of non-zero values per cell.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1500000`. "
+        },
+        "min_cells_per_guide": {
+          "type": "integer",
+          "description": "Minimum of non-zero values per gene.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/input"
+    },
+    {
+      "$ref": "#/$defs/output"
+    },
+    {
+      "$ref": "#/$defs/filtering options"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
 }

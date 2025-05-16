@@ -1,200 +1,131 @@
 {
-"$schema": "http://json-schema.org/draft-07/schema",
-"title": "grep_annotation_column",
-"description": "Perform a regex lookup on a column from the annotation matrices .obs or .var.\nThe annotation matrix can originate from either a modality, or all modalities (global .var or .obs).\n",
-"type": "object",
-"definitions": {
-
-    
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "grep_annotation_column",
+  "description": "Perform a regex lookup on a column from the annotation matrices .obs or .var.\nThe annotation matrix can originate from either a modality, or all modalities (global .var or .obs).\n",
+  "type": "object",
+  "$defs": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "format": "file-path",
-                "mimetype": "text/csv",
-                "pattern": "^\\S+\\.csv$"
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
         }
+      }
     },
-
-    
-    
-    "inputs" : {
-    "title": "Inputs",
-    "type": "object",
-    "description": "Arguments related to the input dataset.",
-    "properties": {
-    
-        
-                "input": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `sample_path`. Path to the input ",
-                "help_text": "Type: `file`, required, example: `sample_path`. Path to the input .h5mu."
-            
-            }
-    
-
-        ,
-                "input_column": {
-                "type":
-                "string",
-                "description": "Type: `string`. Column to query",
-                "help_text": "Type: `string`. Column to query. If not specified, use .var_names or .obs_names, depending on the value of --matrix"
-            
-            }
-    
-
-        ,
-                "input_layer": {
-                "type":
-                "string",
-                "description": "Type: `string`. Input data to use when calculating fraction of observations that match with the query",
-                "help_text": "Type: `string`. Input data to use when calculating fraction of observations that match with the query. \nOnly used when --output_fraction_column is provided. If not specified, .X is used.\n"
-            
-            }
-    
-
-        ,
-                "modality": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `rna`. Which modality to get the annotation matrix from",
-                "help_text": "Type: `string`, required, example: `rna`. Which modality to get the annotation matrix from.\n"
-            
-            }
-    
-
-        ,
-                "matrix": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `var`, choices: ``var`, `obs``. Matrix to fetch the column from that will be searched",
-                "help_text": "Type: `string`, example: `var`, choices: ``var`, `obs``. Matrix to fetch the column from that will be searched.",
-                "enum": ["var", "obs"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
-    "outputs" : {
-    "title": "Outputs",
-    "type": "object",
-    "description": "Arguments related to how the output will be written.",
-    "properties": {
-    
-        
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Location of the output MuData file",
-                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Location of the output MuData file.\n"
-            ,
-                "default":"$id.$key.output.h5mu"
-            }
-    
-
-        ,
-                "output_match_column": {
-                "type":
-                "string",
-                "description": "Type: `string`, required. Name of the column to write the result to",
-                "help_text": "Type: `string`, required. Name of the column to write the result to."
-            
-            }
-    
-
-        ,
-                "output_fraction_column": {
-                "type":
-                "string",
-                "description": "Type: `string`. For the opposite axis, name of the column to write the fraction of \nobservations that matches to the pattern",
-                "help_text": "Type: `string`. For the opposite axis, name of the column to write the fraction of \nobservations that matches to the pattern.\n"
-            
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
-    "query options" : {
-    "title": "Query options",
-    "type": "object",
-    "description": "Options related to the query",
-    "properties": {
-    
-        
-                "regex_pattern": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `^[mM][tT]-`. Regex to use to match with the input column",
-                "help_text": "Type: `string`, required, example: `^[mM][tT]-`. Regex to use to match with the input column."
-            
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/definitions/inputs"
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "Arguments related to the input dataset.",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Path to the input .h5mu.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"sample_path\"`. "
+        },
+        "input_column": {
+          "type": "string",
+          "description": "Column to query",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "input_layer": {
+          "type": "string",
+          "description": "Input data to use when calculating fraction of observations that match with the query",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality to get the annotation matrix from.\n",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"rna\"`. "
+        },
+        "matrix": {
+          "type": "string",
+          "description": "Matrix to fetch the column from that will be searched.",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"var\"`, choices: ``var`, `obs``. ",
+          "enum": [
+            "var",
+            "obs"
+          ]
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/outputs"
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "Arguments related to how the output will be written.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Location of the output MuData file.\n",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "output_match_column": {
+          "type": "string",
+          "description": "Name of the column to write the result to.",
+          "help_text": "Type: `string`, multiple: `False`, required. "
+        },
+        "output_fraction_column": {
+          "type": "string",
+          "description": "For the opposite axis, name of the column to write the fraction of \nobservations that matches to the pattern.\n",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/query options"
+    "query options": {
+      "title": "Query options",
+      "type": "object",
+      "description": "Options related to the query",
+      "properties": {
+        "regex_pattern": {
+          "type": "string",
+          "description": "Regex to use to match with the input column.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"^[mM][tT]-\"`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/query options"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
 }

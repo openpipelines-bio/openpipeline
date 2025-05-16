@@ -1,422 +1,269 @@
 {
-"$schema": "http://json-schema.org/draft-07/schema",
-"title": "scgpt_annotation",
-"description": "Cell type annotation workflow using scGPT. \nThe workflow takes a pre-processed h5mu file as query input, and performs\n  - subsetting for HVG\n  - cross-checking of genes with the model vocabulary\n  - binning of gene counts\n  - padding and tokenizing of genes\n  - transformer-based cell type prediction\nNote that cell-type prediction using scGPT is only possible using a fine-tuned scGPT model.\n",
-"type": "object",
-"definitions": {
-
-    
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "scgpt_annotation",
+  "description": "Cell type annotation workflow using scGPT. \nThe workflow takes a pre-processed h5mu file as query input, and performs\n  - subsetting for HVG\n  - cross-checking of genes with the model vocabulary\n  - binning of gene counts\n  - padding and tokenizing of genes\n  - transformer-based cell type prediction\nNote that cell-type prediction using scGPT is only possible using a fine-tuned scGPT model.\n",
+  "type": "object",
+  "$defs": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "format": "file-path",
-                "mimetype": "text/csv",
-                "pattern": "^\\S+\\.csv$"
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
         }
+      }
     },
-
-    
-    
-    "outputs" : {
-    "title": "Outputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output file path",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output file path"
-            ,
-                "default":"$id.$key.output.h5mu"
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression algorithm to use for the output h5mu file",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression algorithm to use for the output h5mu file.\n",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-        ,
-                "output_obs_predictions": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `scgpt_pred`. The name of the adata",
-                "help_text": "Type: `string`, default: `scgpt_pred`. The name of the adata.obs column to write predicted cell type labels to.\n"
-            ,
-                "default":"scgpt_pred"
-            }
-    
-
-        ,
-                "output_obs_probability": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `scgpt_probability`. The name of the adata",
-                "help_text": "Type: `string`, default: `scgpt_probability`. The name of the adata.obs column to write predicted cell type labels to.\n"
-            ,
-                "default":"scgpt_probability"
-            }
-    
-
-}
-},
-    
-    
-    "query input" : {
-    "title": "Query input",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "id": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `foo`. ID of the sample",
-                "help_text": "Type: `string`, required, example: `foo`. ID of the sample."
-            
-            }
-    
-
-        ,
-                "input": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `input.h5mu`. Path to the input file",
-                "help_text": "Type: `file`, required, example: `input.h5mu`. Path to the input file."
-            
-            }
-    
-
-        ,
-                "modality": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `rna`. Which modality from the input MuData file to process",
-                "help_text": "Type: `string`, default: `rna`. Which modality from the input MuData file to process.\n"
-            ,
-                "default":"rna"
-            }
-    
-
-        ,
-                "input_layer": {
-                "type":
-                "string",
-                "description": "Type: `string`. The layer of the input dataset to process if ",
-                "help_text": "Type: `string`. The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts.\n"
-            
-            }
-    
-
-        ,
-                "input_var_gene_names": {
-                "type":
-                "string",
-                "description": "Type: `string`. The ",
-                "help_text": "Type: `string`. The .var field in the input (query) containing gene names; if not provided, the var index will be used.\n"
-            
-            }
-    
-
-        ,
-                "input_obs_batch_label": {
-                "type":
-                "string",
-                "description": "Type: `string`, required. The ",
-                "help_text": "Type: `string`, required. The .obs field in the input (query) dataset containing the batch labels.\n"
-            
-            }
-    
-
-}
-},
-    
-    
-    "model input" : {
-    "title": "Model input",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "model": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `best_model.pt`. The scGPT model file",
-                "help_text": "Type: `file`, required, example: `best_model.pt`. The scGPT model file. \nMust be a fine-tuned model that contains keys for checkpoints (--finetuned_checkpoints_key) and cell type label mapper(--label_mapper_key).\n"
-            
-            }
-    
-
-        ,
-                "model_config": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `args.json`. The scGPT model configuration file",
-                "help_text": "Type: `file`, required, example: `args.json`. The scGPT model configuration file. \n"
-            
-            }
-    
-
-        ,
-                "model_vocab": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `vocab.json`. The scGPT model vocabulary file",
-                "help_text": "Type: `file`, required, example: `vocab.json`. The scGPT model vocabulary file.\n"
-            
-            }
-    
-
-        ,
-                "finetuned_checkpoints_key": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `model_state_dict`. Key in the model file containing the pre-trained checkpoints",
-                "help_text": "Type: `string`, default: `model_state_dict`. Key in the model file containing the pre-trained checkpoints.\n"
-            ,
-                "default":"model_state_dict"
-            }
-    
-
-        ,
-                "label_mapper_key": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `id_to_class`. Key in the model file containing the cell type class to label mapper dictionary",
-                "help_text": "Type: `string`, default: `id_to_class`. Key in the model file containing the cell type class to label mapper dictionary.\n"
-            ,
-                "default":"id_to_class"
-            }
-    
-
-}
-},
-    
-    
-    "padding arguments" : {
-    "title": "Padding arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "pad_token": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `\u003cpad\u003e`. Token used for padding",
-                "help_text": "Type: `string`, default: `\u003cpad\u003e`. Token used for padding.\n"
-            ,
-                "default":"<pad>"
-            }
-    
-
-        ,
-                "pad_value": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `-2`. The value of the padding token",
-                "help_text": "Type: `integer`, default: `-2`. The value of the padding token.\n"
-            ,
-                "default":-2
-            }
-    
-
-}
-},
-    
-    
-    "hvg subset arguments" : {
-    "title": "HVG subset arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "n_hvg": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `1200`. Number of highly variable genes to subset for",
-                "help_text": "Type: `integer`, default: `1200`. Number of highly variable genes to subset for.\n"
-            ,
-                "default":1200
-            }
-    
-
-        ,
-                "hvg_flavor": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `cell_ranger`, choices: ``cell_ranger`, `seurat``. Method to be used for identifying highly variable genes",
-                "help_text": "Type: `string`, default: `cell_ranger`, choices: ``cell_ranger`, `seurat``. Method to be used for identifying highly variable genes. \nNote that the default for this workflow (`cell_ranger`) is not the default method for scanpy hvg detection (`seurat`).\n",
-                "enum": ["cell_ranger", "seurat"]
-            
-            ,
-                "default":"cell_ranger"
-            }
-    
-
-}
-},
-    
-    
-    "tokenization arguments" : {
-    "title": "Tokenization arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "max_seq_len": {
-                "type":
-                "integer",
-                "description": "Type: `integer`. The maximum sequence length of the tokenized data",
-                "help_text": "Type: `integer`. The maximum sequence length of the tokenized data.\n"
-            
-            }
-    
-
-}
-},
-    
-    
-    "embedding arguments" : {
-    "title": "Embedding arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "dsbn": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean`, default: `true`. Apply domain-specific batch normalization\n",
-                "help_text": "Type: `boolean`, default: `true`. Apply domain-specific batch normalization\n"
-            ,
-                "default":true
-            }
-    
-
-        ,
-                "batch_size": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `64`. The batch size to be used for embedding inference",
-                "help_text": "Type: `integer`, default: `64`. The batch size to be used for embedding inference.\n"
-            ,
-                "default":64
-            }
-    
-
-}
-},
-    
-    
-    "binning arguments" : {
-    "title": "Binning arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "n_input_bins": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `51`. The number of bins to discretize the data into; When no value is provided, data won\u0027t be binned",
-                "help_text": "Type: `integer`, default: `51`. The number of bins to discretize the data into; When no value is provided, data won\u0027t be binned.\n"
-            ,
-                "default":51
-            }
-    
-
-        ,
-                "seed": {
-                "type":
-                "integer",
-                "description": "Type: `integer`. Seed for random number generation used for binning",
-                "help_text": "Type: `integer`. Seed for random number generation used for binning. If not set, no seed is used.\n"
-            
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/definitions/outputs"
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output file path",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "The compression algorithm to use for the output h5mu file.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        },
+        "output_obs_predictions": {
+          "type": "string",
+          "description": "The name of the adata.obs column to write predicted cell type labels to.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"scgpt_pred\"`. ",
+          "default": "scgpt_pred"
+        },
+        "output_obs_probability": {
+          "type": "string",
+          "description": "The name of the adata.obs column to write predicted cell type labels to.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"scgpt_probability\"`. ",
+          "default": "scgpt_probability"
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/query input"
+    "query input": {
+      "title": "Query input",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID of the sample.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"foo\"`. "
+        },
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Path to the input file.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality from the input MuData file to process.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "input_layer": {
+          "type": "string",
+          "description": "The layer of the input dataset to process if .X is not to be used",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "input_var_gene_names": {
+          "type": "string",
+          "description": "The .var field in the input (query) containing gene names; if not provided, the var index will be used.\n",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "input_obs_batch_label": {
+          "type": "string",
+          "description": "The .obs field in the input (query) dataset containing the batch labels.\n",
+          "help_text": "Type: `string`, multiple: `False`, required. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/model input"
+    "model input": {
+      "title": "Model input",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "model": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "The scGPT model file",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"best_model.pt\"`. "
+        },
+        "model_config": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "The scGPT model configuration file",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"args.json\"`. "
+        },
+        "model_vocab": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "The scGPT model vocabulary file.\n",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"vocab.json\"`. "
+        },
+        "finetuned_checkpoints_key": {
+          "type": "string",
+          "description": "Key in the model file containing the pre-trained checkpoints.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"model_state_dict\"`. ",
+          "default": "model_state_dict"
+        },
+        "label_mapper_key": {
+          "type": "string",
+          "description": "Key in the model file containing the cell type class to label mapper dictionary.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"id_to_class\"`. ",
+          "default": "id_to_class"
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/padding arguments"
+    "padding arguments": {
+      "title": "Padding arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "pad_token": {
+          "type": "string",
+          "description": "Token used for padding.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"<pad>\"`. ",
+          "default": "<pad>"
+        },
+        "pad_value": {
+          "type": "integer",
+          "description": "The value of the padding token.\n",
+          "help_text": "Type: `integer`, multiple: `False`, default: `-2`. ",
+          "default": -2
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/hvg subset arguments"
+    "hvg subset arguments": {
+      "title": "HVG subset arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "n_hvg": {
+          "type": "integer",
+          "description": "Number of highly variable genes to subset for.\n",
+          "help_text": "Type: `integer`, multiple: `False`, default: `1200`. ",
+          "default": 1200
+        },
+        "hvg_flavor": {
+          "type": "string",
+          "description": "Method to be used for identifying highly variable genes",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"cell_ranger\"`, choices: ``cell_ranger`, `seurat``. ",
+          "enum": [
+            "cell_ranger",
+            "seurat"
+          ],
+          "default": "cell_ranger"
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/tokenization arguments"
+    "tokenization arguments": {
+      "title": "Tokenization arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "max_seq_len": {
+          "type": "integer",
+          "description": "The maximum sequence length of the tokenized data.\n",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/embedding arguments"
+    "embedding arguments": {
+      "title": "Embedding arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "dsbn": {
+          "type": "boolean",
+          "description": "Apply domain-specific batch normalization\n",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
+        },
+        "batch_size": {
+          "type": "integer",
+          "description": "The batch size to be used for embedding inference.\n",
+          "help_text": "Type: `integer`, multiple: `False`, default: `64`. ",
+          "default": 64
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/binning arguments"
+    "binning arguments": {
+      "title": "Binning arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "n_input_bins": {
+          "type": "integer",
+          "description": "The number of bins to discretize the data into; When no value is provided, data won't be binned.\n",
+          "help_text": "Type: `integer`, multiple: `False`, default: `51`. ",
+          "default": 51
+        },
+        "seed": {
+          "type": "integer",
+          "description": "Seed for random number generation used for binning",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/query input"
+    },
+    {
+      "$ref": "#/$defs/model input"
+    },
+    {
+      "$ref": "#/$defs/padding arguments"
+    },
+    {
+      "$ref": "#/$defs/hvg subset arguments"
+    },
+    {
+      "$ref": "#/$defs/tokenization arguments"
+    },
+    {
+      "$ref": "#/$defs/embedding arguments"
+    },
+    {
+      "$ref": "#/$defs/binning arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
 }

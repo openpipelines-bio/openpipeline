@@ -1,308 +1,196 @@
 {
-"$schema": "http://json-schema.org/draft-07/schema",
-"title": "densmap",
-"description": "A modification of UMAP that adds an extra cost term in order to preserve information \nabout the relative local density of the data. It is performed on the same inputs as UMAP.\n",
-"type": "object",
-"definitions": {
-
-    
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "densmap",
+  "description": "A modification of UMAP that adds an extra cost term in order to preserve information \nabout the relative local density of the data. It is performed on the same inputs as UMAP.\n",
+  "type": "object",
+  "$defs": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "format": "file-path",
-                "mimetype": "text/csv",
-                "pattern": "^\\S+\\.csv$"
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
         }
+      }
     },
-
-    
-    
-    "inputs" : {
-    "title": "Inputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "input": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `input.h5mu`. Input h5mu file",
-                "help_text": "Type: `file`, required, example: `input.h5mu`. Input h5mu file"
-            
-            }
-    
-
-        ,
-                "modality": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `rna`. Which modality from the input MuData file to process",
-                "help_text": "Type: `string`, default: `rna`. Which modality from the input MuData file to process.\n"
-            ,
-                "default":"rna"
-            }
-    
-
-        ,
-                "uns_neighbors": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `neighbors`. The `",
-                "help_text": "Type: `string`, default: `neighbors`. The `.uns` neighbors slot as output by the `find_neighbors` component."
-            ,
-                "default":"neighbors"
-            }
-    
-
-        ,
-                "obsm_pca": {
-                "type":
-                "string",
-                "description": "Type: `string`, required. The slot in `",
-                "help_text": "Type: `string`, required. The slot in `.obsm` where the PCA results are stored.\n"
-            
-            }
-    
-
-}
-},
-    
-    
-    "outputs" : {
-    "title": "Outputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
-            ,
-                "default":"$id.$key.output.h5mu"
-            }
-    
-
-        ,
-                "obsm_output": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `X_densmap`. The ",
-                "help_text": "Type: `string`, default: `X_densmap`. The .obsm key to use for storing the densMAP results.."
-            ,
-                "default":"X_densmap"
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
-    "arguments umap" : {
-    "title": "Arguments UMAP",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "min_dist": {
-                "type":
-                "number",
-                "description": "Type: `double`, default: `0.5`. The effective minimum distance between embedded points",
-                "help_text": "Type: `double`, default: `0.5`. The effective minimum distance between embedded points. Smaller values will result \nin a more clustered/clumped embedding where nearby points on the manifold are drawn \ncloser together, while larger values will result on a more even dispersal of points. \nThe value should be set relative to the spread value, which determines the scale at \nwhich embedded points will be spread out. \n"
-            ,
-                "default":0.5
-            }
-    
-
-        ,
-                "spread": {
-                "type":
-                "number",
-                "description": "Type: `double`, default: `1.0`. The effective scale of embedded points",
-                "help_text": "Type: `double`, default: `1.0`. The effective scale of embedded points. In combination with `min_dist` this \ndetermines how clustered/clumped the embedded points are.\n"
-            ,
-                "default":1.0
-            }
-    
-
-        ,
-                "num_components": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `2`. The number of dimensions of the embedding",
-                "help_text": "Type: `integer`, default: `2`. The number of dimensions of the embedding."
-            ,
-                "default":2
-            }
-    
-
-        ,
-                "max_iter": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `0`. The number of iterations (epochs) of the optimization",
-                "help_text": "Type: `integer`, default: `0`. The number of iterations (epochs) of the optimization. Called `n_epochs` \nin the original UMAP. Default is set to 500 if \nneighbors[\u0027connectivities\u0027].shape[0] \u003c= 10000, else 200.\n"
-            ,
-                "default":0
-            }
-    
-
-        ,
-                "alpha": {
-                "type":
-                "number",
-                "description": "Type: `double`, default: `1.0`. The initial learning rate for the embedding optimization",
-                "help_text": "Type: `double`, default: `1.0`. The initial learning rate for the embedding optimization."
-            ,
-                "default":1.0
-            }
-    
-
-        ,
-                "gamma": {
-                "type":
-                "number",
-                "description": "Type: `double`, default: `1.0`. Weighting applied to negative samples in low dimensional embedding optimization",
-                "help_text": "Type: `double`, default: `1.0`. Weighting applied to negative samples in low dimensional embedding optimization. \nValues higher than one will result in greater weight being given to negative samples.\n"
-            ,
-                "default":1.0
-            }
-    
-
-        ,
-                "negative_sample_rate": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `5`. The number of negative samples to select per positive sample\nin the optimization process",
-                "help_text": "Type: `integer`, default: `5`. The number of negative samples to select per positive sample\nin the optimization process. Increasing this value will result\nin greater repulsive force being applied, greater optimization\ncost, but slightly more accuracy.\n"
-            ,
-                "default":5
-            }
-    
-
-        ,
-                "init_pos": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `spectral`, choices: ``paga`, `spectral`, `random``. How to initialize the low dimensional embedding",
-                "help_text": "Type: `string`, default: `spectral`, choices: ``paga`, `spectral`, `random``. How to initialize the low dimensional embedding. Called `init` in the original UMAP. Options are:\n  \n* Any key from `.obsm`\n* `\u0027paga\u0027`: positions from `paga()`\n* `\u0027spectral\u0027`: use a spectral embedding of the graph\n* `\u0027random\u0027`: assign initial embedding positions at random.\n",
-                "enum": ["paga", "spectral", "random"]
-            
-            ,
-                "default":"spectral"
-            }
-    
-
-}
-},
-    
-    
-    "arguments densmap" : {
-    "title": "Arguments densMAP",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "lambda": {
-                "type":
-                "number",
-                "description": "Type: `double`, default: `2.0`. Controls the regularization weight of the density correlation term in densMAP",
-                "help_text": "Type: `double`, default: `2.0`. Controls the regularization weight of the density correlation term in densMAP. \nHigher values prioritize density preservation over the UMAP objective, and vice versa \nfor values closer to zero. Setting this parameter to zero is equivalent to running \nthe original UMAP algorithm.\n"
-            ,
-                "default":2.0
-            }
-    
-
-        ,
-                "fraction": {
-                "type":
-                "number",
-                "description": "Type: `double`, default: `0.3`. Controls the fraction of epochs (between 0 and 1) where the density-augmented objective \nis used in densMAP",
-                "help_text": "Type: `double`, default: `0.3`. Controls the fraction of epochs (between 0 and 1) where the density-augmented objective \nis used in densMAP. The first (1 - dens_frac) fraction of epochs optimize the original \nUMAP objective before introducing the density correlation term.\n"
-            ,
-                "default":0.3
-            }
-    
-
-        ,
-                "var_shift": {
-                "type":
-                "number",
-                "description": "Type: `double`, default: `0.1`. A small constant added to the variance of local radii in the embedding when calculating \nthe density correlation objective to prevent numerical instability from dividing by a \nsmall number",
-                "help_text": "Type: `double`, default: `0.1`. A small constant added to the variance of local radii in the embedding when calculating \nthe density correlation objective to prevent numerical instability from dividing by a \nsmall number.\n"
-            ,
-                "default":0.1
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/definitions/inputs"
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality from the input MuData file to process.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "uns_neighbors": {
+          "type": "string",
+          "description": "The `.uns` neighbors slot as output by the `find_neighbors` component.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"neighbors\"`. ",
+          "default": "neighbors"
+        },
+        "obsm_pca": {
+          "type": "string",
+          "description": "The slot in `.obsm` where the PCA results are stored.\n",
+          "help_text": "Type: `string`, multiple: `False`, required. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/outputs"
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "obsm_output": {
+          "type": "string",
+          "description": "The .obsm key to use for storing the densMAP results..",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_densmap\"`. ",
+          "default": "X_densmap"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/arguments umap"
+    "arguments umap": {
+      "title": "Arguments UMAP",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "min_dist": {
+          "type": "number",
+          "description": "The effective minimum distance between embedded points",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.5`. ",
+          "default": 0.5
+        },
+        "spread": {
+          "type": "number",
+          "description": "The effective scale of embedded points",
+          "help_text": "Type: `double`, multiple: `False`, default: `1.0`. ",
+          "default": 1.0
+        },
+        "num_components": {
+          "type": "integer",
+          "description": "The number of dimensions of the embedding.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `2`. ",
+          "default": 2
+        },
+        "max_iter": {
+          "type": "integer",
+          "description": "The number of iterations (epochs) of the optimization",
+          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
+          "default": 0
+        },
+        "alpha": {
+          "type": "number",
+          "description": "The initial learning rate for the embedding optimization.",
+          "help_text": "Type: `double`, multiple: `False`, default: `1.0`. ",
+          "default": 1.0
+        },
+        "gamma": {
+          "type": "number",
+          "description": "Weighting applied to negative samples in low dimensional embedding optimization",
+          "help_text": "Type: `double`, multiple: `False`, default: `1.0`. ",
+          "default": 1.0
+        },
+        "negative_sample_rate": {
+          "type": "integer",
+          "description": "The number of negative samples to select per positive sample\nin the optimization process",
+          "help_text": "Type: `integer`, multiple: `False`, default: `5`. ",
+          "default": 5
+        },
+        "init_pos": {
+          "type": "string",
+          "description": "How to initialize the low dimensional embedding",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"spectral\"`, choices: ``paga`, `spectral`, `random``. ",
+          "enum": [
+            "paga",
+            "spectral",
+            "random"
+          ],
+          "default": "spectral"
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/arguments densmap"
+    "arguments densmap": {
+      "title": "Arguments densMAP",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "lambda": {
+          "type": "number",
+          "description": "Controls the regularization weight of the density correlation term in densMAP",
+          "help_text": "Type: `double`, multiple: `False`, default: `2.0`. ",
+          "default": 2.0
+        },
+        "fraction": {
+          "type": "number",
+          "description": "Controls the fraction of epochs (between 0 and 1) where the density-augmented objective \nis used in densMAP",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.3`. ",
+          "default": 0.3
+        },
+        "var_shift": {
+          "type": "number",
+          "description": "A small constant added to the variance of local radii in the embedding when calculating \nthe density correlation objective to prevent numerical instability from dividing by a \nsmall number.\n",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.1`. ",
+          "default": 0.1
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/arguments umap"
+    },
+    {
+      "$ref": "#/$defs/arguments densmap"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
 }
