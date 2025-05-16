@@ -1,5 +1,6 @@
 name: grep_annotation_column
 namespace: "metadata"
+scope: "public"
 description: |
   Perform a regex lookup on a column from the annotation matrices .obs or .var.
   The annotation matrix can originate from either a modality, or all modalities (global .var or .obs).

@@ -1,5 +1,6 @@
 name: cross_check_genes
 namespace: "scgpt"
+scope: "public"
 description: |
   Cross-check genes with pre-trained scGPT model.
 authors:

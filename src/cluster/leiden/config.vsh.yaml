@@ -1,5 +1,6 @@
 name: leiden
 namespace: "cluster"
+scope: "public"
 description: |
   Cluster cells using the [Leiden algorithm] [Traag18] implemented in the [Scanpy framework] [Wolf18]. 
   Leiden is an improved version of the [Louvain algorithm] [Blondel08]. 

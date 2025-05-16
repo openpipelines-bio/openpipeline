@@ -1,5 +1,6 @@
 name: "gdo_singlesample"
 namespace: "workflows/gdo"
+scope: "public"
 description: "Processing unimodal single-sample guide-derived oligonucleotide (GDO) data."
 info:
   name: "GDO Singlesample"

@@ -1,5 +1,6 @@
 name: "scgpt_annotation"
 namespace: "workflows/annotation"
+scope: "public"
 description: |
   Cell type annotation workflow using scGPT. 
   The workflow takes a pre-processed h5mu file as query input, and performs

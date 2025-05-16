@@ -1,5 +1,6 @@
 name: cellranger_count_split
 namespace: mapping
+scope: "public"
 description: Split 10x Cell Ranger output directory into separate output fields.
 authors:
   - __merge__: /src/authors/angela_pisco.yaml

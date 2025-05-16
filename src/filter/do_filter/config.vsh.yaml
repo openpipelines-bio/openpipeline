@@ -1,5 +1,6 @@
 name: do_filter
 namespace: "filter"
+scope: "public"
 description: |
   Remove observations and variables based on specified .obs and .var columns.
 authors:

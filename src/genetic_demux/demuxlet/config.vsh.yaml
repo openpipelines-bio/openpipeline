@@ -1,5 +1,6 @@
 name: demuxlet
 namespace: genetic_demux
+scope: "public"
 description: |
   Demuxlet is a software tool to deconvolute sample identity and identify multiplets when
   multiple samples are pooled by barcoded single cell sequencing. If external genotyping data

@@ -1,5 +1,6 @@
 name: bcl_convert
 namespace: demux
+scope: "public"
 description: |
   Convert bcl files to fastq files using bcl-convert.
   Information about upgrading from bcl2fastq via

@@ -1,5 +1,6 @@
 name: htseq_count
 namespace: mapping
+scope: "public"
 description: |
   Quantify gene expression for subsequent testing for differential expression.
 

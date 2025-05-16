@@ -1,5 +1,6 @@
 name: onclass
 namespace: annotate
+scope: "public"
 description: |
   OnClass is a python package for single-cell cell type annotation. It uses the Cell Ontology to capture the cell type similarity. 
   These similarities enable OnClass to annotate cell types that are never seen in the training data.

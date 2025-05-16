@@ -1,5 +1,6 @@
 name: "qc"
 namespace: "workflows/qc"
+scope: "public"
 description: "A pipeline to add basic qc statistics to a MuData "
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml

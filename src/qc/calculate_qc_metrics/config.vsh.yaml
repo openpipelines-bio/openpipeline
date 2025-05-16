@@ -1,5 +1,6 @@
 name: calculate_qc_metrics
 namespace: "qc"
+scope: "public"
 description: |
   Add basic quality control metrics to an .h5mu file.
 

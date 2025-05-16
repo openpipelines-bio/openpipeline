@@ -1,5 +1,6 @@
 name: filter_10xh5
 namespace: "process_10xh5"
+scope: "public"
 description: |
   Filter a 10x h5 dataset.
 usage: | 

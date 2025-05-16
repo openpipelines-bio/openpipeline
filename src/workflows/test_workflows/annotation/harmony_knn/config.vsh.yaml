@@ -1,5 +1,6 @@
 name: "harmony_knn_test"
 namespace: "test_workflows/annotation"
+scope: "test"
 description: "This component tests the output of the annotation of the harmony_knn of workflow."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml

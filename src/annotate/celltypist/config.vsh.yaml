@@ -1,5 +1,6 @@
 name: celltypist
 namespace: annotate
+scope: "public"
 description: Automated cell type annotation tool for scRNA-seq datasets on the basis of logistic regression classifiers optimised by the stochastic gradient descent algorithm.
 authors:
   - __merge__: /src/authors/jakub_majercik.yaml

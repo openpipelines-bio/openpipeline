@@ -1,5 +1,6 @@
 name: "prot_multisample"
 namespace: "workflows/prot"
+scope: "public"
 description: "Processing unimodal multi-sample ADT data."
 info:
   image: /images/concepts/fig_workflow_multiomics_adt_multisample.svg

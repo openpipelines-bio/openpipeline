@@ -1,5 +1,6 @@
 name: filter_with_scrublet
 namespace: "filter"
+scope: "public"
 description: |
   Doublet detection using the Scrublet method (Wolock, Lopez and Klein, 2019).
   The method tests for potential doublets by using the expression profiles of

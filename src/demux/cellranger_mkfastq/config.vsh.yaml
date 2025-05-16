@@ -1,5 +1,6 @@
 name: cellranger_mkfastq
 namespace: demux
+scope: "public"
 description: Demultiplex raw sequencing data
 usage: |
   cellranger_mkfastq \

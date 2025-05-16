@@ -1,5 +1,6 @@
 name: move_obsm_to_obs
 namespace: "metadata"
+scope: "public"
 description: |
   Move a matrix from .obsm to .obs. Newly created columns in .obs will 
   be created from the .obsm key suffixed with an underscore and the name of the columns

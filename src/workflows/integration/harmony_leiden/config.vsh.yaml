@@ -1,5 +1,6 @@
 name: "harmony_leiden"
 namespace: "workflows/integration"
+scope: "public"
 description: "Run harmony integration followed by neighbour calculations, leiden clustering and run umap on the result."
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml

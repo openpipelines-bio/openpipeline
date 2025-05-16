@@ -1,5 +1,6 @@
 name: binning
 namespace: "scgpt"
+scope: "public"
 description: |
   Conversion of (pre-processed) expression count data into relative values (bins) to address scale differences across sequencing batches.
 authors:

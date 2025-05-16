@@ -1,5 +1,6 @@
 name: "download_file"
 namespace: "download"
+scope: "test"
 status: "deprecated"
 description: |
   Download a file.

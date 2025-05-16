@@ -1,5 +1,6 @@
 name: "from_bdrhap_to_h5mu"
 namespace: "convert"
+scope: "public"
 description: |
   Convert the output of a BD Rhapsody pipeline v2.x to a MuData h5 file.
 authors:

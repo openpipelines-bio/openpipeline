@@ -1,5 +1,6 @@
 name: "prot_singlesample"
 namespace: "workflows/prot"
+scope: "public"
 description: "Processing unimodal single-sample CITE-seq data."
 info:
   image: /images/concepts/fig_workflow_multiomics_adt_singlesample.svg

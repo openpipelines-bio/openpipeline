@@ -1,5 +1,6 @@
 name: "bd_rhapsody"
 namespace: "workflows/ingestion"
+scope: "public"
 info:
   name: "BD Rhapsody"
   test_dependencies:

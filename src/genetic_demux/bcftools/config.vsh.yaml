@@ -1,5 +1,6 @@
 name: bcftools
 namespace: genetic_demux
+scope: "public"
 description: Filter the variants called by freebayes or cellSNP
 authors:
   - __merge__: /src/authors/xichen_wu.yaml

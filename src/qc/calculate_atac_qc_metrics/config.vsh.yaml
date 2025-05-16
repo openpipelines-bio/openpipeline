@@ -1,5 +1,6 @@
 name: calculate_atac_qc_metrics
 namespace: "qc"
+scope: "public"
 description: |
   Add basic ATAC quality control metrics to an .h5mu file.
 

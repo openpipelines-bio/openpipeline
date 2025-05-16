@@ -1,5 +1,6 @@
 name: tfidf
 namespace: "transform"
+scope: "public"
 description: |
   Perform TF-IDF normalization of the data (typically, ATAC).
 

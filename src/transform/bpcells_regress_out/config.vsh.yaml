@@ -1,5 +1,6 @@
 name: bpcells_regress_out
 namespace: "transform"
+scope: "public"
 description: |
   Regress out the effects of confounding variables using a linear least squares regression model with BPCells.
 authors:
