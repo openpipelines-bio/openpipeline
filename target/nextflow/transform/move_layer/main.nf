@@ -3057,6 +3057,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--modality",
+          "description" : "Which modality from the input MuData file to process.\n",
           "default" : [
             "rna"
           ],
@@ -3068,6 +3069,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--input_layer",
+          "description" : "Input layer to move to a new output location. If specified, will be used to select a key from .layers,\notherwise .X is used.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3093,6 +3095,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--output_layer",
+          "description" : "Destination location for the layer. If not provided, .X will be used,\nOtherwise, will be the key for the .layers attribute in the output MuData file.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3292,7 +3295,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/move_layer",
     "viash_version" : "0.9.4",
-    "git_commit" : "c50a5a401cd9ccc144240180b0c4f5228f12db19",
+    "git_commit" : "b893eb3abe64b41eb24cc8251d1d7a126bb063ea",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

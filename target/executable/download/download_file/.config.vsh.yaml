@@ -66,7 +66,7 @@ test_resources:
   path: "run_test.sh"
   is_executable: true
 info: null
-status: "enabled"
+status: "deprecated"
 scope:
   image: "public"
   target: "public"
@@ -156,7 +156,7 @@ build_info:
   output: "target/executable/download/download_file"
   executable: "target/executable/download/download_file/download_file"
   viash_version: "0.9.4"
-  git_commit: "c50a5a401cd9ccc144240180b0c4f5228f12db19"
+  git_commit: "b893eb3abe64b41eb24cc8251d1d7a126bb063ea"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

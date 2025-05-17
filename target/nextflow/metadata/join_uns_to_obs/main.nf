@@ -3057,6 +3057,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--modality",
+          "description" : "Which modality from the input MuData file to process.\n",
           "default" : [
             "rna"
           ],
@@ -3068,6 +3069,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--uns_key",
+          "description" : "Lookup key from .uns pointing to the input data.\n",
           "required" : true,
           "direction" : "input",
           "multiple" : false,
@@ -3284,7 +3286,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/join_uns_to_obs",
     "viash_version" : "0.9.4",
-    "git_commit" : "c50a5a401cd9ccc144240180b0c4f5228f12db19",
+    "git_commit" : "b893eb3abe64b41eb24cc8251d1d7a126bb063ea",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

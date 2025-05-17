@@ -3083,6 +3083,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--modality",
+          "description" : "List of names to use for the modalities. Will be used as the keys in the .mod attribute in the output MuData object\nThe number of items provided for this argument equal the number of input files (--input) and their order should match.\n",
           "default" : [
             "rna"
           ],
@@ -3302,7 +3303,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "c50a5a401cd9ccc144240180b0c4f5228f12db19",
+    "git_commit" : "b893eb3abe64b41eb24cc8251d1d7a126bb063ea",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

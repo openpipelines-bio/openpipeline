@@ -3135,6 +3135,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--filtered_h5",
+          "description" : "Output path for the h5 file storing the filtered counts.\n",
           "example" : [
             "filtered_feature_bc_matrix.h5"
           ],
@@ -3148,6 +3149,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--metrics_summary",
+          "description" : "Where to store the 'metrics_summary' CSV file.\n",
           "example" : [
             "metrics_summary.csv"
           ],
@@ -3161,6 +3163,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--molecule_info",
+          "description" : "Where to store Cell Ranger's 'molecule_info.h5' file.\n",
           "example" : [
             "molecule_info.h5"
           ],
@@ -3174,6 +3177,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--bam",
+          "description" : "Location of output BAM files.\n",
           "example" : [
             "possorted_genome_bam.bam"
           ],
@@ -3187,6 +3191,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--bai",
+          "description" : "Where to store the BAM index files.\n",
           "example" : [
             "possorted_genome_bam.bam.bai"
           ],
@@ -3200,6 +3205,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--raw_h5",
+          "description" : "Output path for the h5 file storing the raw counts.\n",
           "example" : [
             "raw_feature_bc_matrix.h5"
           ],
@@ -3336,7 +3342,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count_split",
     "viash_version" : "0.9.4",
-    "git_commit" : "c50a5a401cd9ccc144240180b0c4f5228f12db19",
+    "git_commit" : "b893eb3abe64b41eb24cc8251d1d7a126bb063ea",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

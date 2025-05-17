@@ -1,298 +1,218 @@
 {
-"$schema": "http://json-schema.org/draft-07/schema",
-"title": "htseq_count",
-"description": "Quantify gene expression for subsequent testing for differential expression.\n\nThis script takes one or more alignment files in SAM/BAM format and a feature file in GFF format and calculates for each feature the number of reads mapping to it. \n\nSee http://htseq.readthedocs.io/en/master/count.html for details.\n",
-"type": "object",
-"definitions": {
-
-    
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "htseq_count",
+  "description": "Quantify gene expression for subsequent testing for differential expression.\n\nThis script takes one or more alignment files in SAM/BAM format and a feature file in GFF format and calculates for each feature the number of reads mapping to it. \n\nSee http://htseq.readthedocs.io/en/master/count.html for details.\n",
+  "type": "object",
+  "$defs": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "format": "file-path",
-                "mimetype": "text/csv",
-                "pattern": "^\\S+\\.csv$"
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
         }
+      }
     },
-
-    
-    
-    "arguments" : {
-    "title": "Arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "order": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `name`, choices: ``pos`, `name``. Sorting order of \u003calignment_file\u003e",
-                "help_text": "Type: `string`, default: `name`, choices: ``pos`, `name``. Sorting order of \u003calignment_file\u003e. Paired-end sequencing data must be sorted either by position or\nby read name, and the sorting order must be specified. Ignored for single-end data.\n",
-                "enum": ["pos", "name"]
-            
-            ,
-                "default":"name"
-            }
-    
-
-        ,
-                "stranded": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `yes`, choices: ``yes`, `no`, `reverse``. Whether the data is from a strand-specific assay",
-                "help_text": "Type: `string`, default: `yes`, choices: ``yes`, `no`, `reverse``. Whether the data is from a strand-specific assay. \u0027reverse\u0027 means \u0027yes\u0027 with reversed strand interpretation.",
-                "enum": ["yes", "no", "reverse"]
-            
-            ,
-                "default":"yes"
-            }
-    
-
-        ,
-                "minimum_alignment_quality": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `10`. Skip all reads with MAPQ alignment quality lower than the given minimum value",
-                "help_text": "Type: `integer`, default: `10`. Skip all reads with MAPQ alignment quality lower than the given minimum value. \nMAPQ is the 5th column of a SAM/BAM file and its usage depends on the software \nused to map the reads.\n"
-            ,
-                "default":10
-            }
-    
-
-        ,
-                "type": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `exon`. Feature type (3rd column in GTF file) to be used, all features of other type are ignored (default, suitable for Ensembl GTF files: exon)",
-                "help_text": "Type: `string`, example: `exon`. Feature type (3rd column in GTF file) to be used, all features of other type are ignored (default, suitable for Ensembl GTF files: exon)"
-            
-            }
-    
-
-        ,
-                "id_attribute": {
-                "type":
-                "string",
-                "description": "Type: List of `string`, example: `gene_id`, multiple_sep: `\";\"`. GTF attribute to be used as feature ID (default, suitable for Ensembl GTF files: gene_id)",
-                "help_text": "Type: List of `string`, example: `gene_id`, multiple_sep: `\";\"`. GTF attribute to be used as feature ID (default, suitable for Ensembl GTF files: gene_id).\nAll feature of the right type (see -t option) within the same GTF attribute will be added\ntogether. The typical way of using this option is to count all exonic reads from each gene\nand add the exons but other uses are possible as well. You can call this option multiple\ntimes: in that case, the combination of all attributes separated by colons (:) will be used\nas a unique identifier, e.g. for exons you might use -i gene_id -i exon_number.\n"
-            
-            }
-    
-
-        ,
-                "additional_attributes": {
-                "type":
-                "string",
-                "description": "Type: List of `string`, example: `gene_name`, multiple_sep: `\";\"`. Additional feature attributes (suitable for Ensembl GTF files: gene_name)",
-                "help_text": "Type: List of `string`, example: `gene_name`, multiple_sep: `\";\"`. Additional feature attributes (suitable for Ensembl GTF files: gene_name). Use multiple times\nfor more than one additional attribute. These attributes are only used as annotations in the\noutput, while the determination of how the counts are added together is done based on option -i.\n"
-            
-            }
-    
-
-        ,
-                "add_chromosome_info": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean_true`, default: `false`. Store information about the chromosome of each feature as an additional attribute\n(e",
-                "help_text": "Type: `boolean_true`, default: `false`. Store information about the chromosome of each feature as an additional attribute\n(e.g. colunm in the TSV output file).\n"
-            ,
-                "default":false
-            }
-    
-
-        ,
-                "mode": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `union`, choices: ``union`, `intersection-strict`, `intersection-nonempty``. Mode to handle reads overlapping more than one feature",
-                "help_text": "Type: `string`, default: `union`, choices: ``union`, `intersection-strict`, `intersection-nonempty``. Mode to handle reads overlapping more than one feature.",
-                "enum": ["union", "intersection-strict", "intersection-nonempty"]
-            
-            ,
-                "default":"union"
-            }
-    
-
-        ,
-                "non_unique": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `none`, choices: ``none`, `all`, `fraction`, `random``. Whether and how to score reads that are not uniquely aligned or ambiguously assigned to features",
-                "help_text": "Type: `string`, default: `none`, choices: ``none`, `all`, `fraction`, `random``. Whether and how to score reads that are not uniquely aligned or ambiguously assigned to features.",
-                "enum": ["none", "all", "fraction", "random"]
-            
-            ,
-                "default":"none"
-            }
-    
-
-        ,
-                "secondary_alignments": {
-                "type":
-                "string",
-                "description": "Type: `string`, choices: ``score`, `ignore``. Whether to score secondary alignments (0x100 flag)",
-                "help_text": "Type: `string`, choices: ``score`, `ignore``. Whether to score secondary alignments (0x100 flag).",
-                "enum": ["score", "ignore"]
-            
-            
-            }
-    
-
-        ,
-                "supplementary_alignments": {
-                "type":
-                "string",
-                "description": "Type: `string`, choices: ``score`, `ignore``. Whether to score supplementary alignments (0x800 flag)",
-                "help_text": "Type: `string`, choices: ``score`, `ignore``. Whether to score supplementary alignments (0x800 flag).",
-                "enum": ["score", "ignore"]
-            
-            
-            }
-    
-
-        ,
-                "counts_output_sparse": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean_true`, default: `false`. Store the counts as a sparse matrix (mtx, h5ad, loom)",
-                "help_text": "Type: `boolean_true`, default: `false`. Store the counts as a sparse matrix (mtx, h5ad, loom)."
-            ,
-                "default":false
-            }
-    
-
-}
-},
-    
-    
-    "input" : {
-    "title": "Input",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "input": {
-                "type":
-                "string",
-                "description": "Type: List of `file`, required, example: `mysample1.BAM;mysample2.BAM`, multiple_sep: `\";\"`. Path to the SAM/BAM files containing the mapped reads",
-                "help_text": "Type: List of `file`, required, example: `mysample1.BAM;mysample2.BAM`, multiple_sep: `\";\"`. Path to the SAM/BAM files containing the mapped reads."
-            
-            }
-    
-
-        ,
-                "reference": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `reference.gtf`. Path to the GTF file containing the features",
-                "help_text": "Type: `file`, required, example: `reference.gtf`. Path to the GTF file containing the features."
-            
-            }
-    
-
-}
-},
-    
-    
-    "output" : {
-    "title": "Output",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.tsv`, example: `htseq-count.tsv`. Filename to output the counts to",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.tsv`, example: `htseq-count.tsv`. Filename to output the counts to."
-            ,
-                "default":"$id.$key.output.tsv"
-            }
-    
-
-        ,
-                "output_delimiter": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `\t`. Column delimiter in output",
-                "help_text": "Type: `string`, example: `\t`. Column delimiter in output."
-            
-            }
-    
-
-        ,
-                "output_sam": {
-                "type":
-                "string",
-                "description": "Type: List of `file`, default: `$id.$key.output_sam_*.BAM`, example: `mysample1_out.BAM;mysample2_out.BAM`, multiple_sep: `\";\"`. Write out all SAM alignment records into SAM/BAM files (one per input file needed), \nannotating each line with its feature assignment (as an optional field with tag \u0027XF\u0027)",
-                "help_text": "Type: List of `file`, default: `$id.$key.output_sam_*.BAM`, example: `mysample1_out.BAM;mysample2_out.BAM`, multiple_sep: `\";\"`. Write out all SAM alignment records into SAM/BAM files (one per input file needed), \nannotating each line with its feature assignment (as an optional field with tag \u0027XF\u0027). \nSee the -p option to use BAM instead of SAM.\n"
-            ,
-                "default":"$id.$key.output_sam_*.BAM"
-            }
-    
-
-        ,
-                "output_sam_format": {
-                "type":
-                "string",
-                "description": "Type: `string`, choices: ``sam`, `bam``. Format to use with the --output_sam argument",
-                "help_text": "Type: `string`, choices: ``sam`, `bam``. Format to use with the --output_sam argument.",
-                "enum": ["sam", "bam"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/definitions/arguments"
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "order": {
+          "type": "string",
+          "description": "Sorting order of <alignment_file>",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"name\"`, choices: ``pos`, `name``. ",
+          "enum": [
+            "pos",
+            "name"
+          ],
+          "default": "name"
+        },
+        "stranded": {
+          "type": "string",
+          "description": "Whether the data is from a strand-specific assay",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"yes\"`, choices: ``yes`, `no`, `reverse``. ",
+          "enum": [
+            "yes",
+            "no",
+            "reverse"
+          ],
+          "default": "yes"
+        },
+        "minimum_alignment_quality": {
+          "type": "integer",
+          "description": "Skip all reads with MAPQ alignment quality lower than the given minimum value",
+          "help_text": "Type: `integer`, multiple: `False`, default: `10`. ",
+          "default": 10
+        },
+        "type": {
+          "type": "string",
+          "description": "Feature type (3rd column in GTF file) to be used, all features of other type are ignored (default, suitable for Ensembl GTF files: exon)",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"exon\"`. "
+        },
+        "id_attribute": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "GTF attribute to be used as feature ID (default, suitable for Ensembl GTF files: gene_id).\nAll feature of the right type (see -t option) within the same GTF attribute will be added\ntogether",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"gene_id\"]`. "
+        },
+        "additional_attributes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Additional feature attributes (suitable for Ensembl GTF files: gene_name)",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"gene_name\"]`. "
+        },
+        "add_chromosome_info": {
+          "type": "boolean",
+          "description": "Store information about the chromosome of each feature as an additional attribute\n(e.g",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "mode": {
+          "type": "string",
+          "description": "Mode to handle reads overlapping more than one feature.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"union\"`, choices: ``union`, `intersection-strict`, `intersection-nonempty``. ",
+          "enum": [
+            "union",
+            "intersection-strict",
+            "intersection-nonempty"
+          ],
+          "default": "union"
+        },
+        "non_unique": {
+          "type": "string",
+          "description": "Whether and how to score reads that are not uniquely aligned or ambiguously assigned to features.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"none\"`, choices: ``none`, `all`, `fraction`, `random``. ",
+          "enum": [
+            "none",
+            "all",
+            "fraction",
+            "random"
+          ],
+          "default": "none"
+        },
+        "secondary_alignments": {
+          "type": "string",
+          "description": "Whether to score secondary alignments (0x100 flag).",
+          "help_text": "Type: `string`, multiple: `False`, choices: ``score`, `ignore``. ",
+          "enum": [
+            "score",
+            "ignore"
+          ]
+        },
+        "supplementary_alignments": {
+          "type": "string",
+          "description": "Whether to score supplementary alignments (0x800 flag).",
+          "help_text": "Type: `string`, multiple: `False`, choices: ``score`, `ignore``. ",
+          "enum": [
+            "score",
+            "ignore"
+          ]
+        },
+        "counts_output_sparse": {
+          "type": "boolean",
+          "description": "Store the counts as a sparse matrix (mtx, h5ad, loom).",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/input"
+    "input": {
+      "title": "Input",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "exists": true,
+          "description": "Path to the SAM/BAM files containing the mapped reads.",
+          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `[\"mysample1.BAM\";\"mysample2.BAM\"]`. "
+        },
+        "reference": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Path to the GTF file containing the features.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"reference.gtf\"`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/output"
+    "output": {
+      "title": "Output",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Filename to output the counts to.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.tsv\"`, direction: `output`, example: `\"htseq-count.tsv\"`. ",
+          "default": "$id.$key.output.tsv"
+        },
+        "output_delimiter": {
+          "type": "string",
+          "description": "Column delimiter in output.",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"\t\"`. "
+        },
+        "output_sam": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "description": "Write out all SAM alignment records into SAM/BAM files (one per input file needed), \nannotating each line with its feature assignment (as an optional field with tag 'XF')",
+          "help_text": "Type: `file`, multiple: `True`, default: `\"$id.$key.output_sam_*.BAM\"`, direction: `output`, example: `[\"mysample1_out.BAM\";\"mysample2_out.BAM\"]`. ",
+          "default": "$id.$key.output_sam_*.BAM"
+        },
+        "output_sam_format": {
+          "type": "string",
+          "description": "Format to use with the --output_sam argument.",
+          "help_text": "Type: `string`, multiple: `False`, choices: ``sam`, `bam``. ",
+          "enum": [
+            "sam",
+            "bam"
+          ]
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/arguments"
+    },
+    {
+      "$ref": "#/$defs/input"
+    },
+    {
+      "$ref": "#/$defs/output"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
 }

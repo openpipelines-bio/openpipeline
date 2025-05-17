@@ -21,6 +21,8 @@ argument_groups:
         description: |
           The input h5mu file of pre-processed data.
       - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process.
         type: string
         default: "rna"
         required: false

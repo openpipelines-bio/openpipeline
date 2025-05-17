@@ -1,351 +1,231 @@
 {
-"$schema": "http://json-schema.org/draft-07/schema",
-"title": "rna_multisample",
-"description": "Processing unimodal multi-sample RNA transcriptomics data.",
-"type": "object",
-"definitions": {
-
-    
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "rna_multisample",
+  "description": "Processing unimodal multi-sample RNA transcriptomics data.",
+  "type": "object",
+  "$defs": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "format": "file-path",
-                "mimetype": "text/csv",
-                "pattern": "^\\S+\\.csv$"
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
         }
+      }
     },
-
-    
-    
-    "inputs" : {
-    "title": "Inputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "id": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `concatenated`. ID of the concatenated file",
-                "help_text": "Type: `string`, required, example: `concatenated`. ID of the concatenated file"
-            
-            }
-    
-
-        ,
-                "input": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `dataset.h5mu`. Path to the samples",
-                "help_text": "Type: `file`, required, example: `dataset.h5mu`. Path to the samples."
-            
-            }
-    
-
-        ,
-                "modality": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `rna`. Modality to process",
-                "help_text": "Type: `string`, default: `rna`. Modality to process."
-            ,
-                "default":"rna"
-            }
-    
-
-        ,
-                "layer": {
-                "type":
-                "string",
-                "description": "Type: `string`. Input layer to use",
-                "help_text": "Type: `string`. Input layer to use. If not specified, .X is used."
-            
-            }
-    
-
-}
-},
-    
-    
-    "output" : {
-    "title": "Output",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
-            ,
-                "default":"$id.$key.output.h5mu"
-            }
-    
-
-}
-},
-    
-    
-    "filtering highly variable features" : {
-    "title": "Filtering highly variable features",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "highly_variable_features_var_output": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `filter_with_hvg`. In which ",
-                "help_text": "Type: `string`, default: `filter_with_hvg`. In which .var slot to store a boolean array corresponding to the highly variable features."
-            ,
-                "default":"filter_with_hvg"
-            }
-    
-
-        ,
-                "highly_variable_features_obs_batch_key": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `sample_id`. If specified, highly-variable features are selected within each batch separately and merged",
-                "help_text": "Type: `string`, default: `sample_id`. If specified, highly-variable features are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific features and acts as a lightweight batch correction method. \nFor all flavors, featues are first sorted by how many batches they are highly variable. For dispersion-based flavors \nties are broken by normalized dispersion. If flavor = \u0027seurat_v3\u0027, ties are broken by the median (across\nbatches) rank based on within-batch normalized variance.\n"
-            ,
-                "default":"sample_id"
-            }
-    
-
-        ,
-                "highly_variable_features_flavor": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `seurat`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. Choose the flavor for identifying highly variable features",
-                "help_text": "Type: `string`, default: `seurat`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. Choose the flavor for identifying highly variable features. For the dispersion based methods\nin their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_features.\n",
-                "enum": ["seurat", "cell_ranger", "seurat_v3"]
-            
-            ,
-                "default":"seurat"
-            }
-    
-
-        ,
-                "highly_variable_features_n_top_features": {
-                "type":
-                "integer",
-                "description": "Type: `integer`. Number of highly-variable features to keep",
-                "help_text": "Type: `integer`. Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor is set to \u0027seurat_v3\u0027."
-            
-            }
-    
-
-}
-},
-    
-    
-    "qc metrics calculation options" : {
-    "title": "QC metrics calculation options",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "var_qc_metrics": {
-                "type":
-                "string",
-                "description": "Type: List of `string`, default: `filter_with_hvg`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from ",
-                "help_text": "Type: List of `string`, default: `filter_with_hvg`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes.\n"
-            ,
-                "default":"filter_with_hvg"
-            }
-    
-
-        ,
-                "top_n_vars": {
-                "type":
-                "string",
-                "description": "Type: List of `integer`, default: `50,100,200,500`, multiple_sep: `\",\"`. Number of top vars to be used to calculate cumulative proportions",
-                "help_text": "Type: List of `integer`, default: `50,100,200,500`, multiple_sep: `\",\"`. Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n"
-            ,
-                "default":"50,100,200,500"
-            }
-    
-
-        ,
-                "output_obs_num_nonzero_vars": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `num_nonzero_vars`. Name of column in ",
-                "help_text": "Type: `string`, default: `num_nonzero_vars`. Name of column in .obs describing, for each observation, the number of stored values\n(including explicit zeroes). In other words, the name of the column that counts\nfor each row the number of columns that contain data.\n"
-            ,
-                "default":"num_nonzero_vars"
-            }
-    
-
-        ,
-                "output_obs_total_counts_vars": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `total_counts`. Name of the column for ",
-                "help_text": "Type: `string`, default: `total_counts`. Name of the column for .obs describing, for each observation (row),\nthe sum of the stored values in the columns.\n"
-            ,
-                "default":"total_counts"
-            }
-    
-
-        ,
-                "output_var_num_nonzero_obs": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `num_nonzero_obs`. Name of column describing, for each feature, the number of stored values\n(including explicit zeroes)",
-                "help_text": "Type: `string`, default: `num_nonzero_obs`. Name of column describing, for each feature, the number of stored values\n(including explicit zeroes). In other words, the name of the column that counts\nfor each column the number of rows that contain data.\n"
-            ,
-                "default":"num_nonzero_obs"
-            }
-    
-
-        ,
-                "output_var_total_counts_obs": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `total_counts`. Name of the column in ",
-                "help_text": "Type: `string`, default: `total_counts`. Name of the column in .var describing, for each feature (column),\nthe sum of the stored values in the rows.\n"
-            ,
-                "default":"total_counts"
-            }
-    
-
-        ,
-                "output_var_obs_mean": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `obs_mean`. Name of the column in ",
-                "help_text": "Type: `string`, default: `obs_mean`. Name of the column in .obs providing the mean of the values in each row.\n"
-            ,
-                "default":"obs_mean"
-            }
-    
-
-        ,
-                "output_var_pct_dropout": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `pct_dropout`. Name of the column in ",
-                "help_text": "Type: `string`, default: `pct_dropout`. Name of the column in .obs providing for each feature the percentage of\nobservations the feature does not appear on (i.e. is missing). Same as `--num_nonzero_obs`\nbut percentage based.\n"
-            ,
-                "default":"pct_dropout"
-            }
-    
-
-}
-},
-    
-    
-    "rna scaling options" : {
-    "title": "RNA Scaling options",
-    "type": "object",
-    "description": "Options for enabling scaling of the log-normalized data to unit variance and zero mean.\nThe scaled data will be output a different layer and representation with reduced dimensions\nwill be created and stored in addition to the non-scaled data.\n",
-    "properties": {
-    
-        
-                "enable_scaling": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean_true`, default: `false`. Enable scaling for the RNA modality",
-                "help_text": "Type: `boolean_true`, default: `false`. Enable scaling for the RNA modality."
-            ,
-                "default":false
-            }
-    
-
-        ,
-                "scaling_output_layer": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `scaled`. Output layer where the scaled log-normalized data will be stored",
-                "help_text": "Type: `string`, default: `scaled`. Output layer where the scaled log-normalized data will be stored."
-            ,
-                "default":"scaled"
-            }
-    
-
-        ,
-                "scaling_max_value": {
-                "type":
-                "number",
-                "description": "Type: `double`. Clip (truncate) data to this value after scaling",
-                "help_text": "Type: `double`. Clip (truncate) data to this value after scaling. If not specified, do not clip."
-            
-            }
-    
-
-        ,
-                "scaling_zero_center": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean_false`, default: `true`. If set, omit zero-centering variables, which allows to handle sparse input efficiently",
-                "help_text": "Type: `boolean_false`, default: `true`. If set, omit zero-centering variables, which allows to handle sparse input efficiently.\""
-            ,
-                "default":true
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/definitions/inputs"
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID of the concatenated file",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"concatenated\"`. "
+        },
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Path to the samples.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"dataset.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Modality to process.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "layer": {
+          "type": "string",
+          "description": "Input layer to use",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/output"
+    "output": {
+      "title": "Output",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Destination path to the output.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/filtering highly variable features"
+    "filtering highly variable features": {
+      "title": "Filtering highly variable features",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "highly_variable_features_var_output": {
+          "type": "string",
+          "description": "In which .var slot to store a boolean array corresponding to the highly variable features.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"filter_with_hvg\"`. ",
+          "default": "filter_with_hvg"
+        },
+        "highly_variable_features_obs_batch_key": {
+          "type": "string",
+          "description": "If specified, highly-variable features are selected within each batch separately and merged",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"sample_id\"`. ",
+          "default": "sample_id"
+        },
+        "highly_variable_features_flavor": {
+          "type": "string",
+          "description": "Choose the flavor for identifying highly variable features",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"seurat\"`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. ",
+          "enum": [
+            "seurat",
+            "cell_ranger",
+            "seurat_v3"
+          ],
+          "default": "seurat"
+        },
+        "highly_variable_features_n_top_features": {
+          "type": "integer",
+          "description": "Number of highly-variable features to keep",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/qc metrics calculation options"
+    "qc metrics calculation options": {
+      "title": "QC metrics calculation options",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "var_qc_metrics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled 'True', \ncompared to the total sum of the values for all genes.\n",
+          "help_text": "Type: `string`, multiple: `True`, default: `[\"filter_with_hvg\"]`, example: `[\"ercc,highly_variable\"]`. ",
+          "default": [
+            "filter_with_hvg"
+          ]
+        },
+        "top_n_vars": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated",
+          "help_text": "Type: `integer`, multiple: `True`, default: `[50,100,200,500]`. ",
+          "default": [
+            50,
+            100,
+            200,
+            500
+          ]
+        },
+        "output_obs_num_nonzero_vars": {
+          "type": "string",
+          "description": "Name of column in .obs describing, for each observation, the number of stored values\n(including explicit zeroes)",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"num_nonzero_vars\"`. ",
+          "default": "num_nonzero_vars"
+        },
+        "output_obs_total_counts_vars": {
+          "type": "string",
+          "description": "Name of the column for .obs describing, for each observation (row),\nthe sum of the stored values in the columns.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"total_counts\"`. ",
+          "default": "total_counts"
+        },
+        "output_var_num_nonzero_obs": {
+          "type": "string",
+          "description": "Name of column describing, for each feature, the number of stored values\n(including explicit zeroes)",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"num_nonzero_obs\"`. ",
+          "default": "num_nonzero_obs"
+        },
+        "output_var_total_counts_obs": {
+          "type": "string",
+          "description": "Name of the column in .var describing, for each feature (column),\nthe sum of the stored values in the rows.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"total_counts\"`. ",
+          "default": "total_counts"
+        },
+        "output_var_obs_mean": {
+          "type": "string",
+          "description": "Name of the column in .obs providing the mean of the values in each row.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"obs_mean\"`. ",
+          "default": "obs_mean"
+        },
+        "output_var_pct_dropout": {
+          "type": "string",
+          "description": "Name of the column in .obs providing for each feature the percentage of\nobservations the feature does not appear on (i.e",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"pct_dropout\"`. ",
+          "default": "pct_dropout"
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/rna scaling options"
+    "rna scaling options": {
+      "title": "RNA Scaling options",
+      "type": "object",
+      "description": "Options for enabling scaling of the log-normalized data to unit variance and zero mean.\nThe scaled data will be output a different layer and representation with reduced dimensions\nwill be created and stored in addition to the non-scaled data.\n",
+      "properties": {
+        "enable_scaling": {
+          "type": "boolean",
+          "description": "Enable scaling for the RNA modality.",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "scaling_output_layer": {
+          "type": "string",
+          "description": "Output layer where the scaled log-normalized data will be stored.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"scaled\"`. ",
+          "default": "scaled"
+        },
+        "scaling_max_value": {
+          "type": "number",
+          "description": "Clip (truncate) data to this value after scaling",
+          "help_text": "Type: `double`, multiple: `False`. "
+        },
+        "scaling_zero_center": {
+          "type": "boolean",
+          "description": "If set, omit zero-centering variables, which allows to handle sparse input efficiently.\"",
+          "help_text": "Type: `boolean_false`, multiple: `False`, default: `true`. ",
+          "default": true
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/output"
+    },
+    {
+      "$ref": "#/$defs/filtering highly variable features"
+    },
+    {
+      "$ref": "#/$defs/qc metrics calculation options"
+    },
+    {
+      "$ref": "#/$defs/rna scaling options"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
 }

@@ -1,191 +1,120 @@
 {
-"$schema": "http://json-schema.org/draft-07/schema",
-"title": "delimit_fraction",
-"description": "Turns a column containing values between 0 and 1 into a boolean column based on thresholds.\n",
-"type": "object",
-"definitions": {
-
-    
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "delimit_fraction",
+  "description": "Turns a column containing values between 0 and 1 into a boolean column based on thresholds.\n",
+  "type": "object",
+  "$defs": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "format": "file-path",
-                "mimetype": "text/csv",
-                "pattern": "^\\S+\\.csv$"
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
         }
+      }
     },
-
-    
-    
-    "inputs" : {
-    "title": "Inputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "input": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `input.h5mu`. Input h5mu file",
-                "help_text": "Type: `file`, required, example: `input.h5mu`. Input h5mu file"
-            
-            }
-    
-
-        ,
-                "modality": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `rna`. ",
-                "help_text": "Type: `string`, default: `rna`. "
-            ,
-                "default":"rna"
-            }
-    
-
-        ,
-                "layer": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `raw_counts`. ",
-                "help_text": "Type: `string`, example: `raw_counts`. "
-            
-            }
-    
-
-        ,
-                "obs_fraction_column": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `fraction_mitochondrial`. Name of column from ",
-                "help_text": "Type: `string`, required, example: `fraction_mitochondrial`. Name of column from .var dataframe selecting\na column that contains floating point values between 0 and 1.\n"
-            
-            }
-    
-
-}
-},
-    
-    
-    "outputs" : {
-    "title": "Outputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
-                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
-            ,
-                "default":"$id.$key.output.h5mu"
-            }
-    
-
-        ,
-                "obs_name_filter": {
-                "type":
-                "string",
-                "description": "Type: `string`, required. In which ",
-                "help_text": "Type: `string`, required. In which .obs slot to store a boolean array corresponding to which observations should be removed."
-            
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
-    "arguments" : {
-    "title": "Arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "min_fraction": {
-                "type":
-                "number",
-                "description": "Type: `double`, default: `0.0`. Min fraction for an observation to be retained (True in output)",
-                "help_text": "Type: `double`, default: `0.0`. Min fraction for an observation to be retained (True in output)."
-            ,
-                "default":0.0
-            }
-    
-
-        ,
-                "max_fraction": {
-                "type":
-                "number",
-                "description": "Type: `double`, default: `1.0`. Max fraction for an observation to be retained (True in output)",
-                "help_text": "Type: `double`, default: `1.0`. Max fraction for an observation to be retained (True in output)."
-            ,
-                "default":1.0
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/definitions/inputs"
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality from the input MuData file to process.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "obs_fraction_column": {
+          "type": "string",
+          "description": "Name of column from .var dataframe selecting\na column that contains floating point values between 0 and 1.\n",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"fraction_mitochondrial\"`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/outputs"
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "obs_name_filter": {
+          "type": "string",
+          "description": "In which .obs slot to store a boolean array corresponding to which observations should be removed.",
+          "help_text": "Type: `string`, multiple: `False`, required. "
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/arguments"
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "min_fraction": {
+          "type": "number",
+          "description": "Min fraction for an observation to be retained (True in output).",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.0`. ",
+          "default": 0.0
+        },
+        "max_fraction": {
+          "type": "number",
+          "description": "Max fraction for an observation to be retained (True in output).",
+          "help_text": "Type: `double`, multiple: `False`, default: `1.0`. ",
+          "default": 1.0
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
 }

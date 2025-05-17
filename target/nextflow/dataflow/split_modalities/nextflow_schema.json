@@ -1,112 +1,80 @@
 {
-"$schema": "http://json-schema.org/draft-07/schema",
-"title": "split_modalities",
-"description": "Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. \n",
-"type": "object",
-"definitions": {
-
-    
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "split_modalities",
+  "description": "Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. \n",
+  "type": "object",
+  "$defs": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "format": "file-path",
-                "mimetype": "text/csv",
-                "pattern": "^\\S+\\.csv$"
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
         }
+      }
     },
-
-    
-    
-    "arguments" : {
-    "title": "Arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "input": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `sample_path`. Path to a single ",
-                "help_text": "Type: `file`, required, default: `sample_path`. Path to a single .h5mu file."
-            ,
-                "default":"sample_path"
-            }
-    
-
-        ,
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output`, example: `/path/to/output`. Output directory containing multiple h5mu files",
-                "help_text": "Type: `file`, required, default: `$id.$key.output`, example: `/path/to/output`. Output directory containing multiple h5mu files."
-            ,
-                "default":"$id.$key.output"
-            }
-    
-
-        ,
-                "output_types": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_types.csv`, example: `types.csv`. A csv containing the base filename and modality type per output file",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_types.csv`, example: `types.csv`. A csv containing the base filename and modality type per output file."
-            ,
-                "default":"$id.$key.output_types.csv"
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/definitions/arguments"
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Path to a single .h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"sample_path\"`, direction: `input`. ",
+          "default": "sample_path"
+        },
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output directory containing multiple h5mu files.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`, example: `\"/path/to/output\"`. ",
+          "default": "$id.$key.output"
+        },
+        "output_types": {
+          "type": "string",
+          "format": "path",
+          "description": "A csv containing the base filename and modality type per output file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output_types.csv\"`, direction: `output`, example: `\"types.csv\"`. ",
+          "default": "$id.$key.output_types.csv"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
 }
