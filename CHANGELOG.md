@@ -34,6 +34,8 @@
 
 * Add missing CUDA enabled `jaxlib` to components that use `scvi-tools` (`scanvi`, `scarches`, `scvi` and `totalvi`) (PR #1028)
 
+* `leiden`: fix issue where the logging system was shut down prematurely after the calculations were done (PR #)
+
 # openpipelines 2.1.0
 
 ## BREAKING CHANGES
