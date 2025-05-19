@@ -1,5 +1,6 @@
 name: bbknn
 namespace: "neighbors"
+scope: "public"
 description: |
   BBKNN network generation
 authors:

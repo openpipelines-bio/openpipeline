@@ -1,5 +1,6 @@
 name: from_h5ad_to_h5mu
 namespace: "convert"
+scope: "public"
 description: |
   Converts a single layer h5ad file into a single MuData object
 authors:

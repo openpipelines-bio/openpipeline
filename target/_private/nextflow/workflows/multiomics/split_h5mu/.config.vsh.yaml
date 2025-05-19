@@ -1,111 +1,144 @@
-name: "sync_test_resources"
-namespace: "download"
+name: "split_h5mu"
+namespace: "workflows/multiomics"
 version: "main_build"
 authors:
-- name: "Robrecht Cannoodt"
+- name: "Dries Schaumont"
   roles:
+  - "author"
   - "maintainer"
   info:
     role: "Core Team Member"
     links:
-      email: "robrecht@data-intuitive.com"
-      github: "rcannood"
-      orcid: "0000-0003-3641-729X"
-      linkedin: "robrechtcannoodt"
+      email: "dries@data-intuitive.com"
+      github: "DriesSchaumont"
+      orcid: "0000-0002-4389-0440"
+      linkedin: "dries-schaumont"
     organizations:
     - name: "Data Intuitive"
       href: "https://www.data-intuitive.com"
-      role: "Data Science Engineer"
-    - name: "Open Problems"
-      href: "https://openproblems.bio"
-      role: "Core Member"
+      role: "Data Scientist"
 argument_groups:
-- name: "Inputs"
+- name: "Input & specifications"
   arguments:
   - type: "file"
     name: "--input"
-    alternatives:
-    - "-i"
-    description: "Path to the _viash.yaml project configuration file."
+    description: "Path to a single .h5mu file."
     info: null
-    default:
-    - "_viash.yaml"
     must_exist: true
     create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--modality"
+    description: "Which modality from the input MuData file to process.\n"
+    info: null
+    default:
+    - "rna"
     required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
+  - type: "string"
+    name: "--obs_feature"
+    description: "The .obs column to split the mudata on."
+    info: null
+    example:
+    - "celltype"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--drop_obs_nan"
+    description: "Whether to drop all .obs columns that contain only nan values after\
+      \ splitting."
+    info: null
+    direction: "input"
+  - type: "boolean_true"
+    name: "--ensure_unique_filenames"
+    description: "Append number suffixes to ensure unique filenames after sanitizing\
+      \ obs feature values."
+    info: null
+    direction: "input"
 - name: "Outputs"
   arguments:
   - type: "file"
     name: "--output"
-    alternatives:
-    - "-o"
-    description: "Path to the directory where the resources will be synced to."
+    description: "Output directory containing multiple h5mu files."
     info: null
-    default:
-    - "."
+    example:
+    - "/path/to/output"
     must_exist: true
     create_parent: true
-    required: false
+    required: true
     direction: "output"
     multiple: false
     multiple_sep: ";"
-- name: "Arguments"
-  arguments:
-  - type: "boolean_true"
-    name: "--quiet"
-    description: "Displays the operations that would be performed using the specified\
-      \ command without actually running them."
-    info: null
-    direction: "input"
-  - type: "boolean_true"
-    name: "--dryrun"
-    description: "Does not display the operations performed from the specified command."
-    info: null
-    direction: "input"
-  - type: "boolean_true"
-    name: "--delete"
-    description: "Files that exist in the destination but not in the source are deleted\
-      \ during sync."
-    info: null
-    direction: "input"
   - type: "string"
-    name: "--exclude"
-    description: "Exclude all files or objects from the command that matches the specified\
-      \ pattern."
+    name: "--output_compression"
+    description: "The compression format to be used on the output h5mu object."
     info: null
+    example:
+    - "gzip"
     required: false
+    choices:
+    - "gzip"
+    - "lzf"
     direction: "input"
-    multiple: true
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_files"
+    description: "A csv containing the base filename and obs feature by which it was\
+      \ split."
+    info: null
+    example:
+    - "sample_files.csv"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
     multiple_sep: ";"
 resources:
-- type: "bash_script"
-  path: "script.sh"
+- type: "nextflow_script"
+  path: "main.nf"
   is_executable: true
+  entrypoint: "run_wf"
+- type: "file"
+  path: "utils"
 - type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
-description: "Sync test resources to the local filesystem"
-usage: "sync_test_resources\nsync_test_resources --input _viash.yaml --output .\n"
+description: "Split the samples of a single modality from a .h5mu (multimodal) sample\
+  \ into seperate .h5mu files based on the values of an .obs column of this modality. "
 test_resources:
-- type: "bash_script"
-  path: "test.sh"
+- type: "nextflow_script"
+  path: "test.nf"
   is_executable: true
-info: null
+  entrypoint: "test_wf"
+- type: "file"
+  path: "concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"
+info:
+  test_dependencies:
+  - name: "split_h5mu_test"
+    namespace: "test_workflows/multiomics"
 status: "enabled"
 scope:
-  image: "public"
-  target: "public"
+  image: "private"
+  target: "private"
+dependencies:
+- name: "dataflow/split_h5mu"
+  alias: "split_h5mu_component"
+  repository:
+    type: "local"
 license: "MIT"
 links:
   repository: "https://github.com/openpipelines-bio/openpipeline"
   docker_registry: "ghcr.io"
 runners:
-- type: "executable"
-  id: "executable"
-  docker_setup_strategy: "ifneedbepullelsecachedbuild"
 - type: "nextflow"
   id: "nextflow"
   directives:
@@ -169,31 +202,17 @@ runners:
     - "includeConfig(\"nextflow_labels.config\")"
   debug: false
   container: "docker"
-engines:
-- type: "docker"
-  id: "docker"
-  image: "amazon/aws-cli:2.17.11"
-  target_tag: "main_build"
-  namespace_separator: "/"
-  setup:
-  - type: "yum"
-    packages:
-    - "wget"
-  - type: "docker"
-    run:
-    - "wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64\
-      \ -O /usr/bin/yq && \\\n  chmod +x /usr/bin/yq\n"
-  entrypoint: []
-  cmd: null
 build_info:
-  config: "src/download/sync_test_resources/config.vsh.yaml"
-  runner: "executable"
-  engine: "docker"
-  output: "target/executable/download/sync_test_resources"
-  executable: "target/executable/download/sync_test_resources/sync_test_resources"
+  config: "src/workflows/multiomics/split_h5mu/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "native"
+  output: "target/_private/nextflow/workflows/multiomics/split_h5mu"
+  executable: "target/_private/nextflow/workflows/multiomics/split_h5mu/main.nf"
   viash_version: "0.9.4"
-  git_commit: "4a61efb990ecc1b9c5d7fa266b6664447dcc0a93"
+  git_commit: "9d70a36307ded5285710e8b3f18ee151507a32c8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  dependencies:
+  - "target/nextflow/dataflow/split_h5mu"
 package_config:
   name: "openpipeline"
   summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
@@ -220,7 +239,6 @@ package_config:
     .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
     )'"
   - ".version := \"main_build\""
-  - ".engines[.type == 'docker'].target_tag := 'main_build'"
   keywords:
   - "single-cell"
   - "multimodal"

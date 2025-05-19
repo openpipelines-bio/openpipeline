@@ -1,5 +1,6 @@
 name: score_genes_cell_cycle_scanpy
 namespace: feature_annotation
+scope: "public"
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
     roles: [ author ]

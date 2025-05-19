@@ -3513,7 +3513,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.9.4",
-    "git_commit" : "4a61efb990ecc1b9c5d7fa266b6664447dcc0a93",
+    "git_commit" : "9d70a36307ded5285710e8b3f18ee151507a32c8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3556,7 +3556,7 @@ meta = [
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
 include { merge } from "${meta.resources_dir}/../../../../nextflow/dataflow/merge/main.nf"
-include { split_modalities as split_modalities_workflow_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/split_modalities/main.nf"
+include { split_modalities as split_modalities_workflow_viashalias } from "${meta.resources_dir}/../../../../_private/nextflow/workflows/multiomics/split_modalities/main.nf"
 split_modalities_workflow = split_modalities_workflow_viashalias.run(key: "split_modalities_workflow")
 include { prot_multisample } from "${meta.resources_dir}/../../../../nextflow/workflows/prot/prot_multisample/main.nf"
 include { rna_multisample } from "${meta.resources_dir}/../../../../nextflow/workflows/rna/rna_multisample/main.nf"

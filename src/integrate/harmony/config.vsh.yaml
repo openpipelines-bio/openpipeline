@@ -1,5 +1,6 @@
 name: harmony
 namespace: "integrate"
+scope: "public"
 status: disabled
 description: "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony."
 authors:

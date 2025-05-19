@@ -1,5 +1,6 @@
 name: lianapy
 namespace: "interpret"
+scope: "public"
 description: "Performs LIANA integration based as described in https://github.com/saezlab/liana-py"
 authors:
   - __merge__: /src/authors/mauro_saporita.yaml

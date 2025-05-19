@@ -1,5 +1,6 @@
 name: "rna_singlesample"
 namespace: "workflows/rna"
+scope: "public"
 description: "Processing unimodal single-sample RNA transcriptomics data."
 info:
   image: /images/concepts/fig_workflow_multiomics_rna_singlesample.svg
