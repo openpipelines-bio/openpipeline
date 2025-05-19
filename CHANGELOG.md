@@ -26,6 +26,8 @@
 
 * Add missing descriptions to components and arguments (PR #1018).
 
+* Add `scope` to component and workflow configurations (see https://viash.io/reference/config/scope.html) (PR #1013).
+
 ## BUG FIXES
 
 * Bump viash to 0.9.4. This adds support for nextflow versions starting major version 25.01 and fixes an issue where an integer being passed to a argument with `type: double` resulted in an error (PR #1016).
