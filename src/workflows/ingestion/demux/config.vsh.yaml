@@ -1,5 +1,6 @@
 name: demux
 namespace: workflows/ingestion
+scope: "public"
 description: |
   Convert `.bcl` files to `.fastq` files using bcl2fastq, bcl-convert or Cell Ranger mkfastq.
 info:

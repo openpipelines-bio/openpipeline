@@ -1,5 +1,6 @@
 name: build_cellranger_reference
 namespace: reference
+scope: "public"
 description: Build a Cell Ranger-compatible reference folder from user-supplied genome FASTA and gene GTF files. Creates a new folder named after the genome.
 authors:
   - __merge__: /src/authors/angela_pisco.yaml

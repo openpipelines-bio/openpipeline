@@ -1,5 +1,6 @@
 name: "harmony_knn"
 namespace: "workflows/annotation"
+scope: "public"
 description: "Cell type annotation workflow by performing harmony integration of reference and query dataset followed by KNN label transfer."
 info:
   name: "Harmony integration followed by KNN label transfer"

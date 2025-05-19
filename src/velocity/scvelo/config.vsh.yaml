@@ -1,5 +1,6 @@
 name: scvelo
 namespace: "velocity"
+scope: "public"
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ maintainer ]

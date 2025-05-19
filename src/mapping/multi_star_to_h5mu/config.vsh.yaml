@@ -1,5 +1,6 @@
 name: multi_star_to_h5mu
 namespace: mapping
+scope: "public"
 description: |
   Convert the output of `multi_star` to a h5mu.
 authors:

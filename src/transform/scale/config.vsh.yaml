@@ -1,5 +1,6 @@
 name: scale
 namespace: "transform"
+scope: "public"
 description: |
   Scale data to unit variance and zero mean.
 authors:
