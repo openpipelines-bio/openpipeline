@@ -1,5 +1,6 @@
 name: harmonypy
 namespace: "integrate"
+scope: "public"
 description: "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony.
               Based on an implementation in python from https://github.com/slowkow/harmonypy"
 authors:

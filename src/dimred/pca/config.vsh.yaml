@@ -1,5 +1,6 @@
 name: pca
 namespace: "dimred"
+scope: "public"
 description: |
   Computes PCA coordinates, loadings and variance decomposition. Uses the implementation of scikit-learn [Pedregosa11].
 authors:

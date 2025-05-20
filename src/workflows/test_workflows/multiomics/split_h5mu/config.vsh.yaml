@@ -1,5 +1,6 @@
 name: "split_h5mu_test"
 namespace: "test_workflows/multiomics"
+scope: "test"
 description: "This component test the output of the integration test of split_h5mu."
 authors:
   - __merge__: /src/authors/kai_waldrant.yaml

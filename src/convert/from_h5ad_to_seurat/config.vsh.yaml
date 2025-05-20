@@ -1,5 +1,6 @@
 name: "from_h5ad_to_seurat"
 namespace: "convert"
+scope: "public"
 description: |
   Converts an h5ad file into a Seurat file.
 authors:

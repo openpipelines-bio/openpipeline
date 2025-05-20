@@ -1,5 +1,6 @@
 name: split_h5mu
 namespace: "dataflow"
+scope: "public"
 description: |
   Split the samples of a single modality from a .h5mu (multimodal) sample into seperate .h5mu files based on the values of an .obs column of this modality. 
 authors:

@@ -1,5 +1,6 @@
 name: "totalvi_leiden"
 namespace: "workflows/integration"
+scope: "public"
 description: "Run totalVI integration followed by neighbour calculations, leiden clustering and run umap on the result."
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml

@@ -1,5 +1,6 @@
 name: subset_h5mu
 namespace: "filter"
+scope: "public"
 description: |
   Create a subset of a mudata file by selecting the first number of observations
 authors:

@@ -1,5 +1,6 @@
 name: make_params
 namespace: "files"
+scope: "public"
 description: "Looks for files in a directory and turn it in a params file."
 authors:
   - __merge__: /src/authors/angela_pisco.yaml

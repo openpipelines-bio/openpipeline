@@ -1,5 +1,6 @@
 name: "scgpt_leiden"
 namespace: "workflows/integration"
+scope: "public"
 description: "Run scGPT integration (cell embedding generation) followed by neighbour calculations, leiden clustering and run umap on the result."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml

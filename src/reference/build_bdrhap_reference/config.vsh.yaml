@@ -1,5 +1,6 @@
 name: build_bdrhap_reference
 namespace: reference
+scope: "public"
 description: |
   The Reference Files Generator creates an archive containing Genome Index
   and Transcriptome annotation files needed for the BD Rhapsody Sequencing

@@ -1,5 +1,6 @@
 name: scvi
 namespace: "integrate"
+scope: "public"
 description: "Performs scvi integration as done in the human lung cell atlas https://github.com/LungCellAtlas/HLCA"
 authors:
   - __merge__: /src/authors/malte_luecken.yaml

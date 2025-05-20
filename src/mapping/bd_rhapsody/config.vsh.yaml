@@ -1,5 +1,6 @@
 name: "bd_rhapsody"
 namespace: "mapping"
+scope: "public"
 description: |
   BD Rhapsody Sequence Analysis CWL pipeline v2.2.1
     

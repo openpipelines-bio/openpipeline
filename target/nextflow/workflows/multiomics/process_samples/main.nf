@@ -3906,7 +3906,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.9.4",
-    "git_commit" : "8ccdade38abcda25a1be3c59240aa1a7901b4f7c",
+    "git_commit" : "1f0b908ac02a0f0045ef4eb4718db9bea8042a27",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3949,7 +3949,7 @@ meta = [
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
 include { add_id } from "${meta.resources_dir}/../../../../nextflow/metadata/add_id/main.nf"
-include { split_modalities as split_modalities_workflow_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/split_modalities/main.nf"
+include { split_modalities as split_modalities_workflow_viashalias } from "${meta.resources_dir}/../../../../_private/nextflow/workflows/multiomics/split_modalities/main.nf"
 split_modalities_workflow = split_modalities_workflow_viashalias.run(key: "split_modalities_workflow")
 include { merge } from "${meta.resources_dir}/../../../../nextflow/dataflow/merge/main.nf"
 include { concatenate_h5mu } from "${meta.resources_dir}/../../../../nextflow/dataflow/concatenate_h5mu/main.nf"
