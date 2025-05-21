@@ -3032,7 +3032,7 @@ nextflow.enable.dsl=2
 
 // create meta object
 meta = [
-  "resources_dir": moduleDir.toRealPath().normalize(),
+  "resources_dir": projectDir,
   "config": processConfig(readJsonBlob('''{
   "name" : "split_modalities",
   "namespace" : "dataflow",
