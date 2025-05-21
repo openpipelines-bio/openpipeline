@@ -3030,9 +3030,11 @@ nextflow.enable.dsl=2
 
 // START COMPONENT-SPECIFIC CODE
 
+import nextflow.file.FileHelper
+
 // create meta object
 meta = [
-  "resources_dir": projectDir,
+  "resources_dir": FileHelper.toCanonicalPath(moduleDir),
   "config": processConfig(readJsonBlob('''{
   "name" : "split_modalities",
   "namespace" : "dataflow",
