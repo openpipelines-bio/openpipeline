@@ -3029,9 +3029,11 @@ nextflow.enable.dsl=2
 
 // START COMPONENT-SPECIFIC CODE
 
+import java.nio.file.FileSystems
+
 // create meta object
 meta = [
-  "resources_dir": moduleDir.toRealPath().normalize(),
+  "resources_dir": moduleDir.getFileSystem() == FileSystems.default ? moduleDir.toRealPath().normalize() : moduleDir,
   "config": processConfig(readJsonBlob('''{
   "name" : "split_modalities",
   "namespace" : "workflows/multiomics",
