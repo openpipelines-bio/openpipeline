@@ -3033,7 +3033,7 @@ import nextflow.file.FileHelper
 
 // create meta object
 meta = [
-  "resources_dir": FileHelper.toCanonicalPath(moduleDir),
+  "resources_dir": nextflow.script.ScriptMeta.current().getScriptPath().getParent(),
   "config": processConfig(readJsonBlob('''{
   "name" : "split_modalities",
   "namespace" : "workflows/multiomics",
