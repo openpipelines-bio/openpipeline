@@ -3273,7 +3273,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/bcftools",
     "viash_version" : "0.9.4",
-    "git_commit" : "1f0b908ac02a0f0045ef4eb4718db9bea8042a27",
+    "git_commit" : "4c1df3ec53346bc09c3b6056344232d3fcaabfb0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
