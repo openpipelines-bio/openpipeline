@@ -3033,7 +3033,7 @@ import java.nio.file.FileSystems
 
 // create meta object
 meta = [
-  "resources_dir": moduleDir.getFileSystem() == FileSystems.default ? moduleDir.toRealPath().normalize() : moduleDir,
+  "resources_dir": "${projectDir}/workflows/multiomics/split_modalities",
   "config": processConfig(readJsonBlob('''{
   "name" : "split_modalities",
   "namespace" : "workflows/multiomics",
