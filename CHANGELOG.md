@@ -18,6 +18,8 @@
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
 
+* `leiden`: bump base container to 3.13 (PR #1030).
+
 ## MINOR CHANGES
 
 * Remove `workflows` directory (PR #993). The workflows which were at one point in this directory were all deprecated and moved to `src/workflows`.
@@ -35,6 +37,8 @@
 * Fix running `neigbors_leiden_umap` workflow with `-stub` enabled (PR #1026).
 
 * Add missing CUDA enabled `jaxlib` to components that use `scvi-tools` (`scanvi`, `scarches`, `scvi` and `totalvi`) (PR #1028)
+
+* `leiden`: fix issue where the logging system was shut down prematurely after the calculations were done (PR #1030)
 
 * Added missing `gpu` label to `scarches` component (PR #1027).
 
