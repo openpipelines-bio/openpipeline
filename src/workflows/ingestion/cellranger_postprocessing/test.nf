@@ -1,8 +1,8 @@
 nextflow.enable.dsl=2
 
-include { cellranger_postprocessing } from params.rootDir + "/target/_test/nextflow/workflows/ingestion/cellranger_postprocessing/main.nf"
+include { cellranger_postprocessing } from params.rootDir + "/target/nextflow/workflows/ingestion/cellranger_postprocessing/main.nf"
 include { from_10xh5_to_h5mu } from params.rootDir + "/target/nextflow/convert/from_10xh5_to_h5mu/main.nf"
-include { cellranger_postprocessing_test } from params.rootDir + "/target/nextflow/test_workflows/ingestion/cellranger_postprocessing_test/main.nf"
+include { cellranger_postprocessing_test } from params.rootDir + "/target/_test/nextflow/test_workflows/ingestion/cellranger_postprocessing_test/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 

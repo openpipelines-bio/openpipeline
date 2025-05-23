@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 
-include { make_reference } from params.rootDir + "/target/_test/nextflow/workflows/ingestion/make_reference/main.nf"
+include { make_reference } from params.rootDir + "/target/nextflow/workflows/ingestion/make_reference/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 
