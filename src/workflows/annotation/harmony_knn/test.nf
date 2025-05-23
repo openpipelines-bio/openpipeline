@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 
 include { harmony_knn } from params.rootDir + "/target/nextflow/workflows/annotation/harmony_knn/main.nf"
-include { harmony_knn_test } from params.rootDir + "/target/nextflow/test_workflows/annotation/harmony_knn_test/main.nf"
+include { harmony_knn_test } from params.rootDir + "/target/_test/nextflow/test_workflows/annotation/harmony_knn_test/main.nf"
 params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
