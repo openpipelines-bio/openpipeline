@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 
-include { scgpt_annotation } from params.rootDir + "/target/nextflow/workflows/annotation/scgpt_annotation/main.nf"
+include { scgpt_annotation } from params.rootDir + "/target/_test/nextflow/workflows/annotation/scgpt_annotation/main.nf"
 include { scgpt_annotation_test } from params.rootDir + "/target/nextflow/test_workflows/annotation/scgpt_annotation_test/main.nf"
 
 workflow test_wf {

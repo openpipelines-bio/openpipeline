@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 
-include { rna_multisample } from params.rootDir + "/target/nextflow/workflows/rna/rna_multisample/main.nf"
+include { rna_multisample } from params.rootDir + "/target/_test/nextflow/workflows/rna/rna_multisample/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 
