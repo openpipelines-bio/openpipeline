@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 
-include { cellranger_mapping } from params.rootDir + "/target/_test/nextflow/workflows/ingestion/cellranger_mapping/main.nf"
+include { cellranger_mapping } from params.rootDir + "/target/nextflow/workflows/ingestion/cellranger_mapping/main.nf"
 include { cellranger_mapping_test } from params.rootDir + "/target/nextflow/test_workflows/ingestion/cellranger_mapping_test/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"

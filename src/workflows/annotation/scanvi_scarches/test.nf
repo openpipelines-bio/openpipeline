@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 
-include { scanvi_scarches } from params.rootDir + "/target/_test/nextflow/workflows/annotation/scanvi_scarches/main.nf"
+include { scanvi_scarches } from params.rootDir + "/target/nextflow/workflows/annotation/scanvi_scarches/main.nf"
 include { scanvi_scarches_test } from params.rootDir + "/target/nextflow/test_workflows/annotation/scanvi_scarches_test/main.nf"
 
 workflow test_wf {

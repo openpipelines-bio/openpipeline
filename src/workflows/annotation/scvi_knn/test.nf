@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 
-include { scvi_knn } from params.rootDir + "/target/_test/nextflow/workflows/annotation/scvi_knn/main.nf"
+include { scvi_knn } from params.rootDir + "/target/nextflow/workflows/annotation/scvi_knn/main.nf"
 include { scvi_knn_test } from params.rootDir + "/target/nextflow/test_workflows/annotation/scvi_knn_test/main.nf"
 
 workflow test_wf {
