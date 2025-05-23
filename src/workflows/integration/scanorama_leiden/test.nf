@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 
-include { scanorama_leiden } from params.rootDir + "/target/nextflow/workflows/integration/scanorama_leiden/main.nf"
+include { scanorama_leiden } from params.rootDir + "/target/_test/nextflow/workflows/integration/scanorama_leiden/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 

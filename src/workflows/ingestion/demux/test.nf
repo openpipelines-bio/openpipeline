@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 
 
-include { demux } from params.rootDir + "/target/nextflow/workflows/ingestion/demux/main.nf"
+include { demux } from params.rootDir + "/target/_test/nextflow/workflows/ingestion/demux/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 

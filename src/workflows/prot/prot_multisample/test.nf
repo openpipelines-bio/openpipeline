@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 
-include { prot_multisample } from params.rootDir + "/target/nextflow/workflows/prot/prot_multisample/main.nf"
+include { prot_multisample } from params.rootDir + "/target/_test/nextflow/workflows/prot/prot_multisample/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 

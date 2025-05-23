@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 
-include { bbknn_leiden } from params.rootDir + "/target/nextflow/workflows/integration/bbknn_leiden/main.nf"
+include { bbknn_leiden } from params.rootDir + "/target/_test/nextflow/workflows/integration/bbknn_leiden/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 
