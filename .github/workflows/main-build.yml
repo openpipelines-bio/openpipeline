@@ -199,7 +199,7 @@ jobs:
     - name: "Parse JSON output from 'viash ns list' as input for matrix."
       id: set_matrix
       run: |
-        echo "components=$(jq -c '[ .[] | map(select(.scope.target != "test")) | 
+        echo "components=$(jq -c '[ .[] | select(.scope.target != "test") | 
           { 
             "name": .name,
             "namespace_separator": .engines | map(select(.type == "docker"))[0].namespace_separator,
@@ -209,7 +209,7 @@ jobs:
           }
         ] | unique' ${{ steps.ns_list.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
-        echo "workflows=$(jq -c '[ .[]  | map(select(.scope.target != "test")) | . as $config | (.test_resources // [])[] | select(.type == "nextflow_script", .entrypoint) |
+        echo "workflows=$(jq -c '[ .[]  | select(.scope.target != "test") | . as $config | (.test_resources // [])[] | select(.type == "nextflow_script", .entrypoint) |
         { 
           "name": $config.name,
           "namespace": $config.namespace,
