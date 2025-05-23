@@ -26,7 +26,7 @@
 
 * Add missing descriptions to components and arguments (PR #1018).
 
-* Add `scope` to component and workflow configurations (see https://viash.io/reference/config/scope.html) (PR #1013).
+* Add `scope` to component and workflow configurations (see https://viash.io/reference/config/scope.html) (PR #1013 and #1032).
 
 ## BUG FIXES
 
