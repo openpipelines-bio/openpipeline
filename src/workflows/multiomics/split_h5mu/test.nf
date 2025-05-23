@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 
 include { split_h5mu } from params.rootDir + "/target/nextflow/workflows/multiomics/split_h5mu/main.nf"
-include { split_h5mu_test } from params.rootDir + "/target/nextflow/test_workflows/multiomics/split_h5mu_test/main.nf"
+include { split_h5mu_test } from params.rootDir + "/target/_test/nextflow/test_workflows/multiomics/split_h5mu_test/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 
