@@ -68,8 +68,8 @@ test_resources:
 info: null
 status: "deprecated"
 scope:
-  image: "public"
-  target: "public"
+  image: "test"
+  target: "test"
 license: "MIT"
 links:
   repository: "https://github.com/openpipelines-bio/openpipeline"
@@ -151,12 +151,12 @@ engines:
   cmd: null
 build_info:
   config: "src/download/download_file/config.vsh.yaml"
-  runner: "nextflow"
+  runner: "executable"
   engine: "docker"
-  output: "target/nextflow/download/download_file"
-  executable: "target/nextflow/download/download_file/main.nf"
+  output: "target/_test/executable/download/download_file"
+  executable: "target/_test/executable/download/download_file/download_file"
   viash_version: "0.9.4"
-  git_commit: "dea6615cbe2cc3b5ff10b59ef4d6cfed25657056"
+  git_commit: "f0dab798cde60c694cdbcfcc93e47eb7cb4933f4"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

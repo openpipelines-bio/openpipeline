@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 
 include { conversion } from params.rootDir + "/target/nextflow/workflows/ingestion/conversion/main.nf"
-include { conversion_test } from params.rootDir + "/target/_test/nextflow/test_workflows/ingestion/conversion_test/main.nf"
+include { conversion_test } from params.rootDir + "/target/nextflow/test_workflows/ingestion/conversion_test/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 
