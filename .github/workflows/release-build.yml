@@ -119,7 +119,7 @@ jobs:
         # todo: replace with viash test command
         export NXF_VER=22.04.5
         nextflow run . \
-          -main-script "${{ matrix.component.main_script }}" \
+          -main-script "${{ matrix.component.executable }}" \
           -entry "${{ matrix.component.entry }}" \
           -profile docker,mount_temp,no_publish \
           -c src/workflows/utils/labels_ci.config \
