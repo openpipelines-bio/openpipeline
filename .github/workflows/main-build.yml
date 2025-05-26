@@ -213,9 +213,10 @@ jobs:
         { 
           "name": $config.name,
           "namespace": $config.namespace,
-          "executable": $config.build_info.executable,
+          "main_script": (($config.build_info.config | capture("^(?<dir>.*\/)").dir) + "/" + .path),
           "entry": .entrypoint,
           "config": $config.build_info.config,
+          "scope": $config.scope.target
         }
         ] | unique' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
