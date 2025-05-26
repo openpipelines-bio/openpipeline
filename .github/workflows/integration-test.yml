@@ -124,15 +124,15 @@ jobs:
         # check if stub runs work
         export NXF_VER=22.04.5
         nextflow run . \
-          -main-script "target/${{ matrix.component.scope == 'private' && '_private' || '' }}/nextflow/${{matrix.component.namespace}}/${{matrix.component.name}}/main.nf" \
+          -main-script "target/nextflow/${{matrix.component.namespace}}/${{matrix.component.name}}/main.nf" \
           -stub -profile no_publish \
           -c src/workflows/utils/integration_tests.config 
 
         # todo: replace with viash test command
         export NXF_VER=22.04.5
         nextflow run . \
-          -main-script "${{ matrix.component.executable }}" \
+          -main-script "${{ matrix.component.main_script }}" \
           -entry "${{ matrix.component.entry }}" \
           -profile docker,mount_temp,no_publish \
           -c src/workflows/utils/labels_ci.config \
-          -c src/workflows/utils/integration_tests.confi
+          -c src/workflows/utils/integration_tests.config
