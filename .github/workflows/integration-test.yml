@@ -124,7 +124,7 @@ jobs:
         # check if stub runs work
         export NXF_VER=22.04.5
         nextflow run . \
-          -main-script "target/${{ matrix.component.scope == 'private' && '_private' || '' }}/nextflow/${{matrix.component.namespace}}/${{matrix.component.name}}/main.nf" \
+          -main-script "target/${{ matrix.component.scope == 'private' && '_private/' || '' }}nextflow/${{matrix.component.namespace}}/${{matrix.component.name}}/main.nf" \
           -stub -profile no_publish \
           -c src/workflows/utils/integration_tests.config 
 
