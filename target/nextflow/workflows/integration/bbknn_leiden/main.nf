@@ -3457,7 +3457,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/bbknn_leiden",
     "viash_version" : "0.9.4",
-    "git_commit" : "eb2e62ccd8a6ece4942b55fa920d01ef4f58c8e0",
+    "git_commit" : "2b442c6837c205660c7fcdd9260232fc629dfc85",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
