@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 
-include { split_modalities } from params.rootDir + "/target/nextflow/workflows/multiomics/split_modalities/main.nf"
-include { split_modalities_test } from params.rootDir + "/target/nextflow/test_workflows/multiomics/split_modalities_test/main.nf"
+include { split_modalities } from params.rootDir + "/target/_private/nextflow/workflows/multiomics/split_modalities/main.nf"
+include { split_modalities_test } from params.rootDir + "/target/_test/nextflow/test_workflows/multiomics/split_modalities_test/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 
