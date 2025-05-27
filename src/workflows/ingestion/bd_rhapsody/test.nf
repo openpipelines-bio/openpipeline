@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 
 include { bd_rhapsody } from params.rootDir + "/target/nextflow/workflows/ingestion/bd_rhapsody/main.nf"
-include { bd_rhapsody_test } from params.rootDir + "/target/nextflow/test_workflows/ingestion/bd_rhapsody_test/main.nf"
+include { bd_rhapsody_test } from params.rootDir + "/target/_test/nextflow/test_workflows/ingestion/bd_rhapsody_test/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 
