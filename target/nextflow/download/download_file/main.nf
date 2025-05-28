@@ -3130,8 +3130,8 @@ meta = [
   ],
   "status" : "deprecated",
   "scope" : {
-    "image" : "test",
-    "target" : "test"
+    "image" : "public",
+    "target" : "public"
   },
   "license" : "MIT",
   "links" : {
@@ -3228,9 +3228,9 @@ meta = [
     "config" : "/home/runner/work/openpipeline/openpipeline/src/download/download_file/config.vsh.yaml",
     "runner" : "nextflow",
     "engine" : "docker",
-    "output" : "/home/runner/work/openpipeline/openpipeline/target/_test/nextflow/download/download_file",
+    "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/download/download_file",
     "viash_version" : "0.9.4",
-    "git_commit" : "2b442c6837c205660c7fcdd9260232fc629dfc85",
+    "git_commit" : "b4ac9bc6bf7ef16a21a12b84b720be48d43aa7cc",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
