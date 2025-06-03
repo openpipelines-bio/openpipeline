@@ -3292,7 +3292,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.11-slim",
+      "image" : "python:3.13-slim",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3346,7 +3346,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.9.4",
-    "git_commit" : "147dfa0922eefb7fe9375311056004c5d5a2db23",
+    "git_commit" : "fd6fdac1229e4d27e2ecfed420e7561e84679ef1",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3708,9 +3708,15 @@ def main():
                 shared_csr_matrix.close()
                 obs_names.shm.close()
                 logger.info("Shared resources closed")
+                logger.info(
+                    "Shutting down logging queue and re-enabling logging from main thread."
+                )
                 log_listener.enqueue_sentinel()
                 log_listener.stop()
-                print("Logging system shut down", flush=True, file=sys.stdout)
+                stdout_handler = logging.StreamHandler()
+                stdout_handler.setFormatter(formatter)
+                logger.addHandler(stdout_handler)
+                logger.info("Re-enabled logging in main thread.")
             logger.info("Waiting for shutdown of processes")
             executor.shutdown()
             logger.info("Executor shut down.")
