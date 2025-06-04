@@ -446,7 +446,7 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM python:3.11-slim
+FROM python:3.13-slim
 ENTRYPOINT []
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y procps && \
@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component cluster leiden"
-LABEL org.opencontainers.image.created="2025-06-03T03:05:26Z"
+LABEL org.opencontainers.image.created="2025-06-04T03:05:32Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d96cb2f2377f6a61f9e2fc9f049786f0bdaa9ba3"
+LABEL org.opencontainers.image.revision="fd75e92d6ec9a4a6619969f3b68103701ba4690d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1503,9 +1503,15 @@ def main():
                 shared_csr_matrix.close()
                 obs_names.shm.close()
                 logger.info("Shared resources closed")
+                logger.info(
+                    "Shutting down logging queue and re-enabling logging from main thread."
+                )
                 log_listener.enqueue_sentinel()
                 log_listener.stop()
-                print("Logging system shut down", flush=True, file=sys.stdout)
+                stdout_handler = logging.StreamHandler()
+                stdout_handler.setFormatter(formatter)
+                logger.addHandler(stdout_handler)
+                logger.info("Re-enabled logging in main thread.")
             logger.info("Waiting for shutdown of processes")
             executor.shutdown()
             logger.info("Executor shut down.")
