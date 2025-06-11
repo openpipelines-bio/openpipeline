@@ -14,6 +14,11 @@
 
 * `download_file` has been deprecated and will be removed in openpipeline 3.0 (PR #1015).
 
+## NEW FUNCTIONALITY
+
+* (Experimental) Added `from_h5mu_or_h5ad_to_tiledb` component. Warning: the functionality in this component is experimental
+  and its behavior may change in future releases (PR #1034).
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
