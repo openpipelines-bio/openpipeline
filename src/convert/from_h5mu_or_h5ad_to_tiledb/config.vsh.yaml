@@ -2,7 +2,9 @@ name: "from_h5mu_or_h5ad_to_tiledb"
 namespace: "convert"
 scope: "public"
 description: |
-  Convert a MuData or AnnData object to tiledb
+  Convert a MuData or AnnData object to tiledb. Currently, transcriptome and protein modalities are supported.
+
+  NOTE: The functionality provided by this component is experimental and may be subject to change. 
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author, maintainer ]
@@ -154,4 +156,4 @@ runners:
   - type: executable
   - type: nextflow
     directives:
-      label: [lowmem, singlecpu]
+      label: [midmem, midcpu]
