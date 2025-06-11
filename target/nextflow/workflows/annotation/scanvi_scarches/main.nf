@@ -3639,7 +3639,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scanvi_scarches",
     "viash_version" : "0.9.4",
-    "git_commit" : "fd6fdac1229e4d27e2ecfed420e7561e84679ef1",
+    "git_commit" : "11ff88000b1d31226ef5711df46da2acaa3f8afb",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
