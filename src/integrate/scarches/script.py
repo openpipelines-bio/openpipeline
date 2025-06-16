@@ -228,10 +228,10 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
         with TemporaryDirectory(dir=meta["temp_dir"]) as tempdir:
             temp_file_name = Path(tempdir) / "model.pt"
             torch.save(model_torch, temp_file_name)
+            del model_torch
             vae_query = model.load_query_data(
                 aligned_adata_query, tempdir, freeze_dropout=True
             )
-        del model_torch
 
     # Train scArches model for query mapping
     vae_query.train(
