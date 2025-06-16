@@ -25,6 +25,8 @@
 
 * `leiden`: bump base container to 3.13 (PR #1030).
 
+* `scanvi`, `scarches`, `scvi` and `totalvi`: bump scvi-tools to `1.3.1` and base image to `nvcr.io/nvidia/pytorch:25.05-py3` (PR #1035).
+
 ## MINOR CHANGES
 
 * Remove `workflows` directory (PR #993). The workflows which were at one point in this directory were all deprecated and moved to `src/workflows`.
