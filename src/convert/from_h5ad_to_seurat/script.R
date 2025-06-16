@@ -1,4 +1,3 @@
-
 library(anndataR)
 
 ### VIASH START
@@ -13,7 +12,7 @@ par <- list(
 seurat_obj <- read_h5ad(
   par$input,
   mode = "r",
-  to = "Seurat",
+  as = "Seurat",
   assay_name = par$assay
 )
 
