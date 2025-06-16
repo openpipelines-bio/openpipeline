@@ -3257,13 +3257,8 @@ meta = [
             "Seurat",
             "SeuratObject"
           ],
-          "bioc_force_install" : false,
-          "warnings_as_errors" : true
-        },
-        {
-          "type" : "r",
           "github" : [
-            "scverse/anndataR"
+            "scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a"
           ],
           "bioc_force_install" : false,
           "warnings_as_errors" : true
@@ -3287,7 +3282,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_seurat",
     "viash_version" : "0.9.4",
-    "git_commit" : "619a8618ab914acd8c98576d3cac1df9c7494839",
+    "git_commit" : "e419e4e2e4a3b65b270e7112f1f5bfa094c34e3c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3337,7 +3332,6 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.R"
 cat > "$tempscript" << VIASHMAIN
-
 library(anndataR)
 
 ### VIASH START
@@ -3385,7 +3379,7 @@ rm(.viash_orig_warn)
 seurat_obj <- read_h5ad(
   par\\$input,
   mode = "r",
-  to = "Seurat",
+  as = "Seurat",
   assay_name = par\\$assay
 )
 
