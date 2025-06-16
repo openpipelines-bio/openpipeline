@@ -4,6 +4,9 @@ from anndata import AnnData
 import scvi
 import pandas as pd
 import numpy as np
+import torch
+from tempfile import TemporaryDirectory
+from pathlib import Path
 
 ### VIASH START
 par = {
@@ -14,7 +17,7 @@ par = {
     "input_var_gene_names": None,
     "unknown_celltype_label": "Unknown",
     "input_obs_size_factor": None,
-    "reference": "resources_test/annotation_test_data/scanvi_model",
+    "reference": "/home/di/code/openpipelines-multisample/resources_test/HLCA_reference_model/HLCA_reference_model.zip",
     "modality": "rna",
     "output": "foo.h5mu",
     "model_output": "test",
@@ -29,7 +32,7 @@ par = {
     "max_epochs": 10,
     "output_compression": "gzip",
 }
-meta = {"resources_dir": "src/utils"}
+meta = {"resources_dir": "src/utils", "temp_dir": "/tmp"}
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -69,10 +72,10 @@ def _detect_base_model(model_path):
 def _validate_obs_metadata_params(model_registry, model_name):
     """
     Validates .obs metadata par variables that are required by scvi-tools models.
-    
+
     This function checks that necessary .obs metadata field names (batch, labels, size factors)
     specified in the model registry have the required corresponding parameters provided in the input.
-    
+
     Parameters
     ----------
     model_registry : dict
@@ -80,7 +83,7 @@ def _validate_obs_metadata_params(model_registry, model_name):
     model_name : str
         Name of the model being validated.
     """
-    
+
     # Maps the keys of the model registry to their corresponding par keys containing the .obs metadata
     registry_par_mapper = {
         "batch_key": "input_obs_batch",
@@ -89,14 +92,11 @@ def _validate_obs_metadata_params(model_registry, model_name):
     }
 
     for registry_key, key in registry_par_mapper.items():
-        
         model_registry_key = model_registry.get(registry_key)
         par_key = par[key]
-        
+
         if model_registry_key and not par_key:
-            if key != "input_obs_label" or not model_registry.get(
-                "unlabeled_category"
-            ):
+            if key != "input_obs_label" or not model_registry.get("unlabeled_category"):
                 raise ValueError(
                     f"The provided {model_name} model requires `--{key}` to be provided."
                 )
@@ -110,14 +110,14 @@ def _validate_obs_metadata_params(model_registry, model_name):
 def _align_query_with_registry(adata_query, model_path):
     """
     Creates a qeury AnnData object with the expected structure and metadata fields that are aligned with the pre-trained reference model.
-    
+
     Parameters
     ----------
     adata_query : AnnData
         The query AnnData object to be aligned with the model structure.
     model_path : str
         Path to the directory containing the pre-trained model.
-    
+
     Returns
     -------
     AnnData
@@ -196,9 +196,7 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
 
     # Keys of the AnnData query object need to match the exact keys in the reference model registry
 
-    aligned_adata_query = _align_query_with_registry(
-        adata_query, model_path
-    )
+    aligned_adata_query = _align_query_with_registry(adata_query, model_path)
 
     try:
         model.prepare_query_anndata(aligned_adata_query, model_path)
@@ -214,10 +212,26 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
                 f"Could not perform model.prepare_model_anndata, likely because the model was trained with different var names then were found in the index. \n\nmodel var_names: {model.prepare_query_anndata(aligned_adata_query, model_path, return_reference_var_names=True).tolist()} \n\nquery data var_names: {aligned_adata_query.var_names.tolist()}  "
             )
 
-    # Load query data into the model
-    vae_query = model.load_query_data(
-        aligned_adata_query, model_path, freeze_dropout=True
-    )
+    try:
+        # Load query data into the model
+        vae_query = model.load_query_data(
+            aligned_adata_query, model_path, freeze_dropout=True
+        )
+    except KeyError:
+        # Older models do not have the 'setup_method_name' key saved with the model.
+        # Assume these were generated from an anndata object.
+        model_torch = torch.load(
+            f"{model_path}/model.pt", weights_only=False, map_location="cpu"
+        )
+        model_torch["attr_dict"]["registry_"]["setup_method_name"] = "setup_anndata"
+
+        with TemporaryDirectory(dir=meta["temp_dir"]) as tempdir:
+            temp_file_name = Path(tempdir) / "model.pt"
+            torch.save(model_torch, temp_file_name)
+            vae_query = model.load_query_data(
+                aligned_adata_query, tempdir, freeze_dropout=True
+            )
+        del model_torch
 
     # Train scArches model for query mapping
     vae_query.train(
@@ -282,10 +296,9 @@ def _get_model_path(model_path: str):
 
     if "model_params.pt" in os.listdir(model_dir):
         # The model is in the `directory`, but it was generated with scvi-tools<0.15
-        # TODO: for new references (that could not be SCANVI based), we need to check the base class somehow. Reading registry does not work with models generated by scvi-tools<0.15
-        # Here I assume that the reference model is for HLCA and thus is SCANVI based
         converted_model_path = os.path.join(model_dir, "converted")
-        scvi.model.SCANVI.convert_legacy_save(model_dir, converted_model_path)
+        model_class = _detect_base_model(model_dir)
+        model_class.convert_legacy_save(model_dir, converted_model_path)
         return converted_model_path
 
     elif "model.pt" in os.listdir(model_dir):
