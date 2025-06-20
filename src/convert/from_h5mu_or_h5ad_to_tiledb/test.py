@@ -9,6 +9,8 @@ import tiledbsoma
 import pyarrow as pa
 from subprocess import CalledProcessError
 
+ad.settings.allow_write_nullable_strings = True
+
 
 ## VIASH START
 meta = {
@@ -47,22 +49,44 @@ def sample_1_modality_1():
     layer_1 = np.array([[94, 81, 60], [50, 88, 69]])
 
     obs = pd.DataFrame(
-        [["A", "B", True, 0.9, 1], ["C", "D", False, 0.2, 2]],
+        [["A", "B", True, 0.9, 1, pd.NA], ["C", "D", False, 0.2, 2, 8]],
         index=df.index,
-        columns=["Obs1", "Shared_obs_col", "bool_column", "float_column", "int_column"],
+        columns=[
+            "Obs1",
+            "Shared_obs_col",
+            "bool_column",
+            "float_column",
+            "int_column",
+            "Shared_obs_col_int",
+        ],
+    ).astype(
+        {
+            "Obs1": "object",
+            "Shared_obs_col": "object",
+            "bool_column": "bool",
+            "float_column": "float64",
+            "int_column": "int64",
+            "Shared_obs_col_int": "Int64",
+        }
     )
+
     var = pd.DataFrame(
         [["a", "b"], ["c", "d"], ["e", "f"]],
         index=df.columns,
         columns=["Feat1", "Shared_feat_col"],
     )
     varm = np.random.rand(df.columns.size, 5)
+    varm2 = pd.DataFrame(
+        np.random.rand(df.columns.size, 5),
+        index=var.index,
+        columns=["varmcol1", "varmcol2", "varmcol3", "varmcol4", "varmcol5"],
+    )
     ad1 = ad.AnnData(
         X=df,
         layers={"layer1": layer_1},
         obs=obs,
         var=var,
-        varm={"random_vals_mod1": varm},
+        varm={"random_vals_mod1": varm, "df_varm": varm2},
         uns={
             "uns_unique_to_sample1": pd.DataFrame(
                 ["foo"], index=["bar"], columns=["col1"]
@@ -104,9 +128,9 @@ def sample_1_modality_2():
     layer_1 = np.array([[20, 35], [76, 93], [100, 38]])
 
     obs = pd.DataFrame(
-        [["E", "F", "G"], ["H", "I", "J"], ["K", "L", "M"]],
+        [["E", "F", "G", 1], ["H", "I", "J", 2.0], ["K", "L", "M", 3.0]],
         index=df.index,
-        columns=["Obs2", "Obs3", "Shared_obs_col"],
+        columns=["Obs2", "Obs3", "Shared_obs_col", "Shared_obs_col_int"],
     )
     var = pd.DataFrame(
         [["d", "e"], ["f", "g"]], index=df.columns, columns=["Feat2", "Shared_feat_col"]
@@ -171,6 +195,7 @@ def test_convert_anndata(run_component, sample_1_modality_1_anndata_file, tmp_pa
                 pa.field("bool_column", pa.bool_()),
                 pa.field("float_column", pa.float64()),
                 pa.field("int_column", pa.int64()),
+                pa.field("Shared_obs_col_int", pa.int64()),
             ]
         )
         expected = pa.Table.from_arrays(
@@ -182,6 +207,7 @@ def test_convert_anndata(run_component, sample_1_modality_1_anndata_file, tmp_pa
                 pa.array([True, False]),
                 pa.array([0.9, 0.2]),
                 pa.array([1, 2]),
+                pa.array([None, 8]),
             ],
             schema=expected_schema,
         )
@@ -336,7 +362,9 @@ def test_output_directory_already_exists(run_component, sample_1_mudata_file, tm
     )
 
 
-def test_convert_mudata(run_component, sample_1_mudata_file, tmp_path):
+def test_convert_mudata(
+    run_component, sample_1_mudata_file, sample_1_modality_1, tmp_path
+):
     output_path = tmp_path / "output"
     run_component(
         [
@@ -373,6 +401,7 @@ def test_convert_mudata(run_component, sample_1_mudata_file, tmp_path):
                 pa.field("bool_column", pa.bool_()),
                 pa.field("float_column", pa.float64()),
                 pa.field("int_column", pa.int64()),
+                pa.field("Shared_obs_col_int", pa.float64()),
                 pa.field("Obs2", pa.large_string()),
                 pa.field("Obs3", pa.large_string()),
             ]
@@ -386,12 +415,16 @@ def test_convert_mudata(run_component, sample_1_mudata_file, tmp_path):
                 pa.array([True, False, None, None]),
                 pa.array([0.9, 0.2, None, None]),
                 pa.array([1, 2, None, None]),
+                pa.array([None, 8, 1, 3]),
                 pa.array([None, None, "E", "K"]),
                 pa.array([None, None, "F", "L"]),
             ],
             schema=expected_schema,
         )
-        assert expected.equals(obs_contents)
+        # Convert to pandas in order to allow the order of the fields to differ
+        pd.testing.assert_frame_equal(
+            expected.to_pandas(), obs_contents.to_pandas(), check_like=True
+        )
 
     with tiledbsoma.DataFrame.open(f"{output_path}/ms/rna/var") as obs_arr:
         var_contents = obs_arr.read().concat()
@@ -441,6 +474,31 @@ def test_convert_mudata(run_component, sample_1_mudata_file, tmp_path):
             np.testing.assert_allclose(
                 log_normalized_data, np.asmatrix(np.array(expected_log_normalized))
             )
+    with tiledbsoma.Collection.open(
+        f"{output_path}/ms/rna/varm", "r"
+    ) as multidim_collection:
+        assert set(multidim_collection.keys()) == {"df_varm", "random_vals_mod1"}
+        for varm_key in multidim_collection:
+            expected_data = sample_1_modality_1.varm[varm_key]
+            try:
+                expected = expected_data.to_numpy()
+                expected_index = sample_1_modality_1.varm[varm_key].columns.to_list()
+                col_index = [
+                    multidim_collection[varm_key].metadata[str(index_)]
+                    for index_ in range(len(expected_index))
+                ]
+                assert expected_index == col_index
+            except AttributeError:
+                expected = expected_data
+            contents = (
+                multidim_collection[varm_key]
+                .read()
+                .coos()
+                .concat()
+                .to_scipy()
+                .todense()
+            )
+            np.testing.assert_allclose(expected, contents)
 
 
 if __name__ == "__main__":

@@ -42,7 +42,7 @@ argument_groups:
           except when using the value 'X'; in which case .X is used.
       - name: --rna_var_gene_names_input
         type: string
-        required: true
+        required: false
         example: "gene_symbol"
         description: |
           Column in .var that provides the gene names. If not specified, the index from the input is used.
