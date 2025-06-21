@@ -3282,7 +3282,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_seurat",
     "viash_version" : "0.9.4",
-    "git_commit" : "90a10015f51b608ace94b98047b317791bcb2ea1",
+    "git_commit" : "f59fa5f51472df07c626db4d0e92d79c6d1dbba0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
