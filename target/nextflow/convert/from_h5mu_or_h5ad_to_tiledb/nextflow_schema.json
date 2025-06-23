@@ -56,7 +56,7 @@
         "rna_var_gene_names_input": {
           "type": "string",
           "description": "Column in .var that provides the gene names",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"gene_symbol\"`. "
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gene_symbol\"`. "
         }
       }
     },

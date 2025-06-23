@@ -3127,7 +3127,7 @@ meta = [
           "example" : [
             "gene_symbol"
           ],
-          "required" : true,
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3497,7 +3497,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_or_h5ad_to_tiledb",
     "viash_version" : "0.9.4",
-    "git_commit" : "e419e4e2e4a3b65b270e7112f1f5bfa094c34e3c",
+    "git_commit" : "ed7f0da6f870594aa244cc964bc6de0ffd525124",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3565,6 +3565,7 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 import pyarrow as pa
 from collections import defaultdict
+import json
 
 anndata.settings.allow_write_nullable_strings = True
 
@@ -3632,6 +3633,65 @@ LAYER_ARGUMENTS = (
     "prot_normalized_layer_input",
     "prot_normalized_layer_output",
 )
+
+
+multidim_column_indices = {}
+
+
+def _convert_to_array(mod_name, _, group):
+    """
+    tiledb SOMA does not support pandas dataframes in varm and obsm
+    Convert those to structured arrays and store column index as metadata
+    """
+    entries = group.keys()
+    for entry in entries:
+        encoding = group[entry].attrs["encoding-type"]
+        if encoding in ("array", "csr_matrix", "csc_matrix"):
+            return
+        if encoding in {
+            "dataframe",
+            "nullable-integer",
+            "nullable-boolean",
+            "nullable-string-array",
+        }:
+            df = anndata.io.read_elem(group[entry])
+            data = df.to_numpy()
+            anndata.io.write_elem(group, entry, data)
+            index_to_write = df.columns
+            # No need to store write the index to tileDB in the case its just the integer index
+            if not isinstance(index_to_write, pd.RangeIndex):
+                multidim_column_indices.setdefault(mod_name, {}).setdefault(
+                    group.name.strip("/"), {}
+                ).update({entry: index_to_write.to_list()})
+            return
+        logger.info(
+            "Deleting %s because it is of encoding %s, which is not supported.",
+            f"{group.name}/{entry}",
+            encoding,
+        )
+        del group[entry]
+
+
+def _read_obs(anndata_file):
+    with h5py.File(anndata_file, "r") as open_rna:
+        return _to_pandas_nullable(anndata.io.read_elem(open_rna["obs"]))
+
+
+def _write_obs(anndata_file, obs_df):
+    with h5py.File(anndata_file, "r+") as open_h5:
+        anndata.io.write_elem(open_h5, "obs", obs_df)
+
+
+def _log_arguments(function_obj, arg_dict):
+    """
+    Format a dictionairy of arguments into a string that is put into the script logs.
+    """
+    args_str = [f"\\\\t{param}: {param_val}\\\\n" for param, param_val in arg_dict.items()]
+    logger.info(
+        "Calling %s with arguments:\\\\n%s",
+        function_obj.__name__,
+        "".join(args_str).rstrip(),
+    )
 
 
 def _to_pandas_nullable(table_or_df: pa.Table | pd.DataFrame) -> pd.DataFrame:
@@ -3785,6 +3845,8 @@ def _copy_column(src, dest, _, df_h5_obj):
     The input dataframe must be h5py object that is encoded by AnnData to store
     a pandas dataframe (e.g. .obs and .var).
     """
+    if src is None:
+        src = df_h5_obj.attrs["_index"]
     logger.info("Copying column '%s' to '%s' for '%s'.", src, dest, df_h5_obj.name)
     if src == dest:
         logger.info("Source and destination for the column are the same, not copying.")
@@ -3792,7 +3854,9 @@ def _copy_column(src, dest, _, df_h5_obj):
     if dest in df_h5_obj:
         raise ValueError(f"Column {dest} already exists in {df_h5_obj.name}.")
     df_h5_obj[dest] = src
-    df_h5_obj.attrs["column-order"] = np.append(df_h5_obj.attrs["column-order"], dest)
+    column_order = df_h5_obj.attrs["column-order"]
+    if dest not in column_order:
+        df_h5_obj.attrs["column-order"] = np.append(column_order, dest)
 
 
 def _set_index_name(name, _, df_h5_obj):
@@ -3868,6 +3932,8 @@ def _get_rna_conversion_specification(par):
             par["rna_normalized_layer_output"],
         ),
         {
+            "varm": partial(_convert_to_array, "rna"),
+            "obsm": partial(_convert_to_array, "rna"),
             "uns": _delete_all_keys,
             "obsp": _delete_all_keys,
             "var": [
@@ -3901,6 +3967,8 @@ def _get_prot_conversion_specification(par):
             par["prot_normalized_layer_output"],
         ),
         {
+            "varm": partial(_convert_to_array, "prot"),
+            "obsm": partial(_convert_to_array, "prot"),
             "var": [
                 partial(_set_index_name, par["prot_var_index_name_output"]),
                 _set_index_to_string_dtype,
@@ -3958,6 +4026,27 @@ def _(conversion_specifications: Callable, input_h5ad, open_h5):
     conversion_specifications(input_h5ad, open_h5)
 
 
+def _write_varm_obsm_indices(output_dir, mod_name, multidim_column_indices):
+    # TileDB SOMA does not support column indices for .varm and obsm matrices
+    # As a workaround, we will store these in the metadata slot
+    for multidim_key in ("varm", "obsm"):
+        collection_name = f"{str(output_dir)}/ms/{mod_name}/{multidim_key}"
+        if tiledbsoma.Collection.exists(collection_name):
+            with tiledbsoma.Collection.open(
+                collection_name, "w"
+            ) as multidim_collection:
+                for item in multidim_collection:
+                    index_to_write = (
+                        multidim_column_indices.get(mod_name, {})
+                        .get(multidim_key, {})
+                        .get(item, None)
+                    )
+                    if index_to_write:
+                        multidim_collection[item].metadata["column_index"] = json.dumps(
+                            index_to_write
+                        )
+
+
 def _remove_directory(dir_path):
     """
     Check if a directory exists and remove it does.
@@ -3966,7 +4055,7 @@ def _remove_directory(dir_path):
         try:
             # Delete the directory and all its contents
             for item in dir_path.iterdir():
-                if item.isfile(item) or item.islink(item):
+                if item.is_file() or item.is_symlink():
                     item.unlink()  # Removes files or symbolic links
                 elif item.is_dir():
                     rmtree(item)  # Removes directories recursively
@@ -4000,6 +4089,30 @@ def _align_obs_columns(experiment_df, anndata_df):
     logger.info("Retreiving obs columns to be added.")
 
     obs_to_add_columns = set(anndata_df.columns)
+
+    logger.info("Checking dtype of common columns")
+    common_columns = obs_to_add_columns.intersection(contents_columns)
+    common_dtypes = {}
+    for column_name in common_columns:
+        # Combine the two columns, but only keep the calculated dtype.
+        # We'll update the data types in the two original frames and let tiledb do the joining.
+        new_series = experiment_df[column_name].combine_first(anndata_df[column_name])
+        result_dtype = new_series.dtype
+        # Nullable floats are not supported by anndata...
+        if pd.api.types.is_float_dtype(
+            result_dtype
+        ) and pd.api.types.is_extension_array_dtype(result_dtype):
+            result_dtype = result_dtype.numpy_dtype
+        common_dtypes[column_name] = result_dtype
+
+    logger.info(
+        "Updating the dtypes to comply with the following schema: %s", common_dtypes
+    )
+    experiment_df, anndata_df = (
+        experiment_df.astype(common_dtypes),
+        anndata_df.astype(common_dtypes),
+    )
+
     logger.info("Will add the following columns: %s", ", ".join(obs_to_add_columns))
     missing_columns_in_old = obs_to_add_columns - contents_columns
     logger.info(
@@ -4062,6 +4175,14 @@ def main(par):
             prot_input, _get_prot_conversion_specification(par)
         )
 
+        logger.info(
+            "Making sure that obs columns are shared between the two modalities."
+        )
+        contents, obs_to_add = _read_obs(rna_converted), _read_obs(prot_converted)
+        contents, obs_to_add = _align_obs_columns(contents, obs_to_add)
+        _write_obs(prot_converted, obs_to_add)
+        _write_obs(rna_converted, contents)
+
     tiledbsoma.logging.info()
     _remove_directory(par["tiledb_dir"])
 
@@ -4073,40 +4194,19 @@ def main(par):
         "uns_keys": [],
         "X_layer_name": "raw",
     }
-    rna_from_h5ad_str = [
-        f"\\\\t{param}: {param_val}\\\\n" for param, param_val in rna_from_h5ad_args.items()
-    ]
-    logger.info(
-        "Calling tiledbsoma.io.from_h5ad with arguments: \\\\n%s",
-        "".join(rna_from_h5ad_str).rstrip(),
-    )
-    tiledbsoma.io.from_h5ad(**rna_from_h5ad_args)
+    func_to_call = tiledbsoma.io.from_h5ad
+    _log_arguments(func_to_call, rna_from_h5ad_args)
+    func_to_call(**rna_from_h5ad_args)
+
+    _write_varm_obsm_indices(par["tiledb_dir"], "rna", multidim_column_indices)
+
     logger.info("Done ingesting RNA modality")
 
     if par["prot_modality"]:
         logger.info("Ingesting protein modality")
-        logger.info(
-            "Making sure that obs columns are shared between the two modalities."
-        )
-        with tiledbsoma.DataFrame.open(f"{par['tiledb_dir']}/obs") as obs_arr:
-            contents = _to_pandas_nullable(obs_arr.read().concat())
-
-        with h5py.File(prot_converted, "r") as open_h5:
-            obs_to_add = _to_pandas_nullable(anndata.io.read_elem(open_h5["obs"]))
-
-        contents, obs_to_add = _align_obs_columns(contents, obs_to_add)
-
-        with h5py.File(prot_converted, "r+") as open_h5:
-            anndata.io.write_elem(open_h5, "obs", obs_to_add)
-
-        with tiledbsoma.Experiment.open(str(par["tiledb_dir"]), "w") as open_experiment:
-            tiledbsoma.io.update_obs(
-                exp=open_experiment,
-                new_data=contents,
-                default_index_name=par["obs_index_name_output"],
-            )
 
         logger.info("Initalizing prot modality schema.")
+        # Note the 'schema_only'
         prot_from_h5ad_schema_args = {
             "experiment_uri": str(par["tiledb_dir"]),
             "input_path": prot_converted,
@@ -4115,16 +4215,9 @@ def main(par):
             "ingest_mode": "schema_only",
             "X_layer_name": "raw",
         }
-        prot_from_h5ad_schema_str = [
-            f"\\\\t{param}: {param_val}\\\\n"
-            for param, param_val in prot_from_h5ad_schema_args.items()
-        ]
-        logger.info(
-            "Calling tiledbsoma.io.from_h5ad with arguments:\\\\n%s",
-            "".join(prot_from_h5ad_schema_str).rstrip(),
-        )
-        # Note the 'schema_only'
-        tiledbsoma.io.from_h5ad(**prot_from_h5ad_schema_args)
+        func_to_call = tiledbsoma.io.from_h5ad
+        _log_arguments(func_to_call, prot_from_h5ad_schema_args)
+        func_to_call(**prot_from_h5ad_schema_args)
 
         logger.info("Registering prot modality anndata")
         # Register the second anndata object in the protein measurement
@@ -4136,15 +4229,9 @@ def main(par):
             "var_field_name": par["prot_var_index_name_output"],
             "append_obsm_varm": True,
         }
-        register_prot_args_str = [
-            f"\\\\t{param}: {param_val}\\\\n"
-            for param, param_val in register_prot_args.items()
-        ]
-        logger.info(
-            "Calling tiledbsoma.io.register_h5ads with arguments:\\\\n%s",
-            "".join(register_prot_args_str).rstrip(),
-        )
-        rd = tiledbsoma.io.register_h5ads(**register_prot_args)
+        func_to_call = tiledbsoma.io.register_h5ads
+        _log_arguments(func_to_call, register_prot_args)
+        rd = func_to_call(**register_prot_args)
 
         rd.prepare_experiment(str(par["tiledb_dir"]))
 
@@ -4158,14 +4245,11 @@ def main(par):
             "uns_keys": [],
             "X_layer_name": "raw",
         }
-        prot_write_args_str = [
-            f"\\\\t{param}: {param_val}\\\\n" for param, param_val in prot_write_args.items()
-        ]
-        logger.info(
-            "Calling tiledbsoma.io.from_h5ad with arguments:\\\\n%s",
-            "".join(prot_write_args_str).rstrip(),
-        )
-        tiledbsoma.io.from_h5ad(**prot_write_args)
+        func_to_call = tiledbsoma.io.from_h5ad
+        _log_arguments(func_to_call, prot_write_args)
+        func_to_call(**prot_write_args)
+
+        _write_varm_obsm_indices(par["tiledb_dir"], "prot", multidim_column_indices)
 
     logger.info("Finished!")
 
