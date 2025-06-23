@@ -18,7 +18,7 @@ par = {
     "input_var_gene_names": None,
     "unknown_celltype_label": "Unknown",
     "input_obs_size_factor": None,
-    "reference": "/home/di/code/openpipelines-multisample/resources_test/HLCA_reference_model/HLCA_reference_model.zip",
+    "reference": "resources_test/annotation_test_data/scanvi_model",
     "modality": "rna",
     "output": "foo.h5mu",
     "model_output": "test",
