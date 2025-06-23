@@ -501,5 +501,50 @@ def test_convert_mudata(
             np.testing.assert_allclose(expected, contents)
 
 
+def test_gene_synbol_column_name_use_index(
+    run_component, sample_1_modality_1, random_h5ad_path, tmp_path
+):
+    output_path = tmp_path / "output"
+    input_h5ad = random_h5ad_path()
+    sample_1_modality_1.var.index.name = "gene_symbol"
+    sample_1_modality_1.write(input_h5ad)
+    run_component(
+        [
+            "--input",
+            input_h5ad,
+            "--rna_modality",
+            "mod1",
+            "--rna_raw_layer_input",
+            "X",
+            "--rna_normalized_layer_input",
+            "layer1",
+            "--tiledb_dir",
+            output_path,
+        ]
+    )
+    with tiledbsoma.DataFrame.open(f"{output_path}/ms/rna/var") as obs_arr:
+        var_contents = obs_arr.read().concat()
+        expected_schema = pa.schema(
+            [
+                pa.field("soma_joinid", pa.int64(), nullable=False),
+                pa.field("rna_index", pa.large_string()),
+                pa.field("Feat1", pa.large_string()),
+                pa.field("Shared_feat_col", pa.large_string()),
+                pa.field("gene_symbol", pa.large_string()),
+            ]
+        )
+        expected = pa.Table.from_arrays(
+            [
+                pa.array([0, 1, 2]),
+                pa.array(["var1", "var2", "overlapping_var_mod1"]),
+                pa.array(["a", "c", "e"]),
+                pa.array(["b", "d", "f"]),
+                pa.array(["var1", "var2", "overlapping_var_mod1"]),
+            ],
+            schema=expected_schema,
+        )
+        assert expected.equals(var_contents)
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
