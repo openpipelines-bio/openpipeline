@@ -16,6 +16,7 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 import pyarrow as pa
 from collections import defaultdict
+import json
 
 anndata.settings.allow_write_nullable_strings = True
 
@@ -481,11 +482,8 @@ def _write_varm_obsm_indices(output_dir, mod_name, multidim_column_indices):
                         .get(item, None)
                     )
                     if index_to_write:
-                        multidim_collection[item].metadata.update(
-                            {
-                                str(index): item
-                                for index, item in enumerate(index_to_write)
-                            }
+                        multidim_collection[item].metadata["column_index"] = json.dumps(
+                            index_to_write
                         )
 
 

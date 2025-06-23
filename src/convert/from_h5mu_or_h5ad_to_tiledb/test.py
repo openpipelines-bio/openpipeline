@@ -1,6 +1,7 @@
 import sys
 import pytest
 import re
+import json
 import anndata as ad
 import mudata as md
 import numpy as np
@@ -483,10 +484,9 @@ def test_convert_mudata(
             try:
                 expected = expected_data.to_numpy()
                 expected_index = sample_1_modality_1.varm[varm_key].columns.to_list()
-                col_index = [
-                    multidim_collection[varm_key].metadata[str(index_)]
-                    for index_ in range(len(expected_index))
-                ]
+                col_index = json.loads(
+                    multidim_collection[varm_key].metadata["column_index"]
+                )
                 assert expected_index == col_index
             except AttributeError:
                 expected = expected_data
