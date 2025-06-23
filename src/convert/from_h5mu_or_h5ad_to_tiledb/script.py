@@ -302,7 +302,7 @@ def _copy_column(src, dest, _, df_h5_obj):
         # Here, this is always the case.
         if src in df_h5_obj.attrs["column-order"]:
             return None
-    df_h5_obj[dest] = df_h5_obj[src]
+    df_h5_obj.copy(src, dest, expand_refs=True, expand_soft=True)
 
 
 def _set_index_name(name, _, df_h5_obj):

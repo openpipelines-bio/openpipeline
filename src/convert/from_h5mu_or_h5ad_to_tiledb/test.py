@@ -231,7 +231,7 @@ def test_convert_anndata(run_component, sample_1_modality_1_anndata_file, tmp_pa
                 pa.array(["var1", "var2", "overlapping_var_mod1"]),
                 pa.array(["a", "c", "e"]),
                 pa.array(["b", "d", "f"]),
-                pa.array(["Feat1", "Feat1", "Feat1"]),
+                pa.array(["a", "c", "e"]),
             ],
             schema=expected_schema,
         )
@@ -444,7 +444,7 @@ def test_convert_mudata(
                 pa.array(["var1", "var2", "overlapping_var_mod1"]),
                 pa.array(["a", "c", "e"]),
                 pa.array(["b", "d", "f"]),
-                pa.array(["Feat1", "Feat1", "Feat1"]),
+                pa.array(["a", "c", "e"]),
             ],
             schema=expected_schema,
         )
