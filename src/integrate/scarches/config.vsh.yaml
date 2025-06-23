@@ -54,7 +54,12 @@ argument_groups:
         type: file
         description: Path to the directory with reference model or a web link.
         required: true
-
+      - name: "--reference_class"
+        type: string
+        required: false
+        description: 
+          For legacy models; the type of model (where the type of model was not saved with it; e.g. when they were generated with scvi-tools versions < 0.15).
+        example: SCANVI
   - name: Outputs
     arguments:
       - name: "--output"

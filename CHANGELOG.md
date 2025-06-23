@@ -14,6 +14,8 @@
 
 * `download_file` has been deprecated and will be removed in openpipeline 3.0 (PR #1015).
 
+* `scarches`: Loading of legacy models no longer asumes the model to based on SCANVI. An argument (`reference_class`) was added which need to be set in this case (PR #1035). 
+
 ## NEW FUNCTIONALITY
 
 * (Experimental) Added `from_h5mu_or_h5ad_to_tiledb` component. Warning: the functionality in this component is experimental
