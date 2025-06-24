@@ -1,5 +1,6 @@
 name: filter_with_scrublet
 namespace: "filter"
+scope: "public"
 description: |
   Doublet detection using the Scrublet method (Wolock, Lopez and Klein, 2019).
   The method tests for potential doublets by using the expression profiles of
@@ -36,6 +37,8 @@ arguments:
     example: input.h5mu
 
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "rna"
     required: false
@@ -52,13 +55,6 @@ arguments:
     direction: output
     example: output.h5mu
 
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
-
   - name: "--obs_name_filter"
     type: string
     default: "filter_with_scrublet"
@@ -73,12 +69,34 @@ arguments:
     default: "scrublet_doublet_score"
     description: Name of the doublet scores column in the obs slot of the returned object.
   
-  # arguments
-  # this argument wasn't being used so I disabled it.
-  # - name: "--expected_doublet_rate"
-  #   type: double
-  #   description: The estimated fraction of doublets as from the experimental setup. Defaults to 0.056 (5.6%%) per the normal expected 10x doublet rate for a 12k loaded cell experiment.
-  #   default: 0.05
+  - name: "--expected_doublet_rate"
+    type: double
+    required: false
+    min: 0
+    max: 1
+    description: |
+      The estimated fraction of doublets as from the experimental setup.
+
+  - name: "--stdev_doublet_rate"
+    type: double
+    min: 0
+    required: false
+    description: Uncertainty in the expected doublet rate.
+
+  - name: "--n_neighbors"
+    type: integer
+    required: false
+    min: 0
+    description: |
+      Number of neighbors used to construct the KNN classifier of observed transcriptomes
+      and simulated doublets.
+  
+  - name: "--sim_doublet_ratio"
+    type: double
+    min: 0
+    description: |
+      Number of doublets to simulate relative to the number of observed
+      transcriptomes.
 
   - name: "--min_counts"
     type: integer
@@ -110,6 +128,8 @@ arguments:
     description: |
       When scrublet fails to automatically determine the double score threshold, 
       allow the component to continue and set the output columns to NA.
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

@@ -1,5 +1,6 @@
 name: "bd_rhapsody"
 namespace: "mapping"
+scope: "public"
 description: |
   BD Rhapsody Sequence Analysis CWL pipeline v2.2.1
     
@@ -620,6 +621,8 @@ argument_groups:
       info:
         config_key: VDJ_VGene_Evalue
     - name: --write_filtered_reads
+      description:
+        Output processed FASTQ reads.
       type: boolean
       multiple: false
       info:

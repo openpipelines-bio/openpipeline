@@ -1,5 +1,6 @@
 name: log1p
 namespace: "transform"
+scope: "public"
 description: |
   Logarithmize the data matrix. Computes X = log(X + 1), where log denotes the natural logarithm unless a different base is given.
 authors:
@@ -18,6 +19,8 @@ arguments:
     example: input.h5mu
 
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "rna"
     required: false
@@ -41,17 +44,15 @@ arguments:
     required: true
     default: output.h5mu
 
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
-
   # arguments
   - name: "--base"
+    description: |
+      Base of the logarithm. Natural logarithm is used by default.
     type: double
     example: 2
+
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

@@ -1,10 +1,107 @@
-# openpipelines 2.1.0
+# openpipelines 3.0.0
+
+## BREAKING CHANGES
+
+* `transfer/publish`: remove component after deprecating it in 2.1.0 (PR #1019).
+
+* Removed `split_h5mu_train_test` component (PR #1020).
+
+* `tar_extract` has been deprecated and will be removed in openpipeline 4.0 (PR #1014). Use [vsh://toolbox/bgzip](https://www.viash-hub.com/packages/toolbox/latest/components/bgzip) instead.
+
+* `compress_h5mu`: rename `compression` argument to `output_compression` (PR #1017, PR #1018).
+
+* `delimit_fraction`: remove unused `layer` argument (PR #1018).
+
+* `download_file` has been deprecated and will be removed in openpipeline 3.0 (PR #1015).
+
+* `scarches`: Loading of legacy models no longer asumes the model to based on SCANVI. An argument (`reference_class`) was added which need to be set in this case (PR #1035). 
 
 ## NEW FUNCTIONALITY
 
-* `feature_annotation/aling_query_reference`: : Added a component to align a query and reference dataset (PR #948, #958).
+* (Experimental) Added `from_h5mu_or_h5ad_to_tiledb` component. Warning: the functionality in this component is experimental
+  and its behavior may change in future releases (PR #1034).
+
+## MAJOR CHANGES
+
+* `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
+
+* `leiden`: bump base container to 3.13 (PR #1030).
+
+* `scanvi`, `scarches`, `scvi` and `totalvi`: bump scvi-tools to `1.3.1` and base image to `nvcr.io/nvidia/pytorch:25.05-py3` (PR #1035).
+
+## MINOR CHANGES
+
+* Remove `workflows` directory (PR #993). The workflows which were at one point in this directory were all deprecated and moved to `src/workflows`.
+
+* Move output file compression argument for AnnData and MuData files to a base config file (`src/base/h5_compression_argument.yaml`) (PR #1017).
+
+* Add missing descriptions to components and arguments (PR #1018).
+
+* Add `scope` to component and workflow configurations (see https://viash.io/reference/config/scope.html) (PR #1013 and #1032).
+
+## BUG FIXES
+
+* Bump viash to 0.9.4. This adds support for nextflow versions starting major version 25.01 and fixes an issue where an integer being passed to a argument with `type: double` resulted in an error (PR #1016).
+
+* Fix running `neigbors_leiden_umap` workflow with `-stub` enabled (PR #1026).
+
+* Add missing CUDA enabled `jaxlib` to components that use `scvi-tools` (`scanvi`, `scarches`, `scvi` and `totalvi`) (PR #1028)
+
+* `leiden`: fix issue where the logging system was shut down prematurely after the calculations were done (PR #1030)
+
+* Added missing `gpu` label to `scarches` component (PR #1027).
+
+# openpipelines 2.1.2
+
+## DOCUMENTATION
+
+* Update README (PR #1024, backported from #1012).
+
+# openpipelines 2.1.1
+
+## BUG FIXES
+
+* Add support for nextflow versions starting major version 25.01 (PR #1009).
+
+* Fix an issue where an interger being passed to a argument with `type: double` resulted in an error (PR #1009). 
+
+# openpipelines 2.1.0
+
+## BREAKING CHANGES
+
+* Deprecation of `metadata/duplicate_obs` and `metadata/duplicate_var` components (PR #952).
+
+* Deprecation of `workflows/annotation/scgpt_integration_knn` component (PR #952).
+
+* `annotate/scanvi`: Remove scarches functionality from this component, as it is already covered in `integrate/scarches` (PR #986). 
+
+## NEW FUNCTIONALITY
+
+* `dataflow/concatenate_h5mu`: add `modality` parameter (PR #977).
+
+* `filter_with_scrublet`: add `expected_doublet_rate`, `stdev_doublet_rate`, `n_neighbors` and `sim_doublet_ratio` arguments (PR #974).
+
+* `feature_annotation/aling_query_reference`: Added a component to align a query and reference dataset (PR #948, #958, #972).
 
 * `workflows/qc/qc` workflow: Added ribosomal gene detection (PR #961).
+
+* `workflows/rna/rna_singlesample`, `workflows/multiomics/process_samples` workflows: Added ribosomal gene detection (PR #968).
+
+* `scanvi`: enable CUDA acceleration (PR #969).
+
+* `workflows/annotation/scvi_knn` workflow: Cell-type annotation based on scVI integration followed by KNN label transfer (PR #954).
+
+* `convert/from_h5ad_to_seurat`: Add component to convert from h5ad to Seurat (PR #980).
+
+* `workflows/annotation/scanvi_scarches` workflow: Cell-type annotation based on scANVI integration and annotation with scArches for reference mapping (PR #898).
+
+* `integrate/scarches`: Implemented functionality to align the query dataset with the model registry and extend functionality to predict labels for scANVI models (PR #898).
+
+* `workflows/annotation/harmony_knn` workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
+
+* `from_cellranger_multi_to_h5mu`: add support for `custom` modality (PR #982).
+
+* `integrate/scvi`: Enable passing any .var field for gene name information instead of .var index, using the `--var_gene_names` parameter (PR #986).
 
 ## MAJOR CHANGES
 
@@ -12,7 +109,10 @@
 
 * The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
 
+
 # MINOR CHANGES
+
+* Bump viash to `0.9.3` (PR #995).
 
 * Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942 and PR #949). 
 
@@ -24,9 +124,29 @@
 
 * `feature_annotation/highly_variable_features_scanpy`: Enable calculation of HVG on a subset of genes (PR #957, PR #959).
 
+* `integrate/scvi`, `integrate/totalvi` and `integrate/scarches`: update base image to nvcr.io/nvidia/pytorch:24.12-py3, pin scvi-tools version to 1.1.5, unpin jax and jaxlib version (PR #970).
+
+* `annotate/celltypist`: Enable passing any layer with log normalized counts, enforce checking whether counts are log normalized (PR #971).
+
+* `process_10xh5/filter_10xh5`: update container base to ubuntu 24.04 (PR #983).
+
 # BUG FIXES
 
+* Fix `-stub` runs (PR #1000).
+
+* `cluster/leiden`: Fix an issue where insufficient shared memory (size of `/dev/shm`) causes the processing to hang.  
+
 * `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).
+
+* `resources_test_scripts/annotation_test_data.sh`: Add a layer to the annotation reference dataset with log normalized counts (PR #960).
+
+* `annotate/celltypist`: Fix missing values in annotation column caused by index misalignment (PR #976).
+
+* `workflows/annotation/scgpt_annotation` and `workflows/integrate/scgpt_leiden`: Parameterization of HVG flavor with default method `cell_ranger` instead of `seurat_v3` (PR #979).
+
+* `dataflow/merge`: Resolved an issue where merging two MuData objects with overlapping `var` or `obs` columns sometimes resulted in an unsupported nullable dtype (e.g. merging `pd.IntegerDtype` and `pd.FloatDtype`). These columns are now correctly cast to their native numpy dtypes before writing(PR #990).
+
+* `workflows/annotation/harmony_knn`: Only process RNA modality in the workflow (PR #988).
 
 # openpipelines 2.0.0
 

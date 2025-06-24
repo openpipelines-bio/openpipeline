@@ -1,5 +1,6 @@
 name: concatenate_h5mu
 namespace: "dataflow"
+scope: "public"
 description: |
   Concatenate observations from samples in several (uni- and/or multi-modal) MuData files into a single file.
 authors:
@@ -13,6 +14,11 @@ arguments:
     description: Paths to the different samples to be concatenated.
     required: true
     example: sample_paths
+  - name: "--modality"
+    type: string
+    multiple: true
+    description: "Only output concatenated objects for the provided modalities. Outputs all modalities by default."
+    required: false
   - name: "--input_id"
     type: string
     multiple: true
@@ -22,16 +28,12 @@ arguments:
       If specified, must be of same length as `--input`.
     required: false
   - name: "--output"
+    description: |
+      Output location for the concatenated MuData object file.
     alternatives: ["-o"]
     type: file
     direction: output
     example: "output.h5mu"
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
   - name: "--obs_sample_name"
     type: string
     description: Name of the .obs key under which to add the sample names.
@@ -61,6 +63,7 @@ arguments:
     type: string
     choices: ["same", "unique", "first", "only", "make_unique"]
     default: make_unique
+__merge__: [., /src/base/h5_compression_argument.yaml]
 
 resources:
   - type: python_script

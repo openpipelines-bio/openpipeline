@@ -1,5 +1,6 @@
 name: cellranger_count_split
 namespace: mapping
+scope: "public"
 description: Split 10x Cell Ranger output directory into separate output fields.
 authors:
   - __merge__: /src/authors/angela_pisco.yaml
@@ -15,36 +16,43 @@ arguments:
     example: input_dir
     description: Output directory from a Cell Ranger count run.
   - name: --filtered_h5
+    description: |
+      Output path for the h5 file storing the filtered counts.
     type: file
     direction: output
     required: false
-    # description: Counts in AnnData format.
     example: filtered_feature_bc_matrix.h5
   - name: --metrics_summary
+    description: |
+      Where to store the 'metrics_summary' CSV file.
     type: file
     direction: output
     required: false
-    # description: Counts in AnnData format.
     example: metrics_summary.csv
   - name: --molecule_info
+    description: |
+      Where to store Cell Ranger's 'molecule_info.h5' file.
     type: file
     direction: output
     required: false
-    # description: Counts in AnnData format.
     example: molecule_info.h5
   - name: --bam
+    description: |
+      Location of output BAM files.
     type: file
     direction: output
     required: false
-    # description: Counts in AnnData format.
     example: possorted_genome_bam.bam
   - name: --bai
+    description: |
+      Where to store the BAM index files.
     type: file
     direction: output
     required: false
-    # description: Counts in AnnData format.
     example: possorted_genome_bam.bam.bai
   - name: --raw_h5
+    description: |
+      Output path for the h5 file storing the raw counts.
     type: file
     direction: output
     required: false

@@ -1,5 +1,6 @@
 name: cellbender_remove_background_v0_2
 namespace: "correction"
+scope: "public"
 description: |
   Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
 
@@ -32,11 +33,6 @@ argument_groups:
         direction: output
         required: true
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--layer_output"
         description: Output layer
         type: string
@@ -56,6 +52,8 @@ argument_groups:
       - name: "--obsm_latent_gene_encoding"
         type: string
         default: "cellbender_latent_gene_encoding"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
   - name: Arguments
     arguments:
       - name: "--expected_cells"

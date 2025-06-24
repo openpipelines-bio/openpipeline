@@ -1,5 +1,6 @@
 name: "split_modalities_test"
 namespace: "test_workflows/multiomics"
+scope: "test"
 description: "This component test the output of the integration test of split_modalities."
 authors:
   - __merge__: /src/authors/kai_waldrant.yaml
@@ -24,21 +25,10 @@ argument_groups:
 resources:
   - type: python_script
     path: script.py
-  - path: /src/base/openpipelinetestutils
-    dest: openpipelinetestutils
 engines:
   - type: docker
     image: python:3.12-slim
-    setup:
-      - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
-      - type: docker
-        copy: ["openpipelinetestutils /opt/openpipelinetestutils"]
-      - type: apt
-        packages: 
-          - procps
-      - type: python
-        packages: /opt/openpipelinetestutils
+    __merge__: /src/base/requirements/testworkflows_setup.yaml
 runners:
   - type: executable
   - type: nextflow

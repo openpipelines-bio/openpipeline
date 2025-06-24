@@ -1,8 +1,5 @@
 from mudata import read_h5mu
-from openpipelinetestutils.asserters import assert_annotation_objects_equal
-from pathlib import Path
-import shutil
-import os
+from openpipeline_testutils.asserters import assert_annotation_objects_equal
 import sys
 import pytest
 
@@ -38,9 +35,4 @@ def test_run():
 
 
 if __name__ == "__main__":
-    HERE_DIR = Path(__file__).resolve().parent
-    shutil.copyfile(
-        os.path.join(meta["resources_dir"], "openpipelinetestutils", "conftest.py"),
-        os.path.join(HERE_DIR, "conftest.py"),
-    )
-    sys.exit(pytest.main(["--import-mode=importlib"]))
+    sys.exit(pytest.main([__file__, "--import-mode=importlib"]))

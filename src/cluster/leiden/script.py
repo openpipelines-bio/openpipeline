@@ -45,7 +45,7 @@ par = {
     "uns_name": "leiden",
     "output_compression": "gzip",
 }
-meta = {"cpus": 8, "resources_dir": "."}
+meta = {"cpus": 8, "resources_dir": "src/utils"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -53,6 +53,13 @@ sys.path.append(meta["resources_dir"])
 from compress_h5mu import compress_h5mu
 
 _shared_logger_name = "leiden"
+
+
+# Function to check available space in /dev/shm
+def get_available_shared_memory():
+    shm_path = "/dev/shm"
+    shm_stats = os.statvfs(shm_path)
+    return shm_stats.f_bsize * shm_stats.f_bavail
 
 
 class SharedNumpyMatrix:
@@ -70,6 +77,13 @@ class SharedNumpyMatrix:
     def from_numpy(
         cls, memory_manager: managers.SharedMemoryManager, array: npt.ArrayLike
     ):
+        available_shared_memory = get_available_shared_memory()
+        n_bytes_required = array.nbytes
+        if available_shared_memory < n_bytes_required:
+            raise ValueError(
+                "Not enough shared memory (/dev/shm) is available to load the data. "
+                f"Required amount: {n_bytes_required}, available: {available_shared_memory}."
+            )
         shm = memory_manager.SharedMemory(size=array.nbytes)
         array_in_shared_memory = np.ndarray(
             array.shape, dtype=array.dtype, buffer=shm.buf
@@ -290,9 +304,15 @@ def main():
                 shared_csr_matrix.close()
                 obs_names.shm.close()
                 logger.info("Shared resources closed")
+                logger.info(
+                    "Shutting down logging queue and re-enabling logging from main thread."
+                )
                 log_listener.enqueue_sentinel()
                 log_listener.stop()
-                print("Logging system shut down", flush=True, file=sys.stdout)
+                stdout_handler = logging.StreamHandler()
+                stdout_handler.setFormatter(formatter)
+                logger.addHandler(stdout_handler)
+                logger.info("Re-enabled logging in main thread.")
             logger.info("Waiting for shutdown of processes")
             executor.shutdown()
             logger.info("Executor shut down.")

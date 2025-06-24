@@ -1,227 +1,163 @@
 name: scanvi
-namespace: annotate
-description: Semi-supervised model for single-cell transcriptomics data. A scVI extension that can leverage the cell type knowledge for a subset of the cells present in the data sets to infer the states of the rest of the cells.
+namespace: "annotate"
+scope: "public"
+description: |
+  scANVI () is a semi-supervised model for single-cell transcriptomics data. scANVI is an scVI extension that can leverage the cell type knowledge for a subset of the cells present in the data sets to infer the states of the rest of the cells.
+  This component will instantiate a scANVI model from a pre-trained scVI model, integrate the data and perform label prediction.
+
 authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ maintainer ]
   - __merge__: /src/authors/jakub_majercik.yaml
     roles: [ author ]
   - __merge__: /src/authors/weiwei_schultz.yaml
     roles: [ contributor ]
-
 argument_groups:
   - name: Inputs
-    description: Arguments related to the input (aka query) dataset.
     arguments:
       - name: "--input"
-        alternatives: [-i]
+        alternatives: ["-i"]
         type: file
-        description: Input h5mu file.
+        description: Input h5mu file. Note that this needs to be the exact same dataset as the --scvi_model was trained on.
         direction: input
         required: true
-        example: input.h5mu
       - name: "--modality"
-        description: Which modality to process.
+        description: |
+          Which modality from the input MuData file to process.
         type: string
         default: "rna"
         required: false
-      - name: "--var_input_gene_names"
-        description: .var field containing the gene names, if the .var index is not to be used.
+      - name: "--input_layer"
         type: string
         required: false
-      - name: "--input_reference_gene_overlap"
-        type: integer
-        default: 100
-        min: 1
+        description: "Input layer to use. If None, X is used"
+      - name: "--var_input"
+        type: string
+        required: false
+        description: ".var column containing highly variable genes that were used to train the scVi model. By default, do not subset genes."
+      - name: "--var_gene_names"
+        type: string
+        required: false
+        description: ".var column containing gene names. By default, use the index."
+      - name: "--obs_labels"
+        type: string
+        required: true
+        description: ".obs field containing the labels"
+      - name: "--unlabeled_category"
+        type: string
+        default: "Unknown"
         description: | 
-          The minimum number of genes present in both the reference and query datasets.
-
-  - name: Reference model
-    description: Arguments related to the reference model.
+          Value in the --obs_labels field that indicates unlabeled observations
+  
+  - name: scVI Model
     arguments:
-      - name: "--scvi_reference_model"
+      - name: "--scvi_model"
         type: file
-        description: "Pretrained SCVI reference model to initialize the SCANVI model with. The model needs to include the AnnData object used to trained the model stored. "
+        description: "Pretrained SCVI reference model to initialize the SCANVI model with."
         example: scvi_model.pt
         direction: input
-        required: false
-      - name: "--scanvi_reference_model"
-        type: file
-        description: "Pretrained SCANVI reference model."
-        example: scvi_model.pt
-        direction: input
-        required: false
-
-  - name: SCANVI reference model training arguments
-    description: Arguments related to the reference SCANVI model.
-    arguments:
-    - name: "--reference_train_size"
-      type: double
-      description: Size of training set.
-      required: false
-      default: 0.9
-      min: 0.0
-      max: 1.0
-    - name: "--reference_max_epochs"
-      type: integer
-      description: Maximum number of epochs.
-      required: false
-      default: 400
-    - name: "--reference_learning_rate"
-      type: double
-      description: Learning rate.
-      required: false
-      default: 1e-3
-    - name: "--reference_reduce_lr_on_plateau"
-      type: boolean
-      description: Reduce learning rate on plateau.
-      required: false
-      default: true
-    - name: "--reference_lr_patience"
-      type: integer
-      description: Patience for learning rate reduction.
-      required: false
-      default: 25
-    - name: "--reference_lr_factor"
-      type: double
-      description: Factor by which to reduce learning rate.
-      required: false
-      default: 0.5
-      min: 0.0
-      max: 1.0
-    - name: "--reference_early_stopping"
-      type: boolean
-      description: Early stopping.
-      required: false
-      default: true
-    - name: "--reference_early_stopping_patience"
-      type: integer
-      description: Patience for early stopping.
-      required: false
-      default: 50
-
-  - name: SCANVI query model training arguments
-    description: Arguments related to the query SCANVI model.
-    arguments:
-    - name: "--query_train_size"
-      type: double
-      description: Size of training set.
-      required: false
-      default: 0.9
-      min: 0.0
-      max: 1.0
-    - name: "--query_max_epochs"
-      type: integer
-      description: Maximum number of epochs.
-      required: false
-      default: 400
-    - name: "--query_learning_rate"
-      type: double
-      description: Learning rate.
-      required: false
-      default: 1e-3
-    - name: "--query_reduce_lr_on_plateau"
-      type: boolean
-      description: Reduce learning rate on plateau.
-      required: false
-      default: true
-    - name: "--query_lr_patience"
-      type: integer
-      description: Patience for learning rate reduction.
-      required: false
-      default: 25
-    - name: "--query_lr_factor"
-      type: double
-      description: Factor by which to reduce learning rate.
-      required: false
-      default: 0.5
-      min: 0.0
-      max: 1.0
-    - name: "--query_early_stopping"
-      type: boolean
-      description: Early stopping.
-      required: false
-      default: true
-    - name: "--query_early_stopping_patience"
-      type: integer
-      description: Patience for early stopping.
-      required: false
-      default: 50
-
+        required: true
+  
   - name: Outputs
-    description: Arguments related to the output.
     arguments:
       - name: "--output"
+        alternatives: ["-o"]
         type: file
         description: Output h5mu file.
         direction: output
         required: true
-        example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--output_model"
         type: file
         description: Folder where the state of the trained model will be saved to.
+        required: false
         direction: output
-        required: false
-        example: model_dir
-      - name: "--output_obs_predictions"
+      - name: "--obsm_output"
         type: string
-        description: |
-          In which `.obs` slots to store the predicted information.
-        default: "scanvi_pred"
+        default: "X_scanvi_integrated"
         required: false
-      - name: "--output_obs_probability"
+        description: "In which .obsm slot to store the resulting integrated embedding."
+      - name: "--obs_output_predictions"
         type: string
-        default: "scanvi_probability"
-        required: false
-        description: |
-          In which `.obs` slots to store the probability of the predictions.
-      - name: "--output_obsm_scanvi_embedding"
+        default: scanvi_pred
+        description: "In which .obs slot to store the predicted labels."
+      - name: "--obs_output_probabilities"
         type: string
-        default: "scanvi_embedding"
+        default: scanvi_proba
+        description: "In which. obs slot to store the probabilities of the predicted labels."
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+ 
+  - name: "scANVI training arguments"
+    arguments:
+      - name: "--early_stopping"
         required: false
-        description: |
-          In which `.obsm` slots to store the scvi embedding.
-      - name: "--unknown_celltype"
+        type: boolean
+        description: "Whether to perform early stopping with respect to the validation set."
+      - name: "--early_stopping_monitor"
+        choices: ["elbo_validation", "reconstruction_loss_validation", "kl_local_validation"]
+        default: "elbo_validation"
         type: string
-        default: "Unknown"
+        description: "Metric logged during validation set epoch."
+      - name: "--early_stopping_patience"
+        type: integer
+        min: 1
+        default: 45
+        description: "Number of validation epochs with no improvement after which training will be stopped."
+      - name: "--early_stopping_min_delta"
+        min: 0
+        type: double
+        default: 0.0
+        description: "Minimum change in the monitored quantity to qualify as an improvement, 
+                      i.e. an absolute change of less than min_delta, will count as no improvement."
+      - name: "--max_epochs"
+        type: integer
+        description: "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest."
         required: false
-        description: |
-          Label for unknown cell types.
+      - name: "--reduce_lr_on_plateau"
+        description: "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus."
+        type: boolean
+        default: True
+      - name: "--lr_factor"
+        description: "Factor to reduce learning rate."
+        type: double
+        default: 0.6
+        min: 0
+      - name: "--lr_patience"
+        description: "Number of epochs with no improvement after which learning rate will be reduced."
+        type: double
+        default: 30
+        min: 0
 
 resources:
   - type: python_script
     path: script.py
-  - path: /src/utils/setup_logger.py
-  - path: /src/utils/cross_check_genes.py
   - path: /src/utils/subset_vars.py
+  - path: /src/utils/compress_h5mu.py
   - path: /src/utils/set_var_index.py
-
+  - path: /src/utils/setup_logger.py
 test_resources:
   - type: python_script
     path: test.py
-  - path: /resources_test/annotation_test_data/
-  - path: /resources_test/pbmc_1k_protein_v3/
+  - path: /resources_test/annotation_test_data/scvi_model/
+  - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 
 engines:
 - type: docker
-  image: python:3.12-slim
+  image: nvcr.io/nvidia/pytorch:25.05-py3
   setup:
-    - type: apt
-      packages:
-        - procps
     - type: python
-      __merge__: [ /src/base/requirements/scanpy.yaml, .]
+      __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
     - type: python
       packages:
-        - scvi-tools==1.1.5
+        - jax[cuda]
+        - scvi-tools~=1.3.1
+  test_setup:
     - type: python
-      __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
-  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+      __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
 runners:
-  - type: executable
-  - type: nextflow
-    directives:
-      label: [highcpu, highmem, highdisk, gpu]
+- type: executable
+  # docker_run_args: ["--gpus all"]
+- type: nextflow
+  directives:
+    label: [midcpu, midmem, gpu, highdisk]

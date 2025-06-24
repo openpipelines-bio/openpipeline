@@ -1,5 +1,6 @@
 name: "cellranger_postprocessing"
 namespace: "workflows/ingestion"
+scope: "public"
 description: "Post-processing Cell Ranger datasets."
 info:
   name: Cell Ranger post-processing

@@ -1,5 +1,6 @@
 name: delimit_fraction
 namespace: "filter"
+scope: "public"
 description: |
   Turns a column containing values between 0 and 1 into a boolean column based on thresholds.
 authors:
@@ -17,13 +18,10 @@ argument_groups:
         example: input.h5mu
 
       - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process.
         type: string
         default: "rna"
-        required: false
-
-      - name: "--layer"
-        type: string
-        example: "raw_counts"
         required: false
 
       - name: "--obs_fraction_column"
@@ -42,17 +40,11 @@ argument_groups:
         direction: output
         example: output.h5mu
 
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
-      
       - name: "--obs_name_filter"
         type: string
         required: true
         description: In which .obs slot to store a boolean array corresponding to which observations should be removed.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Arguments
     arguments:

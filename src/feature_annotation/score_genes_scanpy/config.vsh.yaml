@@ -1,5 +1,6 @@
 name: score_genes_scanpy
 namespace: feature_annotation
+scope: "public"
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
     roles: [ author ]
@@ -49,6 +50,8 @@ argument_groups:
       required: false
       example: gene_pool.txt
     - name: "--modality"
+      description: |
+        Which modality from the input MuData file to process.
       type: string
       default: "rna"
       required: false  
@@ -86,12 +89,8 @@ argument_groups:
       required: false
       description: |
         Name of the score field to be added in .obs.
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
+  __merge__: [., /src/base/h5_compression_argument.yaml]
+
 
 - name: Arguments
   arguments:

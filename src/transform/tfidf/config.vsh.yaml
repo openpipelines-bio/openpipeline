@@ -1,5 +1,6 @@
 name: tfidf
 namespace: "transform"
+scope: "public"
 description: |
   Perform TF-IDF normalization of the data (typically, ATAC).
 
@@ -21,6 +22,8 @@ arguments:
     example: input.h5mu
 
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "atac"
     required: false
@@ -38,13 +41,6 @@ arguments:
     direction: output
     required: true
   
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
-
   - name: "--output_layer"
     type: string
     description: Output layer to use.
@@ -72,6 +68,8 @@ arguments:
     description: Whether to log-transform TF*IDF term (False by default). Can only be used when log_tf and log_idf are False.
     type: boolean
     default: false
+
+__merge__: [., /src/base/h5_compression_argument.yaml]
 
 resources:
   - type: python_script

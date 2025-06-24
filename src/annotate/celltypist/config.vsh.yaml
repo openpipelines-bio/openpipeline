@@ -1,5 +1,6 @@
 name: celltypist
 namespace: annotate
+scope: "public"
 description: Automated cell type annotation tool for scRNA-seq datasets on the basis of logistic regression classifiers optimised by the stochastic gradient descent algorithm.
 authors:
   - __merge__: /src/authors/jakub_majercik.yaml
@@ -25,7 +26,7 @@ argument_groups:
         required: false
       - name: "--input_layer"
         type: string
-        description: The layer in the input data to be used for cell type annotation if .X is not to be used. 
+        description: The layer in the input data containing log normalized counts to be used for cell type annotation if .X is not to be used. 
       - name: "--input_var_gene_names"
         type: string
         required: false
@@ -55,11 +56,6 @@ argument_groups:
         type: string
         description: The name of the adata obs column in the reference data containing cell type annotations.
         default: "cell_ontology_class"
-      - name: "--check_expression"
-        type: boolean_true
-        description: | 
-          Whether to check the expression of the reference dataset to the format reccomended by CellTypist.
-          CellTypist requires data to be log-normalized to 10000 counts per cell.
       - name: "--reference_var_gene_names"
         type: string
         required: false
@@ -114,11 +110,6 @@ argument_groups:
         description: Output h5mu file.
         direction: output
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--output_obs_predictions"
         type: string
         default: celltypist_pred
@@ -131,6 +122,7 @@ argument_groups:
         required: false
         description: |
           In which `.obs` slots to store the probability of the predictions.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
 resources:
   - type: python_script

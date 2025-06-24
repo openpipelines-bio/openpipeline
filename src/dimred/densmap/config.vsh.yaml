@@ -1,5 +1,6 @@
 name: densmap
 namespace: "dimred"
+scope: "public"
 description: |
   A modification of UMAP that adds an extra cost term in order to preserve information 
   about the relative local density of the data. It is performed on the same inputs as UMAP.
@@ -17,6 +18,8 @@ argument_groups:
         example: input.h5mu
 
       - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process.
         type: string
         default: "rna"
         required: false
@@ -42,17 +45,12 @@ argument_groups:
         required: true
         example: output.h5mu
 
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
-
       - name: "--obsm_output"
         type: string
         description: The .obsm key to use for storing the densMAP results..
         default: "X_densmap"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
     
   - name: Arguments UMAP
     arguments:

@@ -1,5 +1,6 @@
 name: "from_10xh5_to_h5mu"
 namespace: "convert"
+scope: "public"
 description: |
   Converts a 10x h5 into an h5mu file.
 authors:
@@ -28,15 +29,12 @@ argument_groups:
         example: output.h5mu
         direction: output
         __merge__: api_output.yaml
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--uns_metrics"
         type: string
         description: Name of the .uns slot under which to QC metrics (if any).
         default: "metrics_cellranger"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
   - name: Arguments
     arguments:
       - name: "--min_genes"

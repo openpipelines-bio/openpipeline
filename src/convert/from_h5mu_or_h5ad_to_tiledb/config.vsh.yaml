@@ -1,0 +1,159 @@
+name: "from_h5mu_or_h5ad_to_tiledb"
+namespace: "convert"
+scope: "public"
+description: |
+  Convert a MuData or AnnData object to tiledb. Currently, transcriptome and protein modalities are supported.
+
+  NOTE: The functionality provided by this component is experimental and may be subject to change. 
+authors:
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+  - name: "Input"
+    arguments:
+      - name: --input
+        description: |
+          Input AnnData or MuData file. When an AnnData file is provided, it is automatically assumed to 
+          contain transcriptome counts.
+        type: file
+        required: true
+        example: "input.h5mu"
+        direction: input
+  - name: "RNA modality"
+    arguments:
+      - name: --rna_modality
+        type: string
+        default: rna
+        description: |
+          The name used for the RNA modality. Used when input file is a MuData object.
+      - name: --rna_raw_layer_input
+        type: string
+        required: true
+        example: X
+        description: |
+          Location of the layer containing the raw transcriptome counts. Layers are looked for in .layers,
+          except when using the value 'X'; in which case .X is used.
+      - name: --rna_normalized_layer_input
+        type: string
+        required: true
+        example: log_normalized
+        description: |
+          Location of the layer containing the normalized counts. Layers are looked for in .layers,
+          except when using the value 'X'; in which case .X is used.
+      - name: --rna_var_gene_names_input
+        type: string
+        required: false
+        example: "gene_symbol"
+        description: |
+          Column in .var that provides the gene names. If not specified, the index from the input is used.
+      
+  - name: "Protein modality"
+    arguments:
+      - name: --prot_modality
+        description: |
+          The name used for the protein modality. Used when input file is a MuData object.
+          When not specified, the protein modality will not be processed.
+        type: string
+        required: false
+        example: prot
+      - name: --prot_raw_layer_input
+        type: string
+        example: X
+        description: |
+          Location of the layer containing the raw protein counts. Layers are looked for in .layers,
+          except when using the value 'X'; in which case .X is used.
+      - name: --prot_normalized_layer_input
+        type: string
+        example: clr
+        description: |
+          Location of the layer containing the normalized counts. Layers are looked for in .layers,
+          except when using the value 'X'; in which case .X is used.
+
+  - name: "Output slots"
+    arguments:
+      - name: "--rna_modality_output"
+        type: string
+        default: "rna"
+        description: |
+          TileDB Measurement name where the RNA modality will be stored.
+      - name: "--prot_modality_output"
+        type: string
+        default: "prot"
+        description: |
+          Name of the TileDB Measurement where the protein modality will be stored.
+      - name: "--obs_index_name_output"
+        description: |
+          Name of the index that is used to describe the cells (observations).
+        type: string
+        default: cell_id
+      - name: --rna_var_index_name_output
+        description: |
+          Output name of the index that is used to describe the genes.
+        type: string
+        default: rna_index
+      - name: --rna_raw_layer_output
+        description: |
+          Output location for the raw transcriptomics counts.
+        type: string
+        default: "X"
+      - name: --rna_normalized_layer_output
+        type: string
+        default: "log_normalized"
+        description: |
+          Output location for the normalized RNA counts.
+      - name: --rna_var_gene_names_output
+        type: string
+        default: "gene_symbol"
+        description: |
+          Name of the .var column that specifies the gene games.
+      - name: --prot_var_index_name_output
+        description: |
+          Output name of the index that is used to describe the proteins. 
+        type: string
+        default: prot_index
+      - name: --prot_raw_layer_output
+        type: string
+        default: "X"
+        description: |
+          Output location for the raw protein counts.
+      - name: --prot_normalized_layer_output
+        type: string
+        default: "log_normalized"
+        description: |
+          Output location for the normalized protein counts.
+
+  - name: "Output arguments"
+    arguments:
+      - name: "--tiledb_dir"
+        type: file
+        direction: output
+        description: |
+          Directory where the TileDB output will be written to.
+      
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages: 
+          - procps
+      - type: python
+        packages:
+          - tiledbsoma
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [midmem, midcpu]
