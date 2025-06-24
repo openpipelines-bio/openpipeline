@@ -451,9 +451,9 @@ FROM ghcr.io/data-intuitive/randpy:r4.0
 ENTRYPOINT []
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component files make_params"
-LABEL org.opencontainers.image.created="2025-06-23T11:55:21Z"
+LABEL org.opencontainers.image.created="2025-06-24T07:29:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ed7f0da6f870594aa244cc964bc6de0ffd525124"
+LABEL org.opencontainers.image.revision="723b935e5ee5fb987501680900e47b9454282dd7"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

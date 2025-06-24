@@ -448,20 +448,20 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM nvcr.io/nvidia/pytorch:24.12-py3
+FROM nvcr.io/nvidia/pytorch:25.05-py3
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4" && \
   python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "jax[cuda]" "scvi-tools~=1.1.5"
+  pip install --upgrade --no-cache-dir "jax[cuda]" "scvi-tools~=1.3.1"
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate scanvi"
-LABEL org.opencontainers.image.created="2025-06-23T11:55:21Z"
+LABEL org.opencontainers.image.created="2025-06-24T07:29:37Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ed7f0da6f870594aa244cc964bc6de0ffd525124"
+LABEL org.opencontainers.image.revision="723b935e5ee5fb987501680900e47b9454282dd7"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

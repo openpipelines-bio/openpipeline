@@ -9,6 +9,7 @@ modality: "rna"
 
 # Reference
 reference: # please fill in - example: "path/to/file"
+# reference_class: "SCANVI"
 
 # Outputs
 # output: "$id.$key.output"

@@ -3497,7 +3497,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_or_h5ad_to_tiledb",
     "viash_version" : "0.9.4",
-    "git_commit" : "ed7f0da6f870594aa244cc964bc6de0ffd525124",
+    "git_commit" : "723b935e5ee5fb987501680900e47b9454282dd7",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3845,18 +3845,24 @@ def _copy_column(src, dest, _, df_h5_obj):
     The input dataframe must be h5py object that is encoded by AnnData to store
     a pandas dataframe (e.g. .obs and .var).
     """
-    if src is None:
-        src = df_h5_obj.attrs["_index"]
     logger.info("Copying column '%s' to '%s' for '%s'.", src, dest, df_h5_obj.name)
+    columns = df_h5_obj.attrs["column-order"]
+    if dest in columns:
+        raise ValueError(f"Column {dest} already exists in {df_h5_obj.name}.")
     if src == dest:
         logger.info("Source and destination for the column are the same, not copying.")
         return None
-    if dest in df_h5_obj:
-        raise ValueError(f"Column {dest} already exists in {df_h5_obj.name}.")
-    df_h5_obj[dest] = src
-    column_order = df_h5_obj.attrs["column-order"]
-    if dest not in column_order:
-        df_h5_obj.attrs["column-order"] = np.append(column_order, dest)
+    df_h5_obj.attrs["column-order"] = np.append(columns, dest)
+    if src is None:
+        # Use the index as source.
+        src = df_h5_obj.attrs["_index"]
+        # Both the index and columns are written as keys to df_h5_obj
+        # An index name may be allowed to also be column name _only_ when
+        # the column and the index have the same contents (this is an anndata requirement).
+        # Here, this is always the case.
+        if src in df_h5_obj.attrs["column-order"]:
+            return None
+    df_h5_obj.copy(src, dest, expand_refs=True, expand_soft=True)
 
 
 def _set_index_name(name, _, df_h5_obj):
@@ -3867,7 +3873,14 @@ def _set_index_name(name, _, df_h5_obj):
     """
     logger.info("Setting index name of '%s' to '%s'.", df_h5_obj.name, name)
     original_index_name = df_h5_obj.attrs["_index"]
-    df_h5_obj.move(original_index_name, name)
+    # An index and a column may share a key in df_h5_obj
+    # In this case we must not remove the original key from the object
+    operator = (
+        df_h5_obj.move
+        if original_index_name not in df_h5_obj.attrs["column-order"]
+        else df_h5_obj.copy
+    )
+    operator(original_index_name, name)
     df_h5_obj.attrs["_index"] = name
     logger.info("Done setting index name")
 

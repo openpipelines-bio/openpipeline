@@ -48,6 +48,8 @@ def test_hlca_reference_model(run_component, input_with_batch, tmp_path):
             "unlabeled",
             "--reference",
             reference,
+            "--reference_class",
+            "SCANVI",
             "--modality",
             "rna",
             "--output",
@@ -93,7 +95,7 @@ def test_scvi_model(run_component, tmp_path):
             "--output_compression",
             "gzip",
             "--obsm_output",
-            "X_integrated_scvi"
+            "X_integrated_scvi",
         ]
     )
     assert output_path.is_file()
@@ -129,7 +131,7 @@ def test_scanvi_model(run_component, tmp_path):
             "--max_epochs",
             "1",
             "--output_compression",
-            "gzip"
+            "gzip",
         ]
     )
     assert output_path.is_file()
@@ -140,10 +142,10 @@ def test_scanvi_model(run_component, tmp_path):
     assert output_data["rna"].uns["integration_method"] == "SCANVI"
     assert "scanvi_pred" in output_data.mod["rna"].obs
     assert "scanvi_proba" in output_data.mod["rna"].obs
-    
+
     predictions = output_data.mod["rna"].obs["scanvi_pred"]
     probabilities = output_data.mod["rna"].obs["scanvi_proba"]
-    
+
     assert (
         predictions.dtype == "category"
     ), "Calculated predictions should be category dtype"
@@ -156,8 +158,8 @@ def test_scanvi_model(run_component, tmp_path):
     ), ".obs at celltypist_probability has values outside the range [0, 1]"
 
     assert (output_model_path / "model.pt").is_file()
-    
-    
+
+
 def test_raises_with_missing_params(run_component, tmp_path):
     output_path = tmp_path / "output.h5mu"
     output_model_path = tmp_path / "model_output"
@@ -179,7 +181,7 @@ def test_raises_with_missing_params(run_component, tmp_path):
         "--output_compression",
         "gzip",
         "--obsm_output",
-        "X_integrated_scvi"
+        "X_integrated_scvi",
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:
