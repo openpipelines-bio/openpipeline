@@ -5,7 +5,7 @@ input: # please fill in - example: "input.h5mu"
 rna_modality: "rna"
 rna_raw_layer_input: # please fill in - example: "X"
 rna_normalized_layer_input: # please fill in - example: "log_normalized"
-rna_var_gene_names_input: # please fill in - example: "gene_symbol"
+# rna_var_gene_names_input: "gene_symbol"
 
 # Protein modality
 # prot_modality: "prot"
