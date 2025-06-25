@@ -3136,6 +3136,24 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--de_method",
+          "description" : "Differential expression method. `scanpy.tl.rank_genes_groups` is used to rank genes according to 1vsRest.",
+          "default" : [
+            "t-test"
+          ],
+          "required" : false,
+          "choices" : [
+            "logreg",
+            "t-test",
+            "wilcoxon",
+            "t-test_overestim_var"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--groupby",
           "description" : "The key of the observations grouping to consider.",
           "required" : true,
@@ -3224,6 +3242,15 @@ meta = [
           ],
           "direction" : "input",
           "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--consensus_opts",
+          "description" : "Strategies to aggregate interactions across methods. Default is None - i.e. ['Specificity', 'Magnitude'] and both specificity and magnitude are aggregated.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
           "multiple_sep" : ";"
         },
         {
@@ -3399,8 +3426,7 @@ meta = [
         {
           "type" : "apt",
           "packages" : [
-            "procps",
-            "git"
+            "procps"
           ],
           "interactive" : false
         },
@@ -3410,7 +3436,8 @@ meta = [
           "packages" : [
             "anndata~=0.11.1",
             "mudata~=0.3.1",
-            "liana~=1.3.0"
+            "liana~=1.5.0",
+            "scipy<1.16"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import awkward\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  exit(1)\\")"
@@ -3436,7 +3463,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/interpret/lianapy",
     "viash_version" : "0.9.4",
-    "git_commit" : "723b935e5ee5fb987501680900e47b9454282dd7",
+    "git_commit" : "97ba5a3a9581ce78051d2a4425f8c97d8760a3bf",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3501,12 +3528,14 @@ par = {
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'de_method': $( if [ ! -z ${VIASH_PAR_DE_METHOD+x} ]; then echo "r'${VIASH_PAR_DE_METHOD//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'groupby': $( if [ ! -z ${VIASH_PAR_GROUPBY+x} ]; then echo "r'${VIASH_PAR_GROUPBY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'resource_name': $( if [ ! -z ${VIASH_PAR_RESOURCE_NAME+x} ]; then echo "r'${VIASH_PAR_RESOURCE_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'gene_symbol': $( if [ ! -z ${VIASH_PAR_GENE_SYMBOL+x} ]; then echo "r'${VIASH_PAR_GENE_SYMBOL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'expr_prop': $( if [ ! -z ${VIASH_PAR_EXPR_PROP+x} ]; then echo "float(r'${VIASH_PAR_EXPR_PROP//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_cells': $( if [ ! -z ${VIASH_PAR_MIN_CELLS+x} ]; then echo "int(r'${VIASH_PAR_MIN_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'aggregate_method': $( if [ ! -z ${VIASH_PAR_AGGREGATE_METHOD+x} ]; then echo "r'${VIASH_PAR_AGGREGATE_METHOD//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'consensus_opts': $( if [ ! -z ${VIASH_PAR_CONSENSUS_OPTS+x} ]; then echo "r'${VIASH_PAR_CONSENSUS_OPTS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'return_all_lrs': $( if [ ! -z ${VIASH_PAR_RETURN_ALL_LRS+x} ]; then echo "r'${VIASH_PAR_RETURN_ALL_LRS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'n_perms': $( if [ ! -z ${VIASH_PAR_N_PERMS+x} ]; then echo "int(r'${VIASH_PAR_N_PERMS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
@@ -3561,6 +3590,9 @@ def main():
     mod.var_names = mod.var[par["gene_symbol"]].astype(str)
     mod.var_names_make_unique()
 
+    if not meta.get("cpus"):
+        meta["cpus"] = 1
+    n_jobs = meta["cpus"] - 1 if meta["cpus"] > 2 else 1
     liana.mt.rank_aggregate(
         adata=mod,
         groupby=par["groupby"],
@@ -3568,9 +3600,12 @@ def main():
         expr_prop=par["expr_prop"],
         min_cells=par["min_cells"],
         aggregate_method=par["aggregate_method"],
+        consensus_opts=par["consensus_opts"],
         return_all_lrs=par["return_all_lrs"],
         layer=par["layer"],
+        de_method=par["de_method"],
         n_perms=par["n_perms"],
+        n_jobs=n_jobs,
         verbose=True,
         inplace=True,
         use_raw=False,

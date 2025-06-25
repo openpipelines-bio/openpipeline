@@ -48,6 +48,18 @@
           "description": "Layer in anndata.AnnData.layers to use",
           "help_text": "Type: `string`, multiple: `False`. "
         },
+        "de_method": {
+          "type": "string",
+          "description": "Differential expression method",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"t-test\"`, choices: ``logreg`, `t-test`, `wilcoxon`, `t-test_overestim_var``. ",
+          "enum": [
+            "logreg",
+            "t-test",
+            "wilcoxon",
+            "t-test_overestim_var"
+          ],
+          "default": "t-test"
+        },
         "groupby": {
           "type": "string",
           "description": "The key of the observations grouping to consider.",
@@ -105,6 +117,14 @@
             "rra"
           ],
           "default": "rra"
+        },
+        "consensus_opts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Strategies to aggregate interactions across methods",
+          "help_text": "Type: `string`, multiple: `True`. "
         },
         "return_all_lrs": {
           "type": "boolean",
