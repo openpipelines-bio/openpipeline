@@ -122,6 +122,11 @@
           "exists": true,
           "description": "Path to the directory with reference model or a web link.",
           "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
+        },
+        "reference_class": {
+          "type": "string",
+          "description": "For legacy models; the type of model (where the type of model was not saved with it; e.g",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"SCANVI\"`. "
         }
       }
     },

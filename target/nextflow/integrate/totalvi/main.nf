@@ -3422,7 +3422,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "nvcr.io/nvidia/pytorch:24.12-py3",
+      "image" : "nvcr.io/nvidia/pytorch:25.05-py3",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3433,7 +3433,7 @@ meta = [
             "anndata~=0.11.1",
             "mudata~=0.3.1",
             "jax[cuda]",
-            "scvi-tools~=1.1.5"
+            "scvi-tools~=1.3.1"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import awkward\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  exit(1)\\")"
@@ -3459,7 +3459,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi",
     "viash_version" : "0.9.4",
-    "git_commit" : "2451938527803774c42f25d2f16b3b18b8f35e38",
+    "git_commit" : "191ab33cfbeccb0a47b6e10dc1a60504a8c306a4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

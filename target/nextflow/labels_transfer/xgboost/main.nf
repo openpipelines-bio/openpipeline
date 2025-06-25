@@ -3757,7 +3757,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/xgboost",
     "viash_version" : "0.9.4",
-    "git_commit" : "2451938527803774c42f25d2f16b3b18b8f35e38",
+    "git_commit" : "191ab33cfbeccb0a47b6e10dc1a60504a8c306a4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
