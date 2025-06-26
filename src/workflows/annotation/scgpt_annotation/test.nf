@@ -3,16 +3,19 @@ nextflow.enable.dsl=2
 include { scgpt_annotation } from params.rootDir + "/target/nextflow/workflows/annotation/scgpt_annotation/main.nf"
 include { scgpt_annotation_test } from params.rootDir + "/target/_test/nextflow/test_workflows/annotation/scgpt_annotation_test/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
-    resources_test = file("${params.rootDir}/resources_test/scgpt")
+  resources_test = file(params.resources_test)
+  scgpt_test_resources = resources_test / "scgpt"
 
     output_ch = Channel.fromList([
         [
             id: "simple_execution_test",
-            input: resources_test.resolve("test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
-            model: resources_test.resolve("finetuned_model/best_model.pt"),
-            model_config: resources_test.resolve("source/args.json"),
-            model_vocab: resources_test.resolve("source/vocab.json"),
+            input: scgpt_test_resources.resolve("test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
+            model: scgpt_test_resources.resolve("finetuned_model/best_model.pt"),
+            model_config: scgpt_test_resources.resolve("source/args.json"),
+            model_vocab: scgpt_test_resources.resolve("source/vocab.json"),
             input_layer: "log_normalized",
             input_obs_batch_label: "sample",
             // change default to reduce resource requirements
