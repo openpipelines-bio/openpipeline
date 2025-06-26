@@ -3,9 +3,11 @@ nextflow.enable.dsl=2
 include { scanvi_scarches } from params.rootDir + "/target/nextflow/workflows/annotation/scanvi_scarches/main.nf"
 include { scanvi_scarches_test } from params.rootDir + "/target/_test/nextflow/test_workflows/annotation/scanvi_scarches_test/main.nf"
 
+params.resources_test = params.rootDir + "/resources_test"
+
 workflow test_wf {
   // allow changing the resources_test dir
-  resources_test = file("${params.rootDir}/resources_test")
+  resources_test = file(params.resources_test)
 
   output_ch = Channel.fromList(
     [
