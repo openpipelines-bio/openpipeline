@@ -22,6 +22,7 @@ par = {
     "return_all_lrs": False,
     "n_perms": 100,
 }
+meta = {"cpus": 4}
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -48,6 +49,9 @@ def main():
     mod.var_names = mod.var[par["gene_symbol"]].astype(str)
     mod.var_names_make_unique()
 
+    if not meta.get("cpus"):
+        meta["cpus"] = 1
+    n_jobs = meta["cpus"] - 1 if meta["cpus"] > 2 else 1
     liana.mt.rank_aggregate(
         adata=mod,
         groupby=par["groupby"],
@@ -55,9 +59,12 @@ def main():
         expr_prop=par["expr_prop"],
         min_cells=par["min_cells"],
         aggregate_method=par["aggregate_method"],
+        consensus_opts=par["consensus_opts"],
         return_all_lrs=par["return_all_lrs"],
         layer=par["layer"],
+        de_method=par["de_method"],
         n_perms=par["n_perms"],
+        n_jobs=n_jobs,
         verbose=True,
         inplace=True,
         use_raw=False,
