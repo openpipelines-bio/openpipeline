@@ -3518,7 +3518,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/score_genes_cell_cycle_scanpy",
     "viash_version" : "0.9.4",
-    "git_commit" : "6af7bfbe9495190d9560c0c75ceba46291bff910",
+    "git_commit" : "8b93dc9d62550b9a50d97df905f80d2ef9e96aa3",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
