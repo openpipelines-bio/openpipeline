@@ -473,9 +473,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping multi_star"
-LABEL org.opencontainers.image.created="2025-06-26T07:52:01Z"
+LABEL org.opencontainers.image.created="2025-07-02T09:36:39Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="69562e08b67aaf8c8b00b4a88dc2a516e351f234"
+LABEL org.opencontainers.image.revision="53d3e33fc56c82e39d4390f1ccff4a0e687071fe"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -6405,13 +6405,13 @@ def main(par, meta):
     """Main function"""
 
     # check input arguments
-    assert len(par["input_id"]) == len(
-        par["input_r1"]
-    ), "--input_r1 should have same length as --input_id"
+    assert len(par["input_id"]) == len(par["input_r1"]), (
+        "--input_r1 should have same length as --input_id"
+    )
     if par["input_r2"]:
-        assert len(par["input_id"]) == len(
-            par["input_r2"]
-        ), "--input_r2 should have same length as --input_id"
+        assert len(par["input_id"]) == len(par["input_r2"]), (
+            "--input_r2 should have same length as --input_id"
+        )
 
     # read config arguments
     with open(meta["config"], "r", encoding="utf-8") as file:
@@ -6488,9 +6488,9 @@ def main(par, meta):
         print("------------------")
         print(f"Success rate: {math.ceil(pct_succeeded * 100)}%")
 
-        assert (
-            pct_succeeded >= par["min_success_rate"]
-        ), f"Success rate should be at least {math.ceil(par['min_success_rate'] * 100)}%"
+        assert pct_succeeded >= par["min_success_rate"], (
+            f"Success rate should be at least {math.ceil(par['min_success_rate'] * 100)}%"
+        )
 
 
 if __name__ == "__main__":

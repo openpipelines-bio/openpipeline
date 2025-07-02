@@ -466,9 +466,9 @@ RUN cd /opt && git clone --depth 1 https://github.com/YosefLab/PopV.git
 
 LABEL org.opencontainers.image.authors="Matthias Beyens, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component annotate popv"
-LABEL org.opencontainers.image.created="2025-06-26T07:51:54Z"
+LABEL org.opencontainers.image.created="2025-07-02T09:36:32Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="69562e08b67aaf8c8b00b4a88dc2a516e351f234"
+LABEL org.opencontainers.image.revision="53d3e33fc56c82e39d4390f1ccff4a0e687071fe"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1423,9 +1423,9 @@ def get_var(adata: ad.AnnData, var_index: list[str]):
 
 
 def main(par, meta):
-    assert (
-        len(par["methods"]) >= 1
-    ), "Please, specify at least one method for cell typing."
+    assert len(par["methods"]) >= 1, (
+        "Please, specify at least one method for cell typing."
+    )
     logger.info("Cell typing methods: {}".format(par["methods"]))
 
     ### PREPROCESSING REFERENCE ###
@@ -1454,9 +1454,9 @@ def main(par, meta):
     # subset with var column
     if par["input_var_subset"]:
         logger.info("Subset input with .var['%s']", par["input_var_subset"])
-        assert (
-            par["input_var_subset"] in input_modality.var
-        ), f"--input_var_subset='{par['input_var_subset']}' needs to be a column in .var"
+        assert par["input_var_subset"] in input_modality.var, (
+            f"--input_var_subset='{par['input_var_subset']}' needs to be a column in .var"
+        )
         input_modality = input_modality[:, input_modality.var[par["input_var_subset"]]]
 
     ### ALIGN REFERENCE AND INPUT ###

@@ -3346,7 +3346,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.9.4",
-    "git_commit" : "69562e08b67aaf8c8b00b4a88dc2a516e351f234",
+    "git_commit" : "53d3e33fc56c82e39d4390f1ccff4a0e687071fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3651,7 +3651,7 @@ def main():
             connectivities = adata.obsp[par["obsp_connectivities"]]
         except KeyError:
             raise ValueError(
-                f"Could not find .obsp key \\\\"{par['obsp_connectivities']}\\\\" "
+                f'Could not find .obsp key "{par["obsp_connectivities"]}" '
                 "in modality {par['modality']}"
             )
 

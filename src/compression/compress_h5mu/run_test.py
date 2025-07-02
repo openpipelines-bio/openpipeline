@@ -51,9 +51,9 @@ def test_compress_h5mu(run_component, tmp_path, compression_type):
             getattr(output, attr_name), getattr(uncompressed_h5mu, attr_name)
         )
     for mod_name in uncompressed_h5mu.mod:
-        assert (
-            mod_name in output.mod
-        ), f"{mod_name} found in uncompressed file, but not in compressed output file."
+        assert mod_name in output.mod, (
+            f"{mod_name} found in uncompressed file, but not in compressed output file."
+        )
         mod_compressed = output.mod[mod_name]
         mod_uncompressed = uncompressed_h5mu.mod[mod_name]
         compare_anndata(mod_compressed, mod_uncompressed)

@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component filter delimit_fraction"
-LABEL org.opencontainers.image.created="2025-06-26T07:51:57Z"
+LABEL org.opencontainers.image.created="2025-07-02T09:36:35Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="69562e08b67aaf8c8b00b4a88dc2a516e351f234"
+LABEL org.opencontainers.image.revision="53d3e33fc56c82e39d4390f1ccff4a0e687071fe"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1284,9 +1284,9 @@ logger = setup_logger()
 logger.info("Reading modality %s from %s", par["modality"], par["input"])
 data = mu.read_h5ad(par["input"], mod=par["modality"])
 
-assert (
-    data.var_names.is_unique
-), "The var_names of the input modality must be be unique."
+assert data.var_names.is_unique, (
+    "The var_names of the input modality must be be unique."
+)
 
 logger.info("\\tUnfiltered data: %s", data)
 logger.info("\\tComputing aggregations.")

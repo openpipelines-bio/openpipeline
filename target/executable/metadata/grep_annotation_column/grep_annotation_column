@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component metadata grep_annotation_column"
-LABEL org.opencontainers.image.created="2025-06-26T07:51:54Z"
+LABEL org.opencontainers.image.created="2025-07-02T09:36:32Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="69562e08b67aaf8c8b00b4a88dc2a516e351f234"
+LABEL org.opencontainers.image.revision="53d3e33fc56c82e39d4390f1ccff4a0e687071fe"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1368,9 +1368,9 @@ def main(par):
         logger.info("Fraction statistics: \\n%s", Series(pct_matching).describe())
         pct_matching = np.where(np.isclose(pct_matching, 0, atol=1e-6), 0, pct_matching)
         pct_matching = np.where(np.isclose(pct_matching, 1, atol=1e-6), 1, pct_matching)
-        assert (
-            np.logical_and(pct_matching >= 0, pct_matching <= 1)
-        ).all(), "Fractions are not within bounds, please report this as a bug"
+        assert (np.logical_and(pct_matching >= 0, pct_matching <= 1)).all(), (
+            "Fractions are not within bounds, please report this as a bug"
+        )
         output_matrix = other_axis_attribute[par["matrix"]]
         logger.info(
             "Writing fractions to matrix '%s', column '%s'",

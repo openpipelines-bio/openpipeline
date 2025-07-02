@@ -6438,7 +6438,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star",
     "viash_version" : "0.9.4",
-    "git_commit" : "69562e08b67aaf8c8b00b4a88dc2a516e351f234",
+    "git_commit" : "53d3e33fc56c82e39d4390f1ccff4a0e687071fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -7063,13 +7063,13 @@ def main(par, meta):
     """Main function"""
 
     # check input arguments
-    assert len(par["input_id"]) == len(
-        par["input_r1"]
-    ), "--input_r1 should have same length as --input_id"
+    assert len(par["input_id"]) == len(par["input_r1"]), (
+        "--input_r1 should have same length as --input_id"
+    )
     if par["input_r2"]:
-        assert len(par["input_id"]) == len(
-            par["input_r2"]
-        ), "--input_r2 should have same length as --input_id"
+        assert len(par["input_id"]) == len(par["input_r2"]), (
+            "--input_r2 should have same length as --input_id"
+        )
 
     # read config arguments
     with open(meta["config"], "r", encoding="utf-8") as file:
@@ -7146,9 +7146,9 @@ def main(par, meta):
         print("------------------")
         print(f"Success rate: {math.ceil(pct_succeeded * 100)}%")
 
-        assert (
-            pct_succeeded >= par["min_success_rate"]
-        ), f"Success rate should be at least {math.ceil(par['min_success_rate'] * 100)}%"
+        assert pct_succeeded >= par["min_success_rate"], (
+            f"Success rate should be at least {math.ceil(par['min_success_rate'] * 100)}%"
+        )
 
 
 if __name__ == "__main__":

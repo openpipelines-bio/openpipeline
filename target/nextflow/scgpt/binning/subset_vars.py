@@ -19,13 +19,13 @@ def subset_vars(adata, subset_col):
         )
 
     if adata.var[subset_col].dtype == "boolean":
-        assert (
-            adata.var[subset_col].isna().sum() == 0
-        ), f"The .var column `{subset_col}` contains NaN values. Can not subset data."
+        assert adata.var[subset_col].isna().sum() == 0, (
+            f"The .var column `{subset_col}` contains NaN values. Can not subset data."
+        )
         adata.var[subset_col] = adata.var[subset_col].astype("bool")
 
-    assert (
-        adata.var[subset_col].dtype == "bool"
-    ), f"Expected dtype of .var column '{subset_col}' to be `bool`, but found {adata.var[subset_col].dtype}. Can not subset data."
+    assert adata.var[subset_col].dtype == "bool", (
+        f"Expected dtype of .var column '{subset_col}' to be `bool`, but found {adata.var[subset_col].dtype}. Can not subset data."
+    )
 
     return adata[:, adata.var[subset_col]].copy()

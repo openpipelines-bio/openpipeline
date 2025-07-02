@@ -3369,7 +3369,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference",
     "viash_version" : "0.9.4",
-    "git_commit" : "69562e08b67aaf8c8b00b4a88dc2a516e351f234",
+    "git_commit" : "53d3e33fc56c82e39d4390f1ccff4a0e687071fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3490,9 +3490,9 @@ def process_params(par: dict[str, Any], config) -> str:
     # check input parameters
     assert par["genome_fasta"], "Pass at least one set of inputs to --genome_fasta."
     assert par["gtf"], "Pass at least one set of inputs to --gtf."
-    assert par["reference_archive"].endswith(
-        ".gz"
-    ), "Output reference_archive must end with .tar.gz."
+    assert par["reference_archive"].endswith(".gz"), (
+        "Output reference_archive must end with .tar.gz."
+    )
 
     # make paths absolute
     for argument in config["arguments"]:

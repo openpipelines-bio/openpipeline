@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_bdrhap_reference"
-LABEL org.opencontainers.image.created="2025-06-26T07:51:56Z"
+LABEL org.opencontainers.image.created="2025-07-02T09:36:34Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="69562e08b67aaf8c8b00b4a88dc2a516e351f234"
+LABEL org.opencontainers.image.revision="53d3e33fc56c82e39d4390f1ccff4a0e687071fe"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1340,9 +1340,9 @@ def process_params(par: dict[str, Any], config) -> str:
     # check input parameters
     assert par["genome_fasta"], "Pass at least one set of inputs to --genome_fasta."
     assert par["gtf"], "Pass at least one set of inputs to --gtf."
-    assert par["reference_archive"].endswith(
-        ".gz"
-    ), "Output reference_archive must end with .tar.gz."
+    assert par["reference_archive"].endswith(".gz"), (
+        "Output reference_archive must end with .tar.gz."
+    )
 
     # make paths absolute
     for argument in config["arguments"]:

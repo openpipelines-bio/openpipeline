@@ -44,9 +44,9 @@ def test_run(run_component, random_h5mu_path, subsampled_input):
     data = mu.read_h5mu(output_file)
 
     # check whether gex was found
-    assert data.mod["rna"].var["feature_types"].unique() == [
-        "Gene Expression"
-    ], "Output X should only contain Gene Expression vars."
+    assert data.mod["rna"].var["feature_types"].unique() == ["Gene Expression"], (
+        "Output X should only contain Gene Expression vars."
+    )
 
     # check whether ab counts were found
     assert "prot" in data.mod, 'Output should contain data.mod["rna"].'

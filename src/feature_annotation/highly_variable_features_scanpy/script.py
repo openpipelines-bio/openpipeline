@@ -143,14 +143,14 @@ try:
         out.index = input_anndata.var.index
         out = out.reindex(index=data.var.index, method=None)
         out.highly_variable = out.highly_variable.fillna(False)
-        assert (
-            out.index == data.var.index
-        ).all(), "Expected output index values to be equivalent to the input index"
+        assert (out.index == data.var.index).all(), (
+            "Expected output index values to be equivalent to the input index"
+        )
     elif par["obs_batch_key"] is not None:
         out = out.reindex(index=data.var.index, method=None)
-        assert (
-            out.index == data.var.index
-        ).all(), "Expected output index values to be equivalent to the input index"
+        assert (out.index == data.var.index).all(), (
+            "Expected output index values to be equivalent to the input index"
+        )
 
 except ValueError as err:
     if str(err) == "cannot specify integer `bins` when input data contains infinity":

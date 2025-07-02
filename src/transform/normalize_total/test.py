@@ -78,9 +78,9 @@ def test_target_sum(run_component, random_h5mu_path):
     mu_input = mu.read_h5mu(input)
     rna_out = mu_output.mod["rna"]
 
-    assert np.all(
-        np.abs(rna_out.X.sum(axis=1) - 10000) < 1
-    ), "Expression should have changed"
+    assert np.all(np.abs(rna_out.X.sum(axis=1) - 10000) < 1), (
+        "Expression should have changed"
+    )
 
     # Copy over X so that the rest of the object can be compared
     mu_input["rna"].X = mu_output["rna"].X
