@@ -149,9 +149,9 @@ def test_filter_with_hvg_var_input(run_component, common_vars_data_path):
         :, common_vars.mod["rna"].var["filter_with_hvg"]
     ].var_names
 
-    assert len(hvg) != len(
-        common_vars_hvg
-    ), "Number of HVG should be different when var_input is defined"
+    assert len(hvg) != len(common_vars_hvg), (
+        "Number of HVG should be different when var_input is defined"
+    )
 
     # Assert original data is unchanged
     # Put the output data back into its original shape

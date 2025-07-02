@@ -26,9 +26,9 @@ logger = setup_logger()
 logger.info("Reading modality %s from %s", par["modality"], par["input"])
 data = mu.read_h5ad(par["input"], mod=par["modality"])
 
-assert (
-    data.var_names.is_unique
-), "The var_names of the input modality must be be unique."
+assert data.var_names.is_unique, (
+    "The var_names of the input modality must be be unique."
+)
 
 logger.info("\tUnfiltered data: %s", data)
 logger.info("\tComputing aggregations.")

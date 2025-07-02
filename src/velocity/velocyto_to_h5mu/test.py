@@ -51,6 +51,6 @@ assert list(output_data.mod.keys()) == ["rna", "rna_velocity"]
 with loompy.connect(input_loom) as ds:
     mshape = output_data.mod["rna_velocity"].shape[::-1]
     lshape = ds.shape
-    assert (
-        mshape == lshape
-    ), f"Expected mudata shape {mshape} to be the same the loom shape {lshape}"
+    assert mshape == lshape, (
+        f"Expected mudata shape {mshape} to be the same the loom shape {lshape}"
+    )

@@ -14,7 +14,7 @@ meta = {
 
 input = f"{meta['resources_dir']}/Kim2020_Lung_subset_tokenized.h5mu"
 model_file = f"{meta['resources_dir']}/source/best_model.pt"
-ft_model_file = f'{meta["resources_dir"]}/finetuned_model/best_model.pt'
+ft_model_file = f"{meta['resources_dir']}/finetuned_model/best_model.pt"
 vocab_file = f"{meta['resources_dir']}/source/vocab.json"
 model_config_file = f"{meta['resources_dir']}/source/args.json"
 input_file = mu.read(input)
@@ -57,22 +57,22 @@ def test_integration_embedding(run_component, tmp_path):
     output_adata = output_mdata.mod["rna"]
 
     # check that embedding obs is present
-    assert (
-        "X_scGPT" in output_adata.obsm.keys()
-    ), "X_scGPT is not present in anndata obsm keys"
+    assert "X_scGPT" in output_adata.obsm.keys(), (
+        "X_scGPT is not present in anndata obsm keys"
+    )
 
     # check embedding size
-    assert (
-        output_adata.obsm["X_scGPT"].shape[1] == 512
-    ), "Embedding size does not equal 512"
+    assert output_adata.obsm["X_scGPT"].shape[1] == 512, (
+        "Embedding size does not equal 512"
+    )
 
     # check embedding value range
-    assert not all(
-        np.isnan(output_adata.obsm["X_scGPT"][0])
-    ), "Embedding values are nan"
-    assert all(
-        [all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]
-    ), "Range of embedding values is outside of [-1, 1]"
+    assert not all(np.isnan(output_adata.obsm["X_scGPT"][0])), (
+        "Embedding values are nan"
+    )
+    assert all([all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]), (
+        "Range of embedding values is outside of [-1, 1]"
+    )
 
     # Run embeddings without dsbn
     output_embedding_file_without_dsbn = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
@@ -290,22 +290,22 @@ def test_finetuned_model(run_component, tmp_path):
     output_adata = output_mdata.mod["rna"]
 
     # check that embedding obs is present
-    assert (
-        "X_scGPT" in output_adata.obsm.keys()
-    ), "X_scGPT is not present in anndata obsm keys"
+    assert "X_scGPT" in output_adata.obsm.keys(), (
+        "X_scGPT is not present in anndata obsm keys"
+    )
 
     # check embedding size
-    assert (
-        output_adata.obsm["X_scGPT"].shape[1] == 512
-    ), "Embedding size does not equal 512"
+    assert output_adata.obsm["X_scGPT"].shape[1] == 512, (
+        "Embedding size does not equal 512"
+    )
 
     # check embedding value range
-    assert not all(
-        np.isnan(output_adata.obsm["X_scGPT"][0])
-    ), "Embedding values are nan"
-    assert all(
-        [all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]
-    ), "Range of embedding values is outside of [-1, 1]"
+    assert not all(np.isnan(output_adata.obsm["X_scGPT"][0])), (
+        "Embedding values are nan"
+    )
+    assert all([all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]), (
+        "Range of embedding values is outside of [-1, 1]"
+    )
 
 
 def test_finetuned_model_architecture(run_component, tmp_path):

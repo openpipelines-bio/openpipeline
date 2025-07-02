@@ -64,9 +64,9 @@ def test_regress_out(run_component, input_h5mu_path, output_h5mu_path):
     assert prot_in.shape == prot_out.shape, "Should have same shape as before"
 
     assert np.mean(rna_in.X) != np.mean(rna_out.X), "RNA expression should have changed"
-    assert np.mean(prot_in.X) == np.mean(
-        prot_out.X
-    ), "Protein expression should remain the same"
+    assert np.mean(prot_in.X) == np.mean(prot_out.X), (
+        "Protein expression should remain the same"
+    )
 
 
 def test_no_regress_out_without_obs_keys(
@@ -89,9 +89,9 @@ def test_no_regress_out_without_obs_keys(
     rna_in = mu_input.mod["rna"]
     rna_out = mu_output.mod["rna"]
 
-    assert np.mean(rna_in.X) == np.mean(
-        rna_out.X
-    ), "RNA expression should remain the same"
+    assert np.mean(rna_in.X) == np.mean(rna_out.X), (
+        "RNA expression should remain the same"
+    )
 
 
 def test_regress_out_with_layers(run_component, input_h5mu_path, output_h5mu_path):
@@ -118,9 +118,9 @@ def test_regress_out_with_layers(run_component, input_h5mu_path, output_h5mu_pat
     rna_in = mu_input.mod["rna"]
     rna_out = mu_output.mod["rna"]
 
-    assert np.mean(rna_in.layers["input"]) != np.mean(
-        rna_out.layers["output"]
-    ), "RNA expression should have changed"
+    assert np.mean(rna_in.layers["input"]) != np.mean(rna_out.layers["output"]), (
+        "RNA expression should have changed"
+    )
 
 
 if __name__ == "__main__":

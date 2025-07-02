@@ -21,18 +21,18 @@ def test_run():
     expected_uns = ["scanvi_integration_neighbors"]
 
     assert "rna" in list(input_mudata.mod.keys()), "Input should contain rna modality."
-    assert all(
-        key in list(input_mudata.mod["rna"].obsm) for key in expected_obsm
-    ), f"Input mod['rna'] obsm columns should be: {expected_obsm}, found: {input_mudata.mod['rna'].obsm.keys()}."
-    assert all(
-        key in list(input_mudata.mod["rna"].obs) for key in expected_obs
-    ), f"Input mod['rna'] obs columns should be: {expected_obs}, found: {input_mudata.mod['rna'].obs.keys()}."
-    assert all(
-        key in list(input_mudata.mod["rna"].obsp) for key in expected_obsp
-    ), f"Input mod['rna'] obsp columns should be: {expected_obsp}, found: {input_mudata.mod['rna'].obsp.keys()}."
-    assert all(
-        key in list(input_mudata.mod["rna"].uns) for key in expected_uns
-    ), f"Input mod['rna'] uns columns should be: {expected_uns}, found: {input_mudata.mod['rna'].uns.keys()}."
+    assert all(key in list(input_mudata.mod["rna"].obsm) for key in expected_obsm), (
+        f"Input mod['rna'] obsm columns should be: {expected_obsm}, found: {input_mudata.mod['rna'].obsm.keys()}."
+    )
+    assert all(key in list(input_mudata.mod["rna"].obs) for key in expected_obs), (
+        f"Input mod['rna'] obs columns should be: {expected_obs}, found: {input_mudata.mod['rna'].obs.keys()}."
+    )
+    assert all(key in list(input_mudata.mod["rna"].obsp) for key in expected_obsp), (
+        f"Input mod['rna'] obsp columns should be: {expected_obsp}, found: {input_mudata.mod['rna'].obsp.keys()}."
+    )
+    assert all(key in list(input_mudata.mod["rna"].uns) for key in expected_uns), (
+        f"Input mod['rna'] uns columns should be: {expected_uns}, found: {input_mudata.mod['rna'].uns.keys()}."
+    )
 
     assert input_mudata.mod["rna"].obs["scanvi_pred"].dtype == "category"
     assert pandas.api.types.is_float_dtype(

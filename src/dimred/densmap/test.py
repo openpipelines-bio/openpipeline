@@ -37,12 +37,12 @@ def test_densmap(run_component, random_h5mu_path):
     input_mudata = read_h5mu(input_path)
 
     # check whether densmap was found and remove for comparison
-    assert (
-        "X_densmap" in output_mudata.mod["rna"].obsm
-    ), "Check whether output was found in .obsm"
-    assert (
-        "densmap" in output_mudata.mod["rna"].uns
-    ), "Check whether output was found in .uns"
+    assert "X_densmap" in output_mudata.mod["rna"].obsm, (
+        "Check whether output was found in .obsm"
+    )
+    assert "densmap" in output_mudata.mod["rna"].uns, (
+        "Check whether output was found in .uns"
+    )
     output_mudata.mod["rna"].obsm.pop("X_densmap")
     output_mudata.mod["rna"].uns.pop("densmap")
     assert_annotation_objects_equal(output_mudata, input_mudata)
@@ -71,12 +71,12 @@ def test_densmap_custom_obsm_output(run_component, random_h5mu_path):
     input_mudata = read_h5mu(input_path)
 
     # check whether tsne was found and remove for comparison
-    assert (
-        "X_custom_densmap" in output_mudata.mod["rna"].obsm
-    ), "Check whether output was found in .obsm"
-    assert (
-        "densmap" in output_mudata.mod["rna"].uns
-    ), "Check whether output was found in .uns"
+    assert "X_custom_densmap" in output_mudata.mod["rna"].obsm, (
+        "Check whether output was found in .obsm"
+    )
+    assert "densmap" in output_mudata.mod["rna"].uns, (
+        "Check whether output was found in .uns"
+    )
     output_mudata.mod["rna"].obsm.pop("X_custom_densmap")
     output_mudata.mod["rna"].uns.pop("densmap")
     assert_annotation_objects_equal(output_mudata, input_mudata)

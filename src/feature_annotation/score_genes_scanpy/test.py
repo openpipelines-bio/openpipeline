@@ -47,9 +47,9 @@ def test_cell_scoring(run_component, tmp_path):
     # check output
     expected_rna_obs_cols = ["cell_cycle_score"]
     for col in expected_rna_obs_cols:
-        assert (
-            col in output.mod["rna"].obs.columns
-        ), f"could not find columns .mod['rna'].obs['{col}']"
+        assert col in output.mod["rna"].obs.columns, (
+            f"could not find columns .mod['rna'].obs['{col}']"
+        )
 
 
 def test_cell_scoring_with_alternative_args(run_component, tmp_path, gene_list_file):
@@ -79,9 +79,9 @@ def test_cell_scoring_with_alternative_args(run_component, tmp_path, gene_list_f
     # check output
     expected_rna_obs_cols = ["cell_cycle_score"]
     for col in expected_rna_obs_cols:
-        assert (
-            col in output.mod["rna"].obs.columns
-        ), f"could not find columns mdata.mod['rna'].obs['{col}']"
+        assert col in output.mod["rna"].obs.columns, (
+            f"could not find columns mdata.mod['rna'].obs['{col}']"
+        )
 
 
 def test_cell_scoring_with_mixed_args(run_component, tmp_path, gene_list_file):
@@ -113,9 +113,9 @@ def test_cell_scoring_with_mixed_args(run_component, tmp_path, gene_list_file):
     # check output
     expected_rna_obs_cols = ["cell_cycle_score"]
     for col in expected_rna_obs_cols:
-        assert (
-            col in output.mod["rna"].obs.columns
-        ), f"could not find columns mdata.mod['rna'].obs['{col}']"
+        assert col in output.mod["rna"].obs.columns, (
+            f"could not find columns mdata.mod['rna'].obs['{col}']"
+        )
 
 
 def test_fail(run_component, tmp_path):
@@ -141,9 +141,9 @@ def test_fail(run_component, tmp_path):
 
     assert e_info.value.returncode != 0
     expected_error = r"The follow genes are missing from the input dataset: {\'a_gene_name_that_does_not_exist\'}"
-    assert (
-        re.search(expected_error, e_info.value.stdout.decode("utf-8")) is not None
-    ), f"expected error message not found in {e_info.value.stdout.decode('utf-8')}"
+    assert re.search(expected_error, e_info.value.stdout.decode("utf-8")) is not None, (
+        f"expected error message not found in {e_info.value.stdout.decode('utf-8')}"
+    )
 
     assert not output_file.exists(), f"output file should not exist: {output_file}"
 

@@ -46,12 +46,12 @@ def test_filter_nothing(run_component, tmp_path):
 
     assert new_obs == 100, "Output should only contain 100 observations"
     assert new_vars == orig_vars, "No RNA vars should have been filtered"
-    assert (
-        mu_out.mod["prot"].n_obs == orig_prot_obs
-    ), "No prot obs should have been filtered"
-    assert (
-        mu_out.mod["prot"].n_vars == orig_prot_vars
-    ), "No prot vars should have been filtered"
+    assert mu_out.mod["prot"].n_obs == orig_prot_obs, (
+        "No prot obs should have been filtered"
+    )
+    assert mu_out.mod["prot"].n_vars == orig_prot_vars, (
+        "No prot vars should have been filtered"
+    )
     assert list(mu_out.mod["rna"].var["feature_types"].cat.categories) == [
         "Gene Expression"
     ], "Feature types of RNA modality should be Gene Expression"

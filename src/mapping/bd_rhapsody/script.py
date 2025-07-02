@@ -117,9 +117,9 @@ def strip_margin(text: str) -> str:
 
 def process_params(par: dict[str, Any], config, temp_dir: str) -> str:
     # check input parameters
-    assert (
-        par["reads"] or par["reads_atac"]
-    ), "Pass at least one set of inputs to --reads or --reads_atac."
+    assert par["reads"] or par["reads_atac"], (
+        "Pass at least one set of inputs to --reads or --reads_atac."
+    )
 
     # output to temp dir if output_dir was not passed
     if not par["output_dir"]:
