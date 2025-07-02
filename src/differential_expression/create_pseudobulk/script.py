@@ -35,37 +35,44 @@ meta = {"resources_dir": "src/utils"}
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+
 logger = setup_logger()
 
 
 def aggregate_and_filter(
-        adata,
-        grouping_value,
-        group_key,
-        sample_key,
-        obs_to_keep,
-        aggregation_method="sum",
-        num_cells_per_donor=30,
-        pseudo_replicates=1):
-
+    adata,
+    grouping_value,
+    group_key,
+    sample_key,
+    obs_to_keep,
+    aggregation_method="sum",
+    num_cells_per_donor=30,
+    pseudo_replicates=1,
+):
     # subset adata to the given grouping (cell/cluster) value
     adata_cell_pop = adata[adata.obs[group_key] == grouping_value]
 
     pb_aggregated_data = []
-    for i, pbs in enumerate(pb_samples := adata_cell_pop.obs[sample_key].cat.categories):
-        logger.info(f"Processing pseudobulk sample {i+1} out of {len(pb_samples)}...")
+    for i, pbs in enumerate(
+        pb_samples := adata_cell_pop.obs[sample_key].cat.categories
+    ):
+        logger.info(f"Processing pseudobulk sample {i + 1} out of {len(pb_samples)}...")
 
         pb_adata = adata_cell_pop[adata_cell_pop.obs[sample_key] == pbs]
 
         # check which pseudobulk sample to keep according to the number of cells
         if pb_adata.shape[0] < num_cells_per_donor:
-            logging.info(f"Number of cells for {pbs} is less than {num_cells_per_donor}, skipping pseudobulk aggregation...")
+            logging.info(
+                f"Number of cells for {pbs} is less than {num_cells_per_donor}, skipping pseudobulk aggregation..."
+            )
             continue
 
         # Create pseudo-replicates
-        logging.info(f"Creating {pseudo_replicates} pseudo-replicates for pseudobulk sample {pbs}...")
+        logging.info(
+            f"Creating {pseudo_replicates} pseudo-replicates for pseudobulk sample {pbs}..."
+        )
         indices = list(pb_adata.obs_names)
-        np.random.seed(par["random_seed"]) # optional seed for reproducibility
+        np.random.seed(par["random_seed"])  # optional seed for reproducibility
         random.shuffle(indices)
         indices = np.array_split(np.array(indices), pseudo_replicates)
 
@@ -74,13 +81,11 @@ def aggregate_and_filter(
             # Aggregate gene expression values
             if aggregation_method == "sum":
                 pb_adata_rep = ad.AnnData(
-                    X=pb_adata[rep_idx].X.sum(axis=0),
-                    var=pb_adata[rep_idx].var[[]]
+                    X=pb_adata[rep_idx].X.sum(axis=0), var=pb_adata[rep_idx].var[[]]
                 )
             elif aggregation_method == "mean":
                 pb_adata_rep = ad.AnnData(
-                    X=pb_adata[rep_idx].X.mean(axis=0),
-                    var=pb_adata[rep_idx].var[[]]
+                    X=pb_adata[rep_idx].X.mean(axis=0), var=pb_adata[rep_idx].var[[]]
                 )
 
             # Store metadata
@@ -97,7 +102,6 @@ def aggregate_and_filter(
 
 
 def is_normalized(layer):
-
     if sp.issparse(layer):
         row_sums = np.array(layer.sum(axis=1)).flatten()
     else:
@@ -107,7 +111,6 @@ def is_normalized(layer):
 
 
 def main():
-
     # Read in data
     logger.info(f"Reading input data {par['input']}...")
     adata = mu.read_h5ad(par["input"], mod=par["modality"]).copy()
@@ -123,15 +126,26 @@ def main():
     for col in required_categorical_obs:
         if col not in adata.obs.columns:
             raise ValueError(f"Required column '{col}' not found in .obs.")
-        adata.obs[col] = adata.obs[col].astype(str).replace(" ", "_").replace("+", "").astype("category")
+        adata.obs[col] = (
+            adata.obs[col]
+            .astype(str)
+            .replace(" ", "_")
+            .replace("+", "")
+            .astype("category")
+        )
 
     # Create pseudobulk groups
     logger.info("Creating pseudobulk groups...")
     adata.obs[par["obs_pseudo_bulk_samples"]] = [
-        "_".join(values) for values in zip(*[adata.obs[col] for col in par["obs_sample_conditions"]])
+        "_".join(values)
+        for values in zip(*[adata.obs[col] for col in par["obs_sample_conditions"]])
     ]
-    adata.obs[par["obs_pseudo_bulk_samples"]] = adata.obs[par["obs_pseudo_bulk_samples"]].astype("category")
-    logger.info(f"Pseudobulk groups created: {adata.obs[par['obs_pseudo_bulk_samples']].unique().tolist()}")
+    adata.obs[par["obs_pseudo_bulk_samples"]] = adata.obs[
+        par["obs_pseudo_bulk_samples"]
+    ].astype("category")
+    logger.info(
+        f"Pseudobulk groups created: {adata.obs[par['obs_pseudo_bulk_samples']].unique().tolist()}"
+    )
 
     # Aggregate pseudobulk data per cell group
     pb_datasets = []
@@ -147,14 +161,16 @@ def main():
             par["obs_sample_conditions"],
             aggregation_method=par["aggregation_method"],
             num_cells_per_donor=par["min_num_cells_per_donor"],
-            pseudo_replicates=par["pseudo_replicates"]
+            pseudo_replicates=par["pseudo_replicates"],
         )
         pb_datasets.append(pb_data)
 
     # Combine pseudobulk datasets
     logger.info("Combining pseudobulk datasets...")
     adata_pb = ad.concat(pb_datasets)
-    logger.info(f"Final dataset: {adata_pb.n_obs} pseudobulk samples, {adata_pb.n_vars} genes")
+    logger.info(
+        f"Final dataset: {adata_pb.n_obs} pseudobulk samples, {adata_pb.n_vars} genes"
+    )
     logger.info("Writing output data...")
     mdata_pb = mu.MuData({"rna": adata_pb})
     mdata_pb.write_h5mu(par["output"])
