@@ -7,27 +7,28 @@ import sys
 import scipy.sparse as sp
 
 ## VIASH START
-# adata = mu.read_h5ad("resources_test/annotation_test_data/TS_Blood_filtered.h5mu", mod="rna")
-# np.random.seed(42)  # Set seed for reproducibility
-# n_cells = adata.n_obs
-# treatment = np.random.choice(['ctrl', 'stim'], size=n_cells, p=[0.5, 0.5])
-# disease = np.random.choice(['healthy', 'diseased'], size=n_cells, p=[0.5, 0.5])
-# adata.obs['treatment'] = treatment
-# adata.obs['disease'] = disease
-# mdata = mu.MuData({"rna": adata})
-# mdata.write_h5mu("resources_test/annotation_test_data/TS_Blood_filtered_annotated.h5mu")
+adata = mu.read_h5ad("resources_test/annotation_test_data/TS_Blood_filtered.h5mu", mod="rna")
+np.random.seed(0)
+n_cells = adata.n_obs
+treatment = np.random.choice(['ctrl', 'stim'], size=n_cells, p=[0.5, 0.5])
+disease = np.random.choice(['healthy', 'diseased'], size=n_cells, p=[0.5, 0.5])
+adata.obs['treatment'] = treatment
+adata.obs['disease'] = disease
+mdata = mu.MuData({"rna": adata})
+mdata.write_h5mu("resources_test/annotation_test_data/TS_Blood_filtered_annotated.h5mu")
 
 par = {
     "input": "resources_test/annotation_test_data/TS_Blood_filtered_annotated.h5mu",
     "modality": "rna",
     "input_layer": None,
     "obs_grouping": "cell_type",
-    "obs_sample_conditions": ["donor_id", "treatment", "disease"],
+    "obs_sample_conditions": ["treatment", "donor_id", "disease"],
+    # "obs_sample_conditions": ["donor_id", "treatment", "disease"],
     "obs_pseudo_bulk_samples": "pb_sample",
     "aggregation_method": "sum",
-    "min_num_cells_per_donor": 5,
-    "pseudo_replicates": 2,
-    "random_seed": 0,
+    "min_num_cells_per_sample": 5,
+    "pseudo_replicates": 1,
+    "random_state": 0,
     "output": "resources_test/annotation_test_data/TS_Blood_filtered_annotated_pseudobulk.h5mu",
 }
 meta = {"resources_dir": "src/utils"}
@@ -72,7 +73,7 @@ def aggregate_and_filter(
             f"Creating {pseudo_replicates} pseudo-replicates for pseudobulk sample {pbs}..."
         )
         indices = list(pb_adata.obs_names)
-        np.random.seed(par["random_seed"])  # optional seed for reproducibility
+        np.random.seed(par["random_state"])  # optional seed for reproducibility
         random.shuffle(indices)
         indices = np.array_split(np.array(indices), pseudo_replicates)
 
@@ -160,7 +161,7 @@ def main():
             par["obs_pseudo_bulk_samples"],
             par["obs_sample_conditions"],
             aggregation_method=par["aggregation_method"],
-            num_cells_per_donor=par["min_num_cells_per_donor"],
+            num_cells_per_donor=par["min_num_cells_per_sample"],
             pseudo_replicates=par["pseudo_replicates"],
         )
         pb_datasets.append(pb_data)
@@ -173,7 +174,7 @@ def main():
     )
     logger.info("Writing output data...")
     mdata_pb = mu.MuData({"rna": adata_pb})
-    mdata_pb.write_h5mu(par["output"])
+    mdata_pb.write_h5mu(par["output"], compression=par["output_compression"])
 
 
 if __name__ == "__main__":
