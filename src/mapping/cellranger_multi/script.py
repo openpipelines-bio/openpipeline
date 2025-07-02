@@ -184,9 +184,9 @@ HELPER_INPUT = {
 
 def infer_library_id_from_path(input_path: str) -> str:
     match = re.match(fastq_regex, input_path)
-    assert (
-        match is not None
-    ), f"File name of '{input_path}' should match regex {fastq_regex}."
+    assert match is not None, (
+        f"File name of '{input_path}' should match regex {fastq_regex}."
+    )
     return match.group(1)
 
 
@@ -209,9 +209,9 @@ def transform_helper_inputs(par: dict[str, Any]) -> dict[str, Any]:
                 helper_input["library_id"].append(library_id)
                 helper_input["library_type"].append(library_type)
 
-    assert len(helper_input["library_id"]) == len(
-        set(helper_input["library_id"])
-    ), "File names passed to feature type-specific inputs must be unique"
+    assert len(helper_input["library_id"]) == len(set(helper_input["library_id"])), (
+        "File names passed to feature type-specific inputs must be unique"
+    )
 
     return helper_input
 
@@ -265,9 +265,9 @@ def resolve_input_directories_to_fastq_paths(input_paths: list[str]) -> list[Pat
 
     # check input fastq files
     for input_path in input_paths:
-        assert (
-            re.match(fastq_regex, input_path.name) is not None
-        ), f"File name of --input '{input_path}' should match regex {fastq_regex}."
+        assert re.match(fastq_regex, input_path.name) is not None, (
+            f"File name of --input '{input_path}' should match regex {fastq_regex}."
+        )
 
     return input_paths
 
@@ -335,12 +335,12 @@ def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> st
 
 def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
     if par["input"]:
-        assert (
-            len(par["library_type"]) > 0
-        ), "--library_type must be defined when passing input to --input"
-        assert (
-            len(par["library_id"]) > 0
-        ), "--library_id must be defined when passing input to --input"
+        assert len(par["library_type"]) > 0, (
+            "--library_type must be defined when passing input to --input"
+        )
+        assert len(par["library_id"]) > 0, (
+            "--library_id must be defined when passing input to --input"
+        )
 
         # if par["input"] is a directory, look for fastq files
         par["input"] = resolve_input_directories_to_fastq_paths(par["input"])
@@ -350,9 +350,9 @@ def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
     for key in ["input", "library_id", "library_type"]:
         par[key] = (par[key] if par[key] else []) + helper_input[key]
 
-        assert (
-            len(par[key]) > 0
-        ), f"Either --{key} or feature type-specific input (e.g. --gex_input, --abc_input, ...) must be defined"
+        assert len(par[key]) > 0, (
+            f"Either --{key} or feature type-specific input (e.g. --gex_input, --abc_input, ...) must be defined"
+        )
 
     # check lengths of libraries metadata
     library_dict = subset_dict(par, LIBRARY_PARAMS)

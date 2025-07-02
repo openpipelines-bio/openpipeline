@@ -44,12 +44,12 @@ def test_tsne(run_component, random_h5mu_path):
     input_mudata = read_h5mu(input_path)
 
     # check whether tsne was found and remove for comparison
-    assert (
-        "X_tsne" in output_mudata.mod["rna"].obsm
-    ), "Check whether output was found in .obsm"
-    assert (
-        "tsne" in output_mudata.mod["rna"].uns
-    ), "Check whether output was found in .uns"
+    assert "X_tsne" in output_mudata.mod["rna"].obsm, (
+        "Check whether output was found in .obsm"
+    )
+    assert "tsne" in output_mudata.mod["rna"].uns, (
+        "Check whether output was found in .uns"
+    )
     output_mudata.mod["rna"].obsm.pop("X_tsne")
     output_mudata.mod["rna"].uns.pop("tsne")
     assert_annotation_objects_equal(output_mudata, input_mudata)
@@ -83,12 +83,12 @@ def test_tsne_custom_rep_obsm_output(run_component, random_h5mu_path):
     assert output_path.is_file(), "No output was created."
     output_mudata = read_h5mu(output_path)
     # check whether tsne was found and remove for comparison
-    assert (
-        "X_custom_tsne" in output_mudata.mod["rna"].obsm
-    ), "Check whether output was found in .obsm"
-    assert (
-        "tsne" in output_mudata.mod["rna"].uns
-    ), "Check whether output was found in .uns"
+    assert "X_custom_tsne" in output_mudata.mod["rna"].obsm, (
+        "Check whether output was found in .obsm"
+    )
+    assert "tsne" in output_mudata.mod["rna"].uns, (
+        "Check whether output was found in .uns"
+    )
     output_mudata.mod["rna"].obsm.pop("X_custom_tsne")
     output_mudata.mod["rna"].uns.pop("tsne")
     assert_annotation_objects_equal(output_mudata, input_mudata_custom)

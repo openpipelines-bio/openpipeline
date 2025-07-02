@@ -20,16 +20,24 @@ def test_run():
     # assert list(input_mudata.var.columns) == expected_var, f"Input var columns should be: {expected_var}."
     assert all(
         key in list(input_mudata.mod["rna"].var.columns) for key in expected_var
-    ), f"Input mod['rna'] var columns should be: {expected_var}, found: {input_mudata.mod["rna"].var.keys()}."
+    ), (
+        f"Input mod['rna'] var columns should be: {expected_var}, found: {input_mudata.mod['rna'].var.keys()}."
+    )
     assert all(
         key in list(input_mudata.mod["rna"].obs.columns) for key in expected_obs
-    ), f"Input mod['rna'] obs columns should be: {expected_obs}, found: {input_mudata.mod["rna"].obs.keys()}."
+    ), (
+        f"Input mod['rna'] obs columns should be: {expected_obs}, found: {input_mudata.mod['rna'].obs.keys()}."
+    )
     assert all(
         key in list(input_mudata.mod["prot"].var.columns) for key in expected_var
-    ), f"Input mod['prot'] var columns should be: {expected_var}, found: {input_mudata.mod["prot"].var.keys()}."
+    ), (
+        f"Input mod['prot'] var columns should be: {expected_var}, found: {input_mudata.mod['prot'].var.keys()}."
+    )
     assert all(
         key in list(input_mudata.mod["prot"].obs.columns) for key in expected_obs
-    ), f"Input mod ['prot'] obs columns should be: {expected_obs}, found: {input_mudata.mod["prot"].obs.keys()}."
+    ), (
+        f"Input mod ['prot'] obs columns should be: {expected_obs}, found: {input_mudata.mod['prot'].obs.keys()}."
+    )
     assert np.array_equal(
         input_mudata.mod["rna"].var["feature_type"].unique(), ["Gene Expression"]
     ), "Output X should only contain Gene Expression vars."

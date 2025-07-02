@@ -51,9 +51,9 @@ def process_params(par: dict[str, Any], config) -> str:
     # check input parameters
     assert par["genome_fasta"], "Pass at least one set of inputs to --genome_fasta."
     assert par["gtf"], "Pass at least one set of inputs to --gtf."
-    assert par["reference_archive"].endswith(
-        ".gz"
-    ), "Output reference_archive must end with .tar.gz."
+    assert par["reference_archive"].endswith(".gz"), (
+        "Output reference_archive must end with .tar.gz."
+    )
 
     # make paths absolute
     for argument in config["arguments"]:

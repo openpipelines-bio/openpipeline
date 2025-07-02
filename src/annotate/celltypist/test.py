@@ -54,18 +54,18 @@ def test_simple_execution(run_component, random_h5mu_path):
     ), "Required keys not found in .obs"
 
     predictions = output_mudata.mod["rna"].obs["celltypist_pred"]
-    assert (
-        predictions.dtype == "category"
-    ), "Calculated predictions should be category dtype"
+    assert predictions.dtype == "category", (
+        "Calculated predictions should be category dtype"
+    )
     assert not all(predictions.isna()), "Not all predictions should be NA"
 
     probabilities = output_mudata.mod["rna"].obs["celltypist_probability"]
-    assert (
-        probabilities.dtype == "float"
-    ), "Calculated probabilities should be float dtype"
-    assert all(
-        0 <= value <= 1 for value in probabilities
-    ), ".obs at celltypist_probability has values outside the range [0, 1]"
+    assert probabilities.dtype == "float", (
+        "Calculated probabilities should be float dtype"
+    )
+    assert all(0 <= value <= 1 for value in probabilities), (
+        ".obs at celltypist_probability has values outside the range [0, 1]"
+    )
 
 
 def test_set_params(run_component, random_h5mu_path):
@@ -115,9 +115,9 @@ def test_set_params(run_component, random_h5mu_path):
     ), "Required keys not found in .obs"
 
     obs_values = output_mudata.mod["rna"].obs["celltypist_probability"]
-    assert all(
-        0 <= value <= 1 for value in obs_values
-    ), ".obs at celltypist_probability has values outside the range [0, 1]"
+    assert all(0 <= value <= 1 for value in obs_values), (
+        ".obs at celltypist_probability has values outside the range [0, 1]"
+    )
 
 
 def test_with_model(run_component, random_h5mu_path):
@@ -145,18 +145,18 @@ def test_with_model(run_component, random_h5mu_path):
     ), "Required keys not found in .obs"
 
     predictions = output_mudata.mod["rna"].obs["celltypist_pred"]
-    assert (
-        predictions.dtype == "category"
-    ), "Calculated predictions should be category dtype"
+    assert predictions.dtype == "category", (
+        "Calculated predictions should be category dtype"
+    )
     assert not all(predictions.isna()), "Not all predictions should be NA"
 
     probabilities = output_mudata.mod["rna"].obs["celltypist_probability"]
-    assert (
-        probabilities.dtype == "float"
-    ), "Calculated probabilities should be float dtype"
-    assert all(
-        0 <= value <= 1 for value in probabilities
-    ), ".obs at celltypist_probability has values outside the range [0, 1]"
+    assert probabilities.dtype == "float", (
+        "Calculated probabilities should be float dtype"
+    )
+    assert all(0 <= value <= 1 for value in probabilities), (
+        ".obs at celltypist_probability has values outside the range [0, 1]"
+    )
 
 
 def test_fail_invalid_input_expression(run_component, random_h5mu_path):

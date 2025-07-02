@@ -506,9 +506,9 @@ def test_cellranger_multi_create_output_on_fail(run_component, random_path):
     with pytest.raises(subprocess.CalledProcessError):
         run_component(args)
 
-    assert (
-        outputpath / "cellranger_multi.log"
-    ).is_file(), "Should have created log file."
+    assert (outputpath / "cellranger_multi.log").is_file(), (
+        "Should have created log file."
+    )
 
 
 def test_cellranger_multi_beam_data(run_component, random_path):
