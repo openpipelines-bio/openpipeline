@@ -19,8 +19,8 @@ def cross_check_genes(
         List of overlapping genes
     """
     common_ens_ids = list(set(reference_genes).intersection(set(query_genes)))
-    assert (
-        len(common_ens_ids) >= min_gene_overlap
-    ), f"The intersection of genes between the query and reference dataset is too small, expected at least {min_gene_overlap}."
+    assert len(common_ens_ids) >= min_gene_overlap, (
+        f"The intersection of genes between the query and reference dataset is too small, expected at least {min_gene_overlap}."
+    )
 
     return common_ens_ids

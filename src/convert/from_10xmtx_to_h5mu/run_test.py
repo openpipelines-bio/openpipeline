@@ -36,17 +36,17 @@ def test_run(run_component, random_h5mu_path):
     data = read_h5mu(output)
 
     # check whether gex was found
-    assert data.mod["rna"].var["feature_types"].unique() == [
-        "Gene Expression"
-    ], "Output X should only contain Gene Expression vars."
+    assert data.mod["rna"].var["feature_types"].unique() == ["Gene Expression"], (
+        "Output X should only contain Gene Expression vars."
+    )
 
     # check whether ab counts were found
     assert "prot" in data.mod, 'Output should contain data.mod["rna"].'
 
     # check whether gene was found
-    assert (
-        "CD3" in data.mod["prot"].var_names
-    ), 'Output should contain antibody column "CD3".'
+    assert "CD3" in data.mod["prot"].var_names, (
+        'Output should contain antibody column "CD3".'
+    )
 
 
 if __name__ == "__main__":

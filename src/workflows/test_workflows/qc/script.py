@@ -18,12 +18,12 @@ def test_run():
     input_mudata = read_h5mu(par["og_input"])
     output_mudata = read_h5mu(par["input"])
 
-    assert (
-        input_mudata.n_mod == output_mudata.n_mod
-    ), "Number of modalities should be the same"
-    assert (
-        input_mudata.mod.keys() == output_mudata.mod.keys()
-    ), "Modalities should be the same"
+    assert input_mudata.n_mod == output_mudata.n_mod, (
+        "Number of modalities should be the same"
+    )
+    assert input_mudata.mod.keys() == output_mudata.mod.keys(), (
+        "Modalities should be the same"
+    )
     assert list(output_mudata.mod.keys()) == [
         "rna",
         "atac",

@@ -58,9 +58,9 @@ def test_simple_execution(run_component, random_h5mu_path):
     assert list(output_mudata.mod["rna"].obs.keys()) == ["onclass_pred", "onclass_prob"]
 
     obs_values = output_mudata.mod["rna"].obs["onclass_prob"]
-    assert all(
-        0 <= value <= 1 for value in obs_values
-    ), ".obs at cell_ontology_class_prob has values outside the range [0, 1]"
+    assert all(0 <= value <= 1 for value in obs_values), (
+        ".obs at cell_ontology_class_prob has values outside the range [0, 1]"
+    )
 
 
 def test_custom_obs(run_component, random_h5mu_path):
@@ -103,9 +103,9 @@ def test_custom_obs(run_component, random_h5mu_path):
     assert set(output_mudata.mod["rna"].obs.keys()) == {"dummy_pred_1", "dummy_prob_1"}
 
     obs_values = output_mudata.mod["rna"].obs["dummy_prob_1"]
-    assert all(
-        0 <= value <= 1 for value in obs_values
-    ), ".obs at dummy_prob_1 has values outside the range [0, 1]"
+    assert all(0 <= value <= 1 for value in obs_values), (
+        ".obs at dummy_prob_1 has values outside the range [0, 1]"
+    )
 
 
 def test_no_model_no_reference_error(run_component, random_h5mu_path):
@@ -170,9 +170,9 @@ def test_pretrained_model(run_component, random_h5mu_path):
     assert list(output_mudata.mod["rna"].obs.keys()) == ["onclass_pred", "onclass_prob"]
 
     obs_values = output_mudata.mod["rna"].obs["onclass_prob"]
-    assert all(
-        0 <= value <= 1 for value in obs_values
-    ), ".obs at cell_ontology_class_prob has values outside the range [0, 1]"
+    assert all(0 <= value <= 1 for value in obs_values), (
+        ".obs at cell_ontology_class_prob has values outside the range [0, 1]"
+    )
 
 
 if __name__ == "__main__":

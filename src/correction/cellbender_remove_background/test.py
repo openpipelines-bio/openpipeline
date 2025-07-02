@@ -37,9 +37,9 @@ assert path.exists(file_output), "No output was created."
 data = read_h5mu(file_output)
 
 # check whether gex was found
-assert data.mod["rna"].var["feature_types"].unique() == [
-    "Gene Expression"
-], "Output X should only contain Gene Expression vars."
+assert data.mod["rna"].var["feature_types"].unique() == ["Gene Expression"], (
+    "Output X should only contain Gene Expression vars."
+)
 
 # check whether ab counts were found
 assert "prot" in data.mod, 'Output should contain data.mod["rna"].'

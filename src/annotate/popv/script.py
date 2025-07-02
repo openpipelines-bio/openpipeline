@@ -87,9 +87,9 @@ def get_var(adata: ad.AnnData, var_index: list[str]):
 
 
 def main(par, meta):
-    assert (
-        len(par["methods"]) >= 1
-    ), "Please, specify at least one method for cell typing."
+    assert len(par["methods"]) >= 1, (
+        "Please, specify at least one method for cell typing."
+    )
     logger.info("Cell typing methods: {}".format(par["methods"]))
 
     ### PREPROCESSING REFERENCE ###
@@ -118,9 +118,9 @@ def main(par, meta):
     # subset with var column
     if par["input_var_subset"]:
         logger.info("Subset input with .var['%s']", par["input_var_subset"])
-        assert (
-            par["input_var_subset"] in input_modality.var
-        ), f"--input_var_subset='{par['input_var_subset']}' needs to be a column in .var"
+        assert par["input_var_subset"] in input_modality.var, (
+            f"--input_var_subset='{par['input_var_subset']}' needs to be a column in .var"
+        )
         input_modality = input_modality[:, input_modality.var[par["input_var_subset"]]]
 
     ### ALIGN REFERENCE AND INPUT ###

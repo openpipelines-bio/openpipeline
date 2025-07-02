@@ -39,9 +39,9 @@ def test_binning(run_component, tmp_path):
     output_adata = output_mdata.mod["rna"]
 
     # Check presence of binning layers
-    assert {"bin_edges", "binned_counts"}.issubset(
-        output_adata.obsm.keys()
-    ), "Binning obsm fields were not added."
+    assert {"bin_edges", "binned_counts"}.issubset(output_adata.obsm.keys()), (
+        "Binning obsm fields were not added."
+    )
 
     # Check bin edges
     bin_edges = output_adata.obsm["bin_edges"]

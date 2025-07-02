@@ -46,12 +46,12 @@ def test_label_transfer(run_component, random_h5mu_path):
 
     output_data = mu.read_h5mu(output)
 
-    assert (
-        "cell_type_pred" in output_data.mod["rna"].obs
-    ), f"Predictions cell_type_pred is missing from output\noutput: {output_data.mod['rna'].obs}"
-    assert (
-        "cell_type_probability" in output_data.mod["rna"].obs
-    ), f"Uncertainties cell_type_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
+    assert "cell_type_pred" in output_data.mod["rna"].obs, (
+        f"Predictions cell_type_pred is missing from output\noutput: {output_data.mod['rna'].obs}"
+    )
+    assert "cell_type_probability" in output_data.mod["rna"].obs, (
+        f"Uncertainties cell_type_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
+    )
 
 
 @pytest.mark.parametrize("weights", ["uniform", "distance", "gaussian"])
@@ -85,12 +85,12 @@ def test_label_transfer_prediction_columns(run_component, weights, random_h5mu_p
 
     output_data = mu.read_h5mu(output)
 
-    assert (
-        "test_prediction" in output_data.mod["rna"].obs
-    ), f"Predictions test_prediction is missing from output\noutput: {output_data.mod['rna'].obs}"
-    assert (
-        "test_probability" in output_data.mod["rna"].obs
-    ), f"Uncertainties test_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
+    assert "test_prediction" in output_data.mod["rna"].obs, (
+        f"Predictions test_prediction is missing from output\noutput: {output_data.mod['rna'].obs}"
+    )
+    assert "test_probability" in output_data.mod["rna"].obs, (
+        f"Uncertainties test_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
+    )
 
 
 def test_label_transfer_prediction_precomputed_neighbor_graph(
@@ -142,12 +142,12 @@ def test_label_transfer_prediction_precomputed_neighbor_graph(
 
     output_data = mu.read_h5mu(output)
 
-    assert (
-        "test_prediction" in output_data.mod["rna"].obs
-    ), f"Predictions test_prediction is missing from output\noutput: {output_data.mod['rna'].obs}"
-    assert (
-        "test_probability" in output_data.mod["rna"].obs
-    ), f"Uncertainties test_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
+    assert "test_prediction" in output_data.mod["rna"].obs, (
+        f"Predictions test_prediction is missing from output\noutput: {output_data.mod['rna'].obs}"
+    )
+    assert "test_probability" in output_data.mod["rna"].obs, (
+        f"Uncertainties test_probability is missing from output\noutput: {output_data.mod['rna'].obs}"
+    )
 
 
 def test_raises_distance_matrix_dimensions(run_component, random_h5mu_path):

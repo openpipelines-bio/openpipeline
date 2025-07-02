@@ -247,7 +247,7 @@ def main():
             connectivities = adata.obsp[par["obsp_connectivities"]]
         except KeyError:
             raise ValueError(
-                f"Could not find .obsp key \"{par['obsp_connectivities']}\" "
+                f'Could not find .obsp key "{par["obsp_connectivities"]}" '
                 "in modality {par['modality']}"
             )
 
