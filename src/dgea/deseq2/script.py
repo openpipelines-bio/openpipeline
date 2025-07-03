@@ -2,6 +2,7 @@ import scanpy as sc
 import mudata as mu
 import pandas as pd
 import numpy as np
+import scipy.sparse as sp
 from pydeseq2.dds import DeseqDataSet
 from pydeseq2.ds import DeseqStats
 
@@ -9,6 +10,7 @@ from pydeseq2.ds import DeseqStats
 par = {
     "input": "pseudobulk_samples.h5mu",
     "output": "deseq2_results.csv",
+    "input_layer": None,
     "design_factors": ["disease", "treatment"],
     "contrast_column": "treatment",
     "contrast_baseline": "ctrl",
@@ -20,6 +22,15 @@ par = {
     "var_gene_name" : "feature_name",
 }
 ## VIASH END
+
+def is_normalized(layer):
+    if sp.issparse(layer):
+        row_sums = np.array(layer.sum(axis=1)).flatten()
+    else:
+        row_sums = layer.sum(axis=1)
+
+    return np.allclose(row_sums, 1)
+
 
 import sys
 sys.path.append(meta["resources_dir"])
@@ -45,6 +56,15 @@ if missing_columns:
 
 # Prepare counts matrix
 logger.info("Preparing counts matrix for DESeq2")
+
+
+# Use specified layer if provided
+if par["input_layer"]:
+    mod.X = mod.layers[par["input_layer"]]
+
+if is_normalized(mod.X):
+    raise ValueError("Input layer must contain raw counts.")
+
 counts = pd.DataFrame(
     mod.X, 
     columns=mod.var_names,
