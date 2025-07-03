@@ -19,9 +19,7 @@ par = {
     "filter_gene_patterns": ["MIR\\d+", "AL\\d+", "LINC\\d+", "AC\\d+", "AP\\d+"],
     "var_gene_name" : "feature_name",
 }
-
-meta = {"resources_dir": "src/utils"}
-### VIASH END
+## VIASH END
 
 import sys
 sys.path.append(meta["resources_dir"])
