@@ -3385,7 +3385,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/grep_annotation_column",
     "viash_version" : "0.9.4",
-    "git_commit" : "fb872e7e5db31abefc1a41c8bf3248e59bdda0b8",
+    "git_commit" : "d50c76c2671b25e4dfcd03abd0f8ff719676642d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3584,9 +3584,9 @@ def main(par):
         logger.info("Fraction statistics: \\\\n%s", Series(pct_matching).describe())
         pct_matching = np.where(np.isclose(pct_matching, 0, atol=1e-6), 0, pct_matching)
         pct_matching = np.where(np.isclose(pct_matching, 1, atol=1e-6), 1, pct_matching)
-        assert (
-            np.logical_and(pct_matching >= 0, pct_matching <= 1)
-        ).all(), "Fractions are not within bounds, please report this as a bug"
+        assert (np.logical_and(pct_matching >= 0, pct_matching <= 1)).all(), (
+            "Fractions are not within bounds, please report this as a bug"
+        )
         output_matrix = other_axis_attribute[par["matrix"]]
         logger.info(
             "Writing fractions to matrix '%s', column '%s'",

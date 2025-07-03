@@ -102,62 +102,62 @@ def test_sample_split(run_component, random_path, input_h5mu, input_h5mu_path):
     assert s1.n_mod == 2
     assert s2.n_mod == 2
 
-    assert (
-        s1.n_obs == input_h5mu.n_obs
-    ), "number of observations of split file does not match input file"
-    assert (
-        s2.n_obs == input_h5mu.n_obs
-    ), "number of observations of split file does not match input file"
+    assert s1.n_obs == input_h5mu.n_obs, (
+        "number of observations of split file does not match input file"
+    )
+    assert s2.n_obs == input_h5mu.n_obs, (
+        "number of observations of split file does not match input file"
+    )
 
-    assert (
-        s1.mod["mod1"].n_obs == 1
-    ), "number of observations of split file s1 modality mod1 should equal 1"
-    assert (
-        s1.mod["mod2"].n_obs == input_h5mu.n_obs
-    ), "number of observations of split file s1 modality mod2 should equal input file"
+    assert s1.mod["mod1"].n_obs == 1, (
+        "number of observations of split file s1 modality mod1 should equal 1"
+    )
+    assert s1.mod["mod2"].n_obs == input_h5mu.n_obs, (
+        "number of observations of split file s1 modality mod2 should equal input file"
+    )
 
-    assert (
-        len(s1.mod["mod1"].obs.keys()) == 2
-    ), "number of observation keys split file s1 modality mod1 should equal 2"
-    assert (
-        len(s1.mod["mod2"].obs.keys()) == 1
-    ), "number of observation keys split file s1 modality mod2 should equal 1"
+    assert len(s1.mod["mod1"].obs.keys()) == 2, (
+        "number of observation keys split file s1 modality mod1 should equal 2"
+    )
+    assert len(s1.mod["mod2"].obs.keys()) == 1, (
+        "number of observation keys split file s1 modality mod2 should equal 1"
+    )
 
-    assert (
-        s2.mod["mod1"].n_obs == 1
-    ), "number of observations of split file s2 modality mod1 should equal 1"
-    assert (
-        s2.mod["mod2"].n_obs == input_h5mu.n_obs
-    ), "number of observations of split file s2 modality mod2 should equal input file"
+    assert s2.mod["mod1"].n_obs == 1, (
+        "number of observations of split file s2 modality mod1 should equal 1"
+    )
+    assert s2.mod["mod2"].n_obs == input_h5mu.n_obs, (
+        "number of observations of split file s2 modality mod2 should equal input file"
+    )
 
-    assert (
-        s1.n_vars == input_h5mu.n_vars
-    ), "number of variables of split file s1 should equal input file"
-    assert (
-        s2.n_vars == input_h5mu.n_vars
-    ), "number of variables of split file s1 should equal input file"
+    assert s1.n_vars == input_h5mu.n_vars, (
+        "number of variables of split file s1 should equal input file"
+    )
+    assert s2.n_vars == input_h5mu.n_vars, (
+        "number of variables of split file s1 should equal input file"
+    )
 
-    assert (
-        s1.mod["mod1"].n_vars == input_h5mu.mod["mod1"].n_vars
-    ), "number of variables of split file s1 modalitty mod1 should equal input file"
-    assert (
-        s1.mod["mod2"].n_vars == input_h5mu.mod["mod1"].n_vars
-    ), "number of variables of split file s1 modalitty mod2 should equal input file"
+    assert s1.mod["mod1"].n_vars == input_h5mu.mod["mod1"].n_vars, (
+        "number of variables of split file s1 modalitty mod1 should equal input file"
+    )
+    assert s1.mod["mod2"].n_vars == input_h5mu.mod["mod1"].n_vars, (
+        "number of variables of split file s1 modalitty mod2 should equal input file"
+    )
 
-    assert (
-        s2.mod["mod1"].n_vars == input_h5mu.mod["mod1"].n_vars
-    ), "number of variables of split file s2 modalitty mod1 should equal input file"
-    assert (
-        s2.mod["mod2"].n_vars == input_h5mu.mod["mod1"].n_vars
-    ), "number of variables of split file s2 modalitty mod2 should equal input file"
+    assert s2.mod["mod1"].n_vars == input_h5mu.mod["mod1"].n_vars, (
+        "number of variables of split file s2 modalitty mod1 should equal input file"
+    )
+    assert s2.mod["mod2"].n_vars == input_h5mu.mod["mod1"].n_vars, (
+        "number of variables of split file s2 modalitty mod2 should equal input file"
+    )
 
     # check correct sample splitting
-    assert np.all(
-        s1.mod["mod1"].obs["Obs"] == "A"
-    ), "observation of .obs Obs in s1 should equal A"
-    assert np.all(
-        s2.mod["mod1"].obs["Obs"] == "B"
-    ), "observation of .obs Obs in s2 should equal B"
+    assert np.all(s1.mod["mod1"].obs["Obs"] == "A"), (
+        "observation of .obs Obs in s1 should equal A"
+    )
+    assert np.all(s2.mod["mod1"].obs["Obs"] == "B"), (
+        "observation of .obs Obs in s2 should equal B"
+    )
 
     # Check contents of csv file
     expected_csv_output = dedent(
@@ -200,26 +200,26 @@ def test_sample_split_dropna(run_component, random_path, input_h5mu, input_h5mu_
     s1 = mu.read_h5mu(s1_file)
     s2 = mu.read_h5mu(s2_file)
 
-    assert (
-        s1.n_obs == input_h5mu.n_obs
-    ), "number of observations of split file does not match input file"
-    assert (
-        s2.n_obs == input_h5mu.n_obs
-    ), "number of observations of split file does not match input file"
+    assert s1.n_obs == input_h5mu.n_obs, (
+        "number of observations of split file does not match input file"
+    )
+    assert s2.n_obs == input_h5mu.n_obs, (
+        "number of observations of split file does not match input file"
+    )
 
-    assert (
-        s1.mod["mod1"].n_obs == 1
-    ), "number of observations of split file s1 modality mod1 should equal 1"
-    assert (
-        s1.mod["mod2"].n_obs == input_h5mu.n_obs
-    ), "number of observations of split file s1 modality mod2 should equal input file"
+    assert s1.mod["mod1"].n_obs == 1, (
+        "number of observations of split file s1 modality mod1 should equal 1"
+    )
+    assert s1.mod["mod2"].n_obs == input_h5mu.n_obs, (
+        "number of observations of split file s1 modality mod2 should equal input file"
+    )
 
-    assert (
-        len(s1.mod["mod1"].obs.keys()) == 1
-    ), "number of observation keys split file s1 modality mod1 should equal 1"
-    assert (
-        len(s1.mod["mod2"].obs.keys()) == 1
-    ), "number of observation keys split file s1 modality mod2 should equal 1"
+    assert len(s1.mod["mod1"].obs.keys()) == 1, (
+        "number of observation keys split file s1 modality mod1 should equal 1"
+    )
+    assert len(s1.mod["mod2"].obs.keys()) == 1, (
+        "number of observation keys split file s1 modality mod2 should equal 1"
+    )
 
 
 def test_sanitizing(run_component, random_path, input_h5mu_path_non_unique_filenames):
@@ -279,9 +279,9 @@ def test_sanitizing(run_component, random_path, input_h5mu_path_non_unique_filen
 
     assert s1_file.is_file(), f"{s1_file} does not exist"
     assert s2_file.is_file(), f"{s2_file} does not exist"
-    assert set(dir_content) == set(
-        [s1_file, s2_file]
-    ), "Output files do not match file names in csv"
+    assert set(dir_content) == set([s1_file, s2_file]), (
+        "Output files do not match file names in csv"
+    )
 
 
 if __name__ == "__main__":

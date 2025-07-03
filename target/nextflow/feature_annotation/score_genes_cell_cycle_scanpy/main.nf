@@ -3518,7 +3518,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/score_genes_cell_cycle_scanpy",
     "viash_version" : "0.9.4",
-    "git_commit" : "fb872e7e5db31abefc1a41c8bf3248e59bdda0b8",
+    "git_commit" : "d50c76c2671b25e4dfcd03abd0f8ff719676642d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3681,9 +3681,9 @@ output_slot_mapping = {
     par["obs_g2m_score"]: "G2M_score",
     par["obs_phase"]: "phase",
 }
-assert all(
-    adata_scanpy.obs.index == input_adata.obs.index
-), "index mismatch between input adata and scanpy output adata"
+assert all(adata_scanpy.obs.index == input_adata.obs.index), (
+    "index mismatch between input adata and scanpy output adata"
+)
 for dest, orig in output_slot_mapping.items():
     input_adata.obs[dest] = adata_scanpy.obs[orig]
 

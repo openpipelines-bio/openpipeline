@@ -3362,7 +3362,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/delimit_fraction",
     "viash_version" : "0.9.4",
-    "git_commit" : "fb872e7e5db31abefc1a41c8bf3248e59bdda0b8",
+    "git_commit" : "d50c76c2671b25e4dfcd03abd0f8ff719676642d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3466,9 +3466,9 @@ logger = setup_logger()
 logger.info("Reading modality %s from %s", par["modality"], par["input"])
 data = mu.read_h5ad(par["input"], mod=par["modality"])
 
-assert (
-    data.var_names.is_unique
-), "The var_names of the input modality must be be unique."
+assert data.var_names.is_unique, (
+    "The var_names of the input modality must be be unique."
+)
 
 logger.info("\\\\tUnfiltered data: %s", data)
 logger.info("\\\\tComputing aggregations.")

@@ -3745,7 +3745,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.9.4",
-    "git_commit" : "fb872e7e5db31abefc1a41c8bf3248e59bdda0b8",
+    "git_commit" : "d50c76c2671b25e4dfcd03abd0f8ff719676642d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3876,22 +3876,22 @@ from compress_h5mu import write_h5ad_to_h5mu_with_compression
 # TODO: optionally, move to qa
 # https://github.com/openpipelines-bio/openpipeline/issues/435
 def check_validity_anndata(adata, layer, obs_batch, n_obs_min_count, n_var_min_count):
-    assert check_nonnegative_integers(
-        adata.layers[layer] if layer else adata.X
-    ), "Make sure input adata contains raw_counts"
+    assert check_nonnegative_integers(adata.layers[layer] if layer else adata.X), (
+        "Make sure input adata contains raw_counts"
+    )
 
-    assert len(set(adata.var_names)) == len(
-        adata.var_names
-    ), "Dataset contains multiple genes with same gene name."
+    assert len(set(adata.var_names)) == len(adata.var_names), (
+        "Dataset contains multiple genes with same gene name."
+    )
 
     # Ensure every obs_batch category has sufficient observations
-    assert (
-        min(adata.obs[[obs_batch]].value_counts()) > n_obs_min_count
-    ), f"Anndata has fewer than {n_obs_min_count} cells."
+    assert min(adata.obs[[obs_batch]].value_counts()) > n_obs_min_count, (
+        f"Anndata has fewer than {n_obs_min_count} cells."
+    )
 
-    assert (
-        adata.n_vars > n_var_min_count
-    ), f"Anndata has fewer than {n_var_min_count} genes."
+    assert adata.n_vars > n_var_min_count, (
+        f"Anndata has fewer than {n_var_min_count} genes."
+    )
 
 
 def main():

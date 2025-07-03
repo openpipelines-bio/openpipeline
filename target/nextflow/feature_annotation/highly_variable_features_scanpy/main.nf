@@ -3475,7 +3475,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.9.4",
-    "git_commit" : "fb872e7e5db31abefc1a41c8bf3248e59bdda0b8",
+    "git_commit" : "d50c76c2671b25e4dfcd03abd0f8ff719676642d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3678,14 +3678,14 @@ try:
         out.index = input_anndata.var.index
         out = out.reindex(index=data.var.index, method=None)
         out.highly_variable = out.highly_variable.fillna(False)
-        assert (
-            out.index == data.var.index
-        ).all(), "Expected output index values to be equivalent to the input index"
+        assert (out.index == data.var.index).all(), (
+            "Expected output index values to be equivalent to the input index"
+        )
     elif par["obs_batch_key"] is not None:
         out = out.reindex(index=data.var.index, method=None)
-        assert (
-            out.index == data.var.index
-        ).all(), "Expected output index values to be equivalent to the input index"
+        assert (out.index == data.var.index).all(), (
+            "Expected output index values to be equivalent to the input index"
+        )
 
 except ValueError as err:
     if str(err) == "cannot specify integer \\`bins\\` when input data contains infinity":

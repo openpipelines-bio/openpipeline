@@ -459,9 +459,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "lxml~=4.8.0" "mudata~=0.2.1" "cellbender~=0.3.0"
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-LABEL org.opencontainers.image.created="2025-07-02T03:06:04Z"
+LABEL org.opencontainers.image.created="2025-07-03T03:06:33Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="fb872e7e5db31abefc1a41c8bf3248e59bdda0b8"
+LABEL org.opencontainers.image.revision="d50c76c2671b25e4dfcd03abd0f8ff719676642d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -2234,17 +2234,17 @@ with tempfile.TemporaryDirectory(
             cmd_pars += [flag] + [str(val) for val in values] if is_kwarg else [flag]
 
     if par["expected_cells_from_qc"] and "metrics_cellranger" in data.uns:
-        assert (
-            par["expected_cells"] is None
-        ), "If min_counts is defined, expected_cells should be undefined"
-        assert (
-            par["total_droplets_included"] is None
-        ), "If min_counts is defined, expected_cells should be undefined"
+        assert par["expected_cells"] is None, (
+            "If min_counts is defined, expected_cells should be undefined"
+        )
+        assert par["total_droplets_included"] is None, (
+            "If min_counts is defined, expected_cells should be undefined"
+        )
         met = data.uns["metrics_cellranger"]
         col_name = "Estimated Number of Cells"
-        assert (
-            col_name in met.columns
-        ), "%s should be a column in .obs[metrics_cellranger]"
+        assert col_name in met.columns, (
+            "%s should be a column in .obs[metrics_cellranger]"
+        )
         est_cells = met[col_name].values[0]
         logger.info(
             "Selecting --expected-cells %d and --total-droplets-included %d",

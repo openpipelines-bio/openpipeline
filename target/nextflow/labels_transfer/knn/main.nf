@@ -3595,7 +3595,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/knn",
     "viash_version" : "0.9.4",
-    "git_commit" : "fb872e7e5db31abefc1a41c8bf3248e59bdda0b8",
+    "git_commit" : "d50c76c2671b25e4dfcd03abd0f8ff719676642d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3754,12 +3754,12 @@ if par["input_obsm_distances"] and par["reference_obsm_distances"]:
         "Using pre-calculated distances for KNN classification as provided in \\`--input_obsm_distances\\` and \\`--reference_obsm_distances\\`."
     )
 
-    assert (
-        par["input_obsm_distances"] in q_adata.obsm
-    ), f"Make sure --input_obsm_distances {par['input_obsm_distances']} is a valid .obsm key. Found: {q_adata.obsm.keys()}."
-    assert (
-        par["reference_obsm_distances"] in r_adata.obsm
-    ), f"Make sure --reference_obsm_distances {par['reference_obsm_distances']} is a valid .obsm key. Found: {r_adata.obsm.keys()}."
+    assert par["input_obsm_distances"] in q_adata.obsm, (
+        f"Make sure --input_obsm_distances {par['input_obsm_distances']} is a valid .obsm key. Found: {q_adata.obsm.keys()}."
+    )
+    assert par["reference_obsm_distances"] in r_adata.obsm, (
+        f"Make sure --reference_obsm_distances {par['reference_obsm_distances']} is a valid .obsm key. Found: {r_adata.obsm.keys()}."
+    )
 
     query_neighbors = q_adata.obsm[par["input_obsm_distances"]]
     reference_neighbors = r_adata.obsm[par["reference_obsm_distances"]]

@@ -3324,7 +3324,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "fb872e7e5db31abefc1a41c8bf3248e59bdda0b8",
+    "git_commit" : "d50c76c2671b25e4dfcd03abd0f8ff719676642d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3592,9 +3592,9 @@ def process_feature_reference(
         df = pd.read_csv(
             efficiency_file, index_col="id", sep=",", decimal=".", quotechar='"'
         )
-        assert (
-            "feature_type" in df.columns
-        ), "Columns 'feature_type' should be present in features_reference file."
+        assert "feature_type" in df.columns, (
+            "Columns 'feature_type' should be present in features_reference file."
+        )
         feature_types = df["feature_type"]
         missing_features = set(feature_types) - set(FEATURE_TYPES_NAMES)
         if missing_features:
@@ -3695,16 +3695,16 @@ def process_antigen_analysis(
         antigen_analysis_folder_path = antigen_analysis_folder_paths[sample_id]
         assert "antigen" in mudata_obj.mod
         per_barcodes_file = antigen_analysis_folder_path / "per_barcode.csv"
-        assert (
-            per_barcodes_file.is_file()
-        ), "Expected a per_barcode.csv file to be present."
+        assert per_barcodes_file.is_file(), (
+            "Expected a per_barcode.csv file to be present."
+        )
         per_barcodes_df = pd.read_csv(
             per_barcodes_file, index_col="barcode", sep=",", decimal=".", quotechar='"'
         )
         is_gex_cell = per_barcodes_df["is_gex_cell"]
-        assert (
-            len(set(is_gex_cell.unique().tolist()) - set([False, True])) == 0
-        ), "Expected 'is_gex_cell' column to be boolean. Please report this as a bug."
+        assert len(set(is_gex_cell.unique().tolist()) - set([False, True])) == 0, (
+            "Expected 'is_gex_cell' column to be boolean. Please report this as a bug."
+        )
         barcodes_in_gex = per_barcodes_df[is_gex_cell]
         # All of the barcodes listed in the per_barcode.csv with is_gex_cell set to 'True'
         # must be in the 'rna' (an thus also 'antigen') modality
@@ -3810,9 +3810,9 @@ def main():
     cellranger_multi_dir = Path(par["input"])
     # TODO: remove when issue https://github.com/viash-io/viash/issues/706 is resolved.
     if isinstance(par["output"], (list, set, tuple)):
-        assert (
-            len(par["output"]) == 1
-        ), "A single output file template should have been provided."
+        assert len(par["output"]) == 1, (
+            "A single output file template should have been provided."
+        )
         par["output"] = par["output"][0]
     assert par["output"].count("*") == 1, (
         f"Expected exactly one wildcard character (*) in output "

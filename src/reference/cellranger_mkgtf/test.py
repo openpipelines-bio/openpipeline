@@ -47,9 +47,9 @@ def test_gene_type_column(run_component, subset_input_gtf, random_path, attribut
             for line in f
             for match in re.findall(r'gene_type "([^"]*)"', line.split("\t")[8])
         }
-    assert (
-        set(attributes) == unique_gene_types
-    ), "Output GTF does not contain exactly the expected gene types."
+    assert set(attributes) == unique_gene_types, (
+        "Output GTF does not contain exactly the expected gene types."
+    )
 
 
 def test_different_columns(run_component, subset_input_gtf, random_path):
@@ -79,9 +79,9 @@ def test_different_columns(run_component, subset_input_gtf, random_path):
             )
             != "ENST00000456328.2"
         )
-    assert (
-        wrong_attributes_count == 0
-    ), "Output GTF contains unexpected attribute values."
+    assert wrong_attributes_count == 0, (
+        "Output GTF contains unexpected attribute values."
+    )
 
 
 if __name__ == "__main__":

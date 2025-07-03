@@ -3303,7 +3303,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "fb872e7e5db31abefc1a41c8bf3248e59bdda0b8",
+    "git_commit" : "d50c76c2671b25e4dfcd03abd0f8ff719676642d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3396,9 +3396,9 @@ from setup_logger import setup_logger
 
 logger = setup_logger()
 
-assert len(par["input"]) == len(
-    par["modality"]
-), "Number of input files should be the same length as the number of modalities"
+assert len(par["input"]) == len(par["modality"]), (
+    "Number of input files should be the same length as the number of modalities"
+)
 
 logger.info("Reading input files")
 data = {

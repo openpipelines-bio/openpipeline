@@ -3691,7 +3691,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background",
     "viash_version" : "0.9.4",
-    "git_commit" : "fb872e7e5db31abefc1a41c8bf3248e59bdda0b8",
+    "git_commit" : "d50c76c2671b25e4dfcd03abd0f8ff719676642d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3905,17 +3905,17 @@ with tempfile.TemporaryDirectory(
             cmd_pars += [flag] + [str(val) for val in values] if is_kwarg else [flag]
 
     if par["expected_cells_from_qc"] and "metrics_cellranger" in data.uns:
-        assert (
-            par["expected_cells"] is None
-        ), "If min_counts is defined, expected_cells should be undefined"
-        assert (
-            par["total_droplets_included"] is None
-        ), "If min_counts is defined, expected_cells should be undefined"
+        assert par["expected_cells"] is None, (
+            "If min_counts is defined, expected_cells should be undefined"
+        )
+        assert par["total_droplets_included"] is None, (
+            "If min_counts is defined, expected_cells should be undefined"
+        )
         met = data.uns["metrics_cellranger"]
         col_name = "Estimated Number of Cells"
-        assert (
-            col_name in met.columns
-        ), "%s should be a column in .obs[metrics_cellranger]"
+        assert col_name in met.columns, (
+            "%s should be a column in .obs[metrics_cellranger]"
+        )
         est_cells = met[col_name].values[0]
         logger.info(
             "Selecting --expected-cells %d and --total-droplets-included %d",

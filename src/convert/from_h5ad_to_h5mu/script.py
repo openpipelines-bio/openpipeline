@@ -19,9 +19,9 @@ from setup_logger import setup_logger
 
 logger = setup_logger()
 
-assert len(par["input"]) == len(
-    par["modality"]
-), "Number of input files should be the same length as the number of modalities"
+assert len(par["input"]) == len(par["modality"]), (
+    "Number of input files should be the same length as the number of modalities"
+)
 
 logger.info("Reading input files")
 data = {

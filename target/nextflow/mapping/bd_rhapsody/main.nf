@@ -4429,7 +4429,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody",
     "viash_version" : "0.9.4",
-    "git_commit" : "fb872e7e5db31abefc1a41c8bf3248e59bdda0b8",
+    "git_commit" : "d50c76c2671b25e4dfcd03abd0f8ff719676642d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -4606,9 +4606,9 @@ def strip_margin(text: str) -> str:
 
 def process_params(par: dict[str, Any], config, temp_dir: str) -> str:
     # check input parameters
-    assert (
-        par["reads"] or par["reads_atac"]
-    ), "Pass at least one set of inputs to --reads or --reads_atac."
+    assert par["reads"] or par["reads_atac"], (
+        "Pass at least one set of inputs to --reads or --reads_atac."
+    )
 
     # output to temp dir if output_dir was not passed
     if not par["output_dir"]:
