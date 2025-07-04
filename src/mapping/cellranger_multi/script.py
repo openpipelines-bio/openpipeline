@@ -466,18 +466,6 @@ def untar(tar_file, output_directory):
     return tar_file
 
 
-def _log_arguments(function_obj, arg_dict):
-    """
-    Format a dictionairy of arguments into a string that is put into the script logs.
-    """
-    args_str = [f"\t{param}: {param_val}\n" for param, param_val in arg_dict.items()]
-    logger.info(
-        "Calling %s with arguments:\n%s",
-        function_obj.__name__,
-        "".join(args_str).rstrip(),
-    )
-
-
 def main(par: dict[str, Any], meta: dict[str, Any]):
     logger.info("Processing params")
     par = process_params(par, meta["config"])
