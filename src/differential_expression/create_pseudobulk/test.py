@@ -1,17 +1,11 @@
 import os
-import subprocess
 import mudata as mu
 import sys
 import pytest
-import re
 import numpy as np
-import pandas as pd
-
 
 ## VIASH START
-meta = {
-    "resources_dir": "resources_test/"
-}
+meta = {"resources_dir": "resources_test/"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -33,10 +27,10 @@ def annotated_test_data(input_data):
     rna_in = input_data.mod["rna"]
     np.random.seed(0)
     n_cells = rna_in.n_obs
-    treatment = np.random.choice(['ctrl', 'stim'], size=n_cells, p=[0.5, 0.5])
-    disease = np.random.choice(['healthy', 'diseased'], size=n_cells, p=[0.5, 0.5])
-    rna_in.obs['treatment'] = treatment
-    rna_in.obs['disease'] = disease
+    treatment = np.random.choice(["ctrl", "stim"], size=n_cells, p=[0.5, 0.5])
+    disease = np.random.choice(["healthy", "diseased"], size=n_cells, p=[0.5, 0.5])
+    rna_in.obs["treatment"] = treatment
+    rna_in.obs["disease"] = disease
     return input_data
 
 
@@ -70,7 +64,9 @@ def test_simple_execution(run_component, random_h5mu_path, annotated_test_data_p
     adata = mdata.mod["rna"]
 
     expected_obs = ["treatment", "cell_type", "n_cells"]
-    assert all(col in adata.obs for col in expected_obs), f"Expected columns {expected_obs} not found in .obs"
+    assert all(col in adata.obs for col in expected_obs), (
+        f"Expected columns {expected_obs} not found in .obs"
+    )
     assert adata.shape[0] == 8, "Expected a total of 8 pseudobulk samples in the output"
 
 
@@ -103,8 +99,12 @@ def test_multiple_factors(run_component, random_h5mu_path, annotated_test_data_p
     adata = mdata.mod["rna"]
 
     expected_obs = ["treatment", "cell_type", "n_cells"]
-    assert all(col in adata.obs for col in expected_obs), f"Expected columns {expected_obs} not found in .obs"
-    assert adata.shape[0] == 16, "Expected a total of 16 pseudobulk samples in the output"
+    assert all(col in adata.obs for col in expected_obs), (
+        f"Expected columns {expected_obs} not found in .obs"
+    )
+    assert adata.shape[0] == 16, (
+        "Expected a total of 16 pseudobulk samples in the output"
+    )
 
 
 def test_pseudo_replicates(run_component, random_h5mu_path, annotated_test_data_path):
@@ -132,8 +132,12 @@ def test_pseudo_replicates(run_component, random_h5mu_path, annotated_test_data_
     adata = mdata.mod["rna"]
 
     expected_obs = ["treatment", "cell_type", "n_cells"]
-    assert all(col in adata.obs for col in expected_obs), f"Expected columns {expected_obs} not found in .obs"
-    assert adata.shape[0] == 16, "Expected a total of 8 pseudobulk samples in the output"
+    assert all(col in adata.obs for col in expected_obs), (
+        f"Expected columns {expected_obs} not found in .obs"
+    )
+    assert adata.shape[0] == 16, (
+        "Expected a total of 8 pseudobulk samples in the output"
+    )
 
 
 def test_filtering(run_component, random_h5mu_path, annotated_test_data_path):
@@ -161,7 +165,9 @@ def test_filtering(run_component, random_h5mu_path, annotated_test_data_path):
     adata = mdata.mod["rna"]
 
     expected_obs = ["treatment", "cell_type", "n_cells"]
-    assert all(col in adata.obs for col in expected_obs), f"Expected columns {expected_obs} not found in .obs"
+    assert all(col in adata.obs for col in expected_obs), (
+        f"Expected columns {expected_obs} not found in .obs"
+    )
     assert adata.shape[0] == 4, "Expected a total of 8 pseudobulk samples in the output"
 
 
