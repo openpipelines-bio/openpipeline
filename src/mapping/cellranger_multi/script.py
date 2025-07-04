@@ -85,6 +85,7 @@ par = {
     "vdj_reference": "resources_test/10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz",
 }
 meta = {
+    "name": "cellranger_multi",
     "cpus": 10,
     "memory_b": None,
     "memory_kb": None,
@@ -465,8 +466,20 @@ def untar(tar_file, output_directory):
     return tar_file
 
 
+def _log_arguments(function_obj, arg_dict):
+    """
+    Format a dictionairy of arguments into a string that is put into the script logs.
+    """
+    args_str = [f"\t{param}: {param_val}\n" for param, param_val in arg_dict.items()]
+    logger.info(
+        "Calling %s with arguments:\n%s",
+        function_obj.__name__,
+        "".join(args_str).rstrip(),
+    )
+
+
 def main(par: dict[str, Any], meta: dict[str, Any]):
-    logger.info("  Processing params")
+    logger.info("Processing params")
     par = process_params(par, meta["config"])
     logger.info(par)
 
@@ -488,6 +501,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
 
         logger.info("Creating config file")
         config_content = generate_config(par, input_symlinks_dir)
+        logger.info("Using config: \n\t%s", config_content.replace("\n", "\n\t"))
         par["output"].mkdir(parents=True, exist_ok=True)
         config_file = par["output"] / "config.csv"
         with open(config_file, "w") as f:
@@ -552,5 +566,6 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
 
 
 if __name__ == "__main__":
+    logger.info("Component '%s' started.", meta["name"])
     main(par, meta)
     logger.info("Finished!")
