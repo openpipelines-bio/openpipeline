@@ -2,7 +2,7 @@ name: "from_h5mu_or_h5ad_to_seurat"
 namespace: "convert"
 scope: "public"
 description: |
-  Converts an h5ad file into a Seurat file.
+  Converts an h5ad file or a single modality of an h5mu file into a Seurat file.
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]
@@ -18,7 +18,7 @@ arguments:
     type: string
     default: "rna"
     required: false
-    description: Name of the modality to be converted. Required if the input file is an h5mu file.
+    description: Modality to be converted if the input file is an h5mu file.
   - name: "--assay"
     type: string
     default: "RNA"
