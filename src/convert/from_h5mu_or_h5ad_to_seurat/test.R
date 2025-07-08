@@ -61,9 +61,7 @@ out <- processx::run(
   meta[["executable"]],
   c(
     "--input", in_h5mu,
-    "--output", out_rds,
-    "--modality", "rna",
-    "--assay", "RNA"
+    "--output", out_rds
   )
 )
 
