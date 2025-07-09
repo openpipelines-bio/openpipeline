@@ -41,16 +41,11 @@ engines:
   - type: docker
     image: rocker/r2u:22.04
     setup:
-      - type: docker
-        env: 
-          - RETICULATE_PYTHON=/usr/bin/python
       - type: apt
-        packages: [ libhdf5-dev, libgeos-dev, python3, python3-pip, python3-dev, python-is-python3, hdf5-tools ]
+        packages: [ libhdf5-dev, libgeos-dev, hdf5-tools ]
       - type: r
-        cran: [ anndata, hdf5r, reticulate, Seurat, SeuratObject ]
+        cran: [ anndata, hdf5r, Seurat, SeuratObject ]
         github: scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a
-      - type: python
-        __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
     test_setup:
       - type: r
         cran: [ testthat ]

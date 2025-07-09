@@ -1,9 +1,6 @@
 library(anndataR)
 library(hdf5r)
-library(reticulate)
 
-mudata <- reticulate::import("mudata")
-anndata <- reticulate::import("anndata")
 
 ### VIASH START
 par <- list(
@@ -28,11 +25,39 @@ is_mudata_file <- function(file_path) {
 }
 
 h5mu_to_h5ad <- function(h5mu_path, modality_name) {
-  # Conversion of h5mu file to h5ad file,
-  # using python's mudata/anndata with reticulate
   tmp_path <- tempfile(fileext = ".h5ad")
-  adata <- mudata$read_h5ad(par$input, par$modality)
-  adata$write_h5ad(tmp_path, compression = "gzip")
+  mod_location <- paste("mod", modality_name, sep = "/")
+  h5src <- hdf5r::H5File$new(h5mu_path, "r")
+  h5dest <- hdf5r::H5File$new(tmp_path, "w")
+  # Copy over the child objects and the child attributes from root
+  # Root cannot be copied directly because it always exists and
+  # copying does not allow overwriting.
+  children <- hdf5r::list.objects(h5src,
+    path = mod_location,
+    full.names = FALSE, recursive = FALSE
+  )
+  for (child in children) {
+    h5dest$obj_copy_from(
+      h5src, paste(mod_location, child, sep = "/"),
+      paste0("/", child)
+    )
+  }
+  # Also copy the root attributes
+  root_attrs <- hdf5r::h5attr_names(x = h5src)
+  for (attr in root_attrs) {
+    h5a <- h5src$attr_open(attr_name = attr)
+    robj <- h5a$read()
+    h5dest$create_attr_by_name(
+      attr_name = attr,
+      obj_name = ".",
+      robj = robj,
+      space = h5a$get_space(),
+      dtype = h5a$get_type()
+    )
+  }
+  h5src$close()
+  h5dest$close()
+
   tmp_path
 }
 

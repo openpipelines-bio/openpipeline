@@ -1,8 +1,6 @@
 library(testthat, warn.conflicts = FALSE)
 library(hdf5r)
-library(reticulate)
 
-mudata <- reticulate::import("mudata")
 
 ## VIASH START
 meta <- list(
@@ -77,8 +75,8 @@ expect_is(obj, "Seurat")
 expect_equal(names(slot(obj, "assays")), "RNA")
 
 dim_rds <- dim(obj)
-adata_in <- mudata$read_h5ad(in_h5mu, mod = "rna")
-dim_ad <- dim(adata_in$X)
+mu_in <- H5File$new(in_h5mu, mode = "r")
+dim_ad <- mu_in[["/mod/rna/X"]]$attr_open("shape")$read()
 
 expect_equal(dim_rds[1], dim_ad[2])
 expect_equal(dim_rds[2], dim_ad[1])
