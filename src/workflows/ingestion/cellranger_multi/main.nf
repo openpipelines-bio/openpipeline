@@ -91,13 +91,10 @@ workflow run_wf {
           "output_compression": "gzip"
         ]
       },
-      toState: {id, output, state -> 
-        [
-          "sample_csv": output.sample_csv,
-          "output_h5mu": output.output,
-          "output_raw": state.output_raw
-        ]
-      },
+      toState: [
+          "sample_csv": "output",
+          "output_h5mu": "output",
+      ],
       filter: {!workflow.stubRun},
     )
  
