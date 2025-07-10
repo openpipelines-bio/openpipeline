@@ -59,6 +59,8 @@
 
 * Added missing `gpu` label to `scarches` component (PR #1027).
 
+* `ingestion/cellranger_multi`: avoid publishing duplicate Cell Ranger output folders when processing multiplexed data (PR #1048).
+
 # openpipelines 2.1.2
 
 ## DOCUMENTATION
