@@ -3541,9 +3541,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample",
     "viash_version" : "0.9.4",
-    "git_commit" : "ae6f69ec59f3d539011739e5745adcc3b8fdf50d",
+    "git_commit" : "f9ccf89f596aa3b839e3910f895cd63ffacf9c89",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2042-gae6f69ec59f"
+    "git_tag" : "0.2.0-2043-gf9ccf89f596"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3762,7 +3762,7 @@ workflow run_wf {
     | filter_with_scrublet.run(
       runIf: { id, state ->
         !state.skip_scrublet_filtering
-      }
+      },
       fromState: [
         "input": "input",
         "layer": "layer",

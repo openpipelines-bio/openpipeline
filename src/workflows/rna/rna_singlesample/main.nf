@@ -168,7 +168,7 @@ workflow run_wf {
     | filter_with_scrublet.run(
       runIf: { id, state ->
         !state.skip_scrublet_filtering
-      }
+      },
       fromState: [
         "input": "input",
         "layer": "layer",
