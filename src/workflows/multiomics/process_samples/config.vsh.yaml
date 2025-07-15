@@ -108,6 +108,11 @@ argument_groups:
         type: double
         example: 0.2
         description: Maximum fraction of UMIs that are mitochondrial.
+
+      - name: "--skip_scrublet_filtering"
+        type: boolean_true
+        description: Skip the scrublet doublet removal step.
+
   - name: "CITE-seq filtering options"
     arguments:
       - name: "--prot_min_counts"

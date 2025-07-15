@@ -166,13 +166,23 @@ workflow run_wf {
     )
     // doublet calling
     | filter_with_scrublet.run(
+      runIf: { id, state ->
+        !state.skip_scrublet_filtering
+      }
       fromState: [
         "input": "input",
-        "output": "workflow_output",
         "layer": "layer",
       ],
       args: [output_compression: "gzip"],
+      toState: ["input": "output"]
     )
+    // Make sure to use the correct ouput file names, 
+    // irrespective of which component(s) (or combinations of then)
+    // were run. The above components
+    // should put their output into 'input'
+    | map {id, state -> 
+      [id, ["output": state.input]]
+    }
     | setState(["output": "output"])
 
   emit:
