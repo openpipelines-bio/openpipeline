@@ -1,0 +1,23 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "atac"
+# layer: "foo"
+# var_input: "foo"
+
+# LSI options
+num_components: 50
+scale_embeddings: true
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+obsm_output: "X_lsi"
+varm_output: "lsi"
+uns_output: "lsi"
+overwrite: false
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments

@@ -1,0 +1,11 @@
+# Arguments
+input: # please fill in - example: "sample_path"
+input_id: # please fill in - example: "foo"
+obs_output: "sample_id"
+# output: "$id.$key.output.h5mu"
+make_observation_keys_unique: false
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
