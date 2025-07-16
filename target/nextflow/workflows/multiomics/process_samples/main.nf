@@ -3912,9 +3912,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.9.4",
-    "git_commit" : "f9ccf89f596aa3b839e3910f895cd63ffacf9c89",
+    "git_commit" : "07297b53180b28c8e198414328683e941eec7ed0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2043-gf9ccf89f596"
+    "git_tag" : "0.2.0-2044-g07297b53180"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -4061,7 +4061,7 @@ workflow run_wf {
         "obs_name_ribosomal_fraction": "obs_name_ribosomal_fraction",
         "ribosomal_gene_regex": "ribosomal_gene_regex",
         "layer": "rna_layer",
-        "skip_scurblet_filtering": "skip_scrublet_filtering"
+        "skip_scrublet_filtering": "skip_scrublet_filtering"
       ],
       "prot": [
         "min_counts": "prot_min_counts",

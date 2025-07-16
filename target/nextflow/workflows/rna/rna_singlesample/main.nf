@@ -3541,9 +3541,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample",
     "viash_version" : "0.9.4",
-    "git_commit" : "f9ccf89f596aa3b839e3910f895cd63ffacf9c89",
+    "git_commit" : "07297b53180b28c8e198414328683e941eec7ed0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2043-gf9ccf89f596"
+    "git_tag" : "0.2.0-2044-g07297b53180"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3754,6 +3754,10 @@ workflow run_wf {
           obs_filter += ["filter_ribosomal"]
         }
         stateMapping += ["obs_filter": obs_filter]
+        // If scrublet is skipped, the output should be set to the workflow output
+        if (state.skip_scrublet_filtering) {
+          stateMapping += ["output": state.workflow_output]
+        }
         return stateMapping
       },
       toState: ["input": "output"]
@@ -3766,6 +3770,7 @@ workflow run_wf {
       fromState: [
         "input": "input",
         "layer": "layer",
+        "output": "workflow_output"
       ],
       args: [output_compression: "gzip"],
       toState: ["input": "output"]
@@ -3775,9 +3780,9 @@ workflow run_wf {
     // were run. The above components
     // should put their output into 'input'
     | map {id, state -> 
-      [id, ["output": state.input]]
+      [id, ["workflow_output": state.input]]
     }
-    | setState(["output": "output"])
+    | setState(["output": "workflow_output"])
 
   emit:
   output_ch
