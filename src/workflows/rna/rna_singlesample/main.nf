@@ -160,6 +160,10 @@ workflow run_wf {
           obs_filter += ["filter_ribosomal"]
         }
         stateMapping += ["obs_filter": obs_filter]
+        // If scrublet is skipped, the output should be set to the workflow output
+        if (state.skip_scrublet_filtering) {
+          stateMapping += ["output": state.workflow_output]
+        }
         return stateMapping
       },
       toState: ["input": "output"]
@@ -172,6 +176,7 @@ workflow run_wf {
       fromState: [
         "input": "input",
         "layer": "layer",
+        "output": "workflow_output"
       ],
       args: [output_compression: "gzip"],
       toState: ["input": "output"]
@@ -181,9 +186,9 @@ workflow run_wf {
     // were run. The above components
     // should put their output into 'input'
     | map {id, state -> 
-      [id, ["output": state.input]]
+      [id, ["workflow_output": state.input]]
     }
-    | setState(["output": "output"])
+    | setState(["output": "workflow_output"])
 
   emit:
   output_ch
