@@ -5,22 +5,24 @@ import numpy as np
 import scipy.sparse as sp
 from pydeseq2.dds import DeseqDataSet
 from pydeseq2.ds import DeseqStats
+import re
 
 ## VIASH START
 par = {
-    "input": "pseudobulk_samples.h5mu",
+    "input": "resources_test/annotation_test_data/TS_Blood_filtered_annotated_pseudobulk.h5mu",
     "output": "deseq2_results.csv",
     "input_layer": None,
-    "design_factors": ["disease", "treatment"],
+    "design_formula": "~ cell_type + disease + treatment",
     "contrast_column": "treatment",
-    "contrast_baseline": "ctrl",
-    "contrast_treatment": "stim",
+    "contrast_values": ["stim", "ctrl"],  # [treatment, baseline] or [group1, group2, group3, ...]
     "filter_genes_min_samples": None,
     "padj_threshold": 0.05,
     "log2fc_threshold": 0.0,
     "filter_gene_patterns": ["MIR\\d+", "AL\\d+", "LINC\\d+", "AC\\d+", "AP\\d+"],
     "var_gene_name" : "feature_name",
 }
+meta = {"resources_dir": "src/utils"}
+
 ## VIASH END
 
 def is_normalized(layer):
@@ -46,17 +48,22 @@ mdata = mu.read_h5mu(par["input"])
 mod = mdata.mod["rna"]
 
 logger.info(f"Input pseudobulk data shape: {mod.shape}")
-logger.info(f"Available metadata columns: {list(mod.obs.columns)}")
+logger.info(f"Available metadata columns: {list(mod.obs.columns)}") 
+
+# Parse design formula to extract factors
+design_factors = re.findall(r'\b(?!~)\w+', par["design_formula"])
+logger.info(f"Design formula: {par['design_formula']}")
+logger.info(f"Extracted factors: {design_factors}")
 
 # Validate required columns exist
-required_columns = par["design_factors"] + [par["contrast_column"]]
+contrast_column = par["contrast_column"]
+required_columns = design_factors + [contrast_column] if contrast_column not in design_factors else design_factors
 missing_columns = [col for col in required_columns if col not in mod.obs.columns]
 if missing_columns:
     raise ValueError(f"Missing required columns in metadata: {missing_columns}")
 
 # Prepare counts matrix
 logger.info("Preparing counts matrix for DESeq2")
-
 
 # Use specified layer if provided
 if par["input_layer"]:
@@ -77,16 +84,25 @@ counts = counts.astype(int)
 metadata = mod.obs.copy()
 
 logger.info(f"Counts matrix shape: {counts.shape}")
-logger.info(f"Design factors: {par['design_factors']}")
+logger.info(f"Design formula: {par['design_formula']}")
 
 # Check contrast values exist
-contrast_values = metadata[par["contrast_column"]].unique()
-logger.info(f"Available values in {par['contrast_column']}: {contrast_values}")
+contrast_column = par["contrast_column"]
+contrast_values = par["contrast_values"]
+available_values = metadata[contrast_column].unique()
+logger.info(f"Available values in {contrast_column}: {available_values}")
 
-if par["contrast_baseline"] not in contrast_values:
-    raise ValueError(f"Baseline '{par['contrast_baseline']}' not found in {par['contrast_column']}")
-if par["contrast_treatment"] not in contrast_values:
-    raise ValueError(f"Treatment '{par['contrast_treatment']}' not found in {par['contrast_column']}")
+# Validate all contrast values exist
+missing_values = [val for val in contrast_values if val not in available_values]
+if missing_values:
+    raise ValueError(f"Contrast values {missing_values} not found in {contrast_column}")
+
+if len(contrast_values) < 2:
+    raise ValueError(f"Need at least 2 values for contrast, got: {contrast_values}")
+
+treatment, baseline = contrast_values
+contrast_tuple = (contrast_column, treatment, baseline)
+logger.info(f"Performing pairwise contrast: {contrast_column} {treatment} vs {baseline}")
 
 # Create DESeq2 dataset
 logger.info("Creating DESeq2 dataset")
@@ -94,7 +110,7 @@ try:
     dds = DeseqDataSet(
         counts=counts,
         metadata=metadata,
-        design_factors=par["design_factors"],
+        design=par["design_formula"],
     )
     
     # Optional gene filtering
@@ -112,10 +128,9 @@ try:
     dds.deseq2()
     
     # Perform statistical test
-    logger.info(f"Performing contrast: {par['contrast_column']} {par['contrast_treatment']} vs {par['contrast_baseline']}")
     stat_res = DeseqStats(
         dds, 
-        contrast=(par["contrast_column"], par["contrast_treatment"], par["contrast_baseline"])
+        contrast=contrast_tuple
     )
     stat_res.summary()
     
@@ -160,12 +175,10 @@ try:
     logger.info(f"  Total genes analyzed: {len(results)}")
     logger.info(f"  Significant upregulated: {len(upregulated)}")
     logger.info(f"  Significant downregulated: {len(downregulated)}")
-    logger.info(f"  Top upregulated gene: {upregulated.iloc[0][par['var_gene_name']] if len(upregulated) > 0 else 'None'}")
-    logger.info(f"  Top downregulated gene: {downregulated.iloc[-1][par['var_gene_name']] if len(downregulated) > 0 else 'None'}")
 
 except Exception as e:
     logger.error(f"DESeq2 analysis failed: {str(e)}")
-    logger.error(f"Analysis context: {par['contrast_column']} contrast '{par['contrast_treatment']}' vs '{par['contrast_baseline']}', {len(mod.obs)} samples, {len(mod.var)} genes")
+    logger.error(f"Analysis context: {contrast_column} contrast {contrast_values}, {len(mod.obs)} samples, {len(mod.var)} genes")
     logger.warning("Check your input data, design factors, and contrast specifications")
     
     raise e

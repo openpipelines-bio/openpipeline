@@ -37,14 +37,13 @@ argument_groups:
 
   - name: Arguments
     arguments:
-      - name: "--design_factors"
+      - name: "--design_formula"
         type: string
-        multiple: true
         description: |
-          List of design factors to use for pseudobulk aggregation.
-          These factors will be used to group cells into pseudobulk samples.
+          Design formula for DESeq2 analysis in R-style format.
+          Specifies the statistical model to account for various factors.
         required: true
-        example: ["disease", "treatment"]
+        example: "~ cell_type + disease + treatment"
       - name: "--contrast_column"
         type: string
         description: |
@@ -52,20 +51,14 @@ argument_groups:
           This column should contain the conditions to compare.
         required: true
         example: "treatment"
-      - name: "--contrast_baseline"
+      - name: "--contrast_values"
         type: string
+        multiple: true
         description: |
-          Baseline condition for the contrast.
-          This is the condition against which the other conditions will be compared.
+          Values to compare in the contrast column.
+          First value is treatment, second is baseline (e.g., ["stim", "ctrl"]).
         required: true
-        example: "ctrl"
-      - name: "--contrast_treatment"
-        type: string
-        description: |
-          Treatment condition for the contrast.
-          This is the condition that will be compared against the baseline.
-        required: true
-        example: "stim"
+        example: ["stim", "ctrl"]
       - name: "--filter_genes_min_samples"
         type: integer
         description: |
@@ -111,15 +104,14 @@ argument_groups:
         direction: output
         required: true
 
-
 resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
-# test_resources:
-#   - type: python_script
-#     path: test.py
-#   - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/annotation_test_data/TS_Blood_filtered_annotated_pseudobulk.h5mu
 
 engines:
 - type: docker
@@ -132,7 +124,6 @@ engines:
       __merge__: [/src/base/requirements/anndata_mudata.yaml]
       __merge__: [/src/base/requirements/scanpy.yaml]
   __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
-
 
 runners:
 - type: executable
