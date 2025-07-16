@@ -76,9 +76,9 @@ sc.tl.score_genes(
 )
 
 # copy results to mudata
-assert all(
-    adata_scanpy.obs.index == input_adata.obs.index
-), "index mismatch between input adata and scanpy output adata"
+assert all(adata_scanpy.obs.index == input_adata.obs.index), (
+    "index mismatch between input adata and scanpy output adata"
+)
 input_adata.obs[par["obs_score"]] = adata_scanpy.obs["score"]
 
 # write output to mudata

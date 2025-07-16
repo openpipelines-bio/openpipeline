@@ -66,16 +66,16 @@ def test_leiden(
     run_component(args)
     assert output_path.exists(), "No output was created."
     data = mu.read_h5mu(output_path)
-    assert (
-        expected_output_key in data.mod["rna"].obsm
-    ), f"Expected to find key '{expected_output_key}' in .obsm"
+    assert expected_output_key in data.mod["rna"].obsm, (
+        f"Expected to find key '{expected_output_key}' in .obsm"
+    )
     # check whether leiden.custom.resolution was found
-    assert (
-        "1.0" in data.mod["rna"].obsm[expected_output_key].columns
-    ), "Output should contain resolution 1.0."
-    assert (
-        "0.25" in data.mod["rna"].obsm[expected_output_key].columns
-    ), "Output should contain resolution 0.25."
+    assert "1.0" in data.mod["rna"].obsm[expected_output_key].columns, (
+        "Output should contain resolution 1.0."
+    )
+    assert "0.25" in data.mod["rna"].obsm[expected_output_key].columns, (
+        "Output should contain resolution 0.25."
+    )
 
 
 def test_leiden_custom_connectivities_key(
@@ -101,12 +101,12 @@ def test_leiden_custom_connectivities_key(
     assert output_path.exists(), "No output was created."
     data = mu.read_h5mu(output_path)
     # check whether leiden.custom.resolution was found
-    assert (
-        "1.0" in data.mod["rna"].obsm["fooleiden"].columns
-    ), "Output should contain resolution 1.0."
-    assert (
-        "0.25" in data.mod["rna"].obsm["fooleiden"].columns
-    ), "Output should contain resolution 0.25."
+    assert "1.0" in data.mod["rna"].obsm["fooleiden"].columns, (
+        "Output should contain resolution 1.0."
+    )
+    assert "0.25" in data.mod["rna"].obsm["fooleiden"].columns, (
+        "Output should contain resolution 0.25."
+    )
 
 
 if __name__ == "__main__":

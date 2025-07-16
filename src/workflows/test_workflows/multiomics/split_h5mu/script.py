@@ -29,9 +29,9 @@ num_files = len(os.listdir(par["samples_dir"]))
 
 # Check if the number of files is equal to the number of lines in the csv
 assert num_samples == num_files, f"Expected {num_samples} files, but found {num_files}."
-assert (
-    input_mu.n_mod == num_samples
-), f"Expected {num_samples} samples in {par['orig_input']} got {num_files} samples."
+assert input_mu.n_mod == num_samples, (
+    f"Expected {num_samples} samples in {par['orig_input']} got {num_files} samples."
+)
 
 
 # Check if the files exist and if the sample name is in the file name
@@ -46,11 +46,11 @@ for i, row in enumerate(data):
     mod_mu = mu.read_h5mu(samples_fp)
     found_samples = mod_mu["rna"].obs["sample_id"].unique()
     assert found_samples.shape[0] == 1, f"Expected 1 sample ID in {row[1]}."
-    assert (
-        found_samples[0] == row[0]
-    ), f"Expected {row[0]} to be the sample ID for {row[1]}"
-    assert (
-        row[0] in input_samples
-    ), f"Expected {row[0]} to be a mod in {par['orig_input']}."
+    assert found_samples[0] == row[0], (
+        f"Expected {row[0]} to be the sample ID for {row[1]}"
+    )
+    assert row[0] in input_samples, (
+        f"Expected {row[0]} to be a mod in {par['orig_input']}."
+    )
 
 print("Test successful!", flush=True)

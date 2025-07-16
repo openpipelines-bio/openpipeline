@@ -14,6 +14,10 @@
 
 * `download_file` has been deprecated and will be removed in openpipeline 3.0 (PR #1015).
 
+* `scarches`: Loading of legacy models no longer asumes the model to based on SCANVI. An argument (`reference_class`) was added which need to be set in this case (PR #1035). 
+
+* `convert/from_h5mu_to_seurat` has been deprecated and will be removed in openpipeline 4.0. Use `convert/from_h5mu_or_h5ad_to_seurat` instead (PR #1046).
+
 ## NEW FUNCTIONALITY
 
 * (Experimental) Added `from_h5mu_or_h5ad_to_tiledb` component. Warning: the functionality in this component is experimental
@@ -21,11 +25,19 @@
 
 * Add `dgea/deseq2` Deseq2 component for differential gene expression analysis (PR #1044).
 
+* `liana`: enabled jobs to be run in parallel and added two new arguments: `consensus_opts`, `de_method` (PR #1039)
+
+* `from_h5mu_or_h5ad_to_seurat`: converts an h5ad file or a single modality from an h5mu file to a seurat object (PR #1046).
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
 
 * `leiden`: bump base container to 3.13 (PR #1030).
+
+* `scanvi`, `scarches`, `scvi` and `totalvi`: bump scvi-tools to `1.3.1` and base image to `nvcr.io/nvidia/pytorch:25.05-py3` (PR #1035).
+
+* `lianapy`: update liana to `1.5.0` (PR #1039)
 
 ## MINOR CHANGES
 

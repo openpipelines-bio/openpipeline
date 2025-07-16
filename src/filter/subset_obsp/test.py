@@ -47,9 +47,9 @@ def test_subset_obsp(input_path, run_component, tmp_path):
     mu_out = mu.read_h5mu(output_path)
 
     assert "group_1" in mu_out.mod["rna"].obsm, "Output should contain group_1 in .obsm"
-    assert (
-        mu_out.mod["rna"].obsm["group_1"].shape[1] == 50
-    ), "Obsm should only contain a subset of the original obsp matrix"
+    assert mu_out.mod["rna"].obsm["group_1"].shape[1] == 50, (
+        "Obsm should only contain a subset of the original obsp matrix"
+    )
 
 
 if __name__ == "__main__":

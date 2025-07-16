@@ -25,9 +25,9 @@ def test_cellranger_count_with_folder(run_component, random_path):
         ]
     )
 
-    assert (
-        output / "filtered_feature_bc_matrix.h5"
-    ).is_file(), "No output was created."
+    assert (output / "filtered_feature_bc_matrix.h5").is_file(), (
+        "No output was created."
+    )
 
 
 def test_cellranger_count_with_fastq_files(run_component, random_path):
@@ -44,9 +44,9 @@ def test_cellranger_count_with_fastq_files(run_component, random_path):
             output,
         ]
     )
-    assert (
-        output / "filtered_feature_bc_matrix.h5"
-    ).is_file(), "No output was created."
+    assert (output / "filtered_feature_bc_matrix.h5").is_file(), (
+        "No output was created."
+    )
 
 
 @pytest.mark.parametrize("chemistry", ["auto", "SC3Pv2"])
@@ -66,9 +66,9 @@ def test_cellranger_chemistry(run_component, random_path, chemistry):
             chemistry,
         ]
     )
-    assert (
-        output / "filtered_feature_bc_matrix.h5"
-    ).is_file(), "No output was created."
+    assert (output / "filtered_feature_bc_matrix.h5").is_file(), (
+        "No output was created."
+    )
 
 
 def test_cellranger_no_bam(run_component, random_path):
@@ -87,9 +87,9 @@ def test_cellranger_no_bam(run_component, random_path):
             "false",
         ]
     )
-    assert (
-        output / "filtered_feature_bc_matrix.h5"
-    ).is_file(), "No output was created."
+    assert (output / "filtered_feature_bc_matrix.h5").is_file(), (
+        "No output was created."
+    )
 
 
 def test_cellranger_no_secondary_analysis(run_component, random_path):
@@ -108,9 +108,9 @@ def test_cellranger_no_secondary_analysis(run_component, random_path):
             "false",
         ]
     )
-    assert (
-        output / "filtered_feature_bc_matrix.h5"
-    ).is_file(), "No output was created."
+    assert (output / "filtered_feature_bc_matrix.h5").is_file(), (
+        "No output was created."
+    )
 
 
 def test_cellranger_exclude_introns(run_component, random_path):
@@ -129,9 +129,9 @@ def test_cellranger_exclude_introns(run_component, random_path):
             "false",
         ]
     )
-    assert (
-        output / "filtered_feature_bc_matrix.h5"
-    ).is_file(), "No output was created."
+    assert (output / "filtered_feature_bc_matrix.h5").is_file(), (
+        "No output was created."
+    )
 
 
 def test_cellranger_trim_reads(run_component, random_path):
@@ -152,9 +152,9 @@ def test_cellranger_trim_reads(run_component, random_path):
             "100",
         ]
     )
-    assert (
-        output / "filtered_feature_bc_matrix.h5"
-    ).is_file(), "No output was created."
+    assert (output / "filtered_feature_bc_matrix.h5").is_file(), (
+        "No output was created."
+    )
 
 
 if __name__ == "__main__":

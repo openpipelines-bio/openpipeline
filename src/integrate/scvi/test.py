@@ -83,17 +83,17 @@ def test_scvi(run_component, mudata_with_mod_rna_obs_batch):
     # check output h5mu
     output_data = mudata.read_h5mu("output.h5mu")
     output_rna = output_data.mod["rna"]
-    assert (
-        output_rna.n_obs == input_rna.n_obs
-    ), f"Number of observations changed\noutput_data: {output_data}"
-    assert (
-        output_rna.n_vars == input_rna.n_vars
-    ), f"Number of variables changed\noutput_data: {output_data}"
+    assert output_rna.n_obs == input_rna.n_obs, (
+        f"Number of observations changed\noutput_data: {output_data}"
+    )
+    assert output_rna.n_vars == input_rna.n_vars, (
+        f"Number of variables changed\noutput_data: {output_data}"
+    )
 
     expected_obsm_output = "X_scvi_integrated" if obsm_output is None else obsm_output
-    assert (
-        expected_obsm_output in output_rna.obsm
-    ), f".obsm['{expected_obsm_output}'] not added\noutput_data: {output_data}"
+    assert expected_obsm_output in output_rna.obsm, (
+        f".obsm['{expected_obsm_output}'] not added\noutput_data: {output_data}"
+    )
 
     # assert that nothing else has changed
     del output_rna.obsm[expected_obsm_output]
@@ -143,17 +143,17 @@ def test_input_parameters(run_component):
     # check output h5mu
     output_data = mudata.read_h5mu("output.h5mu")
     output_rna = output_data.mod["rna"]
-    assert (
-        output_rna.n_obs == input_rna.n_obs
-    ), f"Number of observations changed\noutput_data: {output_data}"
-    assert (
-        output_rna.n_vars == input_rna.n_vars
-    ), f"Number of variables changed\noutput_data: {output_data}"
+    assert output_rna.n_obs == input_rna.n_obs, (
+        f"Number of observations changed\noutput_data: {output_data}"
+    )
+    assert output_rna.n_vars == input_rna.n_vars, (
+        f"Number of variables changed\noutput_data: {output_data}"
+    )
 
     expected_obsm_output = "X_scvi_integrated_test"
-    assert (
-        expected_obsm_output in output_rna.obsm
-    ), f".obsm['{expected_obsm_output}'] not added\noutput_data: {output_data}"
+    assert expected_obsm_output in output_rna.obsm, (
+        f".obsm['{expected_obsm_output}'] not added\noutput_data: {output_data}"
+    )
 
     # assert that nothing else has changed
     del output_rna.obsm[expected_obsm_output]

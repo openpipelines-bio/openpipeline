@@ -26,7 +26,7 @@ def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
             "homo_sapiens",
             "--add_dataset_metadata",
             "--output",
-            output_file
+            output_file,
         ]
     )
 
@@ -84,6 +84,7 @@ def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
     ## check layers
     assert mdata.mod["rna"].X is not None, "Expected count matrix in .X"
 
+
 def test_cellxgene_extract_metadata_expression_with_layer(run_component, tmp_path):
     output_file = tmp_path / "output.h5mu"
 
@@ -99,7 +100,7 @@ def test_cellxgene_extract_metadata_expression_with_layer(run_component, tmp_pat
             "--output",
             output_file,
             "--output_layer_counts",
-            "counts"
+            "counts",
         ]
     )
 
@@ -158,9 +159,9 @@ def test_cellxgene_extract_metadata_expression_with_layer(run_component, tmp_pat
     layers = mdata.mod["rna"].layers
     expected_layers = ["counts"]
     for exp_layer in expected_layers:
-        assert (
-            exp_layer in layers.keys()
-        ), f"Expected layer '{exp_layer}' not found in .layers"
+        assert exp_layer in layers.keys(), (
+            f"Expected layer '{exp_layer}' not found in .layers"
+        )
 
 
 if __name__ == "__main__":
