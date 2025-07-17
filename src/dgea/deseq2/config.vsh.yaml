@@ -94,6 +94,19 @@ argument_groups:
           This is used for reporting gene names in the output.
         default: "feature_name"
         required: false
+      - name: "--per_cell_type"
+        type: boolean_true
+        description: |
+          Whether to run DESeq2 analysis separately for each cell type.
+          If true, performs per-cell-type analysis with cell-type-specific results.
+          If false (default), runs multi-factor analysis accounting for cell type as a covariate.
+      - name: "--cell_type_column"
+        type: string
+        description: |
+          Column name in .obs that contains cell type information.
+          Only used when per_cell_type is true.
+        default: "cell_type"
+        required: false
 
   - name: Outputs
     arguments:
