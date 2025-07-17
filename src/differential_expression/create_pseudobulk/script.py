@@ -7,20 +7,8 @@ import sys
 import scipy.sparse as sp
 
 ## VIASH START
-adata = mu.read_h5ad(
-    "resources_test/annotation_test_data/TS_Blood_filtered.h5mu", mod="rna"
-)
-np.random.seed(0)
-n_cells = adata.n_obs
-treatment = np.random.choice(["ctrl", "stim"], size=n_cells, p=[0.5, 0.5])
-disease = np.random.choice(["healthy", "diseased"], size=n_cells, p=[0.5, 0.5])
-adata.obs["treatment"] = treatment
-adata.obs["disease"] = disease
-mdata = mu.MuData({"rna": adata})
-mdata.write_h5mu("resources_test/annotation_test_data/TS_Blood_filtered_annotated.h5mu")
-
 par = {
-    "input": "resources_test/annotation_test_data/TS_Blood_filtered_annotated.h5mu",
+    "input": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "modality": "rna",
     "input_layer": None,
     "obs_grouping": "cell_type",
@@ -31,7 +19,8 @@ par = {
     "min_num_cells_per_sample": 5,
     "pseudo_replicates": 1,
     "random_state": 0,
-    "output": "resources_test/annotation_test_data/TS_Blood_filtered_annotated_pseudobulk.h5mu",
+    "output": "test.h5mu",
+    "output_compression": "gzip",
 }
 meta = {"resources_dir": "src/utils"}
 ## VIASH END

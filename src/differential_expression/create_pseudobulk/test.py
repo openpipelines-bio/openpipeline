@@ -2,7 +2,6 @@ import os
 import mudata as mu
 import sys
 import pytest
-import numpy as np
 
 ## VIASH START
 meta = {"resources_dir": "resources_test/"}
@@ -10,44 +9,16 @@ meta = {"resources_dir": "resources_test/"}
 
 sys.path.append(meta["resources_dir"])
 
-
-@pytest.fixture
-def input_path():
-    return f"{meta['resources_dir']}/TS_Blood_filtered.h5mu"
+input_path = meta["resources_dir"] + "/TS_Blood_filtered.h5mu"
 
 
-@pytest.fixture
-def input_data(input_path):
-    mu_in = mu.read_h5mu(input_path)
-    return mu_in
-
-
-@pytest.fixture
-def annotated_test_data(input_data):
-    rna_in = input_data.mod["rna"]
-    np.random.seed(0)
-    n_cells = rna_in.n_obs
-    treatment = np.random.choice(["ctrl", "stim"], size=n_cells, p=[0.5, 0.5])
-    disease = np.random.choice(["healthy", "diseased"], size=n_cells, p=[0.5, 0.5])
-    rna_in.obs["treatment"] = treatment
-    rna_in.obs["disease"] = disease
-    return input_data
-
-
-@pytest.fixture
-def annotated_test_data_path(tmp_path, annotated_test_data):
-    temp_h5mu = tmp_path / "de_test_data.h5mu"
-    annotated_test_data.write_h5mu(temp_h5mu)
-    return temp_h5mu
-
-
-def test_simple_execution(run_component, random_h5mu_path, annotated_test_data_path):
+def test_simple_execution(run_component, random_h5mu_path):
     output_path = random_h5mu_path()
 
     run_component(
         [
             "--input",
-            annotated_test_data_path,
+            input_path,
             "--output",
             output_path,
             "--obs_grouping",
@@ -70,13 +41,13 @@ def test_simple_execution(run_component, random_h5mu_path, annotated_test_data_p
     assert adata.shape[0] == 8, "Expected a total of 8 pseudobulk samples in the output"
 
 
-def test_multiple_factors(run_component, random_h5mu_path, annotated_test_data_path):
+def test_multiple_factors(run_component, random_h5mu_path):
     output_path = random_h5mu_path()
 
     run_component(
         [
             "--input",
-            annotated_test_data_path,
+            input_path,
             "--output",
             output_path,
             "--obs_grouping",
@@ -107,13 +78,13 @@ def test_multiple_factors(run_component, random_h5mu_path, annotated_test_data_p
     )
 
 
-def test_pseudo_replicates(run_component, random_h5mu_path, annotated_test_data_path):
+def test_pseudo_replicates(run_component, random_h5mu_path):
     output_path = random_h5mu_path()
 
     run_component(
         [
             "--input",
-            annotated_test_data_path,
+            input_path,
             "--output",
             output_path,
             "--obs_grouping",
@@ -140,13 +111,13 @@ def test_pseudo_replicates(run_component, random_h5mu_path, annotated_test_data_
     )
 
 
-def test_filtering(run_component, random_h5mu_path, annotated_test_data_path):
+def test_filtering(run_component, random_h5mu_path):
     output_path = random_h5mu_path()
 
     run_component(
         [
             "--input",
-            annotated_test_data_path,
+            input_path,
             "--output",
             output_path,
             "--obs_grouping",
