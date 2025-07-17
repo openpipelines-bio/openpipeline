@@ -124,7 +124,7 @@ resources:
 test_resources:
   - type: python_script
     path: test.py
-  - path: /resources_test/annotation_test_data/TS_Blood_filtered_annotated_pseudobulk.h5mu
+  - path: /resources_test/annotation_test_data/TS_Blood_filtered_pseudobulk.h5mu
 
 engines:
 - type: docker
