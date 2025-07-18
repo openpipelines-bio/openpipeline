@@ -1,9 +1,8 @@
-import random
 import numpy as np
-import anndata as ad
 import mudata as mu
-import logging
+import pandas as pd
 import sys
+import scanpy as sc
 import scipy.sparse as sp
 
 ## VIASH START
@@ -11,13 +10,11 @@ par = {
     "input": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "modality": "rna",
     "input_layer": None,
-    "obs_grouping": "cell_type",
-    "obs_sample_conditions": ["treatment", "donor_id", "disease"],
-    # "obs_sample_conditions": ["donor_id", "treatment", "disease"],
+    "obs_label": "cell_type",
+    "obs_groups": ["treatment", "donor_id", "disease"],
+    "obs_cell_count": "n_cells",
     "obs_pseudo_bulk_samples": "pb_sample",
-    "aggregation_method": "sum",
-    "min_num_cells_per_sample": 5,
-    "pseudo_replicates": 1,
+    "min_obs_per_sample": 5,
     "random_state": 0,
     "output": "test.h5mu",
     "output_compression": "gzip",
@@ -31,68 +28,6 @@ from setup_logger import setup_logger
 logger = setup_logger()
 
 
-def aggregate_and_filter(
-    adata,
-    grouping_value,
-    group_key,
-    sample_key,
-    obs_to_keep,
-    aggregation_method="sum",
-    num_cells_per_donor=30,
-    pseudo_replicates=1,
-):
-    # subset adata to the given grouping (cell/cluster) value
-    adata_cell_pop = adata[adata.obs[group_key] == grouping_value]
-
-    pb_aggregated_data = []
-    for i, pbs in enumerate(
-        pb_samples := adata_cell_pop.obs[sample_key].cat.categories
-    ):
-        logger.info(f"Processing pseudobulk sample {i + 1} out of {len(pb_samples)}...")
-
-        pb_adata = adata_cell_pop[adata_cell_pop.obs[sample_key] == pbs]
-
-        # check which pseudobulk sample to keep according to the number of cells
-        if pb_adata.shape[0] < num_cells_per_donor:
-            logging.info(
-                f"Number of cells for {pbs} is less than {num_cells_per_donor}, skipping pseudobulk aggregation..."
-            )
-            continue
-
-        # Create pseudo-replicates
-        logging.info(
-            f"Creating {pseudo_replicates} pseudo-replicates for pseudobulk sample {pbs}..."
-        )
-        indices = list(pb_adata.obs_names)
-        np.random.seed(par["random_state"])  # optional seed for reproducibility
-        random.shuffle(indices)
-        indices = np.array_split(np.array(indices), pseudo_replicates)
-
-        # Aggregate data for each pseudo-replicate
-        for i, rep_idx in enumerate(indices):
-            # Aggregate gene expression values
-            if aggregation_method == "sum":
-                pb_adata_rep = ad.AnnData(
-                    X=pb_adata[rep_idx].X.sum(axis=0), var=pb_adata[rep_idx].var[[]]
-                )
-            elif aggregation_method == "mean":
-                pb_adata_rep = ad.AnnData(
-                    X=pb_adata[rep_idx].X.mean(axis=0), var=pb_adata[rep_idx].var[[]]
-                )
-
-            # Store metadata
-            pb_adata_rep.obs_names = [f"{grouping_value}_{pbs}_{str(i)}"]
-            pb_adata_rep.obs[group_key] = grouping_value
-            for obs in obs_to_keep:
-                pb_adata_rep.obs[obs] = pb_adata[rep_idx].obs[obs][0]
-            pb_adata_rep.obs["n_cells"] = len(pb_adata[rep_idx])
-            pb_aggregated_data.append(pb_adata_rep)
-
-    adata_pb = ad.concat(pb_aggregated_data)
-
-    return adata_pb
-
-
 def is_normalized(layer):
     if sp.issparse(layer):
         row_sums = np.array(layer.sum(axis=1)).flatten()
@@ -100,6 +35,21 @@ def is_normalized(layer):
         row_sums = layer.sum(axis=1)
 
     return np.allclose(row_sums, 1)
+
+
+def count_obs(adata, pb_adata, obs_cols):
+    counts = []
+    for i in range(pb_adata.n_obs):
+        values = pb_adata.obs.iloc[i][obs_cols]
+
+        mask = pd.Series([True] * adata.n_obs)
+        for col in obs_cols:
+            mask &= (adata.obs[col] == values[col]).values
+
+        count = mask.sum()
+        counts.append(count)
+
+    return counts
 
 
 def main():
@@ -113,56 +63,42 @@ def main():
     if is_normalized(adata.X):
         raise ValueError("Input layer must contain raw counts.")
 
-    # Ensure al columns required for pseudobulk aggregation exist and are categorical
-    required_categorical_obs = par["obs_sample_conditions"] + [par["obs_grouping"]]
-    for col in required_categorical_obs:
+    # Sanitize pseudobulk aggregation fields
+    pseudobulk_cols = [par["obs_label"]]
+    if par["obs_groups"]:
+        pseudobulk_cols += par["obs_groups"]
+
+    for col in pseudobulk_cols:
         if col not in adata.obs.columns:
             raise ValueError(f"Required column '{col}' not found in .obs.")
         adata.obs[col] = (
             adata.obs[col]
             .astype(str)
-            .replace(" ", "_")
-            .replace("+", "")
+            .str.replace(" ", "_")
+            .str.replace("+", "")
             .astype("category")
         )
 
-    # Create pseudobulk groups
-    logger.info("Creating pseudobulk groups...")
-    adata.obs[par["obs_pseudo_bulk_samples"]] = [
-        "_".join(values)
-        for values in zip(*[adata.obs[col] for col in par["obs_sample_conditions"]])
-    ]
-    adata.obs[par["obs_pseudo_bulk_samples"]] = adata.obs[
-        par["obs_pseudo_bulk_samples"]
-    ].astype("category")
-    logger.info(
-        f"Pseudobulk groups created: {adata.obs[par['obs_pseudo_bulk_samples']].unique().tolist()}"
-    )
-
     # Aggregate pseudobulk data per cell group
-    pb_datasets = []
-    cell_groups = adata.obs[par["obs_grouping"]].unique()
+    logger.info("Creating pseudobulk samples...")
+    adata_pb = sc.get.aggregate(adata, by=pseudobulk_cols, func="sum", axis=0)
+    adata_pb.X = adata_pb.layers["sum"]
+    del adata_pb.layers["sum"]
 
-    for group in cell_groups:
-        logger.info(f"Processing cell group {group}")
-        pb_data = aggregate_and_filter(
-            adata,
-            group,
-            par["obs_grouping"],
-            par["obs_pseudo_bulk_samples"],
-            par["obs_sample_conditions"],
-            aggregation_method=par["aggregation_method"],
-            num_cells_per_donor=par["min_num_cells_per_sample"],
-            pseudo_replicates=par["pseudo_replicates"],
-        )
-        pb_datasets.append(pb_data)
+    adata_pb.obs_names = [
+        "_".join(values)
+        for values in zip(*[adata_pb.obs[col] for col in pseudobulk_cols])
+    ]
 
-    # Combine pseudobulk datasets
-    logger.info("Combining pseudobulk datasets...")
-    adata_pb = ad.concat(pb_datasets)
+    # Filter pseudobulk samples based on minimum observation count
+    logger.info("Filtering pseudobulk samples based on minimum observation count...")
+    adata_pb.obs[par["obs_cell_count"]] = count_obs(adata, adata_pb, pseudobulk_cols)
+    adata_pb = adata_pb[adata_pb.obs[par["obs_cell_count"]] > par["min_obs_per_sample"]]
+
     logger.info(
         f"Final dataset: {adata_pb.n_obs} pseudobulk samples, {adata_pb.n_vars} genes"
     )
+
     logger.info("Writing output data...")
     mdata_pb = mu.MuData({"rna": adata_pb})
     mdata_pb.write_h5mu(par["output"], compression=par["output_compression"])

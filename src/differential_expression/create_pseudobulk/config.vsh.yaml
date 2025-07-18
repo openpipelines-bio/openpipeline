@@ -36,14 +36,14 @@ argument_groups:
         type: string
         required: false
         description: "Input layer to use. If None, X is used. This layer must contain raw counts."
-      - name: "--obs_grouping"
+      - name: "--obs_label"
         type: string
         required: true
-        description: ".obs field containing the grouping variable. Typically this field contains cell groups such as annotated cell types or clusters."
-      - name: "--obs_sample_conditions"
+        description: ".obs field containing the variable to group on. Typically this field contains cell groups such as annotated cell types or clusters."
+      - name: "--obs_groups"
         type: string
         multiple: true
-        description: ".obs fields containing the experimental condition(s) to create pseudobulk sampels for."
+        description: ".obs fields containing the experimental condition(s) to create pseudobulk samples for."
 
   - name: Arguments
     arguments:
@@ -52,16 +52,11 @@ argument_groups:
         choices: ["sum", "mean"]
         default: "sum"
         description: "Method to aggregate the raw counts for pseudoreplicates. Either sum or mean."
-      - name: "--min_num_cells_per_sample"
+      - name: "--min_obs_per_sample"
         type: integer
         min: 1
         default: 30
         description: "Minimum number of cells per pseudobulk sample."
-      - name: "--pseudo_replicates"
-        type: integer
-        min: 1
-        default: 1
-        description: "Number of pseudoreplicates to create per pseudobulk sample."
       - name: --random_state
         type: integer
         description: |
@@ -69,18 +64,18 @@ argument_groups:
         min: 0
         default: 0
         required: false
+      - name: "--obs_cell_count"
+        type: string
+        default: "n_cells"
+        description: "The .obs field to store the number of observations per pseudobulk sample."
 
   - name: Outputs
     arguments:
       - name: "--output"
         type: file
-        description: Output h5mu file containing the aggreagted pseudobulk samples.
+        description: Output h5mu file containing the aggregated pseudobulk samples.
         direction: output
         required: true
-      - name: "--obs_pseudo_bulk_samples"
-        type: string
-        default: "pb_sample"
-        description: "In which .obs slot to store the pseudobulk sample names." 
       - name: "--output_compression"
         type: string
         description: |
@@ -104,7 +99,7 @@ engines:
   image: python:3.12
   setup:
     - type: python
-      __merge__: [/src/base/requirements/anndata_mudata.yaml]
+      __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml ]
   __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 
 runners:
