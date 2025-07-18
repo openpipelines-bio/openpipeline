@@ -13,7 +13,6 @@ par = {
     "obs_label": "cell_type",
     "obs_groups": ["treatment", "donor_id", "disease"],
     "obs_cell_count": "n_cells",
-    "obs_pseudo_bulk_samples": "pb_sample",
     "min_obs_per_sample": 5,
     "random_state": 0,
     "output": "test.h5mu",
