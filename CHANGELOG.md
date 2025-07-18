@@ -23,6 +23,10 @@
 
 * `liana`: enabled jobs to be run in parallel and added two new arguments: `consensus_opts`, `de_method` (PR #1039)
 
+* (Experimental) `differential_expression/create_pseudobulk`: Added a component to generate pseudobulk samples from single-cell transcriptomics data, 
+  to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis. 
+  Warning: the functionality in this component is experimental and its behavior may change in future releases (PR #1042).
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
