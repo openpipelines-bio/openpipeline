@@ -3331,7 +3331,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_arc_reference",
     "viash_version" : "0.9.4",
-    "git_commit" : "6c1b4490f76f1da1705888c836973535a365154d",
+    "git_commit" : "d8e43252870169a0cd32e03df23ee92942d64b72",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
