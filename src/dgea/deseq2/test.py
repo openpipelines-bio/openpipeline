@@ -19,7 +19,7 @@ sys.path.append(meta["resources_dir"])
 @pytest.fixture
 def pseudobulk_test_data_path():
     """Path to the pseudobulk test data"""
-    return f"{meta['resources_dir']}/TS_Blood_filtered_annotated_pseudobulk.h5mu"
+    return f"{meta['resources_dir']}/TS_Blood_filtered_pseudobulk.h5mu"
 
 
 def test_simple_deseq2_execution(run_component, tmp_path, pseudobulk_test_data_path):
