@@ -6,6 +6,8 @@ description: |
   by aggregating raw gene expression counts from individual cells to create 
   bulk-like expression profiles suitable for differential expression analysis
   with methods designed for bulk differential expression analysis.
+  Note that this componentonly considers factors as explanatory variables, 
+  and excludes covariates from the analysis.
 
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
