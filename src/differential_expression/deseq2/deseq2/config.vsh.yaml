@@ -2,7 +2,7 @@ name: deseq2
 namespace: differential_expression
 description: |
   Performs differential expression analysis using DESeq2 on bulk samples or pseudobulk samples aggregated from single-cell data.
-  Note that this component focuses exclusively on factorial experimental design variables, and excludes e.g. covariates from the analysis.
+  Note that this componentonly considers factors as explanatory variables, and excludes covariates from the analysis.
 
 authors:
   - __merge__: /src/authors/jakub_majercik.yaml

@@ -114,18 +114,43 @@ def filter_genes_by_pattern(counts, gene_pattern):
     return counts
 
 
-def deseq2_analysis(adata, contrast_tuple):
+def deseq2_analysis(counts, metadata, contrast_tuple, design_formula):
+    # Creating DESeq2 dataset
+    logger.info("Creating DESeq2 dataset")
+    adata = DeseqDataSet(
+        counts=counts,
+        metadata=metadata,
+        design=design_formula,
+    )
+
+    # Filtering genes based on presence across samples
+    sample_count = (
+        par["filter_genes_min_samples"] if par["filter_genes_min_samples"] else 1
+    )
+    logger.info(
+        f"Filtering genes by counts: removing genes that are present in less than {sample_count} samples"
+    )
+    sc.pp.filter_genes(adata, min_cells=sample_count)
+
+    # Run DESeq2 analysis
+    logger.info("Running DESeq2 analysis")
     adata.deseq2()
+
     # Perform statistical test
+    logger.info("Performing statistical test")
     stat_res = DeseqStats(adata, contrast=contrast_tuple)
+    stat_res.summary()
     results = stat_res.results_df.reset_index()
+
     # Sort by log2FoldChange
     results = results.sort_values("log2FoldChange", ascending=False)
+
     # Add additional statistics
     results["abs_log2FoldChange"] = results["log2FoldChange"].abs()
     results["significant"] = (results["padj"] < par["p_adj_threshold"]) & (
         results["log2FoldChange"].abs() > par["log2fc_threshold"]
     )
+
     # Filter results based on significance
     significant_genes = results[
         (results["padj"] < par["p_adj_threshold"])
@@ -168,23 +193,9 @@ def main():
 
     # Run DESeq2 analysis
     try:
-        logger.info("Creating DESeq2 dataset")
-        dds = DeseqDataSet(
-            counts=counts,
-            metadata=metadata,
-            design=par["design_formula"],
-        )
-        # Filtering genes based on presence across samples
-        min_cells = par.get("filter_genes_min_samples", 1)
-        logger.info(
-            f"Filtering genes by counts: removing genes that are present in less than {min_cells} samples"
-        )
-        sc.pp.filter_genes(dds, min_cells=min_cells)
-
         # Check if running per cell group or multi-factor
         if par["obs_cell_group"]:
             logger.info("Running DESeq2 analysis per cell group")
-
             # Remove cell group from design formula for per-cell-type analysis
             design_no_celltype = (
                 par["design_formula"]
@@ -194,55 +205,16 @@ def main():
 
             all_results = []
             for cell_group in metadata[par["obs_cell_group"]].unique():
-                logger.info(f"Analyzing cell group: {cell_group}")
-
                 # Subset data for this cell group
                 cell_mask = metadata[par["obs_cell_group"]] == cell_group
                 counts_subset = counts.loc[cell_mask, :]
                 metadata_subset = metadata.loc[cell_mask, :]
 
                 # Run DESeq2 for this cell group
-                dds_cell = DeseqDataSet(
-                    counts=counts_subset,
-                    metadata=metadata_subset,
-                    design=design_no_celltype,
+                logger.info(f"Running DESeq2 analysis for cell group {cell_group}...")
+                cell_results = deseq2_analysis(
+                    counts_subset, metadata_subset, contrast_tuple, design_no_celltype
                 )
-
-                # Run DESeq2 analysis
-                logger.info("Running DESeq2 analysis...")
-                dds_cell.deseq2()
-
-                # Perform statistical test
-                stat_res_cell = DeseqStats(dds_cell, contrast=contrast_tuple)
-                stat_res_cell.summary()
-
-                # Get results
-                cell_results = stat_res_cell.results_df.reset_index()
-                logger.info(
-                    f"DESeq2 analysis for cell group {cell_group} completed. Found {len(cell_results)} genes."
-                )
-
-                # Filter results based on significance
-                significant_genes_cell = cell_results[
-                    (cell_results["padj"] < par["p_adj_threshold"])
-                    & (cell_results["log2FoldChange"].abs() > par["log2fc_threshold"])
-                ]
-                logger.info(
-                    f"Significant genes for cell group {cell_group} (padj < {par['p_adj_threshold']}, |log2FC| > {par['log2fc_threshold']}): {len(significant_genes_cell)}"
-                )
-
-                # Sort by log2FoldChange
-                cell_results = cell_results.sort_values(
-                    "log2FoldChange", ascending=False
-                )
-
-                # Add additional statistics
-                cell_results["abs_log2FoldChange"] = cell_results[
-                    "log2FoldChange"
-                ].abs()
-                cell_results["significant"] = (
-                    cell_results["padj"] < par["p_adj_threshold"]
-                ) & (cell_results["log2FoldChange"].abs() > par["log2fc_threshold"])
 
                 # Add cell_group column to results
                 cell_results["cell_group"] = cell_group
@@ -252,7 +224,9 @@ def main():
             results = pd.concat(all_results, ignore_index=True)
 
         else:
-            results = deseq2_analysis(dds, contrast_tuple)
+            results = deseq2_analysis(
+                counts, metadata, contrast_tuple, par["design_formula"]
+            )
 
         # Log summary statistics
         upregulated = results[(results["log2FoldChange"] > 0) & results["significant"]]
@@ -262,7 +236,7 @@ def main():
 
         logger.info(
             "Summary:\n"
-            f"Total genes analyzed: {len(results)}\n"
+            f"  Total genes analyzed: {len(results)}\n"
             f"  Significant upregulated: {len(upregulated)}\n"
             f"  Significant downregulated: {len(downregulated)}\n"
         )
@@ -272,11 +246,13 @@ def main():
         results.to_csv(par["output"], index=False)
 
     except Exception as e:
-        # logger.error(
-        #     f"DESeq2 analysis failed: {str(e)}:\n"
-        #     f"Analysis context: {contrast_column} contrast {contrast_values}, {len(mod.obs)} samples, {len(mod.var)} genes"
-        # )
-        logger.warning("Check input data, design factors, and contrast specifications")
+        logger.warning(
+            "Check input data, design factors, and contrast specifications\n"
+            f"Contrast column: {par['contrast_column']}\n"
+            f"Contrast values: {par['contrast_values']}\n"
+            f"Number of samples: {len(mod.obs)}\n"
+            f"Number of genes: {len(mod.var)}\n"
+        )
 
         raise e
 
