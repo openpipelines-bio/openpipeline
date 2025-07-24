@@ -1,14 +1,12 @@
 name: deseq2
-namespace: dgea
+namespace: differential_expression
 description: |
-  Perform differential expression analysis using DESeq2 on pseudobulk samples aggregated from single-cell data.
-  This component aggregates single-cell data into pseudobulk samples based on specified design factors,
-  and then performs differential expression analysis using DESeq2.
+  Perform differential expression analysis using DESeq2 on bulk samples or pseudobulk samples aggregated from single-cell data.
 
 authors:
-  - __merge__: /src/authors/dorien_roosen.yaml
-    roles: [ author ]
   - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author ]
   - __merge__: /src/authors/dries_de_maeyer.yaml
     roles: [ contributor ]
@@ -21,7 +19,7 @@ argument_groups:
       - name: "--input"
         alternatives: ["-i"]
         type: file
-        description: Input h5mu file.
+        description: Input h5mu file containing bulk or pseudobulk transcriptomic samples.
         direction: input
         required: true
       - name: "--modality"
@@ -104,8 +102,8 @@ argument_groups:
         type: string
         description: |
           Column name in .obs that contains cell type information.
-          Only used when per_cell_type is true.
-        default: "cell_type"
+          Required when per_cell_type is true.
+        example: "cell_type"
         required: false
 
   - name: Outputs

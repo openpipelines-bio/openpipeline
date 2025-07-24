@@ -1,6 +1,4 @@
-import os
 import subprocess
-import mudata as mu
 import sys
 import pytest
 import pandas as pd
@@ -8,9 +6,7 @@ import re
 
 
 ## VIASH START
-meta = {
-    "resources_dir": "resources_test/"
-}
+meta = {"resources_dir": "resources_test/"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -38,17 +34,19 @@ def test_simple_deseq2_execution(run_component, tmp_path, pseudobulk_test_data_p
             "treatment",
             "--contrast_values",
             "stim",
-            "--contrast_values", 
+            "--contrast_values",
             "ctrl",
         ]
     )
 
     assert output_path.exists(), "Output CSV file does not exist"
-    
+
     # Check the output file
     results = pd.read_csv(output_path)
     expected_columns = ["log2FoldChange", "pvalue", "padj", "significant"]
-    assert all(col in results.columns for col in expected_columns), f"Expected columns {expected_columns} not found"
+    assert all(col in results.columns for col in expected_columns), (
+        f"Expected columns {expected_columns} not found"
+    )
     assert len(results) > 0, "No results found in output"
 
 
@@ -78,7 +76,7 @@ def test_complex_design_formula(run_component, tmp_path, pseudobulk_test_data_pa
     )
 
     assert output_path.exists(), "Output CSV file does not exist"
-    
+
     results = pd.read_csv(output_path)
     assert "significant" in results.columns, "Significance column not found"
     assert len(results) > 0, "No results found for complex design"
@@ -105,7 +103,7 @@ def test_invalid_contrast_column(run_component, tmp_path, pseudobulk_test_data_p
                 "group2",
             ]
         )
-    
+
     assert re.search(
         r"Missing required columns in metadata: \['nonexistent_column'\]",
         err.value.stdout.decode("utf-8"),
