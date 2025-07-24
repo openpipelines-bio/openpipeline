@@ -20,8 +20,8 @@ par = {
     "log2fc_threshold": 0.0,
     "filter_gene_patterns": ["MIR\\d+", "AL\\d+", "LINC\\d+", "AC\\d+", "AP\\d+"],
     "var_gene_name" : "feature_name",
-    "per_cell_type": False,  # New parameter
-    "cell_type_column": "cell_type",  # Which column contains cell types
+    "per_cell_type": False,
+    "cell_type_column": "cell_type",
 }
 meta = {"resources_dir": "src/utils"}
 
@@ -201,9 +201,7 @@ try:
         results = pd.concat(all_results, ignore_index=True)
         
     else:
-        # Current multi-factor approach
         logger.info("Running multi-factor DESeq2 analysis")
-        # Run DESeq2 analysis
         logger.info("Running DESeq2 analysis...")
         dds.deseq2()
         
