@@ -1,7 +1,8 @@
 name: deseq2
 namespace: differential_expression
 description: |
-  Perform differential expression analysis using DESeq2 on bulk samples or pseudobulk samples aggregated from single-cell data.
+  Performs differential expression analysis using DESeq2 on bulk samples or pseudobulk samples aggregated from single-cell data.
+  Note that this component focuses exclusively on factorial experimental design variables, and excludes e.g. covariates from the analysis.
 
 authors:
   - __merge__: /src/authors/jakub_majercik.yaml
@@ -19,7 +20,7 @@ argument_groups:
       - name: "--input"
         alternatives: ["-i"]
         type: file
-        description: Input h5mu file containing bulk or pseudobulk transcriptomic samples.
+        description: Input h5mu file containing (pseudo-)bulk transcriptomic samples.
         direction: input
         required: true
       - name: "--modality"
@@ -32,6 +33,18 @@ argument_groups:
         type: string
         required: false
         description: "Input layer to use. If None, X is used. This layer must contain raw counts."
+      - name: "--var_gene_name"
+        type: string
+        description: |
+          Column name in the variable features table that contains gene symbols.
+          This is used for reporting gene names in the output.
+        default: "feature_name"
+        required: false
+      - name: "--obs_cell_group"
+        type: boolean_true
+        description: |
+          Whether to run DESeq2 analysis separately for each cell group, for example per cell type or per cell cluster.
+          If true, performs per-cell-group analysis with cell-group-specific results.
 
   - name: Arguments
     arguments:
@@ -59,11 +72,12 @@ argument_groups:
         example: ["stim", "ctrl"]
       - name: "--filter_genes_min_samples"
         type: integer
+        min: 1
         description: |
           Minimum number of samples a gene must be expressed in to be included in the analysis.
           If None, no filtering is applied.
         required: false
-      - name: "--padj_threshold"
+      - name: "--p_adj_threshold"
         type: double
         description: |
           Adjusted p-value threshold for significance.
@@ -85,26 +99,6 @@ argument_groups:
           Genes matching any of these patterns will be excluded from the analysis.
         required: false
         example: ["MIR\\d+", "AL\\d+", "LINC\\d+", "AC\\d+", "AP\\d+"]
-      - name: "--var_gene_name"
-        type: string
-        description: |
-          Column name in the variable features table that contains gene symbols.
-          This is used for reporting gene names in the output.
-        default: "feature_name"
-        required: false
-      - name: "--per_cell_type"
-        type: boolean_true
-        description: |
-          Whether to run DESeq2 analysis separately for each cell type.
-          If true, performs per-cell-type analysis with cell-type-specific results.
-          If false (default), runs multi-factor analysis accounting for cell type as a covariate.
-      - name: "--cell_type_column"
-        type: string
-        description: |
-          Column name in .obs that contains cell type information.
-          Required when per_cell_type is true.
-        example: "cell_type"
-        required: false
 
   - name: Outputs
     arguments:
