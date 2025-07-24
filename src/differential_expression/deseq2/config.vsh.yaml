@@ -41,9 +41,9 @@ argument_groups:
         default: "feature_name"
         required: false
       - name: "--obs_cell_group"
-        type: boolean_true
+        type: string
         description: |
-          Whether to run DESeq2 analysis separately for each cell group, for example per cell type or per cell cluster.
+          .obs field containing the cell group information, for example per cell type or per cell cluster.
           If true, performs per-cell-group analysis with cell-group-specific results.
 
   - name: Arguments

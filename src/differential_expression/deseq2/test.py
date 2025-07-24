@@ -50,6 +50,42 @@ def test_simple_deseq2_execution(run_component, tmp_path, pseudobulk_test_data_p
     assert len(results) > 0, "No results found in output"
 
 
+def test_simple_deseq2_with_cell_group(
+    run_component, tmp_path, pseudobulk_test_data_path
+):
+    """Test basic DESeq2 execution with minimal parameters"""
+    output_path = tmp_path / "deseq2_results.csv"
+
+    run_component(
+        [
+            "--input",
+            pseudobulk_test_data_path,
+            "--output",
+            str(output_path),
+            "--obs_cell_group",
+            "cell_type",
+            "--design_formula",
+            "~ treatment",
+            "--contrast_column",
+            "treatment",
+            "--contrast_values",
+            "stim",
+            "--contrast_values",
+            "ctrl",
+        ]
+    )
+
+    assert output_path.exists(), "Output CSV file does not exist"
+
+    # Check the output file
+    results = pd.read_csv(output_path)
+    expected_columns = ["log2FoldChange", "pvalue", "padj", "significant", "cell_type"]
+    assert all(col in results.columns for col in expected_columns), (
+        f"Expected columns {expected_columns} not found"
+    )
+    assert len(results) > 0, "No results found in output"
+
+
 def test_complex_design_formula(run_component, tmp_path, pseudobulk_test_data_path):
     """Test DESeq2 with complex design formula accounting for multiple factors"""
     output_path = tmp_path / "deseq2_complex_results.csv"

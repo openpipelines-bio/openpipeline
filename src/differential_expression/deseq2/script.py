@@ -14,8 +14,8 @@ par = {
     "output": "deseq2_results.csv",
     "input_layer": None,
     "modality": "rna",
-    "obs_cell_group": None,
-    "design_formula": "~ cell_type + disease + treatment",
+    "obs_cell_group": "cell_type",
+    "design_formula": "~ disease + treatment",
     "contrast_column": "treatment",
     "contrast_values": [
         "stim",
@@ -114,8 +114,7 @@ def filter_genes_by_pattern(counts, gene_pattern):
     return counts
 
 
-def deseq2_analysis(counts, metadata, contrast_tuple, design_formula):
-    # Creating DESeq2 dataset
+def create_deseq2_dataset(counts, metadata, design_formula):
     logger.info("Creating DESeq2 dataset")
     adata = DeseqDataSet(
         counts=counts,
@@ -132,7 +131,10 @@ def deseq2_analysis(counts, metadata, contrast_tuple, design_formula):
     )
     sc.pp.filter_genes(adata, min_cells=sample_count)
 
-    # Run DESeq2 analysis
+    return adata
+
+
+def deseq2_analysis(adata, contrast_tuple):
     logger.info("Running DESeq2 analysis")
     adata.deseq2()
 
@@ -212,21 +214,21 @@ def main():
 
                 # Run DESeq2 for this cell group
                 logger.info(f"Running DESeq2 analysis for cell group {cell_group}...")
-                cell_results = deseq2_analysis(
-                    counts_subset, metadata_subset, contrast_tuple, design_no_celltype
+                cell_dds = create_deseq2_dataset(
+                    counts_subset, metadata_subset, design_no_celltype
                 )
+                cell_results = deseq2_analysis(cell_dds, contrast_tuple)
 
                 # Add cell_group column to results
-                cell_results["cell_group"] = cell_group
+                cell_results[par["obs_cell_group"]] = cell_group
                 all_results.append(cell_results)
 
             # Combine all results
             results = pd.concat(all_results, ignore_index=True)
 
         else:
-            results = deseq2_analysis(
-                counts, metadata, contrast_tuple, par["design_formula"]
-            )
+            dds = create_deseq2_dataset(counts, metadata, par["design_formula"])
+            results = deseq2_analysis(dds, contrast_tuple)
 
         # Log summary statistics
         upregulated = results[(results["log2FoldChange"] > 0) & results["significant"]]
