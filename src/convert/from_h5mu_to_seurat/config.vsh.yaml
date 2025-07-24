@@ -1,6 +1,7 @@
 name: "from_h5mu_to_seurat"
 namespace: "convert"
 scope: "public"
+status: "deprecated"
 description: |
   Converts an h5mu file into a Seurat file.
 
