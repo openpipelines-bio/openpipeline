@@ -34,15 +34,20 @@ wget "https://zenodo.org/record/7580707/files/pretrained_models_Blood_ts.tar.gz?
 # Process Tabula Sapiens Blood reference h5ad
 # (Select one individual and 100 cells per cell type)
 # normalize and log1p transform data
+# Add treatment and disease columns
 python <<HEREDOC
 import anndata as ad
 import scanpy as sc
+import numpy as np
+
+# Read in data
 ref_adata = ad.read_h5ad("${OUT}/tmp_TS_Blood_filtered.h5ad")
 sub_ref_adata = ref_adata[ref_adata.obs["donor_assay"] == "TSP14_10x 3' v3"] 
 n=100
 s=sub_ref_adata.obs.groupby('cell_ontology_class').cell_ontology_class.transform('count')
 sub_ref_adata_final = sub_ref_adata[sub_ref_adata.obs[s>=n].groupby('cell_ontology_class').head(n).index]
-# assert sub_ref_adata_final.shape == (500, 58870)
+
+# Normalize and log1p transform data
 data_for_scanpy = ad.AnnData(X=sub_ref_adata_final.X)
 sc.pp.normalize_total(data_for_scanpy, target_sum=10000)
 sc.pp.log1p(
@@ -50,8 +55,17 @@ sc.pp.log1p(
     base=None,
     layer=None,
     copy=False,
-)  
+)
 sub_ref_adata_final.layers["log_normalized"] = data_for_scanpy.X
+
+# Add treatment and disease columns
+n_cells = sub_ref_adata_final.n_obs
+treatment = np.random.choice(["ctrl", "stim"], size=n_cells, p=[0.5, 0.5])
+disease = np.random.choice(["healthy", "diseased"], size=n_cells, p=[0.5, 0.5])
+sub_ref_adata_final.obs["treatment"] = treatment
+sub_ref_adata_final.obs["disease"] = disease
+
+# Write out data
 sub_ref_adata_final.write("${OUT}/TS_Blood_filtered.h5ad", compression='gzip')
 HEREDOC
 
@@ -115,3 +129,13 @@ viash run src/integrate/scanvi/config.vsh.yaml --engine docker -- \
 rm "${OUT}/scanvi_output.h5mu"
 rm "${OUT}/scvi_output.h5mu"
 rm -r "${OUT}/Pretrained_model/"
+
+echo "> Creating Pseudobulk Data for DGEA"
+viash run src/differential_expression/create_pseudobulk/config.vsh.yaml --engine docker -- \
+    --input "${OUT}/TS_Blood_filtered.h5mu" \
+    --obs_grouping "cell_type" \
+    --obs_sample_conditions "donor_id" \
+    --obs_sample_conditions "treatment" \
+    --obs_sample_conditions "disease" \
+    --min_num_cells_per_sample 5 \
+    --output "${OUT}/TS_Blood_filtered_pseudobulk.h5mu" 
