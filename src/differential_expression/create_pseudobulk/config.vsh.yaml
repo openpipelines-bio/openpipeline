@@ -1,0 +1,111 @@
+name: differential_expression
+namespace: "create_pseudobulk"
+scope: "public"
+description: |
+  Generation of pseudobulk samples from single-cell transcriptomics data,
+  by aggregating raw gene expression counts from individual cells to create 
+  bulk-like expression profiles suitable for differential expression analysis
+  with methods designed for bulk differential expression analysis.
+  Note that this componentonly considers factors as explanatory variables, 
+  and excludes covariates from the analysis.
+
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/dries_de_maeyer.yaml
+    roles: [ contributor ]
+  - __merge__: /src/authors/weiwei_schultz.yaml
+    roles: [ contributor ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: Input h5mu file.
+        direction: input
+        required: true
+      - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--input_layer"
+        type: string
+        required: false
+        description: "Input layer to use. If None, X is used. This layer must contain raw counts."
+      - name: "--obs_label"
+        type: string
+        required: true
+        description: ".obs field containing the variable to group on. Typically this field contains cell groups such as annotated cell types or clusters."
+      - name: "--obs_groups"
+        type: string
+        multiple: true
+        description: ".obs fields containing the experimental condition(s) to create pseudobulk samples for."
+
+  - name: Arguments
+    arguments:
+      - name: "--aggregation_method"
+        type: string
+        choices: ["sum", "mean"]
+        default: "sum"
+        description: "Method to aggregate the raw counts for pseudoreplicates. Either sum or mean."
+      - name: "--min_obs_per_sample"
+        type: integer
+        min: 1
+        default: 30
+        description: "Minimum number of cells per pseudobulk sample."
+      - name: --random_state
+        type: integer
+        description: |
+          The random seed for sampling.
+        min: 0
+        default: 0
+        required: false
+      - name: "--obs_cell_count"
+        type: string
+        default: "n_cells"
+        description: "The .obs field to store the number of observations per pseudobulk sample."
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        type: file
+        description: Output h5mu file containing the aggregated pseudobulk samples.
+        direction: output
+        required: true
+      - name: "--output_compression"
+        type: string
+        description: |
+          The compression format to be used on the output h5mu object.
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
+
+engines:
+- type: docker
+  image: python:3.12
+  setup:
+    - type: python
+      __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml ]
+  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [lowcpu, lowmem]
