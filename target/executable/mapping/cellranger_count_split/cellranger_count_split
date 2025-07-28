@@ -453,9 +453,9 @@ ENTRYPOINT []
 RUN apt update && apt upgrade -y
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Samuel D'Souza, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count_split"
-LABEL org.opencontainers.image.created="2025-07-26T03:07:12Z"
+LABEL org.opencontainers.image.created="2025-07-28T03:16:08Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="da7abc68307723662f9542e786aed4686a065f45"
+LABEL org.opencontainers.image.revision="851532ca4f0ce5a97f4aa69328d9cc8914de9b99"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

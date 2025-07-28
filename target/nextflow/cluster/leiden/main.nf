@@ -3346,7 +3346,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.9.4",
-    "git_commit" : "da7abc68307723662f9542e786aed4686a065f45",
+    "git_commit" : "851532ca4f0ce5a97f4aa69328d9cc8914de9b99",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
