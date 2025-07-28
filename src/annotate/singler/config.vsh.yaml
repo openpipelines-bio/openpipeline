@@ -1,0 +1,189 @@
+name: singler
+namespace: annotate
+scope: "public"
+description: |
+  SingleR performs reference-based cell type annotation for single-cell RNA-seq data 
+  by computing Spearman correlations between test cells and reference samples with known labels, 
+  using marker genes to assign the most similar cell type label to each new cell.
+
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/weiwei_schultz.yaml
+    roles: [ contributor ]
+
+argument_groups:
+  - name: Inputs
+    description: Input dataset (query) arguments
+    arguments:
+      - name: "--input"
+        alternatives: [-i]
+        type: file
+        description: The input (query) data to be labeled. Should be a .h5mu file.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--input_layer"
+        type: string
+        description: The layer in the input data containing log normalized counts to be used for cell type annotation if .X is not to be used. 
+      - name: "--input_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The name of the adata .var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used.
+      - name: "--input_obs_clusters"
+        type: string
+        required: false
+        description: |
+          The name of the adata .obs column containing cluster identities of the observations. 
+          If provided, annoation is performed on the aggregated cluster profiles, 
+          otherwise it defaults to annotation per observation.
+      - name: "--input_reference_gene_overlap"
+        type: integer
+        default: 100
+        min: 1
+        description: | 
+          The minimum number of genes present in both the reference and query datasets.
+  
+  - name: Reference
+    description: Arguments related to the reference dataset.
+    arguments:
+      - name: "--reference"
+        type: file
+        description: "The reference data to train the CellTypist classifiers on. Only required if a pre-trained --model is not provided."
+        example: reference.h5mu
+        direction: input
+        required: true
+      - name: "--reference_layer"
+        type: string
+        description: The layer in the reference data containing lognormalized couns to be used for cell type annotation if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.
+        required: false
+      - name: "--reference_obs_target"
+        type: string
+        required: true
+        description: The name of the adata obs column in the reference data containing cell type annotations.
+      - name: "--reference_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
+      - name: "--reference_var_input"
+        type: string
+        required: false
+        description: |
+          .var column containing a boolean mask corresponding to genes to be used for marker selection. By default, do not subset genes.
+
+  - name: Arguments
+    description: Arguments related to the training of and classification with the SingleR model
+    arguments:
+      - name: "--de_n_genes"
+        type: integer
+        required: False
+        min: 1
+        description: |
+          The number of differentially expressed genes across labels to be calculated from the reference.
+          Defaults to 500 * (2/3) ^ log2(N) where N is the number of unique labels when if `--de_method` is set to `classic`,
+          otherwise, defaults to 10.
+      - name: "--de_method"
+        type: string
+        default: "classic"
+        choices: ["classic", "t", "wilcox"]
+        description: Method to detect differentially expressed genes between pairs of labels. 
+      - name: "--quantile"
+        type: double
+        min: 0
+        max: 1
+        default: 0.8
+        description: The quantile of the correlation distribution to use to compute the score per label.
+      - name: "--fine_tune"
+        type: boolean
+        default: true
+        description: |
+          Whether finetuning should be performed to improve the resolution. 
+          If set to True, an additional finetuning step is performed after initial classification, 
+          new marker genes are calculated based on all cells with a score higher then the maximum score minus `--fine_tuning_thershold`,
+          and the calculation of the scores is repeated.
+      - name: "--fine_tuning_threshold"
+        type: double
+        default: 0.05
+        description: |
+          The maximum difference from the maximum correlation to use in fine-tuning
+      - name: "--prune"
+        type: boolean
+        default: true
+        description: 
+          Whether label pruning should be performed. 
+          If set to True, an additional output .obs field `--output_obs_pruned_predictions` will be added to the `--output`,
+          containing labels where 'low-quality' labels are replaced with NA's.
+          Labels are considered 'low-quality' when their delta score (stored in `--output_obs_delta_next`) fall more than 3 median absolute deviations below the median for that label type.
+  
+  - name: Outputs
+    description: Output arguments.
+    arguments:
+      - name: "--output"
+        type: file
+        description: Output h5mu file.
+        direction: output
+        example: output.h5mu
+      - name: "--output_obs_predictions"
+        type: string
+        default: singler_pred
+        description: |
+          In which `.obs` slot to store the predicted labels. If `--fine_tune False`, this is based only on the maximum entry in `--output_obsm_scores`.
+      - name: "--output_obs_probability"
+        type: string
+        default: singler_probability
+        description: |
+          In which `.obs` slots to store the probability of the predicted labels.
+      - name: "--output_obs_delta_next"
+        type: string
+        default: singler_delta_next
+        description: |
+          In which `.obs` slot to store the delta between the best and next-best score. If `--fine_tune True`, this is reported for scores after fine-tuning.
+      - name: "--output_obs_pruned_predictions"
+        type: string
+        default: singler_pruned_labels
+        description: |
+          In which `.obs` slot to store the pruned labels, where low-quality labels are replaced with NA's. Only added if `--prune True`.
+      - name: "--output_obsm_scores"
+        type: string
+        default: singler_scores
+        description: |
+          In which `.obsm` slot to store the matrix of prediction correlations at the specified quantile for each label (column) in each cell (row).
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: r_script
+    path: script.R
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
+
+engines:
+  - type: docker
+    image: rocker/r2u:22.04
+    setup:
+      - type: docker
+        env: 
+          - RETICULATE_PYTHON=/usr/bin/python
+      - type: apt
+        packages: [ libhdf5-dev, python3, python3-pip, python3-dev, python-is-python3 ]
+      - type: r
+        cran: [ anndata, reticulate, SingleR ]
+        github: bnprks/BPCells/r
+      - type: python
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [lowmem, lowcpu]
