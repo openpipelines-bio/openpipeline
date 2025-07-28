@@ -177,7 +177,7 @@ engines:
         packages: [ libhdf5-dev, python3, python3-pip, python3-dev, python-is-python3 ]
       - type: r
         cran: [ anndata, reticulate, SingleR ]
-        github: bnprks/BPCells/r
+        bioc: [ scrapper ]
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]

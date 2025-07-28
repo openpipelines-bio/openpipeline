@@ -72,5 +72,52 @@ def test_simple_execution(run_component, random_h5mu_path):
     )
 
 
+def test_params(run_component, random_h5mu_path):
+    output_file = random_h5mu_path()
+
+    run_component(
+        [
+            "--input",
+            input_file,
+            "--input_var_gene_names",
+            "gene_symbol",
+            "--reference",
+            reference_file,
+            "--reference_obs_target",
+            "cell_ontology_class",
+            "--input_reference_gene_overlap",
+            "1000",
+            "--reference_var_input",
+            "highly_variable",
+            "de_n_genes",
+            "600",
+            "--de_method",
+            "wilcox",
+            "--quantile",
+            "0.75",
+            "--fine_tuning_threshold",
+            "0.1",
+            "--prune",
+            "False",
+            "--output",
+            output_file,
+        ]
+    )
+
+    assert os.path.exists(output_file), "Output file does not exist"
+
+    input_mudata = mu.read_h5mu(input_file)
+    output_mudata = mu.read_h5mu(output_file)
+
+    assert_annotation_objects_equal(input_mudata.mod["prot"], output_mudata.mod["prot"])
+
+    assert list(output_mudata.mod["rna"].obs.keys()) == [
+        "singler_pred",
+        "singler_probability",
+        "singler_delta_next",
+    ]
+    assert list(output_mudata.mod["rna"].obsm.keys()) == ["singler_scores"]
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
