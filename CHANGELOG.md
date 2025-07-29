@@ -44,6 +44,8 @@
 
 ## MINOR CHANGES
 
+* `mapping/cellranger_multi`: The output from Cell Ranger is now displayed as Cell Ranger is running (PR #1045).
+
 * Remove `workflows` directory (PR #993). The workflows which were at one point in this directory were all deprecated and moved to `src/workflows`.
 
 * Move output file compression argument for AnnData and MuData files to a base config file (`src/base/h5_compression_argument.yaml`) (PR #1017).
