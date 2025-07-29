@@ -40,7 +40,7 @@ argument_groups:
         description: | 
           The minimum number of genes present in both the reference and query datasets.
 
-  - name: Ongoloty
+  - name: Ontology
     description: Ontology input files
     arguments:
       - name: "--cl_nlp_emb_file"
