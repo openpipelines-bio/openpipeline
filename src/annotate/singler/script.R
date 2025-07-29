@@ -148,14 +148,9 @@ predictions <- SingleR(
 cat("Writing output data\n")
 # Writing output slots
 input_adata$obs[[par$output_obs_predictions]] <- predictions$labels
-cat("pred success")
 input_adata$obs[[par$output_obs_probability]] <- apply(predictions$scores, 1, max)
-cat("proba success")
 input_adata$obs[[par$output_obs_delta_next]] <- predictions$delta.next
-cat("delta success")
 input_adata$obs[[par$output_obs_pruned_predictions]] <- predictions$pruned.labels
-cat("prune success")
 input_adata$obsm[[par$output_obsm_scores]] <- predictions$scores
-cat("scores success")
 # Writing output H5MU
 input_mdata$write(par$output, compression = par$output_compression)
