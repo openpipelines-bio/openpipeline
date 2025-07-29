@@ -1,6 +1,5 @@
 library(SingleR)
 library(Matrix)
-library(glue)
 requireNamespace("anndata", quietly = TRUE)
 requireNamespace("reticulate", quietly = TRUE)
 mudata <- reticulate::import("mudata")
