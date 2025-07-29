@@ -6,7 +6,7 @@ mudata <- reticulate::import("mudata")
 
 ### VIASH START
 par <- list(
-  input = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+  input = "pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
   modality = "rna",
   input_layer = NULL,
   input_var_gene_names = "gene_symbol",
@@ -53,7 +53,7 @@ sanitize_gene_names <- function(adata, gene_symbol = NULL) {
   }
   # Remove version numbers (dot followed by digits at end of string)
   sanitized <- gsub("\\.[0-9]+$", "", gene_names)
-  return(sanitized)
+  sanitized
 }
 
 subset_vars <- function(adata, subset_col) {
@@ -90,7 +90,8 @@ subset_vars <- function(adata, subset_col) {
   }
 
   # Subset and return copy
-  return(adata[, subset_values]$copy())
+  adata_subset <- adata[, subset_values]$copy()
+  adata_subset
 }
 
 # Read input data
@@ -147,10 +148,15 @@ predictions <- SingleR(
 
 cat("Writing output data\n")
 # Writing output slots
-input_adata$obs[[par$output_obs_predictions]] <- predictions$labels
-input_adata$obs[[par$output_obs_probability]] <- apply(predictions$scores, 1, max)
-input_adata$obs[[par$output_obs_delta_next]] <- predictions$delta.next
-input_adata$obs[[par$output_obs_pruned_predictions]] <- predictions$pruned.labels
-input_adata$obsm[[par$output_obsm_scores]] <- predictions$scores
+input_adata$obs[[par$output_obs_predictions]] <-
+  predictions$labels
+input_adata$obs[[par$output_obs_probability]] <-
+  apply(predictions$scores, 1, max)
+input_adata$obs[[par$output_obs_delta_next]] <-
+  predictions$delta.next
+input_adata$obs[[par$output_obs_pruned_predictions]] <-
+  predictions$pruned.labels
+input_adata$obsm[[par$output_obsm_scores]] <-
+  predictions$scores
 # Writing output H5MU
 input_mdata$write(par$output, compression = par$output_compression)
