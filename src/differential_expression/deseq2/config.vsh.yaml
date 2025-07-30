@@ -67,9 +67,9 @@ argument_groups:
         multiple: true
         description: |
           Values to compare in the contrast column.
-          First value is treatment, second is baseline (e.g., ["stim", "ctrl"]).
+          First value is baseline, following values are different treatments.
         required: true
-        example: ["stim", "ctrl"]
+        example: ["ctrl", "stim"]
       - name: "--filter_genes_min_samples"
         type: integer
         min: 1

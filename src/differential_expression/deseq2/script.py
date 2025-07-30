@@ -18,8 +18,8 @@ par = {
     "design_formula": "~ disease + treatment",
     "contrast_column": "treatment",
     "contrast_values": [
-        "stim",
         "ctrl",
+        "stim",
     ],  # [treatment, baseline] or [group1, group2, group3, ...]
     "filter_genes_min_samples": None,
     "p_adj_threshold": 0.05,
