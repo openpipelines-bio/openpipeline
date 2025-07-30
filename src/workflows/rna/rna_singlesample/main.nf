@@ -161,7 +161,7 @@ workflow run_wf {
         }
         stateMapping += ["obs_filter": obs_filter]
         // If scrublet is skipped, the output should be set to the workflow output
-        if (state.skip_scrublet_filtering) {
+        if (state.skip_scrublet_doublet_detection) {
           stateMapping += ["output": state.workflow_output]
         }
         return stateMapping
@@ -171,7 +171,7 @@ workflow run_wf {
     // doublet calling
     | filter_with_scrublet.run(
       runIf: { id, state ->
-        !state.skip_scrublet_filtering
+        !state.skip_scrublet_doublet_detection
       },
       fromState: [
         "input": "input",

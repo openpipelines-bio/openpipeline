@@ -371,7 +371,7 @@ workflow test_wf8 {
       publish_dir: "foo/",
       rna_min_counts: 2,
       output: "test.h5mu",
-      skip_scrublet_filtering: true
+      skip_scrublet_doublet_detection: true
     ],
     [
       id: "human",
@@ -379,7 +379,7 @@ workflow test_wf8 {
       publish_dir: "foo/",
       rna_min_counts: 2,
       output: "test.h5mu",
-      skip_scrublet_filtering: true
+      skip_scrublet_doublet_detection: true
     ]
   ])
   | map{ state -> [state.id, state] }

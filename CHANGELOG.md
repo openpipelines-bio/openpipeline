@@ -47,7 +47,7 @@
 
 * Add `scope` to component and workflow configurations (see https://viash.io/reference/config/scope.html) (PR #1013 and #1032).
 
-* `workflows/multiomics/process_samples`: Make scrublet filtering an optional step (PR #1049).
+* `workflows/multiomics/process_samples`: Add optional `--skip_scrublet_doublet_detection` flag to bypass Scrublet doublet detection. Scrublet doublet detection runs by default and can now be optionally disabled (PR #1049).
 
 ## BUG FIXES
 

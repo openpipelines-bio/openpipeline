@@ -46,7 +46,7 @@ workflow test_wf {
         min_genes_per_cell: 2,
         max_genes_per_cell: 10000000,
         min_cells_per_gene: 2,
-        skip_scrublet_filtering: true,
+        skip_scrublet_doublet_detection: true,
         output: "skip_scrublet_test.final.h5mu"
       ]
     ])
