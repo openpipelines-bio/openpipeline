@@ -78,16 +78,25 @@ def prepare_contrast_matrix(design_factors, contrast_column, metadata):
             f"Available values: {available_values}"
         )
 
-    if len(contrast_values) < 2:
+    # Handle multi-level contrasts
+    if len(contrast_values) == 2:
+        # Pairwise comparison (current behavior)
+        treatment, baseline = contrast_values
+        contrast_tuple = (contrast_column, treatment, baseline)
+        logger.info(f"Performing pairwise contrast: {contrast_column} {treatment} vs {baseline}")
+        return [contrast_tuple]
+    
+    elif len(contrast_values) > 2:
+        # Multiple comparisons - all vs first (baseline)
+        baseline = contrast_values[0]
+        contrast_tuples = []
+        for treatment in contrast_values[1:]:
+            contrast_tuples.append((contrast_column, treatment, baseline))
+        logger.info(f"Performing multiple contrasts against baseline '{baseline}': {[t[1] for t in contrast_tuples]}")
+        return contrast_tuples
+    
+    else:
         raise ValueError(f"Need at least 2 values for contrast, got: {contrast_values}")
-
-    treatment, baseline = contrast_values
-    contrast_tuple = (contrast_column, treatment, baseline)
-    logger.info(
-        f"Performing pairwise contrast: {contrast_column} {treatment} vs {baseline}"
-    )
-    return contrast_tuple
-
 
 def prepare_counts_matrix(layer, mod):
     counts = pd.DataFrame(layer, columns=mod.var_names, index=mod.obs_names)
@@ -134,34 +143,49 @@ def create_deseq2_dataset(counts, metadata, design_formula):
     return adata
 
 
-def deseq2_analysis(adata, contrast_tuple):
+def deseq2_analysis(adata, contrast_tuples):
     logger.info("Running DESeq2 analysis")
     adata.deseq2()
 
-    # Perform statistical test
-    logger.info("Performing statistical test")
-    stat_res = DeseqStats(adata, contrast=contrast_tuple)
-    stat_res.summary()
-    results = stat_res.results_df.reset_index()
-
-    # Sort by log2FoldChange
-    results = results.sort_values("log2FoldChange", ascending=False)
-
-    # Add additional statistics
-    results["abs_log2FoldChange"] = results["log2FoldChange"].abs()
-    results["significant"] = (results["padj"] < par["p_adj_threshold"]) & (
-        results["log2FoldChange"].abs() > par["log2fc_threshold"]
-    )
-
-    # Filter results based on significance
-    significant_genes = results[
-        (results["padj"] < par["p_adj_threshold"])
-        & (results["log2FoldChange"].abs() > par["log2fc_threshold"])
-    ]
-    logger.info(
-        f"Significant genes (padj < {par['p_adj_threshold']}, |log2FC| > {par['log2fc_threshold']}): {len(significant_genes)}"
-    )
-    return results
+    all_results = []
+    
+    # Handle multiple contrasts
+    if not isinstance(contrast_tuples, list):
+        contrast_tuples = [contrast_tuples]
+    
+    for contrast_tuple in contrast_tuples:
+        logger.info(f"Performing statistical test for contrast: {contrast_tuple}")
+        stat_res = DeseqStats(adata, contrast=contrast_tuple)
+        stat_res.summary()
+        results = stat_res.results_df.reset_index()
+        
+        # Add contrast information
+        results['contrast'] = f"{contrast_tuple[1]}_vs_{contrast_tuple[2]}"
+        results['treatment'] = contrast_tuple[1]
+        results['baseline'] = contrast_tuple[2]
+        
+        # Sort by log2FoldChange
+        results = results.sort_values("log2FoldChange", ascending=False)
+        
+        # Add additional statistics
+        results["abs_log2FoldChange"] = results["log2FoldChange"].abs()
+        results["significant"] = (results["padj"] < par["p_adj_threshold"]) & (
+            results["log2FoldChange"].abs() > par["log2fc_threshold"]
+        )
+        
+        all_results.append(results)
+    
+    # Combine all contrast results
+    combined_results = pd.concat(all_results, ignore_index=True)
+    
+    # Log summary per contrast
+    for contrast_tuple in contrast_tuples:
+        contrast_name = f"{contrast_tuple[1]}_vs_{contrast_tuple[2]}"
+        contrast_results = combined_results[combined_results['contrast'] == contrast_name]
+        significant_genes = contrast_results[contrast_results['significant']]
+        logger.info(f"Contrast {contrast_name}: {len(significant_genes)} significant genes")
+    
+    return combined_results
 
 
 def main():
@@ -180,7 +204,7 @@ def main():
 
     # Preparing contrast matrix
     logger.info("Preparing contrast matrix")
-    contrast_tuple = prepare_contrast_matrix(
+    contrast_tuples = prepare_contrast_matrix(
         design_factors, par["contrast_column"], metadata
     )
 
@@ -217,7 +241,7 @@ def main():
                 cell_dds = create_deseq2_dataset(
                     counts_subset, metadata_subset, design_no_celltype
                 )
-                cell_results = deseq2_analysis(cell_dds, contrast_tuple)
+                cell_results = deseq2_analysis(cell_dds, contrast_tuples)
 
                 # Add cell_group column to results
                 cell_results[par["obs_cell_group"]] = cell_group
@@ -228,7 +252,7 @@ def main():
 
         else:
             dds = create_deseq2_dataset(counts, metadata, par["design_formula"])
-            results = deseq2_analysis(dds, contrast_tuple)
+            results = deseq2_analysis(dds, contrast_tuples)
 
         # Log summary statistics
         upregulated = results[(results["log2FoldChange"] > 0) & results["significant"]]
