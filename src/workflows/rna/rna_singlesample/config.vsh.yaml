@@ -94,9 +94,9 @@ argument_groups:
         description: |
           Maximum fraction of UMIs that are ribosomal. Requires --obs_name_ribosomal_fraction.
 
-      - name: "--skip_scrublet_filtering"
+      - name: "--skip_scrublet_doublet_detection"
         type: boolean_true
-        description: Skip the scrublet doublet removal step.
+        description: Skip the scrublet doublet detection step.
   
   - name: "Mitochondrial & Ribosomal Gene Detection"
     arguments:
