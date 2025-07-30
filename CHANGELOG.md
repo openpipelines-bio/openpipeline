@@ -29,6 +29,11 @@
 
 * `from_h5mu_or_h5ad_to_seurat`: converts an h5ad file or a single modality from an h5mu file to a seurat object (PR #1046).
 
+* (Experimental) `differential_expression/create_pseudobulk`: Added a component to generate pseudobulk samples from single-cell transcriptomics data, 
+  to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis. 
+  Warning: the functionality in this component is experimental and its behavior may change in future releases (PR #1042).
+
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
@@ -40,6 +45,8 @@
 * `lianapy`: update liana to `1.5.0` (PR #1039)
 
 ## MINOR CHANGES
+
+* `mapping/cellranger_multi`: The output from Cell Ranger is now displayed as Cell Ranger is running (PR #1045).
 
 * Remove `workflows` directory (PR #993). The workflows which were at one point in this directory were all deprecated and moved to `src/workflows`.
 
