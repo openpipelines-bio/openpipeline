@@ -1,0 +1,151 @@
+name: pseudobulk_deseq2
+namespace: differential_expression
+scope: public
+description: |
+  Performs pseudobulk generation and subsequent differential expression analysis using DESeq2.
+authors:
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/weiwei_schultz.yaml
+    roles: [ contributor ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: --id
+        type: string
+        required: true
+        description: ID of the sample.
+        example: foo
+      - name: --input
+        type: string
+        required: true
+        description: Input h5mu file.
+        example: /path/to/input_file.h5mu
+      - name: --modality
+        type: string
+        default: rna
+        description: Which modality from the input MuData file to process.
+      - name: --input_layer
+        type: string
+        required: false
+        description: Input layer to use. If None, X is used. This layer must contain raw counts.
+      - name: --obs_label
+        type: string
+        required: true
+        description: .obs field containing the variable to group on. Typically this field contains cell groups such as annotated cell types or clusters.
+        example: cell_type
+      - name: --obs_groups
+        type: string
+        multiple: true
+        description: .obs fields containing the experimental condition(s) to create pseudobulk samples for.
+        example: ["treatment", "disease"]
+      - name: "--var_gene_name"
+        type: string
+        description: |
+          Column name in the variable features table that contains gene symbols.
+          This is used for reporting gene names in the output.
+        default: "feature_name"
+        required: false
+      - name: --obs_cell_group
+        type: string
+        description: |
+          .obs field containing the cell group information, for example per cell type or per cell cluster.
+          If true, performs per-cell-group analysis with cell-group-specific results.
+        required: false
+
+  - name: Pseudobulk Options
+    arguments:
+      - name: --aggregation_method
+        type: string
+        choices: ["sum", "mean"]
+        default: sum
+        description: Method to aggregate the raw counts for pseudoreplicates. Either sum or mean.
+      - name: --min_obs_per_sample
+        type: integer
+        min: 1
+        default: 30
+        description: Minimum number of cells per pseudobulk sample.
+      - name: --random_state
+        type: integer
+        min: 0
+        default: 0
+        description: The random seed for sampling.
+      - name: --obs_cell_count
+        type: string
+        required: false
+        description: .obs field containing the cell count per pseudobulk sample.
+  - name: DGEA options
+    arguments:
+      - name: --design_formula
+        type: string
+        required: true
+        description: |
+          Design formula for DESeq2 analysis in R-style format.
+          Specifies the statistical model to account for various factors.
+        example: "~ cell_type + disease + treatment"
+      - name: --contrast_column
+        type: string
+        required: true
+        description: |
+          Column in the metadata to use for the contrast.
+          This column should contain the conditions to compare.
+        example: "treatment"
+      - name: --contrast_values
+        type: string
+        multiple: true
+        required: true
+        description: |
+          Values to compare in the contrast column.
+          First value is baseline, following values are different treatments.
+        example: ["ctrl", "stim"]
+      - name: --filter_genes_min_samples
+        type: integer
+        min: 1
+        description: |
+          Minimum number of samples a gene must be expressed in to be included in the analysis.
+          If None, no filtering is applied.
+        required: false
+      - name: --p_adj_threshold
+        type: double
+        default: 0.05
+        description: |
+          Adjusted p-value threshold for significance.
+          Genes with adjusted p-values below this threshold will be considered significant.
+        required: false
+      - name: --log2fc_threshold
+        type: double
+        default: 0.0
+        description: |
+          Log2 fold change threshold for significance.
+          Genes with absolute log2 fold change above this threshold will be considered significant.
+        required: false
+      - name: --filter_gene_patterns
+        type: string
+        multiple: true
+        description: |
+          List of regex patterns to filter out genes.
+          Genes matching any of these patterns will be excluded from the analysis.
+        required: false
+
+  - name: Outputs
+    arguments:
+      - name: --output
+        type: file
+        description: Output CSV file with DESeq2 results.
+        direction: output
+        required: true
+
+dependencies:
+  - name: differential_expression/create_pseudobulk
+    alias: create_pseudobulk
+  - name: differential_expression/deseq2
+    alias: deseq2
+
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+
+runners:
+  - type: nextflow
