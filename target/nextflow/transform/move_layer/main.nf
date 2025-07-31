@@ -3295,7 +3295,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/move_layer",
     "viash_version" : "0.9.4",
-    "git_commit" : "527f115105805cc94edb0a0538ca71d9317435fe",
+    "git_commit" : "84256e65d5e478121983a4a6915457192b8facfb",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
