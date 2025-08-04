@@ -37,7 +37,7 @@ meta <- list(
 
 ### VIASH END
 
-get_layer <- function(adata, layer) {
+get_layer <- function(adata, layer, var_gene_names) {
   # find data
   data <-
     if (is.null(layer)) {
@@ -59,6 +59,10 @@ get_layer <- function(adata, layer) {
       )
     }
   }
+
+  # Set matrix dimnames
+  input_gene_names <- sanitize_gene_names(adata, var_gene_names)
+  dimnames(data) <- list(input_gene_names, adata$obs_names)
 
   # return output
   data
@@ -117,9 +121,9 @@ subset_vars <- function(adata, subset_col) {
 cat("Reading input file\n")
 input_mdata <- mudata$read_h5mu(par$input)
 input_adata <- input_mdata$mod[[par$modality]]
-input_matrix <- Matrix::t(get_layer(input_adata, par$input_layer))
-input_gene_names <- sanitize_gene_names(input_adata, par$input_var_gene_names)
-dimnames(input_matrix) <- list(input_gene_names, input_adata$obs_names)
+input_matrix <- Matrix::t(
+  get_layer(input_adata, par$input_layer, par$input_var_gene_names)
+)
 
 # Read reference
 cat("Reading reference file\n")
@@ -127,9 +131,9 @@ ref_adata <- mudata$read_h5ad(par$reference, mod = "rna")
 if (!is.null(par$reference_var_input)) {
   ref_adata <- subset_vars(ref_adata, par$reference_var_input)
 }
-ref_matrix <- Matrix::t(get_layer(ref_adata, par$reference_layer))
-ref_gene_names <- sanitize_gene_names(ref_adata, par$reference_var_gene_names)
-dimnames(ref_matrix) <- list(ref_gene_names, ref_adata$obs_names)
+ref_matrix <- Matrix::t(
+  get_layer(ref_adata, par$reference_layer, par$reference_var_gene_names)
+)
 
 # Check overlap genes
 cat("Checking overlap of genes between input and reference file\n")
@@ -145,11 +149,22 @@ if (length(common_ens_ids) < par$input_reference_gene_overlap) {
 # Calculate CPU cores
 n_workers <- meta$cpus %||% max(1, parallel::detectCores() - 1)
 
+# Assign target labels
+if (!par$reference_obs_target %in% colnames(ref_adata$obs)) {
+  stop(
+    "Requested to use .obs column '",
+    par$reference_obs_target,
+    "' as target labels, but the column is not available."
+  )
+} else {
+  target_labels <- ref_adata$obs[[par$reference_obs_target]]
+}
+
 cat("Performing SingleR cell type prediction\n")
 predictions <- SingleR(
   test = input_matrix,
   ref = ref_matrix,
-  labels = ref_adata$obs[[par$reference_obs_target]],
+  labels = target_labels,
   clusters = par$input_obs_clusters,
   genes = "de",
   de.method = par$de_method,
