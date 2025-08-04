@@ -5,7 +5,7 @@ modality: "rna"
 # input_var_gene_names: "foo"
 input_reference_gene_overlap: 100
 
-# Ongoloty
+# Ontology
 cl_nlp_emb_file: # please fill in - example: "path/to/file"
 cl_ontology_file: # please fill in - example: "path/to/file"
 cl_obo_file: # please fill in - example: "path/to/file"
