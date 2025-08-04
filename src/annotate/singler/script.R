@@ -127,7 +127,7 @@ ref_adata <- mudata$read_h5ad(par$reference, mod = "rna")
 if (!is.null(par$reference_var_input)) {
   ref_adata <- subset_vars(ref_adata, par$reference_var_input)
 }
-ref_matrix <- Matrix::t(get_input_layer(ref_adata, par$reference_layer))
+ref_matrix <- Matrix::t(get_layer(ref_adata, par$reference_layer))
 ref_gene_names <- sanitize_gene_names(ref_adata, par$reference_var_gene_names)
 dimnames(ref_matrix) <- list(ref_gene_names, ref_adata$obs_names)
 
