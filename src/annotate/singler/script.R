@@ -37,12 +37,31 @@ meta <- list(
 
 ### VIASH END
 
-get_input_layer <- function(adata, input_layer = NULL) {
-  if (is.null(input_layer)) {
-    return(adata$X)
-  } else {
-    return(adata$layers[[input_layer]])
+get_layer <- function(adata, layer) {
+  # find data
+  data <-
+    if (is.null(layer)) {
+      adata$X
+    } else {
+      adata$layers[[layer]]
+    }
+
+  # check if data is available
+  if (is.null(data)) {
+    if (is.null(layer)) {
+      stop("No layer specified and no .X slot available in the AnnData object.")
+    } else {
+      stop(
+        "Requested layer '",
+        layer,
+        "' is not available in the AnnData object. Available layers: ",
+        paste(names(adata$layers), collapse = ", ")
+      )
+    }
   }
+
+  # return output
+  data
 }
 
 sanitize_gene_names <- function(adata, gene_symbol = NULL) {
