@@ -124,11 +124,7 @@ if (length(common_ens_ids) < par$input_reference_gene_overlap) {
 }
 
 # Calculate CPU cores
-if (!is.null(meta$cpus)) {
-  n_workers <- meta$cpus
-} else {
-  n_workers <- max(1, parallel::detectCores() - 1)
-}
+n_workers <- meta$cpus %||% max(1, parallel::detectCores() - 1)
 
 cat("Performing SingleR cell type prediction\n")
 predictions <- SingleR(
