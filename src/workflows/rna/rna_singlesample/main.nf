@@ -150,7 +150,9 @@ workflow run_wf {
         // from a modality.
         def stateMapping = [
           input: state.input,
-          var_filter: ["filter_with_counts"]
+          var_filter: ["filter_with_counts"],
+          // If scrublet is skipped, the output should be set to the workflow output
+          output: state.workflow_output
         ]
         def obs_filter = ["filter_with_counts"]
         if (state.var_name_mitochondrial_genes) {
@@ -166,14 +168,18 @@ workflow run_wf {
     )
     // doublet calling
     | filter_with_scrublet.run(
+      runIf: { id, state ->
+        !state.skip_scrublet_doublet_detection
+      },
       fromState: [
         "input": "input",
-        "output": "workflow_output",
         "layer": "layer",
+        "output": "workflow_output"
       ],
       args: [output_compression: "gzip"],
+      toState: ["input": "output"]
     )
-    | setState(["output": "output"])
+    | setState(["output": "input"])
 
   emit:
   output_ch
