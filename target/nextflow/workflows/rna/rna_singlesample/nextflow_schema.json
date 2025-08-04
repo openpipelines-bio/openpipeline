@@ -105,6 +105,12 @@
           "type": "number",
           "description": "Maximum fraction of UMIs that are ribosomal",
           "help_text": "Type: `double`, multiple: `False`, example: `0.2`. "
+        },
+        "skip_scrublet_doublet_detection": {
+          "type": "boolean",
+          "description": "Skip the scrublet doublet detection step.",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
         }
       }
     },
