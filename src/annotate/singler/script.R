@@ -117,7 +117,7 @@ subset_vars <- function(adata, subset_col) {
 cat("Reading input file\n")
 input_mdata <- mudata$read_h5mu(par$input)
 input_adata <- input_mdata$mod[[par$modality]]
-input_matrix <- Matrix::t(get_input_layer(input_adata, par$input_layer))
+input_matrix <- Matrix::t(get_layer(input_adata, par$input_layer))
 input_gene_names <- sanitize_gene_names(input_adata, par$input_var_gene_names)
 dimnames(input_matrix) <- list(input_gene_names, input_adata$obs_names)
 
