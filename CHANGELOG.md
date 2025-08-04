@@ -1,5 +1,7 @@
 # openpipelines 3.0.0
 
+Warning: Some components and workflows that have been introduced in this release have been flagged as `experimental`, their behavior may change in future releases .
+
 ## BREAKING CHANGES
 
 * `transfer/publish`: remove component after deprecating it in 2.1.0 (PR #1019).
@@ -20,17 +22,14 @@
 
 ## NEW FUNCTIONALITY
 
-* (Experimental) Added `from_h5mu_or_h5ad_to_tiledb` component. Warning: the functionality in this component is experimental
-  and its behavior may change in future releases (PR #1034).
+* (Experimental) Added `from_h5mu_or_h5ad_to_tiledb` component (PR #1034). 
 
 * `liana`: enabled jobs to be run in parallel and added two new arguments: `consensus_opts`, `de_method` (PR #1039)
 
 * `from_h5mu_or_h5ad_to_seurat`: converts an h5ad file or a single modality from an h5mu file to a seurat object (PR #1046).
 
 * (Experimental) `differential_expression/create_pseudobulk`: Added a component to generate pseudobulk samples from single-cell transcriptomics data, 
-  to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis. 
-  Warning: the functionality in this component is experimental and its behavior may change in future releases (PR #1042).
-
+  to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis (PR #1042).
 
 ## MAJOR CHANGES
 
