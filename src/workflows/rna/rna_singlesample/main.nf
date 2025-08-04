@@ -150,7 +150,9 @@ workflow run_wf {
         // from a modality.
         def stateMapping = [
           input: state.input,
-          var_filter: ["filter_with_counts"]
+          var_filter: ["filter_with_counts"],
+          // If scrublet is skipped, the output should be set to the workflow output
+          output: state.workflow_output
         ]
         def obs_filter = ["filter_with_counts"]
         if (state.var_name_mitochondrial_genes) {
@@ -160,10 +162,6 @@ workflow run_wf {
           obs_filter += ["filter_ribosomal"]
         }
         stateMapping += ["obs_filter": obs_filter]
-        // If scrublet is skipped, the output should be set to the workflow output
-        if (state.skip_scrublet_doublet_detection) {
-          stateMapping += ["output": state.workflow_output]
-        }
         return stateMapping
       },
       toState: ["input": "output"]
@@ -181,14 +179,7 @@ workflow run_wf {
       args: [output_compression: "gzip"],
       toState: ["input": "output"]
     )
-    // Make sure to use the correct ouput file names, 
-    // irrespective of which component(s) (or combinations of then)
-    // were run. The above components
-    // should put their output into 'input'
-    | map {id, state -> 
-      [id, ["workflow_output": state.input]]
-    }
-    | setState(["output": "workflow_output"])
+    | setState(["output": "input"])
 
   emit:
   output_ch
