@@ -11,7 +11,7 @@ workflow test_wf {
     [
       [
         id: "simple_execution_test",
-        input: resources_test.resolve("/annotation_test_data/TS_Blood_filtered.h5mu"),
+        input: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
         obs_label: "cell_type",
         obs_groups: "treatment",
         design_formula: "~ cell_type + disease + treatment",
