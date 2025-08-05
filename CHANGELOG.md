@@ -31,6 +31,8 @@ Warning: Some components and workflows that have been introduced in this release
 * (Experimental) `differential_expression/create_pseudobulk`: Added a component to generate pseudobulk samples from single-cell transcriptomics data, 
   to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis (PR #1042).
 
+* (Experimental) `annotate/singler`: Added a component to annotate cell types using SingleR (PR #1051).
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
