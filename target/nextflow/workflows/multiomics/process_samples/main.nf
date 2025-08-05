@@ -3294,6 +3294,12 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--skip_scrublet_doublet_detection",
+          "description" : "Skip the scrublet doublet detection step.",
+          "direction" : "input"
         }
       ]
     },
@@ -3906,7 +3912,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.9.4",
-    "git_commit" : "b003b927a2618413e84428ef246bc0e5f274d6ca",
+    "git_commit" : "faf16d089c04db4d1fb0666b2e5c6b14f3247a7f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -4053,7 +4059,8 @@ workflow run_wf {
         "var_name_ribosomal_genes": "var_name_ribosomal_genes",
         "obs_name_ribosomal_fraction": "obs_name_ribosomal_fraction",
         "ribosomal_gene_regex": "ribosomal_gene_regex",
-        "layer": "rna_layer"
+        "layer": "rna_layer",
+        "skip_scrublet_doublet_detection": "skip_scrublet_doublet_detection"
       ],
       "prot": [
         "min_counts": "prot_min_counts",

@@ -89,8 +89,8 @@
         }
       }
     },
-    "ongoloty": {
-      "title": "Ongoloty",
+    "ontology": {
+      "title": "Ontology",
       "type": "object",
       "description": "Ontology input files",
       "properties": {
@@ -195,7 +195,7 @@
       "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/$defs/ongoloty"
+      "$ref": "#/$defs/ontology"
     },
     {
       "$ref": "#/$defs/reference"
