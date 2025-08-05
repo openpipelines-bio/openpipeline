@@ -31,6 +31,7 @@
   to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis. 
   Warning: the functionality in this component is experimental and its behavior may change in future releases (PR #1042).
 
+* (Experimental) `annotate/singler`: Added a component to annotate cell types using SingleR (PR #1051).
 
 ## MAJOR CHANGES
 
