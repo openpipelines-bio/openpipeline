@@ -14,9 +14,10 @@ workflow test_wf {
         input: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
         obs_label: "cell_type",
         obs_groups: "treatment",
-        design_formula: "~ cell_type + disease + treatment",
+        design_formula: "~ cell_type + treatment",
         contrast_column: "treatment",
-        contrast_values: ["ctrl", "stim"]
+        contrast_values: ["ctrl", "stim"],
+        output: "simple_execution_test_output.csv"
       ]
     ])
     | map{ state -> [state.id, state] }

@@ -36,6 +36,7 @@ workflow run_wf {
           p_adj_threshold: "p_adj_threshold",
           log2fc_threshold: "log2fc_threshold",
           filter_gene_patterns: "filter_gene_patterns",
+          output: "output"
         ],
         toState: [ "output": "output" ]
       )
