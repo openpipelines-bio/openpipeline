@@ -1,5 +1,5 @@
 name: pseudobulk_deseq2
-namespace: differential_expression
+namespace: workflows/differential_expression
 scope: public
 description: |
   Performs pseudobulk generation and subsequent differential expression analysis using DESeq2.
@@ -18,7 +18,7 @@ argument_groups:
         description: ID of the sample.
         example: foo
       - name: --input
-        type: string
+        type: file
         required: true
         description: Input h5mu file.
         example: /path/to/input_file.h5mu
@@ -138,14 +138,18 @@ argument_groups:
 
 dependencies:
   - name: differential_expression/create_pseudobulk
-    alias: create_pseudobulk
   - name: differential_expression/deseq2
-    alias: deseq2
 
 resources:
   - type: nextflow_script
     path: main.nf
     entrypoint: run_wf
+
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
 
 runners:
   - type: nextflow

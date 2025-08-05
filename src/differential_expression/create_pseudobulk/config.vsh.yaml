@@ -1,5 +1,5 @@
-name: differential_expression
-namespace: "create_pseudobulk"
+name: create_pseudobulk
+namespace: differential_expression
 scope: "public"
 description: |
   Generation of pseudobulk samples from single-cell transcriptomics data,
