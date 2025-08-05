@@ -6,7 +6,7 @@ mudata <- reticulate::import("mudata")
 
 ### VIASH START
 par <- list(
-  input = "pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+  input = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
   modality = "rna",
   input_layer = NULL,
   input_var_gene_names = "gene_symbol",
@@ -62,7 +62,7 @@ get_layer <- function(adata, layer, var_gene_names) {
 
   # Set matrix dimnames
   input_gene_names <- sanitize_gene_names(adata, var_gene_names)
-  dimnames(data) <- list(input_gene_names, adata$obs_names)
+  dimnames(data) <- list(adata$obs_names, input_gene_names)
 
   # return output
   data
@@ -137,7 +137,7 @@ ref_matrix <- Matrix::t(
 
 # Check overlap genes
 cat("Checking overlap of genes between input and reference file\n")
-common_ens_ids <- intersect(ref_gene_names, input_gene_names)
+common_ens_ids <- intersect(rownames(ref_matrix), rownames(input_matrix))
 if (length(common_ens_ids) < par$input_reference_gene_overlap) {
   stop(
     "The intersection of genes between the query and reference is too small.\n",
