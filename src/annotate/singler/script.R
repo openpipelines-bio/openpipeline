@@ -6,7 +6,7 @@ mudata <- reticulate::import("mudata")
 
 ### VIASH START
 par <- list(
-  input = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+  input = "pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
   modality = "rna",
   input_layer = NULL,
   input_var_gene_names = "gene_symbol",
