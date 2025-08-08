@@ -287,11 +287,11 @@ def _copy_column(src, dest, _, df_h5_obj):
     """
     logger.info("Copying column '%s' to '%s' for '%s'.", src, dest, df_h5_obj.name)
     columns = df_h5_obj.attrs["column-order"]
-    if dest in columns:
-        raise ValueError(f"Column {dest} already exists in {df_h5_obj.name}.")
     if src == dest:
         logger.info("Source and destination for the column are the same, not copying.")
         return None
+    if dest in columns:
+        raise ValueError(f"Column {dest} already exists in {df_h5_obj.name}.")
     df_h5_obj.attrs["column-order"] = np.append(columns, dest)
     if src is None:
         # Use the index as source.
