@@ -3497,7 +3497,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_or_h5ad_to_tiledb",
     "viash_version" : "0.9.4",
-    "git_commit" : "7b661e9746ff527658e111e60574a852a18fb10a",
+    "git_commit" : "bd6cfc8686db5473c10cff0602cac5591c150680",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3847,11 +3847,11 @@ def _copy_column(src, dest, _, df_h5_obj):
     """
     logger.info("Copying column '%s' to '%s' for '%s'.", src, dest, df_h5_obj.name)
     columns = df_h5_obj.attrs["column-order"]
-    if dest in columns:
-        raise ValueError(f"Column {dest} already exists in {df_h5_obj.name}.")
     if src == dest:
         logger.info("Source and destination for the column are the same, not copying.")
         return None
+    if dest in columns:
+        raise ValueError(f"Column {dest} already exists in {df_h5_obj.name}.")
     df_h5_obj.attrs["column-order"] = np.append(columns, dest)
     if src is None:
         # Use the index as source.
