@@ -1,7 +1,5 @@
 # openpipelines 3.0.0
 
-Warning: Some components and workflows that have been introduced in this release have been flagged as `experimental`, their behavior may change in future releases.
-
 ## BREAKING CHANGES
 
 * `transfer/publish`: remove component after deprecating it in 2.1.0 (PR #1019).
