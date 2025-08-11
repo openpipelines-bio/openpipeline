@@ -22,16 +22,20 @@ Warning: Some components and workflows that have been introduced in this release
 
 ## NEW FUNCTIONALITY
 
-* (Experimental) Added `from_h5mu_or_h5ad_to_tiledb` component (PR #1034). 
-
 * `liana`: enabled jobs to be run in parallel and added two new arguments: `consensus_opts`, `de_method` (PR #1039)
 
 * `from_h5mu_or_h5ad_to_seurat`: converts an h5ad file or a single modality from an h5mu file to a seurat object (PR #1046).
 
-* (Experimental) `differential_expression/create_pseudobulk`: Added a component to generate pseudobulk samples from single-cell transcriptomics data, 
+## EXPERIMENTAL
+
+Warning: These experimental features are subject to change in future releases.
+
+* Added `from_h5mu_or_h5ad_to_tiledb` component (PR #1034). 
+
+* Added `differential_expression/create_pseudobulk`: Generation of pseudobulk samples from single-cell transcriptomics data, 
   to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis (PR #1042).
 
-* (Experimental) `annotate/singler`: Added a component to annotate cell types using SingleR (PR #1051).
+* Added `annotate/singler`: Cell type annotation using SingleR (PR #1051).
 
 ## MAJOR CHANGES
 
