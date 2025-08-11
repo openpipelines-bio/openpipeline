@@ -23,6 +23,8 @@
 * (Experimental) Added `from_h5mu_or_h5ad_to_tiledb` component. Warning: the functionality in this component is experimental
   and its behavior may change in future releases (PR #1034).
 
+* (Experimental) Added `tiledb_soma_healthcheck` component (PR #). 
+
 * `liana`: enabled jobs to be run in parallel and added two new arguments: `consensus_opts`, `de_method` (PR #1039)
 
 * `from_h5mu_or_h5ad_to_seurat`: converts an h5ad file or a single modality from an h5mu file to a seurat object (PR #1046).
