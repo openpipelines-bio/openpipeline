@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import re
 import subprocess
+from multiprocessing import cpu_count
 import tempfile
 import pandas as pd
 import yaml
@@ -500,10 +501,15 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         cmd = [CELL_RANGER_EXEC, "multi", "--disable-ui", "--id", temp_id]
 
         command_line_parameters = {
-            "--localcores": meta["cpus"],
-            "--localmem": int(meta["memory_gb"]) - 2 if meta["memory_gb"] else None,
+            "--localcores": int(meta["cpus"]) if meta["cpus"] else cpu_count() - 1,
             "--csv": config_file,
         }
+        if meta["memory_gb"]:
+            command_line_parameters["--localmem"] = (
+                int(meta["memory_gb"]) - 2
+                if meta["memory_gb"] > 2
+                else meta["memory_gb"]
+            )
         cmd += [
             f"{param}={param_value}"
             for param, param_value in command_line_parameters.items()

@@ -3465,7 +3465,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/scvelo",
     "viash_version" : "0.9.4",
-    "git_commit" : "6f7ed02bf3c6d35bac992ae52f1e83ff6010b391",
+    "git_commit" : "a37039aa1a2cad879501e7c255a2e54d9526d6f9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
