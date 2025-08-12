@@ -3528,7 +3528,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/random_forest_annotation",
     "viash_version" : "0.9.4",
-    "git_commit" : "a37039aa1a2cad879501e7c255a2e54d9526d6f9",
+    "git_commit" : "3049450c816caab85804a20508c1529746672945",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3541,6 +3541,12 @@ meta = [
           "type" : "s3",
           "path" : "s3://openpipelines-data",
           "dest" : "resources_test"
+        }
+      ],
+      "nextflow_labels_ci" : [
+        {
+          "path" : "src/workflows/utils/labels_ci.config",
+          "description" : "Adds the correct memory and CPU labels when running on the Viash Hub CI."
         }
       ]
     },
