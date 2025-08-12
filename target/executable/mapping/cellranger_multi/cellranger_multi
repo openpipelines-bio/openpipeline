@@ -461,9 +461,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Angela Oliveira Pisco, Robrecht Cannoodt, Dries De Maeyer, Weiwei Schultz, Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_multi"
-LABEL org.opencontainers.image.created="2025-08-09T03:05:54Z"
+LABEL org.opencontainers.image.created="2025-08-12T03:05:33Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bd6cfc8686db5473c10cff0602cac5591c150680"
+LABEL org.opencontainers.image.revision="382ba027eda0d8b3e38b4e6aa91358d539affcb5"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -2730,6 +2730,7 @@ from __future__ import annotations
 import sys
 import re
 import subprocess
+from multiprocessing import cpu_count
 import tempfile
 import pandas as pd
 import yaml
@@ -3223,10 +3224,15 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         cmd = [CELL_RANGER_EXEC, "multi", "--disable-ui", "--id", temp_id]
 
         command_line_parameters = {
-            "--localcores": meta["cpus"],
-            "--localmem": int(meta["memory_gb"]) - 2 if meta["memory_gb"] else None,
+            "--localcores": int(meta["cpus"]) if meta["cpus"] else cpu_count() - 1,
             "--csv": config_file,
         }
+        if meta["memory_gb"]:
+            command_line_parameters["--localmem"] = (
+                int(meta["memory_gb"]) - 2
+                if meta["memory_gb"] > 2
+                else meta["memory_gb"]
+            )
         cmd += [
             f"{param}={param_value}"
             for param, param_value in command_line_parameters.items()
