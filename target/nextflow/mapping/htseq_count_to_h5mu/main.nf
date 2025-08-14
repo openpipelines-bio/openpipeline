@@ -3338,7 +3338,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count_to_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "382ba027eda0d8b3e38b4e6aa91358d539affcb5",
+    "git_commit" : "879dfe641d34c6371f66acfba71c65d8b0c7a89a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3351,6 +3351,12 @@ meta = [
           "type" : "s3",
           "path" : "s3://openpipelines-data",
           "dest" : "resources_test"
+        }
+      ],
+      "nextflow_labels_ci" : [
+        {
+          "path" : "src/workflows/utils/labels_ci.config",
+          "description" : "Adds the correct memory and CPU labels when running on the Viash Hub CI."
         }
       ]
     },
