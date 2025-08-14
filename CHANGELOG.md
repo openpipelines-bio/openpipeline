@@ -20,19 +20,20 @@
 
 ## NEW FUNCTIONALITY
 
-* (Experimental) Added `from_h5mu_or_h5ad_to_tiledb` component. Warning: the functionality in this component is experimental
-  and its behavior may change in future releases (PR #1034).
-
-* Add `dgea/deseq2` Deseq2 component for differential gene expression analysis (PR #1044).
-
 * `liana`: enabled jobs to be run in parallel and added two new arguments: `consensus_opts`, `de_method` (PR #1039)
 
 * `from_h5mu_or_h5ad_to_seurat`: converts an h5ad file or a single modality from an h5mu file to a seurat object (PR #1046).
 
-* (Experimental) `differential_expression/create_pseudobulk`: Added a component to generate pseudobulk samples from single-cell transcriptomics data, 
-  to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis. 
-  Warning: the functionality in this component is experimental and its behavior may change in future releases (PR #1042).
+## EXPERIMENTAL
 
+Warning: These experimental features are subject to change in future releases.
+
+* Added `from_h5mu_or_h5ad_to_tiledb` component (PR #1034). 
+
+* Added `differential_expression/create_pseudobulk`: Generation of pseudobulk samples from single-cell transcriptomics data, 
+  to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis (PR #1042).
+
+* Added `annotate/singler`: Cell type annotation using SingleR (PR #1051).
 
 ## MAJOR CHANGES
 
@@ -56,7 +57,13 @@
 
 * Add `scope` to component and workflow configurations (see https://viash.io/reference/config/scope.html) (PR #1013 and #1032).
 
+* `workflows/multiomics/process_samples`: Add optional `--skip_scrublet_doublet_detection` flag to bypass Scrublet doublet detection. Scrublet doublet detection runs by default and can now be optionally disabled (PR #1049).
+
+* Nextflow runner: use `resourceLimits` directive in the labels config to set a global limit on the memory (PR #1060).
+
 ## BUG FIXES
+
+* `cellranger_multi`: Fix error when running Cell Ranger without any computational resources specified (PR #1056)
 
 * Bump viash to 0.9.4. This adds support for nextflow versions starting major version 25.01 and fixes an issue where an integer being passed to a argument with `type: double` resulted in an error (PR #1016).
 
