@@ -59,6 +59,8 @@ Warning: These experimental features are subject to change in future releases.
 
 * `workflows/multiomics/process_samples`: Add optional `--skip_scrublet_doublet_detection` flag to bypass Scrublet doublet detection. Scrublet doublet detection runs by default and can now be optionally disabled (PR #1049).
 
+* Nextflow runner: use `resourceLimits` directive in the labels config to set a global limit on the memory (PR #1060).
+
 ## BUG FIXES
 
 * `cellranger_multi`: Fix error when running Cell Ranger without any computational resources specified (PR #1056)
