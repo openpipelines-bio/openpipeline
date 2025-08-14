@@ -4,7 +4,7 @@ set -ex
 
 echo ">>> Running executable"
 $meta_executable \
-    --sam "$meta_resources_dir/demuxafy_test_data/pooled.sorted.bam" \
+    --sam "$meta_resources_dir/demuxafy_test_data/chr_1_pooled.sorted.bam" \
     --vcf "$meta_resources_dir/demuxafy_test_data/test_dataset.vcf" \
     --output demuxlet_result/ \
     --out out \

@@ -4,7 +4,7 @@ set -ex
 
 echo ">>> Running executable"
 $meta_executable \
-    --bam "$meta_resources_dir/demuxafy_test_data/pooled.sorted.bam" \
+    --bam "$meta_resources_dir/demuxafy_test_data/chr_1_pooled.sorted.bam" \
     --fasta_reference "$meta_resources_dir/cellranger_tiny_fastq/cellranger_tiny_ref/fasta/genome.fa" \
     --output freebayes_result/ \
     --region chr21.part \

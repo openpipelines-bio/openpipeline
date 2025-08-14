@@ -4,7 +4,7 @@ library(dplyr, warn.conflicts = FALSE)
 
 ## VIASH START
 par <- list(
-  sam = "resources_test/demuxafy_test_data/pooled.sorted.bam",
+  sam = "resources_test/demuxafy_test_data/chr_1_pooled.sorted.bam",
   vcf = "resources_test/demuxafy_test_data/test_dataset.vcf",
   output = "freemuxlet_result",
   out = "out",
