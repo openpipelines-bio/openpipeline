@@ -47,6 +47,8 @@ Warning: These experimental features are subject to change in future releases.
 
 ## MINOR CHANGES
 
+* `velocyto`: pin base container to `python:3.10-slim-bookworm` (PR #1063).
+
 * `mapping/cellranger_multi`: The output from Cell Ranger is now displayed as Cell Ranger is running (PR #1045).
 
 * Remove `workflows` directory (PR #993). The workflows which were at one point in this directory were all deprecated and moved to `src/workflows`.
