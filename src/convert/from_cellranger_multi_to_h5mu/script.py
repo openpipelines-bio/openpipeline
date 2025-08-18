@@ -237,9 +237,10 @@ def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
             .squeeze()
             .to_dict()
         )
-        # In combined GEX + Antibody probe experiments; antibody barcodes (ABs)
-        # are paired to a probe barcode (BC) with the syntax "{BC}+{AB}". The cells_per_tag
-        # file only encodes the BCs; so we need to strip the AB.
+        # When probe barcodes are combined with multiplexing barcodes; the probe barcode (BC)
+        # is paired with other sample with other sample information using the syntax "{BC}+{antibody}"
+        # (or even "{BC}+{antibody}+{crispr guide}"). The cells_per_tag
+        # file only encodes the BCs; so we need to strip the other information.
         barcode_sample_mapping = {
             key_.partition("+")[0]: value_
             for key_, value_ in barcode_sample_mapping.items()
