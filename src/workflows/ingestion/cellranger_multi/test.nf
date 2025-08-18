@@ -87,5 +87,7 @@ workflow test_wf2 {
     | map { output_list ->
       assert output_list.size() == 3 : "output channel should contain three events"
       assert (output_list.collect{it[0]} as Set) == (["Liver_BC1andOvarian_BC2", "Pancreas_BC4", "Colorectal_BC3"] as Set) : "Output ID should be same as input ID"
+      def raw_output = output_list.collect{it[1].output_raw.getName()} as Set
+      assert (raw_output == (["foo.cellranger_multi_component.output_raw"] as Set)): "Unexpected raw output! Found: $raw_output"
     }
 }
