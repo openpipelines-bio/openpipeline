@@ -70,7 +70,6 @@ Warning: These experimental features are subject to change in future releases.
 * Add missing CUDA enabled `jaxlib` to components that use `scvi-tools` (`scanvi`, `scarches`, `scvi` and `totalvi`) (PR #1028)
 
 * `leiden`: fix issue where the logging system was shut down prematurely after the calculations were done (PR #1030)
-s
 * Added missing `gpu` label to `scarches` component (PR #1027).
 
 * `conversion/from_cellranger_multi_to_h5mu`: fix conversion to MuData for experiments that combine probe barcodes with other feature barcodes (e.g. Antibody Capture and CIRSPR Guide Capture) (PR #1062).
