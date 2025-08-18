@@ -229,7 +229,6 @@ def test_antibody_and_cell_barcode_probes(run_component, tmp_path):
     output_path = samples[0]
     converted_data = read_h5mu(output_path)
     assert list(converted_data.mod.keys()) == ["rna", "prot"]
-    assert "feature_reference" in converted_data.mod["custom"].uns
 
 
 if __name__ == "__main__":
