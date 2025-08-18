@@ -47,6 +47,8 @@ Warning: These experimental features are subject to change in future releases.
 
 ## MINOR CHANGES
 
+* `velocyto`: pin base container to `python:3.10-slim-bookworm` (PR #1063).
+
 * `mapping/cellranger_multi`: The output from Cell Ranger is now displayed as Cell Ranger is running (PR #1045).
 
 * Remove `workflows` directory (PR #993). The workflows which were at one point in this directory were all deprecated and moved to `src/workflows`.
@@ -58,6 +60,8 @@ Warning: These experimental features are subject to change in future releases.
 * Add `scope` to component and workflow configurations (see https://viash.io/reference/config/scope.html) (PR #1013 and #1032).
 
 * `workflows/multiomics/process_samples`: Add optional `--skip_scrublet_doublet_detection` flag to bypass Scrublet doublet detection. Scrublet doublet detection runs by default and can now be optionally disabled (PR #1049).
+
+* Nextflow runner: use `resourceLimits` directive in the labels config to set a global limit on the memory (PR #1060).
 
 ## BUG FIXES
 
