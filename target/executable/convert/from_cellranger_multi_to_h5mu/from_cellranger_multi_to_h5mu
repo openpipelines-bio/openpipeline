@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_cellranger_multi_to_h5mu"
-LABEL org.opencontainers.image.created="2025-08-19T03:03:06Z"
+LABEL org.opencontainers.image.created="2025-08-20T03:01:24Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="56066fb92e3a1862ce7524f0f4c6e09a91469576"
+LABEL org.opencontainers.image.revision="d306d4abb93a31424790b7c70e1a438adbadf0a1"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1407,6 +1407,14 @@ def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
             .squeeze()
             .to_dict()
         )
+        # When probe barcodes are combined with multiplexing barcodes; the probe barcode (BC)
+        # is paired with other sample with other sample information using the syntax "{BC}+{antibody}"
+        # (or even "{BC}+{antibody}+{crispr guide}"). The cells_per_tag
+        # file only encodes the BCs; so we need to strip the other information.
+        barcode_sample_mapping = {
+            key_.partition("+")[0]: value_
+            for key_, value_ in barcode_sample_mapping.items()
+        }
         return split_samples(
             mudata_all_samples, multiplexing_info, barcode_sample_mapping
         )
@@ -1422,7 +1430,8 @@ def split_samples(mudata_obj, multiplexing_analysis_folder, barcode_sample_mappi
     for barcode, indices in sample_cell_mapping.items():
         if indices:
             sample_mudata = mudata_obj[indices]
-            result[barcode_sample_mapping[barcode]] = sample_mudata.copy()
+            sample = barcode_sample_mapping[barcode]
+            result[sample] = sample_mudata.copy()
     return result
 
 

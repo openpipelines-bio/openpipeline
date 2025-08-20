@@ -14,12 +14,12 @@ import tempfile
 
 ## VIASH START
 par = {
-    "input": "resources_test/10x_5k_beam/processed/10x_5k_beam.cellranger_multi.output",
-    "output": "foo.h5mu",
+    "input": "resources_test/10x_4plex_dtc/processed/10x_4plex_dtc.cellranger_multi.output",
+    "output": "*.h5mu",
     "uns_metrics": "metrics_cellranger",
     "output_compression": "gzip",
 }
-meta = {"resources_dir": "."}
+meta = {"resources_dir": "./src/utils/"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -237,6 +237,14 @@ def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
             .squeeze()
             .to_dict()
         )
+        # When probe barcodes are combined with multiplexing barcodes; the probe barcode (BC)
+        # is paired with other sample with other sample information using the syntax "{BC}+{antibody}"
+        # (or even "{BC}+{antibody}+{crispr guide}"). The cells_per_tag
+        # file only encodes the BCs; so we need to strip the other information.
+        barcode_sample_mapping = {
+            key_.partition("+")[0]: value_
+            for key_, value_ in barcode_sample_mapping.items()
+        }
         return split_samples(
             mudata_all_samples, multiplexing_info, barcode_sample_mapping
         )
@@ -252,7 +260,8 @@ def split_samples(mudata_obj, multiplexing_analysis_folder, barcode_sample_mappi
     for barcode, indices in sample_cell_mapping.items():
         if indices:
             sample_mudata = mudata_obj[indices]
-            result[barcode_sample_mapping[barcode]] = sample_mudata.copy()
+            sample = barcode_sample_mapping[barcode]
+            result[sample] = sample_mudata.copy()
     return result
 
 

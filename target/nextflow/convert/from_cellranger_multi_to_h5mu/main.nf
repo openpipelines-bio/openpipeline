@@ -3181,6 +3181,10 @@ meta = [
     {
       "type" : "file",
       "path" : "/resources_test/10x_5k_fixed"
+    },
+    {
+      "type" : "file",
+      "path" : "/resources_test/10x_4plex_dtc"
     }
   ],
   "status" : "enabled",
@@ -3324,7 +3328,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "56066fb92e3a1862ce7524f0f4c6e09a91469576",
+    "git_commit" : "d306d4abb93a31424790b7c70e1a438adbadf0a1",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3644,6 +3648,14 @@ def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
             .squeeze()
             .to_dict()
         )
+        # When probe barcodes are combined with multiplexing barcodes; the probe barcode (BC)
+        # is paired with other sample with other sample information using the syntax "{BC}+{antibody}"
+        # (or even "{BC}+{antibody}+{crispr guide}"). The cells_per_tag
+        # file only encodes the BCs; so we need to strip the other information.
+        barcode_sample_mapping = {
+            key_.partition("+")[0]: value_
+            for key_, value_ in barcode_sample_mapping.items()
+        }
         return split_samples(
             mudata_all_samples, multiplexing_info, barcode_sample_mapping
         )
@@ -3659,7 +3671,8 @@ def split_samples(mudata_obj, multiplexing_analysis_folder, barcode_sample_mappi
     for barcode, indices in sample_cell_mapping.items():
         if indices:
             sample_mudata = mudata_obj[indices]
-            result[barcode_sample_mapping[barcode]] = sample_mudata.copy()
+            sample = barcode_sample_mapping[barcode]
+            result[sample] = sample_mudata.copy()
     return result
 
 
