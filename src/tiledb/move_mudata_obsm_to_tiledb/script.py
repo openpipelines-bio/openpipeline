@@ -3,7 +3,6 @@ import mudata
 import tiledbsoma
 import tiledbsoma.io
 import pandas as pd
-import os
 import json
 
 ## VIASH START
@@ -17,7 +16,6 @@ from setup_logger import setup_logger
 logger = setup_logger()
 
 tiledbsoma.logging.info()
-print(os.environ, file=sys.stderr, flush=True)
 
 
 def main(par):
