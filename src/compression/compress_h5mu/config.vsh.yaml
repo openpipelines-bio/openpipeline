@@ -12,13 +12,14 @@ arguments:
     type: file
     description: Path to the input .h5mu.
     required: true
-    example: sample_path
+    example: input.h5mu
     direction: input
   - name: "--output"
     type: file
     description: location of output file.
     required: true
     direction: output
+    example: output.h5mu
 __merge__: [., /src/base/h5_compression_argument.yaml]
 resources:
   - type: python_script
