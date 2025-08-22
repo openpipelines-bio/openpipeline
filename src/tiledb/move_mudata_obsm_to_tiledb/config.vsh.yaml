@@ -55,10 +55,8 @@ resources:
 test_resources:
   - type: python_script
     path: test.py
-  - path: /resources_test/tiledb/pbmc_1k_protein_v3_mms
-    dest: tiledb/pbmc_1k_protein_v3_mms 
-  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
-    dest: pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+  - path: /resources_test/tiledb/
+  - path: /resources_test/pbmc_1k_protein_v3/
 engines:
   - type: docker
     image: python:3.12
