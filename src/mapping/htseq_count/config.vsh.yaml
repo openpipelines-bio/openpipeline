@@ -53,7 +53,7 @@ argument_groups:
           Write out all SAM alignment records into SAM/BAM files (one per input file needed), 
           annotating each line with its feature assignment (as an optional field with tag 'XF'). 
           See the -p option to use BAM instead of SAM.
-        example: [ mysample1_out.BAM, mysample2_out.BAM ]
+        example: [ mysample1_out.SAM, mysample2_out.SAM ]
         direction: output
         required: false
         multiple: true

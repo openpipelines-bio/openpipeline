@@ -126,6 +126,7 @@ argument_groups:
     arguments:
       - name: "--tiledb_dir"
         type: file
+        example: path/to/tiledb_dir
         direction: output
         description: |
           Directory where the TileDB output will be written to.
