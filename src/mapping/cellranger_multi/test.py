@@ -506,9 +506,9 @@ def test_cellranger_multi_create_output_on_fail(run_component, random_path):
     with pytest.raises(subprocess.CalledProcessError):
         run_component(args)
 
-    assert (
-        outputpath / "cellranger_multi.log"
-    ).is_file(), "Should have created log file."
+    assert (outputpath / "cellranger_multi.log").is_file(), (
+        "Should have created log file."
+    )
 
 
 def test_cellranger_multi_beam_data(run_component, random_path):
@@ -684,6 +684,42 @@ def test_cellranger_multi_with_alternative_names(run_component, random_path):
     assert (
         outputpath / "per_sample_outs/run/vdj_t/filtered_contig_annotations.csv"
     ).is_file()
+
+
+@pytest.mark.parametrize("cpus", [None])
+@pytest.mark.parametrize("memory_bytes", [None])
+def test_cellranger_no_cpus_or_mem_specifier(run_component, random_path):
+    outputpath = random_path()
+    args = [
+        "--output",
+        outputpath,
+        "--input",
+        input1_R1,
+        "--input",
+        input1_R2,
+        "--input",
+        input2_R1,
+        "--input",
+        input2_R2,
+        "--input",
+        input3_R1,
+        "--input",
+        input3_R2,
+        "--gex_reference",
+        gex_reference,
+        "--vdj_reference",
+        vdj_reference,
+        "--feature_reference",
+        feature_reference,
+        "--library_id",
+        "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset;5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
+        "--library_type",
+        "Gene Expression;Antibody Capture;VDJ",
+        "--library_subsample",
+        "0.1;0.1;0.1",
+    ]
+
+    run_component(args)
 
 
 if __name__ == "__main__":

@@ -14,12 +14,12 @@ import tempfile
 
 ## VIASH START
 par = {
-    "input": "resources_test/10x_5k_beam/processed/10x_5k_beam.cellranger_multi.output",
-    "output": "foo.h5mu",
+    "input": "resources_test/10x_4plex_dtc/processed/10x_4plex_dtc.cellranger_multi.output",
+    "output": "*.h5mu",
     "uns_metrics": "metrics_cellranger",
     "output_compression": "gzip",
 }
-meta = {"resources_dir": "."}
+meta = {"resources_dir": "./src/utils/"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -191,9 +191,9 @@ def process_feature_reference(
         df = pd.read_csv(
             efficiency_file, index_col="id", sep=",", decimal=".", quotechar='"'
         )
-        assert (
-            "feature_type" in df.columns
-        ), "Columns 'feature_type' should be present in features_reference file."
+        assert "feature_type" in df.columns, (
+            "Columns 'feature_type' should be present in features_reference file."
+        )
         feature_types = df["feature_type"]
         missing_features = set(feature_types) - set(FEATURE_TYPES_NAMES)
         if missing_features:
@@ -230,16 +230,21 @@ def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
         metrics_file = pd.read_csv(
             list(metrics_files.values())[0], decimal=".", quotechar='"', thousands=","
         )
-        sample_ids = metrics_file[
-            (metrics_file["Metric Name"] == "Sample ID")
-            & (metrics_file["Grouped By"] == "Probe barcode ID")
-        ]
+        sample_ids = metrics_file[metrics_file["Metric Name"] == "Sample ID"]
         barcode_sample_mapping = (
             sample_ids.loc[:, ["Group Name", "Metric Value"]]
             .set_index("Group Name")
             .squeeze()
             .to_dict()
         )
+        # When probe barcodes are combined with multiplexing barcodes; the probe barcode (BC)
+        # is paired with other sample with other sample information using the syntax "{BC}+{antibody}"
+        # (or even "{BC}+{antibody}+{crispr guide}"). The cells_per_tag
+        # file only encodes the BCs; so we need to strip the other information.
+        barcode_sample_mapping = {
+            key_.partition("+")[0]: value_
+            for key_, value_ in barcode_sample_mapping.items()
+        }
         return split_samples(
             mudata_all_samples, multiplexing_info, barcode_sample_mapping
         )
@@ -255,7 +260,8 @@ def split_samples(mudata_obj, multiplexing_analysis_folder, barcode_sample_mappi
     for barcode, indices in sample_cell_mapping.items():
         if indices:
             sample_mudata = mudata_obj[indices]
-            result[barcode_sample_mapping[barcode]] = sample_mudata.copy()
+            sample = barcode_sample_mapping[barcode]
+            result[sample] = sample_mudata.copy()
     return result
 
 
@@ -297,16 +303,16 @@ def process_antigen_analysis(
         antigen_analysis_folder_path = antigen_analysis_folder_paths[sample_id]
         assert "antigen" in mudata_obj.mod
         per_barcodes_file = antigen_analysis_folder_path / "per_barcode.csv"
-        assert (
-            per_barcodes_file.is_file()
-        ), "Expected a per_barcode.csv file to be present."
+        assert per_barcodes_file.is_file(), (
+            "Expected a per_barcode.csv file to be present."
+        )
         per_barcodes_df = pd.read_csv(
             per_barcodes_file, index_col="barcode", sep=",", decimal=".", quotechar='"'
         )
         is_gex_cell = per_barcodes_df["is_gex_cell"]
-        assert (
-            len(set(is_gex_cell.unique().tolist()) - set([False, True])) == 0
-        ), "Expected 'is_gex_cell' column to be boolean. Please report this as a bug."
+        assert len(set(is_gex_cell.unique().tolist()) - set([False, True])) == 0, (
+            "Expected 'is_gex_cell' column to be boolean. Please report this as a bug."
+        )
         barcodes_in_gex = per_barcodes_df[is_gex_cell]
         # All of the barcodes listed in the per_barcode.csv with is_gex_cell set to 'True'
         # must be in the 'rna' (an thus also 'antigen') modality
@@ -412,9 +418,9 @@ def main():
     cellranger_multi_dir = Path(par["input"])
     # TODO: remove when issue https://github.com/viash-io/viash/issues/706 is resolved.
     if isinstance(par["output"], (list, set, tuple)):
-        assert (
-            len(par["output"]) == 1
-        ), "A single output file template should have been provided."
+        assert len(par["output"]) == 1, (
+            "A single output file template should have been provided."
+        )
         par["output"] = par["output"][0]
     assert par["output"].count("*") == 1, (
         f"Expected exactly one wildcard character (*) in output "

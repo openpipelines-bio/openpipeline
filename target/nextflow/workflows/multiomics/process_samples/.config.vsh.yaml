@@ -1,6 +1,6 @@
 name: "process_samples"
 namespace: "workflows/multiomics"
-version: "2.1.0"
+version: "v3.0.0"
 authors:
 - name: "Dries Schaumont"
   roles:
@@ -213,6 +213,11 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--skip_scrublet_doublet_detection"
+    description: "Skip the scrublet doublet detection step."
+    info: null
+    direction: "input"
 - name: "CITE-seq filtering options"
   arguments:
   - type: "integer"
@@ -626,6 +631,7 @@ dependencies:
 - name: "workflows/multiomics/process_batches"
   repository:
     type: "local"
+license: "MIT"
 links:
   repository: "https://github.com/openpipelines-bio/openpipeline"
   docker_registry: "ghcr.io"
@@ -699,13 +705,13 @@ build_info:
   engine: "native"
   output: "target/nextflow/workflows/multiomics/process_samples"
   executable: "target/nextflow/workflows/multiomics/process_samples/main.nf"
-  viash_version: "0.9.3"
-  git_commit: "f80e3d205424a1767687afba3d44764c72ff3d02"
+  viash_version: "0.9.4"
+  git_commit: "b79935a0200a2de4195bfcaa63b1ccbd290c150b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.1.0-rc.1-3-gf80e3d20542"
+  git_tag: "2.1.0"
   dependencies:
   - "target/nextflow/metadata/add_id"
-  - "target/nextflow/workflows/multiomics/split_modalities"
+  - "target/_private/nextflow/workflows/multiomics/split_modalities"
   - "target/nextflow/dataflow/merge"
   - "target/nextflow/dataflow/concatenate_h5mu"
   - "target/nextflow/workflows/rna/rna_singlesample"
@@ -714,20 +720,38 @@ build_info:
   - "target/nextflow/workflows/multiomics/process_batches"
 package_config:
   name: "openpipeline"
-  version: "v2.1.0"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
   info:
     test_resources:
     - type: "s3"
       path: "s3://openpipelines-data"
       dest: "resources_test"
-  viash_version: "0.9.3"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.4"
   source: "src"
   target: "target"
   config_mods:
   - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
-    .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
-    \ := 'includeConfig(\"nextflow_labels.config\")'"
-  - ".version := \"2.1.0\""
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"v3.0.0\""
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
   organization: "openpipelines-bio"
   links:
     repository: "https://github.com/openpipelines-bio/openpipeline"

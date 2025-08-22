@@ -1,5 +1,6 @@
 name: bbknn
 namespace: "neighbors"
+scope: "public"
 description: |
   BBKNN network generation
 authors:
@@ -16,6 +17,8 @@ arguments:
     direction: input
     required: true
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "rna"
     required: false
@@ -37,13 +40,6 @@ arguments:
     required: true
     example: output.h5mu
   
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
-    
   - name: "--uns_output"
     type: string
     default: neighbors
@@ -71,6 +67,8 @@ arguments:
   - name: "--n_trim"
     type: integer
     description: Trim the neighbours of each cell to these many top connectivities. May help with population independence and improve the tidiness of clustering. The lower the value the more independent the individual populations, at the cost of more conserved batch effect. If `None` (default), sets the parameter value automatically to 10 times `neighbors_within_batch` times the number of batches. Set to 0 to skip.
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

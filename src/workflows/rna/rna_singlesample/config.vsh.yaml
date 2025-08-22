@@ -1,5 +1,6 @@
 name: "rna_singlesample"
 namespace: "workflows/rna"
+scope: "public"
 description: "Processing unimodal single-sample RNA transcriptomics data."
 info:
   image: /images/concepts/fig_workflow_multiomics_rna_singlesample.svg
@@ -92,6 +93,11 @@ argument_groups:
         example: 0.2
         description: |
           Maximum fraction of UMIs that are ribosomal. Requires --obs_name_ribosomal_fraction.
+
+      - name: "--skip_scrublet_doublet_detection"
+        type: boolean_true
+        description: Skip the scrublet doublet detection step.
+  
   - name: "Mitochondrial & Ribosomal Gene Detection"
     arguments:
       - name: "--var_gene_names"

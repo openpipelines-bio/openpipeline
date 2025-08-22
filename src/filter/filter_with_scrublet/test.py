@@ -90,18 +90,18 @@ def test_filter_a_little_bit(
 
     new_obs = mu_out.mod["rna"].n_obs
     new_vars = mu_out.mod["rna"].n_vars
-    assert (
-        new_obs == input_mudata.mod["rna"].n_obs
-    ), "No RNA obs should have been filtered"
-    assert (
-        new_vars == input_mudata.mod["rna"].n_vars
-    ), "No RNA vars should have been filtered"
-    assert (
-        mu_out.mod["prot"].n_obs == input_mudata.mod["prot"].n_obs
-    ), "No prot obs should have been filtered"
-    assert (
-        mu_out.mod["prot"].n_vars == input_mudata.mod["prot"].n_vars
-    ), "No prot vars should have been filtered"
+    assert new_obs == input_mudata.mod["rna"].n_obs, (
+        "No RNA obs should have been filtered"
+    )
+    assert new_vars == input_mudata.mod["rna"].n_vars, (
+        "No RNA vars should have been filtered"
+    )
+    assert mu_out.mod["prot"].n_obs == input_mudata.mod["prot"].n_obs, (
+        "No prot obs should have been filtered"
+    )
+    assert mu_out.mod["prot"].n_vars == input_mudata.mod["prot"].n_vars, (
+        "No prot vars should have been filtered"
+    )
     assert list(mu_out.mod["rna"].var["feature_types"].cat.categories) == [
         "Gene Expression"
     ], "Feature types of RNA modality should be Gene Expression"
@@ -135,18 +135,18 @@ def test_filtering_a_lot(
     mu_out = mu.read_h5mu(output_mu)
     new_obs = mu_out.mod["rna"].n_obs
     new_vars = mu_out.mod["rna"].n_vars
-    assert (
-        new_obs < input_mudata.mod["rna"].n_obs
-    ), "Some cells should have been filtered"
-    assert (
-        new_vars == input_mudata.mod["rna"].n_vars
-    ), "No genes should have been filtered"
-    assert (
-        mu_out.mod["prot"].n_obs == input_mudata.mod["prot"].n_obs
-    ), "No prot obs should have been filtered"
-    assert (
-        mu_out.mod["prot"].n_vars == input_mudata.mod["prot"].n_vars
-    ), "No prot vars should have been filtered"
+    assert new_obs < input_mudata.mod["rna"].n_obs, (
+        "Some cells should have been filtered"
+    )
+    assert new_vars == input_mudata.mod["rna"].n_vars, (
+        "No genes should have been filtered"
+    )
+    assert mu_out.mod["prot"].n_obs == input_mudata.mod["prot"].n_obs, (
+        "No prot obs should have been filtered"
+    )
+    assert mu_out.mod["prot"].n_vars == input_mudata.mod["prot"].n_vars, (
+        "No prot vars should have been filtered"
+    )
     assert list(mu_out.mod["rna"].var["feature_types"].cat.categories) == [
         "Gene Expression"
     ], "Feature types of RNA modality should be Gene Expression"
@@ -289,18 +289,18 @@ def test_selecting_input_layer(
     mu_out = mu.read_h5mu(output_mu)
     new_obs = mu_out.mod["rna"].n_obs
     new_vars = mu_out.mod["rna"].n_vars
-    assert (
-        new_obs < input_mudata.mod["rna"].n_obs
-    ), "Some cells should have been filtered"
-    assert (
-        new_vars == input_mudata.mod["rna"].n_vars
-    ), "No genes should have been filtered"
-    assert (
-        mu_out.mod["prot"].n_obs == input_mudata.mod["prot"].n_obs
-    ), "No prot obs should have been filtered"
-    assert (
-        mu_out.mod["prot"].n_vars == input_mudata.mod["prot"].n_vars
-    ), "No prot vars should have been filtered"
+    assert new_obs < input_mudata.mod["rna"].n_obs, (
+        "Some cells should have been filtered"
+    )
+    assert new_vars == input_mudata.mod["rna"].n_vars, (
+        "No genes should have been filtered"
+    )
+    assert mu_out.mod["prot"].n_obs == input_mudata.mod["prot"].n_obs, (
+        "No prot obs should have been filtered"
+    )
+    assert mu_out.mod["prot"].n_vars == input_mudata.mod["prot"].n_vars, (
+        "No prot vars should have been filtered"
+    )
     assert list(mu_out.mod["rna"].var["feature_types"].cat.categories) == [
         "Gene Expression"
     ], "Feature types of RNA modality should be Gene Expression"
@@ -342,18 +342,18 @@ def test_customizing_detection_arguments(
     mu_out = mu.read_h5mu(output_mu)
     new_obs = mu_out.mod["rna"].n_obs
     new_vars = mu_out.mod["rna"].n_vars
-    assert (
-        new_obs < input_mudata.mod["rna"].n_obs
-    ), "Some cells should have been filtered"
-    assert (
-        new_vars == input_mudata.mod["rna"].n_vars
-    ), "No genes should have been filtered"
-    assert (
-        mu_out.mod["prot"].n_obs == input_mudata.mod["prot"].n_obs
-    ), "No prot obs should have been filtered"
-    assert (
-        mu_out.mod["prot"].n_vars == input_mudata.mod["prot"].n_vars
-    ), "No prot vars should have been filtered"
+    assert new_obs < input_mudata.mod["rna"].n_obs, (
+        "Some cells should have been filtered"
+    )
+    assert new_vars == input_mudata.mod["rna"].n_vars, (
+        "No genes should have been filtered"
+    )
+    assert mu_out.mod["prot"].n_obs == input_mudata.mod["prot"].n_obs, (
+        "No prot obs should have been filtered"
+    )
+    assert mu_out.mod["prot"].n_vars == input_mudata.mod["prot"].n_vars, (
+        "No prot vars should have been filtered"
+    )
     assert list(mu_out.mod["rna"].var["feature_types"].cat.categories) == [
         "Gene Expression"
     ], "Feature types of RNA modality should be Gene Expression"

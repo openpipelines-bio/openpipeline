@@ -1,5 +1,6 @@
 name: "scgpt_annotation"
 namespace: "workflows/annotation"
+scope: "public"
 description: |
   Cell type annotation workflow using scGPT. 
   The workflow takes a pre-processed h5mu file as query input, and performs
@@ -37,6 +38,8 @@ argument_groups:
         description: Path to the input file.
         example: input.h5mu
       - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process.
         type: string
         default: "rna"
         required: false

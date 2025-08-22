@@ -1,5 +1,6 @@
 name: velocyto
 namespace: "velocity"
+scope: "public"
 description: "Runs the velocity analysis on a BAM file, outputting a loom file."
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
@@ -53,7 +54,7 @@ test_resources:
 
 engines:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.10-slim-bookworm
     setup:
       - type: apt
         packages:

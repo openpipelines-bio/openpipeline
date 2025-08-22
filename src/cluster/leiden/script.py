@@ -247,7 +247,7 @@ def main():
             connectivities = adata.obsp[par["obsp_connectivities"]]
         except KeyError:
             raise ValueError(
-                f"Could not find .obsp key \"{par['obsp_connectivities']}\" "
+                f'Could not find .obsp key "{par["obsp_connectivities"]}" '
                 "in modality {par['modality']}"
             )
 
@@ -304,9 +304,15 @@ def main():
                 shared_csr_matrix.close()
                 obs_names.shm.close()
                 logger.info("Shared resources closed")
+                logger.info(
+                    "Shutting down logging queue and re-enabling logging from main thread."
+                )
                 log_listener.enqueue_sentinel()
                 log_listener.stop()
-                print("Logging system shut down", flush=True, file=sys.stdout)
+                stdout_handler = logging.StreamHandler()
+                stdout_handler.setFormatter(formatter)
+                logger.addHandler(stdout_handler)
+                logger.info("Re-enabled logging in main thread.")
             logger.info("Waiting for shutdown of processes")
             executor.shutdown()
             logger.info("Executor shut down.")

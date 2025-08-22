@@ -14,9 +14,9 @@ obsm_tokenized_values: "values_tokenized"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-output_compression: "gzip"
 output_obs_predictions: "scgpt_pred"
 output_obs_probability: "scgpt_probability"
+# output_compression: "gzip"
 
 # Arguments
 pad_token: "<pad>"

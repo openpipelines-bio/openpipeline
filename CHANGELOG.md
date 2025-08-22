@@ -1,3 +1,99 @@
+# openpipelines 3.0.0
+
+## BREAKING CHANGES
+
+* `transfer/publish`: remove component after deprecating it in 2.1.0 (PR #1019).
+
+* Removed `split_h5mu_train_test` component (PR #1020).
+
+* `tar_extract` has been deprecated and will be removed in openpipeline 4.0 (PR #1014). Use [vsh://toolbox/bgzip](https://www.viash-hub.com/packages/toolbox/latest/components/bgzip) instead.
+
+* `compress_h5mu`: rename `compression` argument to `output_compression` (PR #1017, PR #1018).
+
+* `delimit_fraction`: remove unused `layer` argument (PR #1018).
+
+* `download_file` has been deprecated and will be removed in openpipeline 3.0 (PR #1015).
+
+* `scarches`: Loading of legacy models no longer asumes the model to based on SCANVI. An argument (`reference_class`) was added which need to be set in this case (PR #1035). 
+
+* `convert/from_h5mu_to_seurat` has been deprecated and will be removed in openpipeline 4.0. Use `convert/from_h5mu_or_h5ad_to_seurat` instead (PR #1046).
+
+## NEW FUNCTIONALITY
+
+* `liana`: enabled jobs to be run in parallel and added two new arguments: `consensus_opts`, `de_method` (PR #1039)
+
+* `from_h5mu_or_h5ad_to_seurat`: converts an h5ad file or a single modality from an h5mu file to a seurat object (PR #1046).
+
+## EXPERIMENTAL
+
+Warning: These experimental features are subject to change in future releases.
+
+* Added `from_h5mu_or_h5ad_to_tiledb` component (PR #1034). 
+
+* Added `differential_expression/create_pseudobulk`: Generation of pseudobulk samples from single-cell transcriptomics data, 
+  to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis (PR #1042).
+
+* Added `annotate/singler`: Cell type annotation using SingleR (PR #1051).
+
+* Added `tiledb/move_mudata_obsm_to_tiledb` (PR #1065).
+
+## MAJOR CHANGES
+
+* `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
+
+* `leiden`: bump base container to 3.13 (PR #1030).
+
+* `scanvi`, `scarches`, `scvi` and `totalvi`: bump scvi-tools to `1.3.1` and base image to `nvcr.io/nvidia/pytorch:25.05-py3` (PR #1035).
+
+* `lianapy`: update liana to `1.5.0` (PR #1039)
+
+## MINOR CHANGES
+
+* `velocyto`: pin base container to `python:3.10-slim-bookworm` (PR #1063).
+
+* `mapping/cellranger_multi`: The output from Cell Ranger is now displayed as Cell Ranger is running (PR #1045).
+
+* Remove `workflows` directory (PR #993). The workflows which were at one point in this directory were all deprecated and moved to `src/workflows`.
+
+* Move output file compression argument for AnnData and MuData files to a base config file (`src/base/h5_compression_argument.yaml`) (PR #1017).
+
+* Add missing descriptions to components and arguments (PR #1018).
+
+* Add `scope` to component and workflow configurations (see https://viash.io/reference/config/scope.html) (PR #1013 and #1032).
+
+* `workflows/multiomics/process_samples`: Add optional `--skip_scrublet_doublet_detection` flag to bypass Scrublet doublet detection. Scrublet doublet detection runs by default and can now be optionally disabled (PR #1049).
+
+* Nextflow runner: use `resourceLimits` directive in the labels config to set a global limit on the memory (PR #1060).
+
+## BUG FIXES
+
+* `cellranger_multi`: Fix error when running Cell Ranger without any computational resources specified (PR #1056)
+
+* Bump viash to 0.9.4. This adds support for nextflow versions starting major version 25.01 and fixes an issue where an integer being passed to a argument with `type: double` resulted in an error (PR #1016).
+
+* Fix running `neigbors_leiden_umap` workflow with `-stub` enabled (PR #1026).
+
+* Add missing CUDA enabled `jaxlib` to components that use `scvi-tools` (`scanvi`, `scarches`, `scvi` and `totalvi`) (PR #1028)
+
+* `leiden`: fix issue where the logging system was shut down prematurely after the calculations were done (PR #1030)
+* Added missing `gpu` label to `scarches` component (PR #1027).
+
+* `conversion/from_cellranger_multi_to_h5mu`: fix conversion to MuData for experiments that combine probe barcodes with other feature barcodes (e.g. Antibody Capture and CIRSPR Guide Capture) (PR #1062).
+
+# openpipelines 2.1.2
+
+## DOCUMENTATION
+
+* Update README (PR #1024, backported from #1012).
+
+# openpipelines 2.1.1
+
+## BUG FIXES
+
+* Add support for nextflow versions starting major version 25.01 (PR #1009).
+
+* Fix an issue where an interger being passed to a argument with `type: double` resulted in an error (PR #1009). 
+
 # openpipelines 2.1.0
 
 ## BREAKING CHANGES
@@ -42,6 +138,7 @@
 
 * The `transfer/publish` component is deprecated and will be removed in a future major release (PR #941).
 
+
 # MINOR CHANGES
 
 * Bump viash to `0.9.3` (PR #995).
@@ -76,11 +173,9 @@
 
 * `workflows/annotation/scgpt_annotation` and `workflows/integrate/scgpt_leiden`: Parameterization of HVG flavor with default method `cell_ranger` instead of `seurat_v3` (PR #979).
 
-* `dataflow/merge`: Resolved an issue where merging two MuData objects with overlapping `var` or `obs` columns sometimes resulted in an unsupported nullable dtype (PR #990), for instance when merging `pd.IntegerDtype` and `pd.FloatDtype`. These columns are now correctly cast to their native numpy dtypes before writing.
+* `dataflow/merge`: Resolved an issue where merging two MuData objects with overlapping `var` or `obs` columns sometimes resulted in an unsupported nullable dtype (e.g. merging `pd.IntegerDtype` and `pd.FloatDtype`). These columns are now correctly cast to their native numpy dtypes before writing(PR #990).
 
 * `workflows/annotation/harmony_knn`: Only process RNA modality in the workflow (PR #988).
-
-* Documentation CI: Fix building the documentation using CI (PR #1003).
 
 # openpipelines 2.0.0
 

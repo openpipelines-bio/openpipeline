@@ -1,13 +1,13 @@
+# Arguments
+# output_compression: "gzip"
+
 # Inputs
 id: # please fill in - example: "my_id"
 input: # please fill in - example: "sample.h5mu"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-
-# Arguments

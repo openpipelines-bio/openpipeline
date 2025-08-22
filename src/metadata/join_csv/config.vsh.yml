@@ -1,5 +1,6 @@
 name: join_csv
 namespace: "metadata"
+scope: "public"
 description: "Join a csv containing metadata to the .obs or .var field of a mudata file."
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
@@ -15,6 +16,8 @@ argument_groups:
         required: true
         example: input.h5mu
       - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process.
         type: string
         default: "rna"
         required: false

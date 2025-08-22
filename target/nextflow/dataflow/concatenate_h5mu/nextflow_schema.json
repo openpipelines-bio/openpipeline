@@ -1,157 +1,124 @@
 {
-"$schema": "http://json-schema.org/draft-07/schema",
-"title": "concatenate_h5mu",
-"description": "Concatenate observations from samples in several (uni- and/or multi-modal) MuData files into a single file.\n",
-"type": "object",
-"definitions": {
-
-    
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "concatenate_h5mu",
+  "description": "Concatenate observations from samples in several (uni- and/or multi-modal) MuData files into a single file.\n",
+  "type": "object",
+  "$defs": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "format": "file-path",
-                "mimetype": "text/csv",
-                "pattern": "^\\S+\\.csv$"
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
         }
+      }
     },
-
-    
-    
-    "arguments" : {
-    "title": "Arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "input": {
-                "type":
-                "string",
-                "description": "Type: List of `file`, required, example: `sample_paths`, multiple_sep: `\";\"`. Paths to the different samples to be concatenated",
-                "help_text": "Type: List of `file`, required, example: `sample_paths`, multiple_sep: `\";\"`. Paths to the different samples to be concatenated."
-            
-            }
-    
-
-        ,
-                "modality": {
-                "type":
-                "string",
-                "description": "Type: List of `string`, multiple_sep: `\";\"`. Only output concatenated objects for the provided modalities",
-                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. Only output concatenated objects for the provided modalities. Outputs all modalities by default."
-            
-            }
-    
-
-        ,
-                "input_id": {
-                "type":
-                "string",
-                "description": "Type: List of `string`, multiple_sep: `\";\"`. Names of the different samples that have to be concatenated",
-                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. Names of the different samples that have to be concatenated.  Must be specified when using \u0027--mode move\u0027.\nIn this case, the ids will be used for the columns names of the dataframes registring the conflicts.\nIf specified, must be of same length as `--input`.\n"
-            
-            }
-    
-
-        ,
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. ",
-                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. "
-            ,
-                "default":"$id.$key.output.h5mu"
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-        ,
-                "obs_sample_name": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `sample_id`. Name of the ",
-                "help_text": "Type: `string`, default: `sample_id`. Name of the .obs key under which to add the sample names."
-            ,
-                "default":"sample_id"
-            }
-    
-
-        ,
-                "other_axis_mode": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `move`, choices: ``same`, `unique`, `first`, `only`, `concat`, `move``. How to handle the merging of other axis (var, obs, ",
-                "help_text": "Type: `string`, default: `move`, choices: ``same`, `unique`, `first`, `only`, `concat`, `move``. How to handle the merging of other axis (var, obs, ...).\n\n  - None: keep no data\n  - same: only keep elements of the matrices which are the same in each of the samples\n  - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)\n  - first: keep the annotation from the first sample\n  - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)\n  - move: identical to \u0027same\u0027, but moving the conflicting values to .varm or .obsm\n",
-                "enum": ["same", "unique", "first", "only", "concat", "move"]
-            
-            ,
-                "default":"move"
-            }
-    
-
-        ,
-                "uns_merge_mode": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `make_unique`, choices: ``same`, `unique`, `first`, `only`, `make_unique``. How to handle the merging of ",
-                "help_text": "Type: `string`, default: `make_unique`, choices: ``same`, `unique`, `first`, `only`, `make_unique``. How to handle the merging of .uns across modalities\n  - None: keep no data\n  - same: only keep elements of the matrices which are the same in each of the samples\n  - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)\n  - first: keep the annotation from the first sample\n  - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)\n  - make_unique: identical to \u0027unique\u0027, but keys which are not unique are made unique by prefixing them with the sample id.\n",
-                "enum": ["same", "unique", "first", "only", "make_unique"]
-            
-            ,
-                "default":"make_unique"
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/definitions/arguments"
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "exists": true,
+          "description": "Paths to the different samples to be concatenated.",
+          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `[\"sample_paths\"]`. "
+        },
+        "modality": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Only output concatenated objects for the provided modalities",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "input_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Names of the different samples that have to be concatenated",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output location for the concatenated MuData object file.\n",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "obs_sample_name": {
+          "type": "string",
+          "description": "Name of the .obs key under which to add the sample names.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"sample_id\"`. ",
+          "default": "sample_id"
+        },
+        "other_axis_mode": {
+          "type": "string",
+          "description": "How to handle the merging of other axis (var, obs, ...).\n\n  - None: keep no data\n  - same: only keep elements of the matrices which are the same in each of the samples\n  - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)\n  - first: keep the annotation from the first sample\n  - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)\n  - move: identical to 'same', but moving the conflicting values to .varm or .obsm\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"move\"`, choices: ``same`, `unique`, `first`, `only`, `concat`, `move``. ",
+          "enum": [
+            "same",
+            "unique",
+            "first",
+            "only",
+            "concat",
+            "move"
+          ],
+          "default": "move"
+        },
+        "uns_merge_mode": {
+          "type": "string",
+          "description": "How to handle the merging of .uns across modalities\n  - None: keep no data\n  - same: only keep elements of the matrices which are the same in each of the samples\n  - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)\n  - first: keep the annotation from the first sample\n  - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)\n  - make_unique: identical to 'unique', but keys which are not unique are made unique by prefixing them with the sample id.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"make_unique\"`, choices: ``same`, `unique`, `first`, `only`, `make_unique``. ",
+          "enum": [
+            "same",
+            "unique",
+            "first",
+            "only",
+            "make_unique"
+          ],
+          "default": "make_unique"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
 }

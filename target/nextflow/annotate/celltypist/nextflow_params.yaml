@@ -23,9 +23,9 @@ min_prop: 0.0
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 output_obs_predictions: "celltypist_pred"
 output_obs_probability: "celltypist_probability"
+# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

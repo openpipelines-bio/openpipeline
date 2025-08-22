@@ -14,8 +14,6 @@ cd "$OUT"
 wget https://www.dropbox.com/s/m8u61jn4i1mcktp/TestData4PipelineSmall.tar.gz
 tar -xf TestData4PipelineSmall.tar.gz
 # bam and vcf file
-cp TestData4PipelineSmall/test_dataset/outs/pooled.sorted.bam.bai .
-cp TestData4PipelineSmall/test_dataset/outs/pooled.sorted.bam .
 cp TestData4PipelineSmall/test_dataset.vcf .
 # extract chr from vcf file
 grep -w '^#\|^#CHROM\|^[1-2]' test_dataset.vcf > test_dataset_chr1_2.vcf

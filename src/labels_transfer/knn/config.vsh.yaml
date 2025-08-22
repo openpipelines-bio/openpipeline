@@ -1,5 +1,6 @@
 name: knn
 namespace: "labels_transfer"
+scope: "public"
 description: |
   This component performs label transfer from reference to query using a K-Neirest Neighbors classifier.
 authors:

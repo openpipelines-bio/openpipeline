@@ -1,5 +1,6 @@
 name: popv
 namespace: "annotate"
+scope: "public"
 description: "Performs popular major vote cell typing on single cell sequence data using multiple algorithms. Note that this is a one-shot version of PopV."
 authors:
   - __merge__: /src/authors/matthias_beyens.yaml
@@ -80,11 +81,8 @@ argument_groups:
         direction: output
         required: true
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
       # - name: "--output_models"
       #   type: file
       #   direction: output

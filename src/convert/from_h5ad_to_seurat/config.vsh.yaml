@@ -1,5 +1,6 @@
 name: "from_h5ad_to_seurat"
 namespace: "convert"
+scope: "public"
 description: |
   Converts an h5ad file into a Seurat file.
 authors:
@@ -41,8 +42,7 @@ engines:
           - libgeos-dev
       - type: r
         cran: [ hdf5r, Seurat, SeuratObject ]
-      - type: r
-        github: scverse/anndataR
+        github: scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a
     test_setup:
       - type: r
         cran: [ testthat ]

@@ -2,7 +2,7 @@
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # output: "output.h5ad"
-output_compression: "gzip"
+# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

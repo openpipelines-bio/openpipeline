@@ -1,5 +1,6 @@
 name: leiden
 namespace: "cluster"
+scope: "public"
 description: |
   Cluster cells using the [Leiden algorithm] [Traag18] implemented in the [Scanpy framework] [Wolf18]. 
   Leiden is an improved version of the [Louvain algorithm] [Blondel08]. 
@@ -24,6 +25,8 @@ arguments:
     example: input.h5mu
 
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "rna"
     required: false
@@ -41,13 +44,6 @@ arguments:
     direction: output
     required: true
     example: output.h5mu
-
-  - name: "--output_compression"
-    type: string
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
-
   - name: "--obsm_name"
     type: string
     description: |
@@ -67,6 +63,8 @@ arguments:
     default: [1]
     required: true
     multiple: true
+__merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py
@@ -79,7 +77,7 @@ test_resources:
 
 engines:
   - type: docker
-    image: python:3.11-slim
+    image: python:3.13-slim
     setup:
       - type: apt
         packages: 

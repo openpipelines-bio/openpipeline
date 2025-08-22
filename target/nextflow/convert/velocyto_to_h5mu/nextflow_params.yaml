@@ -5,10 +5,10 @@ modality: "rna_velocity"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 layer_spliced: "velo_spliced"
 layer_unspliced: "velo_unspliced"
 layer_ambiguous: "velo_ambiguous"
+# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

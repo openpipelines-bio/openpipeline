@@ -1,5 +1,6 @@
 name: celltypist
 namespace: annotate
+scope: "public"
 description: Automated cell type annotation tool for scRNA-seq datasets on the basis of logistic regression classifiers optimised by the stochastic gradient descent algorithm.
 authors:
   - __merge__: /src/authors/jakub_majercik.yaml
@@ -109,11 +110,6 @@ argument_groups:
         description: Output h5mu file.
         direction: output
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--output_obs_predictions"
         type: string
         default: celltypist_pred
@@ -126,6 +122,7 @@ argument_groups:
         required: false
         description: |
           In which `.obs` slots to store the probability of the predictions.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
 resources:
   - type: python_script

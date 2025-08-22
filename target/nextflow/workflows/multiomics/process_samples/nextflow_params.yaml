@@ -23,6 +23,7 @@ add_id_make_observation_keys_unique: true
 # rna_max_fraction_mito: 0.2
 # rna_min_fraction_ribo: 0.0
 # rna_max_fraction_ribo: 0.2
+skip_scrublet_doublet_detection: false
 
 # CITE-seq filtering options
 # prot_min_counts: 3

@@ -1,189 +1,123 @@
 {
-"$schema": "http://json-schema.org/draft-07/schema",
-"title": "calculate_atac_qc_metrics",
-"description": "Add basic ATAC quality control metrics to an .h5mu file.\n\nThe metrics are comparable to what scanpy.pp.calculate_qc_metrics output,\nalthough they have slightly different names:\n\nObs metrics (name in this component -\u003e name in scanpy):\n  - n_features_per_cell -\u003e n_genes_by_counts\n  - total_fragment_counts -\u003e total_counts\n    \n",
-"type": "object",
-"definitions": {
-
-    
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "calculate_atac_qc_metrics",
+  "description": "Add basic ATAC quality control metrics to an .h5mu file.\n\nThe metrics are comparable to what scanpy.pp.calculate_qc_metrics output,\nalthough they have slightly different names:\n\nObs metrics (name in this component -> name in scanpy):\n  - n_features_per_cell -> n_genes_by_counts\n  - total_fragment_counts -> total_counts\n    \n",
+  "type": "object",
+  "$defs": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "format": "file-path",
-                "mimetype": "text/csv",
-                "pattern": "^\\S+\\.csv$"
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
         }
+      }
     },
-
-    
-    
-    "inputs" : {
-    "title": "Inputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "input": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `input.h5mu`. Input h5mu file",
-                "help_text": "Type: `file`, required, example: `input.h5mu`. Input h5mu file"
-            
-            }
-    
-
-        ,
-                "fragments_path": {
-                "type":
-                "string",
-                "description": "Type: `file`, example: `fragments.tsv.gz`. Path to the fragments file",
-                "help_text": "Type: `file`, example: `fragments.tsv.gz`. Path to the fragments file. If not provided and not present in the input h5mu file,\nthe nucleosome signal and TSS enrichment score will not be calculated.\n"
-            
-            }
-    
-
-        ,
-                "modality": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `atac`. ",
-                "help_text": "Type: `string`, default: `atac`. "
-            ,
-                "default":"atac"
-            }
-    
-
-        ,
-                "layer": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `raw_counts`. Layer at `",
-                "help_text": "Type: `string`, example: `raw_counts`. Layer at `.layers` to use for the calculation. If not provided, `.X` is used.\n"
-            
-            }
-    
-
-        ,
-                "n_fragments_for_nucleosome_signal": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `100000`. Number of fragments to use per cell for nucleosome signal calculation",
-                "help_text": "Type: `integer`, default: `100000`. Number of fragments to use per cell for nucleosome signal calculation.\nTakes very long to calculate, for a test run lower value (e.g. 10e3) is recommended.\nSee https://www.sc-best-practices.org/chromatin_accessibility/quality_control.html#nucleosome-signal\nfor more information\n"
-            ,
-                "default":100000
-            }
-    
-
-        ,
-                "nuc_signal_threshold": {
-                "type":
-                "number",
-                "description": "Type: `double`, default: `2.0`. Threshold for nucleosome signal",
-                "help_text": "Type: `double`, default: `2.0`. Threshold for nucleosome signal. Cells with nucleosome signal above this threshold\nwill be marked as low quality (\"NS_FAIL\"), otherwise they will be marked \"NS_PASS\".\n"
-            ,
-                "default":2.0
-            }
-    
-
-        ,
-                "n_tss": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `3000`. Number of the transcription start sites to calculate TSS enrichment score",
-                "help_text": "Type: `integer`, default: `3000`. Number of the transcription start sites to calculate TSS enrichment score.\nSee https://www.sc-best-practices.org/chromatin_accessibility/quality_control.html#tss-enrichment\nfor more information\n"
-            ,
-                "default":3000
-            }
-    
-
-        ,
-                "tss_threshold": {
-                "type":
-                "number",
-                "description": "Type: `double`, default: `1.5`. Threshold for TSS enrichment score",
-                "help_text": "Type: `double`, default: `1.5`. Threshold for TSS enrichment score. Cells with TSS enrichment score below this threshold\nwill be marked as low quality (\"TSS_FAIL\") otherwise they will be marked as \"TSS_PASS\".\n"
-            ,
-                "default":1.5
-            }
-    
-
-}
-},
-    
-    
-    "outputs" : {
-    "title": "Outputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
-                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
-            ,
-                "default":"$id.$key.output.h5mu"
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/definitions/inputs"
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "fragments_path": {
+          "type": "string",
+          "format": "path",
+          "description": "Path to the fragments file",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"fragments.tsv.gz\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality from the input MuData file to process.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"atac\"`. ",
+          "default": "atac"
+        },
+        "layer": {
+          "type": "string",
+          "description": "Layer at `.layers` to use for the calculation",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"raw_counts\"`. "
+        },
+        "n_fragments_for_nucleosome_signal": {
+          "type": "integer",
+          "description": "Number of fragments to use per cell for nucleosome signal calculation.\nTakes very long to calculate, for a test run lower value (e.g",
+          "help_text": "Type: `integer`, multiple: `False`, default: `100000`. ",
+          "default": 100000
+        },
+        "nuc_signal_threshold": {
+          "type": "number",
+          "description": "Threshold for nucleosome signal",
+          "help_text": "Type: `double`, multiple: `False`, default: `2.0`. ",
+          "default": 2.0
+        },
+        "n_tss": {
+          "type": "integer",
+          "description": "Number of the transcription start sites to calculate TSS enrichment score.\nSee https://www.sc-best-practices.org/chromatin_accessibility/quality_control.html#tss-enrichment\nfor more information\n",
+          "help_text": "Type: `integer`, multiple: `False`, default: `3000`. ",
+          "default": 3000
+        },
+        "tss_threshold": {
+          "type": "number",
+          "description": "Threshold for TSS enrichment score",
+          "help_text": "Type: `double`, multiple: `False`, default: `1.5`. ",
+          "default": 1.5
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/outputs"
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
 }

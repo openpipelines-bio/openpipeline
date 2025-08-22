@@ -1,5 +1,6 @@
 name: split_h5mu
 namespace: "dataflow"
+scope: "public"
 description: |
   Split the samples of a single modality from a .h5mu (multimodal) sample into seperate .h5mu files based on the values of an .obs column of this modality. 
 authors:
@@ -13,6 +14,8 @@ argument_groups:
     description: Path to a single .h5mu file.
     required: true
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "rna"
     required: false
@@ -36,18 +39,14 @@ argument_groups:
     direction: output
     example: "/path/to/output"
     description: Output directory containing multiple h5mu files.
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
   - name: "--output_files"
     type: file
     required: true
     direction: output
     example: sample_files.csv
     description: A csv containing the base filename and obs feature by which it was split.
+  __merge__: [., /src/base/h5_compression_argument.yaml]
+
 
 resources:
   - type: python_script

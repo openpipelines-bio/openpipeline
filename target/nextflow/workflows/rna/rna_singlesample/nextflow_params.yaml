@@ -16,6 +16,7 @@ input: # please fill in - example: "dataset.h5mu"
 # max_fraction_mito: 0.2
 # min_fraction_ribo: 0.0
 # max_fraction_ribo: 0.2
+skip_scrublet_doublet_detection: false
 
 # Mitochondrial & Ribosomal Gene Detection
 # var_gene_names: "gene_symbol"

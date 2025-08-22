@@ -2,8 +2,8 @@
 input: # please fill in - example: "input_dir_containing_modalities"
 # output: ["$id.$key.output_*.h5mu"]
 # sample_csv: "$id.$key.sample_csv.csv"
-# output_compression: "gzip"
 uns_metrics: "metrics_cellranger"
+# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

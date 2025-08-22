@@ -1,5 +1,6 @@
 name: find_neighbors
 namespace: "neighbors"
+scope: "public"
 description: |
   Compute a neighborhood graph of observations [McInnes18].
 
@@ -20,6 +21,8 @@ arguments:
     example: input.h5mu
 
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "rna"
     required: false
@@ -37,13 +40,6 @@ arguments:
     description: Output h5mu file containing the found neighbors.
     direction: output
     example: output.h5mu
-    
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
   
   - name: "--uns_output"
     type: string
@@ -76,6 +72,7 @@ arguments:
     type: integer
     default: 0
     description: A random seed.
+__merge__: [., /src/base/h5_compression_argument.yaml]
 
 resources:
   - type: python_script

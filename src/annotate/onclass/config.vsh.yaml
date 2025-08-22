@@ -1,5 +1,6 @@
 name: onclass
 namespace: annotate
+scope: "public"
 description: |
   OnClass is a python package for single-cell cell type annotation. It uses the Cell Ontology to capture the cell type similarity. 
   These similarities enable OnClass to annotate cell types that are never seen in the training data.
@@ -39,7 +40,7 @@ argument_groups:
         description: | 
           The minimum number of genes present in both the reference and query datasets.
 
-  - name: Ongoloty
+  - name: Ontology
     description: Ontology input files
     arguments:
       - name: "--cl_nlp_emb_file"
@@ -98,11 +99,6 @@ argument_groups:
         description: Output h5mu file.
         direction: output
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--output_obs_predictions"
         type: string
         default: onclass_pred
@@ -115,6 +111,7 @@ argument_groups:
         required: false
         description: |
           In which `.obs` slots to store the probability of the predictions.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Model arguments
     description: Model arguments

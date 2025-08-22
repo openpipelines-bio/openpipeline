@@ -36,9 +36,9 @@ def test_simple_execution(run_component):
     # check output
     expected_rna_obs_cols = ["popv_prediction"]
     for col in expected_rna_obs_cols:
-        assert (
-            col in output.mod["rna"].obs.columns
-        ), f"could not find columns .mod['rna'].obs['{col}']"
+        assert col in output.mod["rna"].obs.columns, (
+            f"could not find columns .mod['rna'].obs['{col}']"
+        )
 
     print(f"output: {output}", flush=True)
 

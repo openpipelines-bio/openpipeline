@@ -1,5 +1,6 @@
 name: join_uns_to_obs
 namespace: "metadata"
+scope: "public"
 description: "Join a data frame of length 1 (1 row index value) in .uns containing metadata to the .obs of a mudata file."
 arguments:
   - name: "--input"
@@ -10,10 +11,14 @@ arguments:
     required: true
     example: input.h5mu
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "rna"
     required: false
   - name: "--uns_key"
+    description: |
+      Lookup key from .uns pointing to the input data.
     type: string
     required: true
   - name: "--output"

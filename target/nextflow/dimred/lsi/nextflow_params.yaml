@@ -10,11 +10,11 @@ scale_embeddings: true
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-output_compression: "gzip"
 obsm_output: "X_lsi"
 varm_output: "lsi"
 uns_output: "lsi"
 overwrite: false
+# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

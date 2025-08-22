@@ -1,13 +1,12 @@
 # Inputs
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-# layer: "raw_counts"
 obs_fraction_column: # please fill in - example: "fraction_mitochondrial"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
 obs_name_filter: # please fill in - example: "foo"
+# output_compression: "gzip"
 
 # Arguments
 min_fraction: 0.0

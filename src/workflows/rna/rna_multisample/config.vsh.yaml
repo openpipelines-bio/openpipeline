@@ -1,5 +1,6 @@
 name: "rna_multisample"
 namespace: "workflows/rna"
+scope: "public"
 description: "Processing unimodal multi-sample RNA transcriptomics data."
 info:
   image: /images/concepts/fig_workflow_multiomics_rna_multisample.svg

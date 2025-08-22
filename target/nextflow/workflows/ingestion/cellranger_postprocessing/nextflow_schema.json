@@ -1,182 +1,120 @@
 {
-"$schema": "http://json-schema.org/draft-07/schema",
-"title": "cellranger_postprocessing",
-"description": "Post-processing Cell Ranger datasets.",
-"type": "object",
-"definitions": {
-
-    
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cellranger_postprocessing",
+  "description": "Post-processing Cell Ranger datasets.",
+  "type": "object",
+  "$defs": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "format": "file-path",
-                "mimetype": "text/csv",
-                "pattern": "^\\S+\\.csv$"
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
         }
+      }
     },
-
-    
-    
-    "inputs" : {
-    "title": "Inputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "id": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `foo`. ID of the sample",
-                "help_text": "Type: `string`, required, example: `foo`. ID of the sample."
-            
-            }
-    
-
-        ,
-                "input": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `input.h5mu`. Input h5mu file created by running Cell Ranger and converting its output to h5mu",
-                "help_text": "Type: `file`, required, example: `input.h5mu`. Input h5mu file created by running Cell Ranger and converting its output to h5mu."
-            
-            }
-    
-
-}
-},
-    
-    
-    "outputs" : {
-    "title": "Outputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, default: `$id.$key.output.output`. The converted h5mu file",
-                "help_text": "Type: `file`, default: `$id.$key.output.output`. The converted h5mu file."
-            ,
-                "default":"$id.$key.output.output"
-            }
-    
-
-}
-},
-    
-    
-    "correction arguments" : {
-    "title": "Correction arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "perform_correction": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean_true`, default: `false`. Whether or not to run CellBender to perform count correction",
-                "help_text": "Type: `boolean_true`, default: `false`. Whether or not to run CellBender to perform count correction."
-            ,
-                "default":false
-            }
-    
-
-        ,
-                "cellbender_epochs": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `150`. Number of epochs to run CellBender for",
-                "help_text": "Type: `integer`, default: `150`. Number of epochs to run CellBender for."
-            ,
-                "default":150
-            }
-    
-
-}
-},
-    
-    
-    "filtering arguments" : {
-    "title": "Filtering arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "min_genes": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, example: `100`. Minimum number of counts required for a cell to pass filtering",
-                "help_text": "Type: `integer`, example: `100`. Minimum number of counts required for a cell to pass filtering."
-            
-            }
-    
-
-        ,
-                "min_counts": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, example: `1000`. Minimum number of genes expressed required for a cell to pass filtering",
-                "help_text": "Type: `integer`, example: `1000`. Minimum number of genes expressed required for a cell to pass filtering."
-            
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/definitions/inputs"
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID of the sample.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"foo\"`. "
+        },
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file created by running Cell Ranger and converting its output to h5mu.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/outputs"
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "The converted h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output\"`, direction: `output`. ",
+          "default": "$id.$key.output"
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/correction arguments"
+    "correction arguments": {
+      "title": "Correction arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "perform_correction": {
+          "type": "boolean",
+          "description": "Whether or not to run CellBender to perform count correction.",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "cellbender_epochs": {
+          "type": "integer",
+          "description": "Number of epochs to run CellBender for.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `150`. ",
+          "default": 150
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/filtering arguments"
+    "filtering arguments": {
+      "title": "Filtering arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "min_genes": {
+          "type": "integer",
+          "description": "Minimum number of counts required for a cell to pass filtering.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `100`. "
+        },
+        "min_counts": {
+          "type": "integer",
+          "description": "Minimum number of genes expressed required for a cell to pass filtering.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1000`. "
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/correction arguments"
+    },
+    {
+      "$ref": "#/$defs/filtering arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
 }

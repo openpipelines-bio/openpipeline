@@ -1,5 +1,6 @@
 name: cellranger_mkfastq
 namespace: demux
+scope: "public"
 description: Demultiplex raw sequencing data
 usage: |
   cellranger_mkfastq \
@@ -48,7 +49,7 @@ test_resources:
 
 engines:
 - type: docker
-  image: ghcr.io/data-intuitive/cellranger:8.0
+  image: ghcr.io/data-intuitive/cellranger:9.0
   setup:
     - type: docker
       run: |

@@ -1,248 +1,153 @@
 {
-"$schema": "http://json-schema.org/draft-07/schema",
-"title": "souporcell",
-"description": "souporcell is a method for clustering mixed-genotype scRNAseq experiments by individual.",
-"type": "object",
-"definitions": {
-
-    
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "souporcell",
+  "description": "souporcell is a method for clustering mixed-genotype scRNAseq experiments by individual.",
+  "type": "object",
+  "$defs": {
     "Dataset input": {
-        "title": "Dataset input",
-        "type": "object",
-        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
-        "properties": {
-            "param_list": {
-                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-                "default": "",
-                "format": "file-path",
-                "mimetype": "text/csv",
-                "pattern": "^\\S+\\.csv$"
-            }
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
         }
+      }
     },
-
-    
-    
-    "input" : {
-    "title": "Input",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "fasta": {
-                "type":
-                "string",
-                "description": "Type: `file`. reference fasta file",
-                "help_text": "Type: `file`. reference fasta file"
-            
-            }
-    
-
-        ,
-                "bam": {
-                "type":
-                "string",
-                "description": "Type: `file`. cellranger bam",
-                "help_text": "Type: `file`. cellranger bam"
-            
-            }
-    
-
-        ,
-                "bam_index": {
-                "type":
-                "string",
-                "description": "Type: `file`. cellranger bam index",
-                "help_text": "Type: `file`. cellranger bam index"
-            
-            }
-    
-
-        ,
-                "barcodes": {
-                "type":
-                "string",
-                "description": "Type: `file`. barcodes",
-                "help_text": "Type: `file`. barcodes.tsv from cellranger"
-            
-            }
-    
-
-        ,
-                "clusters": {
-                "type":
-                "integer",
-                "description": "Type: `integer`. number cluster, tbd add easy way to run on a range of k",
-                "help_text": "Type: `integer`. number cluster, tbd add easy way to run on a range of k"
-            
-            }
-    
-
-        ,
-                "ploidy": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `2`. ploidy, must be 1 or 2",
-                "help_text": "Type: `integer`, default: `2`. ploidy, must be 1 or 2"
-            ,
-                "default":2
-            }
-    
-
-        ,
-                "min_alt": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `10`. min alt to use locus",
-                "help_text": "Type: `integer`, default: `10`. min alt to use locus"
-            ,
-                "default":10
-            }
-    
-
-        ,
-                "min_ref": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `10`. min ref to use locus",
-                "help_text": "Type: `integer`, default: `10`. min ref to use locus"
-            ,
-                "default":10
-            }
-    
-
-        ,
-                "max_loci": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `2048`. max loci per cell, affects speed",
-                "help_text": "Type: `integer`, default: `2048`. max loci per cell, affects speed"
-            ,
-                "default":2048
-            }
-    
-
-        ,
-                "restarts": {
-                "type":
-                "integer",
-                "description": "Type: `integer`. number of restarts in clustering, when there are \u003e 12 clusters we recommend increasing this to avoid local minima",
-                "help_text": "Type: `integer`. number of restarts in clustering, when there are \u003e 12 clusters we recommend increasing this to avoid local minima"
-            
-            }
-    
-
-        ,
-                "common_variants": {
-                "type":
-                "string",
-                "description": "Type: `file`. common variant loci or known variant loci vcf, must be vs same reference fasta",
-                "help_text": "Type: `file`. common variant loci or known variant loci vcf, must be vs same reference fasta"
-            
-            }
-    
-
-        ,
-                "known_genotypes": {
-                "type":
-                "string",
-                "description": "Type: `file`. known variants per clone in population vcf mode, must be ",
-                "help_text": "Type: `file`. known variants per clone in population vcf mode, must be .vcf right now we dont accept gzip or bcf sorry"
-            
-            }
-    
-
-        ,
-                "known_genotypes_sample_names": {
-                "type":
-                "string",
-                "description": "Type: `string`. which samples in population vcf from known genotypes option represent the donors in your sample",
-                "help_text": "Type: `string`. which samples in population vcf from known genotypes option represent the donors in your sample"
-            
-            }
-    
-
-        ,
-                "skip_remap": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean_true`, default: `false`. dont remap with minimap2 (not recommended unless in conjunction with --common_variants",
-                "help_text": "Type: `boolean_true`, default: `false`. dont remap with minimap2 (not recommended unless in conjunction with --common_variants"
-            ,
-                "default":false
-            }
-    
-
-        ,
-                "ignore": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean_true`, default: `false`. set to True to ignore data error assertions",
-                "help_text": "Type: `boolean_true`, default: `false`. set to True to ignore data error assertions"
-            ,
-                "default":false
-            }
-    
-
-}
-},
-    
-    
-    "output" : {
-    "title": "Output",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, default: `$id.$key.output.output`, example: `souporcell_out`. name of directory to place souporcell files",
-                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `souporcell_out`. name of directory to place souporcell files"
-            ,
-                "default":"$id.$key.output.output"
-            }
-    
-
-}
-},
-    
-    
-    "nextflow input-output arguments" : {
-    "title": "Nextflow input-output arguments",
-    "type": "object",
-    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-    "properties": {
-    
-        
-                "publish_dir": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-            
-            }
-    
-
-        
-
-}
-}
-},
-"allOf": [
-
-    {
-    "$ref": "#/definitions/input"
+    "input": {
+      "title": "Input",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "fasta": {
+          "type": "string",
+          "format": "path",
+          "description": "reference fasta file",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        },
+        "bam": {
+          "type": "string",
+          "format": "path",
+          "description": "cellranger bam",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        },
+        "bam_index": {
+          "type": "string",
+          "format": "path",
+          "description": "cellranger bam index",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        },
+        "barcodes": {
+          "type": "string",
+          "format": "path",
+          "description": "barcodes.tsv from cellranger",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        },
+        "clusters": {
+          "type": "integer",
+          "description": "number cluster, tbd add easy way to run on a range of k",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "ploidy": {
+          "type": "integer",
+          "description": "ploidy, must be 1 or 2",
+          "help_text": "Type: `integer`, multiple: `False`, default: `2`. ",
+          "default": 2
+        },
+        "min_alt": {
+          "type": "integer",
+          "description": "min alt to use locus",
+          "help_text": "Type: `integer`, multiple: `False`, default: `10`. ",
+          "default": 10
+        },
+        "min_ref": {
+          "type": "integer",
+          "description": "min ref to use locus",
+          "help_text": "Type: `integer`, multiple: `False`, default: `10`. ",
+          "default": 10
+        },
+        "max_loci": {
+          "type": "integer",
+          "description": "max loci per cell, affects speed",
+          "help_text": "Type: `integer`, multiple: `False`, default: `2048`. ",
+          "default": 2048
+        },
+        "restarts": {
+          "type": "integer",
+          "description": "number of restarts in clustering, when there are > 12 clusters we recommend increasing this to avoid local minima",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "common_variants": {
+          "type": "string",
+          "format": "path",
+          "description": "common variant loci or known variant loci vcf, must be vs same reference fasta",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        },
+        "known_genotypes": {
+          "type": "string",
+          "format": "path",
+          "description": "known variants per clone in population vcf mode, must be .vcf right now we dont accept gzip or bcf sorry",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        },
+        "known_genotypes_sample_names": {
+          "type": "string",
+          "description": "which samples in population vcf from known genotypes option represent the donors in your sample",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "skip_remap": {
+          "type": "boolean",
+          "description": "dont remap with minimap2 (not recommended unless in conjunction with --common_variants",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "ignore": {
+          "type": "boolean",
+          "description": "set to True to ignore data error assertions",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/output"
+    "output": {
+      "title": "Output",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "name of directory to place souporcell files",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output\"`, direction: `output`, example: `\"souporcell_out\"`. ",
+          "default": "$id.$key.output"
+        }
+      }
     },
-
-    {
-    "$ref": "#/definitions/nextflow input-output arguments"
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
     }
-]
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/input"
+    },
+    {
+      "$ref": "#/$defs/output"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
 }

@@ -1,5 +1,6 @@
 name: do_filter
 namespace: "filter"
+scope: "public"
 description: |
   Remove observations and variables based on specified .obs and .var columns.
 authors:
@@ -15,6 +16,8 @@ arguments:
     example: input.h5mu
 
   - name: "--modality"
+    description: |
+      Which modality from the input MuData file to process.
     type: string
     default: "rna"
     required: false
@@ -37,13 +40,7 @@ arguments:
     description: Output h5mu file.
     direction: output
     example: output.h5mu
-
-  - name: "--output_compression"
-    type: string
-    description: The compression format to be used on the output h5mu object.
-    choices: ["gzip", "lzf"]
-    required: false
-    example: "gzip"
+__merge__: [., /src/base/h5_compression_argument.yaml]
 
 resources:
   - type: python_script

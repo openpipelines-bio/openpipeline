@@ -1,5 +1,6 @@
 name: "cellranger_multi"
 namespace: "workflows/ingestion"
+scope: "public"
 description: "A pipeline for running Cell Ranger multi."
 info:
   name: Cell Ranger multi

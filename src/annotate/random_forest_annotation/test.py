@@ -79,9 +79,9 @@ def test_simple_execution(run_component, random_h5mu_path):
     ]
 
     obs_values = output_mudata.mod["rna"].obs["random_forest_probability"]
-    assert all(
-        0 <= value <= 1 for value in obs_values
-    ), "probabilities outside the range [0, 1]"
+    assert all(0 <= value <= 1 for value in obs_values), (
+        "probabilities outside the range [0, 1]"
+    )
 
 
 def test_custom_out_obs_model_params(run_component, random_h5mu_path):
@@ -127,9 +127,9 @@ def test_custom_out_obs_model_params(run_component, random_h5mu_path):
     ]
 
     obs_values = output_mudata.mod["rna"].obs["dummy_probability"]
-    assert all(
-        0 <= value <= 1 for value in obs_values
-    ), "probabilities outside the range [0, 1]"
+    assert all(0 <= value <= 1 for value in obs_values), (
+        "probabilities outside the range [0, 1]"
+    )
 
 
 def test_with_model(run_component, random_h5mu_path, dummy_model):
@@ -161,9 +161,9 @@ def test_with_model(run_component, random_h5mu_path, dummy_model):
     ]
 
     obs_values = output_mudata.mod["rna"].obs["random_forest_probability"]
-    assert all(
-        0 <= value <= 1 for value in obs_values
-    ), "probabilities outside the range [0, 1]"
+    assert all(0 <= value <= 1 for value in obs_values), (
+        "probabilities outside the range [0, 1]"
+    )
 
 
 def test_no_model_no_reference_error(run_component, random_h5mu_path):
@@ -177,7 +177,7 @@ def test_no_model_no_reference_error(run_component, random_h5mu_path):
                 "--output",
                 output_file,
                 "--reference_obs_target",
-                "cell_ontology_class" "--reference_var_gene_names",
+                "cell_ontology_class--reference_var_gene_names",
                 "ensemblid",
             ]
         )

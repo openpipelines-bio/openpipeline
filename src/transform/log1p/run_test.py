@@ -84,9 +84,9 @@ def test_1logp(run_component, input_data, output_layer, input_layer, random_h5mu
     assert rna_in.shape == rna_out.shape, "Should have same shape as before"
     assert prot_in.shape == prot_out.shape, "Should have same shape as before"
     input_layer_data = rna_in.X if not input_layer else rna_in.layers[input_layer]
-    assert np.mean(input_layer_data) != np.mean(
-        get_output_layer(rna_out)
-    ), "Expression should have changed"
+    assert np.mean(input_layer_data) != np.mean(get_output_layer(rna_out)), (
+        "Expression should have changed"
+    )
 
     nz_row, nz_col = input_layer_data.nonzero()
     row_corr = np.corrcoef(

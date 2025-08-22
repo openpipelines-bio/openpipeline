@@ -121,7 +121,7 @@ jobs:
           echo "checkout_branch=$DEPLOY_BRANCH" >> "$GITHUB_OUTPUT"
         fi
   
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         ref: ${{ steps.get_checkout_branch.outputs.checkout_branch }}
         fetch-depth: 0
@@ -151,7 +151,11 @@ jobs:
         config_mod: .version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
         parallel: true
         query: ^workflows
-  
+
+    - name: "Remove test component and workflows from the target folder"
+      run: |
+        rm -r target/_test
+
     - name: Build nextflow schemas
       uses: viash-io/viash-actions/pro/build-nextflow-schemas@v6
       with:
@@ -168,7 +172,7 @@ jobs:
         tools_version: 'main_build'
 
     - name: Deploy to target branch
-      uses: stefanzweifel/git-auto-commit-action@v5
+      uses: stefanzweifel/git-auto-commit-action@v6
       with:
         create_branch: true
         commit_message: "deploy: ${{github.sha}}"
@@ -195,7 +199,7 @@ jobs:
     - name: "Parse JSON output from 'viash ns list' as input for matrix."
       id: set_matrix
       run: |
-        echo "components=$(jq -c '[ .[] | 
+        echo "components=$(jq -c '[ .[] | select(.scope.target != "test") | 
           { 
             "name": .name,
             "namespace_separator": .engines | map(select(.type == "docker"))[0].namespace_separator,
@@ -205,13 +209,14 @@ jobs:
           }
         ] | unique' ${{ steps.ns_list.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
-        echo "workflows=$(jq -c '[ .[] | . as $config | (.test_resources // [])[] | select(.type == "nextflow_script", .entrypoint) |
+        echo "workflows=$(jq -c '[ .[]  | select(.scope.target != "test") | . as $config | (.test_resources // [])[] | select(.type == "nextflow_script", .entrypoint) |
         { 
           "name": $config.name,
           "namespace": $config.namespace,
           "main_script": (($config.build_info.config | capture("^(?<dir>.*\/)").dir) + "/" + .path),
           "entry": .entrypoint,
-          "config": $config.build_info.config
+          "config": $config.build_info.config,
+          "scope": $config.scope.target
         }
         ] | unique' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
@@ -233,7 +238,7 @@ jobs:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v2
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - uses: viash-io/viash-actions/setup@v6
 

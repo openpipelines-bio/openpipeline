@@ -29,7 +29,7 @@ jobs:
       dest_paths: ${{ steps.cache.outputs.dest_paths }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         fetch-depth: 0 
     - uses: viash-io/viash-actions/project/sync-and-cache@v6
@@ -54,7 +54,7 @@ jobs:
       run: |
         git config --global core.symlinks true
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         ref: 'release'
 
@@ -112,7 +112,7 @@ jobs:
         # check if stub runs work
         export NXF_VER=22.04.5
         nextflow run . \
-          -main-script "target/nextflow/${{matrix.component.namespace}}/${{matrix.component.name}}/main.nf" \
+          -main-script "target/${{ matrix.component.scope == 'private' && '_private/' || '' }}nextflow/${{matrix.component.namespace}}/${{matrix.component.name}}/main.nf" \
           -stub -profile no_publish \
           -c src/workflows/utils/integration_tests.config
 
@@ -141,7 +141,7 @@ jobs:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v2
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - uses: viash-io/viash-actions/setup@v6
 

@@ -1,5 +1,6 @@
 name: htseq_count_to_h5mu
 namespace: mapping
+scope: "public"
 description: |
   Convert the htseq table to a h5mu.
 authors:
@@ -36,12 +37,8 @@ argument_groups:
         description: "Output h5mu file."
         required: true
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py

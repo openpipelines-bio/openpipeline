@@ -1,5 +1,6 @@
 name: make_reference
 namespace: workflows/ingestion
+scope: "public"
 description: |
   Build a transcriptomics reference into one of many formats.
 info:

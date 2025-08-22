@@ -9,14 +9,15 @@ modality: "rna"
 
 # Reference
 reference: # please fill in - example: "path/to/file"
+# reference_class: "SCANVI"
 
 # Outputs
 # output: "$id.$key.output"
-# output_compression: "gzip"
 # model_output: "model"
 obsm_output: "X_integrated_scanvi"
 obs_output_predictions: "scanvi_pred"
 obs_output_probabilities: "scanvi_proba"
+# output_compression: "gzip"
 
 # Early stopping arguments
 # early_stopping: true

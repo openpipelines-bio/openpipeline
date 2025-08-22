@@ -91,49 +91,49 @@ def test_simple_execution(run_component, random_h5mu_path):
     expected_obs = ["_sample_id", "_cell_type", "_dataset"]
 
     # Evaluate presence of obs, var, layers
-    assert all(
-        key in list(query_adata.obs) for key in expected_obs
-    ), f"Query obs columns should be: {expected_obs}, found: {query_adata.obs.keys()}."
+    assert all(key in list(query_adata.obs) for key in expected_obs), (
+        f"Query obs columns should be: {expected_obs}, found: {query_adata.obs.keys()}."
+    )
 
-    assert all(
-        key in list(query_adata.var) for key in expected_var
-    ), f"Query var columns should be: {expected_var}, found: {query_adata.var.keys()}."
-    assert all(
-        key in list(query_adata.layers) for key in expected_layers
-    ), f"Query layers should be: {expected_layers}, found: {query_adata.layers.keys()}."
+    assert all(key in list(query_adata.var) for key in expected_var), (
+        f"Query var columns should be: {expected_var}, found: {query_adata.var.keys()}."
+    )
+    assert all(key in list(query_adata.layers) for key in expected_layers), (
+        f"Query layers should be: {expected_layers}, found: {query_adata.layers.keys()}."
+    )
 
-    assert all(
-        key in list(reference_adata.obs) for key in expected_obs
-    ), f"Reference obs columns should be: {expected_obs}, found: {reference_adata.obs.keys()}."
+    assert all(key in list(reference_adata.obs) for key in expected_obs), (
+        f"Reference obs columns should be: {expected_obs}, found: {reference_adata.obs.keys()}."
+    )
 
-    assert all(
-        key in list(reference_adata.var) for key in expected_var
-    ), f"Reference var columns should be: {expected_var}, found: {reference_adata.var.keys()}."
-    assert all(
-        key in list(reference_adata.layers) for key in expected_layers
-    ), f"Reference layers should be: {expected_layers}, found: {reference_adata.layers.keys()}."
+    assert all(key in list(reference_adata.var) for key in expected_var), (
+        f"Reference var columns should be: {expected_var}, found: {reference_adata.var.keys()}."
+    )
+    assert all(key in list(reference_adata.layers) for key in expected_layers), (
+        f"Reference layers should be: {expected_layers}, found: {reference_adata.layers.keys()}."
+    )
 
     # Evaluate values in obs, var, layers
-    assert np.all(
-        query_adata.var["_gene_names"] == query_adata.var.index
-    ), "Query .var _gene_names should be equal to query .var index"
-    assert np.all(
-        query_adata.obs["_sample_id"] == query_adata.obs["sample_id"]
-    ), "Query .obs _sample_id should be equal to query .obs sample_id"
-    assert np.all(
-        query_adata.obs["_cell_type"] == "Unknown"
-    ), "Query .obs _cell_type should have value Unkown"
-    assert np.all(
-        query_adata.obs["_dataset"] == "query"
-    ), "Query .obs _dataset should have value query"
+    assert np.all(query_adata.var["_gene_names"] == query_adata.var.index), (
+        "Query .var _gene_names should be equal to query .var index"
+    )
+    assert np.all(query_adata.obs["_sample_id"] == query_adata.obs["sample_id"]), (
+        "Query .obs _sample_id should be equal to query .obs sample_id"
+    )
+    assert np.all(query_adata.obs["_cell_type"] == "Unknown"), (
+        "Query .obs _cell_type should have value Unkown"
+    )
+    assert np.all(query_adata.obs["_dataset"] == "query"), (
+        "Query .obs _dataset should have value query"
+    )
 
-    assert np.all(
-        reference_adata.var["_gene_names"] == reference_adata.var.index
-    ), "Reference .var _gene_names should be equal to query .var index"
+    assert np.all(reference_adata.var["_gene_names"] == reference_adata.var.index), (
+        "Reference .var _gene_names should be equal to query .var index"
+    )
 
-    assert np.all(
-        reference_adata.var.index != reference_adata.var["ensemblid"]
-    ), "Reference .var index should not be equal to reference .var ensemblid"
+    assert np.all(reference_adata.var.index != reference_adata.var["ensemblid"]), (
+        "Reference .var index should not be equal to reference .var ensemblid"
+    )
 
     assert np.all(
         reference_adata.var.index
@@ -142,11 +142,13 @@ def test_simple_execution(run_component, random_h5mu_path):
 
     assert np.any(
         reference_adata.var["_ori_var_index"] != reference_adata.var["ensemblid"]
-    ), "Reference .var _ori_var_index should not be all equal to reference .var ensemblid"
+    ), (
+        "Reference .var _ori_var_index should not be all equal to reference .var ensemblid"
+    )
 
-    assert np.all(
-        reference_adata.var["_ori_var_index"] != reference_adata.var.index
-    ), "Reference .var _ori_var_index should be equal to reference .var index"
+    assert np.all(reference_adata.var["_ori_var_index"] != reference_adata.var.index), (
+        "Reference .var _ori_var_index should be equal to reference .var index"
+    )
 
     assert np.all(
         reference_adata.obs["_sample_id"] == reference_adata.obs["donor_id"]
@@ -154,9 +156,9 @@ def test_simple_execution(run_component, random_h5mu_path):
     assert np.all(
         reference_adata.obs["_cell_type"] == reference_adata.obs["cell_ontology_class"]
     ), "Reference .obs _cell_type should be equal to reference .obs cell_ontology_class"
-    assert np.all(
-        reference_adata.obs["_dataset"] == "reference"
-    ), "Reference .obs _dataset should have value reference"
+    assert np.all(reference_adata.obs["_dataset"] == "reference"), (
+        "Reference .obs _dataset should have value reference"
+    )
 
 
 def test_align_multiple_layers(run_component, random_h5mu_path):
@@ -197,12 +199,12 @@ def test_align_multiple_layers(run_component, random_h5mu_path):
 
     expected_layers = ["_counts", "_log_normalized"]
 
-    assert all(
-        key in list(query_adata.layers) for key in expected_layers
-    ), f"Query layers should be: {expected_layers}, found: {query_adata.layers.keys()}."
-    assert all(
-        key in list(reference_adata.layers) for key in expected_layers
-    ), f"Reference layers should be: {expected_layers}, found: {reference_adata.layers.keys()}."
+    assert all(key in list(query_adata.layers) for key in expected_layers), (
+        f"Query layers should be: {expected_layers}, found: {query_adata.layers.keys()}."
+    )
+    assert all(key in list(reference_adata.layers) for key in expected_layers), (
+        f"Reference layers should be: {expected_layers}, found: {reference_adata.layers.keys()}."
+    )
 
     args_identical_query_layers = [
         "--input",
@@ -300,9 +302,9 @@ def test_copy_layer(run_component, random_h5mu_path, copy_layer):
 
     query_adata = mu.read_h5mu(output_query_file).mod["rna"]
 
-    assert (
-        "_counts" in query_adata.layers.keys()
-    ), f"_counts layer should be present, found: {query_adata.layers.keys()}."
+    assert "_counts" in query_adata.layers.keys(), (
+        f"_counts layer should be present, found: {query_adata.layers.keys()}."
+    )
 
     args_existing_layer = [
         "--input",
@@ -418,7 +420,7 @@ def test_overwrite_obs(run_component, random_h5mu_path, add_obs):
         "--output_reference",
         output_reference_file,
         "--output_obs_batch",
-        "Obs" "--overwrite_existing_key",
+        "Obs--overwrite_existing_key",
         "True",
     ]
 
@@ -526,13 +528,13 @@ def test_preserve_var_index(run_component, random_h5mu_path):
     assert "_ori_var_index" not in query_adata.var.keys()
     assert "_ori_var_index" not in reference_adata.var.keys()
 
-    assert np.all(
-        ori_query_adata.var.index == query_adata.var.index
-    ), "Query .var index should be preserved"
+    assert np.all(ori_query_adata.var.index == query_adata.var.index), (
+        "Query .var index should be preserved"
+    )
 
-    assert np.all(
-        ori_reference_adata.var.index == reference_adata.var.index
-    ), "Reference .var index should be preserved"
+    assert np.all(ori_reference_adata.var.index == reference_adata.var.index), (
+        "Reference .var index should be preserved"
+    )
 
 
 if __name__ == "__main__":

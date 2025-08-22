@@ -4,8 +4,8 @@ modality: "rna"
 # input_layer: "foo"
 # output_layer: "foo"
 # output: "output.h5mu"
-# output_compression: "gzip"
 # base: 2.0
+# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

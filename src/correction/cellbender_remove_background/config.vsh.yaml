@@ -1,5 +1,6 @@
 name: cellbender_remove_background
 namespace: "correction"
+scope: "public"
 description: |
   Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
 
@@ -32,11 +33,6 @@ argument_groups:
         direction: output
         required: true
         example: output.h5mu
-      - name: "--output_compression"
-        type: string
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
       - name: "--layer_output"
         description: Output layer
         type: string
@@ -51,6 +47,8 @@ argument_groups:
         type: string
         default: "cellbender_cell_size"
       - name: "--obs_droplet_efficiency"
+        description: |
+          Name of the column in the .obs dataframe to store the droplet efficiencies in.
         type: string
         default: "cellbender_droplet_efficiency"
       - name: "--obs_latent_scale"
@@ -62,6 +60,8 @@ argument_groups:
       - name: "--obsm_gene_expression_encoding"
         type: string
         default: "cellbender_gene_expression_encoding"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
   - name: Arguments
     arguments:
       # custom arg

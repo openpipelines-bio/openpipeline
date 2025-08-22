@@ -1,5 +1,6 @@
 name: "process_samples"
 namespace: "workflows/multiomics"
+scope: "public"
 description: "A pipeline to analyse multiple multiomics samples."
 info:
   test_dependencies:
@@ -107,6 +108,11 @@ argument_groups:
         type: double
         example: 0.2
         description: Maximum fraction of UMIs that are mitochondrial.
+
+      - name: "--skip_scrublet_doublet_detection"
+        type: boolean_true
+        description: Skip the scrublet doublet detection step.
+
   - name: "CITE-seq filtering options"
     arguments:
       - name: "--prot_min_counts"
