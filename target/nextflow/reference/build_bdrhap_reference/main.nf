@@ -3369,7 +3369,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference",
     "viash_version" : "0.9.4",
-    "git_commit" : "b22c201dc4ab66404c348b3929fc2f7ce9a1e9bf",
+    "git_commit" : "10ada2d85450fd134f1efb1ebeb574929c8803c6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
