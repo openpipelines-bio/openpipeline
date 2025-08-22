@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component mapping bd_rhapsody"
-LABEL org.opencontainers.image.created="2025-08-22T14:12:27Z"
+LABEL org.opencontainers.image.created="2025-08-22T15:37:15Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b79935a0200a2de4195bfcaa63b1ccbd290c150b"
+LABEL org.opencontainers.image.revision="03132f98cca92079ce154fc0bfdd51db05cd3350"
 LABEL org.opencontainers.image.version="v3.0.0"
 
 VIASHDOCKER
