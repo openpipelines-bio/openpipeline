@@ -3167,13 +3167,11 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/resources_test/tiledb/pbmc_1k_protein_v3_mms",
-      "dest" : "tiledb/pbmc_1k_protein_v3_mms"
+      "path" : "/resources_test/tiledb/"
     },
     {
       "type" : "file",
-      "path" : "/resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-      "dest" : "pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+      "path" : "/resources_test/pbmc_1k_protein_v3/"
     }
   ],
   "status" : "enabled",
@@ -3332,7 +3330,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/_private/nextflow/tiledb/move_mudata_obsm_to_tiledb",
     "viash_version" : "0.9.4",
-    "git_commit" : "4062fdd0b5c833a6bf772fd6e737f330e6dfe2ef",
+    "git_commit" : "fb6fc1bc5d305470bf48556dfa7c893a3aba3d13",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
