@@ -1,7 +1,7 @@
 name: "conversion"
 namespace: "workflows/ingestion"
 scope: "public"
-description: "A pipeline to convert different file formats to .h5mu."
+description: "A pipeline to convert .mtx, .h5 or .h5ad file formats to .h5mu."
 info:
   name: Convert to MuData
   test_dependencies:
@@ -22,9 +22,14 @@ argument_groups:
         example: foo
       - name: "--input"
         alternatives: [-i]
-        description: Path to the sample.
+        description: | 
+          Path to the sample to be converted.
+          Possible format options include:
+            - .h5ad
+            - .h5
+            - .mtx
         required: true
-        example: input.h5mu
+        example: input.h5ad, input.h5, input.mtx
         type: file
       - name: "--input_type"
         type: string

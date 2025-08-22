@@ -24,7 +24,9 @@ argument_groups:
       - name: "--input"
         required: true
         type: file
-        description: Input dataset consisting of the (unlabeled) query observations. The dataset is expected to be pre-processed in the same way as --reference.
+        description: |
+          Input dataset consisting of the (unlabeled) query observations. 
+          The dataset is expected to be pre-processed in the same way as --reference.
         example: input.h5mu
       - name: "--modality"
         description: Which modality to process. Should match the modality of the --reference dataset.
@@ -60,7 +62,9 @@ argument_groups:
       - name: "--reference"
         required: true
         type: file
-        description: Reference dataset consisting of the labeled observations to train the KNN classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset.
+        description: |
+          Reference dataset consisting of the labeled observations to train the KNN classifier on. 
+          The dataset is expected to be pre-processed in the same way as the --input query dataset.
         example: reference.h5mu
       - name: "--reference_layer"
         description: The layer of the reference dataset to process if .X is not to be used. Should contain log normalized counts.
@@ -141,7 +145,8 @@ argument_groups:
         type: file
         required: true
         direction: output
-        description: The query data in .h5mu format with predicted labels predicted from the classifier trained on the reference.
+        description: |
+          The annotated output file.
         example: output.h5mu
       - name: "--output_obs_predictions"
         type: string

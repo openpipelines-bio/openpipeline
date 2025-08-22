@@ -28,14 +28,14 @@ arguments:
     alternatives: [ "-i" ]
     type: file
     required: true
-    description: Input run directory
+    description: Directory containing BCL files
     example: bcl_dir
   - name: "--sample_sheet"
     alternatives: [ "-s" ]
     type: file
     required: true
     description: Pointer to the sample sheet
-    example: bcl_dir
+    example: sample_sheet.csv
   - name: "--demultiplexer"
     type: string
     description: The multiplexer to use, one of bclconvert or mkfastq
