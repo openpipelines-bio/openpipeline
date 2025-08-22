@@ -41,9 +41,9 @@ def main(par):
     logger.info("Done getting .obsm keys.")
     tiledb_config = {
         "vfs.s3.no_sign_request": "false",
-        "vfs.s3.region": par["s3_region"],
     }
     optional_config = {
+        "vfs.s3.region": par["s3_region"],
         "vfs.s3.endpoint_override": par["endpoint"],
     }
     for config_setting, config_val in optional_config.items():

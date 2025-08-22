@@ -19,7 +19,7 @@ argument_groups:
         description: |
           Region where the TileDB-SOMA database is hosted.
         type: string
-        required: true
+        required: false
       - name: "--endpoint"
         type: string
         description: |
