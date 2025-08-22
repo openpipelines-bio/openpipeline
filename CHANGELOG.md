@@ -35,6 +35,8 @@ Warning: These experimental features are subject to change in future releases.
 
 * Added `annotate/singler`: Cell type annotation using SingleR (PR #1051).
 
+* Added `tiledb/move_mudata_obsm_to_tiledb` (PR #1065).
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
