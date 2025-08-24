@@ -3,7 +3,6 @@ import sys
 import pytest
 import pandas as pd
 import re
-from pathlib import Path
 
 
 ## VIASH START
@@ -87,14 +86,22 @@ def test_simple_deseq2_with_cell_group(
     # Check each file has expected structure
     for csv_file in csv_files:
         results = pd.read_csv(csv_file)
-        expected_columns = ["log2FoldChange", "pvalue", "padj", "significant", "cell_type"]
+        expected_columns = [
+            "log2FoldChange", 
+            "pvalue", 
+            "padj", 
+            "significant", 
+            "cell_type"
+        ]
         assert all(col in results.columns for col in expected_columns), (
             f"Expected columns {expected_columns} not found in {csv_file}"
         )
         assert len(results) > 0, f"No results found in {csv_file}"
         
         # Check that all rows have the same cell_type value 
-        assert results["cell_type"].nunique() == 1, f"Multiple cell types found in {csv_file}"
+        assert results["cell_type"].nunique() == 1, (
+            f"Multiple cell types found in {csv_file}"
+        )
 
 
 def test_complex_design_formula(run_component, tmp_path, pseudobulk_test_data_path):
@@ -227,7 +234,9 @@ def test_custom_output_prefix(run_component, tmp_path, pseudobulk_test_data_path
     
     # Should have exactly one CSV file with custom prefix
     output_file = output_dir / f"{custom_prefix}.csv"
-    assert output_file.exists(), f"Custom prefix output CSV file {output_file} does not exist"
+    assert output_file.exists(), (
+        f"Custom prefix output CSV file {output_file} does not exist"
+    )
     
     # Check the main file structure
     results = pd.read_csv(output_file)
@@ -238,7 +247,9 @@ def test_custom_output_prefix(run_component, tmp_path, pseudobulk_test_data_path
     assert len(results) > 0, "No results found in output"
 
 
-def test_custom_output_prefix_with_cell_groups(run_component, tmp_path, pseudobulk_test_data_path):
+def test_custom_output_prefix_with_cell_groups(
+    run_component, tmp_path, pseudobulk_test_data_path
+):
     """Test custom output prefix with cell groups"""
     output_dir = tmp_path / "deseq2_output"
     custom_prefix = "celltype_analysis"
@@ -268,19 +279,29 @@ def test_custom_output_prefix_with_cell_groups(run_component, tmp_path, pseudobu
     
     # Check that multiple CSV files exist with custom prefix
     csv_files = list(output_dir.glob(f"{custom_prefix}_*.csv"))
-    assert len(csv_files) > 0, f"No cell group-specific CSV files found with prefix {custom_prefix}"
+    assert len(csv_files) > 0, (
+        f"No cell group-specific CSV files found with prefix {custom_prefix}"
+    )
     
     # Check each file has expected structure
     for csv_file in csv_files:
         results = pd.read_csv(csv_file)
-        expected_columns = ["log2FoldChange", "pvalue", "padj", "significant", "cell_type"]
+        expected_columns = [
+            "log2FoldChange", 
+            "pvalue", 
+            "padj", 
+            "significant", 
+            "cell_type"
+        ]
         assert all(col in results.columns for col in expected_columns), (
             f"Expected columns {expected_columns} not found in {csv_file}"
         )
         assert len(results) > 0, f"No results found in {csv_file}"
         
         # Check that all rows have the same cell_type value 
-        assert results["cell_type"].nunique() == 1, f"Multiple cell types found in {csv_file}"
+        assert results["cell_type"].nunique() == 1, (
+            f"Multiple cell types found in {csv_file}"
+        )
 
 
 if __name__ == "__main__":

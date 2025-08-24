@@ -98,7 +98,8 @@ def prepare_contrast_matrix(design_factors, contrast_column, metadata):
         for treatment in contrast_values[1:]:
             contrast_tuples.append((contrast_column, treatment, baseline))
         logger.info(
-            f"Performing multiple contrasts against baseline '{baseline}': {[t[1] for t in contrast_tuples]}"
+            f"Performing multiple contrasts against baseline '{baseline}': "
+            f"{[t[1] for t in contrast_tuples]}"
         )
         return contrast_tuples
 
@@ -144,7 +145,8 @@ def create_deseq2_dataset(counts, metadata, design_formula):
         par["filter_genes_min_samples"] if par["filter_genes_min_samples"] else 1
     )
     logger.info(
-        f"Filtering genes by counts: removing genes that are present in less than {sample_count} samples"
+        f"Filtering genes by counts: removing genes that are present in "
+        f"less than {sample_count} samples"
     )
     sc.pp.filter_genes(adata, min_cells=sample_count)
 
