@@ -2,7 +2,7 @@ name: deseq2
 namespace: differential_expression
 description: |
   Performs differential expression analysis using DESeq2 on bulk samples or pseudobulk samples aggregated from single-cell data.
-  Note that this componentonly considers factors as explanatory variables, and excludes covariates from the analysis.
+  Note that this component only considers factors as explanatory variables, and excludes covariates from the analysis.
 
 authors:
   - __merge__: /src/authors/jakub_majercik.yaml
@@ -67,7 +67,8 @@ argument_groups:
         multiple: true
         description: |
           Values to compare in the contrast column.
-          First value is baseline, following values are different treatments.
+          First value is the control group, following values are comparison groups. 
+          Values must be present in the fields specified for the design formula.
         required: true
         example: ["ctrl", "stim"]
       - name: "--filter_genes_min_samples"
@@ -102,12 +103,20 @@ argument_groups:
 
   - name: Outputs
     arguments:
-      - name: "--output"
+      - name: "--output_dir"
         alternatives: ["-o"]
         type: file
-        description: Output CSV file with DESeq2 results.
+        description: Output directory for DESeq2 results.
         direction: output
         required: true
+      - name: "--output_prefix"
+        type: string
+        description: |
+          Prefix for output CSV files. 
+          If no cell groups are specified, the output file will be named "{prefix}.csv".
+          If cell groups are specified, files will be named "{prefix}_{cell_group}.csv".
+        default: "deseq2_results"
+        required: false
 
 resources:
   - type: python_script

@@ -7,11 +7,14 @@ from pydeseq2.dds import DeseqDataSet
 from pydeseq2.ds import DeseqStats
 import re
 import sys
+import os
+from pathlib import Path
 
 ## VIASH START
 par = {
     "input": "resources_test/annotation_test_data/TS_Blood_filtered_pseudobulk.h5mu",
-    "output": "deseq2_results.csv",
+    "output_dir": "./",
+    "output_prefix": "deseq2_results",
     "input_layer": None,
     "modality": "rna",
     "obs_cell_group": "cell_type",
@@ -197,6 +200,24 @@ def deseq2_analysis(adata, contrast_tuples):
     return combined_results
 
 
+def save_results_and_log_summary(results, output_file, cell_group=None):
+    """Save results to CSV and log summary statistics"""
+    logger.info(f"Saving results{f' for {cell_group}' if cell_group else ''} to {output_file}")
+    results.to_csv(output_file, index=False)
+
+    # Log summary statistics
+    upregulated = results[(results["log2FoldChange"] > 0) & results["significant"]]
+    downregulated = results[(results["log2FoldChange"] < 0) & results["significant"]]
+
+    summary_prefix = f"Summary{f' for {cell_group}' if cell_group else ''}:\n"
+    logger.info(
+        f"{summary_prefix}"
+        f"  Total genes analyzed: {len(results)}\n"
+        f"  Significant upregulated: {len(upregulated)}\n"
+        f"  Significant downregulated: {len(downregulated)}\n"
+    )
+
+
 def main():
     # Load pseudobulk data
     logger.info(f"Loading pseudobulk data from {par['input']}")
@@ -228,6 +249,10 @@ def main():
 
     # Run DESeq2 analysis
     try:
+        # Create output directory
+        output_dir = Path(par["output_dir"])
+        output_dir.mkdir(parents=True, exist_ok=True)
+
         # Check if running per cell group or multi-factor
         if par["obs_cell_group"]:
             logger.info("Running DESeq2 analysis per cell group")
@@ -238,7 +263,6 @@ def main():
                 .replace(f"{par['obs_cell_group']} +", "")
             )
 
-            all_results = []
             for cell_group in metadata[par["obs_cell_group"]].unique():
                 # Subset data for this cell group
                 cell_mask = metadata[par["obs_cell_group"]] == cell_group
@@ -254,31 +278,20 @@ def main():
 
                 # Add cell_group column to results
                 cell_results[par["obs_cell_group"]] = cell_group
-                all_results.append(cell_results)
 
-            # Combine all results
-            results = pd.concat(all_results, ignore_index=True)
+                # Save results for this cell group
+                # Create safe filename by replacing problematic characters
+                safe_cell_group = str(cell_group).replace("/", "_").replace(" ", "_").replace("(", "").replace(")", "")
+                output_file = output_dir / f"{par['output_prefix']}_{safe_cell_group}.csv"
+                save_results_and_log_summary(cell_results, output_file, cell_group)
 
         else:
             dds = create_deseq2_dataset(counts, metadata, par["design_formula"])
             results = deseq2_analysis(dds, contrast_tuples)
 
-        # Log summary statistics
-        upregulated = results[(results["log2FoldChange"] > 0) & results["significant"]]
-        downregulated = results[
-            (results["log2FoldChange"] < 0) & results["significant"]
-        ]
-
-        logger.info(
-            "Summary:\n"
-            f"  Total genes analyzed: {len(results)}\n"
-            f"  Significant upregulated: {len(upregulated)}\n"
-            f"  Significant downregulated: {len(downregulated)}\n"
-        )
-
-        # Save results
-        logger.info(f"Saving results to {par['output']}")
-        results.to_csv(par["output"], index=False)
+            # Save results
+            output_file = output_dir / f"{par['output_prefix']}.csv"
+            save_results_and_log_summary(results, output_file)
 
     except Exception as e:
         logger.warning(
