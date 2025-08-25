@@ -35,6 +35,8 @@ Warning: These experimental features are subject to change in future releases.
 
 * Added `annotate/singler`: Cell type annotation using SingleR (PR #1051).
 
+* Added `tiledb/move_mudata_obsm_to_tiledb` (PR #1065).
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_*`: Upgrade CellRanger to v9.0 (PR #992 and #1006).
@@ -46,6 +48,8 @@ Warning: These experimental features are subject to change in future releases.
 * `lianapy`: update liana to `1.5.0` (PR #1039)
 
 ## MINOR CHANGES
+
+* `velocyto`: pin base container to `python:3.10-slim-bookworm` (PR #1063).
 
 * `mapping/cellranger_multi`: The output from Cell Ranger is now displayed as Cell Ranger is running (PR #1045).
 
@@ -72,8 +76,9 @@ Warning: These experimental features are subject to change in future releases.
 * Add missing CUDA enabled `jaxlib` to components that use `scvi-tools` (`scanvi`, `scarches`, `scvi` and `totalvi`) (PR #1028)
 
 * `leiden`: fix issue where the logging system was shut down prematurely after the calculations were done (PR #1030)
-
 * Added missing `gpu` label to `scarches` component (PR #1027).
+
+* `conversion/from_cellranger_multi_to_h5mu`: fix conversion to MuData for experiments that combine probe barcodes with other feature barcodes (e.g. Antibody Capture and CIRSPR Guide Capture) (PR #1062).
 
 # openpipelines 2.1.2
 
