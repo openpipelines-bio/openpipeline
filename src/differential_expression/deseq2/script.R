@@ -123,25 +123,26 @@ prepare_contrast_matrix <- function(
   # Handle different contrast scenarios
   if (length(contrast_values) == 2) {
     # Pairwise comparison
-    treatment <- contrast_values[1]
-    baseline <- contrast_values[2]
-    contrast_spec <- c(contrast_column, treatment, baseline)
+    comparison_group <- contrast_values[1]
+    control_group <- contrast_values[2]
+    contrast_spec <- c(contrast_column, comparison_group, control_group)
     cat(
       "Performing pairwise contrast:", contrast_column,
-      treatment, "vs", baseline, "\n"
+      comparison_group, "vs", control_group, "\n"
     )
     contrast_spec
   } else if (length(contrast_values) > 2) {
-    # Multiple comparisons against first value (baseline)
-    baseline <- contrast_values[1]
+    # Multiple comparisons against first value (control_group)
+    control_group <- contrast_values[1]
     contrast_specs <- list()
     for (i in 2:length(contrast_values)) {
-      treatment <- contrast_values[i]
+      comparison_group <- contrast_values[i]
       contrast_specs[[length(contrast_specs) + 1]] <-
-        c(contrast_column, treatment, baseline)
+        c(contrast_column, comparison_group, control_group)
     }
     cat(
-      "Performing multiple contrasts against baseline '", baseline, "':",
+      "Performing multiple contrasts against control_group '",
+      control_group, "':",
       paste(sapply(contrast_specs, function(x) x[2]), collapse = ", "), "\n"
     )
     contrast_specs
@@ -265,8 +266,8 @@ deseq2_analysis <- function(dds, contrast_specs) {
     results_df <- as.data.frame(res)
     results_df$gene_id <- rownames(results_df)
     results_df$contrast <- paste0(contrast_spec[2], "_vs_", contrast_spec[3])
-    results_df$treatment <- contrast_spec[2]
-    results_df$baseline <- contrast_spec[3]
+    results_df$comparison_group <- contrast_spec[2]
+    results_df$control_group <- contrast_spec[3]
     results_df$abs_log2FoldChange <- abs(results_df$log2FoldChange)
     results_df$significant <- (
       results_df$padj < par$p_adj_threshold &

@@ -40,18 +40,51 @@ def test_simple_deseq2_execution(run_component, tmp_path, pseudobulk_test_data_p
     )
 
     assert output_dir.exists(), "Output directory does not exist"
-    output_file = output_dir / "deseq2_analysis.csv"  # Default prefix
-    assert output_file.exists(), "Output CSV file does not exist"
 
     # Assert one CSV file was found
     csv_files = list(output_dir.glob("deseq2_analysis*.csv"))  # Default prefix
     assert len(csv_files) == 1, "Should find exactly one CSV file in output folder"
+    output_file = output_dir / "deseq2_analysis.csv"  # Default prefix
+    assert output_file.exists(), "Output CSV file does not exist"
 
     # Check the output file
     results = pd.read_csv(output_file)
-    expected_columns = ["log2FoldChange", "pvalue", "padj", "significant"]
+    expected_columns = [
+        "baseMean",
+        "log2FoldChange",
+        "lfcSE",
+        "stat",
+        "pvalue",
+        "padj",
+        "significant",
+        "gene_id",
+        "contrast",
+        "comparison_group",
+        "control_group",
+        "abs_log2FoldChange",
+    ]
     assert all(col in results.columns for col in expected_columns), (
         f"Expected columns {expected_columns} not found"
+    )
+
+    expected_float_cols = [
+        "baseMean",
+        "log2FoldChange",
+        "lfcSE",
+        "stat",
+        "pvalue",
+        "padj",
+        "abs_log2FoldChange",
+    ]
+    float_cols = results.select_dtypes(include=["float"]).columns.tolist()
+    assert all(col in float_cols for col in expected_float_cols), (
+        f"Expected float columns {expected_float_cols} not found"
+    )
+
+    expected_obj_cols = ["gene_id", "contrast", "comparison_group", "control_group"]
+    obj_cols = results.select_dtypes(include=["object"]).columns.tolist()
+    assert all(col in obj_cols for col in expected_obj_cols), (
+        f"Expected object columns {expected_obj_cols} not found"
     )
 
 
@@ -90,11 +123,18 @@ def test_simple_deseq2_with_cell_group(
     for csv_file in csv_files:
         results = pd.read_csv(csv_file)
         expected_columns = [
+            "baseMean",
             "log2FoldChange",
+            "lfcSE",
+            "stat",
             "pvalue",
             "padj",
             "significant",
-            "cell_type",
+            "gene_id",
+            "contrast",
+            "comparison_group",
+            "control_group",
+            "abs_log2FoldChange",
         ]
         assert all(col in results.columns for col in expected_columns), (
             f"Expected columns {expected_columns} not found in {csv_file}"
@@ -104,6 +144,26 @@ def test_simple_deseq2_with_cell_group(
         # Check that all rows have the same cell_type value
         assert results["cell_type"].nunique() == 1, (
             f"Multiple cell types found in {csv_file}"
+        )
+
+        expected_float_cols = [
+            "baseMean",
+            "log2FoldChange",
+            "lfcSE",
+            "stat",
+            "pvalue",
+            "padj",
+            "abs_log2FoldChange",
+        ]
+        float_cols = results.select_dtypes(include=["float"]).columns.tolist()
+        assert all(col in float_cols for col in expected_float_cols), (
+            f"Expected float columns {expected_float_cols} not found"
+        )
+
+        expected_obj_cols = ["gene_id", "contrast", "comparison_group", "control_group"]
+        obj_cols = results.select_dtypes(include=["object"]).columns.tolist()
+        assert all(col in obj_cols for col in expected_obj_cols), (
+            f"Expected object columns {expected_obj_cols} not found"
         )
 
 
