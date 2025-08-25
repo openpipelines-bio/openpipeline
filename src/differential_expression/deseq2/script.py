@@ -7,7 +7,6 @@ from pydeseq2.dds import DeseqDataSet
 from pydeseq2.ds import DeseqStats
 import re
 import sys
-import os
 from pathlib import Path
 
 ## VIASH START
@@ -204,7 +203,9 @@ def deseq2_analysis(adata, contrast_tuples):
 
 def save_results_and_log_summary(results, output_file, cell_group=None):
     """Save results to CSV and log summary statistics"""
-    logger.info(f"Saving results{f' for {cell_group}' if cell_group else ''} to {output_file}")
+    logger.info(
+        f"Saving results{f' for {cell_group}' if cell_group else ''} to {output_file}"
+    )
     results.to_csv(output_file, index=False)
 
     # Log summary statistics
@@ -283,8 +284,16 @@ def main():
 
                 # Save results for this cell group
                 # Create safe filename by replacing problematic characters
-                safe_cell_group = str(cell_group).replace("/", "_").replace(" ", "_").replace("(", "").replace(")", "")
-                output_file = output_dir / f"{par['output_prefix']}_{safe_cell_group}.csv"
+                safe_cell_group = (
+                    str(cell_group)
+                    .replace("/", "_")
+                    .replace(" ", "_")
+                    .replace("(", "")
+                    .replace(")", "")
+                )
+                output_file = (
+                    output_dir / f"{par['output_prefix']}_{safe_cell_group}.csv"
+                )
                 save_results_and_log_summary(cell_results, output_file, cell_group)
 
         else:
