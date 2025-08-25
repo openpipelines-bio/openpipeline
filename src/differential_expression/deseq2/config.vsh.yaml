@@ -54,7 +54,7 @@ argument_groups:
           Design formula for DESeq2 analysis in R-style format.
           Specifies the statistical model to account for various factors.
         required: true
-        example: "~ cell_type + disease + treatment"
+        example: "~ disease + treatment"
       - name: "--contrast_column"
         type: string
         description: |
@@ -106,7 +106,9 @@ argument_groups:
       - name: "--output_dir"
         alternatives: ["-o"]
         type: file
-        description: Output directory for DESeq2 results.
+        description: |
+          Output directory for DESeq2 results. 
+          If cell groups are defined (using `--obs_cell_group`), the output folder will contain one CSV per cell group, otherwise it will contain a single output file.
         direction: output
         required: true
       - name: "--output_prefix"
@@ -115,13 +117,12 @@ argument_groups:
           Prefix for output CSV files. 
           If no cell groups are specified, the output file will be named "{prefix}.csv".
           If cell groups are specified, files will be named "{prefix}_{cell_group}.csv".
-        default: "deseq2_results"
+        default: "deseq2_analysis"
         required: false
 
 resources:
-  - type: python_script
-    path: script.py
-  - path: /src/utils/setup_logger.py
+  - type: r_script
+    path: script.R
 test_resources:
   - type: python_script
     path: test.py
@@ -129,15 +130,20 @@ test_resources:
 
 engines:
 - type: docker
-  image: python:3.12
+  image: rocker/r2u:22.04
   setup:
-    - type: python
-      packages:
-        - pydeseq2~=0.5.2
-        - zarr<3.0.0
-    - type: python
-      __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml]
-  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+    - type: apt
+      packages: [ libhdf5-dev, libgeos-dev, hdf5-tools ]
+    - type: r
+      cran: [ hdf5r ]
+      github: scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a
+      bioc: [ DESeq2, "SingleCellExperiment" ]
+  test_setup:
+    - type: apt
+      packages: [ python3, python3-pip, python3-dev, python-is-python3 ]
+  #   - type: python
+  #     __merge__: [ /src/base/requirements/anndata_mudata.yaml, . ]
+  __merge__: [ ., /src/base/requirements/python_test_setup.yaml]
 
 runners:
 - type: executable
