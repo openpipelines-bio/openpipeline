@@ -1,3 +1,11 @@
+# openpipelines 3.x.x
+
+## EXPERIMENTAL
+
+* `differential_expression/deseq2`: Performs differential expression analysis using DESeq2 on bulk or pseudobulk datasets (PR #1044).
+
+* `workflows/differential_expression/pseudobulk_deseq2`: Workflow for generating pseudobulk samples from single-cell data followed by DESeq2 differential expression analysis (PR #1044)
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES
