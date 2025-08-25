@@ -30,10 +30,12 @@ argument_groups:
         type: string
         required: false
         description: Input layer to use. If None, X is used. This layer must contain raw counts.
-      - name: --obs_label
+      - name: --obs_cell_group
         type: string
         required: true
-        description: .obs field containing the variable to group on. Typically this field contains cell groups such as annotated cell types or clusters.
+        description: |
+          .obs field containing the variable to group on. Typically this field contains cell groups such as annotated cell types or clusters.
+          If provided, will generate DESeq2 analysis per cell group.
         example: cell_type
       - name: --obs_groups
         type: string
@@ -46,12 +48,6 @@ argument_groups:
           Column name in the variable features table that contains gene symbols.
           This is used for reporting gene names in the output.
         default: "feature_name"
-        required: false
-      - name: --obs_cell_group
-        type: string
-        description: |
-          .obs field containing the cell group information, for example per cell type or per cell cluster.
-          If true, performs per-cell-group analysis with cell-group-specific results.
         required: false
 
   - name: Pseudobulk Options
@@ -130,11 +126,19 @@ argument_groups:
 
   - name: Outputs
     arguments:
-      - name: --output
+      - name: "--output"
+        alternatives: ["-o"]
         type: file
-        description: Output CSV file with DESeq2 results.
+        description: |
+          Output directory for DESeq2 results, containing one CSV file per cell group (as defined by `--obs_cell_group`) 
         direction: output
         required: true
+      - name: "--output_prefix"
+        type: string
+        description: |
+          Prefix for output CSV files: files will be named "{prefix}_{cell_group}.csv"
+        default: "deseq2_analysis"
+        required: false
 
 dependencies:
   - name: differential_expression/create_pseudobulk

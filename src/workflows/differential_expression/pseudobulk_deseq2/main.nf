@@ -11,7 +11,7 @@ workflow run_wf {
           input: "input",
           modality: "modality",
           input_layer: "input_layer",
-          obs_label: "obs_label",
+          obs_label: "obs_cell_group",
           obs_groups: "obs_groups",
           aggregation_method: "aggregation_method",
           min_obs_per_sample: "min_obs_per_sample",
@@ -36,9 +36,10 @@ workflow run_wf {
           p_adj_threshold: "p_adj_threshold",
           log2fc_threshold: "log2fc_threshold",
           filter_gene_patterns: "filter_gene_patterns",
-          output: "output"
+          output_dir: "output",
+          output_prefix: "output_prefix"
         ],
-        toState: [ "output": "output" ]
+        toState: [ "output": "output_dir" ]
       )
 
       | setState([ "output" ])
