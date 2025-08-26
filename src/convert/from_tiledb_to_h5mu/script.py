@@ -90,7 +90,7 @@ def main(par):
                     multimodal_dict[key_] = pd.DataFrame(
                         multimodal_dict[key_],
                         columns=index_list,
-                        index=output_modality.var_names,
+                        index=multimodal_dict.dim_names,
                     )
                 logger.info(
                     "No column index found for item %s in %s",
