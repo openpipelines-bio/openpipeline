@@ -50,8 +50,8 @@ argument_groups:
       - name: "--design_formula"
         type: string
         description: |
-          Design formula for DESeq2 analysis in R-style format.
-          Specifies the statistical model to account for various factors.
+          The formula should be a tilde (~) followed by the variables with plus signs between them. 
+          The design formula is used to estimate the dispersions and to estimate the log2 fold changes of the model.
         required: true
         example: "~ disease + treatment"
       - name: "--contrast_column"
@@ -82,7 +82,7 @@ argument_groups:
         min: 0
         max: 1
         description: |
-          Adjusted p-value threshold for significance.
+          Adjusted p-value threshold for significance, corrected with the Benjamini and Hochberg method.
           Genes with adjusted p-values below this threshold will be considered significant.
         default: 0.05
         required: false
@@ -138,13 +138,12 @@ engines:
       packages: [ libhdf5-dev, libgeos-dev, hdf5-tools ]
     - type: r
       cran: [ hdf5r ]
+      # Use pinned version to avoid H5 file access issues with latest stable release (0.99.0)
       github: scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a
       bioc: [ DESeq2 ]
   test_setup:
     - type: apt
       packages: [ python3, python3-pip, python3-dev, python-is-python3 ]
-  #   - type: python
-  #     __merge__: [ /src/base/requirements/anndata_mudata.yaml, . ]
   __merge__: [ ., /src/base/requirements/python_test_setup.yaml]
 
 runners:

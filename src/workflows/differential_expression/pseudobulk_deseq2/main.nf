@@ -21,6 +21,35 @@ workflow run_wf {
         toState: [ "input": "output" ]
       )
 
+      | filter_with_counts.run(
+          fromState: [
+            id: "id",
+            input: "input",
+            modality: "modality",
+            layer: "input_layer",
+            min_counts: "min_obs_per_sample",
+
+            obs_cell_count: "obs_cell_count"
+          ],
+          args: [
+            do_subset: "True",
+
+          ]
+          toState: [ "input": "output" ]
+      )
+
+      | do_filter.run(
+
+      )
+
+      | filter_genes_by_pattern.run(
+
+      )
+
+      | do_filter.run(
+
+      )
+
       | deseq2.run(
         fromState: [
           id: "id",

@@ -137,6 +137,9 @@ argument_groups:
 dependencies:
   - name: differential_expression/create_pseudobulk
   - name: differential_expression/deseq2
+  - name: filter/filter_with_counts
+  - name: filter/filter_genes_by_pattern
+  - name: filter/do_filter
 
 resources:
   - type: nextflow_script

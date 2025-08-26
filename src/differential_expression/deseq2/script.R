@@ -22,7 +22,7 @@ par <- list(
   filter_gene_patterns = c(
     "MIR\\d+", "AL\\d+", "LINC\\d+", "AC\\d+", "AP\\d+"
   ),
-  var_gene_name = "feature_name"
+  var_gene_names = "feature_name"
 )
 meta <- list(resources_dir = "src/utils")
 ## VIASH END
@@ -346,9 +346,9 @@ main <- function() {
 
   cat("Preparing counts matrix for DESeq2\n")
   var_names <- if (
-    !is.null(par$var_gene_name) && par$var_gene_name %in% colnames(mod$var)
+    !is.null(par$var_gene_names) && par$var_gene_names %in% colnames(mod$var)
   ) {
-    mod$var[[par$var_gene_name]]
+    mod$var[[par$var_gene_names]]
   } else {
     mod$var_names
   }
