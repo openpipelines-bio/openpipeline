@@ -1,0 +1,585 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cellranger_multi",
+  "description": "A pipeline for running Cell Ranger multi.",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output_raw": {
+          "type": "string",
+          "format": "path",
+          "description": "The raw output folder.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output_raw\"`, direction: `output`, example: `\"output_dir\"`. ",
+          "default": "$id.$key.output_raw"
+        },
+        "output_h5mu": {
+          "type": "string",
+          "format": "path",
+          "description": "Locations for the output files",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output_h5mu.h5mu\"`, direction: `output`, example: `\"*.h5mu\"`. ",
+          "default": "$id.$key.output_h5mu.h5mu"
+        },
+        "uns_metrics": {
+          "type": "string",
+          "description": "Name of the .uns slot under which to QC metrics (if any).",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"metrics_cellranger\"`. ",
+          "default": "metrics_cellranger"
+        }
+      }
+    },
+    "input files": {
+      "title": "Input files",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "description": "The FASTQ files to be analyzed",
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"mysample_S1_L001_R1_001.fastq.gz\";\"mysample_S1_L001_R2_001.fastq.gz\"]`. "
+        }
+      }
+    },
+    "feature type-specific input files": {
+      "title": "Feature type-specific input files",
+      "type": "object",
+      "description": "Helper functionality to allow feature type-specific input files, without the need to specify\nlibrary_type or library_id. The library_id will be inferred from the input paths.\n",
+      "properties": {
+        "gex_input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "description": "The FASTQ files to be analyzed for Gene Expression",
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"mysample_S1_L001_R1_001.fastq.gz\";\"mysample_S1_L001_R2_001.fastq.gz\"]`. "
+        },
+        "abc_input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "description": "The FASTQ files to be analyzed for Antibody Capture",
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"mysample_S1_L001_R1_001.fastq.gz\";\"mysample_S1_L001_R2_001.fastq.gz\"]`. "
+        },
+        "cgc_input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "description": "The FASTQ files to be analyzed for CRISPR Guide Capture",
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"mysample_S1_L001_R1_001.fastq.gz\";\"mysample_S1_L001_R2_001.fastq.gz\"]`. "
+        },
+        "mux_input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "description": "The FASTQ files to be analyzed for Multiplexing Capture",
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"mysample_S1_L001_R1_001.fastq.gz\";\"mysample_S1_L001_R2_001.fastq.gz\"]`. "
+        },
+        "vdj_input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "description": "The FASTQ files to be analyzed for VDJ",
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"mysample_S1_L001_R1_001.fastq.gz\";\"mysample_S1_L001_R2_001.fastq.gz\"]`. "
+        },
+        "vdj_t_input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "description": "The FASTQ files to be analyzed for VDJ-T",
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"mysample_S1_L001_R1_001.fastq.gz\";\"mysample_S1_L001_R2_001.fastq.gz\"]`. "
+        },
+        "vdj_t_gd_input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "description": "The FASTQ files to be analyzed for VDJ-T-GD",
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"mysample_S1_L001_R1_001.fastq.gz\";\"mysample_S1_L001_R2_001.fastq.gz\"]`. "
+        },
+        "vdj_b_input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "description": "The FASTQ files to be analyzed for VDJ-B",
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"mysample_S1_L001_R1_001.fastq.gz\";\"mysample_S1_L001_R2_001.fastq.gz\"]`. "
+        },
+        "agc_input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "description": "The FASTQ files to be analyzed for Antigen Capture",
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"mysample_S1_L001_R1_001.fastq.gz\";\"mysample_S1_L001_R2_001.fastq.gz\"]`. "
+        }
+      }
+    },
+    "library arguments": {
+      "title": "Library arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "library_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The Illumina sample name to analyze",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"mysample1\"]`. "
+        },
+        "library_type": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The underlying feature type of the library.\n",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"Gene Expression\"]`, choices: ``Gene Expression`, `VDJ`, `VDJ-T`, `VDJ-B`, `VDJ-T-GD`, `Antibody Capture`, `CRISPR Guide Capture`, `Multiplexing Capture`, `Antigen Capture`, `Custom``. "
+        },
+        "library_subsample": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The rate at which reads from the provided FASTQ files are sampled.\nMust be strictly greater than 0 and less than or equal to 1.\n",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"0.5\"]`. "
+        },
+        "library_lanes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Lanes associated with this sample",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"1-4\"]`. "
+        },
+        "library_chemistry": {
+          "type": "string",
+          "description": "Only applicable to FRP",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "sample parameters": {
+      "title": "Sample parameters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "sample_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A name to identify a multiplexed sample",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "sample_description": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A description for the sample.",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "sample_expect_cells": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Expected number of recovered cells, used as input to cell calling algorithm.\n",
+          "help_text": "Type: `integer`, multiple: `True`, example: `[3000]`. "
+        },
+        "sample_force_cells": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Force pipeline to use this number of cells, bypassing cell detection.\n",
+          "help_text": "Type: `integer`, multiple: `True`, example: `[3000]`. "
+        }
+      }
+    },
+    "feature barcode library specific arguments": {
+      "title": "Feature Barcode library specific arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "feature_reference": {
+          "type": "string",
+          "format": "path",
+          "description": "Path to the Feature reference CSV file, declaring Feature Barcode constructs and associated barcodes.\nRequired only for Antibody Capture or CRISPR Guide Capture libraries.\nSee https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-ref for more information.\"\n",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"feature_reference.csv\"`. "
+        },
+        "feature_r1_length": {
+          "type": "integer",
+          "description": "Limit the length of the input Read 1 sequence of V(D)J libraries to the first N bases,\nwhere N is the user-supplied value",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "feature_r2_length": {
+          "type": "integer",
+          "description": "Limit the length of the input Read 2 sequence of V(D)J libraries to the first N bases,\nwhere N is a user-supplied value",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "min_crispr_umi": {
+          "type": "integer",
+          "description": "Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection.\nIf a lower or higher sensitivity is desired for detection, this value can be customized\naccording to specific experimental needs",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        }
+      }
+    },
+    "gene expression arguments": {
+      "title": "Gene expression arguments",
+      "type": "object",
+      "description": "Arguments relevant to the analysis of gene expression data.",
+      "properties": {
+        "gex_reference": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Genome refence index built by Cell Ranger mkref.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"reference_genome.tar.gz\"`. "
+        },
+        "gex_secondary_analysis": {
+          "type": "boolean",
+          "description": "Whether or not to run the secondary analysis e.g",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "gex_generate_bam": {
+          "type": "boolean",
+          "description": "Whether to generate a BAM file.",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "tenx_cloud_token_path": {
+          "type": "string",
+          "format": "path",
+          "description": "The 10x Cloud Analysis user token used to enable cell annotation.",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        },
+        "cell_annotation_model": {
+          "type": "string",
+          "description": "\"Cell annotation model to use",
+          "help_text": "Type: `string`, multiple: `False`, choices: ``auto`, `human_pca_v1_beta`, `mouse_pca_v1_beta``. ",
+          "enum": [
+            "auto",
+            "human_pca_v1_beta",
+            "mouse_pca_v1_beta"
+          ]
+        },
+        "gex_expect_cells": {
+          "type": "integer",
+          "description": "Expected number of recovered cells, used as input to cell calling algorithm.\n",
+          "help_text": "Type: `integer`, multiple: `False`, example: `3000`. "
+        },
+        "gex_force_cells": {
+          "type": "integer",
+          "description": "Force pipeline to use this number of cells, bypassing cell detection.\n",
+          "help_text": "Type: `integer`, multiple: `False`, example: `3000`. "
+        },
+        "gex_include_introns": {
+          "type": "boolean",
+          "description": "Whether or not to include intronic reads in counts.\nThis option does not apply to Fixed RNA Profiling analysis.\n",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
+        },
+        "gex_r1_length": {
+          "type": "integer",
+          "description": "Limit the length of the input Read 1 sequence of V(D)J libraries to the first N bases,\nwhere N is the user-supplied value",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "gex_r2_length": {
+          "type": "integer",
+          "description": "Limit the length of the input Read 2 sequence of V(D)J libraries to the first N bases,\nwhere N is a user-supplied value",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "gex_chemistry": {
+          "type": "string",
+          "description": "Assay configuration",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"auto\"`, choices: ``auto`, `threeprime`, `fiveprime`, `SC3Pv1`, `SC3Pv2`, `SC3Pv3`, `SC3Pv3-polyA`, `SC3Pv4`, `SC3Pv4-polyA`, `SC3Pv3LT`, `SC3Pv3HT`, `SC3Pv3HT-polyA`, `SC5P-PE`, `SC5P-PE-v3`, `SC5P-R2`, `SC-FB`, `SC5P-R2-v3`, `SCP5-PE-v3`, `SC5PHT`, `MFRP`, `MFRP-R1`, `MFRP-RNA`, `MFRP-Ab`, `SFRP`, `MFRP-Ab-R2pos50`, `MFRP-RNA-R1`, `MFRP-Ab-R1`, `ARC-v1``. ",
+          "enum": [
+            "auto",
+            "threeprime",
+            "fiveprime",
+            "SC3Pv1",
+            "SC3Pv2",
+            "SC3Pv3",
+            "SC3Pv3-polyA",
+            "SC3Pv4",
+            "SC3Pv4-polyA",
+            "SC3Pv3LT",
+            "SC3Pv3HT",
+            "SC3Pv3HT-polyA",
+            "SC5P-PE",
+            "SC5P-PE-v3",
+            "SC5P-R2",
+            "SC-FB",
+            "SC5P-R2-v3",
+            "SCP5-PE-v3",
+            "SC5PHT",
+            "MFRP",
+            "MFRP-R1",
+            "MFRP-RNA",
+            "MFRP-Ab",
+            "SFRP",
+            "MFRP-Ab-R2pos50",
+            "MFRP-RNA-R1",
+            "MFRP-Ab-R1",
+            "ARC-v1"
+          ],
+          "default": "auto"
+        }
+      }
+    },
+    "vdj related parameters": {
+      "title": "VDJ related parameters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "vdj_reference": {
+          "type": "string",
+          "format": "path",
+          "description": "VDJ refence index built by Cell Ranger mkref.",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"reference_vdj.tar.gz\"`. "
+        },
+        "vdj_inner_enrichment_primers": {
+          "type": "string",
+          "format": "path",
+          "description": "V(D)J Immune Profiling libraries: if inner enrichment primers other than those provided \nin the 10x Genomics kits are used, they need to be specified here as a\ntext file with one primer per line.\n",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"enrichment_primers.txt\"`. "
+        },
+        "vdj_r1_length": {
+          "type": "integer",
+          "description": "Limit the length of the input Read 1 sequence of V(D)J libraries to the first N bases, where N is the user-supplied value.\nNote that the length includes the Barcode and UMI sequences so do not set this below 26.\n",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "vdj_r2_length": {
+          "type": "integer",
+          "description": "Limit the length of the input Read 2 sequence of V(D)J libraries to the first N bases, where N is a user-supplied value",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        }
+      }
+    },
+    "3' cell multiplexing parameters (cellplex multiplexing)": {
+      "title": "3' Cell multiplexing parameters (CellPlex Multiplexing)",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "cell_multiplex_oligo_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The Cell Multiplexing oligo IDs used to multiplex this sample",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "min_assignment_confidence": {
+          "type": "number",
+          "description": "The minimum estimated likelihood to call a sample as tagged with a Cell Multiplexing Oligo (CMO) instead of \"Unassigned\".\nUsers may wish to tolerate a higher rate of mis-assignment in order to obtain more singlets to include in their analysis,\nor a lower rate of mis-assignment at the cost of obtaining fewer singlets.\n",
+          "help_text": "Type: `double`, multiple: `False`. "
+        },
+        "cmo_set": {
+          "type": "string",
+          "format": "path",
+          "description": "Path to a custom CMO set CSV file, declaring CMO constructs and associated barcodes",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        },
+        "barcode_sample_assignment": {
+          "type": "string",
+          "format": "path",
+          "description": "Path to a barcode-sample assignment CSV file that specifies the barcodes that belong to each sample.\n",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        }
+      }
+    },
+    "hashtag multiplexing parameters": {
+      "title": "Hashtag multiplexing parameters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "hashtag_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The hashtag IDs used to multiplex this sample",
+          "help_text": "Type: `string`, multiple: `True`. "
+        }
+      }
+    },
+    "on-chip multiplexing parameters": {
+      "title": "On-chip multiplexing parameters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "ocm_barcode_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The OCM barcode IDs used to multiplex this sample",
+          "help_text": "Type: `string`, multiple: `True`. "
+        }
+      }
+    },
+    "flex multiplexing paramaters": {
+      "title": "Flex multiplexing paramaters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "probe_set": {
+          "type": "string",
+          "format": "path",
+          "description": "A probe set reference CSV file",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        },
+        "filter_probes": {
+          "type": "boolean",
+          "description": "If 'false', include all non-deprecated probes listed in the probe set reference CSV file.\nIf 'true' or not set, probes that are predicted to have off-target activity to homologous genes are excluded from analysis.\nNot filtering will result in UMI counts from all non-deprecated probes,\nincluding those with predicted off-target activity, to be used in the analysis.\nProbes whose ID is prefixed with DEPRECATED are always excluded from the analysis.\n",
+          "help_text": "Type: `boolean`, multiple: `False`. "
+        },
+        "probe_barcode_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The Fixed RNA Probe Barcode ID used for this sample, and for multiplex GEX + Antibody Capture libraries,\nthe corresponding Antibody Multiplexing Barcode IDs",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "emptydrops_minimum_umis": {
+          "type": "integer",
+          "description": "For singleplex Flex experiments, use this option to adjust the UMI cutoff during the second step of cell calling.\nCell Ranger will still perform the full cell calling process but will only evaluate barcodes with UMIs above\nthe threshold you specify.\n",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        }
+      }
+    },
+    "antigen capture (beam) libary arguments": {
+      "title": "Antigen Capture (BEAM) libary arguments",
+      "type": "object",
+      "description": "These arguments are recommended if an Antigen Capture (BEAM) library is present. \nIt is needed to calculate the antigen specificity score.\n",
+      "properties": {
+        "control_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A user-defined ID for any negative controls used in the T/BCR Antigen Capture assay",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "mhc_allele": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The MHC allele for TCR Antigen Capture libraries",
+          "help_text": "Type: `string`, multiple: `True`. "
+        }
+      }
+    },
+    "general arguments": {
+      "title": "General arguments",
+      "type": "object",
+      "description": "These arguments are applicable to all library types.\n",
+      "properties": {
+        "check_library_compatibility": {
+          "type": "boolean",
+          "description": "Optional",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/input files"
+    },
+    {
+      "$ref": "#/$defs/feature type-specific input files"
+    },
+    {
+      "$ref": "#/$defs/library arguments"
+    },
+    {
+      "$ref": "#/$defs/sample parameters"
+    },
+    {
+      "$ref": "#/$defs/feature barcode library specific arguments"
+    },
+    {
+      "$ref": "#/$defs/gene expression arguments"
+    },
+    {
+      "$ref": "#/$defs/vdj related parameters"
+    },
+    {
+      "$ref": "#/$defs/3' cell multiplexing parameters (cellplex multiplexing)"
+    },
+    {
+      "$ref": "#/$defs/hashtag multiplexing parameters"
+    },
+    {
+      "$ref": "#/$defs/on-chip multiplexing parameters"
+    },
+    {
+      "$ref": "#/$defs/flex multiplexing paramaters"
+    },
+    {
+      "$ref": "#/$defs/antigen capture (beam) libary arguments"
+    },
+    {
+      "$ref": "#/$defs/general arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}
