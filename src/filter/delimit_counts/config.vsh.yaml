@@ -1,6 +1,6 @@
 name: delimit_counts
 namespace: "filter"
-scope: "public"
+scope: "private"
 description: |
   Turns an .obs column containing count values into a boolean column based on thresholds.
 authors:
