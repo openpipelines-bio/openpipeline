@@ -31,38 +31,40 @@ workflow run_wf {
           ],
           args: [
             do_subset: "True",
+            var_name_filter: "filter_with_gene_pattern",
+          ]
+          toState: [ "input": "output" ]
+      )
+
+      | filter_genes_by_pattern.run(
+          fromState: [
+            input: "input",
+            modality: "modality",
+            var_gene_names: "var_gene_names",
+            pattern: "filter_gene_patterns",
+            min_counts: "min_obs_per_sample",
+
+          ],
+          args: [
+            do_subset: "True",
             obs_cell_count: "n_cells",
             obs_name_filter: "delimit_samples_per_pseudobulk",
           ]
           toState: [ "input": "output" ]
       )
-      | filter_genes_by_pattern.run(
-          
-      )
+
       | filter_with_counts.run(
           fromState: [
             input: "input",
             modality: "modality",
             layer: "input_layer",
-            min_counts: "min_obs_per_sample",
-
-            obs_cell_count: "obs_cell_count"
+            min_cells_per_gene: "filter_genes_min_samples",
           ],
           args: [
             do_subset: "True",
-
+            var_name_filter: "filter_with_counts"
           ]
           toState: [ "input": "output" ]
-      )
-
-      | do_filter.run(
-
-      )
-
-
-
-      | do_filter.run(
-
       )
 
       | deseq2.run(
@@ -70,7 +72,7 @@ workflow run_wf {
           input: "input",
           modality: "modality",
           input_layer: "input_layer",
-          var_gene_name: "var_gene_name",
+          var_gene_names: "var_gene_names",
           obs_cell_group: "obs_cell_group",
           design_formula: "design_formula",
           contrast_column: "contrast_column",

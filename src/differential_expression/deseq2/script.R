@@ -16,7 +16,6 @@ par <- list(
   design_formula = "~ treatment",
   contrast_column = "treatment",
   contrast_values = c("ctrl", "stim"),
-  filter_genes_min_samples = NULL,
   p_adj_threshold = 0.05,
   log2fc_threshold = 0.0,
   var_gene_names = "feature_name"
@@ -188,23 +187,6 @@ create_deseq2_dataset <- function(counts, metadata, design_formula) {
     colData = metadata,
     design = as.formula(design_formula)
   )
-
-  # Filtering genes based on presence across samples
-  sample_count <- if (
-    !is.null(par$filter_genes_min_samples)
-  ) {
-    par$filter_genes_min_samples
-  } else {
-    1
-  }
-  cat(
-    "Filtering genes by counts: removing genes that are present in less than",
-    sample_count, "samples\n"
-  )
-
-  keep <- rowSums(counts(dds) >= 1) >= sample_count
-  dds <- dds[keep, ]
-
   dds
 }
 

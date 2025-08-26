@@ -70,13 +70,6 @@ argument_groups:
           Values must be present in the fields specified for the design formula.
         required: true
         example: ["ctrl", "stim"]
-      - name: "--filter_genes_min_samples"
-        type: integer
-        min: 1
-        description: |
-          Minimum number of samples a gene must be expressed in to be included in the analysis.
-          If no value is provided, no filtering is applied.
-        required: false
       - name: "--p_adj_threshold"
         type: double
         min: 0
