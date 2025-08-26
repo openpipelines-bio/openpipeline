@@ -1,5 +1,9 @@
 # openpipelines 3.x.x
 
+## BREAKING
+
+* `differential_expression/create_pseudobulks`: Removed functionality to filter psuedobulk samples based on number of aggregated samples threshold, as this functionality is now covered in `filter/delimit_count` (PR #1044).
+
 ## NEW FUNCTIONALITY
 
 * `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).
