@@ -94,14 +94,6 @@ argument_groups:
           Genes with absolute log2 fold change above this threshold will be considered significant.
         default: 0.0
         required: false
-      - name: "--filter_gene_patterns"
-        type: string
-        multiple: true
-        description: |
-          List of regex patterns to filter out genes.
-          Genes matching any of these patterns will be excluded from the analysis.
-        required: false
-        example: ["MIR\\d+", "AL\\d+", "LINC\\d+", "AC\\d+", "AP\\d+"]
 
   - name: Outputs
     arguments:
