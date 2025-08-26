@@ -66,7 +66,7 @@ h5mu_to_h5ad <- function(h5mu_path, modality_name) {
   tmp_path
 }
 
-# Check if expression data is normalized (row sums ≈ 1)
+# Check if expression data is normalized (row sums =~ 1)
 is_normalized <- function(layer) {
   row_sums <- if (is(layer, "sparseMatrix") || is(layer, "dgCMatrix")) {
     Matrix::rowSums(layer)

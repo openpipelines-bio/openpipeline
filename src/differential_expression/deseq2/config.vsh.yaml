@@ -54,7 +54,7 @@ argument_groups:
           Design formula for DESeq2 analysis in R-style format.
           Specifies the statistical model to account for various factors.
         required: true
-        # example: "~ disease + treatment"
+        example: "~ disease + treatment"
       - name: "--contrast_column"
         type: string
         description: |
