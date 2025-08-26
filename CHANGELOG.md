@@ -2,6 +2,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).
+
 * `filter/delimit_counts`: Turns an .obs column of a MuData file containing count data into a boolean column based on thresholds (PR #1069)
 
 ## EXPERIMENTAL
