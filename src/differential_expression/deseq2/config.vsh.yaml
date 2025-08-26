@@ -33,12 +33,11 @@ argument_groups:
         type: string
         required: false
         description: "Input layer to use. If None, X is used. This layer must contain raw counts."
-      - name: "--var_gene_name"
+      - name: "--var_gene_names"
         type: string
         description: |
           Column name in the variable features table that contains gene symbols.
           This is used for reporting gene names in the output.
-        default: "feature_name"
         required: false
       - name: "--obs_cell_group"
         type: string
@@ -76,10 +75,12 @@ argument_groups:
         min: 1
         description: |
           Minimum number of samples a gene must be expressed in to be included in the analysis.
-          If None, no filtering is applied.
+          If no value is provided, no filtering is applied.
         required: false
       - name: "--p_adj_threshold"
         type: double
+        min: 0
+        max: 1
         description: |
           Adjusted p-value threshold for significance.
           Genes with adjusted p-values below this threshold will be considered significant.
@@ -87,6 +88,7 @@ argument_groups:
         required: false
       - name: "--log2fc_threshold"
         type: double
+        min: 0
         description: |
           Log2 fold change threshold for significance.
           Genes with absolute log2 fold change above this threshold will be considered significant.

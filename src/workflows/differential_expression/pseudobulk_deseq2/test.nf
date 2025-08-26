@@ -57,9 +57,7 @@ workflow test_wf {
         deseqFiles.collect { csvFile ->
           def cellType = csvFile.name.replaceAll(/deseq2_analysis_(.*)\.csv/, '$1')
           def newId = "${id}_${cellType}"
-          def newState = state.clone()
           [newId, ["input": csvFile]]
-
         }
     }
 

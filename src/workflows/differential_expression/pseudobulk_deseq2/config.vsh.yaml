@@ -12,11 +12,6 @@ authors:
 argument_groups:
   - name: Inputs
     arguments:
-      - name: --id
-        type: string
-        required: true
-        description: ID of the sample.
-        example: foo
       - name: --input
         type: file
         required: true
@@ -42,13 +37,12 @@ argument_groups:
         multiple: true
         description: .obs fields containing the experimental condition(s) to create pseudobulk samples for.
         example: ["treatment", "disease"]
-      - name: "--var_gene_name"
+      - name: "--var_gene_names"
         type: string
         description: |
           Column name in the variable features table that contains gene symbols.
           This is used for reporting gene names in the output.
-        default: "feature_name"
-        required: false
+        required: true
 
   - name: Pseudobulk Options
     arguments:
