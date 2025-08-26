@@ -30,9 +30,6 @@ h5mu_to_h5ad <- function(h5mu_path, modality_name) {
   mod_location <- paste("mod", modality_name, sep = "/")
   h5src <- hdf5r::H5File$new(h5mu_path, "r")
   h5dest <- hdf5r::H5File$new(tmp_path, "w")
-  # Copy over the child objects and the child attributes from root
-  # Root cannot be copied directly because it always exists and
-  # copying does not allow overwriting.
   children <- hdf5r::list.objects(h5src,
     path = mod_location,
     full.names = FALSE, recursive = FALSE
@@ -75,6 +72,19 @@ is_normalized <- function(layer) {
 
 # Extract design factors from formula
 parse_design_formula <- function(design_formula) {
+  if (!grepl("^~\\s*\\w+(\\s*\\+\\s*\\w+)*$", design_formula)) {
+    stop(
+      sprintf(
+        paste(
+          "Invalid design formula: '%s'.",
+          "Formula must start with '~' and contain factors separated by '+'.",
+          "Example: '~ disease + treatment'",
+          sep = "\n"
+        ),
+        design_formula
+      )
+    )
+  }
   design_factors <- all.vars(as.formula(design_formula))
   cat("Design formula:", design_formula, "\n")
   cat("Extracted factors:", paste(design_factors, collapse = ", "), "\n")
@@ -297,10 +307,18 @@ main <- function() {
   )
 
   cat("Preparing counts matrix for DESeq2\n")
-  var_names <- if (
-    !is.null(par$var_gene_names) && par$var_gene_names %in% colnames(mod$var)
-  ) {
-    mod$var[[par$var_gene_names]]
+  var_names <- if (!is.null(par$var_gene_names)) {
+    if (par$var_gene_names %in% colnames(mod$var)) {
+      mod$var[[par$var_gene_names]]
+    } else {
+      stop(
+        sprintf(
+          "var_gene_names '%s' not found in mod$var columns: %s",
+          par$var_gene_names,
+          paste(colnames(mod$var), collapse = ", ")
+        )
+      )
+    }
   } else {
     mod$var_names
   }

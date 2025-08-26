@@ -37,7 +37,8 @@ workflow test_wf {
       assert state instanceof Map : "State should be a map. Found: ${state}"
       assert state.containsKey("output") : "Output should contain key 'output'. found: ${state}"
       assert state.output.isDirectory() : "'output' should be a directory."
-      def deseqFiles = files("${state.output}/deseq2_analysis_.*.csv")
+      def deseqFiles = state.output.glob("deseq2_analysis_*.csv").toList()
+      "deseqFiles: $deseqFiles"
       assert deseqFiles.size() == 4, "Output directory should contain exactly 4 deseq2_analysis_*.csv files. Found: ${deseqFiles.size()} files: ${deseqFiles.collect { it.name }}"
     
     "Output: $output"

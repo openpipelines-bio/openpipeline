@@ -274,6 +274,35 @@ def test_invalid_contrast_column(run_component, tmp_path, pseudobulk_test_data_p
     ), f"Expected error message not found: {err.value.stdout.decode('utf-8')}"
 
 
+def test_invalid_design_column(run_component, tmp_path, pseudobulk_test_data_path):
+    """Test that invalid contrast column raises appropriate error"""
+    output_dir = tmp_path / "deseq2_output"
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                pseudobulk_test_data_path,
+                "--output_dir",
+                str(output_dir),
+                "--design_formula",
+                "malformed formula",
+                "--contrast_column",
+                "treatment",
+                "--contrast_values",
+                "ctrl",
+                "--contrast_values",
+                "stim",
+            ]
+        )
+
+    # Updated regex to match actual R error format (no square brackets)
+    assert re.search(
+        r"Invalid design formula: 'malformed formula'",
+        err.value.stdout.decode("utf-8"),
+    ), f"Expected error message not found: {err.value.stdout.decode('utf-8')}"
+
+
 def test_custom_output_prefix(run_component, tmp_path, pseudobulk_test_data_path):
     """Test custom output prefix functionality"""
     output_dir = tmp_path / "deseq2_output"

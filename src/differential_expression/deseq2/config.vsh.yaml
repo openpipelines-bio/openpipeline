@@ -36,9 +36,9 @@ argument_groups:
       - name: "--var_gene_names"
         type: string
         description: |
-          Column name in the variable features table that contains gene symbols.
-          This is used for reporting gene names in the output.
+          Name of the .var field that contains gene symbols. If not provided, .var.index will be used.
         required: false
+        example: "gene_symbol"
       - name: "--obs_cell_group"
         type: string
         description: |

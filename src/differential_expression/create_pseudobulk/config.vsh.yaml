@@ -54,12 +54,6 @@ argument_groups:
         choices: ["sum", "mean"]
         default: "sum"
         description: "Method to aggregate the raw counts for pseudoreplicates. Either sum or mean."
-      - name: "--min_obs_per_sample"
-        type: integer
-        min: 1
-        example: 30
-        required: false
-        description: "Minimum number of cells per pseudobulk sample."
       - name: --random_state
         type: integer
         description: |
