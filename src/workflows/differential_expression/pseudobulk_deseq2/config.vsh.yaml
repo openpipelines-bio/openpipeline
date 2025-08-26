@@ -139,6 +139,7 @@ dependencies:
   - name: differential_expression/deseq2
   - name: filter/filter_with_counts
   - name: filter/filter_genes_by_pattern
+  - name: filter/delimit_counts
   - name: filter/do_filter
 
 resources:
