@@ -61,10 +61,7 @@ argument_groups:
         min: 0
         default: 0
         description: The random seed for sampling.
-      - name: --obs_cell_count
-        type: string
-        required: false
-        description: .obs field containing the cell count per pseudobulk sample.
+
   - name: DGEA options
     arguments:
       - name: --design_formula

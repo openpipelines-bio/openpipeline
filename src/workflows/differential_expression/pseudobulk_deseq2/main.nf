@@ -7,23 +7,40 @@ workflow run_wf {
     output_ch = input_ch
       | create_pseudobulk.run(
         fromState: [
-          id: "id",
           input: "input",
           modality: "modality",
           input_layer: "input_layer",
           obs_label: "obs_cell_group",
           obs_groups: "obs_groups",
-          aggregation_method: "aggregation_method",
-          min_obs_per_sample: "min_obs_per_sample",
-          random_state: "random_state",
-          obs_cell_count: "obs_cell_count"
+          aggregation_method: "aggregation_method"
+          random_state: "random_state"
         ],
+        args:[
+          obs_cell_count: "n_cells"
+        ]
         toState: [ "input": "output" ]
       )
 
+      | delimit_counts.run(
+          fromState: [
+            input: "input",
+            modality: "modality",
+            obs_count_column: "input_layer",
+            min_counts: "min_obs_per_sample",
+
+          ],
+          args: [
+            do_subset: "True",
+            obs_cell_count: "n_cells",
+            obs_name_filter: "delimit_samples_per_pseudobulk",
+          ]
+          toState: [ "input": "output" ]
+      )
+      | filter_genes_by_pattern.run(
+          
+      )
       | filter_with_counts.run(
           fromState: [
-            id: "id",
             input: "input",
             modality: "modality",
             layer: "input_layer",
@@ -42,9 +59,7 @@ workflow run_wf {
 
       )
 
-      | filter_genes_by_pattern.run(
 
-      )
 
       | do_filter.run(
 
@@ -52,7 +67,6 @@ workflow run_wf {
 
       | deseq2.run(
         fromState: [
-          id: "id",
           input: "input",
           modality: "modality",
           input_layer: "input_layer",

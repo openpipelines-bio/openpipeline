@@ -19,9 +19,6 @@ par <- list(
   filter_genes_min_samples = NULL,
   p_adj_threshold = 0.05,
   log2fc_threshold = 0.0,
-  filter_gene_patterns = c(
-    "MIR\\d+", "AL\\d+", "LINC\\d+", "AC\\d+", "AP\\d+"
-  ),
   var_gene_names = "feature_name"
 )
 meta <- list(resources_dir = "src/utils")
@@ -170,33 +167,6 @@ prepare_counts_matrix <- function(layer, var_names, obs_names) {
   # Ensure integer counts (required for DESeq2)
   counts_df[] <- lapply(counts_df, function(x) as.integer(round(x)))
   counts_df
-}
-
-# Filter genes based on regex patterns
-filter_genes_by_pattern <- function(counts, gene_patterns) {
-  if (is.null(gene_patterns) || length(gene_patterns) == 0) {
-    return(counts)
-  }
-
-  pattern_string <- paste(gene_patterns, collapse = "|")
-  before_filter <- ncol(counts)
-  genes_to_keep <- !grepl(pattern_string, colnames(counts))
-  counts_filtered <- counts[, genes_to_keep, drop = FALSE]
-
-  cat(
-    "Filtered out genes matching patterns:",
-    paste(gene_patterns, collapse = ", "), "\n"
-  )
-  cat(
-    "Matrix shape before filtering:", nrow(counts), "x", before_filter,
-    "\n"
-  )
-  cat(
-    "Matrix shape after filtering:", nrow(counts_filtered), "x",
-    ncol(counts_filtered), "\n"
-  )
-
-  counts_filtered
 }
 
 # Create and configure DESeq2 dataset
@@ -354,15 +324,6 @@ main <- function() {
   }
   obs_names <- mod$obs_names
   counts <- prepare_counts_matrix(layer, var_names, obs_names)
-
-  # Apply gene filtering if specified
-  if (
-    !is.null(par$filter_gene_patterns) &&
-      length(par$filter_gene_patterns) > 0
-  ) {
-    cat("Filtering genes based on patterns\n")
-    counts <- filter_genes_by_pattern(counts, par$filter_gene_patterns)
-  }
 
   # Ensure output directory exists
   if (!dir.exists(par$output_dir)) {

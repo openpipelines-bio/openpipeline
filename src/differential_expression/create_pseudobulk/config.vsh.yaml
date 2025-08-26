@@ -57,7 +57,8 @@ argument_groups:
       - name: "--min_obs_per_sample"
         type: integer
         min: 1
-        default: 30
+        example: 30
+        required: false
         description: "Minimum number of cells per pseudobulk sample."
       - name: --random_state
         type: integer
