@@ -2,7 +2,7 @@ import mudata as mu
 import numpy as np
 import sys
 from operator import le, ge
-from pandas.api.types import is_integer_dtype
+from pandas.api.types import is_numeric_dtype
 
 
 ### VIASH START
@@ -12,9 +12,10 @@ par = {
     "output": "output.h5mu",
     "obs_name_filter": "filter_with_counts",
     "obs_count_column": "n_cells",
-    "min_count": None,
-    "max_count": None,
+    "min_count": 15,
+    "max_count": 20,
     "output_compression": "gzip",
+    "do_subset": False,
 }
 meta = {"resources_dir": "src/utils/"}
 ### VIASH END
@@ -44,9 +45,9 @@ try:
 except KeyError:
     raise ValueError(f"Could not find column '{par['obs_count_column']}'")
 
-if not is_integer_dtype(counts):
+if not is_numeric_dtype(counts):
     raise ValueError(
-        f"Column '{par['obs_count_column']}' does not contain integer datatype."
+        f"Column '{par['obs_count_column']}' does not contain numeric datatype."
     )
 
 if counts.min() < 0:
@@ -96,6 +97,10 @@ for filter_name_or_value, base, comparator, message in filters:
         logger.info(message, num_removed, filter)
 
 data.obs[par["obs_name_filter"]] = keep_cells
+
+if par["do_subset"]:
+    modality_data = data[keep_cells, :]
+    logger.info("\tFiltered data: %s", modality_data)
 
 logger.info("\tFiltered data: %s", data)
 logger.info("Writing output data to %s", par["output"])
