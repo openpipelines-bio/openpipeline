@@ -1,3 +1,9 @@
+# openpipelines 3.x.x
+
+## NEW FUNCTIONALITY
+
+* `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES
