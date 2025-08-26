@@ -1,3 +1,9 @@
+# openpipelines 3.x.x
+
+## NEW FUNCTIONALITY
+
+* `filter/delimit_counts`: Turns an .obs column of a MuData file containing count data into a boolean column based on thresholds (PR #1069)
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES
