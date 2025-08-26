@@ -28,6 +28,7 @@ argument_groups:
         example: "gene_symbol"
         required: false
       - name: "--pattern"
+        required: true
         type: string
         multiple: true
         example: ["MIR\\d+", "AL\\d+", "LINC\\d+", "AC\\d+", "AP\\d+"]
