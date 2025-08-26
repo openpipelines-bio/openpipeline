@@ -76,4 +76,4 @@ runners:
 - type: executable
 - type: nextflow
   directives:
-    label: [singlecpu, lowmem]
+    label: [lowcpu, midmem]
