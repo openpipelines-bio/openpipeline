@@ -3174,8 +3174,26 @@ meta = [
         },
         {
           "type" : "integer",
+          "name" : "--random_state",
+          "description" : "The random seed for sampling.",
+          "default" : [
+            0
+          ],
+          "required" : false,
+          "min" : 0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Filtering options",
+      "arguments" : [
+        {
+          "type" : "integer",
           "name" : "--min_obs_per_sample",
-          "description" : "Minimum number of cells per pseudobulk sample.",
+          "description" : "Minimum number of observations per pseudobulk sample.",
           "default" : [
             30
           ],
@@ -3187,15 +3205,31 @@ meta = [
         },
         {
           "type" : "integer",
-          "name" : "--random_state",
-          "description" : "The random seed for sampling.",
+          "name" : "--filter_genes_min_samples",
+          "description" : "Minimum number of samples a gene must be expressed in to be included in the analysis.\nIf None, no filtering is applied.\n",
           "default" : [
-            0
+            1
           ],
           "required" : false,
-          "min" : 0,
+          "min" : 1,
           "direction" : "input",
           "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--filter_gene_patterns",
+          "description" : "List of regex patterns to filter out genes.\nGenes matching any of these patterns will be excluded from the analysis.\n",
+          "example" : [
+            "MIR\\\\d+",
+            "AL\\\\d+",
+            "LINC\\\\d+",
+            "AC\\\\d+",
+            "AP\\\\d+"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
           "multiple_sep" : ";"
         }
       ]
@@ -3241,16 +3275,6 @@ meta = [
           "multiple_sep" : ";"
         },
         {
-          "type" : "integer",
-          "name" : "--filter_genes_min_samples",
-          "description" : "Minimum number of samples a gene must be expressed in to be included in the analysis.\nIf None, no filtering is applied.\n",
-          "required" : false,
-          "min" : 1,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
           "type" : "double",
           "name" : "--p_adj_threshold",
           "description" : "Adjusted p-value threshold for significance.\nGenes with adjusted p-values below this threshold will be considered significant.\n",
@@ -3272,22 +3296,6 @@ meta = [
           "required" : false,
           "direction" : "input",
           "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--filter_gene_patterns",
-          "description" : "List of regex patterns to filter out genes.\nGenes matching any of these patterns will be excluded from the analysis.\n",
-          "example" : [
-            "MIR\\\\d+",
-            "AL\\\\d+",
-            "LINC\\\\d+",
-            "AC\\\\d+",
-            "AP\\\\d+"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : true,
           "multiple_sep" : ";"
         }
       ]
@@ -3482,9 +3490,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/differential_expression/pseudobulk_deseq2",
     "viash_version" : "0.9.4",
-    "git_commit" : "cc3879eaa8e032da86d9e9460a7e7c13cb982377",
+    "git_commit" : "757604391361f15aec21a3a835b21b87b2762919",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2114-gcc3879eaa8e"
+    "git_tag" : "0.2.0-2115-g75760439136"
   },
   "package_config" : {
     "name" : "openpipeline",

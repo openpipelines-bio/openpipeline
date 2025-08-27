@@ -96,17 +96,38 @@
           ],
           "default": "sum"
         },
-        "min_obs_per_sample": {
-          "type": "integer",
-          "description": "Minimum number of cells per pseudobulk sample.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `30`. ",
-          "default": 30
-        },
         "random_state": {
           "type": "integer",
           "description": "The random seed for sampling.",
           "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
           "default": 0
+        }
+      }
+    },
+    "filtering options": {
+      "title": "Filtering options",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "min_obs_per_sample": {
+          "type": "integer",
+          "description": "Minimum number of observations per pseudobulk sample.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `30`. ",
+          "default": 30
+        },
+        "filter_genes_min_samples": {
+          "type": "integer",
+          "description": "Minimum number of samples a gene must be expressed in to be included in the analysis.\nIf None, no filtering is applied.\n",
+          "help_text": "Type: `integer`, multiple: `False`, default: `1`. ",
+          "default": 1
+        },
+        "filter_gene_patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of regex patterns to filter out genes.\nGenes matching any of these patterns will be excluded from the analysis.\n",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"MIR\\d+\";\"AL\\d+\";\"LINC\\d+\";\"AC\\d+\";\"AP\\d+\"]`. "
         }
       }
     },
@@ -133,11 +154,6 @@
           "description": "Values to compare in the contrast column.\nFirst value is baseline, following values are different treatments.\n",
           "help_text": "Type: `string`, multiple: `True`, required, example: `[\"ctrl\";\"stim\"]`. "
         },
-        "filter_genes_min_samples": {
-          "type": "integer",
-          "description": "Minimum number of samples a gene must be expressed in to be included in the analysis.\nIf None, no filtering is applied.\n",
-          "help_text": "Type: `integer`, multiple: `False`. "
-        },
         "p_adj_threshold": {
           "type": "number",
           "description": "Adjusted p-value threshold for significance.\nGenes with adjusted p-values below this threshold will be considered significant.\n",
@@ -149,14 +165,6 @@
           "description": "Log2 fold change threshold for significance.\nGenes with absolute log2 fold change above this threshold will be considered significant.\n",
           "help_text": "Type: `double`, multiple: `False`, default: `0.0`. ",
           "default": 0.0
-        },
-        "filter_gene_patterns": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "List of regex patterns to filter out genes.\nGenes matching any of these patterns will be excluded from the analysis.\n",
-          "help_text": "Type: `string`, multiple: `True`, example: `[\"MIR\\d+\";\"AL\\d+\";\"LINC\\d+\";\"AC\\d+\";\"AP\\d+\"]`. "
         }
       }
     },
@@ -182,6 +190,9 @@
     },
     {
       "$ref": "#/$defs/pseudobulk options"
+    },
+    {
+      "$ref": "#/$defs/filtering options"
     },
     {
       "$ref": "#/$defs/dgea options"

@@ -8,17 +8,19 @@ obs_cell_group: # please fill in - example: "cell_type"
 
 # Pseudobulk Options
 aggregation_method: "sum"
-min_obs_per_sample: 30
 random_state: 0
+
+# Filtering options
+min_obs_per_sample: 30
+filter_genes_min_samples: 1
+# filter_gene_patterns: ["MIR\d+", "AL\d+", "LINC\d+", "AC\d+", "AP\d+"]
 
 # DGEA options
 design_formula: # please fill in - example: "~ cell_type + disease + treatment"
 contrast_column: # please fill in - example: "treatment"
 contrast_values: # please fill in - example: ["ctrl", "stim"]
-# filter_genes_min_samples: 123
 p_adj_threshold: 0.05
 log2fc_threshold: 0.0
-# filter_gene_patterns: ["MIR\d+", "AL\d+", "LINC\d+", "AC\d+", "AP\d+"]
 
 # Outputs
 # output: "$id.$key.output"
