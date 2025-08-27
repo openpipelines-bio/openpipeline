@@ -67,7 +67,6 @@ argument_groups:
       - name: --filter_genes_min_samples
         type: integer
         min: 1
-        default: 1
         description: |
           Minimum number of samples a gene must be expressed in to be included in the analysis.
           If None, no filtering is applied.
