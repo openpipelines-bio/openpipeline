@@ -51,16 +51,34 @@ argument_groups:
         choices: ["sum", "mean"]
         default: sum
         description: Method to aggregate the raw counts for pseudoreplicates. Either sum or mean.
-      - name: --min_obs_per_sample
-        type: integer
-        min: 1
-        default: 30
-        description: Minimum number of cells per pseudobulk sample.
       - name: --random_state
         type: integer
         min: 0
         default: 0
         description: The random seed for sampling.
+
+  - name: Filtering options
+    arguments:
+      - name: --min_obs_per_sample
+        type: integer
+        min: 1
+        default: 30
+        description: Minimum number of observations per pseudobulk sample.
+      - name: --filter_genes_min_samples
+        type: integer
+        min: 1
+        default: 1
+        description: |
+          Minimum number of samples a gene must be expressed in to be included in the analysis.
+          If None, no filtering is applied.
+      - name: --filter_gene_patterns
+        type: string
+        multiple: true
+        example: ["MIR\\d+", "AL\\d+", "LINC\\d+", "AC\\d+", "AP\\d+"]
+        description: |
+          List of regex patterns to filter out genes.
+          Genes matching any of these patterns will be excluded from the analysis.
+        required: false
 
   - name: DGEA options
     arguments:
@@ -86,13 +104,6 @@ argument_groups:
           Values to compare in the contrast column.
           First value is baseline, following values are different treatments.
         example: ["ctrl", "stim"]
-      - name: --filter_genes_min_samples
-        type: integer
-        min: 1
-        description: |
-          Minimum number of samples a gene must be expressed in to be included in the analysis.
-          If None, no filtering is applied.
-        required: false
       - name: --p_adj_threshold
         type: double
         default: 0.05
@@ -106,14 +117,6 @@ argument_groups:
         description: |
           Log2 fold change threshold for significance.
           Genes with absolute log2 fold change above this threshold will be considered significant.
-        required: false
-      - name: --filter_gene_patterns
-        type: string
-        multiple: true
-        example: ["MIR\\d+", "AL\\d+", "LINC\\d+", "AC\\d+", "AP\\d+"]
-        description: |
-          List of regex patterns to filter out genes.
-          Genes matching any of these patterns will be excluded from the analysis.
         required: false
 
   - name: Outputs
