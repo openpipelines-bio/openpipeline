@@ -25,6 +25,7 @@ workflow test_wf {
     ])
     | map{ state -> [state.id, state] }
     | pseudobulk_deseq2
+
     | view { output ->
       assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
 
@@ -37,8 +38,9 @@ workflow test_wf {
       assert state instanceof Map : "State should be a map. Found: ${state}"
       assert state.containsKey("output") : "Output should contain key 'output'. found: ${state}"
       assert state.output.isDirectory() : "'output' should be a directory."
-      def deseqFiles = state.output.glob("deseq2_analysis_*.csv").toList()
-      "deseqFiles: $deseqFiles"
+      def deseqFiles = state.output.listFiles().findAll { file ->
+        file.name.matches(/deseq2_analysis_.*\.csv/)
+      }
       assert deseqFiles.size() == 4, "Output directory should contain exactly 4 deseq2_analysis_*.csv files. Found: ${deseqFiles.size()} files: ${deseqFiles.collect { it.name }}"
     
     "Output: $output"
@@ -49,7 +51,9 @@ workflow test_wf {
         def state = output[1]
         
         // Find all CSV files and create separate entries
-        def deseqFiles = files("${state.output}/deseq2_analysis_.*.csv")
+        def deseqFiles = state.output.listFiles().findAll { file ->
+          file.name.matches(/deseq2_analysis_.*\.csv/)
+        }
         deseqFiles.collect { csvFile ->
           def cellType = csvFile.name.replaceAll(/deseq2_analysis_(.*)\.csv/, '$1')
           def newId = "${id}_${cellType}"
