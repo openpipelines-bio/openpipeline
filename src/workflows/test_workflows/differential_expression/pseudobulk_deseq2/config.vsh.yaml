@@ -1,0 +1,25 @@
+name: "pseudobulk_deseq2_test"
+namespace: "test_workflows/differential_expression"
+scope: "test"
+description: "This component tests the output of the pseudobulk_deseq2 differential expression analysis workflow."
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        description: Path to h5mu output.
+        example: foo.final.h5mu
+
+resources:
+  - type: python_script
+    path: script.py
+engines:
+  - type: docker
+    image: python:3.13-slim
+    __merge__: /src/base/requirements/testworkflows_setup.yaml
+runners:
+  - type: executable
+  - type: nextflow
