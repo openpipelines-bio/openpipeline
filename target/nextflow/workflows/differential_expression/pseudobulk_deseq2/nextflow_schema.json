@@ -118,8 +118,7 @@
         "filter_genes_min_samples": {
           "type": "integer",
           "description": "Minimum number of samples a gene must be expressed in to be included in the analysis.\nIf None, no filtering is applied.\n",
-          "help_text": "Type: `integer`, multiple: `False`, default: `1`. ",
-          "default": 1
+          "help_text": "Type: `integer`, multiple: `False`. "
         },
         "filter_gene_patterns": {
           "type": "array",

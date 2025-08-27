@@ -3207,9 +3207,6 @@ meta = [
           "type" : "integer",
           "name" : "--filter_genes_min_samples",
           "description" : "Minimum number of samples a gene must be expressed in to be included in the analysis.\nIf None, no filtering is applied.\n",
-          "default" : [
-            1
-          ],
           "required" : false,
           "min" : 1,
           "direction" : "input",
@@ -3490,9 +3487,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/differential_expression/pseudobulk_deseq2",
     "viash_version" : "0.9.4",
-    "git_commit" : "757604391361f15aec21a3a835b21b87b2762919",
+    "git_commit" : "59731e4eae9c393f74680446e24ee991729e761e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2115-g75760439136"
+    "git_tag" : "0.2.0-2116-g59731e4eae9"
   },
   "package_config" : {
     "name" : "openpipeline",

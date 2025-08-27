@@ -12,7 +12,7 @@ random_state: 0
 
 # Filtering options
 min_obs_per_sample: 30
-filter_genes_min_samples: 1
+# filter_genes_min_samples: 123
 # filter_gene_patterns: ["MIR\d+", "AL\d+", "LINC\d+", "AC\d+", "AP\d+"]
 
 # DGEA options
