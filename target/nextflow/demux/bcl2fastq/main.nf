@@ -3277,7 +3277,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl2fastq",
     "viash_version" : "0.9.4",
-    "git_commit" : "7b8762b4ca85f94a48893143c27c4ac70de0a293",
+    "git_commit" : "fd7f4e65d917bb7200f38b1106c36cb7e11c4e1d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
