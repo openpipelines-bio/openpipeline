@@ -3244,7 +3244,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/fastqc",
     "viash_version" : "0.9.4",
-    "git_commit" : "fd7f4e65d917bb7200f38b1106c36cb7e11c4e1d",
+    "git_commit" : "8cd3ccda5e2d1e1f9165b68f952156dd78aa23d7",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
