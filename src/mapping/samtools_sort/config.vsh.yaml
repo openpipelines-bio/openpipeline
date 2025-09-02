@@ -22,7 +22,7 @@ argument_groups:
         name: --input
         required: true
         description: Path to the SAM/BAM/CRAM files containing the mapped reads.
-        example: "input.bam"
+        example: input.bam, input.sam, input.cram
         info:
           orig_arg: in_sam
   - name: Output

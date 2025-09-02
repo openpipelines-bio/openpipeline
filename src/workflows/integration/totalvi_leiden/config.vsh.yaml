@@ -37,7 +37,8 @@ argument_groups:
       - name: "--reference"
         alternatives: ["-r"]
         type: file
-        description: Input h5mu file with reference data to train the TOTALVI model.
+        example: reference.h5mu
+        description: File containing annotated reference data to train the TOTALVI model.
         direction: input
         required: true
   - name: "Outputs"

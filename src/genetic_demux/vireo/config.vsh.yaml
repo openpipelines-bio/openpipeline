@@ -11,6 +11,7 @@ argument_groups:
   - name: "--cell_data"
     type: file
     description: The cell genotype file in VCF format or cellSNP folder with sparse matrices.
+    example: cell_data.vcf
   - name: "--n_donor"
     type: integer
     default: 2
@@ -18,6 +19,7 @@ argument_groups:
   - name: "--vartrix_data"
     type: file
     description: The cell genotype files in vartrix outputs.
+    example: path/to/vatrix_outputs
   - name: "--donor_file"
     type: file
     description: The donor genotype file in VCF format. Please filter the sample and region with bcftools first!
