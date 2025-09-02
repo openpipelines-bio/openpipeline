@@ -79,10 +79,8 @@ workflow run_wf {
           design_formula: "design_formula",
           contrast_column: "contrast_column",
           contrast_values: "contrast_values",
-          filter_genes_min_samples: "filter_genes_min_samples",
           p_adj_threshold: "p_adj_threshold",
           log2fc_threshold: "log2fc_threshold",
-          filter_gene_patterns: "filter_gene_patterns",
           output_dir: "output",
           output_prefix: "output_prefix"
         ],
