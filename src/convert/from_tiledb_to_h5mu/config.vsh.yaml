@@ -1,0 +1,79 @@
+name: from_tiledb_to_h5mu
+namespace: convert
+scope: public
+authors:
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+  - name: Input database
+    description: "Open a tileDB-SOMA database by URI."
+    arguments:
+      - name: "--input_uri"
+        type: string
+        description: "A URI pointing to a TileDB-SOMA database."
+        required: true
+        example: "s3://bucket/path"
+      - name: "--s3_region"
+        description: |
+          Region where the TileDB-SOMA database is hosted.
+        type: string
+        required: false
+      - name: "--endpoint"
+        type: string
+        description: |
+          Custom endpoint to use to connect to S3
+        required: false
+      - name: "--input_modality"
+        required: true
+        type: string
+        description: |
+          TileDB-SOMA measurement to take the input from.
+      - name: "--input_layers"
+        type: string
+        multiple: true
+        required: true
+        description: |
+          Layers to import from TileDB-SOMA database.
+  - name: "MuData output"
+    arguments:
+      - name: "--output"
+        type: file
+        direction: output
+        required: true
+        description: |
+          The output MuData file.
+      - name: "--output_modality"
+        type: string
+        required: true
+        description: |
+          Name of the modality to write the results to.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/tiledb/
+engines:
+  - type: docker
+    image: python:3.12
+    setup:
+      - type: python
+        packages:
+          - tiledbsoma
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+    test_setup:
+      - type: python
+        packages:
+          - moto[server]
+          - boto3
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
+    docker_run_args: ["--env", "AWS_ACCESS_KEY_ID", "--env", "AWS_SECRET_ACCESS_KEY"]
+  - type: nextflow
+    directives:
+      label: [highmem, midcpu]
