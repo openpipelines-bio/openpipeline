@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "differential_expression",
+  "title": "create_pseudobulk",
   "description": "Generation of pseudobulk samples from single-cell transcriptomics data,\nby aggregating raw gene expression counts from individual cells to create \nbulk-like expression profiles suitable for differential expression analysis\nwith methods designed for bulk differential expression analysis.\nNote that this componentonly considers factors as explanatory variables, \nand excludes covariates from the analysis.\n",
   "type": "object",
   "$defs": {
@@ -93,12 +93,6 @@
             "mean"
           ],
           "default": "sum"
-        },
-        "min_obs_per_sample": {
-          "type": "integer",
-          "description": "Minimum number of cells per pseudobulk sample.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `30`. ",
-          "default": 30
         },
         "random_state": {
           "type": "integer",

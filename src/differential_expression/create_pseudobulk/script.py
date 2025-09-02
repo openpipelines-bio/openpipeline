@@ -13,7 +13,6 @@ par = {
     "obs_label": "cell_type",
     "obs_groups": ["treatment", "donor_id", "disease"],
     "obs_cell_count": "n_cells",
-    "min_obs_per_sample": 5,
     "random_state": 0,
     "output": "test.h5mu",
     "output_compression": "gzip",
@@ -92,7 +91,6 @@ def main():
     # Filter pseudobulk samples based on minimum observation count
     logger.info("Filtering pseudobulk samples based on minimum observation count...")
     adata_pb.obs[par["obs_cell_count"]] = count_obs(adata, adata_pb, pseudobulk_cols)
-    adata_pb = adata_pb[adata_pb.obs[par["obs_cell_count"]] > par["min_obs_per_sample"]]
 
     logger.info(
         f"Final dataset: {adata_pb.n_obs} pseudobulk samples, {adata_pb.n_vars} genes"

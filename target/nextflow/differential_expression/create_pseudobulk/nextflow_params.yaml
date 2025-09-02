@@ -7,7 +7,6 @@ obs_label: # please fill in - example: "foo"
 
 # Arguments
 aggregation_method: "sum"
-min_obs_per_sample: 30
 random_state: 0
 obs_cell_count: "n_cells"
 
