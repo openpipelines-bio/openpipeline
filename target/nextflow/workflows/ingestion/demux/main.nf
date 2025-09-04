@@ -3438,7 +3438,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/demux",
     "viash_version" : "0.9.4",
-    "git_commit" : "2e6b8748f45b9452537dc7de7643a5fda7b762bc",
+    "git_commit" : "8b67047dddd3239beb42e49040a1243fd02ff0bf",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
