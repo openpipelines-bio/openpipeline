@@ -146,16 +146,16 @@ def test_scanvi_model(run_component, tmp_path):
     predictions = output_data.mod["rna"].obs["scanvi_pred"]
     probabilities = output_data.mod["rna"].obs["scanvi_proba"]
 
-    assert (
-        predictions.dtype == "category"
-    ), "Calculated predictions should be category dtype"
+    assert predictions.dtype == "category", (
+        "Calculated predictions should be category dtype"
+    )
     assert not all(predictions.isna()), "Not all predictions should be NA"
-    assert (
-        probabilities.dtype == "float32"
-    ), "Calculated probabilities should be float32 dtype"
-    assert all(
-        0 <= value <= 1 for value in probabilities
-    ), ".obs at celltypist_probability has values outside the range [0, 1]"
+    assert probabilities.dtype == "float32", (
+        "Calculated probabilities should be float32 dtype"
+    )
+    assert all(0 <= value <= 1 for value in probabilities), (
+        ".obs at celltypist_probability has values outside the range [0, 1]"
+    )
 
     assert (output_model_path / "model.pt").is_file()
 

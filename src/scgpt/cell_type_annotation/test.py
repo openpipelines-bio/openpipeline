@@ -5,10 +5,10 @@ import subprocess
 import re
 
 
-input_path = f'{meta["resources_dir"]}/Kim2020_Lung_subset_tokenized.h5mu'
-ft_model = f'{meta["resources_dir"]}/best_model.pt'
-model_config = f'{meta["resources_dir"]}/args.json'
-model_vocab = f'{meta["resources_dir"]}/vocab.json'
+input_path = f"{meta['resources_dir']}/Kim2020_Lung_subset_tokenized.h5mu"
+ft_model = f"{meta['resources_dir']}/best_model.pt"
+model_config = f"{meta['resources_dir']}/args.json"
+model_vocab = f"{meta['resources_dir']}/vocab.json"
 
 
 def test_cell_type_inference(run_component, tmp_path):
@@ -44,12 +44,12 @@ def test_cell_type_inference(run_component, tmp_path):
 
     output_mudata = read_h5mu(output_annotation_file)
     output_adata = output_mudata.mod["rna"]
-    assert (
-        "scgpt_pred" in output_adata.obs.keys()
-    ), "scgpt_pred is not present in anndata obs keys"
-    assert (
-        "scgpt_probability" in output_adata.obs.keys()
-    ), "scgpt_probability is not present in anndata obs keys"
+    assert "scgpt_pred" in output_adata.obs.keys(), (
+        "scgpt_pred is not present in anndata obs keys"
+    )
+    assert "scgpt_probability" in output_adata.obs.keys(), (
+        "scgpt_probability is not present in anndata obs keys"
+    )
 
     # run withou dsbn
     output_annotation_file_without_dsbn = (

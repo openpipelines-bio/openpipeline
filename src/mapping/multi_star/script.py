@@ -372,13 +372,13 @@ def main(par, meta):
     """Main function"""
 
     # check input arguments
-    assert len(par["input_id"]) == len(
-        par["input_r1"]
-    ), "--input_r1 should have same length as --input_id"
+    assert len(par["input_id"]) == len(par["input_r1"]), (
+        "--input_r1 should have same length as --input_id"
+    )
     if par["input_r2"]:
-        assert len(par["input_id"]) == len(
-            par["input_r2"]
-        ), "--input_r2 should have same length as --input_id"
+        assert len(par["input_id"]) == len(par["input_r2"]), (
+            "--input_r2 should have same length as --input_id"
+        )
 
     # read config arguments
     with open(meta["config"], "r", encoding="utf-8") as file:
@@ -455,9 +455,9 @@ def main(par, meta):
         print("------------------")
         print(f"Success rate: {math.ceil(pct_succeeded * 100)}%")
 
-        assert (
-            pct_succeeded >= par["min_success_rate"]
-        ), f"Success rate should be at least {math.ceil(par['min_success_rate'] * 100)}%"
+        assert pct_succeeded >= par["min_success_rate"], (
+            f"Success rate should be at least {math.ceil(par['min_success_rate'] * 100)}%"
+        )
 
 
 if __name__ == "__main__":

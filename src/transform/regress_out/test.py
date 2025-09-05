@@ -94,9 +94,9 @@ def test_regress_out_with_layers(run_component, input_h5mu_path, output_h5mu_pat
     rna_in = mu_input.mod["rna"]
     rna_out = mu_output.mod["rna"]
 
-    assert np.mean(rna_in.layers["input"]) != np.mean(
-        rna_out.layers["output"]
-    ), "RNA expression should have changed"
+    assert np.mean(rna_in.layers["input"]) != np.mean(rna_out.layers["output"]), (
+        "RNA expression should have changed"
+    )
 
 
 if __name__ == "__main__":

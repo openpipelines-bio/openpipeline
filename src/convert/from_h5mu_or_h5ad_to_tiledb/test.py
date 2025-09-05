@@ -546,5 +546,49 @@ def test_gene_synbol_column_name_use_index(
         assert expected.equals(var_contents)
 
 
+def test_gene_symbol_column_already_at_correct_location(
+    run_component, sample_1_modality_1_anndata_file, tmp_path
+):
+    output_path = tmp_path / "output"
+    run_component(
+        [
+            "--input",
+            sample_1_modality_1_anndata_file,
+            "--rna_modality",
+            "mod1",
+            "--rna_raw_layer_input",
+            "X",
+            "--rna_var_gene_names_input",
+            "Feat1",
+            "--rna_var_gene_names_output",
+            "Feat1",
+            "--rna_normalized_layer_input",
+            "layer1",
+            "--tiledb_dir",
+            output_path,
+        ]
+    )
+    with tiledbsoma.DataFrame.open(f"{output_path}/ms/rna/var") as obs_arr:
+        var_contents = obs_arr.read().concat()
+        expected_schema = pa.schema(
+            [
+                pa.field("soma_joinid", pa.int64(), nullable=False),
+                pa.field("rna_index", pa.large_string()),
+                pa.field("Feat1", pa.large_string()),
+                pa.field("Shared_feat_col", pa.large_string()),
+            ]
+        )
+        expected = pa.Table.from_arrays(
+            [
+                pa.array([0, 1, 2]),
+                pa.array(["var1", "var2", "overlapping_var_mod1"]),
+                pa.array(["a", "c", "e"]),
+                pa.array(["b", "d", "f"]),
+            ],
+            schema=expected_schema,
+        )
+        assert expected.equals(var_contents)
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
