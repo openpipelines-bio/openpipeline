@@ -9,7 +9,7 @@ import scipy.sparse as sp
 par = {
     "input": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "modality": "rna",
-    "input_layer": "log_normalized",
+    "input_layer": None,
     "obs_label": "cell_type",
     "obs_groups": ["treatment", "donor_id", "disease"],
     "obs_cell_count": "n_cells",
