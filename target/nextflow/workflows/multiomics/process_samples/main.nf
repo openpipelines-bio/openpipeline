@@ -3764,6 +3764,10 @@ meta = [
       {
         "name" : "remove_modality",
         "namespace" : "filter"
+      },
+      {
+        "name" : "assert_test_workflow_2_output",
+        "namespace" : "test_workflows/multiomics/process_samples"
       }
     ]
   },
@@ -3912,7 +3916,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.9.4",
-    "git_commit" : "5dbdd2aa05d0336ae551a3c95acc8c58d3626873",
+    "git_commit" : "a881f17bae8991918e74acd3eb629eee021f5cff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
