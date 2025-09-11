@@ -16,6 +16,10 @@
 
 * `workflows/differential_expression/pseudobulk_deseq2`: Workflow for generating pseudobulk samples from single-cell data followed by DESeq2 differential expression analysis (PR #1044)
 
+## BUG FIX
+
+* `differential_expression/create_pseudobulks`: Fixed the check to verify that the raw counts layer was passed (PR #1072).
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES

@@ -267,7 +267,6 @@ def test_invalid_contrast_column(run_component, tmp_path, pseudobulk_test_data_p
             ]
         )
 
-    # Updated regex to match actual R error format (no square brackets)
     assert re.search(
         r"Missing required columns in metadata: nonexistent_column",
         err.value.stdout.decode("utf-8"),
@@ -296,7 +295,6 @@ def test_invalid_design_column(run_component, tmp_path, pseudobulk_test_data_pat
             ]
         )
 
-    # Updated regex to match actual R error format (no square brackets)
     assert re.search(
         r"Invalid design formula: 'malformed formula'",
         err.value.stdout.decode("utf-8"),

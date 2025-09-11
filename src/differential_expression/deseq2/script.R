@@ -59,17 +59,6 @@ h5mu_to_h5ad <- function(h5mu_path, modality_name) {
   tmp_path
 }
 
-# Check if expression data is normalized (row sums =~ 1)
-is_normalized <- function(layer) {
-  row_sums <- if (is(layer, "sparseMatrix") || is(layer, "dgCMatrix")) {
-    Matrix::rowSums(layer)
-  } else {
-    rowSums(layer)
-  }
-
-  all(abs(row_sums - 1) < 1e-6, na.rm = TRUE)
-}
-
 # Extract design factors from formula
 parse_design_formula <- function(design_formula) {
   if (!grepl("^~\\s*\\w+(\\s*\\+\\s*\\w+)*$", design_formula)) {
@@ -291,10 +280,6 @@ main <- function() {
     mod$layers[[par$input_layer]]
   } else {
     mod$X
-  }
-
-  if (is_normalized(layer)) {
-    stop("Input layer must contain raw counts.")
   }
 
   # Prepare analysis components
