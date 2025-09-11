@@ -21,6 +21,7 @@ argument_groups:
         description: Input h5mu file. Note that this needs to be the exact same dataset as the --scvi_model was trained on.
         direction: input
         required: true
+        example: input.h5mu
       - name: "--modality"
         description: |
           Which modality from the input MuData file to process.
@@ -63,6 +64,7 @@ argument_groups:
       - name: "--output"
         alternatives: ["-o"]
         type: file
+        example: output.h5mu
         description: Output h5mu file.
         direction: output
         required: true
@@ -71,6 +73,7 @@ argument_groups:
         description: Folder where the state of the trained model will be saved to.
         required: false
         direction: output
+        example: path/to/output_model/
       - name: "--obsm_output"
         type: string
         default: "X_scanvi_integrated"

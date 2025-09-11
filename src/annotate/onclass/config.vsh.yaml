@@ -47,14 +47,17 @@ argument_groups:
         type: file
         description: The .nlp.emb file with the cell type embeddings.
         required: true
+        example: cl.ontology.nlp.emb
       - name: "--cl_ontology_file"
         type: file
         description: The .ontology file with the cell type ontology.
         required: true
+        example: cl.ontology
       - name: "--cl_obo_file"
         type: file
         description: The .obo file with the cell type ontology.
         required: true
+        example: cl.obo
 
   - name: Reference
     description: Arguments related to the reference dataset.
