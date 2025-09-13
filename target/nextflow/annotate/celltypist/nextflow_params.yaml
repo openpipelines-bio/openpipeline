@@ -1,0 +1,34 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# input_layer: "foo"
+# input_var_gene_names: "foo"
+input_reference_gene_overlap: 100
+
+# Reference
+# reference: "reference.h5mu"
+# reference_layer: "foo"
+reference_obs_target: "cell_ontology_class"
+# reference_var_gene_names: "foo"
+# reference_var_input: "foo"
+
+# Model arguments
+# model: "pretrained_model.pkl"
+feature_selection: false
+majority_voting: false
+C: 1.0
+max_iter: 1000
+use_SGD: false
+min_prop: 0.0
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+output_obs_predictions: "celltypist_pred"
+output_obs_probability: "celltypist_probability"
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments

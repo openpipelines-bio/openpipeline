@@ -1,0 +1,371 @@
+name: "cellranger_mapping"
+namespace: "workflows/ingestion"
+version: "disk-labels_build"
+authors:
+- name: "Angela Oliveira Pisco"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      github: "aopisco"
+      orcid: "0000-0003-0142-2355"
+      linkedin: "aopisco"
+    organizations:
+    - name: "Insitro"
+      href: "https://insitro.com"
+      role: "Director of Computational Biology"
+    - name: "Open Problems"
+      href: "https://openproblems.bio"
+      role: "Core Member"
+- name: "Robrecht Cannoodt"
+  roles:
+  - "author"
+  - "maintainer"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "robrecht@data-intuitive.com"
+      github: "rcannood"
+      orcid: "0000-0003-3641-729X"
+      linkedin: "robrechtcannoodt"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Science Engineer"
+    - name: "Open Problems"
+      href: "https://openproblems.bio"
+      role: "Core Member"
+- name: "Dries De Maeyer"
+  roles:
+  - "author"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "ddemaeyer@gmail.com"
+      github: "ddemaeyer"
+      linkedin: "dries-de-maeyer-b46a814"
+    organizations:
+    - name: "Janssen Pharmaceuticals"
+      href: "https://www.janssen.com"
+      role: "Principal Scientist"
+argument_groups:
+- name: "Inputs"
+  arguments:
+  - type: "string"
+    name: "--id"
+    description: "ID of the sample."
+    info: null
+    example:
+    - "foo"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--input"
+    description: "The fastq.gz files to align. Can also be a single directory containing\
+      \ fastq.gz files."
+    info: null
+    example:
+    - "sample_S1_L001_R1_001.fastq.gz"
+    - "sample_S1_L001_R2_001.fastq.gz"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--reference"
+    description: "The path to Cell Ranger reference tar.gz file."
+    info: null
+    example:
+    - "reference.tar.gz"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Outputs"
+  arguments:
+  - type: "file"
+    name: "--output_raw"
+    description: "Location where the output folder from Cell Ranger will be stored."
+    info: null
+    example:
+    - "output_dir"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_h5mu"
+    description: "The output from Cell Ranger, converted to h5mu."
+    info: null
+    example:
+    - "output.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--uns_metrics"
+    description: "Name of the .uns slot under which to QC metrics (if any)."
+    info: null
+    default:
+    - "metrics_summary"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_type"
+    description: "Which Cell Ranger output to use for converting to h5mu."
+    info: null
+    default:
+    - "raw"
+    required: false
+    choices:
+    - "raw"
+    - "filtered"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Cell Ranger arguments"
+  arguments:
+  - type: "integer"
+    name: "--expect_cells"
+    description: "Expected number of recovered cells, used as input to cell calling\
+      \ algorithm."
+    info: null
+    example:
+    - 3000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--chemistry"
+    description: "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single\
+      \ Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1\n- SC3Pv2:\
+      \ Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv3LT: Single Cell 3'\
+      \ v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-PE: Single Cell 5' paired-end\n\
+      - SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2\
+      \ or 5'\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry-\
+      \ for more information.\n"
+    info: null
+    default:
+    - "auto"
+    required: false
+    choices:
+    - "auto"
+    - "threeprime"
+    - "fiveprime"
+    - "SC3Pv1"
+    - "SC3Pv2"
+    - "SC3Pv3"
+    - "SC3Pv3LT"
+    - "SC3Pv3HT"
+    - "SC5P-PE"
+    - "SC5P-R2"
+    - "SC-FB"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--secondary_analysis"
+    description: "Whether or not to run the secondary analysis e.g. clustering."
+    info: null
+    default:
+    - false
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--generate_bam"
+    description: "Whether to generate a BAM file."
+    info: null
+    default:
+    - true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--include_introns"
+    description: "Include intronic reads in count (default=true unless --target-panel\
+      \ is specified in which case default=false)"
+    info: null
+    default:
+    - true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "nextflow_script"
+  path: "main.nf"
+  is_executable: true
+  entrypoint: "run_wf"
+- type: "file"
+  path: "utils"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "A pipeline for running Cell Ranger mapping."
+test_resources:
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf"
+- type: "file"
+  path: "cellranger_tiny_fastq"
+info:
+  name: "Cell Ranger mapping"
+  test_dependencies:
+  - name: "cellranger_mapping_test"
+    namespace: "test_workflows/ingestion"
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+dependencies:
+- name: "mapping/cellranger_count"
+  repository:
+    type: "local"
+- name: "mapping/cellranger_count_split"
+  repository:
+    type: "local"
+- name: "convert/from_10xh5_to_h5mu"
+  repository:
+    type: "local"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+build_info:
+  config: "src/workflows/ingestion/cellranger_mapping/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "native"
+  output: "target/nextflow/workflows/ingestion/cellranger_mapping"
+  executable: "target/nextflow/workflows/ingestion/cellranger_mapping/main.nf"
+  viash_version: "0.9.4"
+  git_commit: "946a368c09c4aa854914cf2133be13d4977b8b25"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-2064-g946a368c09c"
+  dependencies:
+  - "target/nextflow/mapping/cellranger_count"
+  - "target/nextflow/mapping/cellranger_count_split"
+  - "target/nextflow/convert/from_10xh5_to_h5mu"
+package_config:
+  name: "openpipeline"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.4"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"disk-labels_build\""
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

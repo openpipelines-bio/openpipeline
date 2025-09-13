@@ -1,0 +1,410 @@
+name: "pseudobulk_deseq2"
+namespace: "workflows/differential_expression"
+version: "disk-labels_build"
+authors:
+- name: "Jakub Majercik"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      email: "jakub@data-intuitive.com"
+      github: "jakubmajercik"
+      linkedin: "jakubmajercik"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Bioinformatics Engineer"
+- name: "Weiwei Schultz"
+  roles:
+  - "contributor"
+  info:
+    role: "Contributor"
+    organizations:
+    - name: "Janssen R&D US"
+      role: "Associate Director Data Sciences"
+argument_groups:
+- name: "Inputs"
+  arguments:
+  - type: "file"
+    name: "--input"
+    description: "Input h5mu file."
+    info: null
+    example:
+    - "/path/to/input_file.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--modality"
+    description: "Which modality from the input MuData file to process."
+    info: null
+    default:
+    - "rna"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--input_layer"
+    description: "Input layer to use. If None, X is used. This layer must contain\
+      \ raw counts."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_cell_group"
+    description: ".obs field containing the variable to group on. Typically this field\
+      \ contains cell groups such as annotated cell types or clusters.\nIf provided,\
+      \ will generate DESeq2 analysis per cell group.\n"
+    info: null
+    example:
+    - "cell_type"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_groups"
+    description: ".obs fields containing the experimental condition(s) to create pseudobulk\
+      \ samples for."
+    info: null
+    example:
+    - "treatment"
+    - "disease"
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "string"
+    name: "--var_gene_names"
+    description: "Name of the .var field that contains gene symbols. If not provided,\
+      \ .var.index will be used.\n"
+    info: null
+    example:
+    - "gene_symbol"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Pseudobulk Options"
+  arguments:
+  - type: "string"
+    name: "--aggregation_method"
+    description: "Method to aggregate the raw counts for pseudoreplicates. Either\
+      \ sum or mean."
+    info: null
+    default:
+    - "sum"
+    required: false
+    choices:
+    - "sum"
+    - "mean"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--random_state"
+    description: "The random seed for sampling."
+    info: null
+    default:
+    - 0
+    required: false
+    min: 0
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Filtering options"
+  arguments:
+  - type: "integer"
+    name: "--min_obs_per_sample"
+    description: "Minimum number of observations per pseudobulk sample."
+    info: null
+    default:
+    - 30
+    required: false
+    min: 1
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--filter_genes_min_samples"
+    description: "Minimum number of samples a gene must be expressed in to be included\
+      \ in the analysis.\nIf None, no filtering is applied.\n"
+    info: null
+    required: false
+    min: 1
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--filter_gene_patterns"
+    description: "List of regex patterns to filter out genes.\nGenes matching any\
+      \ of these patterns will be excluded from the analysis.\n"
+    info: null
+    example:
+    - "MIR\\d+"
+    - "AL\\d+"
+    - "LINC\\d+"
+    - "AC\\d+"
+    - "AP\\d+"
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "DGEA options"
+  arguments:
+  - type: "string"
+    name: "--design_formula"
+    description: "Design formula for DESeq2 analysis in R-style format.\nSpecifies\
+      \ the statistical model to account for various factors.\n"
+    info: null
+    example:
+    - "~ cell_type + disease + treatment"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--contrast_column"
+    description: "Column in the metadata to use for the contrast.\nThis column should\
+      \ contain the conditions to compare.\n"
+    info: null
+    example:
+    - "treatment"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--contrast_values"
+    description: "Values to compare in the contrast column.\nFirst value is baseline,\
+      \ following values are different treatments.\n"
+    info: null
+    example:
+    - "ctrl"
+    - "stim"
+    required: true
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "double"
+    name: "--p_adj_threshold"
+    description: "Adjusted p-value threshold for significance.\nGenes with adjusted\
+      \ p-values below this threshold will be considered significant.\n"
+    info: null
+    default:
+    - 0.05
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--log2fc_threshold"
+    description: "Log2 fold change threshold for significance.\nGenes with absolute\
+      \ log2 fold change above this threshold will be considered significant.\n"
+    info: null
+    default:
+    - 0.0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Outputs"
+  arguments:
+  - type: "file"
+    name: "--output"
+    alternatives:
+    - "-o"
+    description: "Output directory for DESeq2 results, containing one CSV file per\
+      \ cell group (as defined by `--obs_cell_group`) \n"
+    info: null
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_prefix"
+    description: "Prefix for output CSV files: files will be named \"{prefix}_{cell_group}.csv\"\
+      \n"
+    info: null
+    default:
+    - "deseq2_analysis"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "nextflow_script"
+  path: "main.nf"
+  is_executable: true
+  entrypoint: "run_wf"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Performs pseudobulk generation and subsequent differential expression\
+  \ analysis using DESeq2.\n"
+test_resources:
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf"
+- type: "file"
+  path: "TS_Blood_filtered.h5mu"
+info: null
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+dependencies:
+- name: "differential_expression/create_pseudobulk"
+  repository:
+    type: "local"
+- name: "differential_expression/deseq2"
+  repository:
+    type: "local"
+- name: "filter/filter_with_counts"
+  repository:
+    type: "local"
+- name: "filter/filter_with_pattern"
+  repository:
+    type: "local"
+- name: "filter/delimit_counts"
+  repository:
+    type: "local"
+- name: "filter/do_filter"
+  repository:
+    type: "local"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+build_info:
+  config: "src/workflows/differential_expression/pseudobulk_deseq2/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "native"
+  output: "target/nextflow/workflows/differential_expression/pseudobulk_deseq2"
+  executable: "target/nextflow/workflows/differential_expression/pseudobulk_deseq2/main.nf"
+  viash_version: "0.9.4"
+  git_commit: "946a368c09c4aa854914cf2133be13d4977b8b25"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-2064-g946a368c09c"
+  dependencies:
+  - "target/nextflow/differential_expression/create_pseudobulk"
+  - "target/nextflow/differential_expression/deseq2"
+  - "target/nextflow/filter/filter_with_counts"
+  - "target/nextflow/filter/filter_with_pattern"
+  - "target/_private/nextflow/filter/delimit_counts"
+  - "target/nextflow/filter/do_filter"
+package_config:
+  name: "openpipeline"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.4"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"disk-labels_build\""
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"
