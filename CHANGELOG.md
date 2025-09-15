@@ -16,6 +16,8 @@
 
 * `convert/from_10xh5_to_h5mu`: avoid creating copies of data when filtering data (PR #)
 
+* `cluster/leiden`: added `flavor`, `n_iterations` and `seed` arguments (PR #)
+
 ## NEW FUNCTIONALITY
 
 * `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).

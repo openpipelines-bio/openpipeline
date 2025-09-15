@@ -53,6 +53,9 @@ from compress_h5mu import compress_h5mu
 
 _shared_logger_name = "leiden"
 
+if not par["n_iterations"]:
+    par["n_iterations"] = -1
+
 
 # Function to check available space in /dev/shm
 def get_available_shared_memory():
@@ -156,8 +159,9 @@ def run_single_resolution(shared_csr_matrix, obs_names, resolution):
             resolution=resolution,
             key_added=str(resolution),
             obsp="connectivities",
-            flavor="igraph",
-            n_iterations=2,
+            flavor=par["flavor"],
+            n_iterations=par["n_iterations"],
+            random_state=par["seed"],
             copy=False,
         )
         logger.info(f"Returning result for resolution {resolution}")
