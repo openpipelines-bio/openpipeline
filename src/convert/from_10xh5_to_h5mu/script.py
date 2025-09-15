@@ -51,13 +51,14 @@ else:
 
 # might perform basic filtering to get rid of some data
 # applicable when starting from the raw counts
-if par["min_genes"]:
-    logger.info("Filtering with min_genes=%d", par["min_genes"])
-    sc.pp.filter_cells(adata, min_genes=par["min_genes"])
-
-if par["min_counts"]:
-    logger.info("Filtering with min_counts=%d", par["min_counts"])
-    sc.pp.filter_cells(adata, min_counts=par["min_counts"])
+filtering_args = {}
+for filtering_par_name in ("min_genes", "min_counts"):
+    filtering_args[filtering_par_name] = par[filtering_par_name]
+if filtering_args:
+    logger.info(
+        "Filtering with %s", ", ".join("=".join(_) for _ in filtering_args.items())
+    )
+    sc.pp.filter_cells(adata, **filtering_args)
 
 # generate output
 logger.info("Convert to mudata")

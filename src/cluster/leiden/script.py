@@ -4,7 +4,6 @@ import os
 import time
 import logging
 import logging.handlers
-import warnings
 import mudata as mu
 import pandas as pd
 import scanpy as sc
@@ -152,18 +151,17 @@ def run_single_resolution(shared_csr_matrix, obs_names, resolution):
     try:
         connectivities = shared_csr_matrix.to_csr_matrix()
         adata = create_empty_anndata_with_connectivities(connectivities, obs_names)
-        with warnings.catch_warnings():
-            # In the future, the default backend for leiden will be igraph instead of leidenalg.
-            warnings.simplefilter(action="ignore", category=FutureWarning)
-            adata_out = sc.tl.leiden(
-                adata,
-                resolution=resolution,
-                key_added=str(resolution),
-                obsp="connectivities",
-                copy=True,
-            )
+        sc.tl.leiden(
+            adata,
+            resolution=resolution,
+            key_added=str(resolution),
+            obsp="connectivities",
+            flavor="igraph",
+            n_iterations=2,
+            copy=False,
+        )
         logger.info(f"Returning result for resolution {resolution}")
-        return adata_out.obs[str(resolution)]
+        return adata.obs[str(resolution)]
     finally:
         obs_names.shm.close()
         shared_csr_matrix.close()

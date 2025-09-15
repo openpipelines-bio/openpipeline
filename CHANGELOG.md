@@ -4,11 +4,25 @@
 
 * `differential_expression/create_pseudobulks`: Removed functionality to filter psuedobulk samples based on number of aggregated samples threshold, as this functionality is now covered in `filter/delimit_count` (PR #1044).
 
+## MARJOR CHANGES
+
+* `correction/cellbender_remove_background_v0_2` is now deprecated in favor of `correction/cellbender_remove_background` and will be removed in a future release (PR #).
+
+## MINOR CHANGES
+
+* Update scanpy to `1.11.4` (PR #).
+
+* `cluster/leiden` and `transform/log1p`: avoid creating unnecessary copies of the output data (PR #).
+
+* `convert/from_10xh5_to_h5mu`: avoid creating copies of data when filtering data (PR #)
+
 ## NEW FUNCTIONALITY
 
 * `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).
 
 * `filter/delimit_counts`: Turns an .obs column of a MuData file containing count data into a boolean column based on thresholds (PR #1069)
+
+* `dimred/pca`: added possibility to do chunked processing using arguments `chunks` and `chunk_size`. Also added a `seed` argument in order to better control the variability between executions (PR #).
 
 ## EXPERIMENTAL
 

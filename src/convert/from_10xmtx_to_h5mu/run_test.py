@@ -32,7 +32,7 @@ def test_run(run_component, random_h5mu_path):
     # check if file exists
     assert path.exists(output), "No output was created."
 
-    # read it with scanpy
+    # read it with mudata
     data = read_h5mu(output)
 
     # check whether gex was found
