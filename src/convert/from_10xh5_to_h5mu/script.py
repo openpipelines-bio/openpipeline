@@ -10,9 +10,10 @@ par = {
     "uns_metrics": "metrics_cellranger",
     "output": "foo.h5mu",
     "min_genes": None,
-    "min_counts": None,
     "output_compression": "gzip",
+    "min_counts": 1,
 }
+meta = {"resources_dir": "src/utils"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -53,10 +54,12 @@ else:
 # applicable when starting from the raw counts
 filtering_args = {}
 for filtering_par_name in ("min_genes", "min_counts"):
-    filtering_args[filtering_par_name] = par[filtering_par_name]
+    if (arg_value := par[filtering_par_name]) is not None:
+        filtering_args[filtering_par_name] = arg_value
 if filtering_args:
     logger.info(
-        "Filtering with %s", ", ".join("=".join(_) for _ in filtering_args.items())
+        "Filtering with %s",
+        ", ".join(["=".join(map(str, _)) for _ in filtering_args.items()]),
     )
     sc.pp.filter_cells(adata, **filtering_args)
 
