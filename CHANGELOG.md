@@ -16,6 +16,10 @@
 
 * `workflows/differential_expression/pseudobulk_deseq2`: Workflow for generating pseudobulk samples from single-cell data followed by DESeq2 differential expression analysis (PR #1044)
 
+## MINOR CHANGES
+
+* `transform/normalize_total`, `transform/clr`, `transform/log1p`: Add disk resource labels (PR #1073).
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES
