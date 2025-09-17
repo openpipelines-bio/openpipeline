@@ -3240,7 +3240,8 @@ meta = [
       "directives" : {
         "label" : [
           "midmem",
-          "lowcpu"
+          "lowcpu",
+          "highdisk"
         ],
         "tag" : "$id"
       },
@@ -3356,7 +3357,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p",
     "viash_version" : "0.9.4",
-    "git_commit" : "8702c9367eaf40c204e6f99e67c89e86215f4d96",
+    "git_commit" : "95d242b5341725c6ca1273fedc3ee68b752a2f9d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3874,7 +3875,8 @@ meta["defaults"] = [
   },
   "label" : [
     "midmem",
-    "lowcpu"
+    "lowcpu",
+    "highdisk"
   ],
   "tag" : "$id"
 }'''),
