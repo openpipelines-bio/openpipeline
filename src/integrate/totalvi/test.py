@@ -50,5 +50,47 @@ def test_totalvi(run_component, tmp_path):
     assert "X_totalvi_normalized_protein" in output_data.mod["prot"].obsm
 
 
+def test_totalvi_with_covariates(run_component, tmp_path):
+    """Test totalvi with covariate parameters"""
+    output_path = tmp_path / "output_with_covariates.h5mu"
+    ref_model_path = tmp_path / "totalvi_reference_model_cov"
+    query_model_path = tmp_path / "totalvi_query_model_cov"
+
+    run_component(
+        [
+            "--input",
+            input_file,
+            "--reference", 
+            input_file,
+            "--query_proteins_modality",
+            "prot",
+            "--reference_proteins_modality",
+            "prot",
+            "--var_input",
+            "filter_with_hvg",
+            "--obs_categorical_covariate",
+            "filter_with_scrublet",
+            "--obs_continuous_covariate",
+            "scrublet_doublet_score",
+            "--reference_model_path",
+            str(ref_model_path),
+            "--query_model_path", 
+            str(query_model_path),
+            "--max_epochs",
+            "1",
+            "--max_query_epochs",
+            "1",
+            "--output",
+            str(output_path),
+        ]
+    )
+
+    assert output_path.is_file()
+    output_data = mudata.read_h5mu(output_path)
+    assert "X_integrated_totalvi" in output_data.mod["rna"].obsm
+    assert "X_totalvi_normalized_rna" in output_data.mod["rna"].obsm
+    assert "X_totalvi_normalized_protein" in output_data.mod["prot"].obsm
+    
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
