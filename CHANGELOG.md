@@ -20,7 +20,7 @@
 
 * `transform/normalize_total`, `transform/clr`, `transform/log1p`: Add disk resource labels (PR #1073).
 
-* `integrate/totalvi`: Add `--obs_categorical_covariate` and `--obs_continuous_covariate` arguments to include additional covariates during model training (PR #1076).
+* `integrate/totalvi`: Add `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` arguments to include additional covariates during model training (PR #1076).
 
 # openpipelines 3.0.0
 
