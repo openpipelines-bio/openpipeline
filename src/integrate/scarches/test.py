@@ -3,6 +3,7 @@ import pytest
 import mudata
 import subprocess
 import re
+import scvi
 
 ## VIASH START
 meta = {
@@ -15,7 +16,7 @@ input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu"
 reference = f"{meta['resources_dir']}/HLCA_reference_model.zip"
 scvi_model = f"{meta['resources_dir']}/scvi_model"
 scanvi_model = f"{meta['resources_dir']}/scanvi_model"
-
+scanvi_covariate_model = f"{meta['resources_dir']}/scanvi_covariate_model"
 
 @pytest.fixture
 def input_with_batch(tmp_path):
@@ -158,6 +159,84 @@ def test_scanvi_model(run_component, tmp_path):
     )
 
     assert (output_model_path / "model.pt").is_file()
+
+
+def test_scanvi_covariate_model(run_component, tmp_path):
+    output_path = tmp_path / "output.h5mu"
+    output_model_path = tmp_path / "model_output"
+
+    # run component
+    run_component(
+        [
+            "--input",
+            input_file,
+            "--input_obs_batch",
+            "sample_id",
+            "--input_obs_categorical_covariate",
+            "sample_id",
+            "--input_obs_categorical_covariate",
+            "sample_id",
+            "--reference",
+            scanvi_covariate_model,
+            "--modality",
+            "rna",
+            "--output",
+            str(output_path),
+            "--model_output",
+            str(output_model_path),
+            "--max_epochs",
+            "1",
+            "--output_compression",
+            "gzip",
+        ]
+    )
+    assert output_path.is_file()
+
+    # check output
+    output_data = mudata.read_h5mu(output_path)
+    assert "X_integrated_scanvi" in output_data.mod["rna"].obsm
+    assert output_data["rna"].uns["integration_method"] == "SCANVI"
+    assert "scanvi_pred" in output_data.mod["rna"].obs
+    assert "scanvi_proba" in output_data.mod["rna"].obs
+    assert (output_model_path / "model.pt").is_file()
+    model_name = scvi.model.base.BaseModelClass.load_registry(output_model_path)["model_name"]
+    model = getattr(scvi.model, model_name)
+    model_registry = model.load_registry(output_model_path)["setup_args"]
+    assert model_registry["categorical_covariate_keys"] == ["assay", "donor_assay"]
+
+
+def test_raise_with_mismatch_covariates(run_component, tmp_path):
+    output_path = tmp_path / "output.h5mu"
+    output_model_path = tmp_path / "model_output"
+
+    # run component
+    args = [
+        "--input",
+        input_file,
+        "--input_obs_batch",
+        "sample_id",
+        "--input_obs_categorical_covariate",
+        "sample_id",
+        "--reference",
+        scanvi_covariate_model,
+        "--modality",
+        "rna",
+        "--output",
+        str(output_path),
+        "--model_output",
+        str(output_model_path),
+        "--max_epochs",
+        "1",
+        "--output_compression",
+        "gzip",
+    ]
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args)
+    assert re.search(
+        r"ValueError: The number of provided covariates in `--input_obs_categorical_covariate` \(\[\'sample_id\'\]\) does not match the number of covariates used in the provided model \(\[\'assay\', \'donor_assay\'\]\).",
+        err.value.stdout.decode("utf-8"),
+    )
 
 
 def test_raises_with_missing_params(run_component, tmp_path):
