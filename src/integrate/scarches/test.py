@@ -18,6 +18,7 @@ scvi_model = f"{meta['resources_dir']}/scvi_model"
 scanvi_model = f"{meta['resources_dir']}/scanvi_model"
 scanvi_covariate_model = f"{meta['resources_dir']}/scanvi_covariate_model"
 
+
 @pytest.fixture
 def input_with_batch(tmp_path):
     tmp_input_path = tmp_path / "input.h5mu"

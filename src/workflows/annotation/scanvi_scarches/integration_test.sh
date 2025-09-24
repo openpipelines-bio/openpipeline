@@ -14,3 +14,12 @@ nextflow \
   -profile no_publish,docker \
   -c src/workflows/utils/labels_ci.config \
   -c src/workflows/utils/integration_tests.config 
+
+nextflow \
+  run . \
+  -main-script src/workflows/annotation/scanvi_scarches/test.nf \
+  -entry test_wf_2 \
+  -resume \
+  -profile no_publish,docker \
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config 
