@@ -79,7 +79,7 @@ def _validate_obs_metadata_params(model_registry, model_name):
         "labels_key": "input_obs_label",
         "size_factor_key": "input_obs_size_factor",
         "categorical_covariate_keys": "input_obs_categorical_covariate",
-        "continuous_covariate_keys": "input_obs_continuous_covariate"
+        "continuous_covariate_keys": "input_obs_continuous_covariate",
     }
 
     for registry_key, key in registry_par_mapper.items():
@@ -98,7 +98,10 @@ def _validate_obs_metadata_params(model_registry, model_name):
             )
 
         elif model_registry_key and par_key:
-            if key in ["input_obs_categorical_covariate", "input_obs_continuous_covariate"]:
+            if key in [
+                "input_obs_categorical_covariate",
+                "input_obs_continuous_covariate"
+            ]:
                 if len(par_key) != len(model_registry_key):
                     raise ValueError(
                         f"The number of provided covariates in `--{key}` ({par_key}) does not match the number of covariates used in the provided model ({model_registry_key})."
@@ -167,7 +170,7 @@ def _align_query_with_registry(adata_query, model_path):
             query_obs[model_registry["labels_key"]] = adata_query.obs[
                 model_registry["labels_key"]
             ].tolist()
-            
+
     ## covariate keys
     covariate_mappings = {
         "categorical_covariate_keys": "input_obs_categorical_covariate",

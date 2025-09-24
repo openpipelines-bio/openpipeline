@@ -199,7 +199,9 @@ def test_scanvi_covariate_model(run_component, tmp_path):
     assert "scanvi_pred" in output_data.mod["rna"].obs
     assert "scanvi_proba" in output_data.mod["rna"].obs
     assert (output_model_path / "model.pt").is_file()
-    model_name = scvi.model.base.BaseModelClass.load_registry(output_model_path)["model_name"]
+    model_name = scvi.model.base.BaseModelClass.load_registry(output_model_path)[
+        "model_name"
+    ]
     model = getattr(scvi.model, model_name)
     model_registry = model.load_registry(output_model_path)["setup_args"]
     assert model_registry["categorical_covariate_keys"] == ["assay", "donor_assay"]
