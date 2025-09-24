@@ -100,7 +100,7 @@ def _validate_obs_metadata_params(model_registry, model_name):
         elif model_registry_key and par_key:
             if key in [
                 "input_obs_categorical_covariate",
-                "input_obs_continuous_covariate"
+                "input_obs_continuous_covariate",
             ]:
                 if len(par_key) != len(model_registry_key):
                     raise ValueError(
