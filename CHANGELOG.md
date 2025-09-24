@@ -26,6 +26,8 @@
   
 * `workflows/integration`: Surface `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` in the `totalvi_leiden` and `scvi_leiden` workflows (PR #1076).
   
+* `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES
