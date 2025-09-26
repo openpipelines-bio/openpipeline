@@ -10,6 +10,8 @@
 
 * `filter/delimit_counts`: Turns an .obs column of a MuData file containing count data into a boolean column based on thresholds (PR #1069)
 
+* `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078).
+
 ## EXPERIMENTAL
 
 * `differential_expression/deseq2`: Performs differential expression analysis using DESeq2 on bulk or pseudobulk datasets (PR #1044).
