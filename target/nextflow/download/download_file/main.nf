@@ -3230,7 +3230,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/download/download_file",
     "viash_version" : "0.9.4",
-    "git_commit" : "a921e8503913b5a0ea527fdd13d42220de79f385",
+    "git_commit" : "d0f1da8fbd399a1f6a4fd1d7a559a10f7ebad270",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
