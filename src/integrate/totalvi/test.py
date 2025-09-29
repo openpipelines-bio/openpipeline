@@ -60,7 +60,7 @@ def test_totalvi_with_covariates(run_component, tmp_path):
         [
             "--input",
             input_file,
-            "--reference", 
+            "--reference",
             input_file,
             "--query_proteins_modality",
             "prot",
@@ -74,7 +74,7 @@ def test_totalvi_with_covariates(run_component, tmp_path):
             "scrublet_doublet_score",
             "--reference_model_path",
             str(ref_model_path),
-            "--query_model_path", 
+            "--query_model_path",
             str(query_model_path),
             "--max_epochs",
             "1",
@@ -90,7 +90,7 @@ def test_totalvi_with_covariates(run_component, tmp_path):
     assert "X_integrated_totalvi" in output_data.mod["rna"].obsm
     assert "X_totalvi_normalized_rna" in output_data.mod["rna"].obsm
     assert "X_totalvi_normalized_protein" in output_data.mod["prot"].obsm
-    
+
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
