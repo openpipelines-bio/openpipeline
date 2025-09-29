@@ -49,6 +49,7 @@ engines:
         packages: [ libhdf5-dev, python3, python3-pip, python3-dev, python-is-python3 ]
       - type: r
         cran: [ anndata, Seurat, SeuratObject ]
+        bioc: [ scrapper, bit64 ]
         github: scverse/anndataR
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
