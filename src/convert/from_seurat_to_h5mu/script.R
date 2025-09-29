@@ -4,8 +4,8 @@ md <- reticulate::import("mudata")
 
 ### VIASH START
 par <- list(
-  input = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.rds",
-  output = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms_converted.h5mu",
+  input = "./pbmc_1k_protein_v3_mms.rds",
+  output = "./pbmc_1k_protein_v3_mms_converted.h5mu",
   assay = "RNA",
   modality = "rna"
 )
