@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cellranger_count",
+  "description": "Align fastq files using Cell Ranger count.",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "exists": true,
+          "description": "The fastq.gz files to align",
+          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `[\"sample_S1_L001_R1_001.fastq.gz\";\"sample_S1_L001_R2_001.fastq.gz\"]`. "
+        },
+        "reference": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "The path to Cell Ranger reference tar.gz file",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"reference.tar.gz\"`. "
+        },
+        "feature_reference": {
+          "type": "string",
+          "format": "path",
+          "description": "Feature reference CSV file, declaring Feature Barcode constructs and associated barcodes\n",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "The folder to store the alignment results.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`, example: `\"/path/to/output\"`. ",
+          "default": "$id.$key.output"
+        }
+      }
+    },
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "expect_cells": {
+          "type": "integer",
+          "description": "Expected number of recovered cells, used as input to cell calling algorithm.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `3000`. "
+        },
+        "force_cells": {
+          "type": "integer",
+          "description": "Force pipeline to use this number of cells, bypassing cell calling algorithm.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `3000`. "
+        },
+        "chemistry": {
+          "type": "string",
+          "description": "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1 \n  NOTE: this mode cannot be auto-detected",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"auto\"`, choices: ``auto`, `threeprime`, `fiveprime`, `SC3Pv1`, `SC3Pv2`, `SC3Pv3`, `SC3Pv4`, `SC3Pv3LT`, `SC3Pv3HT`, `SC5P-PE-v3`, `SC5P-PE`, `SC5P-R2`, `SC5P-R2-v3`, `SC-FB`, `ARC-v1``. ",
+          "enum": [
+            "auto",
+            "threeprime",
+            "fiveprime",
+            "SC3Pv1",
+            "SC3Pv2",
+            "SC3Pv3",
+            "SC3Pv4",
+            "SC3Pv3LT",
+            "SC3Pv3HT",
+            "SC5P-PE-v3",
+            "SC5P-PE",
+            "SC5P-R2",
+            "SC5P-R2-v3",
+            "SC-FB",
+            "ARC-v1"
+          ],
+          "default": "auto"
+        },
+        "tenx_cloud_token_path": {
+          "type": "string",
+          "format": "path",
+          "description": "The 10x Cloud Analysis user token used to enable cell annotation.",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        },
+        "cell_annotation_model": {
+          "type": "string",
+          "description": "\"Cell annotation model to use",
+          "help_text": "Type: `string`, multiple: `False`, choices: ``auto`, `human_pca_v1_beta`, `mouse_pca_v1_beta``. ",
+          "enum": [
+            "auto",
+            "human_pca_v1_beta",
+            "mouse_pca_v1_beta"
+          ]
+        },
+        "secondary_analysis": {
+          "type": "boolean",
+          "description": "Whether or not to run the secondary analysis e.g",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "generate_bam": {
+          "type": "boolean",
+          "description": "Whether to generate a BAM file.",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
+        },
+        "include_introns": {
+          "type": "boolean",
+          "description": "Include intronic reads in count.",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
+        },
+        "r1_length": {
+          "type": "integer",
+          "description": "Hard trim the input Read 1 to this length before analysis",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "r2_length": {
+          "type": "integer",
+          "description": "Hard trim the input Read 2 to this length before analysis",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "lanes": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Only use FASTQs from selected lanes.",
+          "help_text": "Type: `integer`, multiple: `True`, example: `[1;2;3]`. "
+        },
+        "library_compatibility_check": {
+          "type": "boolean",
+          "description": "Whether to check for barcode compatibility between libraries.\n",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
+        },
+        "min_crispr_umi": {
+          "type": "integer",
+          "description": "Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection.\nIf a lower or higher sensitivity is desired for detection, this value can be customized\naccording to specific experimental needs",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}
