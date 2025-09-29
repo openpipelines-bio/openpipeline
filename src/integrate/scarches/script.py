@@ -178,8 +178,10 @@ def _align_query_with_registry(adata_query, model_path):
     }
     for registry_key, par_key in covariate_mappings.items():
         if model_registry.get(registry_key):
-            for i, covariate in enumerate(model_registry[registry_key]):
-                query_obs[covariate] = adata_query.obs[par[par_key][i]].tolist()
+            for covariate, par_covariate in zip(
+                model_registry[registry_key], par[par_key]
+            ):
+                query_obs[covariate] = adata_query.obs[par_covariate].tolist()
 
     obs = pd.DataFrame(query_obs, index=obs_index)
     var = pd.DataFrame(index=var_index)
