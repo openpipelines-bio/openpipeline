@@ -456,9 +456,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component report mermaid"
-LABEL org.opencontainers.image.created="2025-09-28T03:00:10Z"
+LABEL org.opencontainers.image.created="2025-09-29T02:57:20Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ed4135b4594c8d1950fef6a2f5ccae80dc171f2c"
+LABEL org.opencontainers.image.revision="c016c562b5601133e7b2f406a42a77a82ddb0f82"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

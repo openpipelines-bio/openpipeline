@@ -3384,7 +3384,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_multisample",
     "viash_version" : "0.9.4",
-    "git_commit" : "ed4135b4594c8d1950fef6a2f5ccae80dc171f2c",
+    "git_commit" : "c016c562b5601133e7b2f406a42a77a82ddb0f82",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
