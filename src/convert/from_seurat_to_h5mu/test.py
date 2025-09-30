@@ -1,7 +1,9 @@
+import subprocess
 import sys
 import pytest
 import mudata as mu
 import numpy as np
+import re
 
 ## VIASH START
 meta = {
@@ -209,6 +211,27 @@ def test_custom_mapping(run_component, random_h5mu_path):
     assert all(key in list(conv_adata.uns) for key in ["uns1", "uns2"]), (
         "uns keys differ"
     )
+
+
+def test_invalid_json_mapping(run_component, random_h5mu_path):
+    conv_mdata_path = random_h5mu_path()
+
+    cmd_pars = [
+        "--input",
+        ori_seurat_path,
+        "--layers_mapping",
+        "{'layer1': 'X'}",
+        "--output",
+        conv_mdata_path,
+    ]
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(cmd_pars)
+
+    assert re.search(
+        r"Could not parse json from argument layers_mapping",
+        err.value.stdout.decode("utf-8"),
+    ), f"Expected error message not found: {err.value.stdout.decode('utf-8')}"
 
 
 if __name__ == "__main__":

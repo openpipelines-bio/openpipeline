@@ -4,8 +4,8 @@ md <- reticulate::import("mudata")
 
 ### VIASH START
 par <- list(
-  input = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.rds",
-  output = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms_converted.h5mu",
+  input = "./pbmc_1k_protein_v3_mms.rds",
+  output = "./pbmc_1k_protein_v3_mms_converted.h5mu",
   assay = "RNA",
   modality = "rna",
   x_mapping = NULL,
@@ -23,20 +23,23 @@ par <- list(
 process_mapping_param <- function(param_key) {
   param_value <- par[[param_key]]
   if (is.null(param_value)) {
-    return(NULL)
+    NULL
   } else if (tolower(param_value) == "true") {
-    return(TRUE)
+    TRUE
   } else if (tolower(param_value) == "false") {
-    return(FALSE)
+    FALSE
   } else {
     # Try to parse as JSON for named character vector
-    tryCatch({
-      return(jsonlite::fromJSON(param_value))
-    }, error = function(e) {
-      cat("Could not parse json from argument", param_key, "\n")
-      cat("Provided value:", param_value, "\n")
-      stop(e)
-    })
+    tryCatch(
+      {
+        return(jsonlite::fromJSON(param_value))
+      },
+      error = function(e) {
+        cat("Could not parse json from argument", param_key, "\n")
+        cat("Provided value:", param_value, "\n")
+        stop(e)
+      }
+    )
   }
 }
 
