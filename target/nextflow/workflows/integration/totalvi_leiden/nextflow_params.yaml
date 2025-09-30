@@ -13,6 +13,9 @@ reference: # please fill in - example: "path/to/file"
 
 # General TotalVI Options
 obs_batch: "sample_id"
+# obs_size_factor: "foo"
+# obs_categorical_covariate: ["foo"]
+# obs_continuous_covariate: ["foo"]
 max_epochs: 400
 max_query_epochs: 200
 weight_decay: 0.0

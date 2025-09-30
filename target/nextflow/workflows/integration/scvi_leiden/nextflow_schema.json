@@ -104,6 +104,27 @@
           "description": "Column name discriminating between your batches.",
           "help_text": "Type: `string`, multiple: `False`, required. "
         },
+        "obs_size_factor": {
+          "type": "string",
+          "description": "Key in adata.obs for size factor information",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "obs_categorical_covariate": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keys in adata.obs that correspond to categorical data",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "obs_continuous_covariate": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keys in adata.obs that correspond to continuous data",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
         "obsm_output": {
           "type": "string",
           "description": "In which .obsm slot to store the resulting integrated embedding.",

@@ -15,6 +15,9 @@ obsp_neighbor_connectivities: "scvi_integration_connectivities"
 
 # Scvi integration options
 obs_batch: # please fill in - example: "foo"
+# obs_size_factor: "foo"
+# obs_categorical_covariate: ["foo"]
+# obs_continuous_covariate: ["foo"]
 obsm_output: "X_scvi_integrated"
 # var_input: "foo"
 # early_stopping: true
