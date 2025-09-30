@@ -1,7 +1,6 @@
 import sys
 import mudata as mu
 import anndata as ad
-from anndata import AnnData  # For type hints
 import scvi
 from scipy.sparse import issparse
 from scanpy._utils import check_nonnegative_integers
@@ -92,8 +91,8 @@ def consolidate_modalities_to_anndata(
     hvg_var_key: str | None = None,
 ) -> ad.AnnData:
     """TOTALVI requires data to be stored in AnnData format with protein counts in .obsm slot. This function performs the conversion"""
-    adata: AnnData = mdata.mod[rna_modality].copy()
 
+    adata = mdata.mod[rna_modality].copy()
     if hvg_var_key:
         adata = subset_vars(adata, subset_col=hvg_var_key)
 
@@ -216,6 +215,8 @@ def main():
         categorical_covariate_keys=par["obs_categorical_covariate"],
         continuous_covariate_keys=par["obs_continuous_covariate"],
     )
+
+    a = 1
 
     # # mdata_query = mudata.read(par["input"].strip())
     # # adata_query = extract_proteins_to_anndata(
