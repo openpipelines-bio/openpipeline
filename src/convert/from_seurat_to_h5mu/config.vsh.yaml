@@ -6,23 +6,82 @@ description: |
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]
-arguments:
+argument_groups:
+- name: Inputs
+  arguments:
   - name: "--input"
     alternatives: ["-i"]
     type: file
     description: Input Seurat file
     direction: input
     required: true
-    example: input.rds
+    example: input.rds  
+  - name: "--assay"
+    type: string
+    default: "RNA"
+    description: Name of the assay to be mapped.
+
+- name: Conversion parameters
+  arguments:
+  - name: "--layers_mapping"
+    type: boolean
+    default: True
+    description: |
+      Whether to map Seurat's Layers to AnnData layers. 
+      If True, all layers will be mapped by name. If False, no layers will be mapped.
+  - name: "--obs_mapping"
+    type: boolean
+    default: True
+    description: |
+      Whether to map Seurat's observation columns to AnnData obs columns. 
+      If True, all observation columns will be mapped by name. If False, no columns will be mapped.
+  - name: "--var_mapping"
+    type: boolean
+    default: True
+    description: |
+      Whether to map Seurat's feature rows to AnnData var columns.
+      If True, all features will be mapped by name. If False, no features will be mapped.
+  - name: "--uns_mapping"
+    type: boolean
+    default: True
+    description: |
+      Whether to map Seurat's Misc to AnnData uns. 
+      If True, all fields will be mapped by name. If False, no fields will be mapped.
+  - name: "--obsm_mapping"
+    type: boolean
+    default: True
+    description: |
+      Whether to map Seurat's Embeddings to AnnData obsm fields. 
+      If True, all fields will be mapped by name. If False, no fields will be mapped.
+  - name: "--varm_mapping"
+    type: boolean
+    default: True
+    description: |
+      Whether to map Seurat's Loadings to AnnData varm fields. 
+      If True, all fields will be mapped by name. If False, no fields will be mapped.
+  - name: "--obsp_mapping"
+    type: boolean
+    default: True
+    description: |
+      Whether to map Seurat's Graphs to AnnData obsp fields.
+      If True, all fields will be mapped by name. If False, no fields will be mapped.
+  - name: "--varp_mapping"
+    type: boolean
+    default: True
+    description: |
+      Whether to map Seurat's Misc to AnnData varp fields. 
+      If True, all fields will be mapped by name. If False, no fields will be mapped.
+  - name: "--x_mapping"
+    type: string
+    description: A string specifying Seurat's Layer to mapped to the .X slot, If not provided, no data will be copied to the .X slot.
+
+- name: Outputs
+  arguments:
   - name: "--modality"
     type: string
     default: "rna"
     required: false
-    description: Modality to be converted if the input file is an h5mu file.
-  - name: "--assay"
-    type: string
-    default: "RNA"
-    description: Name of the assay to be created.
+    description: Name of the modality to be created.
   - name: "--output"
     alternatives: ["-o"]
     type: file

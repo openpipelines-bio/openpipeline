@@ -50,6 +50,7 @@ def test_run(run_component, random_h5mu_path):
     assert np.allclose(conv_adata.layers["X"].todense(), ori_adata.X.todense()), (
         "X layer differs"
     )
+    assert conv_adata.X is None, "X layer was created"
     assert np.allclose(
         conv_adata.layers["log_normalized"].todense(),
         ori_adata.layers["log_normalized"].todense(),
@@ -113,6 +114,59 @@ def test_run(run_component, random_h5mu_path):
 
     assert ori_adata.shape == conv_adata.shape, "shape differs"
     assert ori_adata.uns.keys() == conv_adata.uns.keys(), "uns keys differ"
+
+
+def test_x_mapping(run_component, random_h5mu_path):
+    conv_mdata_path = random_h5mu_path()
+
+    cmd_pars = [
+        "--input",
+        ori_seurat_path,
+        "--x_mapping",
+        "X",
+        "--output",
+        conv_mdata_path,
+    ]
+    run_component(cmd_pars)
+
+    assert conv_mdata_path.is_file(), "No output was created."
+
+    conv_adata = mu.read_h5ad(conv_mdata_path, mod="rna")
+    assert all(key in list(conv_adata.layers) for key in ["X", "log_normalized"]), (
+        "layers keys differ"
+    )
+    assert conv_adata.X is not None, "X is None"
+
+
+def test_conversion_argumens(run_component, random_h5mu_path):
+    conv_mdata_path = random_h5mu_path()
+
+    cmd_pars = [
+        "--input",
+        ori_seurat_path,
+        "--layers_mapping",
+        "False",
+        "--obs_mapping",
+        "False",
+        "--var_mapping",
+        "False",
+        "--obsm_mapping",
+        "False",
+        "--uns_mapping",
+        "False",
+        "--output",
+        conv_mdata_path,
+    ]
+    run_component(cmd_pars)
+
+    assert conv_mdata_path.is_file(), "No output was created."
+
+    conv_adata = mu.read_h5ad(conv_mdata_path, mod="rna")
+    assert conv_adata.obs.shape[1] == 0, "obs was converted"
+    assert conv_adata.var.shape[1] == 0, "var was converted"
+    assert len(conv_adata.obsm) == 0, "obsm was converted"
+    assert len(conv_adata.uns) == 0, "uns was converted"
+    assert len(conv_adata.layers) == 0, "layers were converted"
 
 
 if __name__ == "__main__":
