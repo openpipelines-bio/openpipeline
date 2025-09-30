@@ -169,5 +169,47 @@ def test_conversion_argumens(run_component, random_h5mu_path):
     assert len(conv_adata.layers) == 0, "layers were converted"
 
 
+def test_custom_mapping(run_component, random_h5mu_path):
+    conv_mdata_path = random_h5mu_path()
+
+    cmd_pars = [
+        "--input",
+        ori_seurat_path,
+        "--layers_mapping",
+        '{"layer1": "X", "layer2": "log_normalized"}',
+        "--obs_mapping",
+        '{"obs1": "filter_with_counts", "obs2": "filter_with_scrublet"}',
+        "--var_mapping",
+        '{"var1": "gene_symbol", "var2": "feature_types"}',
+        "--obsm_mapping",
+        '{"obsm1": "X_pca", "obsm2": "X_umap"}',
+        "--uns_mapping",
+        '{"uns1": "log1p", "uns2": "neighbors"}',
+        "--output",
+        conv_mdata_path,
+    ]
+    run_component(cmd_pars)
+
+    assert conv_mdata_path.is_file(), "No output was created."
+
+    conv_adata = mu.read_h5ad(conv_mdata_path, mod="rna")
+
+    assert all(key in list(conv_adata.layers) for key in ["layer1", "layer2"]), (
+        "layers keys differ"
+    )
+    assert all(key in list(conv_adata.obs) for key in ["obs1", "obs2"]), (
+        "obs keys differ"
+    )
+    assert all(key in list(conv_adata.var) for key in ["var1", "var2"]), (
+        "var keys differ"
+    )
+    assert all(key in list(conv_adata.obsm) for key in ["obsm1", "obsm2"]), (
+        "obsm keys differ"
+    )
+    assert all(key in list(conv_adata.uns) for key in ["uns1", "uns2"]), (
+        "uns keys differ"
+    )
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
