@@ -9,6 +9,7 @@ from scanpy._utils import check_nonnegative_integers
 ### VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+    "allow_missing_protein_data": False,
     "rna_modality": "rna",
     "protein_modality": "prot",
     "input_layer": None,
@@ -32,6 +33,8 @@ par = {
     "max_query_epochs": 1,
     "weight_decay": 0.0,
 }
+
+meta = {"resources_dir": "src/utils/"}
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -96,21 +99,29 @@ def consolidate_modalities_to_anndata(
     if hvg_var_key:
         adata = subset_vars(adata, subset_col=hvg_var_key)
 
-    adata = set_var_index(adata, var_names=par["var_gene_names"])
+    adata = set_var_index(adata, var_name=par["var_gene_names"])
 
     if protein_modality in mdata.mod:
         # Put the proteins modality into .obsm slot
         prot_adata = mdata.mod[protein_modality].copy()
+        set_var_index(prot_adata, var_name=par["protein_names"])
+
         protein_layer = prot_adata.layers[input_layer] if input_layer else prot_adata.X
 
         if issparse(protein_layer):
             protein_layer = protein_layer.toarray()
 
         adata.obsm[protein_modality] = protein_layer
+        adata.uns[protein_modality] = prot_adata.var_names
     else:
-        logger.warning(
-            f"Protein modality '{protein_modality}' not found in the MuData object. Proceeding without protein data."
-        )
+        if par["allow_missing_protein_data"]:
+            logger.warning(
+                f"Protein modality '{protein_modality}' not found in the MuData object. Proceeding without protein data."
+            )
+        else:
+            raise ValueError(
+                f"Protein modality '{protein_modality}' not found in the MuData object."
+            )
 
     return adata
 
@@ -206,11 +217,13 @@ def main():
         par["n_var_min_count"],
     )
 
-    scvi.model.TOTALVI.setup_anndata(
+    model = scvi.model.TOTALVI.setup_anndata(
         adata,
         batch_key=par["obs_batch"],
         layer=par["input_layer"],
         protein_expression_obsm_key=par["protein_modality"],
+        protein_names_uns_key=par["protein_modality"],
+        panel_key=par["protein_panel_key"],
         size_factor_key=par["obs_size_factor"],
         categorical_covariate_keys=par["obs_categorical_covariate"],
         continuous_covariate_keys=par["obs_continuous_covariate"],
