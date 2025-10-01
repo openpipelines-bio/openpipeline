@@ -10,7 +10,7 @@
 
 * `filter/delimit_counts`: Turns an .obs column of a MuData file containing count data into a boolean column based on thresholds (PR #1069)
 
-* `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078).
+* `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078, #1079).
 
 ## EXPERIMENTAL
 
@@ -22,6 +22,10 @@
 
 * `transform/normalize_total`, `transform/clr`, `transform/log1p`: Add disk resource labels (PR #1073).
 
+* `integrate/totalvi`: Add `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` arguments to include additional covariates during model training (PR #1076).
+  
+* `workflows/integration`: Surface `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` in the `totalvi_leiden` and `scvi_leiden` workflows (PR #1076).
+  
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES

@@ -3258,9 +3258,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bd_to_10x_molecular_barcode_tags",
     "viash_version" : "0.9.4",
-    "git_commit" : "ff8219fc9ccfa6c844f84e69a9695b9669482d72",
+    "git_commit" : "66b45727a19bfa7f6f90b9484cc268c22fd11495",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2067-gff8219fc9cc"
+    "git_tag" : "0.2.0-2068-g66b45727a19"
   },
   "package_config" : {
     "name" : "openpipeline",

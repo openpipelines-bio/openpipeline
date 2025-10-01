@@ -454,9 +454,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component integrate totalvi"
-LABEL org.opencontainers.image.created="2025-09-29T09:56:16Z"
+LABEL org.opencontainers.image.created="2025-10-01T11:38:22Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ff8219fc9ccfa6c844f84e69a9695b9669482d72"
+LABEL org.opencontainers.image.revision="66b45727a19bfa7f6f90b9484cc268c22fd11495"
 LABEL org.opencontainers.image.version="seurat-to-h5mu_build"
 
 VIASHDOCKER
@@ -618,6 +618,33 @@ function ViashHelp {
   echo "        type: string"
   echo "        default: sample_id"
   echo "        Column name discriminating between your batches."
+  echo ""
+  echo "    --obs_size_factor"
+  echo "        type: string"
+  echo "        Key in adata.obs for size factor information. Instead of using library"
+  echo "        size as a size factor,"
+  echo "        the provided size factor column will be used as offset in the mean of"
+  echo "        the likelihood."
+  echo "        Assumed to be on linear scale."
+  echo ""
+  echo "    --obs_categorical_covariate"
+  echo "        type: string, multiple values allowed"
+  echo "        Keys in adata.obs that correspond to categorical data. These covariates"
+  echo "        can be added in"
+  echo "        addition to the batch covariate and are also treated as nuisance factors"
+  echo "        (i.e., the model tries to minimize their effects on the latent space)."
+  echo "        Thus, these should not be used for biologically-relevant factors that"
+  echo "        you do _not_ want to correct for."
+  echo ""
+  echo "    --obs_continuous_covariate"
+  echo "        type: string, multiple values allowed"
+  echo "        Keys in adata.obs that correspond to continuous data. These covariates"
+  echo "        can be added in"
+  echo "        addition to the batch covariate and are also treated as nuisance factors"
+  echo "        (i.e., the model tries to minimize their effects on the latent space)."
+  echo "        Thus, these should not be"
+  echo "        used for biologically-relevant factors that you do _not_ want to correct"
+  echo "        for."
   echo ""
   echo "    --var_input"
   echo "        type: string"
@@ -829,6 +856,51 @@ while [[ $# -gt 0 ]]; do
         --obs_batch=*)
             [ -n "$VIASH_PAR_OBS_BATCH" ] && ViashError Bad arguments for option \'--obs_batch=*\': \'$VIASH_PAR_OBS_BATCH\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBS_BATCH=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --obs_size_factor)
+            [ -n "$VIASH_PAR_OBS_SIZE_FACTOR" ] && ViashError Bad arguments for option \'--obs_size_factor\': \'$VIASH_PAR_OBS_SIZE_FACTOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBS_SIZE_FACTOR="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_size_factor. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --obs_size_factor=*)
+            [ -n "$VIASH_PAR_OBS_SIZE_FACTOR" ] && ViashError Bad arguments for option \'--obs_size_factor=*\': \'$VIASH_PAR_OBS_SIZE_FACTOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBS_SIZE_FACTOR=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --obs_categorical_covariate)
+            if [ -z "$VIASH_PAR_OBS_CATEGORICAL_COVARIATE" ]; then
+              VIASH_PAR_OBS_CATEGORICAL_COVARIATE="$2"
+            else
+              VIASH_PAR_OBS_CATEGORICAL_COVARIATE="$VIASH_PAR_OBS_CATEGORICAL_COVARIATE;""$2"
+            fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_categorical_covariate. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --obs_categorical_covariate=*)
+            if [ -z "$VIASH_PAR_OBS_CATEGORICAL_COVARIATE" ]; then
+              VIASH_PAR_OBS_CATEGORICAL_COVARIATE=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_OBS_CATEGORICAL_COVARIATE="$VIASH_PAR_OBS_CATEGORICAL_COVARIATE;"$(ViashRemoveFlags "$1")
+            fi
+            shift 1
+            ;;
+        --obs_continuous_covariate)
+            if [ -z "$VIASH_PAR_OBS_CONTINUOUS_COVARIATE" ]; then
+              VIASH_PAR_OBS_CONTINUOUS_COVARIATE="$2"
+            else
+              VIASH_PAR_OBS_CONTINUOUS_COVARIATE="$VIASH_PAR_OBS_CONTINUOUS_COVARIATE;""$2"
+            fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_continuous_covariate. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --obs_continuous_covariate=*)
+            if [ -z "$VIASH_PAR_OBS_CONTINUOUS_COVARIATE" ]; then
+              VIASH_PAR_OBS_CONTINUOUS_COVARIATE=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_OBS_CONTINUOUS_COVARIATE="$VIASH_PAR_OBS_CONTINUOUS_COVARIATE;"$(ViashRemoveFlags "$1")
+            fi
             shift 1
             ;;
         --var_input)
@@ -1431,6 +1503,9 @@ par = {
   'reference_proteins_modality': $( if [ ! -z ${VIASH_PAR_REFERENCE_PROTEINS_MODALITY+x} ]; then echo "r'${VIASH_PAR_REFERENCE_PROTEINS_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_batch': $( if [ ! -z ${VIASH_PAR_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'obs_size_factor': $( if [ ! -z ${VIASH_PAR_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_OBS_SIZE_FACTOR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'obs_categorical_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CATEGORICAL_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CATEGORICAL_COVARIATE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CONTINUOUS_COVARIATE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1562,6 +1637,9 @@ def map_query_to_reference(
         adata_reference,
         batch_key=par["obs_batch"],
         protein_expression_obsm_key=par["reference_proteins_modality"],
+        size_factor_key=par["obs_size_factor"],
+        categorical_covariate_keys=par["obs_categorical_covariate"],
+        continuous_covariate_keys=par["obs_continuous_covariate"],
     )
 
     if is_retraining_model():

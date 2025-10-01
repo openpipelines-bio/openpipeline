@@ -8,6 +8,9 @@ reference_modality: "rna"
 reference_proteins_modality: "prot"
 # input_layer: "foo"
 obs_batch: "sample_id"
+# obs_size_factor: "foo"
+# obs_categorical_covariate: ["foo"]
+# obs_continuous_covariate: ["foo"]
 # var_input: "foo"
 
 # Outputs

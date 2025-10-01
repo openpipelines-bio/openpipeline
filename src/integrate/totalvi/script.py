@@ -21,6 +21,9 @@ par = {
     "force_retrain": False,
     "input_layer": None,
     "obs_batch": "sample_id",
+    "obs_size_factor": None,
+    "obs_categorical_covariate": None,
+    "obs_continuous_covariate": None,
     "var_input": None,
     "output": "foo.h5mu",
     "obsm_output": "X_integrated_totalvi",
@@ -128,6 +131,9 @@ def map_query_to_reference(
         adata_reference,
         batch_key=par["obs_batch"],
         protein_expression_obsm_key=par["reference_proteins_modality"],
+        size_factor_key=par["obs_size_factor"],
+        categorical_covariate_keys=par["obs_categorical_covariate"],
+        continuous_covariate_keys=par["obs_continuous_covariate"],
     )
 
     if is_retraining_model():

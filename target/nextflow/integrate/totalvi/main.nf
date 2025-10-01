@@ -3164,6 +3164,33 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--obs_size_factor",
+          "description" : "Key in adata.obs for size factor information. Instead of using library size as a size factor,\nthe provided size factor column will be used as offset in the mean of the likelihood.\nAssumed to be on linear scale.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--obs_categorical_covariate",
+          "description" : "Keys in adata.obs that correspond to categorical data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space).\nThus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--obs_continuous_covariate",
+          "description" : "Keys in adata.obs that correspond to continuous data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space). Thus, these should not be\nused for biologically-relevant factors that you do _not_ want to correct for.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--var_input",
           "description" : ".var column containing highly variable genes. By default, do not subset genes.",
           "required" : false,
@@ -3459,9 +3486,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi",
     "viash_version" : "0.9.4",
-    "git_commit" : "ff8219fc9ccfa6c844f84e69a9695b9669482d72",
+    "git_commit" : "66b45727a19bfa7f6f90b9484cc268c22fd11495",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2067-gff8219fc9cc"
+    "git_tag" : "0.2.0-2068-g66b45727a19"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3540,6 +3567,9 @@ par = {
   'reference_proteins_modality': $( if [ ! -z ${VIASH_PAR_REFERENCE_PROTEINS_MODALITY+x} ]; then echo "r'${VIASH_PAR_REFERENCE_PROTEINS_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_batch': $( if [ ! -z ${VIASH_PAR_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_size_factor': $( if [ ! -z ${VIASH_PAR_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_OBS_SIZE_FACTOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_categorical_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CATEGORICAL_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CATEGORICAL_COVARIATE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CONTINUOUS_COVARIATE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3671,6 +3701,9 @@ def map_query_to_reference(
         adata_reference,
         batch_key=par["obs_batch"],
         protein_expression_obsm_key=par["reference_proteins_modality"],
+        size_factor_key=par["obs_size_factor"],
+        categorical_covariate_keys=par["obs_categorical_covariate"],
+        continuous_covariate_keys=par["obs_continuous_covariate"],
     )
 
     if is_retraining_model():

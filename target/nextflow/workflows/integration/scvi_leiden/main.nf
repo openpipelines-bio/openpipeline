@@ -3201,6 +3201,33 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--obs_size_factor",
+          "description" : "Key in adata.obs for size factor information. Instead of using library size as a size factor,\nthe provided size factor column will be used as offset in the mean of the likelihood.\nAssumed to be on linear scale.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--obs_categorical_covariate",
+          "description" : "Keys in adata.obs that correspond to categorical data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space).\nThus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--obs_continuous_covariate",
+          "description" : "Keys in adata.obs that correspond to continuous data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space). Thus, these should not be\nused for biologically-relevant factors that you do _not_ want to correct for.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--obsm_output",
           "description" : "In which .obsm slot to store the resulting integrated embedding.",
           "default" : [
@@ -3506,9 +3533,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scvi_leiden",
     "viash_version" : "0.9.4",
-    "git_commit" : "ff8219fc9ccfa6c844f84e69a9695b9669482d72",
+    "git_commit" : "66b45727a19bfa7f6f90b9484cc268c22fd11495",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2067-gff8219fc9cc"
+    "git_tag" : "0.2.0-2068-g66b45727a19"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3574,6 +3601,9 @@ workflow run_wf {
       fromState: [
         "input": "input",
         "obs_batch": "obs_batch",
+        "obs_size_factor": "obs_size_factor",
+        "obs_categorical_covariate": "obs_categorical_covariate",
+        "obs_continuous_covariate": "obs_continuous_covariate",
         "obsm_output": "obsm_output",
         "var_input": "var_input",
         "early_stopping": "early_stopping",
