@@ -1,0 +1,24 @@
+# Inputs
+input: # please fill in - example: "input.rds"
+assay: "RNA"
+
+# Conversion parameters
+layers_mapping: "True"
+obs_mapping: "True"
+var_mapping: "True"
+uns_mapping: "True"
+obsm_mapping: "True"
+varm_mapping: "True"
+obsp_mapping: "True"
+varp_mapping: "True"
+# x_mapping: "foo"
+
+# Outputs
+modality: "rna"
+# output: "$id.$key.output.h5mu"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments
