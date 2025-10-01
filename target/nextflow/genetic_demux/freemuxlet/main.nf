@@ -3484,7 +3484,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/freemuxlet",
     "viash_version" : "0.9.4",
-    "git_commit" : "32fd1a9a95cdb152814c59b3438f6092e2115349",
+    "git_commit" : "05ca7057090ffd31121269573b636d248975dc5b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
