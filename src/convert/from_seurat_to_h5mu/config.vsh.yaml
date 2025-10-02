@@ -106,6 +106,13 @@ argument_groups:
     direction: output
     required: true
     example: output.h5mu
+  - name: "--output_compression"
+    type: string
+    example: "gzip"
+    required: false
+    choices: ["gzip", "lzf"]
+    description: |
+      The compression algorithm to use for the output h5mu file.
 resources:
   - type: r_script
     path: script.R
