@@ -105,7 +105,7 @@ rm "${OUT}/tmp_pretrained_models_Blood_ts.tar.gz"
 find "${OUT}/Pretrained_model" ! -name "example_file_model*" -type f -exec rm -f {} +
 mv "${OUT}/Pretrained_model" "${OUT}/onclass_model"
 
-echo "> Creating SCVI model"
+echo "> Creating simple SCVI model"
 viash run src/integrate/scvi/config.vsh.yaml --engine docker -- \
     --input "${OUT}/TS_Blood_filtered.h5mu" \
     --obs_batch "donor_id" \
@@ -116,8 +116,21 @@ viash run src/integrate/scvi/config.vsh.yaml --engine docker -- \
     --n_obs_min_count 10 \
     --n_var_min_count 10
 
-echo "> Creating SCANVI model"
-viash run src/integrate/scanvi/config.vsh.yaml --engine docker -- \
+echo "> Creating SCVI model with covariates"
+viash run src/integrate/scvi/config.vsh.yaml --engine docker -- \
+    --input "${OUT}/TS_Blood_filtered.h5mu" \
+    --obs_batch "donor_id" \
+    --var_gene_names "ensemblid" \
+    --obs_categorical_covariate "assay" \
+    --obs_categorical_covariate "donor_assay" \
+    --output "${OUT}/scvi_covariate_output.h5mu" \
+    --output_model "${OUT}/scvi_covariate_model" \
+    --max_epochs 5 \
+    --n_obs_min_count 10 \
+    --n_var_min_count 10
+
+echo "> Creating simple SCANVI model"
+viash run src/annotate/scanvi/config.vsh.yaml --engine docker -- \
     --input "${OUT}/TS_Blood_filtered.h5mu" \
     --var_gene_names "ensemblid" \
     --obs_labels "cell_ontology_class" \
@@ -126,8 +139,20 @@ viash run src/integrate/scanvi/config.vsh.yaml --engine docker -- \
     --output_model "${OUT}/scanvi_model" \
     --max_epochs 5 
 
+echo "> Creating SCANVI model with covariates"
+viash run src/annotate/scanvi/config.vsh.yaml --engine docker -- \
+    --input "${OUT}/TS_Blood_filtered.h5mu" \
+    --var_gene_names "ensemblid" \
+    --obs_labels "cell_ontology_class" \
+    --scvi_model "${OUT}/scvi_covariate_model" \
+    --output "${OUT}/scanvi_covariate_output.h5mu" \
+    --output_model "${OUT}/scanvi_covariate_model" \
+    --max_epochs 5 
+
 rm "${OUT}/scanvi_output.h5mu"
+rm "${OUT}/scanvi_covariate_output.h5mu"
 rm "${OUT}/scvi_output.h5mu"
+rm "${OUT}/scvi_covariate_output.h5mu"
 rm -r "${OUT}/Pretrained_model/"
 
 echo "> Creating Pseudobulk Data for DGEA"
