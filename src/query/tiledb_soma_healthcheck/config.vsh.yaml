@@ -8,7 +8,7 @@ authors:
     roles: [ author, maintainer ]
 argument_groups:
   - name: Input database
-    description: "Open CellxGene Census by URI."
+    description: "Open a TileDB SOMA database by URI."
     arguments:
       - name: "--input_uri"
         type: string
