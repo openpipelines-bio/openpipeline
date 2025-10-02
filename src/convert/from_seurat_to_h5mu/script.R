@@ -77,4 +77,4 @@ h5ad_obj <- as_AnnData(
 mdata_obj <- md$MuData(setNames(list(h5ad_obj), par$modality))
 
 # Save the MuData object as H5MU file
-mdata_obj$write_h5mu(par$output)
+mdata_obj$write_h5mu(par$output, output_compression = par$output_compression)
