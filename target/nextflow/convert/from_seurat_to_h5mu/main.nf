@@ -3062,7 +3062,7 @@ meta = [
   ],
   "argument_groups" : [
     {
-      "name" : "Arguments",
+      "name" : "Inputs",
       "arguments" : [
         {
           "type" : "file",
@@ -3083,10 +3083,30 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--modality",
-          "description" : "Modality to be converted if the input file is an h5mu file.",
+          "name" : "--assay",
+          "description" : "Name of the assay to be mapped.",
           "default" : [
-            "rna"
+            "RNA"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Conversion parameters",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--layers_mapping",
+          "description" : "Mapping of Seurat's Layers to AnnData layers. \nIf True, all layers will be mapped by name. \nIf False, no layers will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "example" : [
+            "{\\"layer\\": \\"seurat_layer\\"}"
+          ],
+          "default" : [
+            "True"
           ],
           "required" : false,
           "direction" : "input",
@@ -3095,10 +3115,129 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--assay",
-          "description" : "Name of the assay to be created.",
+          "name" : "--obs_mapping",
+          "description" : "Mapping of Seurat's observation columns to AnnData obs columns. \nIf True, all observation columns will be mapped by name. If False, no columns will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "example" : [
+            "{\\"obs_field\\": \\"seurat_observation\\"}"
+          ],
           "default" : [
-            "RNA"
+            "True"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--var_mapping",
+          "description" : "Mapping of Seurat's feature rows to AnnData var columns.\nIf True, all features will be mapped by name. If False, no features will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "example" : [
+            "{\\"var_field\\": \\"seurat_feature\\"}"
+          ],
+          "default" : [
+            "True"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--uns_mapping",
+          "description" : "Mapping of Seurat's Misc to AnnData uns. \nIf True, all fields will be mapped by name. If False, no fields will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "example" : [
+            "{\\"uns_field\\": \\"seurat_Misc\\"}"
+          ],
+          "default" : [
+            "True"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--obsm_mapping",
+          "description" : "Mapping of Seurat's Embeddings to AnnData obsm fields. \nIf True, all fields will be mapped by name. If False, no fields will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "example" : [
+            "{\\"obsm_field\\": \\"seurat_Embedding\\"}"
+          ],
+          "default" : [
+            "True"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--varm_mapping",
+          "description" : "Mapping of Seurat's Loadings to AnnData varm fields. \nIf True, all fields will be mapped by name. If False, no fields will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "example" : [
+            "{\\"varm_field\\": \\"seurat_Loadings\\"}"
+          ],
+          "default" : [
+            "True"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--obsp_mapping",
+          "description" : "Mapping of Seurat's Graphs to AnnData obsp fields.\nIf True, all fields will be mapped by name. If False, no fields will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "example" : [
+            "{\\"obsp_field\\": \\"seurat_Graph\\"}"
+          ],
+          "default" : [
+            "True"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--varp_mapping",
+          "description" : "Mapping of Seurat's Misc to AnnData varp fields. \nIf True, all fields will be mapped by name. If False, no fields will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "example" : [
+            "{\\"varp_field\\": \\"seurat_Misc\\"}"
+          ],
+          "default" : [
+            "True"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--x_mapping",
+          "description" : "A string specifying Seurat's Layer to mapped to the .X slot, If not provided, no data will be copied to the .X slot.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Outputs",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--modality",
+          "description" : "Name of the modality to be created.",
+          "default" : [
+            "rna"
           ],
           "required" : false,
           "direction" : "input",
@@ -3323,7 +3462,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_seurat_to_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "05ca7057090ffd31121269573b636d248975dc5b",
+    "git_commit" : "2e1b64bd31d16d101d01876ddee505f198731b7c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3390,8 +3529,17 @@ md <- reticulate::import("mudata")
 
 par <- list(
   "input" = $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_INPUT" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
-  "modality" = $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_MODALITY" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
   "assay" = $( if [ ! -z ${VIASH_PAR_ASSAY+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_ASSAY" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "layers_mapping" = $( if [ ! -z ${VIASH_PAR_LAYERS_MAPPING+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_LAYERS_MAPPING" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "obs_mapping" = $( if [ ! -z ${VIASH_PAR_OBS_MAPPING+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OBS_MAPPING" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "var_mapping" = $( if [ ! -z ${VIASH_PAR_VAR_MAPPING+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_VAR_MAPPING" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "uns_mapping" = $( if [ ! -z ${VIASH_PAR_UNS_MAPPING+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_UNS_MAPPING" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "obsm_mapping" = $( if [ ! -z ${VIASH_PAR_OBSM_MAPPING+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OBSM_MAPPING" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "varm_mapping" = $( if [ ! -z ${VIASH_PAR_VARM_MAPPING+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_VARM_MAPPING" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "obsp_mapping" = $( if [ ! -z ${VIASH_PAR_OBSP_MAPPING+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OBSP_MAPPING" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "varp_mapping" = $( if [ ! -z ${VIASH_PAR_VARP_MAPPING+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_VARP_MAPPING" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "x_mapping" = $( if [ ! -z ${VIASH_PAR_X_MAPPING+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_X_MAPPING" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "modality" = $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_MODALITY" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
   "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi )
 )
 meta <- list(
@@ -3425,10 +3573,56 @@ rm(.viash_orig_warn)
 
 ### VIASH END
 
-seurat_obj <- readRDS(par\\$input)
+process_mapping_param <- function(param_key) {
+  param_value <- par[[param_key]]
+  if (is.null(param_value)) {
+    NULL
+  } else if (tolower(param_value) == "true") {
+    TRUE
+  } else if (tolower(param_value) == "false") {
+    FALSE
+  } else {
+    # Try to parse as JSON for named character vector
+    tryCatch(
+      {
+        return(jsonlite::fromJSON(param_value))
+      },
+      error = function(e) {
+        cat("Could not parse json from argument", param_key, "\\\\n")
+        cat("Provided value:", param_value, "\\\\n")
+        stop(e)
+      }
+    )
+  }
+}
 
+mapping_values <- c(
+  "layers_mapping",
+  "obs_mapping",
+  "var_mapping",
+  "uns_mapping",
+  "obsm_mapping",
+  "varm_mapping",
+  "obsp_mapping",
+  "varp_mapping"
+)
+
+for (mapping in mapping_values) {
+  par[[mapping]] <- process_mapping_param(mapping)
+}
+
+seurat_obj <- readRDS(par\\$input)
 h5ad_obj <- as_AnnData(
   seurat_obj,
+  layers_mapping = par\\$layers_mapping,
+  obs_mapping = par\\$obs_mapping,
+  var_mapping = par\\$var_mapping,
+  uns_mapping = par\\$uns_mapping,
+  obsm_mapping = par\\$obsm_mapping,
+  varm_mapping = par\\$varm_mapping,
+  obsp_mapping = par\\$obsp_mapping,
+  varp_mapping = par\\$varp_mapping,
+  x_mapping = par\\$x_mapping,
   assay_name = par\\$assay
 )
 

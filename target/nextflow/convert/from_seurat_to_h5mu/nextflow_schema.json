@@ -18,8 +18,8 @@
         }
       }
     },
-    "arguments": {
-      "title": "Arguments",
+    "inputs": {
+      "title": "Inputs",
       "type": "object",
       "description": "No description",
       "properties": {
@@ -30,17 +30,24 @@
           "description": "Input Seurat file",
           "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.rds\"`. "
         },
-        "modality": {
-          "type": "string",
-          "description": "Modality to be converted if the input file is an h5mu file.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
-        },
         "assay": {
           "type": "string",
-          "description": "Name of the assay to be created.",
+          "description": "Name of the assay to be mapped.",
           "help_text": "Type: `string`, multiple: `False`, default: `\"RNA\"`. ",
           "default": "RNA"
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "modality": {
+          "type": "string",
+          "description": "Name of the modality to be created.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
         },
         "output": {
           "type": "string",
@@ -48,6 +55,66 @@
           "description": "Output H5MU file",
           "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
+        }
+      }
+    },
+    "conversion parameters": {
+      "title": "Conversion parameters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "layers_mapping": {
+          "type": "string",
+          "description": "Mapping of Seurat's Layers to AnnData layers",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"layer\": \"seurat_layer\"}\"`. ",
+          "default": "True"
+        },
+        "obs_mapping": {
+          "type": "string",
+          "description": "Mapping of Seurat's observation columns to AnnData obs columns",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"obs_field\": \"seurat_observation\"}\"`. ",
+          "default": "True"
+        },
+        "var_mapping": {
+          "type": "string",
+          "description": "Mapping of Seurat's feature rows to AnnData var columns.\nIf True, all features will be mapped by name",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"var_field\": \"seurat_feature\"}\"`. ",
+          "default": "True"
+        },
+        "uns_mapping": {
+          "type": "string",
+          "description": "Mapping of Seurat's Misc to AnnData uns",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"uns_field\": \"seurat_Misc\"}\"`. ",
+          "default": "True"
+        },
+        "obsm_mapping": {
+          "type": "string",
+          "description": "Mapping of Seurat's Embeddings to AnnData obsm fields",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"obsm_field\": \"seurat_Embedding\"}\"`. ",
+          "default": "True"
+        },
+        "varm_mapping": {
+          "type": "string",
+          "description": "Mapping of Seurat's Loadings to AnnData varm fields",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"varm_field\": \"seurat_Loadings\"}\"`. ",
+          "default": "True"
+        },
+        "obsp_mapping": {
+          "type": "string",
+          "description": "Mapping of Seurat's Graphs to AnnData obsp fields.\nIf True, all fields will be mapped by name",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"obsp_field\": \"seurat_Graph\"}\"`. ",
+          "default": "True"
+        },
+        "varp_mapping": {
+          "type": "string",
+          "description": "Mapping of Seurat's Misc to AnnData varp fields",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"varp_field\": \"seurat_Misc\"}\"`. ",
+          "default": "True"
+        },
+        "x_mapping": {
+          "type": "string",
+          "description": "A string specifying Seurat's Layer to mapped to the .X slot, If not provided, no data will be copied to the .X slot.",
+          "help_text": "Type: `string`, multiple: `False`. "
         }
       }
     },
@@ -66,7 +133,13 @@
   },
   "allOf": [
     {
-      "$ref": "#/$defs/arguments"
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/conversion parameters"
     },
     {
       "$ref": "#/$defs/nextflow input-output arguments"

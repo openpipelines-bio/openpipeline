@@ -455,9 +455,9 @@ apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Samuel D'Souza, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count"
-LABEL org.opencontainers.image.created="2025-10-01T03:02:48Z"
+LABEL org.opencontainers.image.created="2025-10-02T02:52:10Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="05ca7057090ffd31121269573b636d248975dc5b"
+LABEL org.opencontainers.image.revision="2e1b64bd31d16d101d01876ddee505f198731b7c"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

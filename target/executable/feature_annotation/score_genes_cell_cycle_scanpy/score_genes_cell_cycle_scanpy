@@ -456,9 +456,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Dorien Roosen, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component feature_annotation score_genes_cell_cycle_scanpy"
-LABEL org.opencontainers.image.created="2025-10-01T03:02:50Z"
+LABEL org.opencontainers.image.created="2025-10-02T02:52:11Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="05ca7057090ffd31121269573b636d248975dc5b"
+LABEL org.opencontainers.image.revision="2e1b64bd31d16d101d01876ddee505f198731b7c"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
