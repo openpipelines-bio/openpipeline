@@ -12,6 +12,9 @@ workflow run_wf {
       fromState: [
         "input": "input",
         "obs_batch": "obs_batch",
+        "obs_size_factor": "obs_size_factor",
+        "obs_categorical_covariate": "obs_categorical_covariate",
+        "obs_continuous_covariate": "obs_continuous_covariate",
         "obsm_output": "obsm_output",
         "var_input": "var_input",
         "early_stopping": "early_stopping",
