@@ -3150,6 +3150,24 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--input_obs_categorical_covariate",
+          "description" : "Keys in adata.obs that correspond to categorical data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space).\nThus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.\nImportant: the order of the categorical covariates matters and should match the order of the covariates in the reference data.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--input_obs_continuous_covariate",
+          "description" : "Keys in adata.obs that correspond to continuous data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space). Thus, these should not be\nused for biologically-relevant factors that you do _not_ want to correct for.\nImportant: the order of the continuous covariates matters and should match the order of the covariates in the reference data.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--input_var_gene_names",
           "description" : ".var column containing gene names. By default, use the index.",
           "required" : false,
@@ -3207,6 +3225,24 @@ meta = [
           "required" : false,
           "direction" : "input",
           "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--reference_obs_categorical_covariate",
+          "description" : "Keys in adata.obs that correspond to categorical data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space).\nThus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.\nImportant: the order of the categorical covariates matters and should match the order of the covariates in the query data.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--reference_obs_continuous_covariate",
+          "description" : "Keys in adata.obs that correspond to continuous data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space). Thus, these should not be\nused for biologically-relevant factors that you do _not_ want to correct for.\nImportant: the order of the continuous covariates matters and should match the order of the covariates in the query data.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
           "multiple_sep" : ";"
         },
         {
@@ -3639,7 +3675,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scanvi_scarches",
     "viash_version" : "0.9.4",
-    "git_commit" : "320b88b24907ffc056d7b5928a4ca50e18939eb4",
+    "git_commit" : "935924f7d9efa145e8d082ad3e184de44ec4e35b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3717,6 +3753,8 @@ workflow run_wf {
               "var_input": "reference_var_hvg",
               "var_gene_names": "reference_var_gene_names",
               "obs_size_factor": "reference_obs_size_factor",
+              "obs_categorical_covariate": "reference_obs_categorical_covariate",
+              "obs_continuous_covariate": "reference_obs_continuous_covariate",
               "early_stopping": "early_stopping",
               "early_stopping_monitor": "early_stopping_monitor",
               "early_stopping_patience": "early_stopping_patience",
@@ -3773,6 +3811,8 @@ workflow run_wf {
               "input_obs_batch": "input_obs_batch_label",
               "input_var_gene_names": "input_var_gene_names",
               "input_obs_size_factor": "input_obs_size_factor",
+              "input_obs_categorical_covariate": "input_obs_categorical_covariate",
+              "input_obs_continuous_covariate": "input_obs_continuous_covariate",
               "reference": "scanvi_model",
               "obsm_output": "output_obsm_integrated",
               "obs_output_predictions": "output_obs_predictions",

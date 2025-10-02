@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component metadata join_csv"
-LABEL org.opencontainers.image.created="2025-10-01T14:27:34Z"
+LABEL org.opencontainers.image.created="2025-10-02T14:22:50Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="320b88b24907ffc056d7b5928a4ca50e18939eb4"
+LABEL org.opencontainers.image.revision="935924f7d9efa145e8d082ad3e184de44ec4e35b"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
