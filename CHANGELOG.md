@@ -20,7 +20,7 @@
 
 ## MAJOR CHANGES
 
-* `mapping/samtools_sort` has been deprecated and will be removed in openpipeline 4.0. Use [vsh://biobox/samtools/samtools_sort]() instead.
+* `mapping/samtools_sort` has been deprecated and will be removed in openpipeline 4.0. Use [vsh://biobox/samtools/samtools_sort](https://www.viash-hub.com/packages/biobox/latest/components/samtools/samtools_sort) instead.
 
 ## MINOR CHANGES
 
@@ -40,7 +40,7 @@
 
 * Removed `split_h5mu_train_test` component (PR #1020).
 
-* `tar_extract` has been deprecated and will be removed in openpipeline 4.0 (PR #1014). Use [vsh://toolbox/bgzip](https://www.viash-hub.com/dashboard/packages/biobox/latest/components/samtools/samtools_sort) instead.
+* `tar_extract` has been deprecated and will be removed in openpipeline 4.0 (PR #1014). Use [vsh://toolbox/bgzip](https://www.viash-hub.com/packages/toolbox/latest/components/bgzip) instead.
 
 * `compress_h5mu`: rename `compression` argument to `output_compression` (PR #1017, PR #1018).
 
