@@ -455,9 +455,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov, Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scarches"
-LABEL org.opencontainers.image.created="2025-10-02T02:52:10Z"
+LABEL org.opencontainers.image.created="2025-10-03T02:51:58Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="2e1b64bd31d16d101d01876ddee505f198731b7c"
+LABEL org.opencontainers.image.revision="73b14440e063336623224ed2a3215e4189f87401"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -615,6 +615,29 @@ function ViashHelp {
   echo "        the provided size factor column will be used as offset in the mean of"
   echo "        the likelihood."
   echo "        Assumed to be on linear scale."
+  echo ""
+  echo "    --input_obs_categorical_covariate"
+  echo "        type: string, multiple values allowed"
+  echo "        Keys in adata.obs that correspond to categorical data. These covariates"
+  echo "        can be added in"
+  echo "        addition to the batch covariate and are also treated as nuisance factors"
+  echo "        (i.e., the model tries to minimize their effects on the latent space)."
+  echo "        Thus, these should not be used for biologically-relevant factors that"
+  echo "        you do _not_ want to correct for."
+  echo "        Important: the order of the categorical covariates matters and should"
+  echo "        match the order of the covariates in the trained reference model."
+  echo ""
+  echo "    --input_obs_continuous_covariate"
+  echo "        type: string, multiple values allowed"
+  echo "        Keys in adata.obs that correspond to continuous data. These covariates"
+  echo "        can be added in"
+  echo "        addition to the batch covariate and are also treated as nuisance factors"
+  echo "        (i.e., the model tries to minimize their effects on the latent space)."
+  echo "        Thus, these should not be"
+  echo "        used for biologically-relevant factors that you do _not_ want to correct"
+  echo "        for."
+  echo "        Important: the order of the continuous covariates matters and should"
+  echo "        match the order of the covariates in the trained reference model."
   echo ""
   echo "Reference:"
   echo "    -r, --reference"
@@ -845,6 +868,40 @@ while [[ $# -gt 0 ]]; do
         --input_obs_size_factor=*)
             [ -n "$VIASH_PAR_INPUT_OBS_SIZE_FACTOR" ] && ViashError Bad arguments for option \'--input_obs_size_factor=*\': \'$VIASH_PAR_INPUT_OBS_SIZE_FACTOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_INPUT_OBS_SIZE_FACTOR=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --input_obs_categorical_covariate)
+            if [ -z "$VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE" ]; then
+              VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE="$2"
+            else
+              VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE="$VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE;""$2"
+            fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_obs_categorical_covariate. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --input_obs_categorical_covariate=*)
+            if [ -z "$VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE" ]; then
+              VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE="$VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE;"$(ViashRemoveFlags "$1")
+            fi
+            shift 1
+            ;;
+        --input_obs_continuous_covariate)
+            if [ -z "$VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE" ]; then
+              VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE="$2"
+            else
+              VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE="$VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE;""$2"
+            fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_obs_continuous_covariate. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --input_obs_continuous_covariate=*)
+            if [ -z "$VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE" ]; then
+              VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE="$VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE;"$(ViashRemoveFlags "$1")
+            fi
             shift 1
             ;;
         --reference)
@@ -1588,6 +1645,8 @@ par = {
   'input_obs_label': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_LABEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_obs_size_factor': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_SIZE_FACTOR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_obs_categorical_covariate': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'input_obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_class': $( if [ ! -z ${VIASH_PAR_REFERENCE_CLASS+x} ]; then echo "r'${VIASH_PAR_REFERENCE_CLASS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1670,6 +1729,8 @@ def _validate_obs_metadata_params(model_registry, model_name):
         "batch_key": "input_obs_batch",
         "labels_key": "input_obs_label",
         "size_factor_key": "input_obs_size_factor",
+        "categorical_covariate_keys": "input_obs_categorical_covariate",
+        "continuous_covariate_keys": "input_obs_continuous_covariate",
     }
 
     for registry_key, key in registry_par_mapper.items():
@@ -1686,6 +1747,16 @@ def _validate_obs_metadata_params(model_registry, model_name):
             logger.warning(
                 f"\`--{key}\` was provided but is not used in the provided {model_name} model."
             )
+
+        elif model_registry_key and par_key:
+            if key in [
+                "input_obs_categorical_covariate",
+                "input_obs_continuous_covariate",
+            ]:
+                if len(par_key) != len(model_registry_key):
+                    raise ValueError(
+                        f"The number of provided covariates in \`--{key}\` ({par_key}) does not match the number of covariates used in the provided model ({model_registry_key})."
+                    )
 
 
 def _align_query_with_registry(adata_query, model_path):
@@ -1750,6 +1821,18 @@ def _align_query_with_registry(adata_query, model_path):
             query_obs[model_registry["labels_key"]] = adata_query.obs[
                 model_registry["labels_key"]
             ].tolist()
+
+    ## covariate keys
+    covariate_mappings = {
+        "categorical_covariate_keys": "input_obs_categorical_covariate",
+        "continuous_covariate_keys": "input_obs_continuous_covariate",
+    }
+    for registry_key, par_key in covariate_mappings.items():
+        if model_registry.get(registry_key):
+            for covariate, par_covariate in zip(
+                model_registry[registry_key], par[par_key]
+            ):
+                query_obs[covariate] = adata_query.obs[par_covariate].tolist()
 
     obs = pd.DataFrame(query_obs, index=obs_index)
     var = pd.DataFrame(index=var_index)

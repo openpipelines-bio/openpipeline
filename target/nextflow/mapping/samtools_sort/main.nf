@@ -3271,7 +3271,7 @@ meta = [
       "path" : "/resources_test/cellranger_tiny_fastq"
     }
   ],
-  "status" : "enabled",
+  "status" : "deprecated",
   "scope" : {
     "image" : "public",
     "target" : "public"
@@ -3395,7 +3395,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/samtools_sort",
     "viash_version" : "0.9.4",
-    "git_commit" : "2e1b64bd31d16d101d01876ddee505f198731b7c",
+    "git_commit" : "73b14440e063336623224ed2a3215e4189f87401",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

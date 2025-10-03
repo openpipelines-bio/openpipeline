@@ -3157,6 +3157,24 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--input_obs_categorical_covariate",
+          "description" : "Keys in adata.obs that correspond to categorical data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space).\nThus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.\nImportant: the order of the categorical covariates matters and should match the order of the covariates in the trained reference model.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--input_obs_continuous_covariate",
+          "description" : "Keys in adata.obs that correspond to continuous data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space). Thus, these should not be\nused for biologically-relevant factors that you do _not_ want to correct for.\nImportant: the order of the continuous covariates matters and should match the order of the covariates in the trained reference model.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3423,6 +3441,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/resources_test/annotation_test_data/scanvi_covariate_model"
+    },
+    {
+      "type" : "file",
       "path" : "/resources_test/annotation_test_data/scvi_model"
     },
     {
@@ -3568,7 +3590,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scarches",
     "viash_version" : "0.9.4",
-    "git_commit" : "2e1b64bd31d16d101d01876ddee505f198731b7c",
+    "git_commit" : "73b14440e063336623224ed2a3215e4189f87401",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3645,6 +3667,8 @@ par = {
   'input_obs_label': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_obs_size_factor': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_SIZE_FACTOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_obs_categorical_covariate': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'input_obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_class': $( if [ ! -z ${VIASH_PAR_REFERENCE_CLASS+x} ]; then echo "r'${VIASH_PAR_REFERENCE_CLASS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3727,6 +3751,8 @@ def _validate_obs_metadata_params(model_registry, model_name):
         "batch_key": "input_obs_batch",
         "labels_key": "input_obs_label",
         "size_factor_key": "input_obs_size_factor",
+        "categorical_covariate_keys": "input_obs_categorical_covariate",
+        "continuous_covariate_keys": "input_obs_continuous_covariate",
     }
 
     for registry_key, key in registry_par_mapper.items():
@@ -3743,6 +3769,16 @@ def _validate_obs_metadata_params(model_registry, model_name):
             logger.warning(
                 f"\\`--{key}\\` was provided but is not used in the provided {model_name} model."
             )
+
+        elif model_registry_key and par_key:
+            if key in [
+                "input_obs_categorical_covariate",
+                "input_obs_continuous_covariate",
+            ]:
+                if len(par_key) != len(model_registry_key):
+                    raise ValueError(
+                        f"The number of provided covariates in \\`--{key}\\` ({par_key}) does not match the number of covariates used in the provided model ({model_registry_key})."
+                    )
 
 
 def _align_query_with_registry(adata_query, model_path):
@@ -3807,6 +3843,18 @@ def _align_query_with_registry(adata_query, model_path):
             query_obs[model_registry["labels_key"]] = adata_query.obs[
                 model_registry["labels_key"]
             ].tolist()
+
+    ## covariate keys
+    covariate_mappings = {
+        "categorical_covariate_keys": "input_obs_categorical_covariate",
+        "continuous_covariate_keys": "input_obs_continuous_covariate",
+    }
+    for registry_key, par_key in covariate_mappings.items():
+        if model_registry.get(registry_key):
+            for covariate, par_covariate in zip(
+                model_registry[registry_key], par[par_key]
+            ):
+                query_obs[covariate] = adata_query.obs[par_covariate].tolist()
 
     obs = pd.DataFrame(query_obs, index=obs_index)
     var = pd.DataFrame(index=var_index)

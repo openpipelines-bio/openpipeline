@@ -104,6 +104,22 @@
           "description": "Key in adata.obs for size factor information",
           "help_text": "Type: `string`, multiple: `False`. "
         },
+        "input_obs_categorical_covariate": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keys in adata.obs that correspond to categorical data",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "input_obs_continuous_covariate": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keys in adata.obs that correspond to continuous data",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
         "input_var_gene_names": {
           "type": "string",
           "description": ".var column containing gene names",
@@ -137,6 +153,22 @@
           "type": "string",
           "description": "Key in adata.obs for size factor information",
           "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "reference_obs_categorical_covariate": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keys in adata.obs that correspond to categorical data",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "reference_obs_continuous_covariate": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keys in adata.obs that correspond to continuous data",
+          "help_text": "Type: `string`, multiple: `True`. "
         },
         "unlabeled_category": {
           "type": "string",
