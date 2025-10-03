@@ -13,12 +13,14 @@ argument_groups:
         description: Input h5mu file with query data to integrate with reference.
         direction: input
         required: true
+        example: input.h5mu
       - name: "--reference"
         alternatives: ["-r"]
         type: file
         description: Input h5mu file with reference data to train the TOTALVI model.
         direction: input
         required: true
+        example: reference.h5mu
       - name: "--force_retrain"
         alternatives: ["-f"]
         type: boolean_true
@@ -86,6 +88,7 @@ argument_groups:
         description: Output h5mu file.
         direction: output
         required: true
+        example: output.h5mu
       - name: "--obsm_output"
         type: string
         default: "X_integrated_totalvi"
@@ -106,11 +109,13 @@ argument_groups:
         description: Directory with the reference model. If not exists, trained model will be saved there
         required: false
         default: "totalvi_model_reference/"
+        example: path/to/reference_model/
         direction: output
       - name: "--query_model_path"
         type: file
         description: Directory, where the query model will be saved
         required: false
+        example: path/to/query_model/
         default: "totalvi_model_query/"
         direction: output
   - name: "Learning parameters"

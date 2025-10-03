@@ -204,7 +204,7 @@ argument_groups:
         type: file
         required: true
         direction: output
-        description: The query data in .h5mu format with predicted labels predicted from the classifier trained on the reference.
+        description: The annotated output .h5mu file.
         example: output.h5mu
       - name: "--output_obs_predictions"
         type: string
