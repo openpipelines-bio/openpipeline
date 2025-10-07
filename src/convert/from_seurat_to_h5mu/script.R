@@ -70,11 +70,14 @@ h5ad_obj <- as_AnnData(
   obsp_mapping = par$obsp_mapping,
   varp_mapping = par$varp_mapping,
   x_mapping = par$x_mapping,
-  assay_name = par$assay
+  assay_name = par$assay,
+  output_class = "ReticulateAnnData"
 )
 
 # Create MuData object
-mdata_obj <- md$MuData(setNames(list(h5ad_obj), par$modality))
+mods <- reticulate::dict()
+mods[[par$modality]] <- h5ad_obj
+mdata_obj <- md$MuData(mods)
 
 # Save the MuData object as H5MU file
-mdata_obj$write_h5mu(par$output, output_compression = par$output_compression)
+mdata_obj$write_h5mu(par$output, compression = par$output_compression)
