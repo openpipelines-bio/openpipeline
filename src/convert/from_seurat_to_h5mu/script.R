@@ -75,7 +75,8 @@ h5ad_obj <- as_AnnData(
 )
 
 # Create MuData object
-mods <- reticulate::dict(); mods[[par$modality]] <- h5ad_obj
+mods <- reticulate::dict()
+mods[[par$modality]] <- h5ad_obj
 mdata_obj <- md$MuData(mods)
 
 # Save the MuData object as H5MU file
