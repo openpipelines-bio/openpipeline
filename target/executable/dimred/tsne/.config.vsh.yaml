@@ -1,0 +1,365 @@
+name: "tsne"
+namespace: "dimred"
+version: "add-lognormalization-to-celltypist_build"
+authors:
+- name: "Jakub Majercik"
+  roles:
+  - "maintainer"
+  info:
+    role: "Contributor"
+    links:
+      email: "jakub@data-intuitive.com"
+      github: "jakubmajercik"
+      linkedin: "jakubmajercik"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Bioinformatics Engineer"
+argument_groups:
+- name: "Inputs"
+  arguments:
+  - type: "file"
+    name: "--input"
+    description: "Input h5mu file"
+    info: null
+    example:
+    - "input.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--modality"
+    description: "Which modality from the input MuData file to process.\n"
+    info: null
+    default:
+    - "rna"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--use_rep"
+    description: "The `.obsm` slot to use as input for the tSNE computation."
+    info: null
+    example:
+    - "X_pca"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Outputs"
+  arguments:
+  - type: "file"
+    name: "--output"
+    alternatives:
+    - "-o"
+    description: "Output h5mu file."
+    info: null
+    example:
+    - "output.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obsm_output"
+    description: "The .obsm key to use for storing the tSNE results."
+    info: null
+    default:
+    - "X_tsne"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_compression"
+    description: "Compression format to use for the output AnnData and/or Mudata objects.\n\
+      By default no compression is applied.\n"
+    info: null
+    example:
+    - "gzip"
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Arguments"
+  arguments:
+  - type: "integer"
+    name: "--n_pcs"
+    description: "The number of principal components to use for the tSNE computation."
+    info: null
+    default:
+    - 50
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--perplexity"
+    description: "The perplexity is related to the number of nearest neighbors that\
+      \ is used in other manifold learning algorithms. Larger datasets usually require\
+      \ a larger perplexity. Consider selecting a value between 5 and 50. Different\
+      \ values can result in significantly different results."
+    info: null
+    default:
+    - 30.0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--min_dist"
+    description: "The effective minimum distance between embedded points. Smaller\
+      \ values will result in a more clustered/clumped embedding where nearby points\
+      \ on the manifold are drawn closer together, while larger values will result\
+      \ on a more even dispersal of points. The value should be set relative to the\
+      \ spread value, which determines the scale at which embedded points will be\
+      \ spread out."
+    info: null
+    default:
+    - 0.5
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--metric"
+    description: "Distance metric to calculate neighbors on."
+    info: null
+    default:
+    - "euclidean"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--early_exaggeration"
+    description: "Controls how tight natural clusters in the original space are in\
+      \ the embedded space and how much space will be between them. For larger values,\
+      \ the space between natural clusters will be larger in the embedded space. Again,\
+      \ the choice of this parameter is not very critical. If the cost function increases\
+      \ during initial optimization, the early exaggeration factor or the learning\
+      \ rate might be too high."
+    info: null
+    default:
+    - 12.0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--learning_rate"
+    description: "The learning rate for t-SNE optimization. Typical values range between\
+      \ 10.0 and 1000.0."
+    info: null
+    default:
+    - 1000.0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--random_state"
+    description: "The random seed to use for the tSNE computation."
+    info: null
+    default:
+    - 0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "python_script"
+  path: "script.py"
+  is_executable: true
+- type: "file"
+  path: "setup_logger.py"
+- type: "file"
+  path: "compress_h5mu.py"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "t-SNE (t-Distributed Stochastic Neighbor Embedding) is a dimensionality\
+  \ reduction technique used to visualize high-dimensional data in a low-dimensional\
+  \ space, revealing patterns and clusters by preserving local data similarities.\n"
+test_resources:
+- type: "python_script"
+  path: "test.py"
+  is_executable: true
+- type: "file"
+  path: "pbmc_1k_protein_v3"
+info: null
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "highcpu"
+    - "midmem"
+    - "middisk"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "python:3.10-slim"
+  target_tag: "add-lognormalization-to-celltypist_build"
+  namespace_separator: "/"
+  setup:
+  - type: "apt"
+    packages:
+    - "procps"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "anndata~=0.11.1"
+    - "mudata~=0.3.1"
+    - "scanpy~=1.10.4"
+    script:
+    - "exec(\"try:\\n  import awkward\\nexcept ModuleNotFoundError:\\n  exit(0)\\\
+      nelse:  exit(1)\")"
+    upgrade: true
+  test_setup:
+  - type: "apt"
+    packages:
+    - "git"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.8.0"
+    github:
+    - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/dimred/tsne/config.vsh.yaml"
+  runner: "executable"
+  engine: "docker"
+  output: "target/executable/dimred/tsne"
+  executable: "target/executable/dimred/tsne/tsne"
+  viash_version: "0.9.4"
+  git_commit: "c853100941602d517133a569640a19fd5e39e047"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-2070-gc8531009416"
+package_config:
+  name: "openpipeline"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.4"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"add-lognormalization-to-celltypist_build\""
+  - ".engines[.type == 'docker'].target_tag := 'add-lognormalization-to-celltypist_build'"
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

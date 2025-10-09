@@ -1,0 +1,341 @@
+name: "scsplit"
+namespace: "genetic_demux"
+version: "add-lognormalization-to-celltypist_build"
+authors:
+- name: "Xichen Wu"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      github: "wxicu"
+      linkedin: "xichen-wu"
+      orcid: "0009-0008-2168-4508"
+    organizations:
+    - name: "Helmholtz Munich"
+      href: "https://www.helmholtz-munich.de"
+      role: "Student Assistant"
+argument_groups:
+- name: "Input"
+  arguments:
+  - type: "file"
+    name: "--vcf"
+    description: "VCF from mixed BAM"
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--bam"
+    description: "mixed sample BAM"
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--bar"
+    description: "barcodes whitelist"
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--tag"
+    description: "tag for barcode"
+    info: null
+    default:
+    - "CB"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--com"
+    description: "common SNVs"
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--num"
+    description: "expected number of mixed samples"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--sub"
+    description: "maximum number of subpopulations in autodetect mode"
+    info: null
+    default:
+    - 10
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--ems"
+    description: "number of EM repeats to avoid local maximum"
+    info: null
+    default:
+    - 30
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--dbl"
+    description: "correction for doublets. There will be no refinement on the results\
+      \ if this optional parameter is not specified or specified percentage is less\
+      \ than doublet rates detected during the run."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--vcf_known"
+    description: "known individual genotypes to limit distinguishing variants to available\
+      \ variants, so that users do not need to redo genotyping on selected variants,\
+      \ otherwise any variants could be selected as distinguishing variants."
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--geno"
+    description: "generate sample genotypes based on the split result."
+    info: null
+    direction: "input"
+- name: "Output"
+  arguments:
+  - type: "file"
+    name: "--output"
+    alternatives:
+    - "-o"
+    description: "Output directory"
+    info: null
+    example:
+    - "scSplit_out"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--ref"
+    description: "output Ref count matrix"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--alt"
+    description: "output Alt count matrix"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--psc"
+    description: "generated P(S|C)"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "bash_script"
+  path: "script.sh"
+  is_executable: true
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "scsplit is a genotype-free demultiplexing methode of pooled single-cell\
+  \ RNA-seq, using a hidden state model for identifying genetically distinct samples\
+  \ within a mixed population."
+test_resources:
+- type: "bash_script"
+  path: "test.sh"
+  is_executable: true
+- type: "file"
+  path: "demuxafy_test_data"
+info: null
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "highmem"
+    - "highcpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "python:3.11"
+  target_tag: "add-lognormalization-to-celltypist_build"
+  namespace_separator: "/"
+  setup:
+  - type: "python"
+    user: false
+    pip:
+    - "numpy<2"
+    - "pandas<2.0"
+    - "pysam"
+    - "setuptools<58"
+    - "scikit-learn==1.1.3"
+    - "scipy"
+    - "statistics"
+    upgrade: true
+  - type: "python"
+    user: false
+    pip:
+    - "PyVCF"
+    upgrade: true
+  - type: "docker"
+    run:
+    - "git clone https://github.com/jon-xu/scSplit && cp scSplit/scSplit /usr/local/bin\
+      \ && rm -rf scSplit"
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/genetic_demux/scsplit/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "docker"
+  output: "target/nextflow/genetic_demux/scsplit"
+  executable: "target/nextflow/genetic_demux/scsplit/main.nf"
+  viash_version: "0.9.4"
+  git_commit: "c853100941602d517133a569640a19fd5e39e047"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-2070-gc8531009416"
+package_config:
+  name: "openpipeline"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.4"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"add-lognormalization-to-celltypist_build\""
+  - ".engines[.type == 'docker'].target_tag := 'add-lognormalization-to-celltypist_build'"
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"
