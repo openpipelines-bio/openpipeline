@@ -35,6 +35,10 @@ argument_groups:
         min: 1
         description: | 
           The minimum number of genes present in both the reference and query datasets.
+      - name: "--sanitize_gene_names"
+        type: boolean
+        description: Whether to sanitize gene names by removing version numbers. Recommended when using ENSEMBL ids.
+        default: true
 
   - name: Reference
     description: Arguments related to the reference dataset.

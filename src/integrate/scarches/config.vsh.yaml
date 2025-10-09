@@ -66,6 +66,10 @@ argument_groups:
           (i.e., the model tries to minimize their effects on the latent space). Thus, these should not be
           used for biologically-relevant factors that you do _not_ want to correct for.
           Important: the order of the continuous covariates matters and should match the order of the covariates in the trained reference model.
+      - name: "--sanitize_gene_names"
+        type: boolean
+        description: Whether to sanitize gene names by removing version numbers. Recommended when using ENSEMBL ids.
+        default: true
 
   - name: Reference
     arguments:

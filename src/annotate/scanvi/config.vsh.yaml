@@ -48,7 +48,11 @@ argument_groups:
         default: "Unknown"
         description: | 
           Value in the --obs_labels field that indicates unlabeled observations
-  
+      - name: "--sanitize_gene_names"
+        type: boolean
+        description: Whether to sanitize gene names by removing version numbers. Recommended when using ENSEMBL ids.
+        default: true
+
   - name: scVI Model
     arguments:
       - name: "--scvi_model"
