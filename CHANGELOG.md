@@ -32,6 +32,8 @@
   
 * `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
 
+* Various components and workflows in `integrate`, `annotate`, `workflows/integration` and `workflows/annotation`: Make feature name sanitation optional (PR #1084).
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES

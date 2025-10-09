@@ -19,7 +19,7 @@ def sanitize_gene_names(gene_names: list[str]) -> list[str]:
 
 
 def set_var_index(
-    adata: ad.AnnData, var_name: str | None = None, sanitise_gene_names: bool = True
+    adata: ad.AnnData, var_name: str | None = None, sanitize_gene_names: bool = True
 ) -> ad.AnnData:
     """Sanitize gene names (optional) and set the index of the .var DataFrame.
 
@@ -29,7 +29,7 @@ def set_var_index(
         Annotated data object
     var_name : str | None
         Name of the column in `adata.var` that contains the gene names, if None, the existing index will be sanitized but not replaced.
-    sanitise_gene_names : bool
+    sanitize_gene_names : bool
         Whether to sanitize gene names by removing version numbers.
 
     Returns
@@ -39,7 +39,7 @@ def set_var_index(
     """
     gene_names = adata.var[var_name] if var_name else adata.var.index
 
-    if sanitise_gene_names:
+    if sanitize_gene_names:
         gene_names = sanitize_gene_names(gene_names)
 
     adata.var.index = gene_names
