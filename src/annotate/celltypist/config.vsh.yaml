@@ -26,7 +26,7 @@ argument_groups:
         required: false
       - name: "--input_layer"
         type: string
-        description: The layer in the input data containing log normalized counts to be used for cell type annotation if .X is not to be used. 
+        description: The layer in the input data containing raw counts to be used for cell type annotation if .X is not to be used. 
       - name: "--input_var_gene_names"
         type: string
         required: false
@@ -50,7 +50,7 @@ argument_groups:
         required: false
       - name: "--reference_layer"
         type: string
-        description: The layer in the reference data to be used for cell type annotation if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.
+        description: The layer in the reference data containing raw counts to be used for cell type annotation if .X is not to be used.
         required: false
       - name: "--reference_obs_target"
         type: string
@@ -152,7 +152,7 @@ engines:
         packages:
           - celltypist==1.6.3
       - type: python
-        __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
   - type: executable
