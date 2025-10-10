@@ -14,6 +14,7 @@ arguments:
     type: file
     description: Input h5mu file
     direction: input
+    example: input.h5mu
     required: true
   - name: "--output"
     alternatives: ["-o"]
@@ -21,6 +22,7 @@ arguments:
     description: Output h5mu file.
     direction: output
     required: true
+    example: output.h5mu
   - name: "--modality"
     description: |
       Which modality from the input MuData file to process.

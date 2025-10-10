@@ -32,6 +32,8 @@
   
 * `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
 
+* Add missing `example` fields to several component and workflow configurations (PR #1067).
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES
