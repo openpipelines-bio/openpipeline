@@ -10,6 +10,8 @@
 
 * `filter/delimit_counts`: Turns an .obs column of a MuData file containing count data into a boolean column based on thresholds (PR #1069)
 
+* `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078, #1079, #1082).
+
 ## EXPERIMENTAL
 
 * `differential_expression/deseq2`: Performs differential expression analysis using DESeq2 on bulk or pseudobulk datasets (PR #1044).
@@ -18,9 +20,19 @@
 
 * Deprecated all scGPT functionality (PR #1075).
 
+## MAJOR CHANGES
+
+* `mapping/samtools_sort` has been deprecated and will be removed in openpipeline 4.0. Use [vsh://biobox/samtools/samtools_sort](https://www.viash-hub.com/packages/biobox/latest/components/samtools/samtools_sort) instead.
+
 ## MINOR CHANGES
 
 * `transform/normalize_total`, `transform/clr`, `transform/log1p`: Add disk resource labels (PR #1073).
+
+* `integrate/totalvi`: Add `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` arguments to include additional covariates during model training (PR #1076).
+  
+* `workflows/integration`: Surface `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` in the `totalvi_leiden` and `scvi_leiden` workflows (PR #1076).
+  
+* `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
 
 # openpipelines 3.0.0
 

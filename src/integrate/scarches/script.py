@@ -16,6 +16,8 @@ par = {
     "input_obs_batch": "sample_id",
     "input_obs_label": None,
     "input_var_gene_names": None,
+    "input_obs_categorical_covariate": None,
+    "input_obs_continuous_covariate": None,
     "unknown_celltype_label": "Unknown",
     "input_obs_size_factor": None,
     "reference": "resources_test/annotation_test_data/scanvi_model",
@@ -76,6 +78,8 @@ def _validate_obs_metadata_params(model_registry, model_name):
         "batch_key": "input_obs_batch",
         "labels_key": "input_obs_label",
         "size_factor_key": "input_obs_size_factor",
+        "categorical_covariate_keys": "input_obs_categorical_covariate",
+        "continuous_covariate_keys": "input_obs_continuous_covariate",
     }
 
     for registry_key, key in registry_par_mapper.items():
@@ -92,6 +96,16 @@ def _validate_obs_metadata_params(model_registry, model_name):
             logger.warning(
                 f"`--{key}` was provided but is not used in the provided {model_name} model."
             )
+
+        elif model_registry_key and par_key:
+            if key in [
+                "input_obs_categorical_covariate",
+                "input_obs_continuous_covariate",
+            ]:
+                if len(par_key) != len(model_registry_key):
+                    raise ValueError(
+                        f"The number of provided covariates in `--{key}` ({par_key}) does not match the number of covariates used in the provided model ({model_registry_key})."
+                    )
 
 
 def _align_query_with_registry(adata_query, model_path):
@@ -156,6 +170,18 @@ def _align_query_with_registry(adata_query, model_path):
             query_obs[model_registry["labels_key"]] = adata_query.obs[
                 model_registry["labels_key"]
             ].tolist()
+
+    ## covariate keys
+    covariate_mappings = {
+        "categorical_covariate_keys": "input_obs_categorical_covariate",
+        "continuous_covariate_keys": "input_obs_continuous_covariate",
+    }
+    for registry_key, par_key in covariate_mappings.items():
+        if model_registry.get(registry_key):
+            for covariate, par_covariate in zip(
+                model_registry[registry_key], par[par_key]
+            ):
+                query_obs[covariate] = adata_query.obs[par_covariate].tolist()
 
     obs = pd.DataFrame(query_obs, index=obs_index)
     var = pd.DataFrame(index=var_index)
