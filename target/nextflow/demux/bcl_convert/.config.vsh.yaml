@@ -1,0 +1,312 @@
+name: "bcl_convert"
+namespace: "demux"
+version: "optional-gene-name-sanitation_build"
+authors:
+- name: "Toni Verbeiren"
+  roles:
+  - "author"
+  - "maintainer"
+  info:
+    role: "Core Team Member"
+    links:
+      github: "tverbeiren"
+      linkedin: "verbeiren"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Scientist and CEO"
+- name: "Marijke Van Moerbeke"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      github: "mvanmoerbeke"
+      orcid: "0000-0002-3097-5621"
+      linkedin: "marijke-van-moerbeke-84303a34"
+    organizations:
+    - name: "OpenAnalytics"
+      href: "https://www.openanalytics.eu"
+      role: "Statistical Consultant"
+- name: "Weiwei Schultz"
+  roles:
+  - "contributor"
+  info:
+    role: "Contributor"
+    organizations:
+    - name: "Janssen R&D US"
+      role: "Associate Director Data Sciences"
+- name: "Dorien Roosen"
+  roles:
+  - "author"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "dorien@data-intuitive.com"
+      github: "dorien-er"
+      linkedin: "dorien-roosen"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Scientist"
+argument_groups:
+- name: "Arguments"
+  arguments:
+  - type: "file"
+    name: "--input"
+    alternatives:
+    - "-i"
+    description: "Input run directory"
+    info: null
+    example:
+    - "bcl_dir"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--sample_sheet"
+    alternatives:
+    - "-s"
+    description: "Pointer to the sample sheet"
+    info: null
+    example:
+    - "bcl_dir"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output"
+    alternatives:
+    - "-o"
+    description: "Output directory containig fastq files"
+    info: null
+    example:
+    - "fastq_dir"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--reports"
+    description: "Reports directory"
+    info: null
+    example:
+    - "reports_dir"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--test_mode"
+    description: "Should bcl-convert be run in test mode (using --first-tile-only)?"
+    info: null
+    default:
+    - false
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--strict_mode"
+    description: "Abort if any files are missing."
+    info: null
+    default:
+    - false
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--tiles"
+    description: "Process only a subset of tiles by a regular expression."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--exclude_tiles"
+    description: "Exclude set of tiles by a regular expression"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--no_lane_splitting"
+    description: "Wheter to avoid splitting FASTQ file by lane."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "bash_script"
+  path: "script.sh"
+  is_executable: true
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Convert bcl files to fastq files using bcl-convert.\nInformation about\
+  \ upgrading from bcl2fastq via\nhttps://emea.support.illumina.com/bulletins/2020/10/upgrading-from-bcl2fastq-to-bcl-convert.html\n\
+  and https://support.illumina.com/sequencing/sequencing_software/bcl-convert/compatibility.html\n"
+test_resources:
+- type: "bash_script"
+  path: "test.sh"
+  is_executable: true
+- type: "file"
+  path: "bcl2"
+info: null
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "midmem"
+    - "midcpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "ghcr.io/data-intuitive/bclconvert:4.2"
+  target_tag: "optional-gene-name-sanitation_build"
+  namespace_separator: "/"
+  setup:
+  - type: "apt"
+    packages:
+    - "procps"
+    interactive: false
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/demux/bcl_convert/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "docker"
+  output: "target/nextflow/demux/bcl_convert"
+  executable: "target/nextflow/demux/bcl_convert/main.nf"
+  viash_version: "0.9.4"
+  git_commit: "5dae5f779a16dde701d7012566194a79e308ed6f"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-2074-g5dae5f779a1"
+package_config:
+  name: "openpipeline"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.4"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"optional-gene-name-sanitation_build\""
+  - ".engines[.type == 'docker'].target_tag := 'optional-gene-name-sanitation_build'"
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

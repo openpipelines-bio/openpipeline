@@ -1,0 +1,763 @@
+name: "process_samples"
+namespace: "workflows/multiomics"
+version: "optional-gene-name-sanitation_build"
+authors:
+- name: "Dries Schaumont"
+  roles:
+  - "author"
+  - "maintainer"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "dries@data-intuitive.com"
+      github: "DriesSchaumont"
+      orcid: "0000-0002-4389-0440"
+      linkedin: "dries-schaumont"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Scientist"
+argument_groups:
+- name: "Inputs"
+  arguments:
+  - type: "string"
+    name: "--id"
+    description: "ID of the sample."
+    info: null
+    example:
+    - "foo"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--input"
+    alternatives:
+    - "-i"
+    description: "Path to the sample."
+    info: null
+    example:
+    - "input.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--rna_layer"
+    description: "Input layer for the gene expression modality. If not specified,\
+      \ .X is used."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--prot_layer"
+    description: "Input layer for the antibody capture modality. If not specified,\
+      \ .X is used."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--gdo_layer"
+    description: "Input layer for the guide-derived oligonucleotide (GDO) data. If\
+      \ not specified, .X is used."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Outputs"
+  arguments:
+  - type: "file"
+    name: "--output"
+    description: "Destination path to the output."
+    info: null
+    example:
+    - "output.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+- name: "Sample ID options"
+  description: "Options for adding the id to .obs on the MuData object. Having a sample\
+    \ \nid present in a requirement of several components for this pipeline.\n"
+  arguments:
+  - type: "boolean"
+    name: "--add_id_to_obs"
+    description: "Add the value passed with --id to .obs."
+    info: null
+    default:
+    - true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--add_id_obs_output"
+    description: ".Obs column to add the sample IDs to. Required and only used when\
+      \ \n--add_id_to_obs is set to 'true'\n"
+    info: null
+    default:
+    - "sample_id"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--add_id_make_observation_keys_unique"
+    description: "Join the id to the .obs index (.obs_names). \nOnly used when --add_id_to_obs\
+      \ is set to 'true'.\n"
+    info: null
+    default:
+    - true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "RNA filtering options"
+  arguments:
+  - type: "integer"
+    name: "--rna_min_counts"
+    description: "Minimum number of counts captured per cell."
+    info: null
+    example:
+    - 200
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--rna_max_counts"
+    description: "Maximum number of counts captured per cell."
+    info: null
+    example:
+    - 5000000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--rna_min_genes_per_cell"
+    description: "Minimum of non-zero values per cell."
+    info: null
+    example:
+    - 200
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--rna_max_genes_per_cell"
+    description: "Maximum of non-zero values per cell."
+    info: null
+    example:
+    - 1500000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--rna_min_cells_per_gene"
+    description: "Minimum of non-zero values per gene."
+    info: null
+    example:
+    - 3
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--rna_min_fraction_mito"
+    description: "Minimum fraction of UMIs that are mitochondrial."
+    info: null
+    example:
+    - 0.0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--rna_max_fraction_mito"
+    description: "Maximum fraction of UMIs that are mitochondrial."
+    info: null
+    example:
+    - 0.2
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--rna_min_fraction_ribo"
+    description: "Minimum fraction of UMIs that are mitochondrial."
+    info: null
+    example:
+    - 0.0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--rna_max_fraction_ribo"
+    description: "Maximum fraction of UMIs that are mitochondrial."
+    info: null
+    example:
+    - 0.2
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--skip_scrublet_doublet_detection"
+    description: "Skip the scrublet doublet detection step."
+    info: null
+    direction: "input"
+- name: "CITE-seq filtering options"
+  arguments:
+  - type: "integer"
+    name: "--prot_min_counts"
+    description: "Minimum number of counts per cell."
+    info: null
+    example:
+    - 3
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--prot_max_counts"
+    description: "Minimum number of counts per cell."
+    info: null
+    example:
+    - 5000000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--prot_min_proteins_per_cell"
+    description: "Minimum of non-zero values per cell."
+    info: null
+    example:
+    - 200
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--prot_max_proteins_per_cell"
+    description: "Maximum of non-zero values per cell."
+    info: null
+    example:
+    - 100000000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--prot_min_cells_per_protein"
+    description: "Minimum of non-zero values per protein."
+    info: null
+    example:
+    - 3
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "GDO filtering options"
+  arguments:
+  - type: "integer"
+    name: "--gdo_min_counts"
+    description: "Minimum number of counts per cell."
+    info: null
+    example:
+    - 3
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--gdo_max_counts"
+    description: "Minimum number of counts per cell."
+    info: null
+    example:
+    - 5000000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--gdo_min_guides_per_cell"
+    description: "Minimum of non-zero values per cell."
+    info: null
+    example:
+    - 200
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--gdo_max_guides_per_cell"
+    description: "Maximum of non-zero values per cell."
+    info: null
+    example:
+    - 100000000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--gdo_min_cells_per_guide"
+    description: "Minimum of non-zero values per guide."
+    info: null
+    example:
+    - 3
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Highly variable features detection"
+  arguments:
+  - type: "string"
+    name: "--highly_variable_features_var_output"
+    alternatives:
+    - "--filter_with_hvg_var_output"
+    description: "In which .var slot to store a boolean array corresponding to the\
+      \ highly variable genes."
+    info: null
+    default:
+    - "filter_with_hvg"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--highly_variable_features_obs_batch_key"
+    alternatives:
+    - "--filter_with_hvg_obs_batch_key"
+    description: "If specified, highly-variable genes are selected within each batch\
+      \ separately and merged. This simple \nprocess avoids the selection of batch-specific\
+      \ genes and acts as a lightweight batch correction method.\n"
+    info: null
+    default:
+    - "sample_id"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Mitochondrial & Ribosomal Gene Detection"
+  arguments:
+  - type: "string"
+    name: "--var_gene_names"
+    description: ".var column name to be used to detect mitochondrial/ribosomal genes\
+      \ instead of .var_names (default if not set).\nGene names matching with the\
+      \ regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will\
+      \ be \nidentified as mitochondrial or ribosomal genes, respectively. \n"
+    info: null
+    example:
+    - "gene_symbol"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--var_name_mitochondrial_genes"
+    description: "In which .var slot to store a boolean array corresponding the mitochondrial\
+      \ genes.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_name_mitochondrial_fraction"
+    description: "When specified, write the fraction of counts originating from mitochondrial\
+      \ genes \n(based on --mitochondrial_gene_regex) to an .obs column with the specified\
+      \ name.\nRequires --var_name_mitochondrial_genes.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--mitochondrial_gene_regex"
+    description: "Regex string that identifies mitochondrial genes from --var_gene_names.\n\
+      By default will detect human and mouse mitochondrial genes from a gene symbol.\n"
+    info: null
+    default:
+    - "^[mM][tT]-"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--var_name_ribosomal_genes"
+    description: "In which .var slot to store a boolean array corresponding the ribosomal\
+      \ genes.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_name_ribosomal_fraction"
+    description: "When specified, write the fraction of counts originating from ribosomal\
+      \ genes \n(based on --ribosomal_gene_regex) to an .obs column with the specified\
+      \ name.\nRequires --var_name_ribosomal_genes.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--ribosomal_gene_regex"
+    description: "Regex string that identifies ribosomal genes from --var_gene_names.\n\
+      By default will detect human and mouse ribosomal genes from a gene symbol.\n"
+    info: null
+    default:
+    - "^[Mm]?[Rr][Pp][LlSs]"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "QC metrics calculation options"
+  arguments:
+  - type: "string"
+    name: "--var_qc_metrics"
+    description: "Keys to select a boolean (containing only True or False) column\
+      \ from .var.\nFor each cell, calculate the proportion of total values for genes\
+      \ which are labeled 'True', \ncompared to the total sum of the values for all\
+      \ genes. Defaults to the combined values specified for\n--var_name_mitochondrial_genes\
+      \ and --highly_variable_features_var_output.\n"
+    info: null
+    example:
+    - "ercc,highly_variable"
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ","
+  - type: "integer"
+    name: "--top_n_vars"
+    description: "Number of top vars to be used to calculate cumulative proportions.\n\
+      If not specified, proportions are not calculated. `--top_n_vars 20,50` finds\n\
+      cumulative proportion to the 20th and 50th most expressed vars.\n"
+    info: null
+    default:
+    - 50
+    - 100
+    - 200
+    - 500
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ","
+- name: "PCA options"
+  arguments:
+  - type: "boolean_true"
+    name: "--pca_overwrite"
+    description: "Allow overwriting slots for PCA output."
+    info: null
+    direction: "input"
+- name: "CLR options"
+  arguments:
+  - type: "integer"
+    name: "--clr_axis"
+    description: "Axis to perform the CLR transformation on."
+    info: null
+    default:
+    - 0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "RNA Scaling options"
+  description: "Options for enabling scaling of the log-normalized data to unit variance\
+    \ and zero mean.\nThe scaled data will be output a different layer and representation\
+    \ with reduced dimensions\nwill be created and stored in addition to the non-scaled\
+    \ data.\n"
+  arguments:
+  - type: "boolean_true"
+    name: "--rna_enable_scaling"
+    description: "Enable scaling for the RNA modality."
+    info: null
+    direction: "input"
+  - type: "string"
+    name: "--rna_scaling_output_layer"
+    description: "Output layer where the scaled log-normalized data will be stored."
+    info: null
+    default:
+    - "scaled"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--rna_scaling_pca_obsm_output"
+    description: "Name of the .obsm key where the PCA representation of the log-normalized\n\
+      and scaled data is stored.\n"
+    info: null
+    default:
+    - "scaled_pca"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--rna_scaling_pca_loadings_varm_output"
+    description: "Name of the .varm key where the PCA loadings of the log-normalized\
+      \ and scaled\ndata is stored.\n"
+    info: null
+    default:
+    - "scaled_pca_loadings"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--rna_scaling_pca_variance_uns_output"
+    description: "Name of the .uns key where the variance and variance ratio will\
+      \ be stored as a map.\nThe map will contain two keys: variance and variance_ratio\
+      \ respectively.\n"
+    info: null
+    default:
+    - "scaled_pca_variance"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--rna_scaling_umap_obsm_output"
+    description: "Name of the .obsm key where the UMAP representation of the log-normalized\
+      \ and scaled data is stored."
+    info: null
+    default:
+    - "scaled_umap"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--rna_scaling_max_value"
+    description: "Clip (truncate) data to this value after scaling. If not specified,\
+      \ do not clip."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean_false"
+    name: "--rna_scaling_zero_center"
+    description: "If set, omit zero-centering variables, which allows to handle sparse\
+      \ input efficiently.\""
+    info: null
+    direction: "input"
+resources:
+- type: "nextflow_script"
+  path: "main.nf"
+  is_executable: true
+  entrypoint: "run_wf"
+- type: "file"
+  path: "utils"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "A pipeline to analyse multiple multiomics samples."
+test_resources:
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf"
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf2"
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf3"
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf4"
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf5"
+- type: "file"
+  path: "concat_test_data"
+- type: "file"
+  path: "pbmc_1k_protein_v3"
+- type: "file"
+  path: "10x_5k_lung_crispr"
+info:
+  test_dependencies:
+  - name: "move_layer"
+    namespace: "transform"
+  - name: "remove_modality"
+    namespace: "filter"
+  - name: "assert_test_workflow_2_output"
+    namespace: "test_workflows/multiomics/process_samples"
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+dependencies:
+- name: "metadata/add_id"
+  repository:
+    type: "local"
+- name: "workflows/multiomics/split_modalities"
+  alias: "split_modalities_workflow"
+  repository:
+    type: "local"
+- name: "dataflow/merge"
+  repository:
+    type: "local"
+- name: "dataflow/concatenate_h5mu"
+  repository:
+    type: "local"
+- name: "workflows/rna/rna_singlesample"
+  repository:
+    type: "local"
+- name: "workflows/prot/prot_singlesample"
+  repository:
+    type: "local"
+- name: "workflows/gdo/gdo_singlesample"
+  repository:
+    type: "local"
+- name: "workflows/multiomics/process_batches"
+  repository:
+    type: "local"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+build_info:
+  config: "src/workflows/multiomics/process_samples/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "native"
+  output: "target/nextflow/workflows/multiomics/process_samples"
+  executable: "target/nextflow/workflows/multiomics/process_samples/main.nf"
+  viash_version: "0.9.4"
+  git_commit: "5dae5f779a16dde701d7012566194a79e308ed6f"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-2074-g5dae5f779a1"
+  dependencies:
+  - "target/nextflow/metadata/add_id"
+  - "target/_private/nextflow/workflows/multiomics/split_modalities"
+  - "target/nextflow/dataflow/merge"
+  - "target/nextflow/dataflow/concatenate_h5mu"
+  - "target/nextflow/workflows/rna/rna_singlesample"
+  - "target/nextflow/workflows/prot/prot_singlesample"
+  - "target/nextflow/workflows/gdo/gdo_singlesample"
+  - "target/nextflow/workflows/multiomics/process_batches"
+package_config:
+  name: "openpipeline"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.4"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"optional-gene-name-sanitation_build\""
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

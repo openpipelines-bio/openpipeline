@@ -1,0 +1,20 @@
+# Arguments
+input: # please fill in - example: "path/to/file"
+# output: "$id.$key.output"
+modality: "rna"
+# layer: "foo"
+de_method: "t-test"
+groupby: # please fill in - example: "foo"
+resource_name: "consensus"
+gene_symbol: "gene_symbol"
+expr_prop: 0.1
+min_cells: 5
+aggregate_method: "rra"
+# consensus_opts: ["foo"]
+return_all_lrs: false
+n_perms: 100
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

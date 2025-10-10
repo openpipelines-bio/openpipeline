@@ -1,0 +1,53 @@
+# Query Input
+id: # please fill in - example: "foo"
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# layer: "foo"
+input_obs_batch_label: # please fill in - example: "sample"
+# input_obs_size_factor: "foo"
+# input_obs_categorical_covariate: ["foo"]
+# input_obs_continuous_covariate: ["foo"]
+# input_var_gene_names: "foo"
+sanitize_gene_names: true
+
+# Reference input
+reference: # please fill in - example: "reference.h5mu"
+reference_obs_target: # please fill in - example: "cell_type"
+reference_obs_batch_label: # please fill in - example: "sample"
+# reference_obs_size_factor: "foo"
+# reference_obs_categorical_covariate: ["foo"]
+# reference_obs_continuous_covariate: ["foo"]
+unlabeled_category: "Unknown"
+# reference_var_hvg: "foo"
+# reference_var_gene_names: "foo"
+
+# scVI, scANVI and scArches training options
+# early_stopping: true
+early_stopping_monitor: "elbo_validation"
+early_stopping_patience: 45
+early_stopping_min_delta: 0.0
+# max_epochs: 123
+reduce_lr_on_plateau: true
+lr_factor: 0.6
+lr_patience: 30.0
+
+# Leiden clustering options
+leiden_resolution: [1.0]
+
+# Neighbor classifier arguments
+knn_weights: "uniform"
+knn_n_neighbors: 15
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+output_obs_predictions: "scanvi_pred"
+output_obs_probability: "scanvi_probabilities"
+output_obsm_integrated: "X_integrated_scanvi"
+# output_compression: "gzip"
+# output_model: "$id.$key.output_model"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments
