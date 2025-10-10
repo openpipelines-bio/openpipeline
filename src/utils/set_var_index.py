@@ -2,7 +2,7 @@ import anndata as ad
 import re
 
 
-def sanitize_gene_names(gene_names: list[str]) -> list[str]:
+def strip_version_number(gene_names: list[str]) -> list[str]:
     """Sanitize gene names by removing version numbers.
 
     Parameters
@@ -40,7 +40,7 @@ def set_var_index(
     gene_names = adata.var[var_name] if var_name else adata.var.index
 
     if sanitize_gene_names:
-        gene_names = sanitize_gene_names(gene_names)
+        gene_names = strip_version_number(gene_names)
 
     adata.var.index = gene_names
 
