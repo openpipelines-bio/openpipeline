@@ -36,7 +36,7 @@ def is_normalized(layer):
         row_sums = layer.sum(axis=1)
         exp_row_sums = exp_layer.sum(axis=1)
 
-    is_normalized = np.allclose(row_sums, 1)
+    is_normalized = np.allclose(row_sums, row_sums[0])
     is_log1p_normalized = np.isfinite(exp_row_sums).all() and np.allclose(
         exp_row_sums, exp_row_sums[0]
     )
