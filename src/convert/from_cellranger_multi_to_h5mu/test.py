@@ -203,5 +203,33 @@ def test_custom_modality(run_component, tmp_path):
     assert "feature_reference" in converted_data.mod["custom"].uns
 
 
+def test_antibody_and_cell_barcode_probes(run_component, tmp_path):
+    input_dir = f"{meta['resources_dir']}/10x_4plex_dtc/processed/10x_4plex_dtc.cellranger_multi.output"
+    output_dir = tmp_path / "converted"
+    output_path_template = output_dir / "*.h5mu"
+    samples_csv = tmp_path / "samples.csv"
+    # run component
+    run_component(
+        [
+            "--input",
+            input_dir,
+            "--output",
+            str(output_path_template),
+            "--output_compression",
+            "gzip",
+            "--sample_csv",
+            samples_csv,
+        ]
+    )
+    assert output_dir.is_dir()
+
+    # check output
+    samples = [item for item in output_dir.iterdir() if item.is_file()]
+    assert len(samples) == 4
+    output_path = samples[0]
+    converted_data = read_h5mu(output_path)
+    assert list(converted_data.mod.keys()) == ["rna", "prot"]
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

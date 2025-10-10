@@ -1,3 +1,37 @@
+# openpipelines 3.x.x
+
+## BREAKING
+
+* `differential_expression/create_pseudobulks`: Removed functionality to filter psuedobulk samples based on number of aggregated samples threshold, as this functionality is now covered in `filter/delimit_count` (PR #1044).
+
+## NEW FUNCTIONALITY
+
+* `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).
+
+* `filter/delimit_counts`: Turns an .obs column of a MuData file containing count data into a boolean column based on thresholds (PR #1069)
+
+* `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078, #1079, #1082).
+
+## EXPERIMENTAL
+
+* `differential_expression/deseq2`: Performs differential expression analysis using DESeq2 on bulk or pseudobulk datasets (PR #1044).
+
+* `workflows/differential_expression/pseudobulk_deseq2`: Workflow for generating pseudobulk samples from single-cell data followed by DESeq2 differential expression analysis (PR #1044)
+
+## MAJOR CHANGES
+
+* `mapping/samtools_sort` has been deprecated and will be removed in openpipeline 4.0. Use [vsh://biobox/samtools/samtools_sort](https://www.viash-hub.com/packages/biobox/latest/components/samtools/samtools_sort) instead.
+
+## MINOR CHANGES
+
+* `transform/normalize_total`, `transform/clr`, `transform/log1p`: Add disk resource labels (PR #1073).
+
+* `integrate/totalvi`: Add `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` arguments to include additional covariates during model training (PR #1076).
+  
+* `workflows/integration`: Surface `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` in the `totalvi_leiden` and `scvi_leiden` workflows (PR #1076).
+  
+* `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES
@@ -34,6 +68,8 @@ Warning: These experimental features are subject to change in future releases.
   to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis (PR #1042).
 
 * Added `annotate/singler`: Cell type annotation using SingleR (PR #1051).
+
+* Added `tiledb/move_mudata_obsm_to_tiledb` (PR #1065).
 
 ## MAJOR CHANGES
 
@@ -74,8 +110,9 @@ Warning: These experimental features are subject to change in future releases.
 * Add missing CUDA enabled `jaxlib` to components that use `scvi-tools` (`scanvi`, `scarches`, `scvi` and `totalvi`) (PR #1028)
 
 * `leiden`: fix issue where the logging system was shut down prematurely after the calculations were done (PR #1030)
-
 * Added missing `gpu` label to `scarches` component (PR #1027).
+
+* `conversion/from_cellranger_multi_to_h5mu`: fix conversion to MuData for experiments that combine probe barcodes with other feature barcodes (e.g. Antibody Capture and CIRSPR Guide Capture) (PR #1062).
 
 # openpipelines 2.1.2
 
