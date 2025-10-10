@@ -35,7 +35,7 @@ arguments:
     type: file
     required: true
     description: Pointer to the sample sheet
-    example: sample_sheet.csv
+    example: SampleSheet.csv
   - name: "--demultiplexer"
     type: string
     description: The multiplexer to use, one of bclconvert or mkfastq

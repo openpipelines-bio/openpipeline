@@ -12,14 +12,14 @@ arguments:
     type: file
     must_exist: true
     description: Input SAM or BAM file.
-    example: input.bam, input.sam
+    example: ["input.bam", "input.sam"]
     direction: input
     required: true
   - name: "--output"
     alternatives: ["-o"]
     type: file
     description: Output alignment file.
-    example: output.sam, output.bam
+    example: ["output.sam", "output.bam"]
     direction: output
   - name: "--bam"
     type: boolean_true

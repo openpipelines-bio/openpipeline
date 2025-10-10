@@ -19,7 +19,7 @@ argument_groups:
         name: --input
         required: true
         description: Path to the SAM/BAM files containing the mapped reads.
-        example: [ mysample1.BAM, mysample2.BAM ]
+        example: [ "mysample1.BAM", "mysample2.BAM" ]
         multiple: true
         info:
           orig_arg: samfilenames
