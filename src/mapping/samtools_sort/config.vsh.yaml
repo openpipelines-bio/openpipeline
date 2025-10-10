@@ -1,5 +1,6 @@
 name: samtools_sort
 namespace: mapping
+status: deprecated
 scope: "public"
 description: |
   Sort and (optionally) index alignments.
