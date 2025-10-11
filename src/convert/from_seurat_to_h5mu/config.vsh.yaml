@@ -106,6 +106,8 @@ argument_groups:
     direction: output
     required: true
     example: output.h5mu
+  __merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: r_script
     path: script.R

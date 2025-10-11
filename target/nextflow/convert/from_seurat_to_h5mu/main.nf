@@ -3260,6 +3260,22 @@ meta = [
           "direction" : "output",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_compression",
+          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "example" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     }
@@ -3462,7 +3478,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_seurat_to_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "4a54a9f7efcb948d2a8bf865b2263c981dd3019b",
+    "git_commit" : "dfae1521d290fb80974c58bfd73f18c81191a271",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3540,7 +3556,8 @@ par <- list(
   "varp_mapping" = $( if [ ! -z ${VIASH_PAR_VARP_MAPPING+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_VARP_MAPPING" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
   "x_mapping" = $( if [ ! -z ${VIASH_PAR_X_MAPPING+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_X_MAPPING" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
   "modality" = $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_MODALITY" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
-  "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi )
+  "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "output_compression" = $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT_COMPRESSION" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi )
 )
 meta <- list(
   "name" = $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo -n "'"; echo -n "$VIASH_META_NAME" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
@@ -3623,14 +3640,17 @@ h5ad_obj <- as_AnnData(
   obsp_mapping = par\\$obsp_mapping,
   varp_mapping = par\\$varp_mapping,
   x_mapping = par\\$x_mapping,
-  assay_name = par\\$assay
+  assay_name = par\\$assay,
+  output_class = c("ReticulateAnnData")
 )
 
 # Create MuData object
-mdata_obj <- md\\$MuData(setNames(list(h5ad_obj), par\\$modality))
+mods <- reticulate::dict()
+mods[[par\\$modality]] <- h5ad_obj
+mdata_obj <- md\\$MuData(mods)
 
 # Save the MuData object as H5MU file
-mdata_obj\\$write_h5mu(par\\$output)
+mdata_obj\\$write_h5mu(par\\$output, compression = par\\$output_compression)
 VIASHMAIN
 Rscript "$tempscript"
 '''
