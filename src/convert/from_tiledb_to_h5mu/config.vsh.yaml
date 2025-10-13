@@ -40,6 +40,7 @@ argument_groups:
         type: file
         direction: output
         required: true
+        example: output.h5mu
         description: |
           The output MuData file.
       - name: "--output_modality"
