@@ -71,6 +71,8 @@ Warning: These experimental features are subject to change in future releases.
 
 * Added `annotate/singler`: Cell type annotation using SingleR (PR #1051).
 
+* Added `tiledb_soma_healthcheck` component (PR #1055). 
+
 * Added `tiledb/move_mudata_obsm_to_tiledb` (PR #1065).
 
 ## MAJOR CHANGES
