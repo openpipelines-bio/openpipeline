@@ -1,4 +1,8 @@
-# openpipelines 3.x.x
+# openpipelines 3.1.0
+
+## Experimental
+
+* Added `from_tiledb_to_h5mu` component (PR #1068).
 
 ## BREAKING
 
