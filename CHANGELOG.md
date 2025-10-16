@@ -1,4 +1,8 @@
-# openpipelines 3.x.x
+# openpipelines 3.1.0
+
+## Experimental
+
+* Added `from_tiledb_to_h5mu` component (PR #1068).
 
 ## BREAKING
 
@@ -12,13 +16,15 @@
 
 * `filter/delimit_counts`: Turns an .obs column of a MuData file containing count data into a boolean column based on thresholds (PR #1069)
 
-* `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078, #1079).
+* `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078, #1079, #1082).
 
 ## EXPERIMENTAL
 
 * `differential_expression/deseq2`: Performs differential expression analysis using DESeq2 on bulk or pseudobulk datasets (PR #1044).
 
 * `workflows/differential_expression/pseudobulk_deseq2`: Workflow for generating pseudobulk samples from single-cell data followed by DESeq2 differential expression analysis (PR #1044)
+
+* Deprecated all scGPT functionality (PR #1075).
 
 ## MAJOR CHANGES
 
@@ -72,6 +78,8 @@ Warning: These experimental features are subject to change in future releases.
   to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis (PR #1042).
 
 * Added `annotate/singler`: Cell type annotation using SingleR (PR #1051).
+
+* Added `tiledb_soma_healthcheck` component (PR #1055). 
 
 * Added `tiledb/move_mudata_obsm_to_tiledb` (PR #1065).
 
