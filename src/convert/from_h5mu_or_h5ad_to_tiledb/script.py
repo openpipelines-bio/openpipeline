@@ -681,7 +681,7 @@ def main(par):
             "obs_field_name": par["obs_index_name_output"],
             "var_field_name": par["prot_var_index_name_output"],
             "append_obsm_varm": True,
-            "allow_duplicate_obs_ids": True,  # We are adding a new Measurement to existing observations
+            "allow_duplicate_obs_ids": True,  # Adding a new Measurement to existing observations
         }
         func_to_call = tiledbsoma.io.register_h5ads
         _log_arguments(func_to_call, register_prot_args)
