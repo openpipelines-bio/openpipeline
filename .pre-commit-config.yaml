@@ -2,7 +2,7 @@
 repos:
 - repo: https://github.com/astral-sh/ruff-pre-commit
   # Ruff version.
-  rev: v0.12.1
+  rev: v0.14.0
   hooks:
     - id: ruff-check
       args: [ --fix ]
@@ -19,6 +19,6 @@ repos:
       - styler
       - knitr
 - repo: https://github.com/lorenzwalthert/precommit
-  rev: v0.4.3.9012 
+  rev: v0.4.3.9015 
   hooks:
     - id: lintr
