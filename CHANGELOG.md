@@ -1,13 +1,5 @@
 # openpipelines 3.1.0
 
-## Experimental
-
-* Added `from_tiledb_to_h5mu` component (PR #1068).
-
-## BREAKING
-
-* `differential_expression/create_pseudobulks`: Removed functionality to filter psuedobulk samples based on number of aggregated samples threshold, as this functionality is now covered in `filter/delimit_count` (PR #1044).
-
 ## NEW FUNCTIONALITY
 
 * `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).
@@ -22,7 +14,11 @@
 
 * `workflows/differential_expression/pseudobulk_deseq2`: Workflow for generating pseudobulk samples from single-cell data followed by DESeq2 differential expression analysis (PR #1044)
 
+* `differential_expression/create_pseudobulks`: Removed functionality to filter psuedobulk samples based on number of aggregated samples threshold, as this functionality is now covered in `filter/delimit_count` (PR #1044).
+
 * Deprecated all scGPT functionality (PR #1075).
+
+* Added `from_tiledb_to_h5mu` component (PR #1068).
 
 ## MAJOR CHANGES
 
