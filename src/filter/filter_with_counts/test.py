@@ -3,11 +3,16 @@ import sys
 from pathlib import Path
 import pytest
 import numpy as np
+import scipy
+import anndata as ad
+import pandas as pd
+import subprocess
+import re
 
 ## VIASH START
 meta = {
     "executable": "./target/executable/filter/filter_with_counts/filter_with_counts",
-    "resources_dir": "resources_test/",
+    "resources_dir": "src/utils",
     "config": "/home/di/code/openpipeline/src/filter/filter_with_counts/config.vsh.yaml",
 }
 
@@ -206,6 +211,45 @@ def test_filter_using_different_layer(
     assert list(mu_out.mod["prot"].var["feature_types"].cat.categories) == [
         "Antibody Capture"
     ]
+
+
+def test_input_with_zeroes_in_data(run_component, random_h5mu_path):
+    """
+    When loading external data, the data might be malformatted and cause segfault issues
+    """
+    rng = np.random.default_rng(seed=1)
+    random_counts = scipy.sparse.random(
+        100, 100, density=0.05, format="csr", dtype=np.int32, rng=rng
+    )
+
+    random_counts.data = np.append(
+        random_counts.data,
+        rng.integers(np.iinfo(np.int32).max, size=197, dtype=np.int32, endpoint=False),
+    )
+    random_counts.indices = np.append(
+        random_counts.indices,
+        rng.integers(100, dtype=np.int32, size=197, endpoint=True),
+    )
+
+    mod1 = ad.AnnData(
+        X=random_counts,
+        obs=pd.DataFrame(index=pd.RangeIndex(100)),
+        var=pd.DataFrame(index=pd.RangeIndex(100)),
+    )
+    mudata_mod1 = mu.MuData({"rna": mod1})
+    input_path = random_h5mu_path()
+    output_path = random_h5mu_path()
+    mudata_mod1.write(input_path)
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            ["--input", input_path, "--output", output_path, "--modality", "rna"]
+        )
+    assert re.search(
+        r"The provided sparse matrix \(i.e. X from modality rna\) is malformatted\. "
+        r"The number of elements that the matrix should hold \(i\.e\. \.nnz=500\) does not correspond with "
+        r"the number of elements actually being stored \(i\.e\. \.data\.size=697\)",
+        err.value.stdout.decode("utf-8"),
+    )
 
 
 if __name__ == "__main__":
