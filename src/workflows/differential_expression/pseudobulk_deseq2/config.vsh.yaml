@@ -8,7 +8,10 @@ authors:
     roles: [ author ]
   - __merge__: /src/authors/weiwei_schultz.yaml
     roles: [ contributor ]
-
+info:
+  test_dependencies:
+    - name: pseudobulk_deseq2_test
+      namespace:  test_workflows/differential_expression
 argument_groups:
   - name: Inputs
     arguments:
