@@ -38,6 +38,10 @@
   
 * `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
 
+## BUG FIX
+
+* `differential_expression/create_pseudobulks`: Fixed the check to verify that the raw counts layer was passed (PR #1072).
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES

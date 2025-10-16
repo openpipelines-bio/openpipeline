@@ -27,12 +27,21 @@ logger = setup_logger()
 
 
 def is_normalized(layer):
+    exp_layer = np.expm1(layer)  # Inverse of log1p
+
     if sp.issparse(layer):
         row_sums = np.array(layer.sum(axis=1)).flatten()
+        exp_row_sums = np.array(exp_layer.sum(axis=1)).flatten()
     else:
         row_sums = layer.sum(axis=1)
+        exp_row_sums = exp_layer.sum(axis=1)
 
-    return np.allclose(row_sums, 1)
+    is_normalized = np.allclose(row_sums, row_sums[0])
+    is_log1p_normalized = np.isfinite(exp_row_sums).all() and np.allclose(
+        exp_row_sums, exp_row_sums[0]
+    )
+
+    return is_normalized or is_log1p_normalized
 
 
 def count_obs(adata, pb_adata, obs_cols):
