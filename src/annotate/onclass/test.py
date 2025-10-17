@@ -29,12 +29,12 @@ def test_simple_execution(run_component, random_h5mu_path):
         [
             "--input",
             input_file,
-            "--input_var_gene_names",
-            "gene_symbol",
             "--reference",
             reference_file,
             "--reference_obs_target",
             "cell_ontology_class",
+            "--reference_var_gene_names",
+            "ensemblid",
             "--cl_nlp_emb_file",
             cl_nlp_emb_file,
             "--cl_ontology_file",
@@ -70,12 +70,12 @@ def test_custom_obs(run_component, random_h5mu_path):
         [
             "--input",
             input_file,
-            "--input_var_gene_names",
-            "gene_symbol",
             "--reference",
             reference_file,
             "--reference_obs_target",
             "cell_ontology_class",
+            "--reference_var_gene_names",
+            "ensemblid",
             "--output_obs_predictions",
             "dummy_pred_1",
             "--output_obs_probability",
@@ -116,8 +116,6 @@ def test_no_model_no_reference_error(run_component, random_h5mu_path):
             [
                 "--input",
                 input_file,
-                "--input_var_gene_names",
-                "gene_symbol",
                 "--output",
                 output_file,
                 "--cl_nlp_emb_file",
@@ -128,6 +126,8 @@ def test_no_model_no_reference_error(run_component, random_h5mu_path):
                 cl_obo_file,
                 "--reference_obs_target",
                 "cell_ontology_class",
+                "--reference_var_gene_names",
+                "ensemblid",
             ]
         )
     assert re.search(
@@ -145,6 +145,8 @@ def test_pretrained_model(run_component, random_h5mu_path):
             input_file,
             "--input_var_gene_names",
             "gene_symbol",
+            "--sanitize_gene_names",
+            "False",
             "--cl_nlp_emb_file",
             cl_nlp_emb_file,
             "--cl_ontology_file",
