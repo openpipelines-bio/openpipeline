@@ -1,9 +1,3 @@
-# openpipelines x.x.x
-
-## BREAKING
-
-* `annotate/celltypist`: This component now requires to pass a raw count layer, that will be lognormalized with a target sum of 10000, the required count format for CellTypist (PR #1083). 
-
 # openpipelines 3.1.0
 
 ## NEW FUNCTIONALITY
@@ -13,6 +7,10 @@
 * `filter/delimit_counts`: Turns an .obs column of a MuData file containing count data into a boolean column based on thresholds (PR #1069)
 
 * `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078, #1079, #1082).
+
+* `annotate/celltypist`: enable CUDA acceleration (PR #1083).
+
+* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083).
 
 ## EXPERIMENTAL
 
