@@ -4,6 +4,7 @@ import mudata as mu
 import anndata as ad
 import pandas as pd
 import numpy as np
+from torch.cuda import is_available as cuda_is_available
 
 ## VIASH START
 par = {
@@ -42,6 +43,8 @@ from set_var_index import set_var_index
 from subset_vars import subset_vars
 
 logger = setup_logger()
+use_gpu = cuda_is_available()
+logger.info("GPU enabled? %s", use_gpu)
 
 
 def check_celltypist_format(indata):
@@ -125,11 +128,12 @@ def main(par):
             use_SGD=par["use_SGD"],
             feature_selection=par["feature_selection"],
             check_expression=True,
+            use_GPU=use_gpu,
         )
 
     logger.info("Predicting CellTypist annotations")
     predictions = celltypist.annotate(
-        input_modality, model, majority_voting=par["majority_voting"]
+        input_modality, model, majority_voting=par["majority_voting"], use_GPU=use_gpu
     )
 
     input_adata.obs[par["output_obs_predictions"]] = predictions.predicted_labels[
