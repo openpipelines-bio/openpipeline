@@ -3355,6 +3355,14 @@ meta = [
       "path" : "/resources_test/annotation_test_data/TS_Blood_filtered.h5mu"
     }
   ],
+  "info" : {
+    "test_dependencies" : [
+      {
+        "name" : "pseudobulk_deseq2_test",
+        "namespace" : "test_workflows/differential_expression"
+      }
+    ]
+  },
   "status" : "enabled",
   "scope" : {
     "image" : "public",
@@ -3487,7 +3495,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/differential_expression/pseudobulk_deseq2",
     "viash_version" : "0.9.4",
-    "git_commit" : "c226a5fab2a9a13693ae8992384c0b319bd3258b",
+    "git_commit" : "f34f438c61c8b9584bc783c106fbebbf62492d46",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

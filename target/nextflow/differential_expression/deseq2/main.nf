@@ -3463,7 +3463,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/differential_expression/deseq2",
     "viash_version" : "0.9.4",
-    "git_commit" : "c226a5fab2a9a13693ae8992384c0b319bd3258b",
+    "git_commit" : "f34f438c61c8b9584bc783c106fbebbf62492d46",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3643,7 +3643,8 @@ parse_design_formula <- function(design_formula) {
 
 # Validate and prepare contrast specifications
 prepare_contrast_matrix <- function(
-    design_factors, contrast_column, metadata) {
+  design_factors, contrast_column, metadata
+) {
   # Validate required columns exist
   required_columns <- unique(c(design_factors, contrast_column))
   missing_columns <- setdiff(required_columns, colnames(metadata))
@@ -3810,7 +3811,8 @@ deseq2_analysis <- function(dds, contrast_specs) {
 
 # Save results and print summary statistics
 save_results_and_log_summary <- function(
-    results, output_file, cell_group = NULL) {
+  results, output_file, cell_group = NULL
+) {
   group_text <- if (!is.null(cell_group)) paste(" for", cell_group) else ""
   cat("Saving results", group_text, "to", output_file, "\\\\n")
 
