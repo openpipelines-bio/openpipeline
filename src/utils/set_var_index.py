@@ -3,19 +3,27 @@ import re
 
 
 def strip_version_number(gene_names: list[str]) -> list[str]:
-    """Sanitize gene names by removing version numbers.
+    """Sanitize ensemble ID's by removing version numbers.
 
     Parameters
     ----------
     gene_names : list[str]
-        List of gene names to sanitize.
+        List of ensemble ID's to sanitize.
 
     Returns
     -------
     list[str]
-        List of sanitized gene names.
+        List of sanitized ensemble ID's.
     """
-    return [re.sub("\\.[0-9]+$", "", s) for s in gene_names]
+
+    # Pattern matches Ensembl IDs: starts with ENS, followed by any characters,
+    # then an eleven digit number, optionally followed by .version_number
+    ensembl_pattern = re.compile(r"^(ENS.*\d{11})(?:\.\d+)?$")
+
+    return [
+        match.group(1) if (match := ensembl_pattern.match(gene)) else gene
+        for gene in gene_names
+    ]
 
 
 def set_var_index(
