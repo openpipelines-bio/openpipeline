@@ -3,7 +3,6 @@ import celltypist
 import mudata as mu
 import anndata as ad
 import pandas as pd
-import numpy as np
 
 ## VIASH START
 par = {
@@ -19,7 +18,6 @@ par = {
     "input_reference_gene_overlap": 100,
     "reference_obs_target": "cell_ontology_class",
     "reference_var_input": None,
-    "check_expression": False,
     "feature_selection": True,
     "majority_voting": True,
     "output_compression": "gzip",
@@ -42,12 +40,6 @@ from set_var_index import set_var_index
 from subset_vars import subset_vars
 
 logger = setup_logger()
-
-
-def check_celltypist_format(indata):
-    if np.abs(np.expm1(indata[0]).sum() - 10000) > 1:
-        return False
-    return True
 
 
 def main(par):
