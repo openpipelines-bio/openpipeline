@@ -34,6 +34,7 @@
   
 * `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
 
+* Various components and workflows in `integrate`, `annotate`, `workflows/integration` and `workflows/annotation`: Make feature name sanitation optional (PR #1084).
 
 ## BUG FIXES
 

@@ -71,6 +71,10 @@ argument_groups:
         type: string
         required: false
         description: ".var column containing gene names. By default, use the index."
+      - name: "--sanitize_gene_names"
+        type: boolean
+        description: Whether to sanitize gene names by removing version numbers. Recommended when using ENSEMBL ids.
+        default: true
 
   - name: Reference input
     arguments:

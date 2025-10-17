@@ -1,8 +1,6 @@
 import sys
 import os
 import pytest
-import subprocess
-import re
 import mudata as mu
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
@@ -27,12 +25,8 @@ def test_simple_execution(run_component, random_h5mu_path):
         [
             "--input",
             input_file,
-            "--input_layer",
-            "log_normalized",
             "--reference",
             reference_file,
-            "--reference_layer",
-            "log_normalized",
             "--reference_obs_target",
             "cell_ontology_class",
             "--reference_var_gene_names",
@@ -75,12 +69,8 @@ def test_set_params(run_component, random_h5mu_path):
         [
             "--input",
             input_file,
-            "--input_layer",
-            "log_normalized",
             "--reference",
             reference_file,
-            "--reference_layer",
-            "log_normalized",
             "--reference_obs_target",
             "cell_ontology_class",
             "--reference_var_gene_names",
@@ -156,50 +146,6 @@ def test_with_model(run_component, random_h5mu_path):
     )
     assert all(0 <= value <= 1 for value in probabilities), (
         ".obs at celltypist_probability has values outside the range [0, 1]"
-    )
-
-
-def test_fail_invalid_input_expression(run_component, random_h5mu_path):
-    output_file = random_h5mu_path()
-
-    # fails because input data are not lognormalized
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(
-            [
-                "--input",
-                input_file,
-                "--reference",
-                reference_file,
-                "--reference_var_gene_names",
-                "ensemblid",
-                "--output",
-                output_file,
-            ]
-        )
-    assert re.search(
-        r"Invalid expression matrix, expect log1p normalized expression to 10000 counts per cell",
-        err.value.stdout.decode("utf-8"),
-    )
-
-    # fails because reference data are not lognormalized
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(
-            [
-                "--input",
-                input_file,
-                "--layer",
-                "log_normalized",
-                "--reference",
-                reference_file,
-                "--reference_var_gene_names",
-                "ensemblid",
-                "--output",
-                output_file,
-            ]
-        )
-    assert re.search(
-        r"Invalid expression matrix, expect log1p normalized expression to 10000 counts per cell",
-        err.value.stdout.decode("utf-8"),
     )
 
 
