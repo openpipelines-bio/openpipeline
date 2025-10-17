@@ -40,7 +40,16 @@ def set_var_index(
     gene_names = adata.var[var_name] if var_name else adata.var.index
 
     if sanitize_gene_names:
+        ori_gene_names = len(gene_names)
         gene_names = strip_version_number(gene_names)
+        sanitized_gene_names = len(set(gene_names))
+
+        assert ori_gene_names == sanitized_gene_names, (
+            "Sanitizing gene names resulted in duplicated gene names.\n"
+            "Please ensure unique gene names before proceeding.\n"
+            "Please make sure --var_gene_names contains ensembl IDs (not gene symbols) "
+            "when --sanitize_gene_names is set to True."
+        )
 
     adata.var.index = gene_names
 
