@@ -36,6 +36,10 @@
 
 * Various components and workflows in `integrate`, `annotate`, `workflows/integration` and `workflows/annotation`: Make feature name sanitation optional (PR #1084).
 
+## BUG FIXES
+
+* `filter/filter_with_counts`: this component would sometimes crash (segfault) when processing malformatted sparse matrices. A proper error message is now provided in this case (PR #1086).
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES
