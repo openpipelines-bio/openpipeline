@@ -1,10 +1,10 @@
-# openpipelines 3.x.x
+# openpipelines x.x.x
 
 ## BREAKING
 
-* `differential_expression/create_pseudobulks`: Removed functionality to filter pseudobulk samples based on number of aggregated samples threshold, as this functionality is now covered in `filter/delimit_count` (PR #1044).
+* `annotate/celltypist`: This component now requires to pass a raw count layer, that will be lognormalized with a target sum of 10000, the required count format for CellTypist (PR #1083). 
 
-* `annotate/celtypist`: This component now requires to pass a raw count layer, that will be lognormalized with a target sum of 10000, the required count format for CellTypist (PR #1083). 
+# openpipelines 3.1.0
 
 ## NEW FUNCTIONALITY
 
@@ -12,13 +12,19 @@
 
 * `filter/delimit_counts`: Turns an .obs column of a MuData file containing count data into a boolean column based on thresholds (PR #1069)
 
-* `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078, #1079).
+* `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078, #1079, #1082).
 
 ## EXPERIMENTAL
 
 * `differential_expression/deseq2`: Performs differential expression analysis using DESeq2 on bulk or pseudobulk datasets (PR #1044).
 
 * `workflows/differential_expression/pseudobulk_deseq2`: Workflow for generating pseudobulk samples from single-cell data followed by DESeq2 differential expression analysis (PR #1044)
+
+* `differential_expression/create_pseudobulks`: Removed functionality to filter pseudobulk samples based on number of aggregated samples threshold, as this functionality is now covered in `filter/delimit_count` (PR #1044).
+
+* Deprecated all scGPT functionality (PR #1075).
+
+* Added `from_tiledb_to_h5mu` component (PR #1068).
 
 ## MAJOR CHANGES
 
@@ -33,6 +39,11 @@
 * `workflows/integration`: Surface `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` in the `totalvi_leiden` and `scvi_leiden` workflows (PR #1076).
   
 * `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
+
+
+## BUG FIXES
+
+* `filter/filter_with_counts`: this component would sometimes crash (segfault) when processing malformatted sparse matrices. A proper error message is now provided in this case (PR #1086).
 
 # openpipelines 3.0.0
 
@@ -70,6 +81,8 @@ Warning: These experimental features are subject to change in future releases.
   to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis (PR #1042).
 
 * Added `annotate/singler`: Cell type annotation using SingleR (PR #1051).
+
+* Added `tiledb_soma_healthcheck` component (PR #1055). 
 
 * Added `tiledb/move_mudata_obsm_to_tiledb` (PR #1065).
 
