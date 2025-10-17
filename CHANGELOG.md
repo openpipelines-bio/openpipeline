@@ -8,8 +8,6 @@
 
 * `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078, #1079, #1082).
 
-* `annotate/celltypist`: enable CUDA acceleration (PR #1083).
-
 * `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083).
 
 ## EXPERIMENTAL
