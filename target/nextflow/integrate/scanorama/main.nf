@@ -3427,7 +3427,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scanorama",
     "viash_version" : "0.9.4",
-    "git_commit" : "7ba87f68711ba73590292580ea4dc404f799e7fa",
+    "git_commit" : "4e1ca7e158b0ceae76fb98327cfb8caae0ead1f2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
