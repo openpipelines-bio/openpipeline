@@ -1,10 +1,15 @@
-name: celltypist
-namespace: annotate
+name: "celltypist"
+namespace: "workflows/annotation"
 scope: "public"
-description: Automated cell type annotation tool for scRNA-seq datasets on the basis of logistic regression classifiers optimised by the stochastic gradient descent algorithm.
+description: "Cell type annotation workflow by performing lognormalization of the raw counts layer followed by cell type annotation with CellTypist."
+info:
+  name: "CellTypist annotation"
+  test_dependencies:
+    - name: celltypist_test
+      namespace: test_workflows/annotation
 authors:
-  - __merge__: /src/authors/jakub_majercik.yaml
-    roles: [ author ]
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author, maintainer ]
   - __merge__: /src/authors/weiwei_schultz.yaml
     roles: [ contributor ]
 
@@ -26,7 +31,7 @@ argument_groups:
         required: false
       - name: "--input_layer"
         type: string
-        description: The layer in the input data containing counts that are lognormalized to 10000, .X is not to be used. 
+        description: The layer in the input data containing raw counts, if .X is not to be used. 
       - name: "--input_var_gene_names"
         type: string
         required: false
@@ -38,11 +43,7 @@ argument_groups:
         min: 1
         description: | 
           The minimum number of genes present in both the reference and query datasets.
-      - name: "--sanitize_gene_names"
-        type: boolean
-        description: Whether to sanitize gene names by removing version numbers. Recommended when using ENSEMBL ids.
-        default: true
-
+  
   - name: Reference
     description: Arguments related to the reference dataset.
     arguments:
@@ -54,7 +55,7 @@ argument_groups:
         required: false
       - name: "--reference_layer"
         type: string
-        description: The layer in the reference data containing counts that are lognormalized to 10000, if .X is not to be used.
+        description: The layer in the reference data containing raw counts, if .X is not to be used.
         required: false
       - name: "--reference_obs_target"
         type: string
@@ -128,38 +129,26 @@ argument_groups:
           In which `.obs` slots to store the probability of the predictions.
     __merge__: [., /src/base/h5_compression_argument.yaml]
 
+dependencies:
+  - name: transform/normalize_total
+  - name: transform/log1p
+  - name: transform/delete_layer
+  - name: annotate/celltypist
+    alias: celltypist_component
+
 resources:
-  - type: python_script
-    path: script.py
-  - path: /src/utils/setup_logger.py
-  - path: /src/utils/cross_check_genes.py
-  - path: /src/utils/subset_vars.py
-  - path: /src/utils/set_var_index.py
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
 
 test_resources:
-  - type: python_script
-    path: test.py
-  - path: /resources_test/annotation_test_data/
-  - path: /resources_test/pbmc_1k_protein_v3/
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+  - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
+  - path: /resources_test/annotation_test_data/celltypist_model_Immune_All_Low.pkl
+  - path: /resources_test/annotation_test_data/demo_2000_cells.h5mu
 
-engines:
-  - type: docker
-    image: python:3.10-slim
-    setup:
-      - type: apt
-        packages:
-          - libhdf5-dev
-          - procps
-      - type: python
-        __merge__: [ /src/base/requirements/scanpy.yaml, .]
-      - type: python
-        packages:
-          - celltypist==1.6.3
-      - type: python
-        __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
-    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
-  - type: executable
   - type: nextflow
-    directives:
-      label: [highcpu, highmem, highdisk]

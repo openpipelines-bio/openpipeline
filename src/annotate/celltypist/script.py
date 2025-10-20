@@ -3,15 +3,16 @@ import celltypist
 import mudata as mu
 import anndata as ad
 import pandas as pd
-import scanpy as sc
 
 ## VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "output": "output.h5mu",
     "modality": "rna",
+    # "reference": None,
     "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "model": None,
+    # "model": "resources_test/annotation_test_data/celltypist_model_Immune_All_Low.pkl",
     "input_layer": "log_normalized",
     "reference_layer": "log_normalized",
     "input_reference_gene_overlap": 100,
@@ -41,46 +42,6 @@ from subset_vars import subset_vars
 logger = setup_logger()
 
 
-def setup_anndata(
-    adata: ad.AnnData,
-    layer: str | None = None,
-    gene_names: str | None = None,
-    sanitize_gene_names: bool = True,
-    var_input: str | None = None,
-) -> ad.AnnData:
-    """Creates an AnnData object in the expected format for CellTypist,
-    with lognormalized data (with a target sum of 10000) in the .X slot.
-
-    Parameters
-    ----------
-    adata
-        AnnData object.
-    layer
-        Layer in AnnData object to lognormalize.
-    gene_names
-        .obs field with the gene names to be used
-    var_input
-        .var field with a boolean array of the genes to be used (e.g. highly variable genes)
-    Returns
-    -------
-    AnnData object in CellTypist format.
-    """
-
-    adata = set_var_index(adata, gene_names, sanitize_gene_names)
-
-    if var_input:
-        adata = subset_vars(adata, var_input)
-
-    raw_counts = adata.layers[layer].copy() if layer else adata.X.copy()
-
-    input_modality = ad.AnnData(X=raw_counts, var=pd.DataFrame(index=adata.var.index))
-
-    sc.pp.normalize_total(input_modality, target_sum=10000)
-    sc.pp.log1p(input_modality)
-
-    return input_modality
-
-
 def main(par):
     if (not par["model"] and not par["reference"]) or (
         par["model"] and par["reference"]
@@ -94,11 +55,17 @@ def main(par):
     input_modality = input_adata.copy()
 
     # Provide correct format of query data for celltypist annotation
-    input_modality = setup_anndata(
-        input_modality,
-        par["input_layer"],
-        par["input_var_gene_names"],
-        par["sanitize_gene_names"],
+    ## Sanitize gene names and set as index
+    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
+    ## Fetch lognormalized counts
+    lognorm_counts = (
+        input_modality.layers[par["input_layer"]].copy()
+        if par["input_layer"]
+        else input_modality.X.copy()
+    )
+    ## Create AnnData object
+    input_modality = ad.AnnData(
+        X=lognorm_counts, var=pd.DataFrame(index=input_modality.var.index)
     )
 
     if par["model"]:
@@ -111,16 +78,18 @@ def main(par):
         )
 
     elif par["reference"]:
-        reference_adata = mu.read_h5mu(par["reference"]).mod[par["modality"]]
-        reference_modality = reference_adata.copy()
+        reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
 
-        # Provide correct format of query data for celltypist annotation
-        reference_modality = setup_anndata(
-            reference_modality,
-            par["reference_layer"],
-            par["reference_var_gene_names"],
-            par["sanitize_gene_names"],
-            par["reference_var_input"],
+        # subset to HVG if required
+        if par["reference_var_input"]:
+            reference_modality = subset_vars(
+                reference_modality, par["reference_var_input"]
+            )
+
+        # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
+        # CellTypist requires query gene names to be in index
+        reference_modality = set_var_index(
+            reference_modality, par["reference_var_gene_names"]
         )
 
         # Ensure enough overlap between genes in query and reference
@@ -130,10 +99,18 @@ def main(par):
             min_gene_overlap=par["input_reference_gene_overlap"],
         )
 
+        reference_matrix = (
+            reference_modality.layers[par["reference_layer"]]
+            if par["reference_layer"]
+            else reference_modality.X
+        )
+
+        labels = reference_modality.obs[par["reference_obs_target"]]
+
         logger.info("Training CellTypist model on reference")
         model = celltypist.train(
-            reference_modality.X,
-            labels=reference_adata.obs[par["reference_obs_target"]],
+            reference_matrix,
+            labels=labels,
             genes=reference_modality.var.index,
             C=par["C"],
             max_iter=par["max_iter"],
