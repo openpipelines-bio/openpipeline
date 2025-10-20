@@ -454,9 +454,9 @@ RUN pip install --upgrade pip && \
   python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 LABEL org.opencontainers.image.description="Companion container for running component metadata join_uns_to_obs"
-LABEL org.opencontainers.image.created="2025-10-19T03:04:44Z"
+LABEL org.opencontainers.image.created="2025-10-20T03:04:45Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4e1ca7e158b0ceae76fb98327cfb8caae0ead1f2"
+LABEL org.opencontainers.image.revision="652800a6649521ff8de2d8a2dedbf17e60a88caf"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
