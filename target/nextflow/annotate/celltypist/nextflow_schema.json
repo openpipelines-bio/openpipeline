@@ -38,7 +38,7 @@
         },
         "input_layer": {
           "type": "string",
-          "description": "The layer in the input data containing raw counts to be used for cell type annotation if .X is not to be used.",
+          "description": "The layer in the input data containing counts that are lognormalized to 10000, .X is not to be used.",
           "help_text": "Type: `string`, multiple: `False`. "
         },
         "input_var_gene_names": {
@@ -108,7 +108,7 @@
         },
         "reference_layer": {
           "type": "string",
-          "description": "The layer in the reference data containing raw counts to be used for cell type annotation if .X is not to be used.",
+          "description": "The layer in the reference data containing counts that are lognormalized to 10000, if .X is not to be used.",
           "help_text": "Type: `string`, multiple: `False`. "
         },
         "reference_obs_target": {

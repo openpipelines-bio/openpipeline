@@ -304,9 +304,9 @@ build_info:
   output: "target/nextflow/workflows/integration/harmony_leiden"
   executable: "target/nextflow/workflows/integration/harmony_leiden/main.nf"
   viash_version: "0.9.4"
-  git_commit: "5dae5f779a16dde701d7012566194a79e308ed6f"
+  git_commit: "7219822881ea71fb2d3f7748f5be3facb459b0c3"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-2074-g5dae5f779a1"
+  git_tag: "0.2.0-2075-g7219822881e"
   dependencies:
   - "target/nextflow/integrate/harmonypy"
   - "target/nextflow/workflows/multiomics/neighbors_leiden_umap"

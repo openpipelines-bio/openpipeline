@@ -463,9 +463,9 @@ RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TR
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Dorien Roosen, Dries De Maeyer, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component differential_expression deseq2"
-LABEL org.opencontainers.image.created="2025-10-10T08:29:47Z"
+LABEL org.opencontainers.image.created="2025-10-20T07:01:36Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5dae5f779a16dde701d7012566194a79e308ed6f"
+LABEL org.opencontainers.image.revision="7219822881ea71fb2d3f7748f5be3facb459b0c3"
 LABEL org.opencontainers.image.version="optional-gene-name-sanitation_build"
 
 VIASHDOCKER
@@ -1444,7 +1444,8 @@ parse_design_formula <- function(design_formula) {
 
 # Validate and prepare contrast specifications
 prepare_contrast_matrix <- function(
-    design_factors, contrast_column, metadata) {
+  design_factors, contrast_column, metadata
+) {
   # Validate required columns exist
   required_columns <- unique(c(design_factors, contrast_column))
   missing_columns <- setdiff(required_columns, colnames(metadata))
@@ -1611,7 +1612,8 @@ deseq2_analysis <- function(dds, contrast_specs) {
 
 # Save results and print summary statistics
 save_results_and_log_summary <- function(
-    results, output_file, cell_group = NULL) {
+  results, output_file, cell_group = NULL
+) {
   group_text <- if (!is.null(cell_group)) paste(" for", cell_group) else ""
   cat("Saving results", group_text, "to", output_file, "\\n")
 

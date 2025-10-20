@@ -3,19 +3,27 @@ import re
 
 
 def strip_version_number(gene_names: list[str]) -> list[str]:
-    """Sanitize gene names by removing version numbers.
+    """Sanitize ensemble ID's by removing version numbers.
 
     Parameters
     ----------
     gene_names : list[str]
-        List of gene names to sanitize.
+        List of ensemble ID's to sanitize.
 
     Returns
     -------
     list[str]
-        List of sanitized gene names.
+        List of sanitized ensemble ID's.
     """
-    return [re.sub("\\.[0-9]+$", "", s) for s in gene_names]
+
+    # Pattern matches Ensembl IDs: starts with ENS, followed by any characters,
+    # then an eleven digit number, optionally followed by .version_number
+    ensembl_pattern = re.compile(r"^(ENS.*\d{11})(?:\.\d+)?$")
+
+    return [
+        match.group(1) if (match := ensembl_pattern.match(gene)) else gene
+        for gene in gene_names
+    ]
 
 
 def set_var_index(
@@ -40,7 +48,16 @@ def set_var_index(
     gene_names = adata.var[var_name] if var_name else adata.var.index
 
     if sanitize_gene_names:
+        ori_gene_names = len(gene_names)
         gene_names = strip_version_number(gene_names)
+        sanitized_gene_names = len(set(gene_names))
+
+        assert ori_gene_names == sanitized_gene_names, (
+            "Sanitizing gene names resulted in duplicated gene names.\n"
+            "Please ensure unique gene names before proceeding.\n"
+            "Please make sure --var_gene_names contains ensembl IDs (not gene symbols) "
+            "when --sanitize_gene_names is set to True."
+        )
 
     adata.var.index = gene_names
 
