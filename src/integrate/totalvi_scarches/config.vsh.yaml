@@ -1,7 +1,11 @@
-name: old_totalvi
+name: totalvi_scarches
 namespace: "integrate"
 scope: "public"
-description: "Performs mapping to the reference by totalvi model: https://docs.scvi-tools.org/en/stable/tutorials/notebooks/scarches_scvi_tools.html#Reference-mapping-with-TOTALVI"
+description: |
+  Performs totalVI integration by mapping the query dataset to a reference dataset or model. 
+info:
+  links:
+    documentation: https://docs.scvi-tools.org/en/stable/tutorials/notebooks/scarches_scvi_tools.html#Reference-mapping-with-TOTALVI
 authors:
   - __merge__: /src/authors/vladimir_shitov.yaml
 argument_groups:
@@ -156,4 +160,4 @@ runners:
 - type: executable
 - type: nextflow
   directives:
-    label: [highmem, highcpu, highdisk]
+    label: [highmem, highcpu, highdisk, gpu]
