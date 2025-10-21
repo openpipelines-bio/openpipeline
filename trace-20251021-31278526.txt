@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	19/618fc1	5652	test_wf:celltypist:run_wf:normalize_total:processWf:normalize_total_process (reference_dataset_test)	FAILED	125	2025-10-21 08:41:30.582	61ms	44ms	-	-	-	-	-
