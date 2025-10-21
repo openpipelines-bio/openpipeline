@@ -453,9 +453,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component query tiledb_healthcheck"
-LABEL org.opencontainers.image.created="2025-10-20T03:04:40Z"
+LABEL org.opencontainers.image.created="2025-10-21T02:58:34Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="652800a6649521ff8de2d8a2dedbf17e60a88caf"
+LABEL org.opencontainers.image.revision="023f5dd37cf63298b9dc316ccbd9df3f2c71d80a"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
