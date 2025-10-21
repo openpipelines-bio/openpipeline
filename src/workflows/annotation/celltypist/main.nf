@@ -107,7 +107,8 @@ workflow run_wf {
             "min_prop": state.min_prop,
             "output": state.workflow_output,
             "output_obs_predictions": state.output_obs_predictions,
-            "output_obs_probability": state.output_obs_probability
+            "output_obs_probability": state.output_obs_probability,
+            "sanitize_gene_names": state.sanitize_gene_names
           ]},
           args: [
             "input_layer": "log_normalized_10k",
