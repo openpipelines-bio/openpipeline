@@ -42,7 +42,7 @@ par = {
     "override_missing_proteins": False,
     # training arguments
     "max_epochs": 5,
-    "early_stopping": True
+    "early_stopping": True,
 }
 
 meta = {"resources_dir": "src/utils/"}
@@ -56,7 +56,15 @@ from set_var_index import set_var_index
 logger = setup_logger()
 
 
-def check_validity_anndata(adata, layer, protein_modality, obs_batch, n_obs_min_count, n_var_gene_min_count, n_var_protein_min_count):
+def check_validity_anndata(
+    adata,
+    layer,
+    protein_modality,
+    obs_batch,
+    n_obs_min_count,
+    n_var_gene_min_count,
+    n_var_protein_min_count,
+):
     assert check_nonnegative_integers(adata.layers[layer] if layer else adata.X), (
         "Make sure input rna layer contains raw_counts"
     )
@@ -73,7 +81,7 @@ def check_validity_anndata(adata, layer, protein_modality, obs_batch, n_obs_min_
     assert adata.n_vars > n_var_gene_min_count, (
         f"Anndata has fewer than {n_var_gene_min_count} genes."
     )
-    
+
     assert len(set(adata.var_names)) == len(adata.var_names), (
         "Dataset contains multiple genes with same gene name."
     )
@@ -85,7 +93,6 @@ def check_validity_anndata(adata, layer, protein_modality, obs_batch, n_obs_min_
     assert adata.obsm[protein_modality].shape[1] > n_var_protein_min_count, (
         f"Anndata has fewer than {n_var_protein_min_count} proteins."
     )
-
 
     assert len(set(adata.uns[protein_modality])) == len(adata.uns[protein_modality]), (
         "Dataset contains multiple proteins with same gene name."
@@ -111,7 +118,9 @@ def consolidate_modalities_to_anndata(
     prot_adata = mdata.mod[protein_modality].copy()
     set_var_index(prot_adata, var_name=par["var_protein_names"])
 
-    protein_layer = prot_adata.layers[input_layer_protein] if input_layer_protein else prot_adata.X
+    protein_layer = (
+        prot_adata.layers[input_layer_protein] if input_layer_protein else prot_adata.X
+    )
 
     if issparse(protein_layer):
         protein_layer = protein_layer.toarray()
@@ -124,7 +133,7 @@ def consolidate_modalities_to_anndata(
 
 def main():
     mdata = mu.read_h5mu(par["input"])
-    
+
     logger.info("Preparing data for TOTALVI...")
     adata = consolidate_modalities_to_anndata(
         mdata,
@@ -141,7 +150,7 @@ def main():
         par["obs_batch"],
         par["n_obs_min_count"],
         par["n_var_gene_min_count"],
-        par["n_var_protein_min_count"]
+        par["n_var_protein_min_count"],
     )
 
     logger.info("Loading data for TOTALVI...")
@@ -167,7 +176,7 @@ def main():
         empirical_protein_background_prior=par["empirical_protein_background_prior"],
         override_missing_proteins=par["override_missing_proteins"],
     )
-    
+
     logger.info("Training TOTALVI model...")
     model.train(
         max_epochs=par["max_epochs"],
@@ -175,19 +184,25 @@ def main():
         check_val_every_n_epoch=1,
         accelerator="auto",
     )
-    
+
     logger.info("Getting the latent representation...")
-    mdata.mod[par["modality_rna"]].obsm[par["obsm_output"]] = model.get_latent_representation()
-    
+    mdata.mod[par["modality_rna"]].obsm[par["obsm_output"]] = (
+        model.get_latent_representation()
+    )
+
     logger.info("Getting normalized expression...")
     norm_rna, norm_protein = model.get_normalized_expression()
-    mdata.mod[par["modality_rna"]].obsm[par["obsm_normalized_rna_output"]] = norm_rna.to_numpy()
+    mdata.mod[par["modality_rna"]].obsm[par["obsm_normalized_rna_output"]] = (
+        norm_rna.to_numpy()
+    )
     if par["modality_protein"] in mdata.mod:
-        mdata.mod[par["modality_protein"]].obsm[par["obsm_normalized_protein_output"]] = norm_protein.to_numpy()
+        mdata.mod[par["modality_protein"]].obsm[
+            par["obsm_normalized_protein_output"]
+        ] = norm_protein.to_numpy()
 
     logger.info("Saving integrated data...")
     mdata.write_h5mu(par["output"], compression=par["output_compression"])
-    
+
     if par["output_model"]:
         logger.info("Saving TOTALVI model...")
         model.save(par["output_model"], overwrite=True)
