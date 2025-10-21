@@ -26,8 +26,9 @@ workflow run_wf {
         "max_epochs": state.max_epochs,
         "early_stopping": state.early_stopping,
         "obsm_output": state.obsm_integrated,
-        "obsm_normalized_rna_output": state.obsm_normalized_rna,
-        "obsm_normalized_protein_output": state.obsm_normalized_protein
+        "obsm_normalized_rna_output": state.obsm_normalized_rna_output,
+        "obsm_normalized_protein_output": state.obsm_normalized_protein_output,
+        "output_model": state.output_model
       ]},
       toState: [
         "input": "output",

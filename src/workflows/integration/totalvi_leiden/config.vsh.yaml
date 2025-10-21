@@ -1,7 +1,7 @@
-name: "totalvi_scarches_leiden"
+name: "totalvi_leiden"
 namespace: "workflows/integration"
 scope: "public"
-description: "Run totalVI integration on CITEseq and scRNAseq data, followed by neighbour calculations, leiden clustering and UMAP."
+description: "Run totalVI integration, followed by neighbour calculations, leiden clustering and UMAP."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author ]
@@ -111,21 +111,19 @@ argument_groups:
 
   - name: TotalVI Integration Options
     arguments:
-      - name: "--obsm_output"
+      - name: "--obsm_integrated"
         type: string
         default: "X_integrated_totalvi"
-        required: false
         description: "In which .obsm slot to store the resulting integrated embedding."
       - name: "--obsm_normalized_rna_output"
         type: string
         default: "X_totalvi_normalized_rna"
-        required: false
         description: "In which .obsm slot to store the normalized RNA data from TOTALVI."
       - name: "--obsm_normalized_protein_output"
         type: string
         default: "X_totalvi_normalized_protein"
-        required: false
         description: "In which .obsm slot to store the normalized protein data from TOTALVI."
+
   - name: Neighbour calculation
     arguments:
       - name: "--uns_neighbors"
