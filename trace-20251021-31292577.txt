@@ -1,6 +1,0 @@
-task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
-1	e6/396102	6069	test_wf_2:celltypist:run_wf:normalize_total:processWf:normalize_total_process (reference_model_test)	COMPLETED	0	2025-10-21 08:41:46.607	5.7s	4.7s	166.1%	413.3 MB	2.3 GB	111.6 MB	102.7 MB
-2	ce/8ce745	6135	test_wf_2:celltypist:run_wf:log1p:processWf:log1p_process (reference_model_test)	COMPLETED	0	2025-10-21 08:41:52.324	3.9s	3.3s	230.2%	420 MB	2.3 GB	178.7 MB	169.7 MB
-3	c3/1538f8	6186	test_wf_2:celltypist:run_wf:delete_layer:processWf:delete_layer_process (reference_model_test)	COMPLETED	0	2025-10-21 08:41:56.310	2.7s	2s	193.0%	247.3 MB	1.5 GB	220 MB	170.2 MB
-4	75/23cb22	6228	test_wf_2:celltypist:run_wf:celltypist_component:processWf:celltypist_component_process (reference_model_test)	COMPLETED	0	2025-10-21 08:41:59.032	7.9s	7.2s	187.3%	624.1 MB	2.5 GB	107.3 MB	68.9 MB
-5	4a/24d07a	6307	test_wf_2:celltypist_test:processWf:celltypist_test_process (reference_model_test)	COMPLETED	0	2025-10-21 08:42:06.997	3.4s	2.6s	171.2%	139.2 MB	1.4 GB	87.4 MB	6.5 KB
