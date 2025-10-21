@@ -51,7 +51,9 @@ def main():
     input_mudata = mu.read_h5mu(par["input"])
     input_adata = input_mudata.mod[par["modality"]]
     input_modality = input_adata.copy()
-    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
+    input_modality = set_var_index(
+        input_modality, par["input_var_gene_names"], par["sanitize_gene_names"]
+    )
 
     if par["model"]:
         logger.info("Loading a pre-trained model")
@@ -82,7 +84,9 @@ def main():
         reference_mudata = mu.read_h5mu(par["reference"])
         reference_modality = reference_mudata.mod[par["modality"]].copy()
         reference_modality = set_var_index(
-            reference_modality, par["reference_var_gene_names"]
+            reference_modality,
+            par["reference_var_gene_names"],
+            par["sanitize_gene_names"],
         )
 
         # subset to HVG if required

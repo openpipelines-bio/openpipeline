@@ -62,6 +62,10 @@ argument_groups:
       - name: "--overwrite_existing_key"
         type: boolean_true
         description: If provided, will overwrite existing fields in the input dataset when data are copied during the reference alignment process.
+      - name: "--sanitize_gene_names"
+        type: boolean
+        description: Whether to sanitize gene names by removing version numbers. Recommended when using ENSEMBL ids.
+        default: true
 
   - name: Reference input
     arguments:
