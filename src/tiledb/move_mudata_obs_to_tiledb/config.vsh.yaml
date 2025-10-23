@@ -1,22 +1,27 @@
-name: move_mudata_obsm_to_tiledb
+name: move_mudata_obs_to_tiledb
 namespace: tiledb
 scope: "private"
 description: |
-  Move .obsm items from a MuData modality to an existing tileDB database.
-  The .obsm keys should not exist in the database yet; and the observations from the modality and 
+  Move .obs columns from a MuData modality to an existing tileDB database.
+  The .obs keys should not exist in the database yet; and the observations from the modality and 
   their order should match with what is already present the tiledb database.
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author, maintainer ]
 argument_groups:
   - name: Input database
-    description: "Open a tileDB-SOMA database by URI."
+    description: "Open a tileDB-SOMA database by URI or as a local directory."
     arguments:
       - name: "--input_uri"
         type: string
-        description: "A URI pointing to a TileDB-SOMA database."
-        required: true
+        description: "A URI pointing to a TileDB-SOMA database. Mutually exclusive with 'input_dir'"
+        required: false
         example: "s3://bucket/path"
+      - name: "--input_dir"
+        type: file
+        required: false
+        description: "Path to a TileDB-SOMA database as a local directory"
+        example: "./tiledb_database"
       - name: "--s3_region"
         description: |
           Region where the TileDB-SOMA database is hosted.
@@ -36,6 +41,11 @@ argument_groups:
         type: string
         description: |
           TileDB-SOMA measurement to add the output to.
+      - name: "--obs_index_name_input"
+        description: |
+          Name of the index that is used to describe the cells (observations).
+        type: string
+        default: cell_id
   - name: "MuData input"
     arguments:
       - name: "--input_mudata"
@@ -48,12 +58,12 @@ argument_groups:
         required: true
         type: string
         description: |
-          Modality where to take the .obsm from.
-      - name: "--obsm_input"
+          Modality where to take the .obs from.
+      - name: "--obs_input"
         type: string
         multiple: true
         description: |
-          Keys from .obm to copy. The keys should not be present yet in the database.
+          Columns from .obs to copy. The keys should not be present yet in the database.
   - name: "TileDB-SOMA output"
     arguments:
       - name: "--output_tiledb"

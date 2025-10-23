@@ -57,3 +57,54 @@ workflow test_wf {
     }
 }
 
+
+workflow test_tiledb_wf {
+
+  resources_test = file(params.resources_test)
+
+  output_ch = Channel.fromList([
+      [
+        id: "tiledb_test",
+        tiledb_input_uri: "s3://openpipelines-data/tiledb/pbmc_1k_protein_v3_mms",
+        tiledb_s3_region: "eu-west-3",
+        layer: "raw",
+        obs_batch: "sample_id",
+        max_epochs: 1,
+        output_model: "simple_execution_test_model/",
+        output_tiledb: "tiledb_out",
+        tiledb_s3_no_sign_request: true
+      ],
+    ])
+    | map{ state -> [state.id, state] }
+    | scvi_leiden
+    | view { output ->
+      assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
+
+      // check id
+      def id = output[0]
+      assert id.endsWith("_test")
+
+      // check output
+      def state = output[1]
+      assert state instanceof Map : "State should be a map. Found: ${state}"
+      assert state.containsKey("output") : "Output should contain key 'output'."
+      assert state.output.isFile() : "'output' should be a file."
+      assert state.output.toString().endsWith(".h5mu") : "Output file should end with '.h5mu'. Found: ${state.output}"
+
+      // check model_output
+      assert state.containsKey("output_model") : "Output should contain key 'output_model'."
+      assert state.output_model.isDirectory() : "'output_model' should be a directory."
+      assert state.output_model.toString().endsWith("_model") : "Model output directory should end with '_model'. Found: ${state.output_model}"
+
+      // check tiledb output
+      assert state.containsKey("output_tiledb") : "Output should contain key 'output_tiledb'."
+      assert state.output_tiledb.isDirectory() : "'output_tiledb' should be a directory."
+
+      "Output: $output"
+    }
+    | toSortedList({a, b -> a[0] <=> b[0]})
+    | map { output_list ->
+      assert output_list.size() == 1 : "output channel should contain 1 events"
+      assert output_list.collect{it[0]} == ["tiledb_test"]
+    }
+}
