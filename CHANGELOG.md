@@ -39,7 +39,7 @@
 
 * `filter/filter_with_counts`: this component would sometimes crash (segfault) when processing malformatted sparse matrices. A proper error message is now provided in this case (PR #1086).
 
-* `cluster/leiden`: fix an issue where using an input modality without the `.X` matrix caused `KeyError` (`Unable to synchronously open object`).
+* `cluster/leiden`: fix an issue where using an input modality with missing`.X` caused `KeyError` (`Unable to synchronously open object`) (PR #1093).
 
 # openpipelines 3.0.0
 
