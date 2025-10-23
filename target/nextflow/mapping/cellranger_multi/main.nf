@@ -4117,7 +4117,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.9.4",
-    "git_commit" : "023f5dd37cf63298b9dc316ccbd9df3f2c71d80a",
+    "git_commit" : "49ab1ea342fa9d573522889d9f9c73417d9084b6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
