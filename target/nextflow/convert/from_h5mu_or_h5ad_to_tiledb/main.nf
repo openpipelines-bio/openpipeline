@@ -3497,7 +3497,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_or_h5ad_to_tiledb",
     "viash_version" : "0.9.4",
-    "git_commit" : "49ab1ea342fa9d573522889d9f9c73417d9084b6",
+    "git_commit" : "ddce9694fcd90a4b02db672e5e72fc3585af38e7",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -4247,6 +4247,7 @@ def main(par):
             "obs_field_name": par["obs_index_name_output"],
             "var_field_name": par["prot_var_index_name_output"],
             "append_obsm_varm": True,
+            "allow_duplicate_obs_ids": True,  # Adding a new Measurement to existing observations
         }
         func_to_call = tiledbsoma.io.register_h5ads
         _log_arguments(func_to_call, register_prot_args)
