@@ -3596,7 +3596,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/harmony_knn",
     "viash_version" : "0.9.4",
-    "git_commit" : "8e872fb9b7462c9d07a4f0b3ff1c15e0b6a3622d",
+    "git_commit" : "1b017221741815a5ddf78919372a5984b9e02573",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
