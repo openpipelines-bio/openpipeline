@@ -11,7 +11,6 @@ sanitize_gene_names: true
 # reference_layer: "foo"
 reference_obs_target: "cell_ontology_class"
 # reference_var_gene_names: "foo"
-# reference_var_input: "foo"
 
 # Model arguments
 # model: "pretrained_model.pkl"

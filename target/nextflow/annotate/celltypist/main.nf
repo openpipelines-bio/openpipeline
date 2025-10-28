@@ -3201,15 +3201,6 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--reference_var_input",
-          "description" : ".var column containing highly variable genes. By default, do not subset genes.\n",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
         }
       ]
     },
@@ -3569,9 +3560,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.4",
-    "git_commit" : "6c54f31545d0a3088cd03072116acf2448c1b00f",
+    "git_commit" : "907448008c390a4941a581851a618ce62f370787",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2077-g6c54f31545d"
+    "git_tag" : "0.2.0-2078-g907448008c3"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3645,7 +3636,6 @@ par = {
   'reference_layer': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obs_target': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGET//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_var_gene_names': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'reference_var_input': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'feature_selection': $( if [ ! -z ${VIASH_PAR_FEATURE_SELECTION+x} ]; then echo "r'${VIASH_PAR_FEATURE_SELECTION//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'majority_voting': $( if [ ! -z ${VIASH_PAR_MAJORITY_VOTING+x} ]; then echo "r'${VIASH_PAR_MAJORITY_VOTING//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
@@ -3688,7 +3678,6 @@ sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 from cross_check_genes import cross_check_genes
 from set_var_index import set_var_index
-from subset_vars import subset_vars
 
 logger = setup_logger()
 
@@ -3707,7 +3696,9 @@ def main(par):
 
     # Provide correct format of query data for celltypist annotation
     ## Sanitize gene names and set as index
-    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
+    input_modality = set_var_index(
+        input_modality, par["input_var_gene_names"], par["sanitize_gene_names"]
+    )
     ## Fetch lognormalized counts
     lognorm_counts = (
         input_modality.layers[par["input_layer"]].copy()
@@ -3731,16 +3722,12 @@ def main(par):
     elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
 
-        # subset to HVG if required
-        if par["reference_var_input"]:
-            reference_modality = subset_vars(
-                reference_modality, par["reference_var_input"]
-            )
-
         # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
         # CellTypist requires query gene names to be in index
         reference_modality = set_var_index(
-            reference_modality, par["reference_var_gene_names"]
+            reference_modality,
+            par["reference_var_gene_names"],
+            par["sanitize_gene_names"],
         )
 
         # Ensure enough overlap between genes in query and reference

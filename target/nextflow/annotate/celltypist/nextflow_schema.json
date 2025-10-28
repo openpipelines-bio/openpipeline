@@ -121,11 +121,6 @@
           "type": "string",
           "description": "The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.\n",
           "help_text": "Type: `string`, multiple: `False`. "
-        },
-        "reference_var_input": {
-          "type": "string",
-          "description": ".var column containing highly variable genes",
-          "help_text": "Type: `string`, multiple: `False`. "
         }
       }
     },

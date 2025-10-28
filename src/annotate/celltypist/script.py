@@ -17,7 +17,6 @@ par = {
     "reference_layer": "log_normalized",
     "input_reference_gene_overlap": 100,
     "reference_obs_target": "cell_ontology_class",
-    "reference_var_input": None,
     "feature_selection": True,
     "majority_voting": True,
     "output_compression": "gzip",
@@ -37,7 +36,6 @@ sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 from cross_check_genes import cross_check_genes
 from set_var_index import set_var_index
-from subset_vars import subset_vars
 
 logger = setup_logger()
 
@@ -56,7 +54,9 @@ def main(par):
 
     # Provide correct format of query data for celltypist annotation
     ## Sanitize gene names and set as index
-    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
+    input_modality = set_var_index(
+        input_modality, par["input_var_gene_names"], par["sanitize_gene_names"]
+    )
     ## Fetch lognormalized counts
     lognorm_counts = (
         input_modality.layers[par["input_layer"]].copy()
@@ -80,16 +80,12 @@ def main(par):
     elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
 
-        # subset to HVG if required
-        if par["reference_var_input"]:
-            reference_modality = subset_vars(
-                reference_modality, par["reference_var_input"]
-            )
-
         # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
         # CellTypist requires query gene names to be in index
         reference_modality = set_var_index(
-            reference_modality, par["reference_var_gene_names"]
+            reference_modality,
+            par["reference_var_gene_names"],
+            par["sanitize_gene_names"],
         )
 
         # Ensure enough overlap between genes in query and reference

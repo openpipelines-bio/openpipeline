@@ -3984,9 +3984,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi",
     "viash_version" : "0.9.4",
-    "git_commit" : "6c54f31545d0a3088cd03072116acf2448c1b00f",
+    "git_commit" : "907448008c390a4941a581851a618ce62f370787",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2077-g6c54f31545d"
+    "git_tag" : "0.2.0-2078-g907448008c3"
   },
   "package_config" : {
     "name" : "openpipeline",

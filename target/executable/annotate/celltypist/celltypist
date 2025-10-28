@@ -465,9 +465,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate celltypist"
-LABEL org.opencontainers.image.created="2025-10-21T08:36:13Z"
+LABEL org.opencontainers.image.created="2025-10-28T16:11:07Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6c54f31545d0a3088cd03072116acf2448c1b00f"
+LABEL org.opencontainers.image.revision="907448008c390a4941a581851a618ce62f370787"
 LABEL org.opencontainers.image.version="optional-gene-name-sanitation_build"
 
 VIASHDOCKER
@@ -651,11 +651,6 @@ function ViashHelp {
   echo "        type: string"
   echo "        The name of the adata var column in the reference data containing gene"
   echo "        names; when no gene_name_layer is provided, the var index will be used."
-  echo ""
-  echo "    --reference_var_input"
-  echo "        type: string"
-  echo "        .var column containing highly variable genes. By default, do not subset"
-  echo "        genes."
   echo ""
   echo "Model arguments:"
   echo "    Model arguments."
@@ -891,17 +886,6 @@ while [[ $# -gt 0 ]]; do
         --reference_var_gene_names=*)
             [ -n "$VIASH_PAR_REFERENCE_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--reference_var_gene_names=*\': \'$VIASH_PAR_REFERENCE_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_REFERENCE_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --reference_var_input)
-            [ -n "$VIASH_PAR_REFERENCE_VAR_INPUT" ] && ViashError Bad arguments for option \'--reference_var_input\': \'$VIASH_PAR_REFERENCE_VAR_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_VAR_INPUT="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_var_input. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --reference_var_input=*)
-            [ -n "$VIASH_PAR_REFERENCE_VAR_INPUT" ] && ViashError Bad arguments for option \'--reference_var_input=*\': \'$VIASH_PAR_REFERENCE_VAR_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_VAR_INPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --model)
@@ -1520,7 +1504,6 @@ par = {
   'reference_layer': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_obs_target': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGET//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_var_gene_names': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'reference_var_input': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'feature_selection': $( if [ ! -z ${VIASH_PAR_FEATURE_SELECTION+x} ]; then echo "r'${VIASH_PAR_FEATURE_SELECTION//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'majority_voting': $( if [ ! -z ${VIASH_PAR_MAJORITY_VOTING+x} ]; then echo "r'${VIASH_PAR_MAJORITY_VOTING//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
@@ -1563,7 +1546,6 @@ sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 from cross_check_genes import cross_check_genes
 from set_var_index import set_var_index
-from subset_vars import subset_vars
 
 logger = setup_logger()
 
@@ -1582,7 +1564,9 @@ def main(par):
 
     # Provide correct format of query data for celltypist annotation
     ## Sanitize gene names and set as index
-    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
+    input_modality = set_var_index(
+        input_modality, par["input_var_gene_names"], par["sanitize_gene_names"]
+    )
     ## Fetch lognormalized counts
     lognorm_counts = (
         input_modality.layers[par["input_layer"]].copy()
@@ -1606,16 +1590,12 @@ def main(par):
     elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
 
-        # subset to HVG if required
-        if par["reference_var_input"]:
-            reference_modality = subset_vars(
-                reference_modality, par["reference_var_input"]
-            )
-
         # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
         # CellTypist requires query gene names to be in index
         reference_modality = set_var_index(
-            reference_modality, par["reference_var_gene_names"]
+            reference_modality,
+            par["reference_var_gene_names"],
+            par["sanitize_gene_names"],
         )
 
         # Ensure enough overlap between genes in query and reference
