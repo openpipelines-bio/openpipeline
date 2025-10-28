@@ -2,6 +2,7 @@ import mudata as mu
 import numpy as np
 import sys
 from operator import le, ge, gt
+import scipy
 
 ### VIASH START
 par = {
@@ -32,10 +33,22 @@ modality_data = mu.read_h5ad(par["input"], mod=par["modality"])
 
 logger.info("\tUnfiltered data: %s", modality_data)
 
-logger.info("Selecting input layer %s", "X" if par["layer"] else par["layer"])
+layer_name = "X" if not par["layer"] else par["layer"]
+logger.info("Selecting input layer %s", layer_name)
 input_layer = (
     modality_data.X if not par["layer"] else modality_data.layers[par["layer"]]
 )
+if scipy.sparse.issparse(input_layer):
+    # Below is a check that scipy does not do with check_format; see https://github.com/scipy/scipy/issues/23784
+    # also, check_format might adjust the matrix attributes in place; so do this check before check_format
+
+    assert input_layer.nnz == input_layer.data.size, (
+        f"The provided sparse matrix (i.e. {layer_name} from modality {par['modality']}) is malformatted. "
+        f"The number of elements that the matrix should hold (i.e. .nnz={input_layer.nnz}) does not correspond with "
+        f"the number of elements actually being stored (i.e. .data.size={input_layer.data.size})"
+    )
+    input_layer.check_format(full_check=True)
+
 
 logger.info("\tComputing aggregations.")
 n_counts_per_cell = np.ravel(np.sum(input_layer, axis=1))

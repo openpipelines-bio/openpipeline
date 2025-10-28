@@ -1,8 +1,4 @@
-# openpipelines 3.x.x
-
-## BREAKING
-
-* `differential_expression/create_pseudobulks`: Removed functionality to filter psuedobulk samples based on number of aggregated samples threshold, as this functionality is now covered in `filter/delimit_count` (PR #1044).
+# openpipelines 3.1.0
 
 ## NEW FUNCTIONALITY
 
@@ -18,6 +14,12 @@
 
 * `workflows/differential_expression/pseudobulk_deseq2`: Workflow for generating pseudobulk samples from single-cell data followed by DESeq2 differential expression analysis (PR #1044)
 
+* `differential_expression/create_pseudobulks`: Removed functionality to filter pseudobulk samples based on number of aggregated samples threshold, as this functionality is now covered in `filter/delimit_count` (PR #1044).
+
+* Deprecated all scGPT functionality (PR #1075).
+
+* Added `from_tiledb_to_h5mu` component (PR #1068).
+
 ## MAJOR CHANGES
 
 * `mapping/samtools_sort` has been deprecated and will be removed in openpipeline 4.0. Use [vsh://biobox/samtools/samtools_sort](https://www.viash-hub.com/packages/biobox/latest/components/samtools/samtools_sort) instead.
@@ -32,9 +34,11 @@
   
 * `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
 
-## BUG FIX
+## BUG FIXES
 
 * `differential_expression/create_pseudobulks`: Fixed the check to verify that the raw counts layer was passed (PR #1072).
+
+* `filter/filter_with_counts`: this component would sometimes crash (segfault) when processing malformatted sparse matrices. A proper error message is now provided in this case (PR #1086).
 
 # openpipelines 3.0.0
 
@@ -72,6 +76,8 @@ Warning: These experimental features are subject to change in future releases.
   to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis (PR #1042).
 
 * Added `annotate/singler`: Cell type annotation using SingleR (PR #1051).
+
+* Added `tiledb_soma_healthcheck` component (PR #1055). 
 
 * Added `tiledb/move_mudata_obsm_to_tiledb` (PR #1065).
 

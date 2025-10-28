@@ -82,7 +82,8 @@ parse_design_formula <- function(design_formula) {
 
 # Validate and prepare contrast specifications
 prepare_contrast_matrix <- function(
-    design_factors, contrast_column, metadata) {
+  design_factors, contrast_column, metadata
+) {
   # Validate required columns exist
   required_columns <- unique(c(design_factors, contrast_column))
   missing_columns <- setdiff(required_columns, colnames(metadata))
@@ -249,7 +250,8 @@ deseq2_analysis <- function(dds, contrast_specs) {
 
 # Save results and print summary statistics
 save_results_and_log_summary <- function(
-    results, output_file, cell_group = NULL) {
+  results, output_file, cell_group = NULL
+) {
   group_text <- if (!is.null(cell_group)) paste(" for", cell_group) else ""
   cat("Saving results", group_text, "to", output_file, "\n")
 
