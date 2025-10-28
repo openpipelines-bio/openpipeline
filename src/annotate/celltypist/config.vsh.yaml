@@ -65,11 +65,6 @@ argument_groups:
         required: false
         description: |
           The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
-      - name: "--reference_var_input"
-        type: string
-        required: false
-        description: |
-          .var column containing highly variable genes. By default, do not subset genes.
 
   - name: Model arguments
     description: Model arguments.
