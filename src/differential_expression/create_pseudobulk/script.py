@@ -3,7 +3,6 @@ import mudata as mu
 import pandas as pd
 import sys
 import scanpy as sc
-import scipy.sparse as sp
 
 ## VIASH START
 par = {
@@ -28,8 +27,9 @@ logger = setup_logger()
 
 def is_normalized(layer):
     exp_layer = np.expm1(layer)  # Inverse of log1p
-    row_sums = np.sum(layer, axis=1).ravel()
-    exp_row_sums = np.sum(exp_layer, axis=1).ravel()
+    row_sums = np.asarray(np.sum(layer, axis=1)).ravel()
+    exp_row_sums = np.asarray(np.sum(exp_layer, axis=1)).ravel()
+
     is_normalized = np.allclose(row_sums, row_sums[0])
     is_log1p_normalized = np.isfinite(exp_row_sums).all() and np.allclose(
         exp_row_sums, exp_row_sums[0]
