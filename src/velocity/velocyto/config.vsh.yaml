@@ -70,7 +70,7 @@ engines:
           - Cython
       - type: docker
         run: |
-          git clone --depth 1 https://github.com/velocyto-team/velocyto.py /tmp/velocyto.py && cd /tmp/velocyto.py && git apply /opt/setup.py.patch && pip install .
+          git clone --depth 1 https://github.com/velocyto-team/velocyto.py /tmp/velocyto.py && cd /tmp/velocyto.py && git checkout 56efe891ec3d383d83ad45360f58350c12824c4d && git apply /opt/setup.py.patch && pip install .
       - type: apt
         packages:
           - samtools
