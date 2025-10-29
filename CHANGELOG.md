@@ -8,6 +8,8 @@
 
 * `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078, #1079, #1082).
 
+* `workflows/integration/harmony_leiden`: add support for adding the output slots to a tileDB-SOMA database (PR #1095).
+
 ## EXPERIMENTAL
 
 * `differential_expression/deseq2`: Performs differential expression analysis using DESeq2 on bulk or pseudobulk datasets (PR #1044).
