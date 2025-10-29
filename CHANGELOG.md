@@ -8,6 +8,8 @@
 
 * `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078, #1079, #1082).
 
+* `annotate/celltypist`: Enable CUDA acceleration for CellTypist annotation (PR #1091).
+
 * `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083).
 
 ## EXPERIMENTAL
@@ -37,6 +39,8 @@
 * `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
 
 ## BUG FIXES
+
+* `differential_expression/create_pseudobulks`: Fixed the check to verify that the raw counts layer was passed (PR #1072).
 
 * `filter/filter_with_counts`: this component would sometimes crash (segfault) when processing malformatted sparse matrices. A proper error message is now provided in this case (PR #1086).
 
