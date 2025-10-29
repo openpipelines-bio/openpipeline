@@ -1,5 +1,6 @@
 name: "velocyto_to_h5mu"
 namespace: "convert"
+status: "deprecated"
 scope: "public"
 description: |
   Convert a velocyto loom file to a h5mu file.

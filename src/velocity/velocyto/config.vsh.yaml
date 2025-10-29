@@ -1,6 +1,7 @@
 name: velocyto
 namespace: "velocity"
 scope: "public"
+status: "deprecated"
 description: "Runs the velocity analysis on a BAM file, outputting a loom file."
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
