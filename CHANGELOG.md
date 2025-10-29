@@ -36,7 +36,7 @@
   
 * `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
 
-* `genetic_demux/scsplit`: bump python to `3.13` and unpin pandas and numpy (was pinned to `<2.0` and `<2` respectively) (PR #1096).
+* `genetic_demux/scsplit`: bump python to `3.13` and unpin pandas and numpy (were pinned to `<2.0` and `<2` respectively) (PR #1096).
 
 ## BUG FIXES
 
