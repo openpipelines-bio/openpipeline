@@ -3,7 +3,6 @@ import celltypist
 import mudata as mu
 import anndata as ad
 import pandas as pd
-import numpy as np
 from torch.cuda import is_available as cuda_is_available
 
 ## VIASH START
@@ -20,7 +19,6 @@ par = {
     "input_reference_gene_overlap": 100,
     "reference_obs_target": "cell_ontology_class",
     "reference_var_input": None,
-    "check_expression": False,
     "feature_selection": True,
     "majority_voting": True,
     "output_compression": "gzip",
@@ -45,12 +43,6 @@ from subset_vars import subset_vars
 logger = setup_logger()
 use_gpu = cuda_is_available()
 logger.info("GPU enabled? %s", use_gpu)
-
-
-def check_celltypist_format(indata):
-    if np.abs(np.expm1(indata[0]).sum() - 10000) > 1:
-        return False
-    return True
 
 
 def main(par):

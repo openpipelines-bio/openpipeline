@@ -461,9 +461,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate celltypist"
-LABEL org.opencontainers.image.created="2025-10-30T08:31:39Z"
+LABEL org.opencontainers.image.created="2025-10-30T08:56:05Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0fc32cc211d2b0c40291703802833c8f28354efb"
+LABEL org.opencontainers.image.revision="0c428fc99789c4f4c038a8622bfdf1d23864fb79"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -602,8 +602,8 @@ function ViashHelp {
   echo ""
   echo "    --input_layer"
   echo "        type: string"
-  echo "        The layer in the input data containing log normalized counts to be used"
-  echo "        for cell type annotation if .X is not to be used."
+  echo "        The layer in the input data containing counts that are lognormalized to"
+  echo "        10000, .X is not to be used."
   echo ""
   echo "    --input_var_gene_names"
   echo "        type: string"
@@ -628,9 +628,8 @@ function ViashHelp {
   echo ""
   echo "    --reference_layer"
   echo "        type: string"
-  echo "        The layer in the reference data to be used for cell type annotation if"
-  echo "        .X is not to be used. Data are expected to be processed in the same way"
-  echo "        as the --input query dataset."
+  echo "        The layer in the reference data containing counts that are lognormalized"
+  echo "        to 10000, if .X is not to be used."
   echo ""
   echo "    --reference_obs_target"
   echo "        type: string"
@@ -1477,7 +1476,6 @@ import celltypist
 import mudata as mu
 import anndata as ad
 import pandas as pd
-import numpy as np
 from torch.cuda import is_available as cuda_is_available
 
 ## VIASH START
@@ -1540,12 +1538,6 @@ from subset_vars import subset_vars
 logger = setup_logger()
 use_gpu = cuda_is_available()
 logger.info("GPU enabled? %s", use_gpu)
-
-
-def check_celltypist_format(indata):
-    if np.abs(np.expm1(indata[0]).sum() - 10000) > 1:
-        return False
-    return True
 
 
 def main(par):

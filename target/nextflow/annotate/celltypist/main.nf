@@ -3112,7 +3112,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--input_layer",
-          "description" : "The layer in the input data containing log normalized counts to be used for cell type annotation if .X is not to be used.",
+          "description" : "The layer in the input data containing counts that are lognormalized to 10000, .X is not to be used.",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3163,7 +3163,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--reference_layer",
-          "description" : "The layer in the reference data to be used for cell type annotation if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.",
+          "description" : "The layer in the reference data containing counts that are lognormalized to 10000, if .X is not to be used.",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3550,7 +3550,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.4",
-    "git_commit" : "0fc32cc211d2b0c40291703802833c8f28354efb",
+    "git_commit" : "0c428fc99789c4f4c038a8622bfdf1d23864fb79",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3611,7 +3611,6 @@ import celltypist
 import mudata as mu
 import anndata as ad
 import pandas as pd
-import numpy as np
 from torch.cuda import is_available as cuda_is_available
 
 ## VIASH START
@@ -3674,12 +3673,6 @@ from subset_vars import subset_vars
 logger = setup_logger()
 use_gpu = cuda_is_available()
 logger.info("GPU enabled? %s", use_gpu)
-
-
-def check_celltypist_format(indata):
-    if np.abs(np.expm1(indata[0]).sum() - 10000) > 1:
-        return False
-    return True
 
 
 def main(par):
