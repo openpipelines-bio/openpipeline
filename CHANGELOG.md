@@ -10,6 +10,8 @@
 
 * `annotate/celltypist`: Enable CUDA acceleration for CellTypist annotation (PR #1091).
 
+* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083).
+
 ## EXPERIMENTAL
 
 * `differential_expression/deseq2`: Performs differential expression analysis using DESeq2 on bulk or pseudobulk datasets (PR #1044).
