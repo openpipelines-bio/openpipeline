@@ -6,7 +6,7 @@ mudata <- reticulate::import("mudata")
 
 ### VIASH START
 par <- list(
-  input = "pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+  input = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
   modality = "rna",
   input_layer = NULL,
   input_var_gene_names = "gene_symbol",
@@ -16,6 +16,7 @@ par <- list(
   reference_layer = NULL,
   reference_var_input = NULL,
   reference_var_gene_names = NULL,
+  # reference_var_gene_names = "ensemblid",
   reference_obs_target = "cell_ontology_class",
   output = "singler_output.h5mu",
   output_compression = "gzip",
@@ -61,21 +62,31 @@ get_layer <- function(adata, layer, var_gene_names) {
   }
 
   # Set matrix dimnames
-  input_gene_names <- sanitize_gene_names(adata, var_gene_names)
+  input_gene_names <- sanitize_ensembl_ids(adata, var_gene_names)
   dimnames(data) <- list(adata$obs_names, input_gene_names)
 
   # return output
   data
 }
 
-sanitize_gene_names <- function(adata, gene_symbol = NULL) {
+sanitize_ensembl_ids <- function(adata, gene_symbol = NULL) {
   if (is.null(gene_symbol)) {
     gene_names <- adata$var_names
   } else {
     gene_names <- adata$var[[gene_symbol]]
   }
-  # Remove version numbers (dot followed by digits at end of string)
-  sanitized <- gsub("\\.[0-9]+$", "", gene_names)
+
+  # Pattern matches Ensembl IDs: starts with ENS, followed by any characters,
+  # then an eleven digit number, optionally followed by .version_number
+  ensembl_pattern <- "^(ENS.*\\d{11})(?:\\.\\d+)?$"
+
+  # Remove version numbers for ensembl ids only
+  sanitized <- ifelse(
+    grepl(ensembl_pattern, gene_names, perl = TRUE),
+    gsub(ensembl_pattern, "\\1", gene_names, perl = TRUE),
+    as.character(gene_names)
+  )
+
   sanitized
 }
 

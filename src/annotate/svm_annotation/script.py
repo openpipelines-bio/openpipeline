@@ -52,7 +52,7 @@ def main():
     input_adata = input_mudata.mod[par["modality"]]
     input_modality = input_adata.copy()
     input_modality = set_var_index(
-        input_modality, par["input_var_gene_names"], par["sanitize_gene_names"]
+        input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
     )
 
     if par["model"]:
@@ -86,7 +86,7 @@ def main():
         reference_modality = set_var_index(
             reference_modality,
             par["reference_var_gene_names"],
-            par["sanitize_gene_names"],
+            par["sanitize_ensembl_ids"],
         )
 
         # subset to HVG if required

@@ -115,7 +115,7 @@ workflow run_wf {
             "output": state.output,
             "output_obs_predictions": state.output_obs_predictions,
             "output_obs_probability": state.output_obs_probability,
-            "sanitize_gene_names": state.sanitize_gene_names
+            "sanitize_ensembl_ids": state.sanitize_ensembl_ids
           ]},
           args: [
             "input_layer": "log_normalized_10k",

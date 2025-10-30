@@ -28,7 +28,7 @@ workflow run_wf {
         "output_model": "output_model",
         "modality": "modality",
         "input_layer": "layer",
-        "sanitize_gene_names": "sanitize_gene_names"
+        "sanitize_ensembl_ids": "sanitize_ensembl_ids"
       ],
       toState: [
         "input": "output", 

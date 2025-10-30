@@ -58,7 +58,7 @@ def main(par):
     # Provide correct format of query data for celltypist annotation
     ## Sanitize gene names and set as index
     input_modality = set_var_index(
-        input_modality, par["input_var_gene_names"], par["sanitize_gene_names"]
+        input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
     )
     ## Fetch lognormalized counts
     lognorm_counts = (
@@ -88,7 +88,7 @@ def main(par):
         reference_modality = set_var_index(
             reference_modality,
             par["reference_var_gene_names"],
-            par["sanitize_gene_names"],
+            par["sanitize_ensembl_ids"],
         )
 
         # Ensure enough overlap between genes in query and reference
