@@ -3403,19 +3403,7 @@ meta = [
   },
   "dependencies" : [
     {
-      "name" : "transform/normalize_total",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "transform/log1p",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "transform/delete_layer",
+      "name" : "workflows/rna/log_normalize",
       "repository" : {
         "type" : "local"
       }
@@ -3517,7 +3505,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/celltypist",
     "viash_version" : "0.9.4",
-    "git_commit" : "30074eb2914c066a1e20e4ae31db20b1c34bc677",
+    "git_commit" : "06e1b29a473c2b800ba3a873c6b515b3d58218c6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3565,9 +3553,7 @@ meta = [
 
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
-include { normalize_total } from "${meta.resources_dir}/../../../../nextflow/transform/normalize_total/main.nf"
-include { log1p } from "${meta.resources_dir}/../../../../nextflow/transform/log1p/main.nf"
-include { delete_layer } from "${meta.resources_dir}/../../../../nextflow/transform/delete_layer/main.nf"
+include { log_normalize } from "${meta.resources_dir}/../../../../_private/nextflow/workflows/rna/log_normalize/main.nf"
 include { celltypist as celltypist_component_viashalias } from "${meta.resources_dir}/../../../../nextflow/annotate/celltypist/main.nf"
 celltypist_component = celltypist_component_viashalias.run(key: "celltypist_component")
 
@@ -3581,83 +3567,34 @@ workflow run_wf {
     
     query_ch = input_ch
       // Log normalize query dataset to target sum of 10000
-      | normalize_total.run(
-        fromState: { id, state -> [
-          "input": state.input,
-          "modality": state.modality,
-          "input_layer": state.input_layer,
-        ]},
+      | log_normalize.run(
         args: [
-          "output_layer": "normalized_10k",
-          "target_sum": "10000",
-        ],
-        toState: [
-          "input": "output",
-        ]
-      )
-      | log1p.run( 
-        fromState: { id, state -> [
-          "input": state.input,
-          "modality": state.modality
-        ]},
-        args: [
-          "input_layer": "normalized_10k",
           "output_layer": "log_normalized_10k",
+          "target_sum": "10000"
         ],
-        toState: [
-          "input": "output"
-        ]
-      )
-      | delete_layer.run(
-        fromState: { id, state -> [
-          "input": state.input,
-          "modality": state.modality
-        ]},
-        args: [
-          "layer": "normalized_10k"
+        fromState: [
+          "input": "input",
+          "modality": "modality",
+          "layer": "input_layer",
         ],
-        toState: [
-          "input": "output"
-        ]
+        toState: ["input": "output"]
       )
       | view {"After query normalization: $it"}
 
     ref_ch = input_ch
       // Log normalize reference dataset to target sum of 10000
-      | normalize_total.run(
-        key: "normalize_total_reference",
-        runIf: { id, state ->
-          state.reference
-        },
-        fromState: { id, state -> [
-          "input": state.reference,
-          "modality": state.modality,
-          "input_layer": state.reference_layer,
-        ]},
+      | log_normalize.run(
+        runIf: {id, state -> state.reference},
         args: [
-          "output_layer": "normalized_10k",
-          "target_sum": "10000",
-        ],
-        toState: [
-          "reference": "output",
-        ]
-      )
-      | log1p.run( 
-        key: "log1p_reference",
-        runIf: { id, state ->
-          state.reference
-        },
-        fromState: { id, state -> [
-          "input": state.reference,
-          "modality": state.modality
-        ]},
-        args: [
-          "input_layer": "normalized_10k",
           "output_layer": "log_normalized_10k",
+          "target_sum": "10000"
         ],
-        toState: [
-          "reference": "output"
-        ]
+        fromState: [
+          "input": "reference",
+          "modality": "modality",
+          "layer": "reference_layer",
+        ],
+        toState: ["reference": "output"]
       )
       | view {"After reference normalization: $it"}
 
