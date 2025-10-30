@@ -160,14 +160,12 @@ argument_groups:
         description: If set, omit zero-centering variables, which allows to handle sparse input efficiently."
          
 dependencies:
-  - name: transform/normalize_total
-  - name: transform/log1p
   - name: feature_annotation/highly_variable_features_scanpy
   - name: workflows/qc/qc
     alias: rna_qc
-  - name: transform/delete_layer
   - name: metadata/add_id
   - name: transform/scale
+  - name: workflows/rna/log_normalize
 resources:
   - type: nextflow_script
     path: main.nf
