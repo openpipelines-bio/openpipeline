@@ -457,9 +457,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Jakub Majercik, Dries De Maeyer, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component differential_expression create_pseudobulk"
-LABEL org.opencontainers.image.created="2025-10-30T15:18:11Z"
+LABEL org.opencontainers.image.created="2025-10-30T15:35:02Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="06e1b29a473c2b800ba3a873c6b515b3d58218c6"
+LABEL org.opencontainers.image.revision="525d9feb5e2bee34df1c621440dbeb2f6cea59c3"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
