@@ -6,7 +6,7 @@ mudata <- reticulate::import("mudata")
 
 ### VIASH START
 par <- list(
-  input = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+  input = "pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
   modality = "rna",
   input_layer = NULL,
   input_var_gene_names = "gene_symbol",
@@ -16,12 +16,11 @@ par <- list(
   reference_layer = NULL,
   reference_var_input = NULL,
   reference_var_gene_names = NULL,
-  # reference_var_gene_names = "ensemblid",
   reference_obs_target = "cell_ontology_class",
   output = "singler_output.h5mu",
   output_compression = "gzip",
   output_obs_predictions = "singler_labels",
-  output_obs_probability = "singlr_proba",
+  output_obs_probability = "singler_proba",
   output_obsm_scores = "single_r_scores",
   output_obs_delta_next = "singler_delta_next",
   output_obs_pruned_predictions = "singler_pruned_labels",
