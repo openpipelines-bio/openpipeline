@@ -45,10 +45,9 @@ def _log_arguments(function_obj, arg_dict):
 
 def main(par):
     logger.info("Component %s started", meta["name"])
-    tiledb_config = {
-        "vfs.s3.no_sign_request": "false",
-    }
+    tiledb_config = {}
     optional_config = {
+        "vfs.s3.no_sign_request": par["s3_no_sign_request"],
         "vfs.s3.region": par["s3_region"],
         "vfs.s3.endpoint_override": par["endpoint"],
     }

@@ -3,6 +3,7 @@ import pytest
 import boto3
 import os
 from moto.server import ThreadedMotoServer
+from contextlib import contextmanager
 import socket
 import tiledbsoma
 import subprocess
@@ -10,17 +11,15 @@ import re
 import pandas as pd
 import numpy as np
 import mudata
-import json
-from contextlib import contextmanager
 import requests
 
 
 ## VIASH START
 meta = {
-    "executable": "target/executable/tiledb/move_mudata_obsm_to_tiledb/move_mudata_obsm_to_tiledb",
+    "executable": "target/executable/tiledb/move_mudata_obs_to_tiledb/move_mudata_obs_to_tiledb",
     "resources_dir": "./resources_test",
     "cpus": 2,
-    "config": "./src/tiledb/move_mudata_obsm_to_tiledb/config.vsh.yaml",
+    "config": "./src/tiledb/move_mudata_obs_to_tiledb/config.vsh.yaml",
 }
 sys.path.append("src/utils")
 ## VIASH END
@@ -39,12 +38,11 @@ def input_mudata():
 
 @pytest.fixture
 def input_mudata_extra_output_slot(input_mudata):
-    new_obsm_key = pd.DataFrame(
-        np.random.rand(input_mudata["rna"].n_obs, 5),
+    new_obs_col = pd.Series(
+        np.random.rand(input_mudata["rna"].n_obs, 1).ravel(),
         index=input_mudata["rna"].obs_names,
-        columns=pd.Index(["a", "b", "c", "d", "e"]),
     )
-    input_mudata["rna"].obsm["test_input_slot"] = new_obsm_key
+    input_mudata["rna"].obs["test_input_slot"] = new_obs_col
     return input_mudata
 
 
@@ -83,7 +81,7 @@ def moto_server(aws_credentials):
         yield moto_server
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def initiated_database(moto_server):
     host, port = moto_server.get_host_and_port()
     server_uri = f"http://{host}:{port}"
@@ -121,12 +119,12 @@ def test_key_already_exists_raises(
                 str(input_mudata_path),
                 "--modality",
                 "rna",
-                "--obsm_input",
-                "X_leiden_harmony_umap",
+                "--obs_input",
+                "filter_with_counts",
             ]
         )
     assert re.search(
-        r"ValueError: The following keys already exist in the database: X_leiden_harmony_umap",
+        r"ValueError: The following keys already exist in the database: filter_with_counts",
         err.value.stdout.decode("utf-8"),
     )
 
@@ -147,12 +145,12 @@ def test_missing_obsm_key_raises(run_component, initiated_database, input_mudata
                 str(input_mudata_path),
                 "--modality",
                 "rna",
-                "--obsm_input",
+                "--obs_input",
                 "doesnotexist",
             ]
         )
     assert re.search(
-        r"Not all \.obsm keys were found in the input!",
+        r"Not all \.obs keys were found in the input!",
         err.value.stdout.decode("utf-8"),
     )
 
@@ -176,31 +174,28 @@ def test_add(
             str(input_path),
             "--modality",
             "rna",
-            "--obsm_input",
+            "--obs_input",
             "test_input_slot",
         ]
     )
-    obsm_key_uri = "s3://test/ms/rna/obsm/test_input_slot"
+    obs_key_uri = "s3://test/obs"
     tiledb_config = {
         "vfs.s3.no_sign_request": "false",
         "vfs.s3.region": "us-east-1",
         "vfs.s3.endpoint_override": initiated_database,
     }
     context = tiledbsoma.SOMATileDBContext(tiledb_config=tiledb_config)
-    with tiledbsoma.open(uri=obsm_key_uri, mode="r", context=context) as open_array:
-        obsm_data = open_array.read().coos().concat().to_scipy().todense()
-        assert obsm_data.shape == (713, 5)
-        original_data = (
-            input_mudata_extra_output_slot["rna"].obsm["test_input_slot"].to_numpy()
+    with tiledbsoma.open(uri=obs_key_uri, mode="r", context=context) as open_array:
+        obs_data = open_array.read().concat().to_pandas()
+        obs_data = obs_data.set_index("cell_id")
+        assert "test_input_slot" in obs_data.columns
+        mudata_col = mudata.read_h5ad(input_path, mod="rna").obs["test_input_slot"]
+        pd.testing.assert_series_equal(
+            obs_data.loc[:, "test_input_slot"],
+            mudata_col,
+            check_like=True,
+            check_names=False,
         )
-        np.testing.assert_allclose(original_data, obsm_data)
-        assert json.loads(open_array.metadata["column_index"]) == [
-            "a",
-            "b",
-            "c",
-            "d",
-            "e",
-        ]
 
 
 def test_output_folder(
@@ -208,12 +203,11 @@ def test_output_folder(
     initiated_database,
     input_mudata_extra_output_slot,
     random_h5mu_path,
-    tmp_path_factory,
     tmp_path,
 ):
     input_path = random_h5mu_path()
     input_mudata_extra_output_slot.write(input_path)
-    output_path = tmp_path_factory.mktemp(tmp_path)
+    output_path = tmp_path / "tiledb_out"
     run_component(
         [
             "--input_uri",
@@ -228,34 +222,31 @@ def test_output_folder(
             str(input_path),
             "--modality",
             "rna",
-            "--obsm_input",
+            "--obs_input",
             "test_input_slot",
             "--output_tiledb",
             output_path,
         ]
     )
     assert output_path.is_dir()
-    obsm_key_uri = output_path / "ms/rna/obsm/test_input_slot"
-    assert obsm_key_uri.is_dir()
-    print(list(obsm_key_uri.iterdir()), file=sys.stderr, flush=True)
+    obs_key_uri = output_path / "obs"
+    assert obs_key_uri.is_dir()
+    print(list(obs_key_uri.iterdir()), file=sys.stderr, flush=True)
     with tiledbsoma.open(
-        uri=f"file://{str(obsm_key_uri.resolve())}",
+        uri=f"file://{str(obs_key_uri.resolve())}",
         mode="r",
         context=tiledbsoma.SOMATileDBContext(),
     ) as open_array:
-        obsm_data = open_array.read().coos().concat().to_scipy().todense()
-        assert obsm_data.shape == (713, 5)
-        original_data = (
-            input_mudata_extra_output_slot["rna"].obsm["test_input_slot"].to_numpy()
+        obs_data = open_array.read().concat().to_pandas()
+        obs_data = obs_data.set_index("cell_id")
+        assert "test_input_slot" in obs_data.columns
+        mudata_col = mudata.read_h5ad(input_path, mod="rna").obs["test_input_slot"]
+        pd.testing.assert_series_equal(
+            obs_data.loc[:, "test_input_slot"],
+            mudata_col,
+            check_like=True,
+            check_names=False,
         )
-        np.testing.assert_allclose(original_data, obsm_data)
-        assert json.loads(open_array.metadata["column_index"]) == [
-            "a",
-            "b",
-            "c",
-            "d",
-            "e",
-        ]
 
 
 if __name__ == "__main__":

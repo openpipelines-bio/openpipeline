@@ -23,6 +23,11 @@ argument_groups:
         description: |
           Custom endpoint to use to connect to S3
         required: false
+      - name: "--s3_no_sign_request"
+        description: |
+          Do not sign S3 requests. Credentials will not be loaded if this argument is provided.
+        type: boolean
+        default: false
       - name: "--input_modality"
         required: true
         type: string
