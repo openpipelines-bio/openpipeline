@@ -11,11 +11,11 @@ argument_groups:
   - name: "--sam_file"
     type: file
     description: "Indexed sam/bam file(s), comma separated multiple samples. Mode 1a & 2a: one sam/bam file with single cell. Mode 1b & 2b: one or multiple bulk sam/bam files, no barcodes needed, but sample ids and regionsVCF."
-    example: ["input.bam", "input.sam"]
+    example: "input.bam"
   - name: "--sam_index_file"
     type: file
     description: Input SAM/BAM Index file, problem with samFileList.
-    example: ["input.bai", "input.sai"]
+    example: "input.bai"
   - name: "--sam_fileList"
     type: file
     description: A list file containing bam files, each per line, for Mode 1b & 2b.

@@ -93,7 +93,7 @@ argument_groups:
         type: file
         direction: input
         description: Path to file containing transcription factor motifs in JASPAR format.
-        example: ["motifs.txt", "motifs.transfac", "motifs.meme", "motifs.jaspar"]
+        example: "motifs.txt"
       - name: "--non_nuclear_contigs"
         multiple: true
         required: false

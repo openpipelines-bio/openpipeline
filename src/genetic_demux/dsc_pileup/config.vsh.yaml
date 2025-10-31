@@ -15,7 +15,7 @@ argument_groups:
   - name: "--sam"
     type: file
     description: Input SAM/BAM/CRAM file. Must be sorted by coordinates and indexed.
-    example: ["input.bam", "input.sam", "input.cram"]
+    example: "input.sam"
   - name: "--tag_group"
     type: string
     default: 'CB'
@@ -31,7 +31,7 @@ argument_groups:
   - name: "--vcf"
     type: file
     description: "Input VCF/BCF file for dsc-pileup, containing the AC and AN field."
-    example: ["input.vcf", "input.bcf"]
+    example: "input.vcf"
   - name: "--sm"
     type: string
     description: "List of sample IDs to compare to (default: use all)."

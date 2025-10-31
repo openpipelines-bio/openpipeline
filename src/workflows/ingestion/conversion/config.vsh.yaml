@@ -29,7 +29,7 @@ argument_groups:
             - .h5
             - .mtx
         required: true
-        example: ["input.mtx", "input.h5", "input.h5ad"]
+        example: "input.h5ad"
         type: file
       - name: "--input_type"
         type: string

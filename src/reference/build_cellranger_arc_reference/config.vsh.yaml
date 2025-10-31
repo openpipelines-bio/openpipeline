@@ -21,7 +21,7 @@ arguments:
     name: --motifs_file
     required: false
     description: Transcription factor motifs in JASPAR format. See https://support.10xgenomics.com/single-cell-multiome-atac-gex/software/pipelines/latest/advanced/references
-    example: ["motifs.txt", "motifs.transfac", "motifs.meme", "motifs.jaspar"]
+    example: "motifs.txt"
   - type: string
     name: --non_nuclear_contigs
     multiple: true
