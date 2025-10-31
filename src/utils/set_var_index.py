@@ -1,5 +1,4 @@
 import anndata as ad
-import re
 
 
 def strip_version_number(gene_names: list[str]) -> list[str]:
@@ -18,12 +17,15 @@ def strip_version_number(gene_names: list[str]) -> list[str]:
 
     # Pattern matches Ensembl IDs: starts with ENS, followed by any characters,
     # then an eleven digit number, optionally followed by .version_number
-    ensembl_pattern = re.compile(r"^(ENS.*\d{11})(?:\.\d+)?$")
+    gene_series = gene_names.to_series()
+    ensembl_pattern = r"^ENS.*\d{11}(?:\.\d+)?$"
+    ensembl_mask = gene_series.str.match(ensembl_pattern)
 
-    return [
-        match.group(1) if (match := ensembl_pattern.match(gene)) else gene
-        for gene in gene_names
-    ]
+    sanitized = gene_series.where(
+        ~ensembl_mask, gene_series.str.extract(ensembl_pattern)[0]
+    )
+
+    return sanitized
 
 
 def set_var_index(
