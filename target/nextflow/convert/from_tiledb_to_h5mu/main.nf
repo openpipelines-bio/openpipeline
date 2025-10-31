@@ -3097,6 +3097,18 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "boolean",
+          "name" : "--s3_no_sign_request",
+          "description" : "Do not sign S3 requests. Credentials will not be loaded if this argument is provided.\n",
+          "default" : [
+            false
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "string",
           "name" : "--input_modality",
           "description" : "TileDB-SOMA measurement to take the input from.\n",
@@ -3344,7 +3356,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_tiledb_to_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "525d9feb5e2bee34df1c621440dbeb2f6cea59c3",
+    "git_commit" : "888df6f4b057097292de9202d35e88c5c723748a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3413,6 +3425,7 @@ par = {
   'input_uri': $( if [ ! -z ${VIASH_PAR_INPUT_URI+x} ]; then echo "r'${VIASH_PAR_INPUT_URI//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   's3_region': $( if [ ! -z ${VIASH_PAR_S3_REGION+x} ]; then echo "r'${VIASH_PAR_S3_REGION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'endpoint': $( if [ ! -z ${VIASH_PAR_ENDPOINT+x} ]; then echo "r'${VIASH_PAR_ENDPOINT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  's3_no_sign_request': $( if [ ! -z ${VIASH_PAR_S3_NO_SIGN_REQUEST+x} ]; then echo "r'${VIASH_PAR_S3_NO_SIGN_REQUEST//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'input_modality': $( if [ ! -z ${VIASH_PAR_INPUT_MODALITY+x} ]; then echo "r'${VIASH_PAR_INPUT_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_layers': $( if [ ! -z ${VIASH_PAR_INPUT_LAYERS+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYERS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3467,10 +3480,9 @@ def _log_arguments(function_obj, arg_dict):
 
 def main(par):
     logger.info("Component %s started", meta["name"])
-    tiledb_config = {
-        "vfs.s3.no_sign_request": "false",
-    }
+    tiledb_config = {}
     optional_config = {
+        "vfs.s3.no_sign_request": par["s3_no_sign_request"],
         "vfs.s3.region": par["s3_region"],
         "vfs.s3.endpoint_override": par["endpoint"],
     }

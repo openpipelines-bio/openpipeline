@@ -3065,31 +3065,69 @@ meta = [
       "name" : "Inputs",
       "arguments" : [
         {
-          "type" : "string",
-          "name" : "--id",
-          "description" : "ID of the sample.",
-          "example" : [
-            "foo"
-          ],
-          "required" : true,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
           "type" : "file",
           "name" : "--input",
-          "description" : "Path to the sample.",
+          "description" : "Path to the sample. Mutually exclusive with the 'input_uri' argument.",
           "example" : [
             "dataset.h5mu"
           ],
           "must_exist" : true,
           "create_parent" : true,
-          "required" : true,
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
         },
+        {
+          "type" : "string",
+          "name" : "--tiledb_input_uri",
+          "description" : "A URI containing the TileDB-SOMA objects. Mutually exclusive with the 'input' argument.",
+          "example" : [
+            "s3://bucket/path"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--tiledb_s3_region",
+          "description" : "Region where the TileDB-SOMA database is hosted.\n",
+          "example" : [
+            "us-west-2"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--tiledb_endpoint",
+          "description" : "Custom endpoint to use to connect to S3\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--tiledb_s3_no_sign_request",
+          "description" : "Do not sign S3 requests. Credentials will not be loaded if this argument is provided.\n",
+          "default" : [
+            false
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Input slots",
+      "arguments" : [
         {
           "type" : "string",
           "name" : "--layer",
@@ -3140,6 +3178,17 @@ meta = [
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
+          "direction" : "output",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "file",
+          "name" : "--output_tiledb",
+          "description" : "Output the TileDB database to the specified directory instead of adding it to the existing database.\n",
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : false,
           "direction" : "output",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3442,6 +3491,24 @@ meta = [
       "repository" : {
         "type" : "local"
       }
+    },
+    {
+      "name" : "convert/from_tiledb_to_h5mu",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
+      "name" : "tiledb/move_mudata_obsm_to_tiledb",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
+      "name" : "tiledb/move_mudata_obs_to_tiledb",
+      "repository" : {
+        "type" : "local"
+      }
     }
   ],
   "license" : "MIT",
@@ -3533,7 +3600,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scvi_leiden",
     "viash_version" : "0.9.4",
-    "git_commit" : "525d9feb5e2bee34df1c621440dbeb2f6cea59c3",
+    "git_commit" : "888df6f4b057097292de9202d35e88c5c723748a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3583,6 +3650,9 @@ meta = [
 meta["root_dir"] = getRootDir()
 include { scvi } from "${meta.resources_dir}/../../../../nextflow/integrate/scvi/main.nf"
 include { neighbors_leiden_umap } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/neighbors_leiden_umap/main.nf"
+include { from_tiledb_to_h5mu } from "${meta.resources_dir}/../../../../nextflow/convert/from_tiledb_to_h5mu/main.nf"
+include { move_mudata_obsm_to_tiledb } from "${meta.resources_dir}/../../../../_private/nextflow/tiledb/move_mudata_obsm_to_tiledb/main.nf"
+include { move_mudata_obs_to_tiledb } from "${meta.resources_dir}/../../../../_private/nextflow/tiledb/move_mudata_obs_to_tiledb/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
@@ -3596,6 +3666,30 @@ workflow run_wf {
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
+    | map {id, state -> 
+      assert state.input || state.tiledb_input_uri: "Either --input or --tiledb_input_uri must be defined"
+      assert !(state.input && state.tiledb_input_uri): "Values were specified for both --input and --tiledb_input_uri. Please choose one."
+      assert state.tiledb_s3_region || !state.tiledb_input_uri: "Specifying 'tiledb_s3_region' also requires 'tiledb_input_uri'."
+      assert !state.tiledb_input_uri || state.layer: "When using tileDB input, you must specify a layer using --layer"
+      [id, state]
+    }
+    | from_tiledb_to_h5mu.run(
+      runIf: {id, state -> state.tiledb_input_uri},
+      fromState: { id, state -> 
+        [
+          "input_uri": state.tiledb_input_uri,
+          "s3_region": state.tiledb_s3_region,
+          "endpoint": state.tiledb_endpoint,
+          "input_modality": state.modality,
+          "output_modality": state.modality,
+          "input_layers": [ state.layer ],
+          "s3_no_sign_request": state.tiledb_s3_no_sign_request
+        ]
+      },
+      toState: [
+        "input": "output",
+      ]
+    )
     | scvi.run(
       fromState: [
         "input": "input",
@@ -3637,7 +3731,46 @@ workflow run_wf {
       ],
       toState: ["output": "output"]
     )
-    | setState(["output", "output_model"])
+    | move_mudata_obsm_to_tiledb.run(
+      runIf: {id, state -> state.tiledb_input_uri},
+      fromState: {id, state ->
+        [
+          "input_mudata": state.output,
+          "modality": state.modality,
+          "input_uri": state.tiledb_input_uri,
+          "s3_region": state.tiledb_s3_region,
+          "endpoint": state.tiledb_endpoint,
+          "output_modality": state.modality,
+          "obsm_input": [state.obsm_umap, state.obsm_output],
+          "output_tiledb": state.output_tiledb,
+          "s3_no_sign_request": state.tiledb_s3_no_sign_request
+        ]
+      },
+      toState: ["previous_output_tiledb": "output_tiledb"]
+    )
+    | move_mudata_obs_to_tiledb.run(
+      runIf: {id, state -> state.tiledb_input_uri},
+      fromState: {id, state ->
+        def new_state = [
+          "input_mudata": state.output,
+          "modality": state.modality,
+          "s3_region": state.tiledb_s3_region,
+          "endpoint": state.tiledb_endpoint,
+          "output_modality": state.modality,
+          "obs_input": state.leiden_resolution.collect{state.obs_cluster + "_" + it},
+          "output_tiledb": state.output_tiledb,
+          "s3_no_sign_request": state.tiledb_s3_no_sign_request
+        ]
+        if (state.previous_output_tiledb && file(state.previous_output_tiledb).exists()) {
+          new_state += ["input_dir": state.previous_output_tiledb]
+        } else {
+          new_state += ["input_uri": state.tiledb_input_uri]
+        }
+        return new_state
+      },
+      toState: ["output_tiledb": "output_tiledb"]
+    )
+    | setState(["output", "output_model", "output_tiledb"])
 
   emit:
   output_ch
