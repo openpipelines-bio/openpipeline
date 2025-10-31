@@ -3238,6 +3238,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "scSplit.patch"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3349,19 +3353,24 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.11",
+      "image" : "python:3.13",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
         {
+          "type" : "docker",
+          "copy" : [
+            "scSplit.patch /opt/scSplit.patch"
+          ]
+        },
+        {
           "type" : "python",
           "user" : false,
           "pip" : [
-            "numpy<2",
-            "pandas<2.0",
+            "numpy",
+            "pandas",
             "pysam",
-            "setuptools<58",
-            "scikit-learn==1.1.3",
+            "scikit-learn",
             "scipy",
             "statistics"
           ],
@@ -3371,14 +3380,14 @@ meta = [
           "type" : "python",
           "user" : false,
           "pip" : [
-            "PyVCF"
+            "vcfpy"
           ],
           "upgrade" : true
         },
         {
           "type" : "docker",
           "run" : [
-            "git clone https://github.com/jon-xu/scSplit && cp scSplit/scSplit /usr/local/bin && rm -rf scSplit"
+            "git clone https://github.com/jon-xu/scSplit && cd scSplit && git apply /opt/scSplit.patch && cp scSplit /usr/local/bin && cd .. && rm -rf scSplit"
           ]
         }
       ]
@@ -3390,7 +3399,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/scsplit",
     "viash_version" : "0.9.4",
-    "git_commit" : "9d5fc85860971efb5a44d04135d39bce97c641ee",
+    "git_commit" : "3df19fdc6559b6355a2b122987e82dda4bff144f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

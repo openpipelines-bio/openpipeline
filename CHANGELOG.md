@@ -8,6 +8,10 @@
 
 * `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078, #1079, #1082).
 
+* `annotate/celltypist`: Enable CUDA acceleration for CellTypist annotation (PR #1091).
+
+* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083).
+
 ## EXPERIMENTAL
 
 * `differential_expression/deseq2`: Performs differential expression analysis using DESeq2 on bulk or pseudobulk datasets (PR #1044).
@@ -34,10 +38,15 @@
   
 * `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
 
+* `genetic_demux/scsplit`: bump python to `3.13` and unpin pandas and numpy (were pinned to `<2.0` and `<2` respectively) (PR #1096).
 
 ## BUG FIXES
 
+* `differential_expression/create_pseudobulks`: Fixed the check to verify that the raw counts layer was passed (PR #1072).
+
 * `filter/filter_with_counts`: this component would sometimes crash (segfault) when processing malformatted sparse matrices. A proper error message is now provided in this case (PR #1086).
+
+* `cluster/leiden`: fix an issue where using an input modality with missing`.X` caused `KeyError` (`Unable to synchronously open object`) (PR #1093).
 
 # openpipelines 3.0.0
 

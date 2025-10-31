@@ -3180,6 +3180,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "setup.py.patch"
+    },
+    {
+      "type" : "file",
       "path" : "/resources_test/cellranger_tiny_fastq"
     },
     {
@@ -3286,16 +3290,22 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.10-slim-bookworm",
+      "image" : "python:3.13",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
         {
+          "type" : "docker",
+          "copy" : [
+            "setup.py.patch /opt/setup.py.patch"
+          ]
+        },
+        {
           "type" : "apt",
           "packages" : [
-            "procps",
             "build-essential",
-            "file"
+            "file",
+            "git"
           ],
           "interactive" : false
         },
@@ -3303,18 +3313,16 @@ meta = [
           "type" : "python",
           "user" : false,
           "pip" : [
-            "numpy<2",
+            "numpy",
             "Cython"
           ],
           "upgrade" : true
         },
         {
-          "type" : "python",
-          "user" : false,
-          "pip" : [
-            "velocyto"
-          ],
-          "upgrade" : true
+          "type" : "docker",
+          "run" : [
+            "git clone --depth 1 https://github.com/velocyto-team/velocyto.py /tmp/velocyto.py && cd /tmp/velocyto.py && git checkout 56efe891ec3d383d83ad45360f58350c12824c4d && git apply /opt/setup.py.patch && pip install .\n"
+          ]
         },
         {
           "type" : "apt",
@@ -3342,7 +3350,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/velocyto",
     "viash_version" : "0.9.4",
-    "git_commit" : "9d5fc85860971efb5a44d04135d39bce97c641ee",
+    "git_commit" : "3df19fdc6559b6355a2b122987e82dda4bff144f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -463,9 +463,9 @@ RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TR
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Dorien Roosen, Dries De Maeyer, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component differential_expression deseq2"
-LABEL org.opencontainers.image.created="2025-10-29T03:04:51Z"
+LABEL org.opencontainers.image.created="2025-10-31T03:02:37Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="9d5fc85860971efb5a44d04135d39bce97c641ee"
+LABEL org.opencontainers.image.revision="3df19fdc6559b6355a2b122987e82dda4bff144f"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1410,17 +1410,6 @@ h5mu_to_h5ad <- function(h5mu_path, modality_name) {
   tmp_path
 }
 
-# Check if expression data is normalized (row sums =~ 1)
-is_normalized <- function(layer) {
-  row_sums <- if (is(layer, "sparseMatrix") || is(layer, "dgCMatrix")) {
-    Matrix::rowSums(layer)
-  } else {
-    rowSums(layer)
-  }
-
-  all(abs(row_sums - 1) < 1e-6, na.rm = TRUE)
-}
-
 # Extract design factors from formula
 parse_design_formula <- function(design_formula) {
   if (!grepl("^~\\\\s*\\\\w+(\\\\s*\\\\+\\\\s*\\\\w+)*\$", design_formula)) {
@@ -1644,10 +1633,6 @@ main <- function() {
     mod\$layers[[par\$input_layer]]
   } else {
     mod\$X
-  }
-
-  if (is_normalized(layer)) {
-    stop("Input layer must contain raw counts.")
   }
 
   # Prepare analysis components

@@ -3463,7 +3463,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/differential_expression/deseq2",
     "viash_version" : "0.9.4",
-    "git_commit" : "9d5fc85860971efb5a44d04135d39bce97c641ee",
+    "git_commit" : "3df19fdc6559b6355a2b122987e82dda4bff144f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3607,17 +3607,6 @@ h5mu_to_h5ad <- function(h5mu_path, modality_name) {
   h5dest\\$close()
 
   tmp_path
-}
-
-# Check if expression data is normalized (row sums =~ 1)
-is_normalized <- function(layer) {
-  row_sums <- if (is(layer, "sparseMatrix") || is(layer, "dgCMatrix")) {
-    Matrix::rowSums(layer)
-  } else {
-    rowSums(layer)
-  }
-
-  all(abs(row_sums - 1) < 1e-6, na.rm = TRUE)
 }
 
 # Extract design factors from formula
@@ -3843,10 +3832,6 @@ main <- function() {
     mod\\$layers[[par\\$input_layer]]
   } else {
     mod\\$X
-  }
-
-  if (is_normalized(layer)) {
-    stop("Input layer must contain raw counts.")
   }
 
   # Prepare analysis components
