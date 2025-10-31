@@ -38,7 +38,7 @@
   
 * `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
 
-* Various components and workflows in `integrate`, `annotate`, `workflows/integration` and `workflows/annotation`: Perform optional ensembl id sanitation (by stripping the version number) using the `--sanitize_ensembl_ids` argument (PR #1084).
+* Various components and workflows in `integrate`, `annotate`, `workflows/integration` and `workflows/annotation`: Optionally disable ensembl id sanitation (by stripping the version number) using the `--sanitize_ensembl_ids` argument (PR #1084).
 
 * `genetic_demux/scsplit`: bump python to `3.13` and unpin pandas and numpy (were pinned to `<2.0` and `<2` respectively) (PR #1096).
 

@@ -1,12 +1,12 @@
 import anndata as ad
 
 
-def strip_version_number(gene_names: list[str]) -> list[str]:
+def strip_version_number(gene_series: list[str]) -> list[str]:
     """Sanitize ensemble ID's by removing version numbers.
 
     Parameters
     ----------
-    gene_names : list[str]
+    gene_series : list[str]
         List of ensemble ID's to sanitize.
 
     Returns
@@ -17,8 +17,7 @@ def strip_version_number(gene_names: list[str]) -> list[str]:
 
     # Pattern matches Ensembl IDs: starts with ENS, followed by any characters,
     # then an eleven digit number, optionally followed by .version_number
-    gene_series = gene_names.to_series()
-    ensembl_pattern = r"^ENS.*\d{11}(?:\.\d+)?$"
+    ensembl_pattern = r"^(ENS.*\d{11})(?:\.\d+)?$"
     ensembl_mask = gene_series.str.match(ensembl_pattern)
 
     sanitized = gene_series.where(
@@ -47,7 +46,7 @@ def set_var_index(
     AnnData
         Copy of `adata` with optionally sanitized and replaced index
     """
-    gene_names = adata.var[var_name] if var_name else adata.var.index
+    gene_names = adata.var[var_name] if var_name else adata.var.index.to_series()
 
     if sanitize_ensembl_ids:
         ori_gene_names = len(gene_names)
