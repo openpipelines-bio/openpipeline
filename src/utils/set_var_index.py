@@ -15,6 +15,9 @@ def strip_version_number(gene_series: list[str]) -> list[str]:
         List of sanitized ensemble ID's.
     """
 
+    # Convert to string type to handle Categorical series
+    gene_series = gene_series.astype(str)
+
     # Pattern matches Ensembl IDs: starts with ENS, followed by any characters,
     # then an eleven digit number, optionally followed by .version_number
     ensembl_pattern = r"^(ENS.*\d{11})(?:\.\d+)?$"
