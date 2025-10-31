@@ -31,6 +31,7 @@ workflow run_wf {
               "reduce_lr_on_plateau": "reduce_lr_on_plateau",
               "lr_factor": "lr_factor",
               "lr_patience": "lr_patience",
+              "sanitize_ensembl_ids": "sanitize_ensembl_ids"
           ],
           args: [
               "obsm_output": "X_integrated_scvi"
@@ -63,6 +64,7 @@ workflow run_wf {
               "reduce_lr_on_plateau": "reduce_lr_on_plateau",
               "lr_factor": "lr_factor",
               "lr_patience": "lr_patience",
+              "sanitize_ensembl_ids": "sanitize_ensembl_ids"
           ],
           toState: [
               "reference": "output",
@@ -94,7 +96,8 @@ workflow run_wf {
               "lr_factor": "lr_factor",
               "lr_patience": "lr_patience",
               "output": "workflow_output",
-              "model_output": "workflow_output_model"
+              "model_output": "workflow_output_model",
+              "sanitize_ensembl_ids": "sanitize_ensembl_ids"
           ],
           toState: [
               "input": "output",
