@@ -38,6 +38,12 @@
           "description": "Custom endpoint to use to connect to S3\n",
           "help_text": "Type: `string`, multiple: `False`. "
         },
+        "s3_no_sign_request": {
+          "type": "boolean",
+          "description": "Do not sign S3 requests",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
         "input_modality": {
           "type": "string",
           "description": "TileDB-SOMA measurement to take the input from.\n",

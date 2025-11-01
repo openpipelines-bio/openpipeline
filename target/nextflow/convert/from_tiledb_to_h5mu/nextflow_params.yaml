@@ -2,6 +2,7 @@
 input_uri: # please fill in - example: "s3://bucket/path"
 # s3_region: "foo"
 # endpoint: "foo"
+s3_no_sign_request: false
 input_modality: # please fill in - example: "foo"
 input_layers: # please fill in - example: ["foo"]
 

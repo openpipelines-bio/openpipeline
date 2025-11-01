@@ -12,6 +12,8 @@
 
 * `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083).
 
+* `workflows/integration/harmony_leiden`: add support for adding the output slots to a tileDB-SOMA database (PR #1095).
+
 ## EXPERIMENTAL
 
 * `differential_expression/deseq2`: Performs differential expression analysis using DESeq2 on bulk or pseudobulk datasets (PR #1044).
@@ -23,6 +25,8 @@
 * Deprecated all scGPT functionality (PR #1075).
 
 * Added `from_tiledb_to_h5mu` component (PR #1068).
+
+* `workflows/integration/scvi_leiden`: add support for adding the output slots to a tileDB-SOMA database (PR 1094).
 
 ## MAJOR CHANGES
 

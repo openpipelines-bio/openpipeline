@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component filter delimit_counts"
-LABEL org.opencontainers.image.created="2025-10-31T03:02:38Z"
+LABEL org.opencontainers.image.created="2025-11-01T03:02:46Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3df19fdc6559b6355a2b122987e82dda4bff144f"
+LABEL org.opencontainers.image.revision="229be8b23254035575177315eaf8695451ceb8ef"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
