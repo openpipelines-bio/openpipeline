@@ -23,29 +23,32 @@
       "type": "object",
       "description": "No description",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "ID of the sample.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"foo\"`. "
-        },
         "input": {
           "type": "string",
           "format": "path",
-          "exists": true,
-          "description": "Path to the sample.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"dataset.h5mu\"`. "
+          "description": "Path to the sample",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"dataset.h5mu\"`. "
         },
-        "layer": {
+        "tiledb_input_uri": {
           "type": "string",
-          "description": "use specified layer for expression values instead of the .X object from the modality.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"log_normalized\"`. ",
-          "default": "log_normalized"
+          "description": "A URI containing the TileDB-SOMA objects",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"s3://bucket/path\"`. "
         },
-        "modality": {
+        "tiledb_s3_region": {
           "type": "string",
-          "description": "Which modality to process.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "description": "Region where the TileDB-SOMA database is hosted.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"us-west-2\"`. "
+        },
+        "tiledb_endpoint": {
+          "type": "string",
+          "description": "Custom endpoint to use to connect to S3\n",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "tiledb_s3_no_sign_request": {
+          "type": "boolean",
+          "description": "Do not sign S3 requests",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
+          "default": false
         }
       }
     },
@@ -60,6 +63,32 @@
           "description": "Destination path to the output.",
           "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
+        },
+        "output_tiledb": {
+          "type": "string",
+          "format": "path",
+          "description": "Output the TileDB database to the specified directory instead of adding it to the existing database.\n",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output_tiledb\"`, direction: `output`. ",
+          "default": "$id.$key.output_tiledb"
+        }
+      }
+    },
+    "input slots": {
+      "title": "Input slots",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "layer": {
+          "type": "string",
+          "description": "use specified layer for expression values instead of the .X object from the modality.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"log_normalized\"`. ",
+          "default": "log_normalized"
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality to process.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
         }
       }
     },
@@ -182,6 +211,9 @@
     },
     {
       "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/input slots"
     },
     {
       "$ref": "#/$defs/neighbour calculation"
