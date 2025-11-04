@@ -3286,7 +3286,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/compression/compress_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "36f98199e475a6298422b30fc1a9f637ac0195b4",
+    "git_commit" : "b228b7f335dfed732d6c46a49c71533d93166121",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
