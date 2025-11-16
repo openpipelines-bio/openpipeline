@@ -464,9 +464,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component velocity velocyto"
-LABEL org.opencontainers.image.created="2025-11-15T02:59:08Z"
+LABEL org.opencontainers.image.created="2025-11-16T03:05:31Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3ebc3f9c3f3358f26b13d215a30b65c2ec52c82e"
+LABEL org.opencontainers.image.revision="cc5aee8721560d79c9d244155a8d70d905079a9a"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
