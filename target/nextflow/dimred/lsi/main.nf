@@ -3437,7 +3437,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/lsi",
     "viash_version" : "0.9.4",
-    "git_commit" : "f0658e8af8c7956cbaa8f3191782de6e9a28193c",
+    "git_commit" : "02bf03a9d9678142efeb814d6e865a0a7c679883",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
