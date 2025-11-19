@@ -11,12 +11,15 @@ argument_groups:
   - name: "--vcf"
     type: file
     description: VCF from mixed BAM
+    example: input.vcf
   - name: "--bam"
     type: file
     description: mixed sample BAM
+    example: input.bam
   - name: "--bar"
     type: file
     description: barcodes whitelist
+    example: barcodes.txt
   - name: "--tag"
     type: string
     default: "CB"
@@ -24,6 +27,7 @@ argument_groups:
   - name: "--com"
     type: file
     description: common SNVs
+    example: common_snvs.txt
   - name: "--num"
     type: integer
     description: expected number of mixed samples
@@ -40,6 +44,7 @@ argument_groups:
     description: correction for doublets. There will be no refinement on the results if this optional parameter is not specified or specified percentage is less than doublet rates detected during the run.
   - name: "--vcf_known"
     type: file
+    example: known_variants.vcf
     description: known individual genotypes to limit distinguishing variants to available variants, so that users do not need to redo genotyping on selected variants, otherwise any variants could be selected as distinguishing variants.
   - name: "--geno"
     type: boolean_true

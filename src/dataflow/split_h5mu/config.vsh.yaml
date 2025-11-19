@@ -13,6 +13,7 @@ argument_groups:
     type: file
     description: Path to a single .h5mu file.
     required: true
+    example: input.h5mu
   - name: "--modality"
     description: |
       Which modality from the input MuData file to process.

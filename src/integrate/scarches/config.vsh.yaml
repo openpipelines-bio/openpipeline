@@ -17,6 +17,7 @@ argument_groups:
         description: Input h5mu file to use as a query
         direction: input
         required: true
+        example: input.h5mu
       - name: "--layer"
         type: string
         description: Layer to be used for scArches, if .X is not to be used.
@@ -74,6 +75,7 @@ argument_groups:
         type: file
         description: Path to the directory with reference model or a web link.
         required: true
+        example: path/to/reference/
       - name: "--reference_class"
         type: string
         required: false
@@ -89,11 +91,13 @@ argument_groups:
         description: Output h5mu file.
         direction: output
         required: true
+        example: output.h5mu
       - name: "--model_output"
         type: file
         default: "model"
         direction: output
         description: Output directory for model
+        example: path/to/output_model/
       - name: "--obsm_output"
         type: string
         default: "X_integrated_scanvi"

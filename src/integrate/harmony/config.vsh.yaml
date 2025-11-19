@@ -14,12 +14,14 @@ arguments:
     type: file
     description: Input h5mu file
     direction: input
+    example: input.h5mu
     required: true
   - name: "--output"
     alternatives: ["-o"]
     type: file
     description: Output h5mu file.
     direction: output
+    example: output.h5mu
     required: true
   - name: "--modality"
     type: string

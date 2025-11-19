@@ -15,6 +15,7 @@ argument_groups:
   - name: "--sam"
     type: file
     description: Input SAM/BAM/CRAM file. Must be sorted by coordinates and indexed.
+    example: "input.bam"
   - name: "--tag_group"
     type: string
     default: 'CB'
@@ -29,6 +30,7 @@ argument_groups:
   - name: "--vcf"
     type: file
     description: Input VCF/BCF file, containing the individual genotypes (GT), posterior probability (GP), or genotype likelihood (PL).
+    example: "input.vcf"
   - name: "--field"
     type: string
     default: "GT"

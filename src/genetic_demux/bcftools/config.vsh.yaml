@@ -10,6 +10,7 @@ arguments:
     type: file
     required: true
     multiple: true
+    example: ["input_1.vcf", "input_2.vcf"]
     description: VCF files, must have the same sample columns appearing in the same order.
   - name: "--concat"
     type: boolean_true

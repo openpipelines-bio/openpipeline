@@ -28,6 +28,7 @@ argument_groups:
         description: Input h5mu file.
         direction: input
         required: true
+        example: input.h5mu
       - name: "--modality"
         description: |
           Which modality from the input MuData file to process.
@@ -73,6 +74,7 @@ argument_groups:
         description: Output h5mu file containing the aggregated pseudobulk samples.
         direction: output
         required: true
+        example: output.h5mu
       - name: "--output_compression"
         type: string
         description: |

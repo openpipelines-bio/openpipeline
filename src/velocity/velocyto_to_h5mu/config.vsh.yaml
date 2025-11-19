@@ -23,7 +23,7 @@ argument_groups:
         required: true
       - name: "--input_h5mu"
         type: file
-        description: If a MuData file is provided, 
+        description: If a MuData file is provided, the velocity h5ad object will be added to this file.
         example: input.h5mu
       - name: "--modality"
         type: string

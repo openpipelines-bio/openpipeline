@@ -44,6 +44,8 @@
 
 * `genetic_demux/scsplit`: bump python to `3.13` and unpin pandas and numpy (were pinned to `<2.0` and `<2` respectively) (PR #1096).
 
+* Add missing `example` fields to several component and workflow configurations (PR #1067).
+
 ## BUG FIXES
 
 * `differential_expression/create_pseudobulks`: Fixed the check to verify that the raw counts layer was passed (PR #1072).

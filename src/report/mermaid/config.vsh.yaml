@@ -20,6 +20,7 @@ arguments:
     description: Generated network as output.
     direction: output
     required: true
+    example: "output.png"
   - name: "--output_format"
     type: string
     description: |

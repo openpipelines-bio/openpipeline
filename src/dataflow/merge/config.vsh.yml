@@ -14,6 +14,7 @@ arguments:
     description: Paths to the single-modality .h5mu files that need to be combined
     required: true
     default: sample_paths
+    example: ["/path/to/modality_1.h5mu", "/path/to/modality_2.h5mu"]
   - name: "--output"
     description: Path to the output file.
     alternatives: ["-o"]

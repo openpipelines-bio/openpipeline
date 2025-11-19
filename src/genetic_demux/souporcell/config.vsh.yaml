@@ -11,15 +11,19 @@ argument_groups:
   - name: "--fasta"
     type: file
     description: reference fasta file
+    example: reference.fasta
   - name: "--bam"
     type: file
     description: cellranger bam
+    example: input.bam
   - name: "--bam_index"
     type: file
     description: cellranger bam index
+    example: input.bam.bai
   - name: "--barcodes"
     type: file
     description: barcodes.tsv from cellranger
+    example: barcodes.tsv
   - name: "--clusters"
     type: integer
     description: number cluster, tbd add easy way to run on a range of k
@@ -44,10 +48,12 @@ argument_groups:
     description: number of restarts in clustering, when there are > 12 clusters we recommend increasing this to avoid local minima
   - name: "--common_variants"
     type: file
+    example: common_variants.vcf
     description: common variant loci or known variant loci vcf, must be vs same reference fasta
   - name: "--known_genotypes"
     type: file
-    description: known variants per clone in population vcf mode, must be .vcf right now we dont accept gzip or bcf sorry
+    description: known variants per clone in population vcf mode
+    example: known_variants.vcf
   - name: "--known_genotypes_sample_names"
     type: string
     description: which samples in population vcf from known genotypes option represent the donors in your sample
