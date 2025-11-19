@@ -1,9 +1,9 @@
-name: move_mudata_obsm_to_tiledb
+name: move_mudata_obsp_to_tiledb
 namespace: tiledb
 scope: "private"
 description: |
-  Move .obsm items from a MuData modality to an existing tileDB database.
-  The .obsm keys should not exist in the database yet; and the observations from the modality and 
+  Move .obsp items from a MuData modality to an existing tileDB database.
+  The .obsp keys should not exist in the database yet; and the observations from the modality and 
   their order should match with what is already present the tiledb database.
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
@@ -48,12 +48,12 @@ argument_groups:
         required: true
         type: string
         description: |
-          Modality where to take the .obsm from.
-      - name: "--obsm_input"
+          Modality where to take the .obsp from.
+      - name: "--obsp_input"
         type: string
         multiple: true
         description: |
-          Keys from .obm to copy. The keys should not be present yet in the database.
+          Keys from .obsp to copy. The keys should not be present yet in the database.
   - name: "TileDB-SOMA output"
     arguments:
       - name: "--output_tiledb"

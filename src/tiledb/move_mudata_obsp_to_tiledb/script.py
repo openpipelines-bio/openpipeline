@@ -2,26 +2,25 @@ import sys
 import mudata
 import tiledbsoma
 import tiledbsoma.io
-import pandas as pd
-import json
 from pathlib import Path
 
 ## VIASH START
 par = {
     "input_uri": "s3://openpipelines-data/tiledb/pbmc_1k_protein_v3_mms/",
     "input_mudata": "./resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-    "obsm_input": ["test_slot"],
+    "obsp_input": ["test_slot"],
     "modality": "rna",
     "s3_region": "eu-west-3",
+    "s3_no_sign_request": True,
     "endpoint": None,
     "output_tiledb": "./output",
     "output_modality": "rna",
 }
-meta = {"resources_dir": "src/utils", "name": "move_mudata_obsm_to_tiledb"}
+meta = {"resources_dir": "src/utils", "name": "move_mudata_obsp_to_tiledb"}
 
 test_path = "./mudata_for_testing.h5mu"
 test_mudata = mudata.read_h5mu(par["input_mudata"])
-test_mudata["rna"].obsm["test_slot"] = test_mudata["rna"].obsm["X_pca"].copy()
+test_mudata["rna"].obsp["test_slot"] = test_mudata["rna"].obsp["connectivities"].copy()
 test_mudata.write(test_path)
 par["input_mudata"] = test_path
 ## VIASH END
@@ -37,24 +36,24 @@ tiledbsoma.logging.info()
 def main(par):
     logger.info(f"Component {meta['name']} started.")
     par["input_uri"] = par["input_uri"].rstrip("/")
-    if not par["obsm_input"]:
-        raise ValueError("Please provide at least one .obsm key.")
+    if not par["obsp_input"]:
+        raise ValueError("Please provide at least one .obsp key.")
     logger.info(
         "Opening mudata file '%s', modality '%s'.", par["input_mudata"], par["modality"]
     )
     modality_data = mudata.read_h5ad(par["input_mudata"], mod=par["modality"])
     logger.info(
-        "Done reading modality. Looking at .obsm for keys: '%s'",
-        ",".join(par["obsm_input"]),
+        "Done reading modality. Looking at .obsp for keys: '%s'",
+        ",".join(par["obsp_input"]),
     )
     try:
         keys_to_transfer = {
-            obsm_key: modality_data.obsm[obsm_key] for obsm_key in par["obsm_input"]
+            obsp_key: modality_data.obsp[obsp_key] for obsp_key in par["obsp_input"]
         }
     except KeyError as e:
-        raise KeyError("Not all .obsm keys were found in the input!") from e
+        raise KeyError("Not all .obsp keys were found in the input!") from e
 
-    logger.info("Done getting .obsm keys.")
+    logger.info("Done getting .obsp keys.")
     optional_config = {
         "vfs.s3.region": par["s3_region"],
         "vfs.s3.endpoint_override": par["endpoint"],
@@ -107,7 +106,11 @@ def main(par):
         logger.info("Looking for measurement %s", par["output_modality"])
         measurement = open_experiment.ms[par["output_modality"]]
         logger.info("Checking if keys do not already exist.")
-        existing_keys = measurement.obsm.keys()
+        try:
+            existing_keys = measurement.obsp.keys()
+        except AttributeError:
+            existing_keys = []
+            pass
         logger.info("Existing keys: %s", ",".join(existing_keys))
         overlap = set(existing_keys).intersection(set(keys_to_transfer.keys()))
         if overlap:
@@ -115,34 +118,20 @@ def main(par):
                 f"The following keys already exist in the database: {','.join(overlap)}."
             )
         logger.info("Adding keys to database.")
-        for key, obsm_val in keys_to_transfer.items():
-            logger.info("Adding .obsm key '%s', of class '%s'", key, type(obsm_val))
-            index_as_json = None
-            if isinstance(obsm_val, pd.DataFrame):
-                # tileDB does not allow column indices to be saved directly
-                # So need to add those as JSON metadata
-                index_to_write = obsm_val.columns.to_list()
-                if not isinstance(index_to_write, pd.RangeIndex):
-                    index_as_json = json.dumps(index_to_write)
-                obsm_val = obsm_val.to_numpy()
+        for key, obsp_val in keys_to_transfer.items():
+            logger.info("Adding .obsp key '%s', of class '%s'", key, type(obsp_val))
 
             tiledbsoma.io.add_matrix_to_collection(
                 open_experiment,
                 measurement_name=par["output_modality"],
                 ingest_mode="write",
-                collection_name="obsm",
+                collection_name="obsp",
                 matrix_name=key,
-                matrix_data=obsm_val,
+                matrix_data=obsp_val,
                 context=context,
             )
-            # Allow for more than one obsm slot to be transferred
+            # Allow for more than one obsp slot to be transferred
             open_experiment = open_experiment.reopen(mode="w")
-            if index_as_json:
-                uri = f"{par['input_uri']}/ms/{par['output_modality']}/obsm/{key}"
-                with tiledbsoma.open(
-                    uri=uri, mode="w", context=context
-                ) as open_obsm_array:
-                    open_obsm_array.metadata["column_index"] = index_as_json
 
     logger.info("Finished!")
 

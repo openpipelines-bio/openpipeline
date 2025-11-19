@@ -70,6 +70,7 @@ argument_groups:
 resources:
   - type: bash_script
     path: script.sh
+  - path: scSplit.patch
 test_resources:
   - type: bash_script
     path: test.sh
@@ -77,21 +78,22 @@ test_resources:
 
 engines:
   - type: docker
-    image: python:3.11
+    image: python:3.13
     setup:
+    - type: docker
+      copy: ["scSplit.patch /opt/scSplit.patch"]
     - type: python
       pip: 
-        - numpy<2
-        - pandas<2.0
+        - numpy
+        - pandas
         - pysam
-        - setuptools<58
-        - scikit-learn==1.1.3
+        - scikit-learn
         - scipy
         - statistics
     - type: python
-      pip: [ PyVCF ]
+      pip: [ vcfpy ]
     - type: docker
-      run: git clone https://github.com/jon-xu/scSplit && cp scSplit/scSplit /usr/local/bin && rm -rf scSplit
+      run: git clone https://github.com/jon-xu/scSplit && cd scSplit && git apply /opt/scSplit.patch && cp scSplit /usr/local/bin && cd .. && rm -rf scSplit
 runners:
   - type: executable
   - type: nextflow

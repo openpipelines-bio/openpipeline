@@ -52,26 +52,29 @@ resources:
 test_resources:
   - type: python_script
     path: test.py
+  - path: setup.py.patch
   - path: /resources_test/cellranger_tiny_fastq
   - path: /resources_test/rna_velocity
   - path: /resources_test/reference_gencodev41_chr1
 
 engines:
   - type: docker
-    image: python:3.10-slim-bookworm
+    image: python:3.13
     setup:
+      - type: docker
+        copy: ["setup.py.patch /opt/setup.py.patch"]
       - type: apt
         packages:
-          - procps
           - build-essential
           - file
+          - git
       - type: python
         pip:
-          - numpy<2
+          - numpy
           - Cython
-      - type: python
-        pip:
-          - velocyto
+      - type: docker
+        run: |
+          git clone --depth 1 https://github.com/velocyto-team/velocyto.py /tmp/velocyto.py && cd /tmp/velocyto.py && git checkout 56efe891ec3d383d83ad45360f58350c12824c4d && git apply /opt/setup.py.patch && pip install .
       - type: apt
         packages:
           - samtools
