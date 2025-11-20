@@ -10,17 +10,16 @@ import re
 import pandas as pd
 import numpy as np
 import mudata
-import json
 from contextlib import contextmanager
 import requests
 
 
 ## VIASH START
 meta = {
-    "executable": "target/executable/tiledb/move_mudata_obsm_to_tiledb/move_mudata_obsm_to_tiledb",
+    "executable": "target/executable/tiledb/move_mudata_obsp_to_tiledb/move_mudata_obsp_to_tiledb",
     "resources_dir": "./resources_test",
     "cpus": 2,
-    "config": "./src/tiledb/move_mudata_obsm_to_tiledb/config.vsh.yaml",
+    "config": "./src/tiledb/move_mudata_obsp_to_tiledb/config.vsh.yaml",
 }
 sys.path.append("src/utils")
 ## VIASH END
@@ -39,12 +38,13 @@ def input_mudata():
 
 @pytest.fixture
 def input_mudata_extra_output_slot(input_mudata):
-    new_obsm_key = pd.DataFrame(
-        np.random.rand(input_mudata["rna"].n_obs, 5),
+    n_obs = input_mudata["rna"].n_obs
+    new_obsp_key = pd.DataFrame(
+        np.random.rand(n_obs, n_obs),
         index=input_mudata["rna"].obs_names,
-        columns=pd.Index(["a", "b", "c", "d", "e"]),
+        columns=input_mudata["rna"].obs_names,
     )
-    input_mudata["rna"].obsm["test_input_slot"] = new_obsm_key
+    input_mudata["rna"].obsp["test_input_slot"] = new_obsp_key
     return input_mudata
 
 
@@ -103,9 +103,7 @@ def initiated_database(moto_server):
     requests.post(f"{server_uri}/moto-api/reset")
 
 
-def test_key_already_exists_raises(
-    run_component, input_mudata_path, initiated_database
-):
+def test_missing_obsp_key_raises(run_component, initiated_database, input_mudata_path):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(
             [
@@ -121,38 +119,12 @@ def test_key_already_exists_raises(
                 str(input_mudata_path),
                 "--modality",
                 "rna",
-                "--obsm_input",
-                "X_leiden_harmony_umap",
-            ]
-        )
-    assert re.search(
-        r"ValueError: The following keys already exist in the database: X_leiden_harmony_umap",
-        err.value.stdout.decode("utf-8"),
-    )
-
-
-def test_missing_obsm_key_raises(run_component, initiated_database, input_mudata_path):
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(
-            [
-                "--input_uri",
-                "s3://test",
-                "--endpoint",
-                initiated_database,
-                "--s3_region",
-                "us-east-1",
-                "--output_modality",
-                "rna",
-                "--input_mudata",
-                str(input_mudata_path),
-                "--modality",
-                "rna",
-                "--obsm_input",
+                "--obsp_input",
                 "doesnotexist",
             ]
         )
     assert re.search(
-        r"Not all \.obsm keys were found in the input!",
+        r"Not all \.obsp keys were found in the input!",
         err.value.stdout.decode("utf-8"),
     )
 
@@ -176,31 +148,22 @@ def test_add(
             str(input_path),
             "--modality",
             "rna",
-            "--obsm_input",
+            "--obsp_input",
             "test_input_slot",
         ]
     )
-    obsm_key_uri = "s3://test/ms/rna/obsm/test_input_slot"
+    obsp_key_uri = "s3://test/ms/rna/obsp/test_input_slot"
     tiledb_config = {
         "vfs.s3.no_sign_request": "false",
         "vfs.s3.region": "us-east-1",
         "vfs.s3.endpoint_override": initiated_database,
     }
     context = tiledbsoma.SOMATileDBContext(tiledb_config=tiledb_config)
-    with tiledbsoma.open(uri=obsm_key_uri, mode="r", context=context) as open_array:
-        obsm_data = open_array.read().coos().concat().to_scipy().todense()
-        assert obsm_data.shape == (713, 5)
-        original_data = (
-            input_mudata_extra_output_slot["rna"].obsm["test_input_slot"].to_numpy()
-        )
-        np.testing.assert_allclose(original_data, obsm_data)
-        assert json.loads(open_array.metadata["column_index"]) == [
-            "a",
-            "b",
-            "c",
-            "d",
-            "e",
-        ]
+    with tiledbsoma.open(uri=obsp_key_uri, mode="r", context=context) as open_array:
+        obsp_data = open_array.read().coos().concat().to_scipy().todense()
+        assert obsp_data.shape == (713, 713)
+        original_data = input_mudata_extra_output_slot["rna"].obsp["test_input_slot"]
+        np.testing.assert_allclose(original_data, obsp_data)
 
 
 def test_output_folder(
@@ -228,34 +191,25 @@ def test_output_folder(
             str(input_path),
             "--modality",
             "rna",
-            "--obsm_input",
+            "--obsp_input",
             "test_input_slot",
             "--output_tiledb",
             output_path,
         ]
     )
     assert output_path.is_dir()
-    obsm_key_uri = output_path / "ms/rna/obsm/test_input_slot"
-    assert obsm_key_uri.is_dir()
-    print(list(obsm_key_uri.iterdir()), file=sys.stderr, flush=True)
+    obsp_key_uri = output_path / "ms/rna/obsp/test_input_slot"
+    assert obsp_key_uri.is_dir()
+    print(list(obsp_key_uri.iterdir()), file=sys.stderr, flush=True)
     with tiledbsoma.open(
-        uri=f"file://{str(obsm_key_uri.resolve())}",
+        uri=f"file://{str(obsp_key_uri.resolve())}",
         mode="r",
         context=tiledbsoma.SOMATileDBContext(),
     ) as open_array:
-        obsm_data = open_array.read().coos().concat().to_scipy().todense()
-        assert obsm_data.shape == (713, 5)
-        original_data = (
-            input_mudata_extra_output_slot["rna"].obsm["test_input_slot"].to_numpy()
-        )
-        np.testing.assert_allclose(original_data, obsm_data)
-        assert json.loads(open_array.metadata["column_index"]) == [
-            "a",
-            "b",
-            "c",
-            "d",
-            "e",
-        ]
+        obsp_data = open_array.read().coos().concat().to_scipy().todense()
+        assert obsp_data.shape == (713, 713)
+        original_data = input_mudata_extra_output_slot["rna"].obsp["test_input_slot"]
+        np.testing.assert_allclose(original_data, obsp_data)
 
 
 if __name__ == "__main__":

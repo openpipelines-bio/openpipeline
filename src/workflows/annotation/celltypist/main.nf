@@ -6,83 +6,34 @@ workflow run_wf {
     
     query_ch = input_ch
       // Log normalize query dataset to target sum of 10000
-      | normalize_total.run(
-        fromState: { id, state -> [
-          "input": state.input,
-          "modality": state.modality,
-          "input_layer": state.input_layer,
-        ]},
+      | log_normalize.run(
         args: [
-          "output_layer": "normalized_10k",
-          "target_sum": "10000",
-        ],
-        toState: [
-          "input": "output",
-        ]
-      )
-      | log1p.run( 
-        fromState: { id, state -> [
-          "input": state.input,
-          "modality": state.modality
-        ]},
-        args: [
-          "input_layer": "normalized_10k",
           "output_layer": "log_normalized_10k",
+          "target_sum": "10000"
         ],
-        toState: [
-          "input": "output"
-        ]
-      )
-      | delete_layer.run(
-        fromState: { id, state -> [
-          "input": state.input,
-          "modality": state.modality
-        ]},
-        args: [
-          "layer": "normalized_10k"
+        fromState: [
+          "input": "input",
+          "modality": "modality",
+          "layer": "input_layer",
         ],
-        toState: [
-          "input": "output"
-        ]
+        toState: ["input": "output"]
       )
       | view {"After query normalization: $it"}
 
     ref_ch = input_ch
       // Log normalize reference dataset to target sum of 10000
-      | normalize_total.run(
-        key: "normalize_total_reference",
-        runIf: { id, state ->
-          state.reference
-        },
-        fromState: { id, state -> [
-          "input": state.reference,
-          "modality": state.modality,
-          "input_layer": state.reference_layer,
-        ]},
+      | log_normalize.run(
+        runIf: {id, state -> state.reference},
         args: [
-          "output_layer": "normalized_10k",
-          "target_sum": "10000",
-        ],
-        toState: [
-          "reference": "output",
-        ]
-      )
-      | log1p.run( 
-        key: "log1p_reference",
-        runIf: { id, state ->
-          state.reference
-        },
-        fromState: { id, state -> [
-          "input": state.reference,
-          "modality": state.modality
-        ]},
-        args: [
-          "input_layer": "normalized_10k",
           "output_layer": "log_normalized_10k",
+          "target_sum": "10000"
         ],
-        toState: [
-          "reference": "output"
-        ]
+        fromState: [
+          "input": "reference",
+          "modality": "modality",
+          "layer": "reference_layer",
+        ],
+        toState: ["reference": "output"]
       )
       | view {"After reference normalization: $it"}
 

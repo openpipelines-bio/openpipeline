@@ -134,9 +134,7 @@ argument_groups:
     __merge__: [., /src/base/h5_compression_argument.yaml]
 
 dependencies:
-  - name: transform/normalize_total
-  - name: transform/log1p
-  - name: transform/delete_layer
+  - name: workflows/rna/log_normalize
   - name: annotate/celltypist
     alias: celltypist_component
 
