@@ -36,7 +36,7 @@ jobs:
       dest_paths: ${{ steps.cache.outputs.dest_paths }}
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
@@ -55,7 +55,7 @@ jobs:
         component: ${{ fromJson(needs.build.outputs.workflow_matrix) }}
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
@@ -66,7 +66,7 @@ jobs:
       run: |
         git config --global core.symlinks true
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         ref: 'integration_build'
 
