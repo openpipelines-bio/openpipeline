@@ -45,10 +45,11 @@ arguments:
 resources:
   - type: bash_script
     path: script.sh
+  - path: setup.py.patch
+
 test_resources:
   - type: python_script
     path: test.py
-  - path: setup.py.patch
   - path: /resources_test/cellranger_tiny_fastq
   - path: /resources_test/rna_velocity
   - path: /resources_test/reference_gencodev41_chr1

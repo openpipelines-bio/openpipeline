@@ -3167,6 +3167,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "setup.py.patch"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3177,10 +3181,6 @@ meta = [
       "type" : "python_script",
       "path" : "test.py",
       "is_executable" : true
-    },
-    {
-      "type" : "file",
-      "path" : "setup.py.patch"
     },
     {
       "type" : "file",
@@ -3350,7 +3350,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/velocyto",
     "viash_version" : "0.9.4",
-    "git_commit" : "c3966efc2217acc3fafc3237c0dac506c801c9a4",
+    "git_commit" : "76871f6454fb1bae60ff8cbb864a9efee30c8b37",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
