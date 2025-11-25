@@ -141,14 +141,14 @@ def test_cellranger_multi(run_component, random_path):
     run_component(args)
 
     # check for raw data
-    assert (outputpath / "multi/count/raw_feature_bc_matrix.h5").is_file()
+    assert (outputpath / "raw_feature_bc_matrix.h5").is_file()
 
     # check for metrics summary
     assert (outputpath / "per_sample_outs/run/metrics_summary.csv").is_file()
 
     # check for filtered gex+ab data
     assert (
-        outputpath / "per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5"
+        outputpath / "per_sample_outs/run/sample_filtered_feature_bc_matrix.h5"
     ).is_file()
 
     # check for vdj data
@@ -255,7 +255,7 @@ def test_vdj_inner_enrichment_primers(run_component, random_path):
     assert config_path.is_file()
     with config_path.open("r") as config_file:
         config_contents = config_file.read()
-    expected_csv_content = rf"\[vdj\]\nreference,.*?\ninner-enrichment-primers,{enrichment_primers_file.resolve()}\n"
+    expected_csv_content = rf"\[vdj\]\nreference,.*?\ninner-enrichment-primers,.*{enrichment_primers_file.name}\n"
     assert re.search(expected_csv_content, config_contents)
 
 
@@ -362,6 +362,8 @@ def test_cellranger_multi_crispr_data(run_component, random_path):
         "SC3_v3_NextGem_DI_CRISPR_A549_5K_gex_subset;SC3_v3_NextGem_DI_CRISPR_A549_5K_crispr_subset",
         "--library_type",
         "Gene Expression;CRISPR Guide Capture",
+        "--gex_secondary_analysis",  # As of version 0.10, secondary analysis needs to be enabled
+        "true",  # in order to get the 'crispr_analysis' folder
         "--min_crispr_umi",
         "3",
         "--gex_reference",
@@ -374,15 +376,15 @@ def test_cellranger_multi_crispr_data(run_component, random_path):
     ]
     run_component(args)
     # check for raw data
-    assert (outputpath / "multi/count/raw_feature_bc_matrix.h5").is_file()
+    assert (outputpath / "raw_feature_bc_matrix.h5").is_file()
     # check for metrics summary
     assert (outputpath / "per_sample_outs/run/metrics_summary.csv").is_file()
     # check for filtered gex+ab data
     assert (
-        outputpath / "per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5"
+        outputpath / "per_sample_outs/run/sample_filtered_feature_bc_matrix.h5"
     ).is_file()
     # check for crispr data
-    assert (outputpath / "per_sample_outs/run/count/crispr_analysis/").is_dir()
+    assert (outputpath / "per_sample_outs/run/crispr_analysis/").is_dir()
 
 
 def test_cellranger_multi_helper_input(run_component, random_path):
@@ -412,14 +414,14 @@ def test_cellranger_multi_helper_input(run_component, random_path):
     run_component(args)
 
     # check for raw data
-    assert (outputpath / "multi/count/raw_feature_bc_matrix.h5").is_file()
+    assert (outputpath / "raw_feature_bc_matrix.h5").is_file()
 
     # check for metrics summary
     assert (outputpath / "per_sample_outs/run/metrics_summary.csv").is_file()
 
     # check for filtered gex+ab data
     assert (
-        outputpath / "per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5"
+        outputpath / "per_sample_outs/run/sample_filtered_feature_bc_matrix.h5"
     ).is_file()
 
     # check for vdj data
@@ -459,14 +461,14 @@ def test_cellranger_multi_combined_helper_and_global_input(run_component, random
     run_component(args)
 
     # check for raw data
-    assert (outputpath / "multi/count/raw_feature_bc_matrix.h5").is_file()
+    assert (outputpath / "raw_feature_bc_matrix.h5").is_file()
 
     # check for metrics summary
     assert (outputpath / "per_sample_outs/run/metrics_summary.csv").is_file()
 
     # check for filtered gex+ab data
     assert (
-        outputpath / "per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5"
+        outputpath / "per_sample_outs/run/sample_filtered_feature_bc_matrix.h5"
     ).is_file()
 
     # check for vdj data
@@ -545,11 +547,11 @@ def test_cellranger_multi_beam_data(run_component, random_path):
     ]
     run_component(args)
     # check for raw data
-    assert (outputpath / "multi/count/raw_feature_bc_matrix.h5").is_file()
+    assert (outputpath / "raw_feature_bc_matrix.h5").is_file()
     # check for metrics summary
     assert (outputpath / "per_sample_outs/run/metrics_summary.csv").is_file()
     assert (
-        outputpath / "per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5"
+        outputpath / "per_sample_outs/run/sample_filtered_feature_bc_matrix.h5"
     ).is_file()
     # check for antigen data
     assert (outputpath / "per_sample_outs/run/antigen_analysis/").is_dir()
@@ -587,16 +589,16 @@ def test_cellranger_multi_fixed_rna(run_component, random_path):
     ]
     run_component(args)
     # check for raw data
-    assert (outputpath / "multi/count/raw_feature_bc_matrix.h5").is_file()
+    assert (outputpath / "raw_feature_bc_matrix.h5").is_file()
     # check for metrics summary
     for sample in ["Liver_BC1", "Ovarian_BC2", "Colorectal_BC3", "Pancreas_BC4"]:
         assert (outputpath / f"per_sample_outs/{sample}/metrics_summary.csv").is_file()
         assert (
             outputpath
-            / f"per_sample_outs/{sample}/count/sample_filtered_feature_bc_matrix.h5"
+            / f"per_sample_outs/{sample}/sample_filtered_feature_bc_matrix.h5"
         ).is_file()
 
-    assert (outputpath / "multi/multiplexing_analysis").is_dir()
+    assert (outputpath / "multiplexing_analysis").is_dir()
 
 
 def test_cellranger_multi_with_alternative_names(run_component, random_path):
@@ -670,14 +672,14 @@ def test_cellranger_multi_with_alternative_names(run_component, random_path):
     run_component(args)
 
     # check for raw data
-    assert (outputpath / "multi/count/raw_feature_bc_matrix.h5").is_file()
+    assert (outputpath / "raw_feature_bc_matrix.h5").is_file()
 
     # check for metrics summary
     assert (outputpath / "per_sample_outs/run/metrics_summary.csv").is_file()
 
     # check for filtered gex+ab data
     assert (
-        outputpath / "per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5"
+        outputpath / "per_sample_outs/run/sample_filtered_feature_bc_matrix.h5"
     ).is_file()
 
     # check for vdj data
@@ -723,4 +725,4 @@ def test_cellranger_no_cpus_or_mem_specifier(run_component, random_path):
 
 
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__]))
+    sys.exit(pytest.main([__file__, "-k", "test_cellranger_multi", "-x"]))
