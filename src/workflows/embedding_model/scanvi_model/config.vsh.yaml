@@ -1,5 +1,5 @@
-name: "scanvi_scarches"
-namespace: "workflows/annotation"
+name: "scanvi_model"
+namespace: "workflows/embedding_model"
 scope: "public"
 description: "Generation of a scANVI reference model."
 authors:
@@ -11,8 +11,8 @@ authors:
 info:
   name: "scANVI model workflow"
   test_dependencies:
-    - name: scanvi_scarches_test
-      namespace: test_workflows/annotation
+    - name: scanvi_model_test
+      namespace: test_workflows/embedding_model
 
 argument_groups:
   - name: Inputs
