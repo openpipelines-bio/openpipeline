@@ -1,4 +1,8 @@
-# openpipelines 3.1.0
+# openpipelines 4.0.0
+
+## BREAKING CHANGES
+
+* `mapping/cellranger_multi`: bump Cell Ranger to version 10 (PR #1103).
 
 ## NEW FUNCTIONALITY
 

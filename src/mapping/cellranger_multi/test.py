@@ -725,4 +725,4 @@ def test_cellranger_no_cpus_or_mem_specifier(run_component, random_path):
 
 
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__, "-k", "test_cellranger_multi", "-x"]))
+    sys.exit(pytest.main([__file__]))
