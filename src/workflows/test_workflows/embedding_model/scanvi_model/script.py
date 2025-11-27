@@ -47,5 +47,6 @@ def test_run():
         f"Expected categorical_covariate_keys to be {par['obs_covariate']}, found: {model_args['categorical_covariate_keys']}."
     )
 
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "--import-mode=importlib"]))
