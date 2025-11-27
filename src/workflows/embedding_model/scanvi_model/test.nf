@@ -48,7 +48,8 @@ workflow test_wf {
     }
     | scanvi_model_test.run(
         fromState: [
-          "input": "output"
+          "input": "output",
+          "model": "output_scanvi_model"
         ]
     )
 
@@ -68,7 +69,7 @@ workflow test_wf {
     [
       [
         id: "simple_execution_test",
-        obs_covariate: ["assay"],
+        obs_categorical_covariate: ["assay"],
         input: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
         obs_batch_label: "donor_assay",
         obs_target: "cell_type",
@@ -104,7 +105,11 @@ workflow test_wf {
     }
     | scanvi_model_test.run(
         fromState: [
-          "input": "output"
+          "input": "output",
+          "model": "output_scanvi_model"
+        ],
+        args: [
+          "obs_covariate": ["assay"]
         ]
     )
 
