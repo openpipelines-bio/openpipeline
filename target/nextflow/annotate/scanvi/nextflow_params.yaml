@@ -11,7 +11,7 @@ unlabeled_category: "Unknown"
 scvi_model: # please fill in - example: "scvi_model.pt"
 
 # Outputs
-# output: "$id.$key.output"
+# output: "$id.$key.output.h5mu"
 # output_model: "$id.$key.output_model"
 obsm_output: "X_scanvi_integrated"
 obs_output_predictions: "scanvi_pred"

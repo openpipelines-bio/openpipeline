@@ -127,27 +127,39 @@
         }
       }
     },
+    "reference model": {
+      "title": "Reference model",
+      "type": "object",
+      "description": "Pre-trained scANVI model to map the query data onto.",
+      "properties": {
+        "reference_model": {
+          "type": "string",
+          "format": "path",
+          "description": "Path to pre-trained scANVI model.",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"scanvi_model\"`. "
+        }
+      }
+    },
     "reference input": {
       "title": "Reference input",
       "type": "object",
-      "description": "No description",
+      "description": "Reference dataset input arguments to train scANVI model on. Only used if no reference model is provided.",
       "properties": {
         "reference": {
           "type": "string",
           "format": "path",
-          "exists": true,
           "description": "Reference dataset consisting of the labeled observations to train the KNN classifier on",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"reference.h5mu\"`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"reference.h5mu\"`. "
         },
         "reference_obs_target": {
           "type": "string",
           "description": "The `.obs` key containing the target labels.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"cell_type\"`. "
+          "help_text": "Type: `string`, multiple: `False`, example: `\"cell_type\"`. "
         },
         "reference_obs_batch_label": {
           "type": "string",
           "description": "The .obs field in the reference dataset containing the batch labels.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"sample\"`. "
+          "help_text": "Type: `string`, multiple: `False`, example: `\"sample\"`. "
         },
         "reference_obs_size_factor": {
           "type": "string",
@@ -306,6 +318,9 @@
     },
     {
       "$ref": "#/$defs/query input"
+    },
+    {
+      "$ref": "#/$defs/reference model"
     },
     {
       "$ref": "#/$defs/reference input"

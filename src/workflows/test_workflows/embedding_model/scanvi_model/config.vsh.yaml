@@ -1,0 +1,41 @@
+name: "scanvi_model_test"
+namespace: "test_workflows/embedding_model"
+scope: "test"
+description: "This component tests the output of the scanvi embedding model generation."
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        description: Path to h5mu output.
+        example: foo.final.h5mu
+      - name: "--model"
+        type: file
+        required: true
+        description: Path to scanvi model output.
+        example: scanvi_model/
+      - name: "--obs_covariate"
+        type: string  
+        description: The covariates of the model.
+        multiple: true
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+
+    setup:
+      - type: python
+        packages:
+        - scvi-tools~=1.3.1
+    __merge__: /src/base/requirements/testworkflows_setup.yaml
+runners:
+  - type: executable
+  - type: nextflow

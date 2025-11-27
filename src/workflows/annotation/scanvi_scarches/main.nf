@@ -10,9 +10,34 @@ workflow run_wf {
         def new_state = state + ["workflow_output": state.output, "workflow_output_model": state.output_model]
         [id, new_state]
         }
+        // Make sure parameters are filled out correctly
+        | map { id, state->
+          def new_state = [:]
+          // Check that either a reference dataset or model is provided
+          if (!state.reference  && !state.reference_model) {
+            throw new RuntimeException("At least one of --reference or --reference_model must be provided")
+          }
+          if (state.reference  && state.reference_model) {
+            System.err.println(
+              "Warning: both --reference_model and --reference were provided. \
+              The pre-trained scANVI --reference_model will be used for annotation, the --reference dataset will be ignored."
+            )
+          }
+          // Make sure all required parameters are provided if a reference dataset is to be used
+          if (state.reference && !state.reference_model && !state.reference_obs_target) {
+            throw new RuntimeException("--reference_obs_target must be provided if --reference is used for scANVI model training.")
+          }
+          if (state.reference && !state.reference_model && !state.reference_obs_batch_label) {
+            throw new RuntimeException("--reference_obs_batch_label must be provided if --reference is used for scANVI model training.")
+          }
+          [id, state + new_state]
+        }
 
         // Integrate & generate scvi model from the reference data
         | scvi.run(
+          runIf: { id, state -> 
+            !state.reference_model 
+          },
           fromState: [
               "input": "reference",
               "modality": "modality",
@@ -43,6 +68,9 @@ workflow run_wf {
         
         // Create scanvi model from the scvi reference model and integrate reference data
         | scanvi.run(
+          runIf: { id, state -> 
+            !state.reference_model 
+          },
           fromState: [
               "input": "reference",
               "modality": "modality",
@@ -66,7 +94,7 @@ workflow run_wf {
           ],
           toState: [
               "reference": "output",
-              "scanvi_model": "output_model"
+              "reference_model": "output_model"
           ]
         )
 
@@ -81,7 +109,7 @@ workflow run_wf {
               "input_obs_size_factor": "input_obs_size_factor",
               "input_obs_categorical_covariate": "input_obs_categorical_covariate",
               "input_obs_continuous_covariate": "input_obs_continuous_covariate",
-              "reference": "scanvi_model",
+              "reference": "reference_model",
               "obsm_output": "output_obsm_integrated",
               "obs_output_predictions": "output_obs_predictions",
               "obs_output_probabilities": "output_obs_probability",

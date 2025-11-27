@@ -121,7 +121,7 @@ jobs:
           echo "checkout_branch=$DEPLOY_BRANCH" >> "$GITHUB_OUTPUT"
         fi
   
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         ref: ${{ steps.get_checkout_branch.outputs.checkout_branch }}
         fetch-depth: 0
@@ -238,7 +238,7 @@ jobs:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v2
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - uses: viash-io/viash-actions/setup@v6
 

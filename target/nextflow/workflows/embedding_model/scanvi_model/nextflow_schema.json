@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "scanvi_model",
+  "description": "Generation of a scANVI reference model.",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Reference dataset consisting of the labeled observations to train the scANVI classifier on.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"reference.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "The modality from the --input to be processed.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "layer": {
+          "type": "string",
+          "description": "Which layer to use if .X is not to be used.",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "obs_target": {
+          "type": "string",
+          "description": "The `.obs` key containing the target labels.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"cell_type\"`. "
+        },
+        "obs_batch_label": {
+          "type": "string",
+          "description": "The .obs field in the reference dataset containing the batch labels.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"sample\"`. "
+        },
+        "obs_size_factor": {
+          "type": "string",
+          "description": "Key in adata.obs for size factor information",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "obs_categorical_covariate": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keys in adata.obs that correspond to categorical data",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "obs_continuous_covariate": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keys in adata.obs that correspond to continuous data",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "unlabeled_category": {
+          "type": "string",
+          "description": "Value in the --obs_batch_label field that indicates unlabeled observations\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"Unknown\"`. ",
+          "default": "Unknown"
+        },
+        "var_hvg": {
+          "type": "string",
+          "description": ".var column containing highly variable genes",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "var_gene_names": {
+          "type": "string",
+          "description": ".var column containing gene names",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "The query data in .h5mu format with predicted labels predicted from the classifier trained on the reference.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "The compression format to be used on the output h5mu object.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        },
+        "output_scvi_model": {
+          "type": "string",
+          "format": "path",
+          "description": "Path to the resulting scVI model that was trained on the reference dataset.",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output_scvi_model\"`, direction: `output`, example: `\"path/to/scvi_model\"`. ",
+          "default": "$id.$key.output_scvi_model"
+        },
+        "output_scanvi_model": {
+          "type": "string",
+          "format": "path",
+          "description": "Path to the resulting scANVI model that was trained on the reference dataset.",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output_scanvi_model\"`, direction: `output`, example: `\"path/to/scanvi_model\"`. ",
+          "default": "$id.$key.output_scanvi_model"
+        }
+      }
+    },
+    "scvi and scanvi training options": {
+      "title": "scVI and scANVI training options",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "early_stopping": {
+          "type": "boolean",
+          "description": "Whether to perform early stopping with respect to the validation set.",
+          "help_text": "Type: `boolean`, multiple: `False`. "
+        },
+        "early_stopping_monitor": {
+          "type": "string",
+          "description": "Metric logged during validation set epoch.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"elbo_validation\"`, choices: ``elbo_validation`, `reconstruction_loss_validation`, `kl_local_validation``. ",
+          "enum": [
+            "elbo_validation",
+            "reconstruction_loss_validation",
+            "kl_local_validation"
+          ],
+          "default": "elbo_validation"
+        },
+        "early_stopping_patience": {
+          "type": "integer",
+          "description": "Number of validation epochs with no improvement after which training will be stopped.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `45`. ",
+          "default": 45
+        },
+        "early_stopping_min_delta": {
+          "type": "number",
+          "description": "Minimum change in the monitored quantity to qualify as an improvement, i.e",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.0`. ",
+          "default": 0.0
+        },
+        "max_epochs": {
+          "type": "integer",
+          "description": "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest.",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "reduce_lr_on_plateau": {
+          "type": "boolean",
+          "description": "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus.",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
+        },
+        "lr_factor": {
+          "type": "number",
+          "description": "Factor to reduce learning rate.",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.6`. ",
+          "default": 0.6
+        },
+        "lr_patience": {
+          "type": "number",
+          "description": "Number of epochs with no improvement after which learning rate will be reduced.",
+          "help_text": "Type: `double`, multiple: `False`, default: `30.0`. ",
+          "default": 30.0
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/scvi and scanvi training options"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}
