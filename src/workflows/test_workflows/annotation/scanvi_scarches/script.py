@@ -40,7 +40,7 @@ def test_run():
     assert pandas.api.types.is_float_dtype(
         input_mudata.mod["rna"].obs["scanvi_probabilities"].dtype
     )
-    
+
     # Test output model
     registry = scvi.model.base.BaseModelClass.load_registry(par["model"])
     model_args = registry["setup_args"]

@@ -28,7 +28,7 @@ def test_run():
     assert pandas.api.types.is_float_dtype(
         input_mudata.mod["rna"].obs["scanvi_probabilities"].dtype
     )
-    
+
     # Test output model
     registry = scvi.model.base.BaseModelClass.load_registry(par["model"])
     model_args = registry["setup_args"]
@@ -47,6 +47,7 @@ def test_run():
     assert model_args["categorical_covariate_keys"] == par["obs_covariate"], (
         f"Expected categorical_covariate_keys to be {par['obs_covariate']}, found: {model_args['categorical_covariate_keys']}."
     )
+
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "--import-mode=importlib"]))
