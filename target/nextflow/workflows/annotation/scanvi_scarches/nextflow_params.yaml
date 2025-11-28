@@ -9,13 +9,10 @@ input_obs_batch_label: # please fill in - example: "sample"
 # input_obs_continuous_covariate: ["foo"]
 # input_var_gene_names: "foo"
 
-# Reference model
-# reference_model: "scanvi_model"
-
 # Reference input
-# reference: "reference.h5mu"
-# reference_obs_target: "cell_type"
-# reference_obs_batch_label: "sample"
+reference: # please fill in - example: "reference.h5mu"
+reference_obs_target: # please fill in - example: "cell_type"
+reference_obs_batch_label: # please fill in - example: "sample"
 # reference_obs_size_factor: "foo"
 # reference_obs_categorical_covariate: ["foo"]
 # reference_obs_continuous_covariate: ["foo"]

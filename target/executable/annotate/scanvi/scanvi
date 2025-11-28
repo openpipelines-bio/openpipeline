@@ -459,9 +459,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate scanvi"
-LABEL org.opencontainers.image.created="2025-11-27T13:16:17Z"
+LABEL org.opencontainers.image.created="2025-11-28T03:02:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="dc36e61e0fc9dd6886c84114d997f2aff20d9388"
+LABEL org.opencontainers.image.revision="b5fddbdfff5b0ad1f387819a2df1240d33819ec6"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -630,7 +630,6 @@ function ViashHelp {
   echo "Outputs:"
   echo "    -o, --output"
   echo "        type: file, required parameter, output, file must exist"
-  echo "        example: output.h5mu"
   echo "        Output h5mu file."
   echo ""
   echo "    --output_model"
