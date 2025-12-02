@@ -41,8 +41,7 @@ engines:
     image: rocker/r2u:24.04
     setup:
       - type: docker
-        env: 
-          - GITHUB_TOKEN
+        run: "--mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN"
       - type: apt
         packages: 
           - libhdf5-dev
@@ -53,6 +52,7 @@ engines:
         github: pmbio/MuDataSeurat@empty-tables-and-nullable
 runners:
   - type: executable
+    docker_run_args: [--secret id=GITHUB_TOKEN]
   - type: nextflow
     directives:
       label: [lowmem, singlecpu]

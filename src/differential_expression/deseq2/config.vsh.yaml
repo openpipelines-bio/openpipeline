@@ -120,8 +120,7 @@ engines:
   image: rocker/r2u:22.04
   setup:
     - type: docker
-      env: 
-        - GITHUB_TOKEN
+      run: "--mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN"
     - type: apt
       packages: [ libhdf5-dev, libgeos-dev, hdf5-tools ]
     - type: r
@@ -136,4 +135,5 @@ engines:
 
 runners:
 - type: executable
+  docker_run_args: [--secret id=GITHUB_TOKEN]
 - type: nextflow

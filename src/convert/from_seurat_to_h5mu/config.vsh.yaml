@@ -123,7 +123,8 @@ engines:
       - type: docker
         env: 
           - RETICULATE_PYTHON=/usr/bin/python
-          - GITHUB_TOKEN
+      - type: docker
+        run: "--mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN"
       - type: apt
         packages: [ libhdf5-dev, python3, python3-pip, python3-dev, python-is-python3 ]
       - type: r
@@ -136,6 +137,7 @@ engines:
 
 runners:
   - type: executable
+    docker_run_args: [--secret id=GITHUB_TOKEN]
   - type: nextflow
     directives:
       label: [lowmem, lowcpu]
