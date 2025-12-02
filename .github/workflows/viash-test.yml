@@ -56,6 +56,9 @@ jobs:
         LANG=C viash ns list > /dev/null
         JAVA_TOOL_OPTIONS=-Dfile.encoding=ascii viash ns build --parallel > /dev/null
 
+    # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
+    - uses: data-intuitive/reclaim-the-bytes@v2
+
     - uses: viash-io/viash-actions/project/sync-and-cache@v6
       id: cache
 
