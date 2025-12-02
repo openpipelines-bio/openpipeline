@@ -119,6 +119,9 @@ engines:
 - type: docker
   image: rocker/r2u:22.04
   setup:
+    - type: docker
+      env: 
+        - GITHUB_TOKEN
     - type: apt
       packages: [ libhdf5-dev, libgeos-dev, hdf5-tools ]
     - type: r
