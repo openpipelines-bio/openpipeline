@@ -4,17 +4,20 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
-    | map {id, state -> 
-      assert state.input || state.tiledb_input_uri: "Either --input or --tiledb_input_uri must be defined"
-      assert !(state.input && state.tiledb_input_uri): "Values were specified for both --input and --tiledb_input_uri. Please choose one."
-      assert state.tiledb_s3_region || !state.tiledb_input_uri: "Specifying 'tiledb_s3_region' also requires 'tiledb_input_uri'."
-      assert !state.tiledb_input_uri || state.layer: "When using tileDB input, you must specify a layer using --layer"
+    | map {id, state ->
+      if (!workflow.stubRun) {
+        assert state.input || state.tiledb_input_uri: "Either --input or --tiledb_input_uri must be defined"
+        assert !(state.input && state.tiledb_input_uri): "Values were specified for both --input and --tiledb_input_uri. Please choose one."
+        assert state.tiledb_s3_region || !state.tiledb_input_uri: "Specifying 'tiledb_s3_region' also requires 'tiledb_input_uri'."
+        assert !state.tiledb_input_uri || state.layer: "When using tileDB input, you must specify a layer using --layer"
+      }
       [id, state]
     }
     // Make sure there is not conflict between the output from this workflow
     // And the output from any of the components
     | map {id, state ->
       def new_state = state + ["workflow_output": state.output]
+      new_state += [ "output_tiledb": state.tiledb_input_uri ? state.output_tiledb : null]
       [id, new_state]
     }
     | from_tiledb_to_h5mu.run(
