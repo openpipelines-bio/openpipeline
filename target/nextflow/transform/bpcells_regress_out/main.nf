@@ -3329,6 +3329,12 @@ meta = [
       "setup" : [
         {
           "type" : "docker",
+          "run" : [
+            "--mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN"
+          ]
+        },
+        {
+          "type" : "docker",
           "env" : [
             "RETICULATE_PYTHON=/usr/bin/python"
           ]
@@ -3397,7 +3403,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/bpcells_regress_out",
     "viash_version" : "0.9.4",
-    "git_commit" : "d3021cd57b826f9137461a813304e0eedfc9776a",
+    "git_commit" : "e7b68b7a15015e558284f445d3921e6aab282545",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

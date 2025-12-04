@@ -451,6 +451,7 @@ function ViashDockerfile {
     cat << 'VIASHDOCKER'
 FROM rocker/r2u:22.04
 ENTRYPOINT []
+RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y libhdf5-dev libgeos-dev hdf5-tools && \
   rm -rf /var/lib/apt/lists/*
@@ -463,9 +464,9 @@ RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TR
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Dorien Roosen, Dries De Maeyer, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component differential_expression deseq2"
-LABEL org.opencontainers.image.created="2025-12-02T10:04:04Z"
+LABEL org.opencontainers.image.created="2025-12-04T12:16:27Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d3021cd57b826f9137461a813304e0eedfc9776a"
+LABEL org.opencontainers.image.revision="e7b68b7a15015e558284f445d3921e6aab282545"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
