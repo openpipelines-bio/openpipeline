@@ -16,8 +16,10 @@ workflow run_wf {
     // Make sure there is not conflict between the output from this workflow
     // And the output from any of the components
     | map {id, state ->
-      def new_state = state + ["workflow_output": state.output]
-      new_state += [ "output_tiledb": state.tiledb_input_uri ? state.output_tiledb : null]
+      def new_state = state + [
+        "workflow_output": state.output
+        "output_tiledb": state.tiledb_input_uri ? state.output_tiledb : null
+      ]
       [id, new_state]
     }
     | from_tiledb_to_h5mu.run(

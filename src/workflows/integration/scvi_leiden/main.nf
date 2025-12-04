@@ -5,8 +5,10 @@ workflow run_wf {
   main:
   output_ch = input_ch
     | map {id, state -> 
-      def new_state = state + ["workflow_output": state.output, ]
-      new_state += [ "output_tiledb": state.tiledb_input_uri ? state.output_tiledb : null]
+      def new_state = state + [
+        "workflow_output": state.output
+        "output_tiledb": state.tiledb_input_uri ? state.output_tiledb : null
+      ]
       [id, new_state]
     }
     | map {id, state -> 
