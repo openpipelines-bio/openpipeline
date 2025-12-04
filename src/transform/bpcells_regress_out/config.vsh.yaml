@@ -59,6 +59,8 @@ engines:
     image: rocker/r2u:24.04
     setup:
       - type: docker
+        run: "--mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN"
+      - type: docker
         env: 
           - PIP_BREAK_SYSTEM_PACKAGES=1
           - RETICULATE_PYTHON=/usr/bin/python

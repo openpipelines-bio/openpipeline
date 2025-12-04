@@ -40,6 +40,8 @@ engines:
   - type: docker
     image: rocker/r2u:24.04
     setup:
+      - type: docker
+        run: "--mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN"
       - type: apt
         packages: 
           - libhdf5-dev
