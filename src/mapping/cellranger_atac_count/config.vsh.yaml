@@ -65,15 +65,12 @@ test_resources:
   - path: /resources_test/reference_gencodev41_chr1
 engines:
   - type: docker
-    image: quay.io/nf-core/cellranger_atac:2.2.0
+    image: ghcr.io/data-intuitive/cellranger_atac:2.1
     setup:
-      - type: apt
-        packages:
-          - procps
       - type: docker
-        run: 
-          - cellranger telemetry disable
-
+        run: |
+          DEBIAN_FRONTEND=noninteractive apt update \
+          && apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
 runners:
   - type: executable
   - type: nextflow
