@@ -50,7 +50,6 @@ engines:
         cran: [ testthat ]
 runners:
   - type: executable
-    docker_run_args: [--secret id=GITHUB_TOKEN]
   - type: nextflow
     directives:
       label: [lowmem, singlecpu]
