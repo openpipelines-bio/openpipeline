@@ -3470,6 +3470,12 @@ meta = [
       "entrypoint" : "test_wf"
     },
     {
+      "type" : "nextflow_script",
+      "path" : "test.nf",
+      "is_executable" : true,
+      "entrypoint" : "test_tiledb_wf"
+    },
+    {
       "type" : "file",
       "path" : "/resources_test/pbmc_1k_protein_v3"
     }
@@ -3600,7 +3606,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scvi_leiden",
     "viash_version" : "0.9.4",
-    "git_commit" : "e7b68b7a15015e558284f445d3921e6aab282545",
+    "git_commit" : "3512a66387dedcdef2c434c2147fa3fe78f47444",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3663,14 +3669,19 @@ workflow run_wf {
   main:
   output_ch = input_ch
     | map {id, state -> 
-      def new_state = state + ["workflow_output": state.output]
+      def new_state = state + [
+        "workflow_output": state.output
+        "output_tiledb": state.tiledb_input_uri ? state.output_tiledb : null
+      ]
       [id, new_state]
     }
     | map {id, state -> 
-      assert state.input || state.tiledb_input_uri: "Either --input or --tiledb_input_uri must be defined"
-      assert !(state.input && state.tiledb_input_uri): "Values were specified for both --input and --tiledb_input_uri. Please choose one."
-      assert state.tiledb_s3_region || !state.tiledb_input_uri: "Specifying 'tiledb_s3_region' also requires 'tiledb_input_uri'."
-      assert !state.tiledb_input_uri || state.layer: "When using tileDB input, you must specify a layer using --layer"
+      if (!workflow.stubRun) {
+        assert state.input || state.tiledb_input_uri: "Either --input or --tiledb_input_uri must be defined"
+        assert !(state.input && state.tiledb_input_uri): "Values were specified for both --input and --tiledb_input_uri. Please choose one."
+        assert state.tiledb_s3_region || !state.tiledb_input_uri: "Specifying 'tiledb_s3_region' also requires 'tiledb_input_uri'."
+        assert !state.tiledb_input_uri || state.layer: "When using tileDB input, you must specify a layer using --layer"
+      }
       [id, state]
     }
     | from_tiledb_to_h5mu.run(
