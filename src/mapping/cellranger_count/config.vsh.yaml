@@ -141,12 +141,14 @@ test_resources:
   - path: /src/utils/setup_logger.py
 engines:
   - type: docker
-    image: ghcr.io/data-intuitive/cellranger:9.0
+    image: quay.io/nf-core/cellranger:10.0.0
     setup:
+      - type: apt
+        packages:
+          - procps
       - type: docker
-        run: |
-          DEBIAN_FRONTEND=noninteractive apt update && \
-          apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
+        run: 
+          - cellranger telemetry disable
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
   - type: executable

@@ -137,6 +137,15 @@ jobs:
     - name: Run test
       timeout-minutes: 40
       run: |
+        docker() {
+          if [[ $1 == build ]]; then
+              shift
+              command docker build --secret id=GITHUB_TOKEN "$@"
+          else
+              command docker "$@"
+          fi
+        }
+        export docker
         viash test \
           "${{ matrix.component.config }}" \
           --cpus 4 \
