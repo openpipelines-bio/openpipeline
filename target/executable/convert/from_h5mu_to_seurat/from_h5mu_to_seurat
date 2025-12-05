@@ -448,6 +448,7 @@ function ViashDockerfile {
     cat << 'VIASHDOCKER'
 FROM rocker/r2u:24.04
 ENTRYPOINT []
+RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y libhdf5-dev libgeos-dev && \
   rm -rf /var/lib/apt/lists/*
@@ -460,9 +461,9 @@ RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TR
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5mu_to_seurat"
-LABEL org.opencontainers.image.created="2025-12-04T03:06:00Z"
+LABEL org.opencontainers.image.created="2025-12-05T03:05:53Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="de2fc7303c52a34ecbf94747d60d45f59309cc4a"
+LABEL org.opencontainers.image.revision="78898380cbb60e8f1c520ab0837c9e598fb3e060"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

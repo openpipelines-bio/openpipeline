@@ -450,6 +450,7 @@ function ViashDockerfile {
     cat << 'VIASHDOCKER'
 FROM rocker/r2u:22.04
 ENTRYPOINT []
+RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
 ENV RETICULATE_PYTHON=/usr/bin/python
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y libhdf5-dev python3 python3-pip python3-dev python-is-python3 && \
@@ -465,9 +466,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Robrecht Cannoodt, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component transform bpcells_regress_out"
-LABEL org.opencontainers.image.created="2025-12-04T03:05:55Z"
+LABEL org.opencontainers.image.created="2025-12-05T03:05:48Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="de2fc7303c52a34ecbf94747d60d45f59309cc4a"
+LABEL org.opencontainers.image.revision="78898380cbb60e8f1c520ab0837c9e598fb3e060"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

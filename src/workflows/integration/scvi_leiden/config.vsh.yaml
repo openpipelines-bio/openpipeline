@@ -196,6 +196,9 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_tiledb_wf
   - path: /resources_test/pbmc_1k_protein_v3
 runners:
   - type: nextflow

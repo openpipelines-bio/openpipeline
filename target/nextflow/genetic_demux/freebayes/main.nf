@@ -3909,7 +3909,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/freebayes",
     "viash_version" : "0.9.4",
-    "git_commit" : "de2fc7303c52a34ecbf94747d60d45f59309cc4a",
+    "git_commit" : "78898380cbb60e8f1c520ab0837c9e598fb3e060",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
