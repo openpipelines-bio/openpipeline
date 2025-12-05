@@ -41,13 +41,17 @@ engines:
   - type: docker
     image: rocker/r2u:22.04
     setup:
-      - type: docker
-        run: "--mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN"
       - type: apt
         packages: [ libhdf5-dev, libgeos-dev, hdf5-tools ]
       - type: r
         cran: [ anndata, hdf5r, Seurat, SeuratObject ]
-        github: scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a
+        # Until viash r requirements supports passing secrets
+        # --mount only applies to ONE single docker RUN instruction  
+        # github: scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a
+      - type: docker
+        run:
+          - --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
+          - Rscript -e 'options(warn = 2); remotes::install_github(c("scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a"), repos = "https://cran.rstudio.com")'
     test_setup:
       - type: r
         cran: [ testthat ]
