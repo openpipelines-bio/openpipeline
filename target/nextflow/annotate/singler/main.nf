@@ -3586,7 +3586,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/singler",
     "viash_version" : "0.9.4",
-    "git_commit" : "3e4036e265178692a40cf6862aa5d7bdba8c1758",
+    "git_commit" : "bbeaea5518893422576b8054eb178f7c280b5408",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
