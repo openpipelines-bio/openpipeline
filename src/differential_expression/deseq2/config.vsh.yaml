@@ -117,7 +117,7 @@ test_resources:
 
 engines:
 - type: docker
-  image: rocker/r2u:22.04
+  image: rocker/r2u:24.04
   setup:
     - type: docker
       run: "--mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN"
