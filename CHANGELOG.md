@@ -1,5 +1,9 @@
 # openpipelines 4.0.0
 
+## BREAKING CHANGES
+
+* Removed `cellbender_remove_background_v0_2` (PR #1111).
+
 ## NEW FUNCTIONALITY
 
 * `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).
