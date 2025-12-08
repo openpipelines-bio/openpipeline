@@ -73,11 +73,7 @@ test_resources:
 
 engines:
 - type: docker
-<<<<<<< Updated upstream
-  image: python:3.13-slim
-=======
   image: python:3.12-slim
->>>>>>> Stashed changes
   setup:
     # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
     - type: docker
