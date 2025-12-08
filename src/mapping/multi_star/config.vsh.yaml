@@ -73,13 +73,17 @@ test_resources:
 
 engines:
 - type: docker
+<<<<<<< Updated upstream
   image: python:3.13-slim
+=======
+  image: python:3.12-slim
+>>>>>>> Stashed changes
   setup:
     # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
     - type: docker
       env: 
-        - STAR_VERSION 2.7.10b
-        - PACKAGES gcc g++ make wget zlib1g-dev unzip
+        - STAR_VERSION=2.7.10b
+        - PACKAGES="gcc g++ make wget zlib1g-dev unzip"
     - type: docker
       run: |
         apt-get update && \
@@ -103,12 +107,10 @@ engines:
         - pyyaml
         - HTSeq
         - multiprocess
-        - gtfparse
         - pandas
-        - numpy<2
-        # Pin multiqc to avoid 
-        # 'TypeError: expected str, bytes or os.PathLike object, not NoneType'
-        - multiqc~=1.15.0
+        - numpy>2
+        - gffutils
+        - multiqc
   test_setup:
     - type: python
       packages:

@@ -9,8 +9,7 @@ from pathlib import Path
 import yaml
 import pandas as pd
 from multiprocess import Pool
-import gtfparse
-import polars as pl
+import gffutils
 
 ## VIASH START
 par = {
@@ -28,10 +27,10 @@ par = {
     "output": "test_output",
 }
 meta = {
+    "config": "./src/mapping/multi_star/config.vsh.yaml",
     "name": "star_and_htseq",
     "cpus": 30,
     "temp_dir": "/tmp",
-    "config": "src/mapping/multi_star/.config.vsh.yaml",
 }
 ## VIASH END
 
@@ -338,14 +337,21 @@ def run_htseq_count(
 
 
 def get_feature_info(reference_gtf) -> pd.DataFrame:
-    ref = gtfparse.read_gtf(reference_gtf)
-    ref_genes = ref.filter((pl.col("feature") == "gene") | (pl.col("source") == "ERCC"))
+    filtered_result = []
+    db = gffutils.create_db(reference_gtf, ":memory:")
+    for item in db.all_features():
+        item_tuple = item.astuple()
+        # index 2 is the 'source', 3 is the feature type
+        if item_tuple[3] == "gene" or item_tuple[2] == "ERCC":
+            filtered_result.append(
+                (
+                    item.attributes["gene_id"][0],
+                    "Gene Expression",
+                    item.attributes["gene_name"][0],
+                )
+            )
     return pd.DataFrame(
-        {
-            "feature_id": pd.Index(ref_genes.get_column("gene_id")),
-            "feature_type": "Gene Expression",
-            "feature_name": ref_genes.get_column("gene_name").to_pandas(),
-        }
+        filtered_result, columns=["feature_id", "feature_type", "feature_name"]
     )
 
 
