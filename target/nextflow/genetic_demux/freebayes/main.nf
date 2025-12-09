@@ -3889,7 +3889,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ubuntu:22.04",
+      "image" : "debian:latest",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3909,7 +3909,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/freebayes",
     "viash_version" : "0.9.4",
-    "git_commit" : "d99a36e5c44f6ff1c49546cf6db7de2dc58d049f",
+    "git_commit" : "341126b1bd9c774430d6e0e2ec80cca05d1520c9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -3397,7 +3397,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "rocker/r2u:22.04",
+      "image" : "rocker/r2u:24.04",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3433,25 +3433,25 @@ meta = [
       ],
       "test_setup" : [
         {
+          "type" : "docker",
+          "env" : [
+            "PIP_BREAK_SYSTEM_PACKAGES=1"
+          ]
+        },
+        {
           "type" : "apt",
           "packages" : [
             "python3",
             "python3-pip",
             "python3-dev",
-            "python-is-python3"
-          ],
-          "interactive" : false
-        },
-        {
-          "type" : "apt",
-          "packages" : [
+            "python-is-python3",
             "git"
           ],
           "interactive" : false
         },
         {
           "type" : "python",
-          "user" : false,
+          "user" : true,
           "packages" : [
             "viashpy==0.8.0"
           ],
@@ -3469,7 +3469,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/differential_expression/deseq2",
     "viash_version" : "0.9.4",
-    "git_commit" : "d99a36e5c44f6ff1c49546cf6db7de2dc58d049f",
+    "git_commit" : "341126b1bd9c774430d6e0e2ec80cca05d1520c9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

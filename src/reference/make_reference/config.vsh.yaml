@@ -53,7 +53,7 @@ test_resources:
     path: test.sh
 engines:
   - type: docker
-    image: ubuntu:22.04
+    image: ubuntu:24.04
     setup:
       - type: apt
         packages: [ pigz, seqkit, curl, wget, unzip, file]

@@ -3427,7 +3427,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.10-slim",
+      "image" : "python:3.13-slim",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3443,14 +3443,11 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.11.1",
-            "mudata~=0.3.1",
+            "anndata~=0.12.6",
+            "mudata~=0.3.2",
             "scanpy~=1.10.4",
             "scrublet",
             "annoy==1.17.3"
-          ],
-          "script" : [
-            "exec(\\"try:\\\\n  import awkward\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  exit(1)\\")"
           ],
           "upgrade" : true
         }
@@ -3483,7 +3480,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.9.4",
-    "git_commit" : "d99a36e5c44f6ff1c49546cf6db7de2dc58d049f",
+    "git_commit" : "341126b1bd9c774430d6e0e2ec80cca05d1520c9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

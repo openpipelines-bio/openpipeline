@@ -453,14 +453,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4" "scvelo~=0.3.3" "scipy~=1.14.1" && \
-  python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
+  pip install --upgrade --no-cache-dir "anndata~=0.12.6" "mudata~=0.3.2" "scanpy~=1.10.4" "scvelo~=0.3.3" "scipy~=1.14.1"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component velocity scvelo"
-LABEL org.opencontainers.image.created="2025-12-08T10:25:07Z"
+LABEL org.opencontainers.image.created="2025-12-09T09:44:29Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d99a36e5c44f6ff1c49546cf6db7de2dc58d049f"
+LABEL org.opencontainers.image.revision="341126b1bd9c774430d6e0e2ec80cca05d1520c9"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
