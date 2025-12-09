@@ -82,7 +82,7 @@ test_resources:
   - path: /resources_test/cellranger_atac_tiny_bcl/counts/
 engines:
   - type: docker
-    image: python:3.10-slim-bullseye
+    image: python:3.13-slim-bullseye
     setup:
       - type: apt
         packages: 
@@ -93,7 +93,7 @@ engines:
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
-          - muon~=0.1.5
+          - muon~=0.1.7
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
