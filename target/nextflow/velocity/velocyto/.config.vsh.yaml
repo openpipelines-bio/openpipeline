@@ -111,6 +111,8 @@ test_resources:
   path: "test.py"
   is_executable: true
 - type: "file"
+  path: "setup.py.patch"
+- type: "file"
   path: "cellranger_tiny_fastq"
 - type: "file"
   path: "rna_velocity"
@@ -198,27 +200,30 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "python:3.10-slim-bookworm"
+  image: "python:3.13"
   target_tag: "optional-gene-name-sanitation_build"
   namespace_separator: "/"
   setup:
+  - type: "docker"
+    copy:
+    - "setup.py.patch /opt/setup.py.patch"
   - type: "apt"
     packages:
-    - "procps"
     - "build-essential"
     - "file"
+    - "git"
     interactive: false
   - type: "python"
     user: false
     pip:
-    - "numpy<2"
+    - "numpy"
     - "Cython"
     upgrade: true
-  - type: "python"
-    user: false
-    pip:
-    - "velocyto"
-    upgrade: true
+  - type: "docker"
+    run:
+    - "git clone --depth 1 https://github.com/velocyto-team/velocyto.py /tmp/velocyto.py\
+      \ && cd /tmp/velocyto.py && git checkout 56efe891ec3d383d83ad45360f58350c12824c4d\
+      \ && git apply /opt/setup.py.patch && pip install .\n"
   - type: "apt"
     packages:
     - "samtools"
@@ -238,9 +243,9 @@ build_info:
   output: "target/nextflow/velocity/velocyto"
   executable: "target/nextflow/velocity/velocyto/main.nf"
   viash_version: "0.9.4"
-  git_commit: "907448008c390a4941a581851a618ce62f370787"
+  git_commit: "0dbdc7e9ba15ada44e24d147882be80be553d165"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-2078-g907448008c3"
+  git_tag: "0.2.0-2079-g0dbdc7e9ba1"
 package_config:
   name: "openpipeline"
   summary: "Best-practice workflows for single-cell multi-omics analyses.\n"

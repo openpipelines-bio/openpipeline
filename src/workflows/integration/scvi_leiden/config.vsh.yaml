@@ -10,16 +10,32 @@ info:
 argument_groups:
   - name: "Inputs"
     arguments:
-      - name: "--id"
-        required: true
-        type: string
-        description: ID of the sample.
-        example: foo
       - name: "--input"
-        required: true
         type: file
-        description: Path to the sample.
+        description: Path to the sample. Mutually exclusive with the 'input_uri' argument.
         example: dataset.h5mu
+      - name: "--tiledb_input_uri"
+        type: string
+        description: "A URI containing the TileDB-SOMA objects. Mutually exclusive with the 'input' argument."
+        example: "s3://bucket/path"
+      - name: "--tiledb_s3_region"
+        type: string
+        description: |
+          Region where the TileDB-SOMA database is hosted.
+        type: string
+        example: "us-west-2"
+      - name: "--tiledb_endpoint"
+        type: string
+        description: |
+          Custom endpoint to use to connect to S3
+        required: false
+      - name: "--tiledb_s3_no_sign_request"
+        description: | 
+          Do not sign S3 requests. Credentials will not be loaded if this argument is provided.
+        type: boolean
+        default: false
+  - name: Input slots
+    arguments:
       - name: "--layer"
         type: string
         description: use specified layer for expression values instead of the .X object from the modality.
@@ -29,9 +45,9 @@ argument_groups:
         type: string
         default: "rna"
         required: false
-      - name: "--sanitize_gene_names"
+      - name: "--sanitize_ensembl_ids"
         type: boolean
-        description: Whether to sanitize gene names by removing version numbers. Recommended when using ENSEMBL ids.
+        description: Whether to sanitize ensembl ids by removing version numbers.
         default: true
 
   - name: "Outputs"
@@ -48,6 +64,13 @@ argument_groups:
         required: true
         direction: output
         example: output_dir/
+      - name: "--output_tiledb"
+        type: file
+        direction: output
+        description: |
+          Output the TileDB database to the specified directory instead of adding it to the existing database.
+        required: false
+
   - name: Neighbour calculation
     arguments:
       - name: "--uns_neighbors"
@@ -164,6 +187,10 @@ argument_groups:
 dependencies:
   - name: integrate/scvi
   - name: workflows/multiomics/neighbors_leiden_umap
+  - name: convert/from_tiledb_to_h5mu
+  - name: tiledb/move_mudata_obsm_to_tiledb
+  - name: tiledb/move_mudata_obs_to_tiledb
+
 resources:
   - type: nextflow_script
     path: main.nf

@@ -134,7 +134,7 @@ def _align_query_with_registry(adata_query, model_path):
     # Sanitize gene names and set as index of the AnnData object
     # all scArches VAE models expect gene names to be in the .var index
     adata_query = set_var_index(
-        adata_query, par["input_var_gene_names"], par["sanitize_gene_names"]
+        adata_query, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
     )
 
     # align layer

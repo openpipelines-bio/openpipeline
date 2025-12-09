@@ -3177,8 +3177,8 @@ meta = [
         },
         {
           "type" : "boolean",
-          "name" : "--sanitize_gene_names",
-          "description" : "Whether to sanitize gene names by removing version numbers. Recommended when using ENSEMBL ids.",
+          "name" : "--sanitize_ensembl_ids",
+          "description" : "Whether to sanitize ensembl ids by removing version numbers.",
           "default" : [
             true
           ],
@@ -3585,9 +3585,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/scanvi",
     "viash_version" : "0.9.4",
-    "git_commit" : "907448008c390a4941a581851a618ce62f370787",
+    "git_commit" : "0dbdc7e9ba15ada44e24d147882be80be553d165",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2078-g907448008c3"
+    "git_tag" : "0.2.0-2079-g0dbdc7e9ba1"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3656,7 +3656,7 @@ par = {
   'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_labels': $( if [ ! -z ${VIASH_PAR_OBS_LABELS+x} ]; then echo "r'${VIASH_PAR_OBS_LABELS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'unlabeled_category': $( if [ ! -z ${VIASH_PAR_UNLABELED_CATEGORY+x} ]; then echo "r'${VIASH_PAR_UNLABELED_CATEGORY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'sanitize_gene_names': $( if [ ! -z ${VIASH_PAR_SANITIZE_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_SANITIZE_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'sanitize_ensembl_ids': $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo "r'${VIASH_PAR_SANITIZE_ENSEMBL_IDS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'scvi_model': $( if [ ! -z ${VIASH_PAR_SCVI_MODEL+x} ]; then echo "r'${VIASH_PAR_SCVI_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_model': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3723,7 +3723,7 @@ def main():
 
     # Sanitize gene names and set as index of the AnnData object
     adata_subset = set_var_index(
-        adata_subset, par["var_gene_names"], par["sanitize_gene_names"]
+        adata_subset, par["var_gene_names"], par["sanitize_ensembl_ids"]
     )
 
     logger.info(f"Loading pre-trained scVI model from {par['scvi_model']}")

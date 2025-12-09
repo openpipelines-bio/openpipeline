@@ -43,9 +43,9 @@ argument_groups:
         min: 1
         description: | 
           The minimum number of genes present in both the reference and query datasets.
-      - name: "--sanitize_gene_names"
+      - name: "--sanitize_ensembl_ids"
         type: boolean
-        description: Whether to sanitize gene names by removing version numbers. Recommended when using ENSEMBL ids.
+        description: Whether to sanitize ensembl ids by removing version numbers.
         default: true
   
   - name: Reference
@@ -134,9 +134,7 @@ argument_groups:
     __merge__: [., /src/base/h5_compression_argument.yaml]
 
 dependencies:
-  - name: transform/normalize_total
-  - name: transform/log1p
-  - name: transform/delete_layer
+  - name: workflows/rna/log_normalize
   - name: annotate/celltypist
     alias: celltypist_component
 

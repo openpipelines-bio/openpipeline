@@ -454,9 +454,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_tiledb_to_h5mu"
-LABEL org.opencontainers.image.created="2025-10-28T16:11:07Z"
+LABEL org.opencontainers.image.created="2025-12-09T19:28:21Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="907448008c390a4941a581851a618ce62f370787"
+LABEL org.opencontainers.image.revision="0dbdc7e9ba15ada44e24d147882be80be553d165"
 LABEL org.opencontainers.image.version="optional-gene-name-sanitation_build"
 
 VIASHDOCKER
@@ -592,6 +592,12 @@ function ViashHelp {
   echo "        type: string"
   echo "        Custom endpoint to use to connect to S3"
   echo ""
+  echo "    --s3_no_sign_request"
+  echo "        type: boolean"
+  echo "        default: false"
+  echo "        Do not sign S3 requests. Credentials will not be loaded if this argument"
+  echo "        is provided."
+  echo ""
   echo "    --input_modality"
   echo "        type: string, required parameter"
   echo "        TileDB-SOMA measurement to take the input from."
@@ -698,6 +704,17 @@ while [[ $# -gt 0 ]]; do
         --endpoint=*)
             [ -n "$VIASH_PAR_ENDPOINT" ] && ViashError Bad arguments for option \'--endpoint=*\': \'$VIASH_PAR_ENDPOINT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_ENDPOINT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --s3_no_sign_request)
+            [ -n "$VIASH_PAR_S3_NO_SIGN_REQUEST" ] && ViashError Bad arguments for option \'--s3_no_sign_request\': \'$VIASH_PAR_S3_NO_SIGN_REQUEST\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_S3_NO_SIGN_REQUEST="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --s3_no_sign_request. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --s3_no_sign_request=*)
+            [ -n "$VIASH_PAR_S3_NO_SIGN_REQUEST" ] && ViashError Bad arguments for option \'--s3_no_sign_request=*\': \'$VIASH_PAR_S3_NO_SIGN_REQUEST\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_S3_NO_SIGN_REQUEST=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --input_modality)
@@ -976,7 +993,18 @@ if [ -z ${VIASH_META_TEMP_DIR+x} ]; then
   exit 1
 fi
 
+# filling in defaults
+if [ -z ${VIASH_PAR_S3_NO_SIGN_REQUEST+x} ]; then
+  VIASH_PAR_S3_NO_SIGN_REQUEST="false"
+fi
+
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_S3_NO_SIGN_REQUEST" ]]; then
+  if ! [[ "$VIASH_PAR_S3_NO_SIGN_REQUEST" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--s3_no_sign_request' has to be a boolean. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_META_CPUS" ]]; then
   if ! [[ "$VIASH_META_CPUS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError 'cpus' has to be an integer. Use "--help" to get more information on the parameters.
@@ -1156,6 +1184,7 @@ par = {
   'input_uri': $( if [ ! -z ${VIASH_PAR_INPUT_URI+x} ]; then echo "r'${VIASH_PAR_INPUT_URI//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   's3_region': $( if [ ! -z ${VIASH_PAR_S3_REGION+x} ]; then echo "r'${VIASH_PAR_S3_REGION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'endpoint': $( if [ ! -z ${VIASH_PAR_ENDPOINT+x} ]; then echo "r'${VIASH_PAR_ENDPOINT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  's3_no_sign_request': $( if [ ! -z ${VIASH_PAR_S3_NO_SIGN_REQUEST+x} ]; then echo "r'${VIASH_PAR_S3_NO_SIGN_REQUEST//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'input_modality': $( if [ ! -z ${VIASH_PAR_INPUT_MODALITY+x} ]; then echo "r'${VIASH_PAR_INPUT_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_layers': $( if [ ! -z ${VIASH_PAR_INPUT_LAYERS+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYERS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1210,10 +1239,9 @@ def _log_arguments(function_obj, arg_dict):
 
 def main(par):
     logger.info("Component %s started", meta["name"])
-    tiledb_config = {
-        "vfs.s3.no_sign_request": "false",
-    }
+    tiledb_config = {}
     optional_config = {
+        "vfs.s3.no_sign_request": par["s3_no_sign_request"],
         "vfs.s3.region": par["s3_region"],
         "vfs.s3.endpoint_override": par["endpoint"],
     }

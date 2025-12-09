@@ -4,7 +4,7 @@ modality: "rna"
 # input_layer: "foo"
 # input_var_gene_names: "foo"
 input_reference_gene_overlap: 100
-sanitize_gene_names: true
+sanitize_ensembl_ids: true
 
 # Reference
 # reference: "reference.h5mu"

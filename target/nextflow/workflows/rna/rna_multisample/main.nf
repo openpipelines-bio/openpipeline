@@ -3437,18 +3437,6 @@ meta = [
   },
   "dependencies" : [
     {
-      "name" : "transform/normalize_total",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "transform/log1p",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
       "name" : "feature_annotation/highly_variable_features_scanpy",
       "repository" : {
         "type" : "local"
@@ -3462,12 +3450,6 @@ meta = [
       }
     },
     {
-      "name" : "transform/delete_layer",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
       "name" : "metadata/add_id",
       "repository" : {
         "type" : "local"
@@ -3475,6 +3457,12 @@ meta = [
     },
     {
       "name" : "transform/scale",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
+      "name" : "workflows/rna/log_normalize",
       "repository" : {
         "type" : "local"
       }
@@ -3569,9 +3557,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample",
     "viash_version" : "0.9.4",
-    "git_commit" : "907448008c390a4941a581851a618ce62f370787",
+    "git_commit" : "0dbdc7e9ba15ada44e24d147882be80be553d165",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2078-g907448008c3"
+    "git_tag" : "0.2.0-2079-g0dbdc7e9ba1"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3618,14 +3606,12 @@ meta = [
 
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
-include { normalize_total } from "${meta.resources_dir}/../../../../nextflow/transform/normalize_total/main.nf"
-include { log1p } from "${meta.resources_dir}/../../../../nextflow/transform/log1p/main.nf"
 include { highly_variable_features_scanpy } from "${meta.resources_dir}/../../../../nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
 include { qc as rna_qc_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/qc/qc/main.nf"
 rna_qc = rna_qc_viashalias.run(key: "rna_qc")
-include { delete_layer } from "${meta.resources_dir}/../../../../nextflow/transform/delete_layer/main.nf"
 include { add_id } from "${meta.resources_dir}/../../../../nextflow/metadata/add_id/main.nf"
 include { scale } from "${meta.resources_dir}/../../../../nextflow/transform/scale/main.nf"
+include { log_normalize } from "${meta.resources_dir}/../../../../_private/nextflow/workflows/rna/log_normalize/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
@@ -3639,37 +3625,16 @@ workflow run_wf {
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
-    | normalize_total.run(
-      fromState: { id, state ->
-        [
-          "input": state.input,
-          "input_layer": state.layer, 
-          "output_layer": "normalized",
-          "modality": state.modality
-        ]
-      },
-      toState: ["input": "output"],
-    )
-    | log1p.run( 
-      fromState: { id, state ->
-        [
-          "input": state.input,
-          "output_layer": "log_normalized",
-          "input_layer": "normalized",
-          "modality": state.modality
-        ]
-      },
-      toState: ["input": "output"]
-    )
-    | delete_layer.run(
-      fromState: {id, state -> 
-        [
-          "input": state.input,
-          "layer": "normalized",
-          "modality": state.modality
-        ]
-      },
-      toState: ["input": "output"]
+    | log_normalize.run(
+      args: ["output_layer": "log_normalized"],
+      fromState: [
+        "input": "input",
+        "layer": "layer",
+        "modality": "modality"
+      ],
+      toState: [
+        "input": "output"
+      ]
     )
     | scale.run(
       runIf: {id, state -> state.enable_scaling},

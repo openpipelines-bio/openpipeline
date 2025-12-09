@@ -145,7 +145,7 @@ def test_pretrained_model(run_component, random_h5mu_path):
             input_file,
             "--input_var_gene_names",
             "gene_symbol",
-            "--sanitize_gene_names",
+            "--sanitize_ensembl_ids",
             "False",
             "--cl_nlp_emb_file",
             cl_nlp_emb_file,

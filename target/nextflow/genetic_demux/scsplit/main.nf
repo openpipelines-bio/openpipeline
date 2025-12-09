@@ -3238,6 +3238,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "scSplit.patch"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3349,19 +3353,24 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.11",
+      "image" : "python:3.13",
       "target_tag" : "optional-gene-name-sanitation_build",
       "namespace_separator" : "/",
       "setup" : [
         {
+          "type" : "docker",
+          "copy" : [
+            "scSplit.patch /opt/scSplit.patch"
+          ]
+        },
+        {
           "type" : "python",
           "user" : false,
           "pip" : [
-            "numpy<2",
-            "pandas<2.0",
+            "numpy",
+            "pandas",
             "pysam",
-            "setuptools<58",
-            "scikit-learn==1.1.3",
+            "scikit-learn",
             "scipy",
             "statistics"
           ],
@@ -3371,14 +3380,14 @@ meta = [
           "type" : "python",
           "user" : false,
           "pip" : [
-            "PyVCF"
+            "vcfpy"
           ],
           "upgrade" : true
         },
         {
           "type" : "docker",
           "run" : [
-            "git clone https://github.com/jon-xu/scSplit && cp scSplit/scSplit /usr/local/bin && rm -rf scSplit"
+            "git clone https://github.com/jon-xu/scSplit && cd scSplit && git apply /opt/scSplit.patch && cp scSplit /usr/local/bin && cd .. && rm -rf scSplit"
           ]
         }
       ]
@@ -3390,9 +3399,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/scsplit",
     "viash_version" : "0.9.4",
-    "git_commit" : "907448008c390a4941a581851a618ce62f370787",
+    "git_commit" : "0dbdc7e9ba15ada44e24d147882be80be553d165",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2078-g907448008c3"
+    "git_tag" : "0.2.0-2079-g0dbdc7e9ba1"
   },
   "package_config" : {
     "name" : "openpipeline",

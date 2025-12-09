@@ -124,7 +124,7 @@ def main():
 
     # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
     input_modality = set_var_index(
-        input_modality, par["input_var_gene_names"], par["sanitize_gene_names"]
+        input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
     )
     input_matrix = (
         input_modality.layers[par["input_layer"]]
@@ -160,7 +160,7 @@ def main():
         reference_modality = set_var_index(
             reference_modality,
             par["reference_var_gene_names"],
-            par["sanitize_gene_names"],
+            par["sanitize_ensembl_ids"],
         )
 
         # subset to HVG if required

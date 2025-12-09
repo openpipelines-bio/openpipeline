@@ -454,9 +454,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component annotate onclass"
-LABEL org.opencontainers.image.created="2025-10-28T16:11:07Z"
+LABEL org.opencontainers.image.created="2025-12-09T19:28:20Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="907448008c390a4941a581851a618ce62f370787"
+LABEL org.opencontainers.image.revision="0dbdc7e9ba15ada44e24d147882be80be553d165"
 LABEL org.opencontainers.image.version="optional-gene-name-sanitation_build"
 
 VIASHDOCKER
@@ -611,11 +611,10 @@ function ViashHelp {
   echo "        The minimum number of genes present in both the reference and query"
   echo "        datasets."
   echo ""
-  echo "    --sanitize_gene_names"
+  echo "    --sanitize_ensembl_ids"
   echo "        type: boolean"
   echo "        default: true"
-  echo "        Whether to sanitize gene names by removing version numbers. Recommended"
-  echo "        when using ENSEMBL ids."
+  echo "        Whether to sanitize ensembl ids by removing version numbers."
   echo ""
   echo "Ontology:"
   echo "    Ontology input files"
@@ -823,15 +822,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --sanitize_gene_names)
-            [ -n "$VIASH_PAR_SANITIZE_GENE_NAMES" ] && ViashError Bad arguments for option \'--sanitize_gene_names\': \'$VIASH_PAR_SANITIZE_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_SANITIZE_GENE_NAMES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --sanitize_gene_names. Use "--help" to get more information on the parameters. && exit 1
+        --sanitize_ensembl_ids)
+            [ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ] && ViashError Bad arguments for option \'--sanitize_ensembl_ids\': \'$VIASH_PAR_SANITIZE_ENSEMBL_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SANITIZE_ENSEMBL_IDS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --sanitize_ensembl_ids. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --sanitize_gene_names=*)
-            [ -n "$VIASH_PAR_SANITIZE_GENE_NAMES" ] && ViashError Bad arguments for option \'--sanitize_gene_names=*\': \'$VIASH_PAR_SANITIZE_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_SANITIZE_GENE_NAMES=$(ViashRemoveFlags "$1")
+        --sanitize_ensembl_ids=*)
+            [ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ] && ViashError Bad arguments for option \'--sanitize_ensembl_ids=*\': \'$VIASH_PAR_SANITIZE_ENSEMBL_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SANITIZE_ENSEMBL_IDS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --cl_nlp_emb_file)
@@ -1221,8 +1220,8 @@ fi
 if [ -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then
   VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP="100"
 fi
-if [ -z ${VIASH_PAR_SANITIZE_GENE_NAMES+x} ]; then
-  VIASH_PAR_SANITIZE_GENE_NAMES="true"
+if [ -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then
+  VIASH_PAR_SANITIZE_ENSEMBL_IDS="true"
 fi
 if [ -z ${VIASH_PAR_UNKNOWN_CELLTYPE+x} ]; then
   VIASH_PAR_UNKNOWN_CELLTYPE="Unknown"
@@ -1270,9 +1269,9 @@ if [[ -n "$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP" ]]; then
     exit 1
   fi
 fi
-if [[ -n "$VIASH_PAR_SANITIZE_GENE_NAMES" ]]; then
-  if ! [[ "$VIASH_PAR_SANITIZE_GENE_NAMES" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--sanitize_gene_names' has to be a boolean. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ]]; then
+  if ! [[ "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--sanitize_ensembl_ids' has to be a boolean. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -1484,7 +1483,7 @@ par = {
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'sanitize_gene_names': $( if [ ! -z ${VIASH_PAR_SANITIZE_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_SANITIZE_GENE_NAMES//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'sanitize_ensembl_ids': $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo "r'${VIASH_PAR_SANITIZE_ENSEMBL_IDS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'cl_nlp_emb_file': $( if [ ! -z ${VIASH_PAR_CL_NLP_EMB_FILE+x} ]; then echo "r'${VIASH_PAR_CL_NLP_EMB_FILE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'cl_ontology_file': $( if [ ! -z ${VIASH_PAR_CL_ONTOLOGY_FILE+x} ]; then echo "r'${VIASH_PAR_CL_ONTOLOGY_FILE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'cl_obo_file': $( if [ ! -z ${VIASH_PAR_CL_OBO_FILE+x} ]; then echo "r'${VIASH_PAR_CL_OBO_FILE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1617,7 +1616,7 @@ def main():
 
     # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
     input_modality = set_var_index(
-        input_modality, par["input_var_gene_names"], par["sanitize_gene_names"]
+        input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
     )
     input_matrix = (
         input_modality.layers[par["input_layer"]]
@@ -1653,7 +1652,7 @@ def main():
         reference_modality = set_var_index(
             reference_modality,
             par["reference_var_gene_names"],
-            par["sanitize_gene_names"],
+            par["sanitize_ensembl_ids"],
         )
 
         # subset to HVG if required

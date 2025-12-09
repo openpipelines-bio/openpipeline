@@ -3143,8 +3143,8 @@ meta = [
         },
         {
           "type" : "boolean",
-          "name" : "--sanitize_gene_names",
-          "description" : "Whether to sanitize gene names by removing version numbers. Recommended when using ENSEMBL ids.",
+          "name" : "--sanitize_ensembl_ids",
+          "description" : "Whether to sanitize ensembl ids by removing version numbers.",
           "default" : [
             true
           ],
@@ -3415,19 +3415,7 @@ meta = [
   },
   "dependencies" : [
     {
-      "name" : "transform/normalize_total",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "transform/log1p",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "transform/delete_layer",
+      "name" : "workflows/rna/log_normalize",
       "repository" : {
         "type" : "local"
       }
@@ -3529,9 +3517,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/celltypist",
     "viash_version" : "0.9.4",
-    "git_commit" : "907448008c390a4941a581851a618ce62f370787",
+    "git_commit" : "0dbdc7e9ba15ada44e24d147882be80be553d165",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2078-g907448008c3"
+    "git_tag" : "0.2.0-2079-g0dbdc7e9ba1"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3578,9 +3566,7 @@ meta = [
 
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
-include { normalize_total } from "${meta.resources_dir}/../../../../nextflow/transform/normalize_total/main.nf"
-include { log1p } from "${meta.resources_dir}/../../../../nextflow/transform/log1p/main.nf"
-include { delete_layer } from "${meta.resources_dir}/../../../../nextflow/transform/delete_layer/main.nf"
+include { log_normalize } from "${meta.resources_dir}/../../../../_private/nextflow/workflows/rna/log_normalize/main.nf"
 include { celltypist as celltypist_component_viashalias } from "${meta.resources_dir}/../../../../nextflow/annotate/celltypist/main.nf"
 celltypist_component = celltypist_component_viashalias.run(key: "celltypist_component")
 
@@ -3592,89 +3578,47 @@ workflow run_wf {
 
   main:
     
-    output_ch = input_ch
-        // Set aside the output for this workflow to avoid conflicts
-        | map {id, state -> 
-          def new_state = state + ["workflow_output": state.output]
-          [id, new_state]
-        }
-        // Log normalize query dataset to target sum of 10000
-        | normalize_total.run(
-          fromState: { id, state -> [
-            "input": state.input,
-            "modality": state.modality,
-            "input_layer": state.input_layer,
-          ]},
-          args: [
-            "output_layer": "normalized_10k",
-            "target_sum": "10000",
-          ],
-          toState: [
-            "input": "output",
-          ]
-        )
+    query_ch = input_ch
+      // Log normalize query dataset to target sum of 10000
+      | log_normalize.run(
+        args: [
+          "output_layer": "log_normalized_10k",
+          "target_sum": "10000"
+        ],
+        fromState: [
+          "input": "input",
+          "modality": "modality",
+          "layer": "input_layer",
+        ],
+        toState: ["input": "output"]
+      )
+      | view {"After query normalization: $it"}
 
-        | log1p.run( 
-          fromState: { id, state -> [
-            "input": state.input,
-            "modality": state.modality
-          ]},
-          args: [
-            "input_layer": "normalized_10k",
-            "output_layer": "log_normalized_10k",
-          ],
-          toState: [
-            "input": "output"
-          ]
-        )
-        | delete_layer.run(
-          fromState: { id, state -> [
-            "input": state.input,
-            "modality": state.modality
-          ]},
-          args: [
-            "layer": "normalized_10k"
-          ],
-          toState: [
-            "input": "output"
-          ]
-        )
-        // Log normalize reference dataset to target sum of 10000
-        | normalize_total.run(
-          key: "normalize_total_reference",
-          runIf: { id, state ->
-            state.reference
-          },
-          fromState: { id, state -> [
-            "input": state.reference,
-            "modality": state.modality,
-            "input_layer": state.reference_layer,
-          ]},
-          args: [
-            "output_layer": "normalized_10k",
-            "target_sum": "10000",
-          ],
-          toState: [
-            "reference": "output",
-          ]
-        )
-        | log1p.run( 
-          key: "log1p_reference",
-          runIf: { id, state ->
-            state.reference
-          },
-          fromState: { id, state -> [
-            "input": state.reference,
-            "modality": state.modality
-          ]},
-          args: [
-            "input_layer": "normalized_10k",
-            "output_layer": "log_normalized_10k",
-          ],
-          toState: [
-            "reference": "output"
-          ]
-        )
+    ref_ch = input_ch
+      // Log normalize reference dataset to target sum of 10000
+      | log_normalize.run(
+        runIf: {id, state -> state.reference},
+        args: [
+          "output_layer": "log_normalized_10k",
+          "target_sum": "10000"
+        ],
+        fromState: [
+          "input": "reference",
+          "modality": "modality",
+          "layer": "reference_layer",
+        ],
+        toState: ["reference": "output"]
+      )
+      | view {"After reference normalization: $it"}
+
+
+    output_ch = query_ch.join(ref_ch, failOnMismatch: true, failOnDuplicate: true)
+        | view {"After channel mixing: $it"}
+        // Set aside the output for this workflow to avoid conflicts
+        | map {id, query_state, ref_state -> 
+          def newState = query_state + ["reference": ref_state.reference]
+          [id, newState]
+        }        
         // Run harmony integration with leiden clustering
         | celltypist_component.run(
           fromState: { id, state -> [
@@ -3693,10 +3637,10 @@ workflow run_wf {
             "max_iter": state.max_iter,
             "use_SGD": state.use_SGD,
             "min_prop": state.min_prop,
-            "output": state.workflow_output,
+            "output": state.output,
             "output_obs_predictions": state.output_obs_predictions,
             "output_obs_probability": state.output_obs_probability,
-            "sanitize_gene_names": state.sanitize_gene_names
+            "sanitize_ensembl_ids": state.sanitize_ensembl_ids
           ]},
           args: [
             "input_layer": "log_normalized_10k",

@@ -3123,8 +3123,8 @@ meta = [
         },
         {
           "type" : "boolean",
-          "name" : "--sanitize_gene_names",
-          "description" : "Whether to sanitize gene names by removing version numbers. Recommended when using ENSEMBL ids.",
+          "name" : "--sanitize_ensembl_ids",
+          "description" : "Whether to sanitize ensembl ids by removing version numbers.",
           "default" : [
             true
           ],
@@ -3527,9 +3527,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/svm_annotation",
     "viash_version" : "0.9.4",
-    "git_commit" : "907448008c390a4941a581851a618ce62f370787",
+    "git_commit" : "0dbdc7e9ba15ada44e24d147882be80be553d165",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2078-g907448008c3"
+    "git_tag" : "0.2.0-2079-g0dbdc7e9ba1"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3599,7 +3599,7 @@ par = {
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'sanitize_gene_names': $( if [ ! -z ${VIASH_PAR_SANITIZE_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_SANITIZE_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'sanitize_ensembl_ids': $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo "r'${VIASH_PAR_SANITIZE_ENSEMBL_IDS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_layer': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obs_target': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGET//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3662,7 +3662,7 @@ def main():
     input_adata = input_mudata.mod[par["modality"]]
     input_modality = input_adata.copy()
     input_modality = set_var_index(
-        input_modality, par["input_var_gene_names"], par["sanitize_gene_names"]
+        input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
     )
 
     if par["model"]:
@@ -3696,7 +3696,7 @@ def main():
         reference_modality = set_var_index(
             reference_modality,
             par["reference_var_gene_names"],
-            par["sanitize_gene_names"],
+            par["sanitize_ensembl_ids"],
         )
 
         # subset to HVG if required

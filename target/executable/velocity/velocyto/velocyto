@@ -446,17 +446,17 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM python:3.10-slim-bookworm
+FROM python:3.13
 ENTRYPOINT []
+COPY setup.py.patch /opt/setup.py.patch
 RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y procps build-essential file && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential file git && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "numpy<2" "Cython"
+  pip install --upgrade --no-cache-dir "numpy" "Cython"
 
-RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "velocyto"
+RUN git clone --depth 1 https://github.com/velocyto-team/velocyto.py /tmp/velocyto.py && cd /tmp/velocyto.py && git checkout 56efe891ec3d383d83ad45360f58350c12824c4d && git apply /opt/setup.py.patch && pip install .
 
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y samtools && \
@@ -464,9 +464,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component velocity velocyto"
-LABEL org.opencontainers.image.created="2025-10-28T16:11:09Z"
+LABEL org.opencontainers.image.created="2025-12-09T19:28:22Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="907448008c390a4941a581851a618ce62f370787"
+LABEL org.opencontainers.image.revision="0dbdc7e9ba15ada44e24d147882be80be553d165"
 LABEL org.opencontainers.image.version="optional-gene-name-sanitation_build"
 
 VIASHDOCKER

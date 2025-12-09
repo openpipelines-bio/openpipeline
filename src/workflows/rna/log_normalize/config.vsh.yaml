@@ -1,0 +1,62 @@
+name: "log_normalize"
+namespace: "workflows/rna"
+scope: "private"
+description: "Performs normalization and subsequent log-transformation of raw count data."
+authors:
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ author ]
+argument_groups:
+  - name: "Inputs"
+    arguments:
+      - name: "--input"
+        required: true
+        type: file
+        description: MuData file to transform.
+        example: dataset.h5mu
+      - name: "--modality"
+        type: string
+        description: Modality to process.
+        default: "rna"
+      - name: "--layer"
+        type: string
+        description: "Input layer containing raw counts. If not specified, .X is used."
+  - name: "Transormation options"
+    arguments:
+      - name: "--target_sum"
+        type: integer
+        min: 1
+        description: |
+          Normalize total counts to the specified amount. If not set, after normalization each observation (cell) 
+          will have a total count equal to the median of total counts for observations (cells) before normalization.
+  - name: "Output slots"
+    arguments:
+      - name: "--output_layer"
+        type: string
+        required: true
+        description: |
+          Layer to write the log-transformed counts to.
+  - name: "Output"
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: Destination path to the output.
+        example: output.h5mu
+dependencies:
+  - name: transform/normalize_total
+  - name: transform/log1p
+  - name: transform/delete_layer
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+  - type: file
+    path: /src/workflows/utils/
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - path: /resources_test/pbmc_1k_protein_v3
+runners:
+  - type: nextflow

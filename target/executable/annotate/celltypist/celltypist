@@ -447,12 +447,8 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM python:3.10-slim
+FROM nvcr.io/nvidia/pytorch:25.05-py3
 ENTRYPOINT []
-RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y libhdf5-dev procps && \
-  rm -rf /var/lib/apt/lists/*
-
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scanpy~=1.10.4"
 
@@ -465,9 +461,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate celltypist"
-LABEL org.opencontainers.image.created="2025-10-28T16:11:07Z"
+LABEL org.opencontainers.image.created="2025-12-09T19:28:21Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="907448008c390a4941a581851a618ce62f370787"
+LABEL org.opencontainers.image.revision="0dbdc7e9ba15ada44e24d147882be80be553d165"
 LABEL org.opencontainers.image.version="optional-gene-name-sanitation_build"
 
 VIASHDOCKER
@@ -621,11 +617,10 @@ function ViashHelp {
   echo "        The minimum number of genes present in both the reference and query"
   echo "        datasets."
   echo ""
-  echo "    --sanitize_gene_names"
+  echo "    --sanitize_ensembl_ids"
   echo "        type: boolean"
   echo "        default: true"
-  echo "        Whether to sanitize gene names by removing version numbers. Recommended"
-  echo "        when using ENSEMBL ids."
+  echo "        Whether to sanitize ensembl ids by removing version numbers."
   echo ""
   echo "Reference:"
   echo "    Arguments related to the reference dataset."
@@ -647,10 +642,10 @@ function ViashHelp {
   echo "        The name of the adata obs column in the reference data containing cell"
   echo "        type annotations."
   echo ""
-  echo "    --reference_var_gene_names"
+  echo "    --reference_var_input"
   echo "        type: string"
-  echo "        The name of the adata var column in the reference data containing gene"
-  echo "        names; when no gene_name_layer is provided, the var index will be used."
+  echo "        .var column containing highly variable genes. By default, do not subset"
+  echo "        genes."
   echo ""
   echo "Model arguments:"
   echo "    Model arguments."
@@ -833,15 +828,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --sanitize_gene_names)
-            [ -n "$VIASH_PAR_SANITIZE_GENE_NAMES" ] && ViashError Bad arguments for option \'--sanitize_gene_names\': \'$VIASH_PAR_SANITIZE_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_SANITIZE_GENE_NAMES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --sanitize_gene_names. Use "--help" to get more information on the parameters. && exit 1
+        --sanitize_ensembl_ids)
+            [ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ] && ViashError Bad arguments for option \'--sanitize_ensembl_ids\': \'$VIASH_PAR_SANITIZE_ENSEMBL_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SANITIZE_ENSEMBL_IDS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --sanitize_ensembl_ids. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --sanitize_gene_names=*)
-            [ -n "$VIASH_PAR_SANITIZE_GENE_NAMES" ] && ViashError Bad arguments for option \'--sanitize_gene_names=*\': \'$VIASH_PAR_SANITIZE_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_SANITIZE_GENE_NAMES=$(ViashRemoveFlags "$1")
+        --sanitize_ensembl_ids=*)
+            [ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ] && ViashError Bad arguments for option \'--sanitize_ensembl_ids=*\': \'$VIASH_PAR_SANITIZE_ENSEMBL_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SANITIZE_ENSEMBL_IDS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --reference)
@@ -877,15 +872,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_REFERENCE_OBS_TARGET=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --reference_var_gene_names)
-            [ -n "$VIASH_PAR_REFERENCE_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--reference_var_gene_names\': \'$VIASH_PAR_REFERENCE_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_VAR_GENE_NAMES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_var_gene_names. Use "--help" to get more information on the parameters. && exit 1
+        --reference_var_input)
+            [ -n "$VIASH_PAR_REFERENCE_VAR_INPUT" ] && ViashError Bad arguments for option \'--reference_var_input\': \'$VIASH_PAR_REFERENCE_VAR_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REFERENCE_VAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_var_input. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --reference_var_gene_names=*)
-            [ -n "$VIASH_PAR_REFERENCE_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--reference_var_gene_names=*\': \'$VIASH_PAR_REFERENCE_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
+        --reference_var_input=*)
+            [ -n "$VIASH_PAR_REFERENCE_VAR_INPUT" ] && ViashError Bad arguments for option \'--reference_var_input=*\': \'$VIASH_PAR_REFERENCE_VAR_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REFERENCE_VAR_INPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --model)
@@ -1209,8 +1204,8 @@ fi
 if [ -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then
   VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP="100"
 fi
-if [ -z ${VIASH_PAR_SANITIZE_GENE_NAMES+x} ]; then
-  VIASH_PAR_SANITIZE_GENE_NAMES="true"
+if [ -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then
+  VIASH_PAR_SANITIZE_ENSEMBL_IDS="true"
 fi
 if [ -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then
   VIASH_PAR_REFERENCE_OBS_TARGET="cell_ontology_class"
@@ -1265,9 +1260,9 @@ if [[ -n "$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP" ]]; then
     exit 1
   fi
 fi
-if [[ -n "$VIASH_PAR_SANITIZE_GENE_NAMES" ]]; then
-  if ! [[ "$VIASH_PAR_SANITIZE_GENE_NAMES" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--sanitize_gene_names' has to be a boolean. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ]]; then
+  if ! [[ "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--sanitize_ensembl_ids' has to be a boolean. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -1490,6 +1485,7 @@ import celltypist
 import mudata as mu
 import anndata as ad
 import pandas as pd
+from torch.cuda import is_available as cuda_is_available
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
@@ -1499,11 +1495,11 @@ par = {
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'sanitize_gene_names': $( if [ ! -z ${VIASH_PAR_SANITIZE_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_SANITIZE_GENE_NAMES//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'sanitize_ensembl_ids': $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo "r'${VIASH_PAR_SANITIZE_ENSEMBL_IDS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_layer': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_obs_target': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGET//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'reference_var_gene_names': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'reference_var_input': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'feature_selection': $( if [ ! -z ${VIASH_PAR_FEATURE_SELECTION+x} ]; then echo "r'${VIASH_PAR_FEATURE_SELECTION//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'majority_voting': $( if [ ! -z ${VIASH_PAR_MAJORITY_VOTING+x} ]; then echo "r'${VIASH_PAR_MAJORITY_VOTING//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
@@ -1546,8 +1542,11 @@ sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 from cross_check_genes import cross_check_genes
 from set_var_index import set_var_index
+from subset_vars import subset_vars
 
 logger = setup_logger()
+use_gpu = cuda_is_available()
+logger.info("GPU enabled? %s", use_gpu)
 
 
 def main(par):
@@ -1565,7 +1564,7 @@ def main(par):
     # Provide correct format of query data for celltypist annotation
     ## Sanitize gene names and set as index
     input_modality = set_var_index(
-        input_modality, par["input_var_gene_names"], par["sanitize_gene_names"]
+        input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
     )
     ## Fetch lognormalized counts
     lognorm_counts = (
@@ -1590,12 +1589,18 @@ def main(par):
     elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
 
+        # subset to HVG if required
+        if par["reference_var_input"]:
+            reference_modality = subset_vars(
+                reference_modality, par["reference_var_input"]
+            )
+
         # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
         # CellTypist requires query gene names to be in index
         reference_modality = set_var_index(
             reference_modality,
             par["reference_var_gene_names"],
-            par["sanitize_gene_names"],
+            par["sanitize_ensembl_ids"],
         )
 
         # Ensure enough overlap between genes in query and reference
@@ -1623,11 +1628,12 @@ def main(par):
             use_SGD=par["use_SGD"],
             feature_selection=par["feature_selection"],
             check_expression=True,
+            use_GPU=use_gpu,
         )
 
     logger.info("Predicting CellTypist annotations")
     predictions = celltypist.annotate(
-        input_modality, model, majority_voting=par["majority_voting"]
+        input_modality, model, majority_voting=par["majority_voting"], use_GPU=use_gpu
     )
 
     input_adata.obs[par["output_obs_predictions"]] = predictions.predicted_labels[

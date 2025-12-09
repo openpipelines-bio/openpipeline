@@ -8,7 +8,7 @@ input_obs_batch_label: # please fill in - example: "sample"
 # input_var_gene_names: "foo"
 input_reference_gene_overlap: 100
 overwrite_existing_key: false
-sanitize_gene_names: true
+sanitize_ensembl_ids: true
 
 # Reference input
 reference: # please fill in - example: "reference.h5mu"

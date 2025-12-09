@@ -3184,8 +3184,8 @@ meta = [
         },
         {
           "type" : "boolean",
-          "name" : "--sanitize_gene_names",
-          "description" : "Whether to sanitize gene names by removing version numbers. Recommended when using ENSEMBL ids.",
+          "name" : "--sanitize_ensembl_ids",
+          "description" : "Whether to sanitize ensembl ids by removing version numbers.",
           "default" : [
             true
           ],
@@ -3689,9 +3689,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scvi_knn",
     "viash_version" : "0.9.4",
-    "git_commit" : "907448008c390a4941a581851a618ce62f370787",
+    "git_commit" : "0dbdc7e9ba15ada44e24d147882be80be553d165",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2078-g907448008c3"
+    "git_tag" : "0.2.0-2079-g0dbdc7e9ba1"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3888,7 +3888,7 @@ workflow run_wf {
           "reduce_lr_on_plateau": state.scvi_reduce_lr_on_plateau,
           "lr_factor": state.scvi_lr_factor,
           "lr_patience": state.scvi_lr_patience,
-          "sanitize_gene_names": state.sanitize_gene_names
+          "sanitize_ensembl_ids": state.sanitize_ensembl_ids
         ]},
         args: [
           "var_input": "_common_hvg",

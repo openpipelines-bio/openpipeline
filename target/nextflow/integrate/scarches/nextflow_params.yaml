@@ -8,7 +8,7 @@ modality: "rna"
 # input_obs_size_factor: "foo"
 # input_obs_categorical_covariate: ["foo"]
 # input_obs_continuous_covariate: ["foo"]
-sanitize_gene_names: true
+sanitize_ensembl_ids: true
 
 # Reference
 reference: # please fill in - example: "path/to/file"

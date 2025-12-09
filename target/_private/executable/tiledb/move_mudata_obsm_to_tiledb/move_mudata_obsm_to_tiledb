@@ -449,14 +449,14 @@ function ViashDockerfile {
 FROM python:3.12
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "tiledbsoma" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "tiledbsoma" "boto3" "awscli" && \
   python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component tiledb move_mudata_obsm_to_tiledb"
-LABEL org.opencontainers.image.created="2025-10-28T16:11:06Z"
+LABEL org.opencontainers.image.created="2025-12-09T19:28:19Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="907448008c390a4941a581851a618ce62f370787"
+LABEL org.opencontainers.image.revision="0dbdc7e9ba15ada44e24d147882be80be553d165"
 LABEL org.opencontainers.image.version="optional-gene-name-sanitation_build"
 
 VIASHDOCKER
@@ -569,7 +569,7 @@ if [ -z "${VIASH_DOCKER_AUTOMOUNT_PREFIX+x}" ]; then
 fi
 
 # initialise docker variables
-VIASH_DOCKER_RUN_ARGS=(-i --rm --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY)
+VIASH_DOCKER_RUN_ARGS=(-i --rm --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY --env AWS_DEFAULT_REGION)
 
 
 # ViashHelp: Display helpful explanation about this executable
@@ -597,25 +597,36 @@ function ViashHelp {
   echo "        type: string"
   echo "        Custom endpoint to use to connect to S3"
   echo ""
+  echo "    --s3_no_sign_request"
+  echo "        type: boolean"
+  echo "        default: false"
+  echo "        Do not sign S3 requests. Credentials will not be loaded if this argument"
+  echo "        is provided."
+  echo ""
   echo "    --output_modality"
   echo "        type: string"
   echo "        TileDB-SOMA measurement to add the output to."
   echo ""
   echo "MuData input:"
   echo "    --input_mudata"
-  echo "        type: file, file must exist"
+  echo "        type: file, required parameter, file must exist"
   echo "        MuData object to take the columns from. The observations and their order"
   echo "        should"
   echo "        match between the database and the input modality."
   echo ""
   echo "    --modality"
-  echo "        type: string"
+  echo "        type: string, required parameter"
   echo "        Modality where to take the .obsm from."
   echo ""
   echo "    --obsm_input"
   echo "        type: string, multiple values allowed"
   echo "        Keys from .obm to copy. The keys should not be present yet in the"
   echo "        database."
+  echo ""
+  echo "TileDB-SOMA output:"
+  echo "    --output_tiledb"
+  echo "        type: file, output, file must exist"
+  echo "        Output to a directory instead of adding to the existing database."
   echo ""
   echo "Viash built in Computational Requirements:"
   echo "    ---cpus=INT"
@@ -700,6 +711,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_ENDPOINT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --s3_no_sign_request)
+            [ -n "$VIASH_PAR_S3_NO_SIGN_REQUEST" ] && ViashError Bad arguments for option \'--s3_no_sign_request\': \'$VIASH_PAR_S3_NO_SIGN_REQUEST\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_S3_NO_SIGN_REQUEST="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --s3_no_sign_request. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --s3_no_sign_request=*)
+            [ -n "$VIASH_PAR_S3_NO_SIGN_REQUEST" ] && ViashError Bad arguments for option \'--s3_no_sign_request=*\': \'$VIASH_PAR_S3_NO_SIGN_REQUEST\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_S3_NO_SIGN_REQUEST=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --output_modality)
             [ -n "$VIASH_PAR_OUTPUT_MODALITY" ] && ViashError Bad arguments for option \'--output_modality\': \'$VIASH_PAR_OUTPUT_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_MODALITY="$2"
@@ -748,6 +770,17 @@ while [[ $# -gt 0 ]]; do
             else
               VIASH_PAR_OBSM_INPUT="$VIASH_PAR_OBSM_INPUT;"$(ViashRemoveFlags "$1")
             fi
+            shift 1
+            ;;
+        --output_tiledb)
+            [ -n "$VIASH_PAR_OUTPUT_TILEDB" ] && ViashError Bad arguments for option \'--output_tiledb\': \'$VIASH_PAR_OUTPUT_TILEDB\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_TILEDB="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_tiledb. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_tiledb=*)
+            [ -n "$VIASH_PAR_OUTPUT_TILEDB" ] && ViashError Bad arguments for option \'--output_tiledb=*\': \'$VIASH_PAR_OUTPUT_TILEDB\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_TILEDB=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---engine)
@@ -924,6 +957,14 @@ if [ -z ${VIASH_PAR_INPUT_URI+x} ]; then
   ViashError '--input_uri' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
+if [ -z ${VIASH_PAR_INPUT_MUDATA+x} ]; then
+  ViashError '--input_mudata' is a required argument. Use "--help" to get more information on the parameters.
+  exit 1
+fi
+if [ -z ${VIASH_PAR_MODALITY+x} ]; then
+  ViashError '--modality' is a required argument. Use "--help" to get more information on the parameters.
+  exit 1
+fi
 if [ -z ${VIASH_META_NAME+x} ]; then
   ViashError 'name' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
@@ -949,6 +990,11 @@ if [ -z ${VIASH_META_TEMP_DIR+x} ]; then
   exit 1
 fi
 
+# filling in defaults
+if [ -z ${VIASH_PAR_S3_NO_SIGN_REQUEST+x} ]; then
+  VIASH_PAR_S3_NO_SIGN_REQUEST="false"
+fi
+
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_INPUT_MUDATA" ] && [ ! -e "$VIASH_PAR_INPUT_MUDATA" ]; then
   ViashError "Input file '$VIASH_PAR_INPUT_MUDATA' does not exist."
@@ -956,6 +1002,12 @@ if [ ! -z "$VIASH_PAR_INPUT_MUDATA" ] && [ ! -e "$VIASH_PAR_INPUT_MUDATA" ]; the
 fi
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_S3_NO_SIGN_REQUEST" ]]; then
+  if ! [[ "$VIASH_PAR_S3_NO_SIGN_REQUEST" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--s3_no_sign_request' has to be a boolean. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_META_CPUS" ]]; then
   if ! [[ "$VIASH_META_CPUS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError 'cpus' has to be an integer. Use "--help" to get more information on the parameters.
@@ -1029,12 +1081,22 @@ if [[ -n "$VIASH_META_MEMORY_PIB" ]]; then
   fi
 fi
 
+# create parent directories of output files, if so desired
+if [ ! -z "$VIASH_PAR_OUTPUT_TILEDB" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_TILEDB")" ]; then
+  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_TILEDB")"
+fi
+
 if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
   # detect volumes from file arguments
   VIASH_CHOWN_VARS=()
 if [ ! -z "$VIASH_PAR_INPUT_MUDATA" ]; then
   VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_INPUT_MUDATA")" )
   VIASH_PAR_INPUT_MUDATA=$(ViashDockerAutodetectMount "$VIASH_PAR_INPUT_MUDATA")
+fi
+if [ ! -z "$VIASH_PAR_OUTPUT_TILEDB" ]; then
+  VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_OUTPUT_TILEDB")" )
+  VIASH_PAR_OUTPUT_TILEDB=$(ViashDockerAutodetectMount "$VIASH_PAR_OUTPUT_TILEDB")
+  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT_TILEDB" )
 fi
 if [ ! -z "$VIASH_META_RESOURCES_DIR" ]; then
   VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_META_RESOURCES_DIR")" )
@@ -1109,6 +1171,7 @@ import tiledbsoma
 import tiledbsoma.io
 import pandas as pd
 import json
+from pathlib import Path
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
@@ -1116,10 +1179,12 @@ par = {
   'input_uri': $( if [ ! -z ${VIASH_PAR_INPUT_URI+x} ]; then echo "r'${VIASH_PAR_INPUT_URI//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   's3_region': $( if [ ! -z ${VIASH_PAR_S3_REGION+x} ]; then echo "r'${VIASH_PAR_S3_REGION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'endpoint': $( if [ ! -z ${VIASH_PAR_ENDPOINT+x} ]; then echo "r'${VIASH_PAR_ENDPOINT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  's3_no_sign_request': $( if [ ! -z ${VIASH_PAR_S3_NO_SIGN_REQUEST+x} ]; then echo "r'${VIASH_PAR_S3_NO_SIGN_REQUEST//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'output_modality': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODALITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_mudata': $( if [ ! -z ${VIASH_PAR_INPUT_MUDATA+x} ]; then echo "r'${VIASH_PAR_INPUT_MUDATA//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'obsm_input': $( if [ ! -z ${VIASH_PAR_OBSM_INPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_INPUT//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi )
+  'obsm_input': $( if [ ! -z ${VIASH_PAR_OBSM_INPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_INPUT//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'output_tiledb': $( if [ ! -z ${VIASH_PAR_OUTPUT_TILEDB+x} ]; then echo "r'${VIASH_PAR_OUTPUT_TILEDB//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1176,22 +1241,51 @@ def main(par):
         raise KeyError("Not all .obsm keys were found in the input!") from e
 
     logger.info("Done getting .obsm keys.")
-    tiledb_config = {
-        "vfs.s3.no_sign_request": "false",
-    }
     optional_config = {
         "vfs.s3.region": par["s3_region"],
         "vfs.s3.endpoint_override": par["endpoint"],
+        "vfs.s3.no_sign_request": par["s3_no_sign_request"],
     }
+    tiledb_config = {}
     for config_setting, config_val in optional_config.items():
         if config_val is not None:
             tiledb_config[config_setting] = config_val
-    logger.info("Using the following config to connect: %s", tiledb_config)
+    logger.info("Using the following config to connect to S3: %s", tiledb_config)
     context = tiledbsoma.SOMATileDBContext(tiledb_config=tiledb_config)
 
-    logger.info(
-        "Trying to access '%s' in region '%s'", par["input_uri"], par["s3_region"]
-    )
+    if par["output_tiledb"]:
+        logger.info("Requested to output to a directory. Downloading database...")
+        output_dir_path = Path(par["output_tiledb"])
+        output_dir_path.mkdir(parents=True, exist_ok=True)
+        import boto3
+        from awscli.customizations.s3.utils import split_s3_bucket_key
+
+        bucket, key = split_s3_bucket_key(par["input_uri"])
+        connection_args = {
+            "endpoint_url": par["endpoint"],
+            "region_name": par["s3_region"],
+        }
+        if par["s3_no_sign_request"]:
+            import botocore
+
+            connection_args["config"] = botocore.config.Config(
+                signature_version=botocore.UNSIGNED
+            )
+
+        client = boto3.resource("s3", **connection_args)
+        bucket = client.Bucket(bucket)
+        for i, s3_obj in enumerate(bucket.objects.filter(Prefix=key)):
+            output_path = output_dir_path / s3_obj.key.removeprefix(key).lstrip("/")
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            bucket.download_file(s3_obj.key, output_path)
+            print(f"Downloaded {i} files.", file=sys.stdout, flush=True, end="\\r")
+        logger.info("Download completed!")
+        logger.info("Setting input to %s", par["input_uri"])
+        par["input_uri"] = f"file://{output_dir_path.resolve()}"
+        logger.info("Overwriting TileDB config because S3 connection is not required.")
+        context = tiledbsoma.SOMATileDBContext()
+
+    logger.info("Trying to access '%s'", par["input_uri"])
     with tiledbsoma.open(
         par["input_uri"], mode="w", context=context
     ) as open_experiment:
@@ -1200,7 +1294,8 @@ def main(par):
         measurement = open_experiment.ms[par["output_modality"]]
         logger.info("Checking if keys do not already exist.")
         existing_keys = measurement.obsm.keys()
-        overlap = set(existing_keys).intersection(set(keys_to_transfer))
+        logger.info("Existing keys: %s", ",".join(existing_keys))
+        overlap = set(existing_keys).intersection(set(keys_to_transfer.keys()))
         if overlap:
             raise ValueError(
                 f"The following keys already exist in the database: {','.join(overlap)}."
@@ -1226,6 +1321,8 @@ def main(par):
                 matrix_data=obsm_val,
                 context=context,
             )
+            # Allow for more than one obsm slot to be transferred
+            open_experiment = open_experiment.reopen(mode="w")
             if index_as_json:
                 uri = f"{par['input_uri']}/ms/{par['output_modality']}/obsm/{key}"
                 with tiledbsoma.open(
@@ -1251,6 +1348,9 @@ if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
   if [ ! -z "$VIASH_PAR_INPUT_MUDATA" ]; then
     VIASH_PAR_INPUT_MUDATA=$(ViashDockerStripAutomount "$VIASH_PAR_INPUT_MUDATA")
   fi
+  if [ ! -z "$VIASH_PAR_OUTPUT_TILEDB" ]; then
+    VIASH_PAR_OUTPUT_TILEDB=$(ViashDockerStripAutomount "$VIASH_PAR_OUTPUT_TILEDB")
+  fi
   if [ ! -z "$VIASH_META_RESOURCES_DIR" ]; then
     VIASH_META_RESOURCES_DIR=$(ViashDockerStripAutomount "$VIASH_META_RESOURCES_DIR")
   fi
@@ -1263,6 +1363,13 @@ if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
   if [ ! -z "$VIASH_META_TEMP_DIR" ]; then
     VIASH_META_TEMP_DIR=$(ViashDockerStripAutomount "$VIASH_META_TEMP_DIR")
   fi
+fi
+
+
+# check whether required files exist
+if [ ! -z "$VIASH_PAR_OUTPUT_TILEDB" ] && [ ! -e "$VIASH_PAR_OUTPUT_TILEDB" ]; then
+  ViashError "Output file '$VIASH_PAR_OUTPUT_TILEDB' does not exist."
+  exit 1
 fi
 
 

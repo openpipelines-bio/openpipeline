@@ -3346,9 +3346,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.9.4",
-    "git_commit" : "907448008c390a4941a581851a618ce62f370787",
+    "git_commit" : "0dbdc7e9ba15ada44e24d147882be80be553d165",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2078-g907448008c3"
+    "git_tag" : "0.2.0-2079-g0dbdc7e9ba1"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3410,6 +3410,7 @@ import time
 import logging
 import logging.handlers
 import warnings
+import h5py
 import mudata as mu
 import pandas as pd
 import scanpy as sc
@@ -3727,7 +3728,8 @@ def main():
             logger.info("Waiting for shutdown of processes")
             executor.shutdown()
             logger.info("Executor shut down.")
-        adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
+        del adata
+        results = pd.DataFrame(results)
 
         output_file = Path(par["output"])
         logger.info("Writing output to %s.", par["output"])
@@ -3737,9 +3739,11 @@ def main():
             else output_file
         )
         shutil.copyfile(par["input"], output_file_uncompressed)
-        mu.write_h5ad(
-            filename=output_file_uncompressed, mod=par["modality"], data=adata
-        )
+        logger.info("Opening %s", output_file_uncompressed)
+        with h5py.File(output_file_uncompressed, "a") as storage:
+            group_path = f"/mod/{par['modality']}/obsm/{par['obsm_name']}"
+            logger.info("Adding output to %s", group_path)
+            ad.io.write_elem(storage, k=group_path, elem=results)
         if par["output_compression"]:
             compress_h5mu(
                 output_file_uncompressed,

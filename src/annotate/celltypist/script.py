@@ -3,6 +3,7 @@ import celltypist
 import mudata as mu
 import anndata as ad
 import pandas as pd
+from torch.cuda import is_available as cuda_is_available
 
 ## VIASH START
 par = {
@@ -10,6 +11,7 @@ par = {
     "output": "output.h5mu",
     "modality": "rna",
     # "reference": None,
+    "reference_var_input": "highly_variable",
     "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "model": None,
     # "model": "resources_test/annotation_test_data/celltypist_model_Immune_All_Low.pkl",
@@ -28,6 +30,7 @@ par = {
     "min_prop": 0,
     "output_obs_predictions": "celltypist_pred",
     "output_obs_probability": "celltypist_probability",
+    "sanitize_ensembl_ids": True,
 }
 meta = {"resources_dir": "src/utils"}
 ## VIASH END
@@ -36,8 +39,11 @@ sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 from cross_check_genes import cross_check_genes
 from set_var_index import set_var_index
+from subset_vars import subset_vars
 
 logger = setup_logger()
+use_gpu = cuda_is_available()
+logger.info("GPU enabled? %s", use_gpu)
 
 
 def main(par):
@@ -55,7 +61,7 @@ def main(par):
     # Provide correct format of query data for celltypist annotation
     ## Sanitize gene names and set as index
     input_modality = set_var_index(
-        input_modality, par["input_var_gene_names"], par["sanitize_gene_names"]
+        input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
     )
     ## Fetch lognormalized counts
     lognorm_counts = (
@@ -80,12 +86,18 @@ def main(par):
     elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
 
+        # subset to HVG if required
+        if par["reference_var_input"]:
+            reference_modality = subset_vars(
+                reference_modality, par["reference_var_input"]
+            )
+
         # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
         # CellTypist requires query gene names to be in index
         reference_modality = set_var_index(
             reference_modality,
             par["reference_var_gene_names"],
-            par["sanitize_gene_names"],
+            par["sanitize_ensembl_ids"],
         )
 
         # Ensure enough overlap between genes in query and reference
@@ -113,11 +125,12 @@ def main(par):
             use_SGD=par["use_SGD"],
             feature_selection=par["feature_selection"],
             check_expression=True,
+            use_GPU=use_gpu,
         )
 
     logger.info("Predicting CellTypist annotations")
     predictions = celltypist.annotate(
-        input_modality, model, majority_voting=par["majority_voting"]
+        input_modality, model, majority_voting=par["majority_voting"], use_GPU=use_gpu
     )
 
     input_adata.obs[par["output_obs_predictions"]] = predictions.predicted_labels[
