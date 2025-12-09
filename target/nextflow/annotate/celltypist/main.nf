@@ -3201,6 +3201,15 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--reference_var_gene_names",
+          "description" : "The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3553,9 +3562,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.4",
-    "git_commit" : "0dbdc7e9ba15ada44e24d147882be80be553d165",
+    "git_commit" : "bf415c29a9136832f28ee2268e19c39393259843",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2079-g0dbdc7e9ba1"
+    "git_tag" : "0.2.0-2080-gbf415c29a91"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3630,6 +3639,7 @@ par = {
   'reference_layer': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obs_target': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGET//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_var_input': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'reference_var_gene_names': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'feature_selection': $( if [ ! -z ${VIASH_PAR_FEATURE_SELECTION+x} ]; then echo "r'${VIASH_PAR_FEATURE_SELECTION//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'majority_voting': $( if [ ! -z ${VIASH_PAR_MAJORITY_VOTING+x} ]; then echo "r'${VIASH_PAR_MAJORITY_VOTING//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
