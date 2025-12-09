@@ -60,11 +60,11 @@ argument_groups:
         type: string
         description: The name of the adata obs column in the reference data containing cell type annotations.
         default: "cell_ontology_class"
-      - name: "--reference_var_gene_names"
+      - name: "--reference_var_input"
         type: string
         required: false
         description: |
-          The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
+          .var column containing highly variable genes. By default, do not subset genes.
 
   - name: Model arguments
     description: Model arguments.
