@@ -58,6 +58,8 @@
 
 * `cluster/leiden`: fix an issue where using an input modality with missing`.X` caused `KeyError` (`Unable to synchronously open object`) (PR #1093).
 
+* `annotate/celltypist`: Surface the parameter `--reference_var_input` for subsetting reference dataset before model training (PR #1112).
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES
