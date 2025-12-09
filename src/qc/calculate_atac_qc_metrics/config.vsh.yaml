@@ -106,7 +106,7 @@ engines:
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         __merge__: [ /src/base/requirements/scanpy.yaml, .]
         packages:
-          - muon~=0.1.5
+          - muon~=0.1.7
           - pysam~=0.22.0
     test_setup:
       - type: python

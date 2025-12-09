@@ -4,6 +4,8 @@
 
 * `mapping/cellranger_multi`: bump Cell Ranger to version 10 (PR #1103).
 
+* Removed `cellbender_remove_background_v0_2` (PR #1111).
+
 ## NEW FUNCTIONALITY
 
 * `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).
@@ -47,6 +49,8 @@
 * `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
 
 * `genetic_demux/scsplit`: bump python to `3.13` and unpin pandas and numpy (were pinned to `<2.0` and `<2` respectively) (PR #1096).
+
+* Bump `anndata` to `0.12.6` and mudata to `0.3.2` (PR #1111).
 
 ## BUG FIXES
 
