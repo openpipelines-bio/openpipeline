@@ -3216,6 +3216,18 @@ meta = [
           "direction" : "input",
           "multiple" : true,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--sanitize_ensembl_ids",
+          "description" : "Whether to sanitize ensembl ids by removing version numbers.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3742,7 +3754,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.9.4",
-    "git_commit" : "341126b1bd9c774430d6e0e2ec80cca05d1520c9",
+    "git_commit" : "9e6f5bdaacae3ce0ad2bfacc18294d63c44019ab",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3815,6 +3827,7 @@ par = {
   'obs_size_factor': $( if [ ! -z ${VIASH_PAR_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_OBS_SIZE_FACTOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_categorical_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CATEGORICAL_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CATEGORICAL_COVARIATE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CONTINUOUS_COVARIATE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'sanitize_ensembl_ids': $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo "r'${VIASH_PAR_SANITIZE_ENSEMBL_IDS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_model': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3907,7 +3920,9 @@ def main():
         adata_subset = adata.copy()
 
     # Sanitize gene names and set as index of the AnnData object
-    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
+    adata_subset = set_var_index(
+        adata_subset, par["var_gene_names"], par["sanitize_ensembl_ids"]
+    )
 
     check_validity_anndata(
         adata_subset,

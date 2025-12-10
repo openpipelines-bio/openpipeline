@@ -3175,6 +3175,18 @@ meta = [
           "direction" : "input",
           "multiple" : true,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--sanitize_ensembl_ids",
+          "description" : "Whether to sanitize ensembl ids by removing version numbers.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3587,7 +3599,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scarches",
     "viash_version" : "0.9.4",
-    "git_commit" : "341126b1bd9c774430d6e0e2ec80cca05d1520c9",
+    "git_commit" : "9e6f5bdaacae3ce0ad2bfacc18294d63c44019ab",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3666,6 +3678,7 @@ par = {
   'input_obs_size_factor': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_SIZE_FACTOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_obs_categorical_covariate': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'input_obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'sanitize_ensembl_ids': $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo "r'${VIASH_PAR_SANITIZE_ENSEMBL_IDS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_class': $( if [ ! -z ${VIASH_PAR_REFERENCE_CLASS+x} ]; then echo "r'${VIASH_PAR_REFERENCE_CLASS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3803,7 +3816,9 @@ def _align_query_with_registry(adata_query, model_path):
 
     # Sanitize gene names and set as index of the AnnData object
     # all scArches VAE models expect gene names to be in the .var index
-    adata_query = set_var_index(adata_query, par["input_var_gene_names"])
+    adata_query = set_var_index(
+        adata_query, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
+    )
 
     # align layer
     query_layer = (

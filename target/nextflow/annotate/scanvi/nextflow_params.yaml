@@ -6,6 +6,7 @@ modality: "rna"
 # var_gene_names: "foo"
 obs_labels: # please fill in - example: "foo"
 unlabeled_category: "Unknown"
+sanitize_ensembl_ids: true
 
 # scVI Model
 scvi_model: # please fill in - example: "scvi_model.pt"

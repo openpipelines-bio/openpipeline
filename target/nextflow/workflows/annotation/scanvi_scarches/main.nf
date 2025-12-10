@@ -3174,6 +3174,18 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--sanitize_ensembl_ids",
+          "description" : "Whether to sanitize ensembl ids by removing version numbers.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3675,7 +3687,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scanvi_scarches",
     "viash_version" : "0.9.4",
-    "git_commit" : "341126b1bd9c774430d6e0e2ec80cca05d1520c9",
+    "git_commit" : "9e6f5bdaacae3ce0ad2bfacc18294d63c44019ab",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3763,6 +3775,7 @@ workflow run_wf {
               "reduce_lr_on_plateau": "reduce_lr_on_plateau",
               "lr_factor": "lr_factor",
               "lr_patience": "lr_patience",
+              "sanitize_ensembl_ids": "sanitize_ensembl_ids"
           ],
           args: [
               "obsm_output": "X_integrated_scvi"
@@ -3795,6 +3808,7 @@ workflow run_wf {
               "reduce_lr_on_plateau": "reduce_lr_on_plateau",
               "lr_factor": "lr_factor",
               "lr_patience": "lr_patience",
+              "sanitize_ensembl_ids": "sanitize_ensembl_ids"
           ],
           toState: [
               "reference": "output",
@@ -3826,7 +3840,8 @@ workflow run_wf {
               "lr_factor": "lr_factor",
               "lr_patience": "lr_patience",
               "output": "workflow_output",
-              "model_output": "workflow_output_model"
+              "model_output": "workflow_output_model",
+              "sanitize_ensembl_ids": "sanitize_ensembl_ids"
           ],
           toState: [
               "input": "output",

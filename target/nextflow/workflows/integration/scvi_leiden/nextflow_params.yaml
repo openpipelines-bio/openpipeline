@@ -8,6 +8,7 @@ tiledb_s3_no_sign_request: false
 # Input slots
 # layer: "foo"
 modality: "rna"
+sanitize_ensembl_ids: true
 
 # Outputs
 # output: "$id.$key.output.h5mu"

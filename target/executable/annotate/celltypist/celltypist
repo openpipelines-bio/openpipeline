@@ -460,9 +460,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate celltypist"
-LABEL org.opencontainers.image.created="2025-12-09T09:44:26Z"
+LABEL org.opencontainers.image.created="2025-12-10T10:16:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="341126b1bd9c774430d6e0e2ec80cca05d1520c9"
+LABEL org.opencontainers.image.revision="9e6f5bdaacae3ce0ad2bfacc18294d63c44019ab"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -616,6 +616,11 @@ function ViashHelp {
   echo "        The minimum number of genes present in both the reference and query"
   echo "        datasets."
   echo ""
+  echo "    --sanitize_ensembl_ids"
+  echo "        type: boolean"
+  echo "        default: true"
+  echo "        Whether to sanitize ensembl ids by removing version numbers."
+  echo ""
   echo "Reference:"
   echo "    Arguments related to the reference dataset."
   echo ""
@@ -636,15 +641,15 @@ function ViashHelp {
   echo "        The name of the adata obs column in the reference data containing cell"
   echo "        type annotations."
   echo ""
-  echo "    --reference_var_gene_names"
-  echo "        type: string"
-  echo "        The name of the adata var column in the reference data containing gene"
-  echo "        names; when no gene_name_layer is provided, the var index will be used."
-  echo ""
   echo "    --reference_var_input"
   echo "        type: string"
   echo "        .var column containing highly variable genes. By default, do not subset"
   echo "        genes."
+  echo ""
+  echo "    --reference_var_gene_names"
+  echo "        type: string"
+  echo "        The name of the adata var column in the reference data containing gene"
+  echo "        names; when no gene_name_layer is provided, the var index will be used."
   echo ""
   echo "Model arguments:"
   echo "    Model arguments."
@@ -827,6 +832,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --sanitize_ensembl_ids)
+            [ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ] && ViashError Bad arguments for option \'--sanitize_ensembl_ids\': \'$VIASH_PAR_SANITIZE_ENSEMBL_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SANITIZE_ENSEMBL_IDS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --sanitize_ensembl_ids. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --sanitize_ensembl_ids=*)
+            [ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ] && ViashError Bad arguments for option \'--sanitize_ensembl_ids=*\': \'$VIASH_PAR_SANITIZE_ENSEMBL_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SANITIZE_ENSEMBL_IDS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --reference)
             [ -n "$VIASH_PAR_REFERENCE" ] && ViashError Bad arguments for option \'--reference\': \'$VIASH_PAR_REFERENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_REFERENCE="$2"
@@ -860,17 +876,6 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_REFERENCE_OBS_TARGET=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --reference_var_gene_names)
-            [ -n "$VIASH_PAR_REFERENCE_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--reference_var_gene_names\': \'$VIASH_PAR_REFERENCE_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_VAR_GENE_NAMES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_var_gene_names. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --reference_var_gene_names=*)
-            [ -n "$VIASH_PAR_REFERENCE_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--reference_var_gene_names=*\': \'$VIASH_PAR_REFERENCE_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         --reference_var_input)
             [ -n "$VIASH_PAR_REFERENCE_VAR_INPUT" ] && ViashError Bad arguments for option \'--reference_var_input\': \'$VIASH_PAR_REFERENCE_VAR_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_REFERENCE_VAR_INPUT="$2"
@@ -880,6 +885,17 @@ while [[ $# -gt 0 ]]; do
         --reference_var_input=*)
             [ -n "$VIASH_PAR_REFERENCE_VAR_INPUT" ] && ViashError Bad arguments for option \'--reference_var_input=*\': \'$VIASH_PAR_REFERENCE_VAR_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_REFERENCE_VAR_INPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --reference_var_gene_names)
+            [ -n "$VIASH_PAR_REFERENCE_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--reference_var_gene_names\': \'$VIASH_PAR_REFERENCE_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REFERENCE_VAR_GENE_NAMES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_var_gene_names. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --reference_var_gene_names=*)
+            [ -n "$VIASH_PAR_REFERENCE_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--reference_var_gene_names=*\': \'$VIASH_PAR_REFERENCE_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REFERENCE_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --model)
@@ -1203,6 +1219,9 @@ fi
 if [ -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then
   VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP="100"
 fi
+if [ -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then
+  VIASH_PAR_SANITIZE_ENSEMBL_IDS="true"
+fi
 if [ -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then
   VIASH_PAR_REFERENCE_OBS_TARGET="cell_ontology_class"
 fi
@@ -1253,6 +1272,12 @@ if [[ -n "$VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP" ]]; then
   fi
   if [[ $VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP -lt 1 ]]; then
     ViashError '--input_reference_gene_overlap' has be more than or equal to 1. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ]]; then
+  if ! [[ "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--sanitize_ensembl_ids' has to be a boolean. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -1485,11 +1510,12 @@ par = {
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'sanitize_ensembl_ids': $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo "r'${VIASH_PAR_SANITIZE_ENSEMBL_IDS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_layer': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_obs_target': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGET//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'reference_var_gene_names': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_var_input': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'reference_var_gene_names': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'feature_selection': $( if [ ! -z ${VIASH_PAR_FEATURE_SELECTION+x} ]; then echo "r'${VIASH_PAR_FEATURE_SELECTION//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'majority_voting': $( if [ ! -z ${VIASH_PAR_MAJORITY_VOTING+x} ]; then echo "r'${VIASH_PAR_MAJORITY_VOTING//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
@@ -1553,7 +1579,9 @@ def main(par):
 
     # Provide correct format of query data for celltypist annotation
     ## Sanitize gene names and set as index
-    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
+    input_modality = set_var_index(
+        input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
+    )
     ## Fetch lognormalized counts
     lognorm_counts = (
         input_modality.layers[par["input_layer"]].copy()
@@ -1586,7 +1614,9 @@ def main(par):
         # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
         # CellTypist requires query gene names to be in index
         reference_modality = set_var_index(
-            reference_modality, par["reference_var_gene_names"]
+            reference_modality,
+            par["reference_var_gene_names"],
+            par["sanitize_ensembl_ids"],
         )
 
         # Ensure enough overlap between genes in query and reference

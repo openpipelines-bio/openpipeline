@@ -3140,6 +3140,18 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--sanitize_ensembl_ids",
+          "description" : "Whether to sanitize ensembl ids by removing version numbers.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3505,7 +3517,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/celltypist",
     "viash_version" : "0.9.4",
-    "git_commit" : "341126b1bd9c774430d6e0e2ec80cca05d1520c9",
+    "git_commit" : "9e6f5bdaacae3ce0ad2bfacc18294d63c44019ab",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3626,7 +3638,8 @@ workflow run_wf {
             "min_prop": state.min_prop,
             "output": state.output,
             "output_obs_predictions": state.output_obs_predictions,
-            "output_obs_probability": state.output_obs_probability
+            "output_obs_probability": state.output_obs_probability,
+            "sanitize_ensembl_ids": state.sanitize_ensembl_ids
           ]},
           args: [
             "input_layer": "log_normalized_10k",

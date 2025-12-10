@@ -3120,6 +3120,18 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--sanitize_ensembl_ids",
+          "description" : "Whether to sanitize ensembl ids by removing version numbers.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3525,7 +3537,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/random_forest_annotation",
     "viash_version" : "0.9.4",
-    "git_commit" : "341126b1bd9c774430d6e0e2ec80cca05d1520c9",
+    "git_commit" : "9e6f5bdaacae3ce0ad2bfacc18294d63c44019ab",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3596,6 +3608,7 @@ par = {
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'sanitize_ensembl_ids': $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo "r'${VIASH_PAR_SANITIZE_ENSEMBL_IDS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_layer': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obs_target': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGET//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3652,7 +3665,9 @@ def main():
     input_mudata = mu.read_h5mu(par["input"])
     input_adata = input_mudata.mod[par["modality"]]
     input_modality = input_adata.copy()
-    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
+    input_modality = set_var_index(
+        input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
+    )
 
     # Handle max_features parameter
     max_features_conversion = {
@@ -3705,7 +3720,9 @@ def main():
         reference_mudata = mu.read_h5mu(par["reference"])
         reference_modality = reference_mudata.mod[par["modality"]].copy()
         reference_modality = set_var_index(
-            reference_modality, par["reference_var_gene_names"]
+            reference_modality,
+            par["reference_var_gene_names"],
+            par["sanitize_ensembl_ids"],
         )
 
         # subset to HVG if required

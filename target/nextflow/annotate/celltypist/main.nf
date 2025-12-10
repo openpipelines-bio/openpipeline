@@ -3139,6 +3139,18 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--sanitize_ensembl_ids",
+          "description" : "Whether to sanitize ensembl ids by removing version numbers.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3183,8 +3195,8 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--reference_var_gene_names",
-          "description" : "The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.\n",
+          "name" : "--reference_var_input",
+          "description" : ".var column containing highly variable genes. By default, do not subset genes.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3192,8 +3204,8 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--reference_var_input",
-          "description" : ".var column containing highly variable genes. By default, do not subset genes.\n",
+          "name" : "--reference_var_gene_names",
+          "description" : "The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3547,7 +3559,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.4",
-    "git_commit" : "341126b1bd9c774430d6e0e2ec80cca05d1520c9",
+    "git_commit" : "9e6f5bdaacae3ce0ad2bfacc18294d63c44019ab",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3618,11 +3630,12 @@ par = {
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'sanitize_ensembl_ids': $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo "r'${VIASH_PAR_SANITIZE_ENSEMBL_IDS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_layer': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obs_target': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGET//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'reference_var_gene_names': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_var_input': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'reference_var_gene_names': $( if [ ! -z ${VIASH_PAR_REFERENCE_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'feature_selection': $( if [ ! -z ${VIASH_PAR_FEATURE_SELECTION+x} ]; then echo "r'${VIASH_PAR_FEATURE_SELECTION//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'majority_voting': $( if [ ! -z ${VIASH_PAR_MAJORITY_VOTING+x} ]; then echo "r'${VIASH_PAR_MAJORITY_VOTING//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
@@ -3686,7 +3699,9 @@ def main(par):
 
     # Provide correct format of query data for celltypist annotation
     ## Sanitize gene names and set as index
-    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
+    input_modality = set_var_index(
+        input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
+    )
     ## Fetch lognormalized counts
     lognorm_counts = (
         input_modality.layers[par["input_layer"]].copy()
@@ -3719,7 +3734,9 @@ def main(par):
         # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
         # CellTypist requires query gene names to be in index
         reference_modality = set_var_index(
-            reference_modality, par["reference_var_gene_names"]
+            reference_modality,
+            par["reference_var_gene_names"],
+            par["sanitize_ensembl_ids"],
         )
 
         # Ensure enough overlap between genes in query and reference

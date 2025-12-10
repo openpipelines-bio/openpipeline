@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate scanvi"
-LABEL org.opencontainers.image.created="2025-12-09T09:44:27Z"
+LABEL org.opencontainers.image.created="2025-12-10T10:16:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="341126b1bd9c774430d6e0e2ec80cca05d1520c9"
+LABEL org.opencontainers.image.revision="9e6f5bdaacae3ce0ad2bfacc18294d63c44019ab"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -619,6 +619,11 @@ function ViashHelp {
   echo "        type: string"
   echo "        default: Unknown"
   echo "        Value in the --obs_labels field that indicates unlabeled observations"
+  echo ""
+  echo "    --sanitize_ensembl_ids"
+  echo "        type: boolean"
+  echo "        default: true"
+  echo "        Whether to sanitize ensembl ids by removing version numbers."
   echo ""
   echo "scVI Model:"
   echo "    --scvi_model"
@@ -839,6 +844,17 @@ while [[ $# -gt 0 ]]; do
         --unlabeled_category=*)
             [ -n "$VIASH_PAR_UNLABELED_CATEGORY" ] && ViashError Bad arguments for option \'--unlabeled_category=*\': \'$VIASH_PAR_UNLABELED_CATEGORY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_UNLABELED_CATEGORY=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --sanitize_ensembl_ids)
+            [ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ] && ViashError Bad arguments for option \'--sanitize_ensembl_ids\': \'$VIASH_PAR_SANITIZE_ENSEMBL_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SANITIZE_ENSEMBL_IDS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --sanitize_ensembl_ids. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --sanitize_ensembl_ids=*)
+            [ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ] && ViashError Bad arguments for option \'--sanitize_ensembl_ids=*\': \'$VIASH_PAR_SANITIZE_ENSEMBL_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SANITIZE_ENSEMBL_IDS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --scvi_model)
@@ -1230,6 +1246,9 @@ fi
 if [ -z ${VIASH_PAR_UNLABELED_CATEGORY+x} ]; then
   VIASH_PAR_UNLABELED_CATEGORY="Unknown"
 fi
+if [ -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then
+  VIASH_PAR_SANITIZE_ENSEMBL_IDS="true"
+fi
 if [ -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then
   VIASH_PAR_OBSM_OUTPUT="X_scanvi_integrated"
 fi
@@ -1269,6 +1288,12 @@ if [ ! -z "$VIASH_PAR_SCVI_MODEL" ] && [ ! -e "$VIASH_PAR_SCVI_MODEL" ]; then
 fi
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ]]; then
+  if ! [[ "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--sanitize_ensembl_ids' has to be a boolean. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_PAR_EARLY_STOPPING" ]]; then
   if ! [[ "$VIASH_PAR_EARLY_STOPPING" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
     ViashError '--early_stopping' has to be a boolean. Use "--help" to get more information on the parameters.
@@ -1562,6 +1587,7 @@ par = {
   'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_labels': $( if [ ! -z ${VIASH_PAR_OBS_LABELS+x} ]; then echo "r'${VIASH_PAR_OBS_LABELS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'unlabeled_category': $( if [ ! -z ${VIASH_PAR_UNLABELED_CATEGORY+x} ]; then echo "r'${VIASH_PAR_UNLABELED_CATEGORY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'sanitize_ensembl_ids': $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo "r'${VIASH_PAR_SANITIZE_ENSEMBL_IDS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'scvi_model': $( if [ ! -z ${VIASH_PAR_SCVI_MODEL+x} ]; then echo "r'${VIASH_PAR_SCVI_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_model': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1627,7 +1653,9 @@ def main():
         adata_subset = adata.copy()
 
     # Sanitize gene names and set as index of the AnnData object
-    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
+    adata_subset = set_var_index(
+        adata_subset, par["var_gene_names"], par["sanitize_ensembl_ids"]
+    )
 
     logger.info(f"Loading pre-trained scVI model from {par['scvi_model']}")
     scvi_model = scvi.model.SCVI.load(
