@@ -117,7 +117,7 @@ test_resources:
 
 engines:
 - type: docker
-  image: rocker/r2u:22.04
+  image: rocker/r2u:24.04
   setup:
     - type: docker
       run: "--mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN"
@@ -129,9 +129,16 @@ engines:
       github: scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a
       bioc: [ DESeq2 ]
   test_setup:
+    - type: docker
+      env: 
+        - PIP_BREAK_SYSTEM_PACKAGES=1
     - type: apt
-      packages: [ python3, python3-pip, python3-dev, python-is-python3 ]
-  __merge__: [ ., /src/base/requirements/python_test_setup.yaml]
+      packages: [ python3, python3-pip, python3-dev, python-is-python3, git ]
+    - type: python
+      user: true
+      __merge__:
+        - /src/base/requirements/viashpy.yaml
+        - /src/base/requirements/openpipeline_testutils.yaml
 
 runners:
 - type: executable

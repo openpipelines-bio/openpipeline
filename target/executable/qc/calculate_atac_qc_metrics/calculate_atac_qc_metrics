@@ -453,13 +453,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.10.4" "muon~=0.1.5" "pysam~=0.22.0"
+  pip install --upgrade --no-cache-dir "scanpy~=1.10.4" "muon~=0.1.7" "pysam~=0.22.0"
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component qc calculate_atac_qc_metrics"
-LABEL org.opencontainers.image.created="2025-12-09T03:05:43Z"
+LABEL org.opencontainers.image.created="2025-12-10T03:07:34Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5d82da46d0e8e8785bde19137a5c36f7947f0241"
+LABEL org.opencontainers.image.revision="4ad7d3ac6e968bdc0f3febe2923d0248bbf0e050"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

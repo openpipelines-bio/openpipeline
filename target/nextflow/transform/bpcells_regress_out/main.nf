@@ -3323,10 +3323,16 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "rocker/r2u:22.04",
+      "image" : "rocker/r2u:24.04",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
+        {
+          "type" : "docker",
+          "env" : [
+            "PIP_BREAK_SYSTEM_PACKAGES=1"
+          ]
+        },
         {
           "type" : "docker",
           "run" : [
@@ -3364,13 +3370,10 @@ meta = [
         },
         {
           "type" : "python",
-          "user" : false,
+          "user" : true,
           "packages" : [
-            "anndata~=0.11.1",
-            "mudata~=0.3.1"
-          ],
-          "script" : [
-            "exec(\\"try:\\\\n  import awkward\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  exit(1)\\")"
+            "anndata~=0.12.6",
+            "mudata~=0.3.2"
           ],
           "upgrade" : true
         }
@@ -3403,7 +3406,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/bpcells_regress_out",
     "viash_version" : "0.9.4",
-    "git_commit" : "5d82da46d0e8e8785bde19137a5c36f7947f0241",
+    "git_commit" : "4ad7d3ac6e968bdc0f3febe2923d0248bbf0e050",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -446,21 +446,20 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM python:3.10-slim
+FROM python:3.13-slim
 ENTRYPOINT []
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y procps && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.11.1" "mudata~=0.3.1" "scanpy~=1.10.4" && \
-  python -c 'exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")'
+  pip install --upgrade --no-cache-dir "anndata~=0.12.6" "mudata~=0.3.2" "scanpy~=1.10.4"
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component transform regress_out"
-LABEL org.opencontainers.image.created="2025-12-09T03:05:38Z"
+LABEL org.opencontainers.image.created="2025-12-10T03:07:29Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5d82da46d0e8e8785bde19137a5c36f7947f0241"
+LABEL org.opencontainers.image.revision="4ad7d3ac6e968bdc0f3febe2923d0248bbf0e050"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

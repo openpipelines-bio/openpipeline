@@ -3252,7 +3252,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.10-slim",
+      "image" : "python:3.13-slim",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3285,7 +3285,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_star_reference",
     "viash_version" : "0.9.4",
-    "git_commit" : "5d82da46d0e8e8785bde19137a5c36f7947f0241",
+    "git_commit" : "4ad7d3ac6e968bdc0f3febe2923d0248bbf0e050",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
