@@ -8,37 +8,16 @@ workflow run_wf {
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
-    | normalize_total.run(
-      fromState: { id, state ->
-        [
-          "input": state.input,
-          "input_layer": state.layer, 
-          "output_layer": "normalized",
-          "modality": state.modality
-        ]
-      },
-      toState: ["input": "output"],
-    )
-    | log1p.run( 
-      fromState: { id, state ->
-        [
-          "input": state.input,
-          "output_layer": "log_normalized",
-          "input_layer": "normalized",
-          "modality": state.modality
-        ]
-      },
-      toState: ["input": "output"]
-    )
-    | delete_layer.run(
-      fromState: {id, state -> 
-        [
-          "input": state.input,
-          "layer": "normalized",
-          "modality": state.modality
-        ]
-      },
-      toState: ["input": "output"]
+    | log_normalize.run(
+      args: ["output_layer": "log_normalized"],
+      fromState: [
+        "input": "input",
+        "layer": "layer",
+        "modality": "modality"
+      ],
+      toState: [
+        "input": "output"
+      ]
     )
     | scale.run(
       runIf: {id, state -> state.enable_scaling},

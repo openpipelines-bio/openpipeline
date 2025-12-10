@@ -84,7 +84,9 @@ def main():
         adata_subset = adata.copy()
 
     # Sanitize gene names and set as index of the AnnData object
-    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
+    adata_subset = set_var_index(
+        adata_subset, par["var_gene_names"], par["sanitize_ensembl_ids"]
+    )
 
     check_validity_anndata(
         adata_subset,

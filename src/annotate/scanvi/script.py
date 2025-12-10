@@ -50,7 +50,9 @@ def main():
         adata_subset = adata.copy()
 
     # Sanitize gene names and set as index of the AnnData object
-    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
+    adata_subset = set_var_index(
+        adata_subset, par["var_gene_names"], par["sanitize_ensembl_ids"]
+    )
 
     logger.info(f"Loading pre-trained scVI model from {par['scvi_model']}")
     scvi_model = scvi.model.SCVI.load(

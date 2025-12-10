@@ -100,12 +100,16 @@ def test_split(
     # modality followed by a colon and the name of the key (in the global .var).
     replace_regex = r"(^mod1:|^mod2:)"
     expected_var_keys = {
-        re.sub(replace_regex, "", col_name) for col_name in input_h5mu.var_keys()
+        re.sub(replace_regex, "", col_name)
+        for col_name in input_h5mu.var.columns.tolist()
     }
-    assert set(mod1.var_keys()) | set(mod2.var_keys()) == expected_var_keys
+    assert (
+        set(mod1.var.columns.tolist()) | set(mod2.var.columns.tolist())
+        == expected_var_keys
+    )
 
-    assert set(mod1.var_keys()) == set(input_h5mu.mod["mod1"].var.columns)
-    assert set(mod2.var_keys()) == set(input_h5mu.mod["mod2"].var.columns)
+    assert set(mod1.var.columns.tolist()) == set(input_h5mu.mod["mod1"].var.columns)
+    assert set(mod2.var.columns.tolist()) == set(input_h5mu.mod["mod2"].var.columns)
 
     expected_csv_output = dedent(
         f"""\

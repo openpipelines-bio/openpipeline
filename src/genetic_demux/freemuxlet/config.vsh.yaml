@@ -104,7 +104,7 @@ test_resources:
 
 engines:
 - type: docker
-  image: ubuntu:22.04
+  image: ubuntu:24.04
   setup:
   - type: docker
     copy: ["freemuxlet.patch /opt/freemuxlet.patch"]

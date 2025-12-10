@@ -386,12 +386,12 @@ def test_concat_different_var_columns_per_sample(
     output_path = random_h5mu_path()
     # Before removing the 'Shared_feat' column from one of the samples,
     # check if they are present in both
-    assert "Shared_feat" in sample_1_h5mu.var_keys()
-    assert "Shared_feat" in sample_2_h5mu.var_keys()
+    assert "Shared_feat" in sample_1_h5mu.var.columns.to_list()
+    assert "Shared_feat" in sample_2_h5mu.var.columns.to_list()
 
     sample_2_h5mu = remove_annotation_column(sample_2_h5mu, ["Shared_feat"], axis="var")
-    assert "Shared_feat" in sample_1_h5mu.var_keys()
-    assert "Shared_feat" not in sample_2_h5mu.var_keys()
+    assert "Shared_feat" in sample_1_h5mu.var.columns.to_list()
+    assert "Shared_feat" not in sample_2_h5mu.var.columns.to_list()
 
     # 'Shared_feat' column is not missing from sample2, which is what this test is about
     input_sample1_path = write_mudata_to_file(sample_1_h5mu)
@@ -430,8 +430,8 @@ def test_concat_different_var_columns_per_sample(
         sample2_original_mod = data_sample2.mod[mod_name]
 
         original_var_keys = set(
-            sample1_original_mod.var_keys()
-            + sample2_original_mod.var_keys()
+            sample1_original_mod.var.columns.to_list()
+            + sample2_original_mod.var.columns.to_list()
             + list(sample1_original_mod.varm.keys())
             + list(sample2_original_mod.varm.keys())
         )
@@ -506,8 +506,8 @@ def test_concat_different_columns_per_modality(
         data_sample1_mod = data_sample1.mod[mod_name]
         data_sample2_mod = data_sample2.mod[mod_name]
         original_var_keys = set(
-            data_sample1_mod.var_keys()
-            + data_sample2_mod.var_keys()
+            data_sample1_mod.var.columns.to_list()
+            + data_sample2_mod.var.columns.to_list()
             + list(data_sample2_mod.varm.keys())
             + list(data_sample1_mod.varm.keys())
         )
@@ -591,8 +591,8 @@ def test_concat_different_columns_per_modality_and_per_sample(
         data_sample1_mod = data_sample1.mod[mod_name]
         data_sample2_mod = data_sample2.mod[mod_name]
         original_var_keys = set(
-            data_sample1_mod.var_keys()
-            + data_sample2_mod.var_keys()
+            data_sample1_mod.var.columns.to_list()
+            + data_sample2_mod.var.columns.to_list()
             + list(data_sample2_mod.varm.keys())
             + list(data_sample1_mod.varm.keys())
         )
@@ -600,7 +600,7 @@ def test_concat_different_columns_per_modality_and_per_sample(
         assert original_var_keys == set(
             column_name.removeprefix("conflict_")
             for column_name in concatenated_mod.varm.keys()
-        ) | set(concatenated_mod.var.columns.tolist())
+        ) | set(concatenated_mod.var.columns.to_list())
 
     assert "Shared_feat" in concatenated_data.mod["mod2"].var.columns
 
@@ -1038,7 +1038,8 @@ def test_mode_move(
             list(sample_1_mod.varm.keys()) + list(sample_2_mod.varm.keys())
         )
         original_var_keys = (
-            set(sample_1_mod.var_keys() + sample_2_mod.var_keys()) | original_varm_keys
+            set(sample_1_mod.var.columns.to_list() + sample_2_mod.var.columns.to_list())
+            | original_varm_keys
         )
 
         assert original_var_keys == set(

@@ -1,12 +1,12 @@
-# openpipeline x.x.x
+# openpipelines 4.0.0
 
-## BREAKING
+## BREAKING CHANGES
+
+* Removed `cellbender_remove_background_v0_2` (PR #1111).
 
 * `workflows/annotation/totalvi_scarches_leiden` and `annotate/totalvi_scarches`: Renamed previously implemented versions of `workflows/annotation/totalvi_leiden` and `annotate/totalvi` to reflect that scArches is used for reference mapping with TotalVI (PR #1092).
 
 * `workflows/annotation/totalvi_leiden` and `annotate/totalvi`: Added new workflows and components for cell type annotation using TotalVI integration followed by Leiden clustering, without scArches reference mapping (PR #1092).
-
-# openpipelines 3.1.0
 
 ## NEW FUNCTIONALITY
 
@@ -15,6 +15,12 @@
 * `filter/delimit_counts`: Turns an .obs column of a MuData file containing count data into a boolean column based on thresholds (PR #1069)
 
 * `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078, #1079, #1082).
+
+* `annotate/celltypist`: Enable CUDA acceleration for CellTypist annotation (PR #1091).
+
+* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083).
+
+* `workflows/integration/harmony_leiden`: add support for adding the output slots to a tileDB-SOMA database (PR #1095).
 
 ## EXPERIMENTAL
 
@@ -27,6 +33,8 @@
 * Deprecated all scGPT functionality (PR #1075).
 
 * Added `from_tiledb_to_h5mu` component (PR #1068).
+
+* `workflows/integration/scvi_leiden`: add support for adding the output slots to a tileDB-SOMA database (PR 1094).
 
 ## MAJOR CHANGES
 
@@ -42,10 +50,19 @@
   
 * `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
 
+* Various components and workflows in `integrate`, `annotate`, `workflows/integration` and `workflows/annotation`: Optionally disable ensembl id sanitation (by stripping the version number) using the `--sanitize_ensembl_ids` argument (PR #1084).
+
+* `genetic_demux/scsplit`: bump python to `3.13` and unpin pandas and numpy (were pinned to `<2.0` and `<2` respectively) (PR #1096).
+
+* Bump `anndata` to `0.12.6` and mudata to `0.3.2` (PR #1111).
 
 ## BUG FIXES
 
+* `differential_expression/create_pseudobulks`: Fixed the check to verify that the raw counts layer was passed (PR #1072).
+
 * `filter/filter_with_counts`: this component would sometimes crash (segfault) when processing malformatted sparse matrices. A proper error message is now provided in this case (PR #1086).
+
+* `cluster/leiden`: fix an issue where using an input modality with missing`.X` caused `KeyError` (`Unable to synchronously open object`) (PR #1093).
 
 # openpipelines 3.0.0
 

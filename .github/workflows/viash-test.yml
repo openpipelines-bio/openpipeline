@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Install Python
@@ -42,7 +42,7 @@ jobs:
       dest_paths: ${{ steps.cache.outputs.dest_paths }}
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0 
 
@@ -55,6 +55,9 @@ jobs:
       run: |
         LANG=C viash ns list > /dev/null
         JAVA_TOOL_OPTIONS=-Dfile.encoding=ascii viash ns build --parallel > /dev/null
+
+    # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
+    - uses: data-intuitive/reclaim-the-bytes@v2
 
     - uses: viash-io/viash-actions/project/sync-and-cache@v6
       id: cache
@@ -87,7 +90,7 @@ jobs:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v2
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - uses: viash-io/viash-actions/setup@v6
     - uses: viash-io/viash-actions/project/update-docker-engine@v6
@@ -134,6 +137,15 @@ jobs:
     - name: Run test
       timeout-minutes: 40
       run: |
+        docker() {
+          if [[ $1 == build ]]; then
+              shift
+              command docker build --secret id=GITHUB_TOKEN "$@"
+          else
+              command docker "$@"
+          fi
+        }
+        export docker
         viash test \
           "${{ matrix.component.config }}" \
           --cpus 4 \
