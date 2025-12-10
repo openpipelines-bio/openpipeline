@@ -50,9 +50,26 @@ arguments:
       Name of the .obsm key under which to add the cluster labels.
       The name of the columns in the matrix will correspond to the resolutions.
     default: "leiden"
-
-    # todo: add uns_params
-    # example: uns["leiden"] = {'params': {'n_iterations': -1, 'random_state': 0, 'resolution': 1.0}}
+  - name: --flavor
+    type: string
+    description: |
+          Which package's implementation to use.
+    choices: ["leidenalg", "igraph"]
+    default: "leidenalg"
+  - name: "--n_iterations"
+    required: false
+    type: integer
+    min: 1
+    description: |
+      How many iterations of the Leiden clustering algorithm to perform.
+      When defined, positive values above 2 define the total number of iterations to perform.
+      When not set, the algorithm will run until it reaches its optimal clustering.
+  - name: "--seed"
+    required: false
+    type: integer
+    description: |
+      Fix the initialization of the optimization. Can be used to increase reproducibility.
+    min: 0
 
   # arguments
   - name: "--resolution"

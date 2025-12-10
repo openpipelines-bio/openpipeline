@@ -2,7 +2,7 @@ name: pca
 namespace: "dimred"
 scope: "public"
 description: |
-  Computes PCA coordinates, loadings and variance decomposition. Uses the implementation of scikit-learn [Pedregosa11].
+  Computes PCA coordinates, loadings and variance decomposition. 
 authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
     roles: [ maintainer ]
@@ -33,6 +33,26 @@ arguments:
     description: Column name in .var matrix that will be used to select which genes to run the PCA on.
     example: filter_with_hvg
 
+  - name: "--chunked"
+    type: boolean_true
+    description: |
+      If True, perform an incremental PCA on segments of a predefined size. Setting this flag automatically implies zero centering.
+      Must be specified together with --chunk_size.
+
+  - name: "--chunk_size"
+    type: integer
+    min: 2
+    required: false
+    description: |
+      Number of observations to include in each chunk. Required if chunked=True was passed.
+
+  - name: "--seed"
+    type: integer
+    min: 0
+    required: false
+    description: |
+      Used to set the initial states for the optimization. 
+    
   # outputs
   - name: "--output"
     alternatives: ["-o"]
@@ -88,9 +108,7 @@ engines:
         - procps
     - type: python
       __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
-  test_setup:
-    - type: python
-      __merge__: [ /src/base/requirements/viashpy.yaml, .]
+  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 
 runners:
 - type: executable

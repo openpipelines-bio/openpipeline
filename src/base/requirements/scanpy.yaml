@@ -1,2 +1,2 @@
 packages:
-  - scanpy~=1.10.4
+  - scanpy~=1.11.4
