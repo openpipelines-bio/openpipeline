@@ -64,7 +64,6 @@ def main(par):
     input_modality = set_var_index(
         input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
     )
-
     ## Fetch lognormalized counts
     lognorm_counts = (
         input_modality.layers[par["input_layer"]].copy()
