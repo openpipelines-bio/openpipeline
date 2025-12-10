@@ -59,17 +59,6 @@ h5mu_to_h5ad <- function(h5mu_path, modality_name) {
   tmp_path
 }
 
-# Check if expression data is normalized (row sums =~ 1)
-is_normalized <- function(layer) {
-  row_sums <- if (is(layer, "sparseMatrix") || is(layer, "dgCMatrix")) {
-    Matrix::rowSums(layer)
-  } else {
-    rowSums(layer)
-  }
-
-  all(abs(row_sums - 1) < 1e-6, na.rm = TRUE)
-}
-
 # Extract design factors from formula
 parse_design_formula <- function(design_formula) {
   if (!grepl("^~\\s*\\w+(\\s*\\+\\s*\\w+)*$", design_formula)) {
@@ -93,7 +82,8 @@ parse_design_formula <- function(design_formula) {
 
 # Validate and prepare contrast specifications
 prepare_contrast_matrix <- function(
-    design_factors, contrast_column, metadata) {
+  design_factors, contrast_column, metadata
+) {
   # Validate required columns exist
   required_columns <- unique(c(design_factors, contrast_column))
   missing_columns <- setdiff(required_columns, colnames(metadata))
@@ -260,7 +250,8 @@ deseq2_analysis <- function(dds, contrast_specs) {
 
 # Save results and print summary statistics
 save_results_and_log_summary <- function(
-    results, output_file, cell_group = NULL) {
+  results, output_file, cell_group = NULL
+) {
   group_text <- if (!is.null(cell_group)) paste(" for", cell_group) else ""
   cat("Saving results", group_text, "to", output_file, "\n")
 
@@ -291,10 +282,6 @@ main <- function() {
     mod$layers[[par$input_layer]]
   } else {
     mod$X
-  }
-
-  if (is_normalized(layer)) {
-    stop("Input layer must contain raw counts.")
   }
 
   # Prepare analysis components

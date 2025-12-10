@@ -100,5 +100,35 @@ def test_leiden_custom_connectivities_key(
     )
 
 
+def test_leiden_no_x_layer(input_data, run_component, random_h5mu_path):
+    """
+    On some anndata versions, setting X to `None` would cause
+    KeyError: "Unable to synchronously open object (object 'X' doesn't exist)"
+    """
+    output_path = random_h5mu_path()
+    mudata_no_x = random_h5mu_path()
+    del input_data["rna"].X
+    input_data.write(mudata_no_x)
+    run_component(
+        [
+            "--input",
+            mudata_no_x,
+            "--resolution",
+            "1;0.25",
+            "--output",
+            output_path,
+        ]
+    )
+    assert output_path.exists(), "No output was created."
+    data = mu.read_h5mu(output_path)
+    # check whether leiden.custom.resolution was found
+    assert "1.0" in data.mod["rna"].obsm["leiden"].columns, (
+        "Output should contain resolution 1.0."
+    )
+    assert "0.25" in data.mod["rna"].obsm["leiden"].columns, (
+        "Output should contain resolution 0.25."
+    )
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-v"]))

@@ -4,11 +4,12 @@ import scvi
 
 ### VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+    "input": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "modality": "rna",
     "input_layer": None,
-    "obs_batch": "sample_id",
+    "obs_batch": "donor_id",
     "var_input": None,
+    "var_gene_names": "ensemblid",
     "output": "foo.h5mu",
     "obsm_output": "X_scvi_integrated",
     "early_stopping": True,
@@ -18,11 +19,26 @@ par = {
     "reduce_lr_on_plateau": True,
     "lr_factor": 0.6,
     "lr_patience": 30,
-    "max_epochs": 500,
+    "max_epochs": 5,
     "n_obs_min_count": 10,
     "n_var_min_count": 10,
     "output_model": "test/",
     "output_compression": "gzip",
+    "obs_categorical_covariate": ["assay", "donor_assay"],
+    "obs_continuous_covariate": [],
+    "obs_size_factor": None,
+    "obs_labels": None,
+    "n_hidden_nodes": 128,
+    "n_dimensions_latent_space": 30,
+    "n_hidden_layers": 2,
+    "dropout_rate": 0.1,
+    "dispersion": "gene",
+    "gene_likelihood": "nb",
+    "use_layer_normalization": "both",
+    "use_batch_normalization": "none",
+    "encode_covariates": True,
+    "deeply_inject_covariates": False,
+    "use_observed_lib_size": False,
 }
 
 meta = {"resources_dir": "src/utils"}
@@ -68,7 +84,9 @@ def main():
         adata_subset = adata.copy()
 
     # Sanitize gene names and set as index of the AnnData object
-    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
+    adata_subset = set_var_index(
+        adata_subset, par["var_gene_names"], par["sanitize_ensembl_ids"]
+    )
 
     check_validity_anndata(
         adata_subset,

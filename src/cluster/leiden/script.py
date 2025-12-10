@@ -4,6 +4,7 @@ import os
 import time
 import logging
 import logging.handlers
+import h5py
 import mudata as mu
 import pandas as pd
 import scanpy as sc
@@ -318,7 +319,8 @@ def main():
             logger.info("Waiting for shutdown of processes")
             executor.shutdown()
             logger.info("Executor shut down.")
-        adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
+        del adata
+        results = pd.DataFrame(results)
 
         output_file = Path(par["output"])
         logger.info("Writing output to %s.", par["output"])
@@ -328,9 +330,11 @@ def main():
             else output_file
         )
         shutil.copyfile(par["input"], output_file_uncompressed)
-        mu.write_h5ad(
-            filename=output_file_uncompressed, mod=par["modality"], data=adata
-        )
+        logger.info("Opening %s", output_file_uncompressed)
+        with h5py.File(output_file_uncompressed, "a") as storage:
+            group_path = f"/mod/{par['modality']}/obsm/{par['obsm_name']}"
+            logger.info("Adding output to %s", group_path)
+            ad.io.write_elem(storage, k=group_path, elem=results)
         if par["output_compression"]:
             compress_h5mu(
                 output_file_uncompressed,
