@@ -3287,6 +3287,18 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--sanitize_ensembl_ids",
+          "description" : "Whether to sanitize ensembl ids by removing version numbers.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3584,7 +3596,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/singler",
     "viash_version" : "0.9.4",
-    "git_commit" : "4ad7d3ac6e968bdc0f3febe2923d0248bbf0e050",
+    "git_commit" : "173559f79143233a33eda37899c49f68114015f6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3669,6 +3681,7 @@ par <- list(
   "fine_tune" = $( if [ ! -z ${VIASH_PAR_FINE_TUNE+x} ]; then echo -n "as.logical(toupper('"; echo -n "$VIASH_PAR_FINE_TUNE" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'))"; else echo NULL; fi ),
   "fine_tuning_threshold" = $( if [ ! -z ${VIASH_PAR_FINE_TUNING_THRESHOLD+x} ]; then echo -n "as.numeric('"; echo -n "$VIASH_PAR_FINE_TUNING_THRESHOLD" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "')"; else echo NULL; fi ),
   "prune" = $( if [ ! -z ${VIASH_PAR_PRUNE+x} ]; then echo -n "as.logical(toupper('"; echo -n "$VIASH_PAR_PRUNE" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'))"; else echo NULL; fi ),
+  "sanitize_ensembl_ids" = $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo -n "as.logical(toupper('"; echo -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'))"; else echo NULL; fi ),
   "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
   "output_obs_predictions" = $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT_OBS_PREDICTIONS" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
   "output_obs_probability" = $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PROBABILITY+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT_OBS_PROBABILITY" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
@@ -3732,21 +3745,31 @@ get_layer <- function(adata, layer, var_gene_names) {
   }
 
   # Set matrix dimnames
-  input_gene_names <- sanitize_gene_names(adata, var_gene_names)
+  input_gene_names <- sanitize_ensembl_ids(adata, var_gene_names)
   dimnames(data) <- list(adata\\$obs_names, input_gene_names)
 
   # return output
   data
 }
 
-sanitize_gene_names <- function(adata, gene_symbol = NULL) {
+sanitize_ensembl_ids <- function(adata, gene_symbol = NULL) {
   if (is.null(gene_symbol)) {
     gene_names <- adata\\$var_names
   } else {
     gene_names <- adata\\$var[[gene_symbol]]
   }
-  # Remove version numbers (dot followed by digits at end of string)
-  sanitized <- gsub("\\\\\\\\.[0-9]+\\$", "", gene_names)
+
+  # Pattern matches Ensembl IDs: starts with ENS, followed by any characters,
+  # then an eleven digit number, optionally followed by .version_number
+  ensembl_pattern <- "^(ENS.*\\\\\\\\d{11})(?:\\\\\\\\.\\\\\\\\d+)?\\$"
+
+  # Remove version numbers for ensembl ids only
+  sanitized <- ifelse(
+    grepl(ensembl_pattern, gene_names, perl = TRUE),
+    gsub(ensembl_pattern, "\\\\\\\\1", gene_names, perl = TRUE),
+    as.character(gene_names)
+  )
+
   sanitized
 }
 

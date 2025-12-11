@@ -466,9 +466,9 @@ RUN pip install --user --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate singler"
-LABEL org.opencontainers.image.created="2025-12-10T03:07:32Z"
+LABEL org.opencontainers.image.created="2025-12-11T03:07:25Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4ad7d3ac6e968bdc0f3febe2923d0248bbf0e050"
+LABEL org.opencontainers.image.revision="173559f79143233a33eda37899c49f68114015f6"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -713,6 +713,11 @@ function ViashHelp {
   echo "        with NA's. Labels are considered 'low-quality' when their delta score"
   echo "        (stored in \`--output_obs_delta_next\`) fall more than 3 median absolute"
   echo "        deviations below the median for that label type."
+  echo ""
+  echo "    --sanitize_ensembl_ids"
+  echo "        type: boolean"
+  echo "        default: true"
+  echo "        Whether to sanitize ensembl ids by removing version numbers."
   echo ""
   echo "Outputs:"
   echo "    Output arguments."
@@ -1001,6 +1006,17 @@ while [[ $# -gt 0 ]]; do
         --prune=*)
             [ -n "$VIASH_PAR_PRUNE" ] && ViashError Bad arguments for option \'--prune=*\': \'$VIASH_PAR_PRUNE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_PRUNE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --sanitize_ensembl_ids)
+            [ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ] && ViashError Bad arguments for option \'--sanitize_ensembl_ids\': \'$VIASH_PAR_SANITIZE_ENSEMBL_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SANITIZE_ENSEMBL_IDS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --sanitize_ensembl_ids. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --sanitize_ensembl_ids=*)
+            [ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ] && ViashError Bad arguments for option \'--sanitize_ensembl_ids=*\': \'$VIASH_PAR_SANITIZE_ENSEMBL_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SANITIZE_ENSEMBL_IDS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -1309,6 +1325,9 @@ fi
 if [ -z ${VIASH_PAR_PRUNE+x} ]; then
   VIASH_PAR_PRUNE="true"
 fi
+if [ -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then
+  VIASH_PAR_SANITIZE_ENSEMBL_IDS="true"
+fi
 if [ -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then
   VIASH_PAR_OUTPUT_OBS_PREDICTIONS="singler_pred"
 fi
@@ -1403,6 +1422,12 @@ fi
 if [[ -n "$VIASH_PAR_PRUNE" ]]; then
   if ! [[ "$VIASH_PAR_PRUNE" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
     ViashError '--prune' has to be a boolean. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ]]; then
+  if ! [[ "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--sanitize_ensembl_ids' has to be a boolean. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -1621,6 +1646,7 @@ par <- list(
   "fine_tune" = $( if [ ! -z ${VIASH_PAR_FINE_TUNE+x} ]; then echo -n "as.logical(toupper('"; echo -n "$VIASH_PAR_FINE_TUNE" | sed "s#['\\]#\\\\&#g"; echo "'))"; else echo NULL; fi ),
   "fine_tuning_threshold" = $( if [ ! -z ${VIASH_PAR_FINE_TUNING_THRESHOLD+x} ]; then echo -n "as.numeric('"; echo -n "$VIASH_PAR_FINE_TUNING_THRESHOLD" | sed "s#['\\]#\\\\&#g"; echo "')"; else echo NULL; fi ),
   "prune" = $( if [ ! -z ${VIASH_PAR_PRUNE+x} ]; then echo -n "as.logical(toupper('"; echo -n "$VIASH_PAR_PRUNE" | sed "s#['\\]#\\\\&#g"; echo "'))"; else echo NULL; fi ),
+  "sanitize_ensembl_ids" = $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo -n "as.logical(toupper('"; echo -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" | sed "s#['\\]#\\\\&#g"; echo "'))"; else echo NULL; fi ),
   "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi ),
   "output_obs_predictions" = $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT_OBS_PREDICTIONS" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi ),
   "output_obs_probability" = $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PROBABILITY+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT_OBS_PROBABILITY" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi ),
@@ -1684,21 +1710,31 @@ get_layer <- function(adata, layer, var_gene_names) {
   }
 
   # Set matrix dimnames
-  input_gene_names <- sanitize_gene_names(adata, var_gene_names)
+  input_gene_names <- sanitize_ensembl_ids(adata, var_gene_names)
   dimnames(data) <- list(adata\$obs_names, input_gene_names)
 
   # return output
   data
 }
 
-sanitize_gene_names <- function(adata, gene_symbol = NULL) {
+sanitize_ensembl_ids <- function(adata, gene_symbol = NULL) {
   if (is.null(gene_symbol)) {
     gene_names <- adata\$var_names
   } else {
     gene_names <- adata\$var[[gene_symbol]]
   }
-  # Remove version numbers (dot followed by digits at end of string)
-  sanitized <- gsub("\\\\.[0-9]+\$", "", gene_names)
+
+  # Pattern matches Ensembl IDs: starts with ENS, followed by any characters,
+  # then an eleven digit number, optionally followed by .version_number
+  ensembl_pattern <- "^(ENS.*\\\\d{11})(?:\\\\.\\\\d+)?\$"
+
+  # Remove version numbers for ensembl ids only
+  sanitized <- ifelse(
+    grepl(ensembl_pattern, gene_names, perl = TRUE),
+    gsub(ensembl_pattern, "\\\\1", gene_names, perl = TRUE),
+    as.character(gene_names)
+  )
+
   sanitized
 }
 

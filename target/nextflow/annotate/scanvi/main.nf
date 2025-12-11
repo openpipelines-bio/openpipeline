@@ -3174,6 +3174,18 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--sanitize_ensembl_ids",
+          "description" : "Whether to sanitize ensembl ids by removing version numbers.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3570,7 +3582,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/scanvi",
     "viash_version" : "0.9.4",
-    "git_commit" : "4ad7d3ac6e968bdc0f3febe2923d0248bbf0e050",
+    "git_commit" : "173559f79143233a33eda37899c49f68114015f6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3640,6 +3652,7 @@ par = {
   'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_labels': $( if [ ! -z ${VIASH_PAR_OBS_LABELS+x} ]; then echo "r'${VIASH_PAR_OBS_LABELS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'unlabeled_category': $( if [ ! -z ${VIASH_PAR_UNLABELED_CATEGORY+x} ]; then echo "r'${VIASH_PAR_UNLABELED_CATEGORY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'sanitize_ensembl_ids': $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo "r'${VIASH_PAR_SANITIZE_ENSEMBL_IDS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'scvi_model': $( if [ ! -z ${VIASH_PAR_SCVI_MODEL+x} ]; then echo "r'${VIASH_PAR_SCVI_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_model': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3705,7 +3718,9 @@ def main():
         adata_subset = adata.copy()
 
     # Sanitize gene names and set as index of the AnnData object
-    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
+    adata_subset = set_var_index(
+        adata_subset, par["var_gene_names"], par["sanitize_ensembl_ids"]
+    )
 
     logger.info(f"Loading pre-trained scVI model from {par['scvi_model']}")
     scvi_model = scvi.model.SCVI.load(

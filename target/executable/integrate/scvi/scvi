@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Malte D. Luecken, Dries Schaumont, Matthias Beyens"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scvi"
-LABEL org.opencontainers.image.created="2025-12-10T03:07:27Z"
+LABEL org.opencontainers.image.created="2025-12-11T03:07:19Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4ad7d3ac6e968bdc0f3febe2923d0248bbf0e050"
+LABEL org.opencontainers.image.revision="173559f79143233a33eda37899c49f68114015f6"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -644,6 +644,11 @@ function ViashHelp {
   echo "        Thus, these should not be"
   echo "        used for biologically-relevant factors that you do _not_ want to correct"
   echo "        for."
+  echo ""
+  echo "    --sanitize_ensembl_ids"
+  echo "        type: boolean"
+  echo "        default: true"
+  echo "        Whether to sanitize ensembl ids by removing version numbers."
   echo ""
   echo "Outputs:"
   echo "    -o, --output"
@@ -979,6 +984,17 @@ while [[ $# -gt 0 ]]; do
             else
               VIASH_PAR_OBS_CONTINUOUS_COVARIATE="$VIASH_PAR_OBS_CONTINUOUS_COVARIATE;"$(ViashRemoveFlags "$1")
             fi
+            shift 1
+            ;;
+        --sanitize_ensembl_ids)
+            [ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ] && ViashError Bad arguments for option \'--sanitize_ensembl_ids\': \'$VIASH_PAR_SANITIZE_ENSEMBL_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SANITIZE_ENSEMBL_IDS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --sanitize_ensembl_ids. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --sanitize_ensembl_ids=*)
+            [ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ] && ViashError Bad arguments for option \'--sanitize_ensembl_ids=*\': \'$VIASH_PAR_SANITIZE_ENSEMBL_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SANITIZE_ENSEMBL_IDS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -1454,6 +1470,9 @@ fi
 if [ -z ${VIASH_PAR_OBS_BATCH+x} ]; then
   VIASH_PAR_OBS_BATCH="sample_id"
 fi
+if [ -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then
+  VIASH_PAR_SANITIZE_ENSEMBL_IDS="true"
+fi
 if [ -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then
   VIASH_PAR_OBSM_OUTPUT="X_scvi_integrated"
 fi
@@ -1522,6 +1541,12 @@ if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
 fi
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ]]; then
+  if ! [[ "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--sanitize_ensembl_ids' has to be a boolean. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_PAR_N_HIDDEN_NODES" ]]; then
   if ! [[ "$VIASH_PAR_N_HIDDEN_NODES" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError '--n_hidden_nodes' has to be an integer. Use "--help" to get more information on the parameters.
@@ -1916,6 +1941,7 @@ par = {
   'obs_size_factor': $( if [ ! -z ${VIASH_PAR_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_OBS_SIZE_FACTOR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_categorical_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CATEGORICAL_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CATEGORICAL_COVARIATE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CONTINUOUS_COVARIATE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'sanitize_ensembl_ids': $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo "r'${VIASH_PAR_SANITIZE_ENSEMBL_IDS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_model': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -2008,7 +2034,9 @@ def main():
         adata_subset = adata.copy()
 
     # Sanitize gene names and set as index of the AnnData object
-    adata_subset = set_var_index(adata_subset, par["var_gene_names"])
+    adata_subset = set_var_index(
+        adata_subset, par["var_gene_names"], par["sanitize_ensembl_ids"]
+    )
 
     check_validity_anndata(
         adata_subset,

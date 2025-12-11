@@ -454,9 +454,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov, Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scarches"
-LABEL org.opencontainers.image.created="2025-12-10T03:07:27Z"
+LABEL org.opencontainers.image.created="2025-12-11T03:07:20Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4ad7d3ac6e968bdc0f3febe2923d0248bbf0e050"
+LABEL org.opencontainers.image.revision="173559f79143233a33eda37899c49f68114015f6"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -637,6 +637,11 @@ function ViashHelp {
   echo "        for."
   echo "        Important: the order of the continuous covariates matters and should"
   echo "        match the order of the covariates in the trained reference model."
+  echo ""
+  echo "    --sanitize_ensembl_ids"
+  echo "        type: boolean"
+  echo "        default: true"
+  echo "        Whether to sanitize ensembl ids by removing version numbers."
   echo ""
   echo "Reference:"
   echo "    -r, --reference"
@@ -901,6 +906,17 @@ while [[ $# -gt 0 ]]; do
             else
               VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE="$VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE;"$(ViashRemoveFlags "$1")
             fi
+            shift 1
+            ;;
+        --sanitize_ensembl_ids)
+            [ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ] && ViashError Bad arguments for option \'--sanitize_ensembl_ids\': \'$VIASH_PAR_SANITIZE_ENSEMBL_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SANITIZE_ENSEMBL_IDS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --sanitize_ensembl_ids. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --sanitize_ensembl_ids=*)
+            [ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ] && ViashError Bad arguments for option \'--sanitize_ensembl_ids=*\': \'$VIASH_PAR_SANITIZE_ENSEMBL_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SANITIZE_ENSEMBL_IDS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --reference)
@@ -1302,6 +1318,9 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
+if [ -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then
+  VIASH_PAR_SANITIZE_ENSEMBL_IDS="true"
+fi
 if [ -z ${VIASH_PAR_MODEL_OUTPUT+x} ]; then
   VIASH_PAR_MODEL_OUTPUT="model"
 fi
@@ -1344,6 +1363,12 @@ if [ ! -z "$VIASH_PAR_REFERENCE" ] && [ ! -e "$VIASH_PAR_REFERENCE" ]; then
 fi
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" ]]; then
+  if ! [[ "$VIASH_PAR_SANITIZE_ENSEMBL_IDS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--sanitize_ensembl_ids' has to be a boolean. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_PAR_EARLY_STOPPING" ]]; then
   if ! [[ "$VIASH_PAR_EARLY_STOPPING" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
     ViashError '--early_stopping' has to be a boolean. Use "--help" to get more information on the parameters.
@@ -1646,6 +1671,7 @@ par = {
   'input_obs_size_factor': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_SIZE_FACTOR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_obs_categorical_covariate': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_CATEGORICAL_COVARIATE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'input_obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_CONTINUOUS_COVARIATE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'sanitize_ensembl_ids': $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo "r'${VIASH_PAR_SANITIZE_ENSEMBL_IDS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_class': $( if [ ! -z ${VIASH_PAR_REFERENCE_CLASS+x} ]; then echo "r'${VIASH_PAR_REFERENCE_CLASS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1783,7 +1809,9 @@ def _align_query_with_registry(adata_query, model_path):
 
     # Sanitize gene names and set as index of the AnnData object
     # all scArches VAE models expect gene names to be in the .var index
-    adata_query = set_var_index(adata_query, par["input_var_gene_names"])
+    adata_query = set_var_index(
+        adata_query, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
+    )
 
     # align layer
     query_layer = (

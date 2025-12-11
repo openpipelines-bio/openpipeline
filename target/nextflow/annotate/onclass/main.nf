@@ -3123,6 +3123,18 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--sanitize_ensembl_ids",
+          "description" : "Whether to sanitize ensembl ids by removing version numbers.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3509,7 +3521,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/onclass",
     "viash_version" : "0.9.4",
-    "git_commit" : "4ad7d3ac6e968bdc0f3febe2923d0248bbf0e050",
+    "git_commit" : "173559f79143233a33eda37899c49f68114015f6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3581,6 +3593,7 @@ par = {
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_reference_gene_overlap': $( if [ ! -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then echo "int(r'${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'sanitize_ensembl_ids': $( if [ ! -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then echo "r'${VIASH_PAR_SANITIZE_ENSEMBL_IDS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'cl_nlp_emb_file': $( if [ ! -z ${VIASH_PAR_CL_NLP_EMB_FILE+x} ]; then echo "r'${VIASH_PAR_CL_NLP_EMB_FILE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'cl_ontology_file': $( if [ ! -z ${VIASH_PAR_CL_ONTOLOGY_FILE+x} ]; then echo "r'${VIASH_PAR_CL_ONTOLOGY_FILE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'cl_obo_file': $( if [ ! -z ${VIASH_PAR_CL_OBO_FILE+x} ]; then echo "r'${VIASH_PAR_CL_OBO_FILE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3712,7 +3725,9 @@ def main():
     input_modality = input_adata.copy()
 
     # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
-    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
+    input_modality = set_var_index(
+        input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
+    )
     input_matrix = (
         input_modality.layers[par["input_layer"]]
         if par["input_layer"]
@@ -3745,7 +3760,9 @@ def main():
         reference_mudata = mu.read_h5mu(par["reference"])
         reference_modality = reference_mudata.mod[par["modality"]].copy()
         reference_modality = set_var_index(
-            reference_modality, par["reference_var_gene_names"]
+            reference_modality,
+            par["reference_var_gene_names"],
+            par["sanitize_ensembl_ids"],
         )
 
         # subset to HVG if required
