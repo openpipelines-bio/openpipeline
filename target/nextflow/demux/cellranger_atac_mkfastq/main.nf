@@ -3322,7 +3322,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/cellranger_atac_mkfastq",
     "viash_version" : "0.9.4",
-    "git_commit" : "173559f79143233a33eda37899c49f68114015f6",
+    "git_commit" : "d40de65073b3ef3bd1379dbb6afb1b76e7d65201",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
