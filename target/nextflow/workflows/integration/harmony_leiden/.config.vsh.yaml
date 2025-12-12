@@ -1,0 +1,412 @@
+name: "harmony_leiden"
+namespace: "workflows/integration"
+version: "celltypist_build"
+authors:
+- name: "Dries Schaumont"
+  roles:
+  - "author"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "dries@data-intuitive.com"
+      github: "DriesSchaumont"
+      orcid: "0000-0002-4389-0440"
+      linkedin: "dries-schaumont"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Scientist"
+argument_groups:
+- name: "Inputs"
+  arguments:
+  - type: "file"
+    name: "--input"
+    description: "Path to the sample. Mutually exclusive with the 'input_uri' argument."
+    info: null
+    example:
+    - "dataset.h5mu"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--tiledb_input_uri"
+    description: "A URI containing the TileDB-SOMA objects. Mutually exclusive with\
+      \ the 'input' argument."
+    info: null
+    example:
+    - "s3://bucket/path"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--tiledb_s3_region"
+    description: "Region where the TileDB-SOMA database is hosted.\n"
+    info: null
+    example:
+    - "us-west-2"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--tiledb_endpoint"
+    description: "Custom endpoint to use to connect to S3\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--tiledb_s3_no_sign_request"
+    description: "Do not sign S3 requests. Credentials will not be loaded if this\
+      \ argument is provided.\n"
+    info: null
+    default:
+    - false
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Input slots"
+  arguments:
+  - type: "string"
+    name: "--layer"
+    description: "use specified layer for expression values instead of the .X object\
+      \ from the modality."
+    info: null
+    default:
+    - "log_normalized"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--modality"
+    description: "Which modality to process."
+    info: null
+    default:
+    - "rna"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Outputs"
+  arguments:
+  - type: "file"
+    name: "--output"
+    description: "Destination path to the output."
+    info: null
+    example:
+    - "output.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_tiledb"
+    description: "Output the TileDB database to the specified directory instead of\
+      \ adding it to the existing database.\n"
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+- name: "Neighbour calculation"
+  arguments:
+  - type: "string"
+    name: "--uns_neighbors"
+    description: "In which .uns slot to store various neighbor output objects."
+    info: null
+    default:
+    - "harmonypy_integration_neighbors"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obsp_neighbor_distances"
+    description: "In which .obsp slot to store the distance matrix between the resulting\
+      \ neighbors."
+    info: null
+    default:
+    - "harmonypy_integration_distances"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obsp_neighbor_connectivities"
+    description: "In which .obsp slot to store the connectivities matrix between the\
+      \ resulting neighbors."
+    info: null
+    default:
+    - "harmonypy_integration_connectivities"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Harmony integration options"
+  arguments:
+  - type: "string"
+    name: "--embedding"
+    description: "Embedding to use as input"
+    info: null
+    default:
+    - "X_pca"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obsm_integrated"
+    description: "In which .obsm slot to store the resulting integrated embedding."
+    info: null
+    default:
+    - "X_pca_integrated"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_covariates"
+    description: "The .obs field(s) that define the covariate(s) to regress out."
+    info: null
+    example:
+    - "batch"
+    - "sample"
+    required: true
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "double"
+    name: "--theta"
+    description: "Diversity clustering penalty parameter. Can be set as a single value\
+      \ for all batch observations or as multiple values, one for each observation\
+      \ in the batches defined by --obs_covariates. theta=0 does not encourage any\
+      \ diversity. Larger values of theta\nresult in more diverse clusters.\"\n"
+    info: null
+    default:
+    - 2.0
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "Clustering options"
+  arguments:
+  - type: "string"
+    name: "--obs_cluster"
+    description: "Prefix for the .obs keys under which to add the cluster labels.\
+      \ Newly created columns in .obs will \nbe created from the specified value for\
+      \ '--obs_cluster' suffixed with an underscore and one of the resolutions\nresolutions\
+      \ specified in '--leiden_resolution'.\n"
+    info: null
+    default:
+    - "harmony_integration_leiden"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--leiden_resolution"
+    description: "Control the coarseness of the clustering. Higher values lead to\
+      \ more clusters."
+    info: null
+    default:
+    - 1.0
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "Umap options"
+  arguments:
+  - type: "string"
+    name: "--obsm_umap"
+    description: "In which .obsm slot to store the resulting UMAP embedding."
+    info: null
+    default:
+    - "X_leiden_harmony_umap"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "nextflow_script"
+  path: "main.nf"
+  is_executable: true
+  entrypoint: "run_wf"
+- type: "file"
+  path: "utils"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Run harmony integration followed by neighbour calculations, leiden clustering\
+  \ and run umap on the result."
+test_resources:
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf"
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_tiledb_wf"
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf2"
+- type: "file"
+  path: "pbmc_1k_protein_v3"
+info: null
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+dependencies:
+- name: "integrate/harmonypy"
+  repository:
+    type: "local"
+- name: "workflows/multiomics/neighbors_leiden_umap"
+  repository:
+    type: "local"
+- name: "convert/from_tiledb_to_h5mu"
+  repository:
+    type: "local"
+- name: "tiledb/move_mudata_obsm_to_tiledb"
+  repository:
+    type: "local"
+- name: "tiledb/move_mudata_obs_to_tiledb"
+  repository:
+    type: "local"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+build_info:
+  config: "src/workflows/integration/harmony_leiden/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "native"
+  output: "target/nextflow/workflows/integration/harmony_leiden"
+  executable: "target/nextflow/workflows/integration/harmony_leiden/main.nf"
+  viash_version: "0.9.4"
+  git_commit: "d838c8fd6a44910f70c43dc4080b7cab9d6eff2c"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-2097-gd838c8fd6a4"
+  dependencies:
+  - "target/nextflow/integrate/harmonypy"
+  - "target/nextflow/workflows/multiomics/neighbors_leiden_umap"
+  - "target/nextflow/convert/from_tiledb_to_h5mu"
+  - "target/_private/nextflow/tiledb/move_mudata_obsm_to_tiledb"
+  - "target/_private/nextflow/tiledb/move_mudata_obs_to_tiledb"
+package_config:
+  name: "openpipeline"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.4"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"celltypist_build\""
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

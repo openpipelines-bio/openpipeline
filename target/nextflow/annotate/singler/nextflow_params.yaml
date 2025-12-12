@@ -1,0 +1,36 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# input_layer: "foo"
+# input_var_gene_names: "foo"
+# input_obs_clusters: "foo"
+input_reference_gene_overlap: 100
+
+# Reference
+reference: # please fill in - example: "reference.h5mu"
+# reference_layer: "foo"
+reference_obs_target: # please fill in - example: "foo"
+# reference_var_gene_names: "foo"
+# reference_var_input: "foo"
+
+# Arguments
+# de_n_genes: 123
+de_method: "classic"
+quantile: 0.8
+fine_tune: true
+fine_tuning_threshold: 0.05
+prune: true
+sanitize_ensembl_ids: true
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+output_obs_predictions: "singler_pred"
+output_obs_probability: "singler_probability"
+output_obs_delta_next: "singler_delta_next"
+output_obs_pruned_predictions: "singler_pruned_labels"
+output_obsm_scores: "singler_scores"
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
