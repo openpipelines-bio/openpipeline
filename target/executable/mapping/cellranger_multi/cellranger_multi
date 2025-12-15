@@ -451,19 +451,21 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM ghcr.io/data-intuitive/cellranger:9.0
+FROM quay.io/nf-core/cellranger:10.0.0
 ENTRYPOINT []
-RUN DEBIAN_FRONTEND=noninteractive apt update && \
-apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y procps && \
+  rm -rf /var/lib/apt/lists/*
 
+RUN cellranger telemetry disable
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "pandas" "pyyaml"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Angela Oliveira Pisco, Robrecht Cannoodt, Dries De Maeyer, Weiwei Schultz, Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_multi"
-LABEL org.opencontainers.image.created="2025-12-10T10:16:52Z"
+LABEL org.opencontainers.image.created="2025-12-15T09:52:34Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="9e6f5bdaacae3ce0ad2bfacc18294d63c44019ab"
+LABEL org.opencontainers.image.revision="a10cdcd476715b7d1ad52f4c105b79c79baf2c37"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -917,6 +919,11 @@ function ViashHelp {
   echo "        first N bases, where N is a user-supplied value."
   echo "        Trimming occurs before sequencing metrics are computed and therefore,"
   echo "        limiting the length of Read 2 may affect Q30 scores"
+  echo ""
+  echo "    --vdj_denovo"
+  echo "        type: boolean"
+  echo "        Run in reference-free mode (i.e., do not use annotations). This option"
+  echo "        is not supported for multiplexed experiments."
   echo ""
   echo "3' Cell multiplexing parameters (CellPlex Multiplexing):"
   echo "    --cmo_ids, --cell_multiplex_oligo_ids"
@@ -1673,6 +1680,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_VDJ_R2_LENGTH=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --vdj_denovo)
+            [ -n "$VIASH_PAR_VDJ_DENOVO" ] && ViashError Bad arguments for option \'--vdj_denovo\': \'$VIASH_PAR_VDJ_DENOVO\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VDJ_DENOVO="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --vdj_denovo. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --vdj_denovo=*)
+            [ -n "$VIASH_PAR_VDJ_DENOVO" ] && ViashError Bad arguments for option \'--vdj_denovo=*\': \'$VIASH_PAR_VDJ_DENOVO\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VDJ_DENOVO=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --cell_multiplex_oligo_ids)
             if [ -z "$VIASH_PAR_CELL_MULTIPLEX_OLIGO_IDS" ]; then
               VIASH_PAR_CELL_MULTIPLEX_OLIGO_IDS="$2"
@@ -2357,6 +2375,12 @@ if [[ -n "$VIASH_PAR_VDJ_R2_LENGTH" ]]; then
     exit 1
   fi
 fi
+if [[ -n "$VIASH_PAR_VDJ_DENOVO" ]]; then
+  if ! [[ "$VIASH_PAR_VDJ_DENOVO" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--vdj_denovo' has to be a boolean. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_PAR_MIN_ASSIGNMENT_CONFIDENCE" ]]; then
   if ! [[ "$VIASH_PAR_MIN_ASSIGNMENT_CONFIDENCE" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
     ViashError '--min_assignment_confidence' has to be a double. Use "--help" to get more information on the parameters.
@@ -2783,6 +2807,7 @@ par = {
   'vdj_inner_enrichment_primers': $( if [ ! -z ${VIASH_PAR_VDJ_INNER_ENRICHMENT_PRIMERS+x} ]; then echo "r'${VIASH_PAR_VDJ_INNER_ENRICHMENT_PRIMERS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'vdj_r1_length': $( if [ ! -z ${VIASH_PAR_VDJ_R1_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_VDJ_R1_LENGTH//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'vdj_r2_length': $( if [ ! -z ${VIASH_PAR_VDJ_R2_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_VDJ_R2_LENGTH//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'vdj_denovo': $( if [ ! -z ${VIASH_PAR_VDJ_DENOVO+x} ]; then echo "r'${VIASH_PAR_VDJ_DENOVO//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'cell_multiplex_oligo_ids': $( if [ ! -z ${VIASH_PAR_CELL_MULTIPLEX_OLIGO_IDS+x} ]; then echo "r'${VIASH_PAR_CELL_MULTIPLEX_OLIGO_IDS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'min_assignment_confidence': $( if [ ! -z ${VIASH_PAR_MIN_ASSIGNMENT_CONFIDENCE+x} ]; then echo "float(r'${VIASH_PAR_MIN_ASSIGNMENT_CONFIDENCE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'cmo_set': $( if [ ! -z ${VIASH_PAR_CMO_SET+x} ]; then echo "r'${VIASH_PAR_CMO_SET//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -2887,6 +2912,7 @@ VDJ_CONFIG_KEYS = {
     "vdj_inner_enrichment_primers": "inner-enrichment-primers",
     "vdj_r1_length": "r1-length",
     "vdj_r2_length": "r2-length",
+    "vdj_denovo": "denovo",
 }
 
 
@@ -3265,13 +3291,18 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             raise RuntimeError("Cell Ranger returned a nonzero exitcode!")
 
         logger.info("Checking if expected output files are present.")
-        # look for output dir file
+        # Sanity check the output: check for required files
         tmp_output_dir = temp_dir_path / temp_id / "outs"
         expected_files = {
-            Path("multi"): Path.is_dir,
             Path("per_sample_outs"): Path.is_dir,
             Path("config.csv"): Path.is_file,
+            Path("filtered_feature_bc_matrix"): Path.is_dir,
+            Path("filtered_feature_bc_matrix.h5"): Path.is_file,
+            Path("raw_feature_bc_matrix"): Path.is_dir,
+            Path("raw_feature_bc_matrix.h5"): Path.is_file,
         }
+        dir_contents = map(str, tmp_output_dir.iterdir())
+        logger.info("Directory contents: %s", ", ".join(dir_contents))
         for file_path, type_func in expected_files.items():
             output_path = tmp_output_dir / file_path
             if not type_func(output_path):
