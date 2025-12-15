@@ -457,9 +457,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component filter subset_obsp"
-LABEL org.opencontainers.image.created="2025-12-12T07:17:10Z"
+LABEL org.opencontainers.image.created="2025-12-15T16:29:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d838c8fd6a44910f70c43dc4080b7cab9d6eff2c"
+LABEL org.opencontainers.image.revision="8babdfd51ca44774ad60bb6400449e0887c15b85"
 LABEL org.opencontainers.image.version="celltypist_build"
 
 VIASHDOCKER
