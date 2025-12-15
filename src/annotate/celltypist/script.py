@@ -3,6 +3,7 @@ import celltypist
 import mudata as mu
 import anndata as ad
 import pandas as pd
+import numpy as np
 from torch.cuda import is_available as cuda_is_available
 
 ## VIASH START
@@ -46,6 +47,13 @@ use_gpu = cuda_is_available()
 logger.info("GPU enabled? %s", use_gpu)
 
 
+def check_lognormalized_expression(count_matrix):
+    if np.abs(np.expm1(count_matrix[0]).sum() - 10000) > 1:
+        raise ValueError(
+            "Invalid expression matrix, expect log1p normalized expression to 10000 counts per cell."
+        )
+
+
 def main(par):
     if (not par["model"] and not par["reference"]) or (
         par["model"] and par["reference"]
@@ -69,6 +77,8 @@ def main(par):
         if par["input_layer"]
         else input_modality.X.copy()
     )
+    check_lognormalized_expression(lognorm_counts)
+
     ## Create AnnData object
     input_modality = ad.AnnData(
         X=lognorm_counts, var=pd.DataFrame(index=input_modality.var.index)
@@ -85,6 +95,13 @@ def main(par):
 
     elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
+
+        # Check expression before subsetting to HVG
+        check_lognormalized_expression(
+            reference_modality.X
+            if not par["reference_layer"]
+            else reference_modality.layers[par["reference_layer"]]
+        )
 
         # subset to HVG if required
         if par["reference_var_input"]:
@@ -124,7 +141,7 @@ def main(par):
             max_iter=par["max_iter"],
             use_SGD=par["use_SGD"],
             feature_selection=par["feature_selection"],
-            check_expression=True,
+            check_expression=False,  # if True, throws an error if lognormalized data are subset for HVG,
             use_GPU=use_gpu,
         )
 
