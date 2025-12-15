@@ -38,7 +38,11 @@ argument_groups:
         min: 1
         description: | 
           The minimum number of genes present in both the reference and query datasets.
-  
+      - name: "--sanitize_ensembl_ids"
+        type: boolean
+        description: Whether to sanitize ensembl ids by removing version numbers.
+        default: true
+
   - name: Reference
     description: Arguments related to the reference dataset.
     arguments:
@@ -56,16 +60,16 @@ argument_groups:
         type: string
         description: The name of the adata obs column in the reference data containing cell type annotations.
         default: "cell_ontology_class"
-      - name: "--reference_var_gene_names"
-        type: string
-        required: false
-        description: |
-          The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
       - name: "--reference_var_input"
         type: string
         required: false
         description: |
           .var column containing highly variable genes. By default, do not subset genes.
+      - name: "--reference_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
 
   - name: Model arguments
     description: Model arguments.

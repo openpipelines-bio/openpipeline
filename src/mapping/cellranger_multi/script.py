@@ -164,6 +164,7 @@ VDJ_CONFIG_KEYS = {
     "vdj_inner_enrichment_primers": "inner-enrichment-primers",
     "vdj_r1_length": "r1-length",
     "vdj_r2_length": "r2-length",
+    "vdj_denovo": "denovo",
 }
 
 
