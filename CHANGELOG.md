@@ -20,6 +20,8 @@
 
 * `workflows/integration/harmony_leiden`: add support for adding the output slots to a tileDB-SOMA database (PR #1095).
 
+* `dataflow/concatenate_h5mu`: optionally perform block-diagonal concatenation of specified `.obsp` keys across input MuData objects (PR #1115).
+
 ## EXPERIMENTAL
 
 * `differential_expression/deseq2`: Performs differential expression analysis using DESeq2 on bulk or pseudobulk datasets (PR #1044).
