@@ -36,9 +36,13 @@
 
 ## MAJOR CHANGES
 
+* Make sure that 'zarr>3' is being used (PR #1116).
+
 * `mapping/samtools_sort` has been deprecated and will be removed in openpipeline 4.0. Use [vsh://biobox/samtools/samtools_sort](https://www.viash-hub.com/packages/biobox/latest/components/samtools/samtools_sort) instead.
 
 ## MINOR CHANGES
+
+* `totalvi`, `celltypist`, `scanvi` and `scarches`: bump base container image to `nvcr.io/nvidia/pytorch:25.11-py3` (PR #1116)
 
 * `transform/normalize_total`, `transform/clr`, `transform/log1p`: Add disk resource labels (PR #1073).
 
