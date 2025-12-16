@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 import re
 import sys
+import scipy.sparse as sp
 from openpipeline_testutils.utils import remove_annotation_column
 from operator import attrgetter
 
@@ -69,6 +70,8 @@ def sample_1_modality_1():
             ),
         },
     )
+    A1 = np.array([[0, 1], [2, 0]])
+    ad1.obsp["connectivities"] = sp.csr_matrix(A1)
     # ad1 = ad.AnnData(df, obs=obs, var=var)
     return ad1
 
@@ -163,6 +166,8 @@ def sample_2_modality_1():
             ),
         },
     )
+    A2 = np.array([[0, 3, 4], [5, 0, 6], [7, 8, 0]])
+    ad3.obsp["connectivities"] = sp.csr_matrix(A2)
     return ad3
 
 
@@ -506,8 +511,8 @@ def test_concat_different_columns_per_modality(
         data_sample1_mod = data_sample1.mod[mod_name]
         data_sample2_mod = data_sample2.mod[mod_name]
         original_var_keys = set(
-            data_sample1_mod.var.columns.to_list()
-            + data_sample2_mod.var.columns.to_list()
+            data_sample1_mod.var_keys()
+            + data_sample2_mod.var_keys()
             + list(data_sample2_mod.varm.keys())
             + list(data_sample1_mod.varm.keys())
         )
@@ -1192,6 +1197,65 @@ def test_subset_modalities(
     assert output_path.is_file()
     concatenated_data = md.read(output_path)
     assert set(concatenated_data.mod.keys()) == set(["mod1"])
+
+
+def test_obsp_block_diag_concat(
+    run_component,
+    sample_1_h5mu,
+    sample_2_h5mu,
+    write_mudata_to_file,
+    random_h5mu_path,
+):
+    """
+    Test that `.obsp` for a given key is concatenated as a block-diagonal matrix
+    across samples for the same modality (here: mod1), and that the block order
+    matches the sample order.
+    """
+
+    output_path = random_h5mu_path()
+    run_component(
+        [
+            "--input_id",
+            "sample1;sample2",
+            "--input",
+            write_mudata_to_file(sample_1_h5mu),
+            "--input",
+            write_mudata_to_file(sample_2_h5mu),
+            "--output",
+            output_path,
+            "--other_axis_mode",
+            "move",
+            "--uns_merge_mode",
+            "make_unique",
+            "--obsp_keys",
+            "connectivities",
+        ]
+    )
+
+    concatenated = md.read(output_path)
+    mod1 = concatenated["mod1"]
+    mod2 = concatenated["mod2"]
+
+    assert "connectivities" in mod1.obsp
+    assert "connectivities" not in mod2.obsp
+
+    expected = sp.csr_matrix(
+        [
+            [0, 1, 0, 0, 0],
+            [2, 0, 0, 0, 0],
+            [0, 0, 0, 3, 4],
+            [0, 0, 5, 0, 6],
+            [0, 0, 7, 8, 0],
+        ]
+    )
+
+    G = mod1.obsp["connectivities"].tocsr()
+    assert G.shape == expected.shape, (
+        "obsp 'connectivities' has incorrect shape after concatenation"
+    )
+    assert (G - expected).nnz == 0, (
+        "obsp 'connectivities' not correctly concatenated as block-diagonal matrix"
+    )
 
 
 if __name__ == "__main__":
