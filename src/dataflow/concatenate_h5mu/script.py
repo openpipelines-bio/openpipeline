@@ -21,7 +21,6 @@ par = {
     "output": "foo.h5mu",
     "input_id": ["mouse", "human"],
     "obsp_keys": [],
-    "raise_with_missing_obsp_key": True,
     "other_axis_mode": "move",
     "output_compression": "gzip",
     "uns_merge_mode": "make_unique",
