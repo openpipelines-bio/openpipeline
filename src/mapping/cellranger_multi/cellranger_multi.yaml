@@ -335,7 +335,11 @@ argument_groups:
         description: |
           Limit the length of the input Read 2 sequence of V(D)J libraries to the first N bases, where N is a user-supplied value. 
           Trimming occurs before sequencing metrics are computed and therefore, limiting the length of Read 2 may affect Q30 scores
-
+      - name: "--vdj_denovo"
+        type: boolean
+        required: false
+        description: |
+          Run in reference-free mode (i.e., do not use annotations). This option is not supported for multiplexed experiments.
   - name: 3' Cell multiplexing parameters (CellPlex Multiplexing)
     # cell_multiplex_oligo_ids adds to [samples] section
     # min_assignment_confidence, cmo_set barcode_sample_assignment are added to [gene-expression]

@@ -3725,6 +3725,15 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--vdj_denovo",
+          "description" : "Run in reference-free mode (i.e., do not use annotations). This option is not supported for multiplexed experiments.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -4069,14 +4078,21 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ghcr.io/data-intuitive/cellranger:9.0",
+      "image" : "quay.io/nf-core/cellranger:10.0.0",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
         {
+          "type" : "apt",
+          "packages" : [
+            "procps"
+          ],
+          "interactive" : false
+        },
+        {
           "type" : "docker",
           "run" : [
-            "DEBIAN_FRONTEND=noninteractive apt update && \\\\\napt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*\n"
+            "cellranger telemetry disable"
           ]
         },
         {
@@ -4117,7 +4133,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.9.4",
-    "git_commit" : "c2e92965e8a611d23e036a13fbd5c1666060763f",
+    "git_commit" : "19be66e31c8ee82d70ffe51fb6665e0e99c37725",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -4231,6 +4247,7 @@ par = {
   'vdj_inner_enrichment_primers': $( if [ ! -z ${VIASH_PAR_VDJ_INNER_ENRICHMENT_PRIMERS+x} ]; then echo "r'${VIASH_PAR_VDJ_INNER_ENRICHMENT_PRIMERS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'vdj_r1_length': $( if [ ! -z ${VIASH_PAR_VDJ_R1_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_VDJ_R1_LENGTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'vdj_r2_length': $( if [ ! -z ${VIASH_PAR_VDJ_R2_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_VDJ_R2_LENGTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'vdj_denovo': $( if [ ! -z ${VIASH_PAR_VDJ_DENOVO+x} ]; then echo "r'${VIASH_PAR_VDJ_DENOVO//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'cell_multiplex_oligo_ids': $( if [ ! -z ${VIASH_PAR_CELL_MULTIPLEX_OLIGO_IDS+x} ]; then echo "r'${VIASH_PAR_CELL_MULTIPLEX_OLIGO_IDS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'min_assignment_confidence': $( if [ ! -z ${VIASH_PAR_MIN_ASSIGNMENT_CONFIDENCE+x} ]; then echo "float(r'${VIASH_PAR_MIN_ASSIGNMENT_CONFIDENCE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'cmo_set': $( if [ ! -z ${VIASH_PAR_CMO_SET+x} ]; then echo "r'${VIASH_PAR_CMO_SET//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -4335,6 +4352,7 @@ VDJ_CONFIG_KEYS = {
     "vdj_inner_enrichment_primers": "inner-enrichment-primers",
     "vdj_r1_length": "r1-length",
     "vdj_r2_length": "r2-length",
+    "vdj_denovo": "denovo",
 }
 
 
@@ -4713,13 +4731,18 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             raise RuntimeError("Cell Ranger returned a nonzero exitcode!")
 
         logger.info("Checking if expected output files are present.")
-        # look for output dir file
+        # Sanity check the output: check for required files
         tmp_output_dir = temp_dir_path / temp_id / "outs"
         expected_files = {
-            Path("multi"): Path.is_dir,
             Path("per_sample_outs"): Path.is_dir,
             Path("config.csv"): Path.is_file,
+            Path("filtered_feature_bc_matrix"): Path.is_dir,
+            Path("filtered_feature_bc_matrix.h5"): Path.is_file,
+            Path("raw_feature_bc_matrix"): Path.is_dir,
+            Path("raw_feature_bc_matrix.h5"): Path.is_file,
         }
+        dir_contents = map(str, tmp_output_dir.iterdir())
+        logger.info("Directory contents: %s", ", ".join(dir_contents))
         for file_path, type_func in expected_files.items():
             output_path = tmp_output_dir / file_path
             if not type_func(output_path):
