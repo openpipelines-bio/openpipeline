@@ -36,8 +36,6 @@
 
 ## MAJOR CHANGES
 
-* Make sure that 'zarr>3' is being used (PR #1116).
-
 * `mapping/samtools_sort` has been deprecated and will be removed in openpipeline 4.0. Use [vsh://biobox/samtools/samtools_sort](https://www.viash-hub.com/packages/biobox/latest/components/samtools/samtools_sort) instead.
 
 ## MINOR CHANGES
