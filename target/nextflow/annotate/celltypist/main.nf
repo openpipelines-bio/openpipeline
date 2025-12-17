@@ -3517,7 +3517,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "celltypist==1.6.3"
+            "celltypist==1.7.1"
           ],
           "upgrade" : true
         },
@@ -3559,9 +3559,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.4",
-    "git_commit" : "8babdfd51ca44774ad60bb6400449e0887c15b85",
+    "git_commit" : "e4b6ca131dd3282a2507ff05b552865a2dcc207e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2098-g8babdfd51ca"
+    "git_tag" : "0.2.0-2099-ge4b6ca131dd"
   },
   "package_config" : {
     "name" : "openpipeline",
