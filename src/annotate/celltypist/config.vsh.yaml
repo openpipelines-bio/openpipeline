@@ -150,7 +150,7 @@ engines:
         __merge__: [ /src/base/requirements/scanpy.yaml, .]
       - type: python
         packages:
-          - celltypist==1.6.3
+          - celltypist==1.7.1
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
