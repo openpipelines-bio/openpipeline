@@ -23,7 +23,7 @@ par = {
     "feature_selection": True,
     "majority_voting": True,
     "output_compression": "gzip",
-    "input_var_gene_names": None,
+    "input_var_gene_names": "gene_symbol",
     "reference_var_gene_names": "ensemblid",
     "C": 1.0,
     "max_iter": 1000,
@@ -31,7 +31,7 @@ par = {
     "min_prop": 0,
     "output_obs_predictions": "celltypist_pred",
     "output_obs_probability": "celltypist_probability",
-    "sanitize_ensembl_ids": True,
+    "sanitize_ensembl_ids": False,
 }
 meta = {"resources_dir": "src/utils"}
 ## VIASH END
@@ -48,7 +48,7 @@ logger.info("GPU enabled? %s", use_gpu)
 
 
 def check_lognormalized_expression(count_matrix):
-    if np.abs(np.expm1(count_matrix[0]).sum() - 10000) > 1:
+    if np.any(np.abs(np.expm1(count_matrix).sum(axis=1) - 10000) > 1):
         raise ValueError(
             "Invalid expression matrix, expect log1p normalized expression to 10000 counts per cell."
         )
@@ -71,6 +71,7 @@ def main(par):
     input_modality = set_var_index(
         input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
     )
+
     ## Fetch lognormalized counts
     lognorm_counts = (
         input_modality.layers[par["input_layer"]].copy()

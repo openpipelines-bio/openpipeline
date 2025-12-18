@@ -460,9 +460,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate celltypist"
-LABEL org.opencontainers.image.created="2025-12-18T10:07:13Z"
+LABEL org.opencontainers.image.created="2025-12-18T13:21:17Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="fe89e4d750c114636f4710c0de8712b61b9249f2"
+LABEL org.opencontainers.image.revision="c4f79578e227cc2c7a40bcca70d82ba84d890067"
 LABEL org.opencontainers.image.version="celltypist_build"
 
 VIASHDOCKER
@@ -1567,7 +1567,7 @@ logger.info("GPU enabled? %s", use_gpu)
 
 
 def check_lognormalized_expression(count_matrix):
-    if np.abs(np.expm1(count_matrix[0]).sum() - 10000) > 1:
+    if np.any(np.abs(np.expm1(count_matrix).sum(axis=1) - 10000) > 1):
         raise ValueError(
             "Invalid expression matrix, expect log1p normalized expression to 10000 counts per cell."
         )
@@ -1590,6 +1590,7 @@ def main(par):
     input_modality = set_var_index(
         input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
     )
+
     ## Fetch lognormalized counts
     lognorm_counts = (
         input_modality.layers[par["input_layer"]].copy()

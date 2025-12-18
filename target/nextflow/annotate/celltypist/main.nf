@@ -3559,9 +3559,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.4",
-    "git_commit" : "fe89e4d750c114636f4710c0de8712b61b9249f2",
+    "git_commit" : "c4f79578e227cc2c7a40bcca70d82ba84d890067",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2100-gfe89e4d750c"
+    "git_tag" : "0.2.0-2101-gc4f79578e22"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3688,7 +3688,7 @@ logger.info("GPU enabled? %s", use_gpu)
 
 
 def check_lognormalized_expression(count_matrix):
-    if np.abs(np.expm1(count_matrix[0]).sum() - 10000) > 1:
+    if np.any(np.abs(np.expm1(count_matrix).sum(axis=1) - 10000) > 1):
         raise ValueError(
             "Invalid expression matrix, expect log1p normalized expression to 10000 counts per cell."
         )
@@ -3711,6 +3711,7 @@ def main(par):
     input_modality = set_var_index(
         input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
     )
+
     ## Fetch lognormalized counts
     lognorm_counts = (
         input_modality.layers[par["input_layer"]].copy()

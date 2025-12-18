@@ -21,18 +21,14 @@ celltypist_input_file = (
 # input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 
 
-@pytest.fixture
-def log_normalize():
-    def _log_normalize(adata):
-        sc.pp.normalize_total(adata, target_sum=1e4)
-        sc.pp.log1p(adata)
-        return adata
-
-    return _log_normalize
+def log_normalize(adata):
+    sc.pp.normalize_total(adata, target_sum=1e4)
+    sc.pp.log1p(adata)
+    return adata
 
 
 @pytest.fixture
-def reference_mdata(log_normalize):
+def reference_mdata():
     mdata = mu.read_h5mu(
         f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5mu"
     )
@@ -43,7 +39,7 @@ def reference_mdata(log_normalize):
 
 
 @pytest.fixture
-def input_mdata(log_normalize):
+def input_mdata():
     mdata = mu.read_h5mu(
         f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
     )

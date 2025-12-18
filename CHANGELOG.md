@@ -14,7 +14,7 @@
 
 * `annotate/celltypist`: Enable CUDA acceleration for CellTypist annotation (PR #1091).
 
-* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083, 1114).
+* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083, #1114).
 
 * `workflows/integration/harmony_leiden`: add support for adding the output slots to a tileDB-SOMA database (PR #1095).
 
@@ -59,6 +59,8 @@
 * `filter/filter_with_counts`: this component would sometimes crash (segfault) when processing malformatted sparse matrices. A proper error message is now provided in this case (PR #1086).
 
 * `cluster/leiden`: fix an issue where using an input modality with missing`.X` caused `KeyError` (`Unable to synchronously open object`) (PR #1093).
+
+* `utils/set_var_index`: ensure the index dtype is string instead of category to prevent errors when the index is subsequently updated (e.g. when making var index names unique) (PR #1114).
 
 # openpipelines 3.0.0
 
