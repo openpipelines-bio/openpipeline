@@ -455,13 +455,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.6" "mudata~=0.3.2" "scanpy~=1.10.4" "loompy"
+  pip install --upgrade --no-cache-dir "anndata~=0.12.6" "mudata~=0.3.2" "scanpy~=1.10.4" "loompy" && \
+  python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Robrecht Cannoodt, Angela Oliveira Pisco"
 LABEL org.opencontainers.image.description="Companion container for running component convert velocyto_to_h5mu"
-LABEL org.opencontainers.image.created="2025-12-15T09:52:39Z"
+LABEL org.opencontainers.image.created="2025-12-18T10:37:31Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a10cdcd476715b7d1ad52f4c105b79c79baf2c37"
+LABEL org.opencontainers.image.revision="c908f9e2be4c4833d5449c15b13ececfa13a37e3"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

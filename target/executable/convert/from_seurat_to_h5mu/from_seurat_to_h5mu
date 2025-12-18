@@ -456,7 +456,8 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --user --upgrade pip && \
-  pip install --user --upgrade --no-cache-dir "anndata~=0.12.6" "mudata~=0.3.2"
+  pip install --user --upgrade --no-cache-dir "anndata~=0.12.6" "mudata~=0.3.2" && \
+  python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
   Rscript -e 'options(warn = 2); if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")' && \
@@ -467,9 +468,9 @@ RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TR
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_seurat_to_h5mu"
-LABEL org.opencontainers.image.created="2025-12-15T09:52:38Z"
+LABEL org.opencontainers.image.created="2025-12-18T10:37:30Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a10cdcd476715b7d1ad52f4c105b79c79baf2c37"
+LABEL org.opencontainers.image.revision="c908f9e2be4c4833d5449c15b13ececfa13a37e3"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
