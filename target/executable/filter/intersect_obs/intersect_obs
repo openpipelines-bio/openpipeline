@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Isabelle Bergiers"
 LABEL org.opencontainers.image.description="Companion container for running component filter intersect_obs"
-LABEL org.opencontainers.image.created="2025-12-17T07:59:47Z"
+LABEL org.opencontainers.image.created="2025-12-18T10:07:14Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e4b6ca131dd3282a2507ff05b552865a2dcc207e"
+LABEL org.opencontainers.image.revision="fe89e4d750c114636f4710c0de8712b61b9249f2"
 LABEL org.opencontainers.image.version="celltypist_build"
 
 VIASHDOCKER
