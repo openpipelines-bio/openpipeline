@@ -60,6 +60,8 @@
 
 * `cluster/leiden`: fix an issue where using an input modality with missing`.X` caused `KeyError` (`Unable to synchronously open object`) (PR #1093).
 
+* `utils/set_var_index`: ensure the index dtype is string instead of category to prevent errors when the index is subsequently updated (e.g. when making var index names unique) (PR #1100).
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES
