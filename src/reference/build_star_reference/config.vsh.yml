@@ -51,7 +51,7 @@ test_resources:
   - path: /resources_test/cellranger_tiny_fastq
 engines:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.13-slim
     setup:
       - type: apt
         packages: 

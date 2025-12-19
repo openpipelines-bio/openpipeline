@@ -141,13 +141,12 @@ test_resources:
 
 engines:
 - type: docker
-  image: nvcr.io/nvidia/pytorch:25.05-py3
+  image: nvcr.io/nvidia/pytorch:25.11-py3
   setup:
     - type: python
       __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
       packages:
-        - jax[cuda]
-        - scvi-tools~=1.3.1
+        - scvi-tools[cuda]~=1.4.1
   test_setup:
     - type: python
       __merge__: [ /src/base/requirements/viashpy.yaml, .]

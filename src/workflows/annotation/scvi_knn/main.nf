@@ -134,7 +134,8 @@ workflow run_wf {
           "max_epochs": state.scvi_max_epochs,
           "reduce_lr_on_plateau": state.scvi_reduce_lr_on_plateau,
           "lr_factor": state.scvi_lr_factor,
-          "lr_patience": state.scvi_lr_patience
+          "lr_patience": state.scvi_lr_patience,
+          "sanitize_ensembl_ids": state.sanitize_ensembl_ids
         ]},
         args: [
           "var_input": "_common_hvg",

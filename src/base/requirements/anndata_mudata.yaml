@@ -1,9 +1,6 @@
 __merge__: [/src/base/requirements/anndata.yaml, .]
 packages:
-  - mudata~=0.3.1
-# Make sure that awkward is not installed. Currently, support of awkward arrays
-# in anndata is experimental, and it is enabled based on whether or not the package
-# is available. By making sure that awkward is not installed, the functionality is
-# not enabled.
+  - mudata~=0.3.2
+
 script: |
-  exec("try:\n  import awkward\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  exit(1)")
+    exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")
