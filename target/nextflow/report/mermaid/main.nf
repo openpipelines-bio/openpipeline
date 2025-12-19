@@ -3288,7 +3288,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/report/mermaid",
     "viash_version" : "0.9.4",
-    "git_commit" : "e1fbc84fe73d67ff3fea2315ea2ad3c735b28420",
+    "git_commit" : "2adf3d363a5daea24c77a25faac210cc490d7034",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
