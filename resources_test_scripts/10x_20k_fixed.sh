@@ -104,46 +104,47 @@ if [[ ! -f "$probe_set_corrected" ]]; then
   done
 fi
 
-# # Input FASTA:
-# #   >1 dna:chromosome chromosome:GRCh38:1:1:248956422:1 REF
-# # Output FASTA:
-# #   >chr1 1
-# input_fastq="$HOME/.cache/openpipeline/GRCh38.primary_assembly.genome.fa.gz"
-# fasta_modified="$TMPDIR/GRCh38.primary_assembly.genome.modified.fa"
-# if [[ ! -f "$input_fastq" ]]; then
-#   wget "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz" -O "$input_fastq"
-# fi
-# zcat "$input_fastq" \
-#     | sed -E 's/^>(\S+).*/>\1 \1/' \
-#     | sed -E 's/^>([0-9]+|[XY]) />chr\1 /' \
-#     | sed -E 's/^>MT />chrM /' \
-#     > "$fasta_modified"
+# Input FASTA:
+#   >1 dna:chromosome chromosome:GRCh38:1:1:248956422:1 REF
+# Output FASTA:
+#   >chr1 1
+input_fastq="$HOME/.cache/openpipeline/GRCh38.primary_assembly.genome.fa.gz"
+fasta_modified="$TMPDIR/GRCh38.primary_assembly.genome.modified.fa"
+if [[ ! -f "$input_fastq" ]]; then
+  wget "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz" -O "$input_fastq"
+fi
+zcat "$input_fastq" \
+    | sed -E 's/^>(\S+).*/>\1 \1/' \
+    | sed -E 's/^>([0-9]+|[XY]) />chr\1 /' \
+    | sed -E 's/^>MT />chrM /' \
+    > "$fasta_modified"
 
-# pigz --fast "$fasta_modified"
-# fasta_modified="$fasta_modified.gz"
-# # Input GTF:
-# #     ... gene_id "ENSG00000223972.5"; ...
-# # Output GTF:
-# #     ... gene_id "ENSG00000223972"; gene_version "5"; ...
-# input_gtf="$HOME/.cache/openpipeline/gencode.v41.annotation.gtf.gz"
-# gtf_modified="$TMPDIR/gencode.v41.annotation.gtf.modified.gtf"
-# if [[ ! -f "$input_gtf" ]]; then
-#   wget "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz" -O "$input_gtf"
-# fi
+pigz --fast "$fasta_modified"
+fasta_modified="$fasta_modified.gz"
+# Input GTF:
+#     ... gene_id "ENSG00000223972.5"; ...
+# Output GTF:
+#     ... gene_id "ENSG00000223972"; gene_version "5"; ...
+input_gtf="$HOME/.cache/openpipeline/gencode.v41.annotation.gtf.gz"
+gtf_modified="$TMPDIR/gencode.v41.annotation.gtf.modified.gtf"
+if [[ ! -f "$input_gtf" ]]; then
+  wget "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz" -O "$input_gtf"
+fi
 
-# REGEX="(ENS(MUS)?[GTE][0-9]+)\.([0-9]+)"
-# zcat "$input_gtf" \
-#     | sed -E 's/gene_id "'"$REGEX"'";/gene_id "\1"; gene_version "\3";/' \
-#     | sed -E 's/transcript_id "'"$REGEX"'";/transcript_id "\1"; transcript_version "\3";/' \
-#     | sed -E 's/exon_id "'"$REGEX"'";/exon_id "\1"; exon_version "\3";/' \
-#     > "$gtf_modified"
-# pigz --fast "$gtf_modified"
-# gtf_modified="$gtf_modified.gz"
+REGEX="(ENS(MUS)?[GTE][0-9]+)\.([0-9]+)"
+zcat "$input_gtf" \
+    | sed -E 's/gene_id "'"$REGEX"'";/gene_id "\1"; gene_version "\3";/' \
+    | sed -E 's/transcript_id "'"$REGEX"'";/transcript_id "\1"; transcript_version "\3";/' \
+    | sed -E 's/exon_id "'"$REGEX"'";/exon_id "\1"; exon_version "\3";/' \
+    > "$gtf_modified"
+pigz --fast "$gtf_modified"
+gtf_modified="$gtf_modified.gz"
 
 final_genome="$HOME/.cache/openpipeline/GRCh38.cellranger.genome.fa.gz"
 if [ ! -f "$final_genome" ]; then
-  NXF_VER=21.10.6 nextflow \
-    run . \
+  nextflow \
+    run openpipelines-bio/openpipeline \
+    -r 3.0.0 \
     -main-script target/nextflow/workflows/ingestion/make_reference/main.nf \
     -profile docker \
     -resume \
@@ -173,7 +174,6 @@ param_list:
 probe_set: "$probe_set_corrected"
 gex_reference: "$genome_tar"
 feature_reference: "$feature_ref"
-publish_dir: "$OUT/processed"
 probe_barcode_ids:
   - BC001
   - BC002
@@ -193,9 +193,22 @@ sample_force_cells:
 HERE
 
 nextflow \
+  run openpipelines-bio/openpipeline \
+  -r 3.0.0 \
+  -main-script target/nextflow/mapping/cellranger_multi/main.nf \
+  -resume \
+  -profile docker,mount_temp \
+  -params-file /tmp/params.yaml \
+  -c src/workflows/utils/labels_ci.config \
+  --publish_dir "$OUT/processed"
+
+mkdir -p "${OUT}/processed"
+
+nextflow \
   run . \
   -main-script target/nextflow/mapping/cellranger_multi/main.nf \
   -resume \
   -profile docker,mount_temp \
   -params-file /tmp/params.yaml \
-  -c src/workflows/utils/labels_ci.config
+  -c src/workflows/utils/labels_ci.config \
+  --publish_dir "${OUT}_v10/processed"
