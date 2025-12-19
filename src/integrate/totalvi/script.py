@@ -10,8 +10,8 @@ from scanpy._utils import check_nonnegative_integers
 par = {
     # inputs
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-    "modality_rna": "rna",
-    "modality_protein": "prot",
+    "rna_modality": "rna",
+    "prot_modality": "prot",
     "input_layer_rna": None,
     "input_layer_protein": None,
     "obs_batch": "sample_id",
@@ -135,10 +135,12 @@ def main():
     mdata = mu.read_h5mu(par["input"])
 
     logger.info("Preparing data for TOTALVI...")
+    # Move protein counts to .obsm slot of the rna modality AnnData 
+    # and protein names .uns slot to comply with TOTALVI input format
     adata = consolidate_modalities_to_anndata(
         mdata,
-        par["modality_rna"],
-        par["modality_protein"],
+        par["rna_modality"],
+        par["prot_modality"],
         par["input_layer_protein"],
         par["var_input"],
     )
@@ -146,7 +148,7 @@ def main():
     check_validity_anndata(
         adata,
         par["input_layer_rna"],
-        par["modality_protein"],
+        par["prot_modality"],
         par["obs_batch"],
         par["n_obs_min_count"],
         par["n_var_gene_min_count"],
@@ -158,8 +160,8 @@ def main():
         adata,
         batch_key=par["obs_batch"],
         layer=par["input_layer_rna"],
-        protein_expression_obsm_key=par["modality_protein"],
-        protein_names_uns_key=par["modality_protein"],
+        protein_expression_obsm_key=par["prot_modality"],
+        protein_names_uns_key=par["prot_modality"],
         size_factor_key=par["obs_size_factor"],
         categorical_covariate_keys=par["obs_categorical_covariate"],
         continuous_covariate_keys=par["obs_continuous_covariate"],
@@ -186,17 +188,17 @@ def main():
     )
 
     logger.info("Getting the latent representation...")
-    mdata.mod[par["modality_rna"]].obsm[par["obsm_output"]] = (
+    mdata.mod[par["rna_modality"]].obsm[par["obsm_output"]] = (
         model.get_latent_representation()
     )
 
     logger.info("Getting normalized expression...")
     norm_rna, norm_protein = model.get_normalized_expression()
-    mdata.mod[par["modality_rna"]].obsm[par["obsm_normalized_rna_output"]] = (
+    mdata.mod[par["rna_modality"]].obsm[par["obsm_normalized_rna_output"]] = (
         norm_rna.to_numpy()
     )
-    if par["modality_protein"] in mdata.mod:
-        mdata.mod[par["modality_protein"]].obsm[
+    if par["prot_modality"] in mdata.mod:
+        mdata.mod[par["prot_modality"]].obsm[
             par["obsm_normalized_protein_output"]
         ] = norm_protein.to_numpy()
 

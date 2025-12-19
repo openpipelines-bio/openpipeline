@@ -12,8 +12,8 @@ workflow run_wf {
     | totalvi.run(
       fromState: {id, state -> [
         "input": state.input,
-        "modality_rna": state.modality_rna,
-        "modality_protein": state.modality_protein,
+        "rna_modality": state.rna_modality,
+        "prot_modality": state.prot_modality,
         "input_layer_rna": state.input_layer_rna,
         "input_layer_protein": state.input_layer_protein,
         "obs_batch": state.obs_batch,
@@ -39,7 +39,7 @@ workflow run_wf {
     | neighbors_leiden_umap.run(
       fromState: {id, state -> [
         "input": state.input,
-        "modality": state.modality_rna,
+        "modality": state.rna_modality,
         "uns_neighbors": state.uns_neighbors,
         "obsp_neighbor_distances": state.obsp_neighbor_distances,
         "obsp_neighbor_connectivities": state.obsp_neighbor_connectivities,
