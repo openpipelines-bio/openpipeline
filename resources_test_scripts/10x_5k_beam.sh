@@ -98,8 +98,18 @@ control_id:
 mhc_allele:
     - "HLA-A*02:01"
     - "HLA-B*07:02"
-publish_dir: "$OUT/processed"
 HERE
+
+nextflow \
+  run openpipelines-bio/openpipeline \
+  -r 3.0.0 \
+  -main-script target/nextflow/mapping/cellranger_multi/main.nf \
+  -resume \
+  -profile docker,mount_temp \
+  -params-file /tmp/params.yaml \
+  -c src/workflows/utils/labels_ci.config \
+  --publish_dir "$OUT/processed"
+
 
 nextflow \
   run . \
@@ -107,20 +117,24 @@ nextflow \
   -resume \
   -profile docker,mount_temp \
   -params-file /tmp/params.yaml \
-  -c src/workflows/utils/labels_ci.config
+  -c src/workflows/utils/labels_ci.config \
+  --publish_dir "${OUT}_v10/processed"
 
 # Create h5mu
 cat > /tmp/params.yaml << HERE
 id: "$ID"
 input: "$OUT/processed/$ID.cellranger_multi.output"
 publish_dir: "$OUT/"
-output: "$orig_sample_id.h5mu"
+output: "*.h5mu"
 HERE
 
 nextflow \
-  run . \
+  run openpipelines-bio/openpipeline \
+  -r 3.0.0 \
   -main-script target/nextflow/convert/from_cellranger_multi_to_h5mu/main.nf \
   -resume \
   -profile docker,mount_temp \
   -params-file /tmp/params.yaml \
   -c src/workflows/utils/labels_ci.config
+
+mv "$OUT/0.h5mu" "$OUT/${orig_sample_id}.h5mu"

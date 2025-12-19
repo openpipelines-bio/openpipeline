@@ -1,5 +1,6 @@
 import sys
 import pytest
+import math
 from mudata import read_h5mu
 
 ## VIASH START
@@ -10,15 +11,62 @@ meta = {
 }
 ## VIASH END
 
-input_anticmv = f"{meta['resources_dir']}/10x_5k_anticmv/processed/10x_5k_anticmv.cellranger_multi.output"
-input_lung_crispr = f"{meta['resources_dir']}/10x_5k_lung_crispr/processed/10x_5k_lung_crispr.cellranger_multi.output.output"
-input_beam = (
-    f"{meta['resources_dir']}/10x_5k_beam/processed/10x_5k_beam.cellranger_multi.output"
-)
-input_fixed_rna = f"{meta['resources_dir']}/10x_5k_fixed/processed/10x_5k_fixed.cellranger_multi.output"
+
+@pytest.fixture(params=["v9", "v10"])
+def input_anticmv(request):
+    base = {
+        "v9": "10x_5k_anticmv",
+        "v10": "10x_5k_anticmv_v10",
+    }
+    return f"{meta['resources_dir']}/{base[request.param]}/processed/10x_5k_anticmv.cellranger_multi.output"
 
 
-def test_cellranger_multi_basic(run_component, tmp_path):
+@pytest.fixture(params=["v9", "v10"])
+def input_anticmv_with_custom_modality(request):
+    base = {
+        "v9": "10x_5k_anticmv",
+        "v10": "10x_5k_anticmv_v10",
+    }
+    return f"{meta['resources_dir']}/{base[request.param]}/processed_with_custom/10x_5k_anticmv.cellranger_multi.output"
+
+
+@pytest.fixture(params=["v9", "v10"])
+def input_lung_crispr(request):
+    base = {
+        "v9": "10x_5k_lung_crispr",
+        "v10": "10x_5k_lung_crispr_v10",
+    }
+    return f"{meta['resources_dir']}/{base[request.param]}/processed/10x_5k_lung_crispr.cellranger_multi.output"
+
+
+@pytest.fixture(params=["v9", "v10"])
+def input_beam(request):
+    base = {
+        "v9": "10x_5k_beam",
+        "v10": "10x_5k_beam_v10",
+    }
+    return f"{meta['resources_dir']}/{base[request.param]}/processed/10x_5k_beam.cellranger_multi.output"
+
+
+@pytest.fixture(params=["v9", "v10"])
+def input_fixed_rna(request):
+    base = {
+        "v9": "10x_5k_fixed",
+        "v10": "10x_5k_fixed_v10",
+    }
+    return f"{meta['resources_dir']}/{base[request.param]}/processed/10x_5k_fixed.cellranger_multi.output"
+
+
+@pytest.fixture(params=["v9", "v10"])
+def input_4plex_dtc(request):
+    base = {
+        "v9": "10x_4plex_dtc",
+        "v10": "10x_4plex_dtc_v10",
+    }
+    return f"{meta['resources_dir']}/{base[request.param]}/processed/10x_4plex_dtc.cellranger_multi.output"
+
+
+def test_cellranger_multi_basic(run_component, tmp_path, input_anticmv):
     output_dir = tmp_path / "converted"
     output_path_template = output_dir / "*.h5mu"
     samples_csv = tmp_path / "samples.csv"
@@ -64,7 +112,7 @@ def test_cellranger_multi_basic(run_component, tmp_path):
         ("Confidently mapped reads in cells", "Gene Expression", "Cells"),
         "Metric Value",
     ]
-    assert percentage.iloc[0] == "0.8569"
+    assert math.isclose(float(percentage.iloc[0]), 0.857, rel_tol=1e-2)
 
     thousand_delimited_number = metrics_df_with_index.loc[
         ("Cells", "Gene Expression", "Cells"), "Metric Value"
@@ -77,7 +125,7 @@ def test_cellranger_multi_basic(run_component, tmp_path):
     smaller_number == "6"
 
 
-def test_cellranger_multi_to_h5mu_crispr(run_component, tmp_path):
+def test_cellranger_multi_to_h5mu_crispr(run_component, tmp_path, input_lung_crispr):
     output_dir = tmp_path / "converted"
     output_path_template = output_dir / "*.h5mu"
     samples_csv = tmp_path / "samples.csv"
@@ -110,7 +158,7 @@ def test_cellranger_multi_to_h5mu_crispr(run_component, tmp_path):
     assert "feature_reference" in converted_data.mod["gdo"].uns
 
 
-def test_cellranger_multi_to_h5mu_beam(run_component, tmp_path):
+def test_cellranger_multi_to_h5mu_beam(run_component, tmp_path, input_beam):
     output_dir = tmp_path / "converted"
     output_path_template = output_dir / "*.h5mu"
     samples_csv = tmp_path / "samples.csv"
@@ -140,7 +188,7 @@ def test_cellranger_multi_to_h5mu_beam(run_component, tmp_path):
     assert "antigen_specificity_scores_Flu_A0201" in converted_data["antigen"].obsm
 
 
-def test_cellranger_multi_to_h5mu_fixed_rna(run_component, tmp_path):
+def test_cellranger_multi_to_h5mu_fixed_rna(run_component, tmp_path, input_fixed_rna):
     output_dir = tmp_path / "converted"
     output_path_template = output_dir / "*.h5mu"
     samples_csv = tmp_path / "samples.csv"
@@ -174,8 +222,7 @@ def test_cellranger_multi_to_h5mu_fixed_rna(run_component, tmp_path):
         assert list(converted_data.mod.keys()) == ["rna", "prot"]
 
 
-def test_custom_modality(run_component, tmp_path):
-    input_dir = f"{meta['resources_dir']}/10x_5k_anticmv/processed_with_custom/10x_5k_anticmv.cellranger_multi.output"
+def test_custom_modality(run_component, tmp_path, input_anticmv_with_custom_modality):
     output_dir = tmp_path / "converted"
     output_path_template = output_dir / "*.h5mu"
     samples_csv = tmp_path / "samples.csv"
@@ -183,7 +230,7 @@ def test_custom_modality(run_component, tmp_path):
     run_component(
         [
             "--input",
-            input_dir,
+            input_anticmv_with_custom_modality,
             "--output",
             str(output_path_template),
             "--output_compression",
@@ -203,8 +250,7 @@ def test_custom_modality(run_component, tmp_path):
     assert "feature_reference" in converted_data.mod["custom"].uns
 
 
-def test_antibody_and_cell_barcode_probes(run_component, tmp_path):
-    input_dir = f"{meta['resources_dir']}/10x_4plex_dtc/processed/10x_4plex_dtc.cellranger_multi.output"
+def test_antibody_and_cell_barcode_probes(run_component, tmp_path, input_4plex_dtc):
     output_dir = tmp_path / "converted"
     output_path_template = output_dir / "*.h5mu"
     samples_csv = tmp_path / "samples.csv"
@@ -212,7 +258,7 @@ def test_antibody_and_cell_barcode_probes(run_component, tmp_path):
     run_component(
         [
             "--input",
-            input_dir,
+            input_4plex_dtc,
             "--output",
             str(output_path_template),
             "--output_compression",

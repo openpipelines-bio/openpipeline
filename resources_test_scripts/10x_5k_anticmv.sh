@@ -93,13 +93,26 @@ param_list:
 gex_reference: "$genome_tar"
 vdj_reference: "$vdj_ref"
 feature_reference: "$feature_reference"
-publish_dir: "$OUT/processed"
 HERE
+
+nextflow \
+  run openpipelines-bio/openpipeline \
+  -main-script target/nextflow/mapping/cellranger_multi/main.nf \
+  -r 3.0.0 \
+  -resume \
+  --publish_dir "$OUT/processed" \
+  -profile docker,mount_temp \
+  -params-file /tmp/params.yaml \
+  -c src/workflows/utils/labels.config \
+  -c src/workflows/utils/errorstrat_ignore.config
+
+mkdir -p "${OUT}_v10/processed"
 
 nextflow \
   run . \
   -main-script target/nextflow/mapping/cellranger_multi/main.nf \
   -resume \
+  --publish_dir "${OUT}_v10/processed" \
   -profile docker,mount_temp \
   -params-file /tmp/params.yaml \
   -c src/workflows/utils/labels.config \
@@ -114,7 +127,8 @@ output: "*.h5mu"
 HERE
 
 nextflow \
-  run . \
+  run openpipelines-bio/openpipeline \
+  -r 3.0.0 \
   -main-script target/nextflow/convert/from_cellranger_multi_to_h5mu/main.nf \
   -resume \
   -profile docker,mount_temp \
@@ -135,7 +149,8 @@ output: "${orig_sample_id}_qc.h5mu"
 HERE
 
 nextflow \
-  run . \
+  run openpipelines-bio/openpipeline \
+  -r 3.0.0 \
   -main-script target/nextflow/workflows/qc/qc/main.nf \
   -resume \
   -profile docker,mount_temp \
@@ -152,7 +167,8 @@ output: "${orig_sample_id}_mms.h5mu"
 HERE
 
 nextflow \
-  run . \
+  run openpipelines-bio/openpipeline \
+  -r 3.0.0 \
   -main-script target/nextflow/workflows/multiomics/process_samples/main.nf \
   -resume \
   -profile docker,mount_temp \
@@ -190,8 +206,20 @@ param_list:
 gex_reference: "$genome_tar"
 feature_reference: "/tmp/custom_${feat_ref_name}"
 vdj_reference: "$vdj_ref"
-publish_dir: "$OUT/processed_with_custom"
 HERE
+
+nextflow \
+  run openpipelines-bio/openpipeline \
+  -r 3.0.0 \
+  -main-script target/nextflow/mapping/cellranger_multi/main.nf \
+  -resume \
+  -profile docker,mount_temp \
+  -params-file /tmp/params_custom.yaml \
+  -c src/workflows/utils/labels.config \
+  -c src/workflows/utils/errorstrat_ignore.config \
+  --publish_dir "${OUT}/processed_with_custom"
+
+
 
 nextflow \
   run . \
@@ -200,4 +228,5 @@ nextflow \
   -profile docker,mount_temp \
   -params-file /tmp/params_custom.yaml \
   -c src/workflows/utils/labels.config \
-  -c src/workflows/utils/errorstrat_ignore.config
+  -c src/workflows/utils/errorstrat_ignore.config \
+  --publish_dir "${OUT}_v10/processed_with_custom"
