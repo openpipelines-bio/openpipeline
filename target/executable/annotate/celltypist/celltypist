@@ -461,9 +461,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate celltypist"
-LABEL org.opencontainers.image.created="2025-12-19T13:18:46Z"
+LABEL org.opencontainers.image.created="2025-12-19T14:13:05Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="2adf3d363a5daea24c77a25faac210cc490d7034"
+LABEL org.opencontainers.image.revision="53f6b8d90bb2b9d0a2cbf4eff0721799a0241c3e"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

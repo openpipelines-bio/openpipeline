@@ -3402,10 +3402,7 @@ meta = [
       "namespace_separator" : "/",
       "setup" : [
         {
-          "type" : "docker",
-          "run" : [
-            "--mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN"
-          ]
+          "type" : "docker"
         },
         {
           "type" : "apt",
@@ -3424,11 +3421,15 @@ meta = [
           "bioc" : [
             "DESeq2"
           ],
-          "github" : [
-            "scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a"
-          ],
           "bioc_force_install" : false,
           "warnings_as_errors" : true
+        },
+        {
+          "type" : "docker",
+          "run" : [
+            "--mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN",
+            "Rscript -e 'options(warn = 2); remotes::install_github(c(\\"scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a\\"), repos = \\"https://cran.rstudio.com\\")'"
+          ]
         }
       ],
       "test_setup" : [
@@ -3469,7 +3470,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/differential_expression/deseq2",
     "viash_version" : "0.9.4",
-    "git_commit" : "2adf3d363a5daea24c77a25faac210cc490d7034",
+    "git_commit" : "53f6b8d90bb2b9d0a2cbf4eff0721799a0241c3e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

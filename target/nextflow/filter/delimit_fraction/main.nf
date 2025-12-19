@@ -3362,7 +3362,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/delimit_fraction",
     "viash_version" : "0.9.4",
-    "git_commit" : "2adf3d363a5daea24c77a25faac210cc490d7034",
+    "git_commit" : "53f6b8d90bb2b9d0a2cbf4eff0721799a0241c3e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

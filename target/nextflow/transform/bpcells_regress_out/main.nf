@@ -3330,18 +3330,7 @@ meta = [
         {
           "type" : "docker",
           "env" : [
-            "PIP_BREAK_SYSTEM_PACKAGES=1"
-          ]
-        },
-        {
-          "type" : "docker",
-          "run" : [
-            "--mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN"
-          ]
-        },
-        {
-          "type" : "docker",
-          "env" : [
+            "PIP_BREAK_SYSTEM_PACKAGES=1",
             "RETICULATE_PYTHON=/usr/bin/python"
           ]
         },
@@ -3362,11 +3351,15 @@ meta = [
             "anndata",
             "reticulate"
           ],
-          "github" : [
-            "bnprks/BPCells/r"
-          ],
           "bioc_force_install" : false,
           "warnings_as_errors" : true
+        },
+        {
+          "type" : "docker",
+          "run" : [
+            "--mount=type=secret,id=GITHUB_TOKEN,env=GTIHUB_TOKEN",
+            "Rscript -e 'options(warn = 2); remotes::install_github(c(\\"bnprks/BPCells/r\\"), repos = \\"https://cran.rstudio.com\\")'"
+          ]
         },
         {
           "type" : "python",
@@ -3409,7 +3402,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/bpcells_regress_out",
     "viash_version" : "0.9.4",
-    "git_commit" : "2adf3d363a5daea24c77a25faac210cc490d7034",
+    "git_commit" : "53f6b8d90bb2b9d0a2cbf4eff0721799a0241c3e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
