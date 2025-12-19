@@ -3540,7 +3540,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "nvcr.io/nvidia/pytorch:25.05-py3",
+      "image" : "nvcr.io/nvidia/pytorch:25.11-py3",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3552,14 +3552,16 @@ meta = [
             "mudata~=0.3.2",
             "scanpy~=1.10.4"
           ],
+          "script" : [
+            "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
+          ],
           "upgrade" : true
         },
         {
           "type" : "python",
           "user" : false,
           "packages" : [
-            "jax[cuda]",
-            "scvi-tools~=1.3.1"
+            "scvi-tools[cuda]~=1.4.1"
           ],
           "upgrade" : true
         }
@@ -3582,7 +3584,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/scanvi",
     "viash_version" : "0.9.4",
-    "git_commit" : "fe214fbce9c4b029517804c84369ca1c33f8e5c2",
+    "git_commit" : "2b9c2e13afb886ec7679d8d383bf6c81d10725a7",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

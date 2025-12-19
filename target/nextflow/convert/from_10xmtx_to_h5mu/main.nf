@@ -3264,6 +3264,9 @@ meta = [
             "mudata~=0.3.2",
             "scanpy~=1.10.4"
           ],
+          "script" : [
+            "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
+          ],
           "upgrade" : true
         }
       ],
@@ -3295,7 +3298,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xmtx_to_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "fe214fbce9c4b029517804c84369ca1c33f8e5c2",
+    "git_commit" : "2b9c2e13afb886ec7679d8d383bf6c81d10725a7",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

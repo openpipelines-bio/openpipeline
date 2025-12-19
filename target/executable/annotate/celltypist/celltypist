@@ -447,7 +447,7 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM nvcr.io/nvidia/pytorch:25.05-py3
+FROM nvcr.io/nvidia/pytorch:25.11-py3
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scanpy~=1.10.4"
@@ -456,13 +456,14 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "celltypist==1.6.3"
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.6" "mudata~=0.3.2"
+  pip install --upgrade --no-cache-dir "anndata~=0.12.6" "mudata~=0.3.2" && \
+  python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate celltypist"
-LABEL org.opencontainers.image.created="2025-12-18T03:06:21Z"
+LABEL org.opencontainers.image.created="2025-12-19T03:07:01Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="fe214fbce9c4b029517804c84369ca1c33f8e5c2"
+LABEL org.opencontainers.image.revision="2b9c2e13afb886ec7679d8d383bf6c81d10725a7"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
