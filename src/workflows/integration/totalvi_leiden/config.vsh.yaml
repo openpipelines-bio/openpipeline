@@ -16,17 +16,16 @@ argument_groups:
         description: ID of the sample.
         example: foo
       - name: "--input"
-        alternatives: ["-i"]
         type: file
         description: Input h5mu file to be integrated.
         example: input.h5mu
         direction: input
         required: true
-      - name: "--modality_rna"
+      - name: "--rna_modality"
         type: string
         default: "rna"
         required: false
-      - name: "--modality_protein"
+      - name: "--prot_modality"
         type: string
         default: "prot"
         description: Name of the modality in the input (query) h5mu file containing protein data
@@ -76,7 +75,7 @@ argument_groups:
       - name: "--var_protein_names"
         type: string
         required: false
-        description: ".var column in the protein modality containing protein names. By default, use mod['protein'].var_names."
+        description: ".var column in the protein modality containing protein names. By default, use mod['prot'].var_names."
       - name: "--var_input"
         type: string
         required: false
@@ -92,7 +91,7 @@ argument_groups:
         example: output.h5mu
       - name: "--output_model"
         type: file
-        description: Directory with the reference model. If not exists, trained model will be saved there
+        description: Directory where the trained reference model will be stored.
         required: false
         default: "totalvi_model_reference/"
         direction: output
@@ -147,7 +146,7 @@ argument_groups:
           Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will 
           be created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions
           resolutions specified in '--leiden_resolution'.
-        default: "scvi_integration_leiden"
+        default: "totalvi_integration_leiden"
       - name: "--leiden_resolution"
         type: double
         description: Control the coarseness of the clustering. Higher values lead to more clusters.

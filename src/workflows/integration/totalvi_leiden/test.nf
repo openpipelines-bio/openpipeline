@@ -1,6 +1,7 @@
 nextflow.enable.dsl=2
 
 include { totalvi_leiden } from params.rootDir + "/target/nextflow/workflows/integration/totalvi_leiden/main.nf"
+include { totalvi_leiden_test } from params.rootDir + "/target/_test/nextflow/test_workflows/integration/totalvi_leiden_test/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 
@@ -48,6 +49,16 @@ workflow test_wf {
 
       "Output: $output"
     }
+    | totalvi_leiden_test.run(
+        fromState: [
+          "input": "output"
+        ],
+        args: [
+          "expected_modalities": ["rna", "prot"]
+        ]
+    )
+
+  output_ch
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
       assert output_list.size() == 2 : "output channel should contain 2 events"

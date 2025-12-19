@@ -9,7 +9,7 @@ authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer ]
   - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ maintainer ]
+    roles: [ contributor ]
 argument_groups:
   - name: Inputs
     arguments:
@@ -20,15 +20,15 @@ argument_groups:
         example: input.h5mu
         direction: input
         required: true
-      - name: "--modality_rna"
+      - name: "--rna_modality"
         type: string
         default: "rna"
-        required: false
-      - name: "--modality_protein"
+        required: true
+      - name: "--prot_modality"
         type: string
         default: "prot"
         description: Name of the modality in the input (query) h5mu file containing protein data
-        required: false
+        required: true
       - name: "--input_layer_rna"
         type: string
         required: false
@@ -74,7 +74,7 @@ argument_groups:
       - name: "--var_protein_names"
         type: string
         required: false
-        description: ".var column in the protein modality containing protein names. By default, use mod['protein'].var_names."
+        description: ".var column in the protein modality containing protein names. By default, use mod['prot'].var_names."
       - name: "--var_input"
         type: string
         required: false
@@ -85,16 +85,19 @@ argument_groups:
         type: integer
         description: "Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training."
         required: false
+        min: 0
         default: 0
       - name: "--n_var_gene_min_count"
         type: integer
         description: "Minimum number of genes threshold ensuring that sufficient observations (genes) are present for model training."
         required: false
+        min: 0
         default: 0
       - name: "--n_var_protein_min_count"
         type: integer
         description: "Minimum number of proteins threshold ensuring that sufficient observations (genes) are present for model training."
         required: false
+        min: 0
         default: 0
   - name: Model arguments
     arguments:
