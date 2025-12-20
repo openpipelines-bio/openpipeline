@@ -107,13 +107,23 @@ test_resources:
 - type: "file"
   path: "10x_5k_anticmv"
 - type: "file"
+  path: "10x_5k_anticmv_v10"
+- type: "file"
   path: "10x_5k_lung_crispr"
+- type: "file"
+  path: "10x_5k_lung_crispr_v10"
 - type: "file"
   path: "10x_5k_beam"
 - type: "file"
+  path: "10x_5k_beam_v10"
+- type: "file"
   path: "10x_5k_fixed"
 - type: "file"
+  path: "10x_5k_fixed_v10"
+- type: "file"
   path: "10x_4plex_dtc"
+- type: "file"
+  path: "10x_4plex_dtc_v10"
 info: null
 status: "enabled"
 scope:
@@ -196,7 +206,7 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "python:3.12-slim"
+  image: "python:3.13-slim"
   target_tag: "integration_build"
   namespace_separator: "/"
   setup:
@@ -210,9 +220,7 @@ engines:
     - "anndata~=0.12.6"
     - "mudata~=0.3.2"
     - "scanpy~=1.10.4"
-    - "scirpy~=0.12.0"
-    - "pandas~=2.2.3"
-    - "pytest"
+    - "scirpy"
     script:
     - "exec(\"try:\\n  import zarr; from importlib.metadata import version\\nexcept\
       \ ModuleNotFoundError:\\n  exit(0)\\nelse:  assert int(version(\\\"zarr\\\"\
@@ -233,7 +241,7 @@ build_info:
   output: "target/nextflow/convert/from_cellranger_multi_to_h5mu"
   executable: "target/nextflow/convert/from_cellranger_multi_to_h5mu/main.nf"
   viash_version: "0.9.4"
-  git_commit: "2b9c2e13afb886ec7679d8d383bf6c81d10725a7"
+  git_commit: "a19dc3ae17390db2a83c0deebf0c935cd29d2089"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

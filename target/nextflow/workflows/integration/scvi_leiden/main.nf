@@ -3618,7 +3618,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scvi_leiden",
     "viash_version" : "0.9.4",
-    "git_commit" : "2b9c2e13afb886ec7679d8d383bf6c81d10725a7",
+    "git_commit" : "a19dc3ae17390db2a83c0deebf0c935cd29d2089",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3682,7 +3682,7 @@ workflow run_wf {
   output_ch = input_ch
     | map {id, state -> 
       def new_state = state + [
-        "workflow_output": state.output
+        "workflow_output": state.output,
         "output_tiledb": state.tiledb_input_uri ? state.output_tiledb : null
       ]
       [id, new_state]

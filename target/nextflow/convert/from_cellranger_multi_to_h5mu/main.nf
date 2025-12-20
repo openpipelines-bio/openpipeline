@@ -3172,7 +3172,15 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/resources_test/10x_5k_anticmv_v10"
+    },
+    {
+      "type" : "file",
       "path" : "/resources_test/10x_5k_lung_crispr"
+    },
+    {
+      "type" : "file",
+      "path" : "/resources_test/10x_5k_lung_crispr_v10"
     },
     {
       "type" : "file",
@@ -3180,11 +3188,23 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/resources_test/10x_5k_beam_v10"
+    },
+    {
+      "type" : "file",
       "path" : "/resources_test/10x_5k_fixed"
     },
     {
       "type" : "file",
+      "path" : "/resources_test/10x_5k_fixed_v10"
+    },
+    {
+      "type" : "file",
       "path" : "/resources_test/10x_4plex_dtc"
+    },
+    {
+      "type" : "file",
+      "path" : "/resources_test/10x_4plex_dtc_v10"
     }
   ],
   "status" : "enabled",
@@ -3282,7 +3302,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.12-slim",
+      "image" : "python:3.13-slim",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3300,9 +3320,7 @@ meta = [
             "anndata~=0.12.6",
             "mudata~=0.3.2",
             "scanpy~=1.10.4",
-            "scirpy~=0.12.0",
-            "pandas~=2.2.3",
-            "pytest"
+            "scirpy"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3328,7 +3346,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "2b9c2e13afb886ec7679d8d383bf6c81d10725a7",
+    "git_commit" : "a19dc3ae17390db2a83c0deebf0c935cd29d2089",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3529,7 +3547,7 @@ def gather_input_data(dir: Path):
         )
 
     required_subfolders = [
-        dir / subfolder_name for subfolder_name in ("multi", "per_sample_outs")
+        dir / subfolder_name for subfolder_name in ("per_sample_outs",)
     ]
     found_input = {key_: {} for key_ in POSSIBLE_LIBRARY_TYPES}
     for required_subfolder in required_subfolders:
@@ -3539,21 +3557,29 @@ def gather_input_data(dir: Path):
                 "sure that the specified input folder is a valid cellranger multi output."
             )
 
-    multi_dir = dir / "multi"
-    for library_type in multi_dir.iterdir():
-        if not library_type.is_dir():
-            logger.warning(
-                "%s is not a directory. Contents of the multi folder "
-                "must be directories to be recognized as valid input data",
-                library_type,
-            )
+    library_type_dir = multi_dir if (multi_dir := (dir / "multi")).is_dir() else dir
+    for library_type in library_type_dir.iterdir():
+        if library_type.name in POSSIBLE_LIBRARY_TYPES:
+            if multi_dir.is_dir():
+                if not library_type.is_dir():
+                    logger.warning(
+                        "%s is not a directory. Contents of the multi folder "
+                        "must be directories to be recognized as valid input data",
+                        library_type,
+                    )
+                    continue
+            found_input[library_type.name] = library_type
             continue
-        if library_type.name not in POSSIBLE_LIBRARY_TYPES:
+        if multi_dir.is_dir():
             raise ValueError(
                 f"Contents of the 'multi' folder must be found one of the following: {','.join(POSSIBLE_LIBRARY_TYPES)}."
             )
+    if not found_input["count"]:
+        found_input["count"] = dir
 
-        found_input[library_type.name] = library_type
+    feature_reference = found_input["count"] / "feature_reference.csv"
+    if feature_reference:
+        found_input["feature_reference"] = feature_reference
 
     per_sample_outs_dir = dir / "per_sample_outs"
     samples_dirs = [
@@ -3564,9 +3590,10 @@ def gather_input_data(dir: Path):
     for samples_dir in samples_dirs:
         for file_part in (
             "metrics_summary.csv",
-            "count/feature_reference.csv",
             "count/crispr_analysis/perturbation_efficiencies_by_feature.csv",
+            "crispr_analysis/perturbation_efficiencies_by_feature.csv",  # Cell Ranger v10
             "count/crispr_analysis/perturbation_efficiencies_by_target.csv",
+            "crispr_analysis/perturbation_efficiencies_by_target.csv",  # Cell Ranger v10
             "antigen_analysis",
         ):
             found_file = samples_dir / file_part
@@ -3595,16 +3622,16 @@ def proces_perturbation(
 
 
 def process_feature_reference(
-    mudatas: dict[str, mudata.MuData], efficiency_files: dict[str, Path]
+    mudatas: dict[str, mudata.MuData], efficiency_file: dict[str, Path]
 ):
-    for sample, mudata_obj in mudatas.items():
-        efficiency_file = efficiency_files[sample]
-        df = pd.read_csv(
-            efficiency_file, index_col="id", sep=",", decimal=".", quotechar='"'
-        )
-        assert "feature_type" in df.columns, (
-            "Columns 'feature_type' should be present in features_reference file."
-        )
+    df_all = pd.read_csv(
+        efficiency_file, index_col="id", sep=",", decimal=".", quotechar='"'
+    )
+    assert "feature_type" in df_all.columns, (
+        "Columns 'feature_type' should be present in features_reference file."
+    )
+    for _, mudata_obj in mudatas.items():
+        df = df_all.copy(deep=True)
         feature_types = df["feature_type"]
         missing_features = set(feature_types) - set(FEATURE_TYPES_NAMES)
         if missing_features:

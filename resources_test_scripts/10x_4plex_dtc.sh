@@ -134,7 +134,6 @@ param_list:
 probe_set: "$probe_set_corrected"
 gex_reference: "$genome_tar"
 feature_reference: "$feature_ref"
-publish_dir: "$OUT/processed"
 probe_barcode_ids:
   - BC001+AB001
   - BC002+AB002
@@ -149,9 +148,22 @@ gex_generate_bam: false
 HERE
 
 nextflow \
+  run openpipelines-bio/openpipeline \
+  -r 3.0.0 \
+  -main-script target/nextflow/mapping/cellranger_multi/main.nf \
+  -resume \
+  -profile docker,mount_temp \
+  -params-file /tmp/params.yaml \
+  --publish_dir "$OUT/processed" \
+  -c src/workflows/utils/labels_ci.config
+
+mkdir -p "${OUT}_v10/processed"
+
+nextflow \
   run . \
   -main-script target/nextflow/mapping/cellranger_multi/main.nf \
   -resume \
   -profile docker,mount_temp \
   -params-file /tmp/params.yaml \
+  --publish_dir "${OUT}_v10/processed" \
   -c src/workflows/utils/labels_ci.config

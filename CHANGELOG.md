@@ -6,7 +6,14 @@
 
 * Removed `cellbender_remove_background_v0_2` (PR #1111).
 
+* `convert/from_cellranger_multi_to_h5mu`: VDJ related output is now stored in AIRR Rearrangement standard.
+   Because one cell can have multiple receptor chains, this relationship is represented as an `awkward` array
+   stored in `.obsm["airr"]` slot of the VDJ modality (PR #1109). 
+
+
 ## NEW FUNCTIONALITY
+
+* `convert/from_cellranger_multi_to_h5mu`: add support for Cell Ranger 10 (PR #1109). 
 
 * `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).
 

@@ -448,20 +448,20 @@ function ViashDockerfile {
     cat << 'VIASHDOCKER'
 FROM rocker/r2u:24.04
 ENTRYPOINT []
-RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y libhdf5-dev libgeos-dev && \
   rm -rf /var/lib/apt/lists/*
 
 RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
-  Rscript -e 'options(warn = 2); remotes::install_cran(c("hdf5r", "Seurat", "SeuratObject"), repos = "https://cran.rstudio.com")' && \
-  Rscript -e 'options(warn = 2); remotes::install_github(c("scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a"), repos = "https://cran.rstudio.com")'
+  Rscript -e 'options(warn = 2); remotes::install_cran(c("hdf5r", "Seurat", "SeuratObject"), repos = "https://cran.rstudio.com")'
 
+RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
+RUN Rscript -e 'options(warn = 2); remotes::install_github(c("scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a"), repos = "https://cran.rstudio.com")'
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5ad_to_seurat"
-LABEL org.opencontainers.image.created="2025-12-19T03:07:03Z"
+LABEL org.opencontainers.image.created="2025-12-20T03:04:27Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="2b9c2e13afb886ec7679d8d383bf6c81d10725a7"
+LABEL org.opencontainers.image.revision="a19dc3ae17390db2a83c0deebf0c935cd29d2089"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
