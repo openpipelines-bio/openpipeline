@@ -3470,7 +3470,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/differential_expression/deseq2",
     "viash_version" : "0.9.4",
-    "git_commit" : "a19dc3ae17390db2a83c0deebf0c935cd29d2089",
+    "git_commit" : "d6dc52a9e8bc6278fdaef0376ec1ff56fdd28a3f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
