@@ -378,5 +378,6 @@ def test_filter_with_hvg_exclude_features(run_component, lognormed_test_data_pat
         "Excluded features should not be marked as highly variable"
     )
 
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
