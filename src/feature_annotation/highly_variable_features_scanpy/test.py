@@ -313,5 +313,70 @@ def test_filter_with_hvg_cell_ranger_unfiltered_data_change_error_message(
     )
 
 
+def test_filter_with_hvg_exclude_features(run_component, lognormed_test_data_path):
+    """
+    Test that excluding features from HVG calculation works correctly.
+    Features in the exclusion list should be excluded from HVG selection
+    but remain in the output data with highly_variable=False.
+    """
+    # Read input to get some feature names to exclude
+    input_data = mu.read_h5mu(lognormed_test_data_path)
+    rna = input_data.mod["rna"]
+    # Get first 5 feature names to exclude
+    features_to_exclude = rna.var_names[:5].tolist()
+
+    # First, run without exclusion
+    run_component(
+        [
+            "--flavor",
+            "seurat",
+            "--input",
+            lognormed_test_data_path,
+            "--output",
+            "output_no_exclusion.h5mu",
+            "--layer",
+            "log_transformed",
+            "--output_compression",
+            "gzip",
+        ]
+    )
+
+    # Then run with exclusion of specific features
+    run_component(
+        [
+            "--flavor",
+            "seurat",
+            "--input",
+            lognormed_test_data_path,
+            "--output",
+            "output_with_exclusion.h5mu",
+            "--layer",
+            "log_transformed",
+            "--output_compression",
+            "gzip",
+            "--features_to_exclude",
+            ";".join(features_to_exclude),
+        ]
+    )
+
+    assert os.path.exists("output_with_exclusion.h5mu")
+    data_no_exclusion = mu.read_h5mu("output_no_exclusion.h5mu")
+    data_with_exclusion = mu.read_h5mu("output_with_exclusion.h5mu")
+
+    rna_no_exclusion = data_no_exclusion.mod["rna"]
+    rna_with_exclusion = data_with_exclusion.mod["rna"]
+
+    # Check that filter_with_hvg column exists
+    assert "filter_with_hvg" in rna_with_exclusion.var.columns
+
+    # Check that all features are still present (exclusion doesn't remove features)
+    assert rna_with_exclusion.n_vars == rna_no_exclusion.n_vars
+
+    # Check that excluded features are not marked as HVG
+    excluded_hvg = rna_with_exclusion.var.loc[features_to_exclude, "filter_with_hvg"]
+    assert not excluded_hvg.any(), (
+        "Excluded features should not be marked as highly variable"
+    )
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
