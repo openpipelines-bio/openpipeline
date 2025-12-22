@@ -2,6 +2,11 @@ name: "totalvi_leiden"
 namespace: "workflows/integration"
 scope: "public"
 description: "Run totalVI integration, followed by neighbour calculations, leiden clustering and UMAP."
+info:
+  name: totalVI Leiden
+  test_dependencies:
+    - name: totalvi_leiden_test
+      namespace: test_workflows/integration
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author ]
