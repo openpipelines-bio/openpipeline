@@ -1,0 +1,656 @@
+name: "cellbender_remove_background"
+namespace: "correction"
+version: "3.0.1"
+argument_groups:
+- name: "Inputs"
+  arguments:
+  - type: "file"
+    name: "--input"
+    alternatives:
+    - "-i"
+    description: "Input h5mu file. Data file on which to run tool. Data must be un-filtered:\
+      \ it should include empty droplets."
+    info: null
+    example:
+    - "input.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--modality"
+    description: "List of modalities to process."
+    info: null
+    default:
+    - "rna"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Outputs"
+  arguments:
+  - type: "file"
+    name: "--output"
+    alternatives:
+    - "-o"
+    description: "Full count matrix as an h5mu file, with background RNA removed.\
+      \ This file contains all the original droplet barcodes."
+    info: null
+    example:
+    - "output.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--layer_output"
+    description: "Output layer"
+    info: null
+    default:
+    - "cellbender_corrected"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_background_fraction"
+    info: null
+    default:
+    - "cellbender_background_fraction"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_cell_probability"
+    info: null
+    default:
+    - "cellbender_cell_probability"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_cell_size"
+    info: null
+    default:
+    - "cellbender_cell_size"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_droplet_efficiency"
+    description: "Name of the column in the .obs dataframe to store the droplet efficiencies\
+      \ in.\n"
+    info: null
+    default:
+    - "cellbender_droplet_efficiency"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_latent_scale"
+    info: null
+    default:
+    - "cellbender_latent_scale"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--var_ambient_expression"
+    info: null
+    default:
+    - "cellbender_ambient_expression"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obsm_gene_expression_encoding"
+    info: null
+    default:
+    - "cellbender_gene_expression_encoding"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_compression"
+    description: "Compression format to use for the output AnnData and/or Mudata objects.\n\
+      By default no compression is applied.\n"
+    info: null
+    example:
+    - "gzip"
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Arguments"
+  arguments:
+  - type: "boolean"
+    name: "--expected_cells_from_qc"
+    description: "Will use the Cell Ranger QC to determine the estimated number of\
+      \ cells"
+    info: null
+    default:
+    - false
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--expected_cells"
+    description: "Number of cells expected in the dataset (a rough estimate within\
+      \ a factor of 2 is sufficient)."
+    info: null
+    example:
+    - 1000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--total_droplets_included"
+    description: "The number of droplets from the rank-ordered UMI plot\nthat will\
+      \ have their cell probabilities inferred as an\noutput. Include the droplets\
+      \ which might contain cells.\nDroplets beyond TOTAL_DROPLETS_INCLUDED should\
+      \ be\n'surely empty' droplets.\n"
+    info: null
+    example:
+    - 25000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--force_cell_umi_prior"
+    description: "Ignore CellBender's heuristic prior estimation, and use this prior\
+      \ for UMI counts in cells."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--force_empty_umi_prior"
+    description: "Ignore CellBender's heuristic prior estimation, and use this prior\
+      \ for UMI counts in empty droplets."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--model"
+    description: "Which model is being used for count data.\n\n* 'naive' subtracts\
+      \ the estimated ambient profile.\n* 'simple' does not model either ambient RNA\
+      \ or random barcode swapping (for debugging purposes -- not recommended).\n\
+      * 'ambient' assumes background RNA is incorporated into droplets.\n* 'swapping'\
+      \ assumes background RNA comes from random barcode swapping (via PCR chimeras).\n\
+      * 'full' uses a combined ambient and swapping model.\n"
+    info: null
+    default:
+    - "full"
+    required: false
+    choices:
+    - "naive"
+    - "simple"
+    - "ambient"
+    - "swapping"
+    - "full"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--epochs"
+    description: "Number of epochs to train."
+    info: null
+    default:
+    - 150
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--low_count_threshold"
+    description: "Droplets with UMI counts below this number are completely \nexcluded\
+      \ from the analysis. This can help identify the correct \nprior for empty droplet\
+      \ counts in the rare case where empty \ncounts are extremely high (over 200).\n"
+    info: null
+    default:
+    - 5
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--z_dim"
+    description: "Dimension of latent variable z.\n"
+    info: null
+    default:
+    - 64
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--z_layers"
+    description: "Dimension of hidden layers in the encoder for z.\n"
+    info: null
+    default:
+    - 512
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "double"
+    name: "--training_fraction"
+    description: "Training detail: the fraction of the data used for training.\nThe\
+      \ rest is never seen by the inference algorithm. Speeds up learning.\n"
+    info: null
+    default:
+    - 0.9
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--empty_drop_training_fraction"
+    description: "Training detail: the fraction of the training data each epoch that\
+      \ \nis drawn (randomly sampled) from surely empty droplets.\n"
+    info: null
+    default:
+    - 0.2
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--ignore_features"
+    description: "Integer indices of features to ignore entirely. In the output\n\
+      count matrix, the counts for these features will be unchanged.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "double"
+    name: "--fpr"
+    description: "Target 'delta' false positive rate in [0, 1). Use 0 for a cohort\n\
+      of samples which will be jointly analyzed for differential expression.\nA false\
+      \ positive is a true signal count that is erroneously removed.\nMore background\
+      \ removal is accompanied by more signal removal at\nhigh values of FPR. You\
+      \ can specify multiple values, which will\ncreate multiple output files.\n"
+    info: null
+    default:
+    - 0.01
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "string"
+    name: "--exclude_feature_types"
+    description: "Feature types to ignore during the analysis. These features will\n\
+      be left unchanged in the output file.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "double"
+    name: "--projected_ambient_count_threshold"
+    description: "Controls how many features are included in the analysis, which\n\
+      can lead to a large speedup. If a feature is expected to have less\nthan PROJECTED_AMBIENT_COUNT_THRESHOLD\
+      \ counts total in all cells\n(summed), then that gene is excluded, and it will\
+      \ be unchanged\nin the output count matrix. For example, \nPROJECTED_AMBIENT_COUNT_THRESHOLD\
+      \ = 0 will include all features\nwhich have even a single count in any empty\
+      \ droplet.\n"
+    info: null
+    default:
+    - 0.1
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--learning_rate"
+    description: "Training detail: lower learning rate for inference.\nA OneCycle\
+      \ learning rate schedule is used, where the\nupper learning rate is ten times\
+      \ this value. (For this\nvalue, probably do not exceed 1e-3).\n"
+    info: null
+    default:
+    - 1.0E-4
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--final_elbo_fail_fraction"
+    description: "Training is considered to have failed if \n(best_test_ELBO - final_test_ELBO)/(best_test_ELBO\
+      \ - initial_test_ELBO) > FINAL_ELBO_FAIL_FRACTION.\nTraining will automatically\
+      \ re-run if --num-training-tries > 1.\nBy default, will not fail training based\
+      \ on final_training_ELBO.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--epoch_elbo_fail_fraction"
+    description: "Training is considered to have failed if \n(previous_epoch_test_ELBO\
+      \ - current_epoch_test_ELBO)/(previous_epoch_test_ELBO - initial_train_ELBO)\
+      \ > EPOCH_ELBO_FAIL_FRACTION.\nTraining will automatically re-run if --num-training-tries\
+      \ > 1.\nBy default, will not fail training based on epoch_training_ELBO.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--num_training_tries"
+    description: "Number of times to attempt to train the model. At each subsequent\
+      \ attempt,\nthe learning rate is multiplied by LEARNING_RATE_RETRY_MULT.\n"
+    info: null
+    default:
+    - 1
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--learning_rate_retry_mult"
+    description: "Learning rate is multiplied by this amount each time a new training\n\
+      attempt is made. (This parameter is only used if training fails based\non EPOCH_ELBO_FAIL_FRACTION\
+      \ or FINAL_ELBO_FAIL_FRACTION and\nNUM_TRAINING_TRIES is > 1.) \n"
+    info: null
+    default:
+    - 0.2
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--posterior_batch_size"
+    description: "Training detail: size of batches when creating the posterior.\n\
+      Reduce this to avoid running out of GPU memory creating the posterior\n(will\
+      \ be slower).\n"
+    info: null
+    default:
+    - 128
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--posterior_regulation"
+    description: "Posterior regularization method. (For experts: not required for\
+      \ normal usage,\nsee documentation). \n\n* PRq is approximate quantile-targeting.\n\
+      * PRmu is approximate mean-targeting aggregated over genes (behavior of v0.2.0).\n\
+      * PRmu_gene is approximate mean-targeting per gene.\n"
+    info: null
+    required: false
+    choices:
+    - "PRq"
+    - "PRmu"
+    - "PRmu_gene"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--alpha"
+    description: "Tunable parameter alpha for the PRq posterior regularization method\n\
+      (not normally used: see documentation).\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--q"
+    description: "Tunable parameter q for the CDF threshold estimation method (not\n\
+      normally used: see documentation).\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--estimator"
+    description: "Output denoised count estimation method. (For experts: not required\n\
+      for normal usage, see documentation).\n"
+    info: null
+    default:
+    - "mckp"
+    required: false
+    choices:
+    - "map"
+    - "mean"
+    - "cdf"
+    - "sample"
+    - "mckp"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--estimator_multiple_cpu"
+    description: "Including the flag --estimator-multiple-cpu will use more than one\n\
+      CPU to compute the MCKP output count estimator in parallel (does nothing\nfor\
+      \ other estimators).\n"
+    info: null
+    direction: "input"
+  - type: "boolean"
+    name: "--constant_learning_rate"
+    description: "Including the flag --constant-learning-rate will use the ClippedAdam\n\
+      optimizer instead of the OneCycleLR learning rate schedule, which is\nthe default.\
+      \ Learning is faster with the OneCycleLR schedule.\nHowever, training can easily\
+      \ be continued from a checkpoint for more\nepochs than the initial command specified\
+      \ when using ClippedAdam. On\nthe other hand, if using the OneCycleLR schedule\
+      \ with 150 epochs\nspecified, it is not possible to pick up from that final\
+      \ checkpoint\nand continue training until 250 epochs.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--debug"
+    description: "Including the flag --debug will log extra messages useful for debugging.\n"
+    info: null
+    direction: "input"
+  - type: "boolean_true"
+    name: "--cuda"
+    description: "Including the flag --cuda will run the inference on a\nGPU.\n"
+    info: null
+    direction: "input"
+resources:
+- type: "python_script"
+  path: "script.py"
+  is_executable: true
+- type: "file"
+  path: "setup_logger.py"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Eliminating technical artifacts from high-throughput single-cell RNA\
+  \ sequencing data.\n\nThis module removes counts due to ambient RNA molecules and\
+  \ random barcode swapping from (raw) UMI-based scRNA-seq count matrices. \nAt the\
+  \ moment, only the count matrices produced by the CellRanger count pipeline is supported.\
+  \ Support for additional tools and protocols \nwill be added in the future. A quick\
+  \ start tutorial can be found here.\n\nFleming et al. 2022, bioRxiv.\n"
+test_resources:
+- type: "python_script"
+  path: "test.py"
+  is_executable: true
+- type: "file"
+  path: "pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+info: null
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "midcpu"
+    - "midmem"
+    - "gpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "nvcr.io/nvidia/cuda:11.8.0-devel-ubuntu22.04"
+  target_tag: "3.0.0"
+  namespace_separator: "/"
+  setup:
+  - type: "docker"
+    run:
+    - "apt update && DEBIAN_FRONTEND=noninteractive apt install -y make build-essential\
+      \ libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget ca-certificates\
+      \ curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev\
+      \ liblzma-dev mecab-ipadic-utf8 git \\\n&& curl https://pyenv.run | bash \\\n\
+      && pyenv update \\\n&& pyenv install $PYTHON_VERSION \\\n&& pyenv global $PYTHON_VERSION\
+      \ \\\n&& apt-get clean\n"
+    env:
+    - "PYENV_ROOT=\"/root/.pyenv\""
+    - "PATH=\"$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH\""
+    - "PYTHON_VERSION=3.7.16"
+  - type: "python"
+    user: false
+    packages:
+    - "lxml~=4.8.0"
+    - "mudata~=0.2.1"
+    - "cellbender~=0.3.0"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/correction/cellbender_remove_background/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "docker"
+  output: "target/nextflow/correction/cellbender_remove_background"
+  executable: "target/nextflow/correction/cellbender_remove_background/main.nf"
+  viash_version: "0.9.4"
+  git_commit: "933f8b1c50b8c84eb0a57e7a24e240c22427f2b5"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "3.0.0-3-g933f8b1c50b"
+package_config:
+  name: "openpipeline"
+  version: "v3.0.1"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.4"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"3.0.1\""
+  - ".engines[.type == 'docker'].target_tag := '3.0.0'"
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"
