@@ -65,6 +65,8 @@
 
 ## BUG FIXES
 
+* `workflows/cellranger_multi`: fix `ocm_barcode_ids`, `min_crispr_umi`, `emptydrops_minimum_umis` and `hashtag_ids` arguments not being applied (PR #).
+
 * `differential_expression/create_pseudobulks`: Fixed the check to verify that the raw counts layer was passed (PR #1072).
 
 * `filter/filter_with_counts`: this component would sometimes crash (segfault) when processing malformatted sparse matrices. A proper error message is now provided in this case (PR #1086).
