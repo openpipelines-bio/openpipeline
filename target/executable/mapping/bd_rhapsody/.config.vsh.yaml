@@ -1,0 +1,1170 @@
+name: "bd_rhapsody"
+namespace: "mapping"
+version: "3.0.1"
+authors:
+- name: "Robrecht Cannoodt"
+  roles:
+  - "author"
+  - "maintainer"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "robrecht@data-intuitive.com"
+      github: "rcannood"
+      orcid: "0000-0003-3641-729X"
+      linkedin: "robrechtcannoodt"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Science Engineer"
+    - name: "Open Problems"
+      href: "https://openproblems.bio"
+      role: "Core Member"
+- name: "Weiwei Schultz"
+  roles:
+  - "contributor"
+  info:
+    role: "Contributor"
+    organizations:
+    - name: "Janssen R&D US"
+      role: "Associate Director Data Sciences"
+argument_groups:
+- name: "Inputs"
+  arguments:
+  - type: "file"
+    name: "--reads"
+    description: "Reads (optional) - Path to your FASTQ.GZ formatted read files from\
+      \ libraries that may include:\n  \n- WTA mRNA\n- Targeted mRNA\n- AbSeq\n- Sample\
+      \ Multiplexing\n- VDJ\n  \nYou may specify as many R1/R2 read pairs as you want.\n"
+    info:
+      config_key: "Reads"
+    example:
+    - "WTALibrary_S1_L001_R1_001.fastq.gz"
+    - "WTALibrary_S1_L001_R2_001.fastq.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--reads_atac"
+    description: "Path to your FASTQ.GZ formatted read files from ATAC-Seq libraries.\n\
+      You may specify as many R1/R2/I2 files as you want.\n"
+    info:
+      config_key: "Reads_ATAC"
+    example:
+    - "ATACLibrary_S2_L001_R1_001.fastq.gz"
+    - "ATACLibrary_S2_L001_R2_001.fastq.gz"
+    - "ATACLibrary_S2_L001_I2_001.fastq.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "References"
+  description: "Assay type will be inferred from the provided reference(s).\nDo not\
+    \ provide both reference_archive and targeted_reference at the same time.\n  \n\
+    Valid reference input combinations:\n  - reference_archive: WTA only\n  - reference_archive\
+    \ & abseq_reference: WTA + AbSeq\n  - reference_archive & supplemental_reference:\
+    \ WTA + extra transgenes\n  - reference_archive & abseq_reference & supplemental_reference:\
+    \ WTA + AbSeq + extra transgenes\n  - reference_archive: WTA + ATAC or ATAC only\n\
+    \  - reference_archive & supplemental_reference: WTA + ATAC + extra transgenes\n\
+    \  - targeted_reference: Targeted only\n  - targeted_reference & abseq_reference:\
+    \ Targeted + AbSeq\n  - abseq_reference: AbSeq only\n\nThe reference_archive can\
+    \ be generated with the bd_rhapsody_make_reference component.\nAlternatively,\
+    \ BD also provides standard references which can be downloaded from these locations:\n\
+    \n  - Human: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Human_WTA_2023-02.tar.gz\n\
+    \  - Mouse: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Mouse_WTA_2023-02.tar.gz\n"
+  arguments:
+  - type: "file"
+    name: "--reference_archive"
+    description: "Path to Rhapsody WTA Reference in the tar.gz format.\n\nStructure\
+      \ of the reference archive:\n  \n- `BD_Rhapsody_Reference_Files/`: top level\
+      \ folder\n  - `star_index/`: sub-folder containing STAR index, that is files\
+      \ created with `STAR --runMode genomeGenerate`\n  - GTF for gene-transcript-annotation\
+      \ e.g. \"gencode.v43.primary_assembly.annotation.gtf\"\n"
+    info:
+      config_key: "Reference_Archive"
+    example:
+    - "RhapRef_Human_WTA_2023-02.tar.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--targeted_reference"
+    description: "Path to the targeted reference file in FASTA format.\n"
+    info:
+      config_key: "Targeted_Reference"
+    example:
+    - "BD_Rhapsody_Immune_Response_Panel_Hs.fasta"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--abseq_reference"
+    description: "Path to the AbSeq reference file in FASTA format.  Only needed if\
+      \ BD AbSeq Ab-Oligos are used."
+    info:
+      config_key: "AbSeq_Reference"
+    example:
+    - "AbSeq_reference.fasta"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--supplemental_reference"
+    alternatives:
+    - "-s"
+    description: "Path to the supplemental reference file in FASTA format.  Only needed\
+      \ if there are additional transgene sequences to be aligned against in a WTA\
+      \ assay experiment."
+    info:
+      config_key: "Supplemental_Reference"
+    example:
+    - "supplemental_reference.fasta"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "Outputs"
+  description: "Outputs for all pipeline runs"
+  arguments:
+  - type: "file"
+    name: "--output_dir"
+    alternatives:
+    - "-o"
+    description: "The unprocessed output directory containing all the outputs from\
+      \ the pipeline."
+    info: null
+    example:
+    - "output_dir"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_seurat"
+    description: "Single-cell analysis tool inputs. Seurat (.rds) input file containing\
+      \ RSEC molecules data table and all cell annotation metadata."
+    info:
+      template: "sample_Seurat.rds"
+    example:
+    - "output_seurat.rds"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_mudata"
+    info:
+      template: "sample.h5mu"
+    example:
+    - "output_mudata.h5mu"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--metrics_summary"
+    description: "Metrics Summary. Report containing sequencing, molecules, and cell\
+      \ metrics."
+    info:
+      template: "sample_Metrics_Summary.csv"
+    example:
+    - "metrics_summary.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--pipeline_report"
+    description: "Pipeline Report. Summary report containing the results from the\
+      \ sequencing analysis pipeline run."
+    info:
+      template: "sample_Pipeline_Report.html"
+    example:
+    - "pipeline_report.html"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--rsec_mols_per_cell"
+    description: "Molecules per bioproduct per cell bassed on RSEC"
+    info:
+      template: "sample_RSEC_MolsPerCell_MEX.zip"
+    example:
+    - "RSEC_MolsPerCell_MEX.zip"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--dbec_mols_per_cell"
+    description: "Molecules per bioproduct per cell bassed on DBEC. DBEC data table\
+      \ is only output if the experiment includes targeted mRNA or AbSeq bioproducts."
+    info:
+      template: "sample_DBEC_MolsPerCell_MEX.zip"
+    example:
+    - "DBEC_MolsPerCell_MEX.zip"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--rsec_mols_per_cell_unfiltered"
+    description: "Unfiltered tables containing all cell labels with 10 reads."
+    info:
+      template: "sample_RSEC_MolsPerCell_Unfiltered_MEX.zip"
+    example:
+    - "RSEC_MolsPerCell_Unfiltered_MEX.zip"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--bam"
+    description: "Alignment file of R2 with associated R1 annotations for Bioproduct."
+    info:
+      template: "sample_Bioproduct.bam"
+    example:
+    - "BioProduct.bam"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--bam_index"
+    description: "Index file for the alignment file."
+    info:
+      template: "sample_Bioproduct.bam.bai"
+    example:
+    - "BioProduct.bam.bai"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--bioproduct_stats"
+    description: "Bioproduct Stats. Metrics from RSEC and DBEC Unique Molecular Identifier\
+      \ adjustment algorithms on a per-bioproduct basis."
+    info:
+      template: "sample_Bioproduct_Stats.csv"
+    example:
+    - "Bioproduct_Stats.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--dimred_tsne"
+    description: "t-SNE dimensionality reduction coordinates per cell index"
+    info:
+      template: "sample_assay_tSNE_coordinates.csv"
+    example:
+    - "tSNE_coordinates.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--dimred_umap"
+    description: "UMAP dimensionality reduction coordinates per cell index"
+    info:
+      template: "sample_assay_UMAP_coordinates.csv"
+    example:
+    - "UMAP_coordinates.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--immune_cell_classification"
+    description: "Immune Cell Classification. Cell type classification based on the\
+      \ expression of immune cell markers."
+    info:
+      template: "sample_assay_cell_type_experimental.csv"
+    example:
+    - "Immune_Cell_Classification.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+- name: "Multiplex outputs"
+  description: "Outputs when multiplex option is selected"
+  arguments:
+  - type: "file"
+    name: "--sample_tag_metrics"
+    description: "Sample Tag Metrics. Metrics from the sample determination algorithm."
+    info:
+      template: "sample_Sample_Tag_Metrics.csv"
+    example:
+    - "Sample_Tag_Metrics.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--sample_tag_calls"
+    description: "Sample Tag Calls. Assigned Sample Tag for each putative cell"
+    info:
+      template: "sample_Sample_Tag_Calls.csv"
+    example:
+    - "Sample_Tag_Calls.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--sample_tag_counts"
+    description: "Sample Tag Counts. Separate data tables and metric summary for cells\
+      \ assigned to each sample tag. Note: For putative cells that could not be assigned\
+      \ a specific Sample Tag, a Multiplet_and_Undetermined.zip file is also output."
+    info:
+      template: "sample_Sample_Tag.zip"
+    example:
+    - "Sample_Tag1.zip"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--sample_tag_counts_unassigned"
+    description: "Sample Tag Counts Unassigned. Data table and metric summary for\
+      \ cells that could not be assigned a specific Sample Tag."
+    info:
+      template: "sample_Multiplet_and_Undetermined.zip"
+    example:
+    - "Multiplet_and_Undetermined.zip"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+- name: "VDJ Outputs"
+  description: "Outputs when VDJ option selected"
+  arguments:
+  - type: "file"
+    name: "--vdj_metrics"
+    description: "VDJ Metrics. Overall metrics from the VDJ analysis."
+    info:
+      template: "sample_VDJ_Metrics.csv"
+    example:
+    - "VDJ_Metrics.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--vdj_per_cell"
+    description: "VDJ Per Cell. Cell specific read and molecule counts, VDJ gene segments,\
+      \ CDR3 sequences, paired chains, and cell type."
+    info:
+      template: "sample_VDJ_perCell.csv"
+    example:
+    - "VDJ_perCell.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--vdj_per_cell_uncorrected"
+    description: "VDJ Per Cell Uncorrected. Cell specific read and molecule counts,\
+      \ VDJ gene segments, CDR3 sequences, paired chains, and cell type."
+    info:
+      template: "sample_VDJ_perCell_uncorrected.csv"
+    example:
+    - "VDJ_perCell_uncorrected.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--vdj_dominant_contigs"
+    description: "VDJ Dominant Contigs. Dominant contig for each cell label chain\
+      \ type combination (putative cells only)."
+    info:
+      template: "sample_VDJ_Dominant_Contigs_AIRR.csv"
+    example:
+    - "VDJ_Dominant_Contigs_AIRR.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--vdj_unfiltered_contigs"
+    description: "VDJ Unfiltered Contigs. All contigs that were assembled and annotated\
+      \ successfully (all cells)."
+    info:
+      template: "sample_VDJ_Unfiltered_Contigs_AIRR.csv"
+    example:
+    - "VDJ_Unfiltered_Contigs_AIRR.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+- name: "ATAC-Seq outputs"
+  description: "Outputs when ATAC-Seq option selected"
+  arguments:
+  - type: "file"
+    name: "--atac_metrics"
+    description: "ATAC Metrics. Overall metrics from the ATAC-Seq analysis."
+    info:
+      template: "sample_ATAC_Metrics.csv"
+    example:
+    - "ATAC_Metrics.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--atac_metrics_json"
+    description: "ATAC Metrics JSON. Overall metrics from the ATAC-Seq analysis in\
+      \ JSON format."
+    info:
+      template: "sample_ATAC_Metrics.json"
+    example:
+    - "ATAC_Metrics.json"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--atac_fragments"
+    description: "ATAC Fragments. Chromosomal location, cell index, and read support\
+      \ for each fragment detected"
+    info:
+      template: "sample_ATAC_Fragments.bed.gz"
+    example:
+    - "ATAC_Fragments.bed.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--atac_fragments_index"
+    description: "Index of ATAC Fragments."
+    info:
+      template: "sample_ATAC_Fragments.bed.gz.tbi"
+    example:
+    - "ATAC_Fragments.bed.gz.tbi"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--atac_transposase_sites"
+    description: "ATAC Transposase Sites. Chromosomal location, cell index, and read\
+      \ support for each transposase site detected"
+    info:
+      template: "sample_ATAC_Transposase_Sites.bed.gz"
+    example:
+    - "ATAC_Transposase_Sites.bed.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--atac_transposase_sites_index"
+    description: "Index of ATAC Transposase Sites."
+    info:
+      template: "sample_ATAC_Transposase_Sites.bed.gz.tbi"
+    example:
+    - "ATAC_Transposase_Sites.bed.gz.tbi"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--atac_peaks"
+    description: "ATAC Peaks. Peak regions of transposase activity"
+    info:
+      template: "sample_ATAC_Peaks.bed.gz"
+    example:
+    - "ATAC_Peaks.bed.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--atac_peaks_index"
+    description: "Index of ATAC Peaks."
+    info:
+      template: "sample_ATAC_Peaks.bed.gz.tbi"
+    example:
+    - "ATAC_Peaks.bed.gz.tbi"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--atac_peak_annotation"
+    description: "ATAC Peak Annotation. Estimated annotation of peak-to-gene connections"
+    info:
+      template: "sample_peak_annotation.tsv.gz"
+    example:
+    - "peak_annotation.tsv.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--atac_cell_by_peak"
+    description: "ATAC Cell by Peak. Peak regions of transposase activity per cell"
+    info:
+      template: "sample_ATAC_Cell_by_Peak_MEX.zip"
+    example:
+    - "ATAC_Cell_by_Peak_MEX.zip"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--atac_cell_by_peak_unfiltered"
+    description: "ATAC Cell by Peak Unfiltered. Unfiltered file containing all cell\
+      \ labels with >=1 transposase sites in peaks."
+    info:
+      template: "sample_ATAC_Cell_by_Peak_Unfiltered_MEX.zip"
+    example:
+    - "ATAC_Cell_by_Peak_Unfiltered_MEX.zip"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--atac_bam"
+    description: "ATAC BAM. Alignment file for R1 and R2 with associated I2 annotations\
+      \ for ATAC-Seq. Only output if the BAM generation flag is set to true."
+    info:
+      template: "sample_ATAC.bam"
+    example:
+    - "ATAC.bam"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--atac_bam_index"
+    description: "Index of ATAC BAM."
+    info:
+      template: "sample_ATAC.bam.bai"
+    example:
+    - "ATAC.bam.bai"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+- name: "AbSeq Cell Calling outputs"
+  description: "Outputs when Cell Calling Abseq is selected"
+  arguments:
+  - type: "file"
+    name: "--protein_aggregates_experimental"
+    description: "Protein Aggregates Experimental"
+    info:
+      template: "sample_Protein_Aggregates_Experimental.csv"
+    example:
+    - "Protein_Aggregates_Experimental.csv"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+- name: "Putative Cell Calling Settings"
+  arguments:
+  - type: "string"
+    name: "--cell_calling_data"
+    description: "Specify the dataset to be used for putative cell calling: mRNA,\
+      \ AbSeq, ATAC, mRNA_and_ATAC\n  \nFor putative cell calling using an AbSeq dataset,\
+      \ please provide an AbSeq_Reference fasta file above.\n  \nFor putative cell\
+      \ calling using an ATAC dataset, please provide a WTA+ATAC-Seq Reference_Archive\
+      \ file above.\n  \nThe default data for putative cell calling, will be determined\
+      \ the following way:\n  \n- If mRNA Reads and ATAC Reads exist: mRNA_and_ATAC\n\
+      - If only ATAC Reads exist: ATAC\n- Otherwise: mRNA\n"
+    info:
+      config_key: "Cell_Calling_Data"
+    example:
+    - "mRNA"
+    required: false
+    choices:
+    - "mRNA"
+    - "AbSeq"
+    - "ATAC"
+    - "mRNA_and_ATAC"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--cell_calling_bioproduct_algorithm"
+    description: "Specify the bioproduct algorithm to be used for putative cell calling:\
+      \ Basic or Refined\n  \nBy default, the Basic algorithm will be used for putative\
+      \ cell calling.\n"
+    info:
+      config_key: "Cell_Calling_Bioproduct_Algorithm"
+    example:
+    - "Basic"
+    required: false
+    choices:
+    - "Basic"
+    - "Refined"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--cell_calling_atac_algorithm"
+    description: "Specify the ATAC-seq algorithm to be used for putative cell calling:\
+      \ Basic or Refined\n  \nBy default, the Basic algorithm will be used for putative\
+      \ cell calling.\n"
+    info:
+      config_key: "Cell_Calling_ATAC_Algorithm"
+    example:
+    - "Basic"
+    required: false
+    choices:
+    - "Basic"
+    - "Refined"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--exact_cell_count"
+    description: "Set a specific number of cells as putative, based on those with\
+      \ the highest error-corrected read count\n"
+    info:
+      config_key: "Exact_Cell_Count"
+    example:
+    - 10000
+    required: false
+    min: 1
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--expected_cell_count"
+    description: "Guide the basic putative cell calling algorithm by providing an\
+      \ estimate of the number of cells expected.  Usually this can be the number\
+      \ of cells loaded into the Rhapsody cartridge.  If there are multiple inflection\
+      \ points on the second derivative cumulative curve, this will ensure the one\
+      \ selected is near the expected. \n"
+    info:
+      config_key: "Expected_Cell_Count"
+    example:
+    - 20000
+    required: false
+    min: 1
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Intronic Reads Settings"
+  arguments:
+  - type: "boolean"
+    name: "--exclude_intronic_reads"
+    description: "By default, the flag is false, and reads aligned to exons and introns\
+      \ are considered and represented in molecule counts. When the flag is set to\
+      \ true, intronic reads will be excluded.\nThe value can be true or false.\n"
+    info:
+      config_key: "Exclude_Intronic_Reads"
+    example:
+    - false
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Multiplex Settings"
+  arguments:
+  - type: "string"
+    name: "--sample_tags_version"
+    description: "Specify the version of the Sample Tags used in the run:\n\n* If\
+      \ Sample Tag Multiplexing was done, specify the appropriate version: human,\
+      \ mouse, flex, nuclei_includes_mrna, nuclei_atac_only\n* If this is an SMK +\
+      \ Nuclei mRNA run or an SMK + Multiomic ATAC-Seq (WTA+ATAC-Seq) run (and not\
+      \ an SMK + ATAC-Seq only run), choose the \"nuclei_includes_mrna\" option.\n\
+      * If this is an SMK + ATAC-Seq only run (and not SMK + Multiomic ATAC-Seq (WTA+ATAC-Seq)),\
+      \ choose the \"nuclei_atac_only\" option.\n"
+    info:
+      config_key: "Sample_Tags_Version"
+    example:
+    - "human"
+    required: false
+    choices:
+    - "human"
+    - "mouse"
+    - "flex"
+    - "nuclei_includes_mrna"
+    - "nuclei_atac_only"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--tag_names"
+    description: "Specify the tag number followed by '-' and the desired sample name\
+      \ to appear in Sample_Tag_Metrics.csv\nDo not use the special characters.\n"
+    info:
+      config_key: "Tag_Names"
+    example:
+    - "4-mySample"
+    - "9-myOtherSample"
+    - "6-alsoThisSample"
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "VDJ arguments"
+  arguments:
+  - type: "string"
+    name: "--vdj_version"
+    description: "If VDJ was done, specify the appropriate option: human, mouse, humanBCR,\
+      \ humanTCR, mouseBCR, mouseTCR\n"
+    info:
+      config_key: "VDJ_Version"
+    example:
+    - "human"
+    required: false
+    choices:
+    - "human"
+    - "mouse"
+    - "humanBCR"
+    - "humanTCR"
+    - "mouseBCR"
+    - "mouseTCR"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "ATAC options"
+  arguments:
+  - type: "file"
+    name: "--predefined_atac_peaks"
+    description: "An optional BED file containing pre-established chromatin accessibility\
+      \ peak regions for generating the ATAC cell-by-peak matrix."
+    info:
+      config_key: "Predefined_ATAC_Peaks"
+    example:
+    - "predefined_peaks.bed"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Additional options"
+  arguments:
+  - type: "string"
+    name: "--run_name"
+    description: "Specify a run name to use as the output file base name. Use only\
+      \ letters, numbers, or hyphens. Do not use special characters or spaces.\n"
+    info:
+      config_key: "Run_Name"
+    default:
+    - "sample"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--generate_bam"
+    description: "Specify whether to create the BAM file output\n"
+    info:
+      config_key: "Generate_Bam"
+    default:
+    - false
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--long_reads"
+    description: "Use STARlong (default: undefined - i.e. autodetects based on read\
+      \ lengths) - Specify if the STARlong aligner should be used instead of STAR.\
+      \ Set to true if the reads are longer than 650bp.\n"
+    info:
+      config_key: "Long_Reads"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Advanced options"
+  description: "NOTE: Only change these if you are really sure about what you are\
+    \ doing\n"
+  arguments:
+  - type: "string"
+    name: "--custom_star_params"
+    description: "Modify STAR alignment parameters - Set this parameter to fully override\
+      \ default STAR mapping parameters used in the pipeline.\nFor reference this\
+      \ is the default that is used:\n\n  Short Reads: `--outFilterScoreMinOverLread\
+      \ 0 --outFilterMatchNminOverLread 0 --outFilterMultimapScoreRange 0 --clip3pAdapterSeq\
+      \ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA --seedSearchStartLmax 50 --outFilterMatchNmin\
+      \ 25 --limitOutSJcollapsed 2000000`\n  Long Reads: Same as Short Reads + `--seedPerReadNmax\
+      \ 10000`\n\nThis applies to fastqs provided in the Reads user input \nDo NOT\
+      \ set any non-mapping related params like `--genomeDir`, `--outSAMtype`, `--outSAMunmapped`,\
+      \ `--readFilesIn`, `--runThreadN`, etc.\nWe use STAR version 2.7.10b\n"
+    info:
+      config_key: "Custom_STAR_Params"
+    example:
+    - "--alignIntronMax 6000 --outFilterScoreMinOverLread 0.1 --limitOutSJcollapsed\
+      \ 2000000"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--custom_bwa_mem2_params"
+    description: "Modify bwa-mem2 alignment parameters - Set this parameter to fully\
+      \ override bwa-mem2 mapping parameters used in the pipeline\nThe pipeline does\
+      \ not specify any custom mapping params to bwa-mem2 so program default values\
+      \ are used\nThis applies to fastqs provided in the Reads_ATAC user input \n\
+      Do NOT set any non-mapping related params like `-C`, `-t`, etc.\nWe use bwa-mem2\
+      \ version 2.2.1\n"
+    info:
+      config_key: "Custom_bwa_mem2_Params"
+    example:
+    - "-k 16 -w 200 -r"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "CWL-runner arguments"
+  arguments:
+  - type: "boolean"
+    name: "--parallel"
+    description: "Run jobs in parallel."
+    info: null
+    default:
+    - true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--timestamps"
+    description: "Add timestamps to the errors, warnings, and notifications."
+    info: null
+    direction: "input"
+- name: "Undocumented arguments"
+  arguments:
+  - type: "integer"
+    name: "--abseq_umi"
+    info:
+      config_key: "AbSeq_UMI"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--target_analysis"
+    info:
+      config_key: "Target_analysis"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--vdj_jgene_evalue"
+    description: "e-value threshold for J gene. The e-value threshold for J gene call\
+      \ by IgBlast/PyIR, default is set as 0.001\n"
+    info:
+      config_key: "VDJ_JGene_Evalue"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--vdj_vgene_evalue"
+    description: "e-value threshold for V gene. The e-value threshold for V gene call\
+      \ by IgBlast/PyIR, default is set as 0.001\n"
+    info:
+      config_key: "VDJ_VGene_Evalue"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--write_filtered_reads"
+    description: "Output processed FASTQ reads."
+    info:
+      config_key: "Write_Filtered_Reads"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "python_script"
+  path: "script.py"
+  is_executable: true
+- type: "file"
+  path: "rhapsody_pipeline_2.2.1_nodocker.cwl"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "BD Rhapsody Sequence Analysis CWL pipeline v2.2.1\n  \nThis pipeline\
+  \ performs analysis of single-cell multiomic sequence read (FASTQ) data. The supported\n\
+  sequencing libraries are those generated by the BD Rhapsody assay kits, including:\
+  \ Whole Transcriptome\nmRNA, Targeted mRNA, AbSeq Antibody-Oligonucleotides, Single-Cell\
+  \ Multiplexing, TCR/BCR, and\nATAC-Seq\n\nThe CWL pipeline file is obtained by cloning\
+  \ 'https://bitbucket.org/CRSwDev/cwl' and removing all objects with class 'DockerRequirement'\
+  \ from the YAML.\n"
+test_resources:
+- type: "python_script"
+  path: "test.py"
+  is_executable: true
+- type: "file"
+  path: "rhapsody_cell_label.py"
+- type: "file"
+  path: "reference.fa.gz"
+- type: "file"
+  path: "reference.gtf.gz"
+- type: "file"
+  path: "reference_bd_rhapsody.tar.gz"
+- type: "file"
+  path: "raw"
+info:
+  keywords:
+  - "rna-seq"
+  - "single-cell"
+  - "multiomic"
+  - "atac-seq"
+  - "targeted"
+  - "abseq"
+  - "tcr"
+  - "bcr"
+  links:
+    repository: "https://bitbucket.org/CRSwDev/cwl/src/master/v2.2.1"
+    documentation: "https://bd-rhapsody-bioinfo-docs.genomics.bd.com"
+  license: "Unknown"
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "highmem"
+    - "highcpu"
+    - "middisk"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "bdgenomics/rhapsody:2.2.1"
+  target_tag: "3.0.0"
+  namespace_separator: "/"
+  setup:
+  - type: "apt"
+    packages:
+    - "procps"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "cwlref-runner"
+    - "cwl-runner"
+    - "ruamel.yaml"
+    - "biopython"
+    - "gffutils"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/mapping/bd_rhapsody/config.vsh.yaml"
+  runner: "executable"
+  engine: "docker"
+  output: "target/executable/mapping/bd_rhapsody"
+  executable: "target/executable/mapping/bd_rhapsody/bd_rhapsody"
+  viash_version: "0.9.4"
+  git_commit: "e0eac01a85edd11e922380df25023caa0f4a07aa"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "3.0.0-4-ge0eac01a85e"
+package_config:
+  name: "openpipeline"
+  version: "v3.0.1"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.4"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"3.0.1\""
+  - ".engines[.type == 'docker'].target_tag := '3.0.0'"
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"
