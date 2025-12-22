@@ -70,7 +70,7 @@ workflow run_wf {
         "barcode_sample_assignment": "barcode_sample_assignment",
         "ocm_barcode_ids": "ocm_barcode_ids",
         "min_crispr_umi": "min_crispr_umi",
-        "emptydrops_minimum_umis", "emptydrops_minimum_umis",
+        "emptydrops_minimum_umis": "emptydrops_minimum_umis",
         "hashtag_ids": "hashtag_ids",
         "probe_set": "probe_set",
         "filter_probes": "filter_probes",
