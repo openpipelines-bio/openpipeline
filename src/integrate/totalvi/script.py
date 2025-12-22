@@ -135,7 +135,7 @@ def main():
     mdata = mu.read_h5mu(par["input"])
 
     logger.info("Preparing data for TOTALVI...")
-    # Move protein counts to .obsm slot of the rna modality AnnData 
+    # Move protein counts to .obsm slot of the rna modality AnnData
     # and protein names .uns slot to comply with TOTALVI input format
     adata = consolidate_modalities_to_anndata(
         mdata,
@@ -198,9 +198,9 @@ def main():
         norm_rna.to_numpy()
     )
     if par["prot_modality"] in mdata.mod:
-        mdata.mod[par["prot_modality"]].obsm[
-            par["obsm_normalized_protein_output"]
-        ] = norm_protein.to_numpy()
+        mdata.mod[par["prot_modality"]].obsm[par["obsm_normalized_protein_output"]] = (
+            norm_protein.to_numpy()
+        )
 
     logger.info("Saving integrated data...")
     mdata.write_h5mu(par["output"], compression=par["output_compression"])
