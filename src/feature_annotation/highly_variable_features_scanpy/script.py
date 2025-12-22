@@ -107,13 +107,22 @@ if par["var_input"]:
 excluded_features_mask = None
 if par.get("features_to_exclude"):
     features_to_exclude = set(par["features_to_exclude"])
-    logger.info("\tExcluding %d specified features from HVG calculation", len(features_to_exclude))
+    logger.info(
+        "\tExcluding %d specified features from HVG calculation",
+        len(features_to_exclude),
+    )
     excluded_features_mask = input_anndata.var_names.isin(features_to_exclude)
     n_excluded = excluded_features_mask.sum()
     n_not_found = len(features_to_exclude) - n_excluded
     if n_not_found > 0:
-        not_found = features_to_exclude - set(input_anndata.var_names[excluded_features_mask])
-        logger.warning("\t%d features to exclude were not found in the data: %s", n_not_found, list(not_found)[:10])
+        not_found = features_to_exclude - set(
+            input_anndata.var_names[excluded_features_mask]
+        )
+        logger.warning(
+            "\t%d features to exclude were not found in the data: %s",
+            n_not_found,
+            list(not_found)[:10],
+        )
     logger.info("\tExcluding %d features from HVG calculation", n_excluded)
     if n_excluded == input_anndata.n_vars:
         raise ValueError(
