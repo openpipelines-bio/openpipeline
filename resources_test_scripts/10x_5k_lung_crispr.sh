@@ -92,7 +92,8 @@ done
 
 
 # Run mapping pipeline
-# TODO: Also include conversion to h5mu
+# As of Cell Ranger v10, gex_secondary_analysis is required
+# to generate CRISPR output. 
 cat > /tmp/params.yaml << HERE
 param_list:
 - id: "$ID"
@@ -106,8 +107,19 @@ param_list:
 
 gex_reference: "$genome_tar"
 feature_reference: "$crispr_ref_adjusted"
-publish_dir: "$OUT/processed"
 HERE
+
+nextflow \
+  run openpipelines-bio/openpipeline \
+  -r 3.0.0 \
+  -main-script target/nextflow/mapping/cellranger_multi/main.nf \
+  -resume \
+  -profile docker,mount_temp \
+  -params-file /tmp/params.yaml \
+  -c src/workflows/utils/labels.config \
+  --publish_dir "${OUT}/processed"
+
+mkdir -p "${OUT}_v10/processed"
 
 nextflow \
   run . \
@@ -115,20 +127,25 @@ nextflow \
   -resume \
   -profile docker,mount_temp \
   -params-file /tmp/params.yaml \
-  -c src/workflows/utils/labels.config
+  -c src/workflows/utils/labels.config \
+  --publish_dir "${OUT}_v10/processed" \
+  --gex_secondary_analysis
 
 # Create h5mu
 cat > /tmp/params.yaml << HERE
 id: "$ID"
 input: "$OUT/processed/10x_5k_lung_crispr.cellranger_multi.output"
-publish_dir: "$OUT/"
-output: "$orig_sample_id.h5mu"
+output: "*.h5mu"
 HERE
 
 nextflow \
-  run . \
+  run openpipelines-bio/openpipeline \
+  -r 3.0.0 \
   -main-script target/nextflow/convert/from_cellranger_multi_to_h5mu/main.nf \
   -resume \
   -profile docker,mount_temp \
   -params-file /tmp/params.yaml \
-  -c src/workflows/utils/labels.config
+  -c src/workflows/utils/labels.config \
+  --publish_dir "$OUT/"
+mv "${OUT}/0.h5mu"  "${OUT}/$orig_sample_id.h5mu"
+

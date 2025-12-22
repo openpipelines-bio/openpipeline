@@ -67,7 +67,7 @@ jobs:
     # use cache
     - name: Cache resources data
       if: ${{ needs.sync_s3.outputs.cache_key != '' }}
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       timeout-minutes: 10
       with:
         path: ${{ needs.sync_s3.outputs.dest_paths }}
@@ -150,7 +150,7 @@ jobs:
     # use cache
     - name: Cache resources data
       if: ${{ needs.sync_s3.outputs.cache_key != '' }}
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       timeout-minutes: 10
       with:
         path: ${{ needs.sync_s3.outputs.dest_paths }}

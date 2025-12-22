@@ -2,6 +2,8 @@
 
 ## BREAKING CHANGES
 
+* `mapping/cellranger_multi`: bump Cell Ranger to version 10 (PR #1103).
+
 * Removed `cellbender_remove_background_v0_2` (PR #1111).
 
 * `workflows/annotation/totalvi_scarches_leiden` and `annotate/totalvi_scarches`: Renamed previously implemented versions of `workflows/annotation/totalvi_leiden` and `annotate/totalvi` to reflect that scArches is used for reference mapping with TotalVI (PR #1092).
@@ -9,6 +11,8 @@
 * `workflows/annotation/totalvi_leiden` and `annotate/totalvi`: Added new workflows and components for cell type annotation using TotalVI integration followed by Leiden clustering, without scArches reference mapping (PR #1092).
 
 ## NEW FUNCTIONALITY
+
+* `convert/from_cellranger_multi_to_h5mu`: add support for Cell Ranger 10 (PR #1109). 
 
 * `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).
 
@@ -41,6 +45,8 @@
 * `mapping/samtools_sort` has been deprecated and will be removed in openpipeline 4.0. Use [vsh://biobox/samtools/samtools_sort](https://www.viash-hub.com/packages/biobox/latest/components/samtools/samtools_sort) instead.
 
 ## MINOR CHANGES
+
+* `totalvi`, `celltypist`, `scanvi` and `scarches`: bump base container image to `nvcr.io/nvidia/pytorch:25.11-py3` (PR #1116)
 
 * `transform/normalize_total`, `transform/clr`, `transform/log1p`: Add disk resource labels (PR #1073).
 

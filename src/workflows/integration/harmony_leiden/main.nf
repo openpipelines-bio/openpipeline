@@ -17,7 +17,7 @@ workflow run_wf {
     // And the output from any of the components
     | map {id, state ->
       def new_state = state + [
-        "workflow_output": state.output
+        "workflow_output": state.output,
         "output_tiledb": state.tiledb_input_uri ? state.output_tiledb : null
       ]
       [id, new_state]
