@@ -1,3 +1,9 @@
+# openpipelines 3.0.1
+
+## BUG FIXES
+
+* `workflows/cellranger_multi`: fix `ocm_barcode_ids`, `min_crispr_umi`, `emptydrops_minimum_umis` and `hashtag_ids` arguments not being applied (backported fom PR #1118).
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES
