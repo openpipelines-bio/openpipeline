@@ -8,7 +8,13 @@ import scanpy as sc
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
-meta = {"resources_dir": "resources_test"}
+meta = {
+    "executable": "./target/docker/annotate/celltypist/celltypist",
+    "resources_dir": "resources_test/",
+    "cpus": 15,
+    "memory_gb": 20,
+    "config": "src/annotate/celltypist/config.vsh.yaml",
+}
 ## VIASH END
 
 
@@ -214,7 +220,7 @@ def test_fail_invalid_input_expression(
             ]
         )
     assert re.search(
-        r"Invalid expression matrix, expect log1p normalized expression to 10000 counts per cell",
+        r"Invalid expression matrix, expect input layer to contain log1p normalized expression to 10000 counts per cell",
         err.value.stdout.decode("utf-8"),
     )
 
@@ -258,6 +264,45 @@ def test_with_hvg(
     assert all(0 <= value <= 1 for value in obs_values), (
         ".obs at celltypist_probability has values outside the range [0, 1]"
     )
+
+
+def test_duplicate_categorical_index_entry(
+    run_component, random_h5mu_path, reference_mdata, input_mdata, write_mudata_to_file
+):
+    """Test that the component handles duplicate index entries correctly."""
+    output_file = random_h5mu_path()
+
+    # Create a modified input with duplicate index entries
+    indices = input_mdata.mod["rna"].var["gene_symbol"].to_list()
+    indices[0] = indices[1]  # duplicate the first index entry
+    import pandas as pd
+
+    input_mdata.mod["rna"].var["dup_idx"] = pd.CategoricalIndex(indices)
+
+    input_file = write_mudata_to_file(input_mdata)
+    reference_file = write_mudata_to_file(reference_mdata)
+
+    # Component should not raise with duplicate categorical indices
+    run_component(
+        [
+            "--input",
+            input_file,
+            "--reference",
+            reference_file,
+            "--reference_obs_target",
+            "cell_ontology_class",
+            "--reference_var_gene_names",
+            "feature_name",
+            "--input_var_gene_names",
+            "dup_idx",
+            "--sanitize_ensembl_ids",
+            "False",
+            "--output",
+            output_file,
+        ]
+    )
+
+    assert os.path.exists(output_file), "Output file does not exist"
 
 
 if __name__ == "__main__":

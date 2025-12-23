@@ -135,6 +135,7 @@ resources:
   - path: /src/utils/cross_check_genes.py
   - path: /src/utils/subset_vars.py
   - path: /src/utils/set_var_index.py
+  - path: /src/utils/is_lognormalized.py
 
 test_resources:
   - type: python_script

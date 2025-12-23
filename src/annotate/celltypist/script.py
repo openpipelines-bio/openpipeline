@@ -3,7 +3,6 @@ import celltypist
 import mudata as mu
 import anndata as ad
 import pandas as pd
-import numpy as np
 from torch.cuda import is_available as cuda_is_available
 
 ## VIASH START
@@ -12,18 +11,18 @@ par = {
     "output": "output.h5mu",
     "modality": "rna",
     # "reference": None,
-    "reference_var_input": "highly_variable",
+    "reference_var_input": None,
     "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "model": None,
     # "model": "resources_test/annotation_test_data/celltypist_model_Immune_All_Low.pkl",
-    "input_layer": "log_normalized",
+    "input_layer": None,
     "reference_layer": "log_normalized",
     "input_reference_gene_overlap": 100,
     "reference_obs_target": "cell_ontology_class",
     "feature_selection": True,
     "majority_voting": True,
     "output_compression": "gzip",
-    "input_var_gene_names": "gene_symbol",
+    "input_var_gene_names": "dup_idx",
     "reference_var_gene_names": "ensemblid",
     "C": 1.0,
     "max_iter": 1000,
@@ -41,17 +40,11 @@ from setup_logger import setup_logger
 from cross_check_genes import cross_check_genes
 from set_var_index import set_var_index
 from subset_vars import subset_vars
+from is_lognormalized import is_lognormalized
 
 logger = setup_logger()
 use_gpu = cuda_is_available()
 logger.info("GPU enabled? %s", use_gpu)
-
-
-def check_lognormalized_expression(count_matrix):
-    if np.any(np.abs(np.expm1(count_matrix).sum(axis=1) - 10000) > 1):
-        raise ValueError(
-            "Invalid expression matrix, expect log1p normalized expression to 10000 counts per cell."
-        )
 
 
 def main(par):
@@ -78,7 +71,11 @@ def main(par):
         if par["input_layer"]
         else input_modality.X.copy()
     )
-    check_lognormalized_expression(lognorm_counts)
+
+    if not is_lognormalized(lognorm_counts, target_sum=10000):
+        raise ValueError(
+            "Invalid expression matrix, expect input layer to contain log1p normalized expression to 10000 counts per cell."
+        )
 
     ## Create AnnData object
     input_modality = ad.AnnData(
@@ -98,11 +95,10 @@ def main(par):
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
 
         # Check expression before subsetting to HVG
-        check_lognormalized_expression(
-            reference_modality.X
-            if not par["reference_layer"]
-            else reference_modality.layers[par["reference_layer"]]
-        )
+        if not is_lognormalized(lognorm_counts, target_sum=10000):
+            raise ValueError(
+                "Invalid expression matrix, expect reference layer to contain log1p normalized expression to 10000 counts per cell."
+            )
 
         # subset to HVG if required
         if par["reference_var_input"]:
@@ -137,7 +133,9 @@ def main(par):
         model = celltypist.train(
             reference_matrix,
             labels=labels,
-            genes=reference_modality.var.index,
+            genes=reference_modality.var.index.astype(
+                str
+            ),  # ensure string type, fails if categorical when making var indices unique
             C=par["C"],
             max_iter=par["max_iter"],
             use_SGD=par["use_SGD"],
@@ -147,6 +145,8 @@ def main(par):
         )
 
     logger.info("Predicting CellTypist annotations")
+    # Make sure .var index is string dtype, fails if categorical when making var indices unique
+    input_modality.var.index = input_modality.var.index.astype(str)
     predictions = celltypist.annotate(
         input_modality, model, majority_voting=par["majority_voting"], use_GPU=use_gpu
     )
