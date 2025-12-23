@@ -11,18 +11,18 @@ par = {
     "output": "output.h5mu",
     "modality": "rna",
     # "reference": None,
-    "reference_var_input": "highly_variable",
+    "reference_var_input": None,
     "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "model": None,
     # "model": "resources_test/annotation_test_data/celltypist_model_Immune_All_Low.pkl",
-    "input_layer": "log_normalized",
+    "input_layer": None,
     "reference_layer": "log_normalized",
     "input_reference_gene_overlap": 100,
     "reference_obs_target": "cell_ontology_class",
     "feature_selection": True,
     "majority_voting": True,
     "output_compression": "gzip",
-    "input_var_gene_names": None,
+    "input_var_gene_names": "dup_idx",
     "reference_var_gene_names": "ensemblid",
     "C": 1.0,
     "max_iter": 1000,
@@ -30,7 +30,7 @@ par = {
     "min_prop": 0,
     "output_obs_predictions": "celltypist_pred",
     "output_obs_probability": "celltypist_probability",
-    "sanitize_ensembl_ids": True,
+    "sanitize_ensembl_ids": False,
 }
 meta = {"resources_dir": "src/utils"}
 ## VIASH END
@@ -40,6 +40,7 @@ from setup_logger import setup_logger
 from cross_check_genes import cross_check_genes
 from set_var_index import set_var_index
 from subset_vars import subset_vars
+from is_lognormalized import is_lognormalized
 
 logger = setup_logger()
 use_gpu = cuda_is_available()
@@ -63,12 +64,19 @@ def main(par):
     input_modality = set_var_index(
         input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
     )
+
     ## Fetch lognormalized counts
     lognorm_counts = (
         input_modality.layers[par["input_layer"]].copy()
         if par["input_layer"]
         else input_modality.X.copy()
     )
+
+    if not is_lognormalized(lognorm_counts, target_sum=10000):
+        raise ValueError(
+            "Invalid expression matrix, expect input layer to contain log1p normalized expression to 10000 counts per cell."
+        )
+
     ## Create AnnData object
     input_modality = ad.AnnData(
         X=lognorm_counts, var=pd.DataFrame(index=input_modality.var.index)
@@ -85,6 +93,12 @@ def main(par):
 
     elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
+
+        # Check expression before subsetting to HVG
+        if not is_lognormalized(lognorm_counts, target_sum=10000):
+            raise ValueError(
+                "Invalid expression matrix, expect reference layer to contain log1p normalized expression to 10000 counts per cell."
+            )
 
         # subset to HVG if required
         if par["reference_var_input"]:
@@ -119,16 +133,20 @@ def main(par):
         model = celltypist.train(
             reference_matrix,
             labels=labels,
-            genes=reference_modality.var.index,
+            genes=reference_modality.var.index.astype(
+                str
+            ),  # ensure string type, fails if categorical when making var indices unique
             C=par["C"],
             max_iter=par["max_iter"],
             use_SGD=par["use_SGD"],
             feature_selection=par["feature_selection"],
-            check_expression=True,
+            check_expression=False,  # if True, throws an error if lognormalized data are subset for HVG,
             use_GPU=use_gpu,
         )
 
     logger.info("Predicting CellTypist annotations")
+    # Make sure .var index is string dtype, fails if categorical when making var indices unique
+    input_modality.var.index = input_modality.var.index.astype(str)
     predictions = celltypist.annotate(
         input_modality, model, majority_voting=par["majority_voting"], use_GPU=use_gpu
     )
