@@ -19,6 +19,7 @@ par = {
     ],
     "output": "foo.h5mu",
     "input_id": ["mouse", "human"],
+    "obsp_keys": [],
     "other_axis_mode": "move",
     "output_compression": "gzip",
     "uns_merge_mode": "make_unique",
@@ -267,6 +268,7 @@ def concatenate_modality(
     concatenated_data = anndata.concat(
         mod_data.values(),
         join="outer",
+        pairwise=True if par["obsp_keys"] else False,
         merge=other_axis_mode_to_apply,
         uns_merge=uns_merge_mode_to_apply,
     )
@@ -278,6 +280,13 @@ def concatenate_modality(
 
     if uns_merge_mode == "make_unique":
         concatenated_data = make_uns_keys_unique(mod_data, concatenated_data)
+
+    # Remove obsp keys that are not in par["obsp_keys"]
+    if par["obsp_keys"]:
+        # Keep only the obsp keys that are specified in par["obsp_keys"]
+        keys_to_remove = set(concatenated_data.obsp.keys()) - set(par["obsp_keys"])
+        for key in keys_to_remove:
+            del concatenated_data.obsp[key]
 
     return concatenated_data
 
