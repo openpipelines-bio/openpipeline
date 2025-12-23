@@ -10,7 +10,6 @@ from pathlib import Path
 from h5py import File as H5File
 from typing import Literal
 import shutil
-import scipy.sparse as sp
 
 ### VIASH START
 par = {
@@ -222,35 +221,6 @@ def split_conflicts_modalities(
     return output
 
 
-def merge_obsp_block_diag(
-    mod_data: dict[str, anndata.AnnData],
-    concatenated_data: anndata.AnnData,
-) -> anndata.AnnData:
-    """
-    Build block-diagonal `.obsp` matrices for provided keys.
-    """
-
-    adatas_in_order = list(mod_data.values())
-
-    for key in par["obsp_keys"]:
-        # Evaluate that obsp key is present in all samples
-        if not all([key in adata.obsp.keys() for adata in adatas_in_order]):
-            logger.warning(
-                f".obsp['{key}'] not found in all samples, skipping block-diagonal merge for this key.",
-            )
-            continue
-
-        # Order of blocks must match the concat order
-        logger.info("Building block-diagonal obsp['%s'] matrix.", key)
-        blocks = []
-        for ad in adatas_in_order:
-            # `.tocsr()` to ensure compatible format for block_diag
-            blocks.append(ad.obsp[key].tocsr())
-        concatenated_data.obsp[key] = sp.block_diag(blocks, format="csr")
-
-    return concatenated_data
-
-
 def concatenate_modality(
     n_processes: int,
     mod: str | None,
@@ -298,6 +268,7 @@ def concatenate_modality(
     concatenated_data = anndata.concat(
         mod_data.values(),
         join="outer",
+        pairwise=True if par["obsp_keys"] else False,
         merge=other_axis_mode_to_apply,
         uns_merge=uns_merge_mode_to_apply,
     )
@@ -310,8 +281,12 @@ def concatenate_modality(
     if uns_merge_mode == "make_unique":
         concatenated_data = make_uns_keys_unique(mod_data, concatenated_data)
 
+    # Remove obsp keys that are not in par["obsp_keys"]
     if par["obsp_keys"]:
-        concatenated_data = merge_obsp_block_diag(mod_data, concatenated_data)
+        # Keep only the obsp keys that are specified in par["obsp_keys"]
+        keys_to_remove = set(concatenated_data.obsp.keys()) - set(par["obsp_keys"])
+        for key in keys_to_remove:
+            del concatenated_data.obsp[key]
 
     return concatenated_data
 

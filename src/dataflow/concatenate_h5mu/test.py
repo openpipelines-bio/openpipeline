@@ -511,8 +511,8 @@ def test_concat_different_columns_per_modality(
         data_sample1_mod = data_sample1.mod[mod_name]
         data_sample2_mod = data_sample2.mod[mod_name]
         original_var_keys = set(
-            data_sample1_mod.var_keys()
-            + data_sample2_mod.var_keys()
+            data_sample1_mod.var.columns.tolist()
+            + data_sample2_mod.var.columns.tolist()
             + list(data_sample2_mod.varm.keys())
             + list(data_sample1_mod.varm.keys())
         )
@@ -1249,11 +1249,11 @@ def test_obsp_block_diag_concat(
         ]
     )
 
-    G = mod1.obsp["connectivities"].tocsr()
-    assert G.shape == expected.shape, (
+    pairwise_obsp = mod1.obsp["connectivities"].tocsr()
+    assert pairwise_obsp.shape == expected.shape, (
         "obsp 'connectivities' has incorrect shape after concatenation"
     )
-    assert (G - expected).nnz == 0, (
+    assert (pairwise_obsp - expected).nnz == 0, (
         "obsp 'connectivities' not correctly concatenated as block-diagonal matrix"
     )
 
