@@ -69,6 +69,7 @@ argument_groups:
         type: file
         description: Output h5mu file.
         direction: output
+        example: output.h5mu
         required: true
       - name: "--output_model"
         type: file
