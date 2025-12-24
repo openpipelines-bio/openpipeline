@@ -6,10 +6,9 @@
 
 * Removed `cellbender_remove_background_v0_2` (PR #1111).
 
-* `convert/from_cellranger_multi_to_h5mu`: VDJ related output is now stored in AIRR Rearrangement standard.
-   Because one cell can have multiple receptor chains, this relationship is represented as an `awkward` array
-   stored in `.obsm["airr"]` slot of the VDJ modality (PR #1109). 
+* `workflows/annotation/totalvi_scarches_leiden` and `annotate/totalvi_scarches`: Renamed previously implemented versions of `workflows/annotation/totalvi_leiden` and `annotate/totalvi` to reflect that scArches is used for reference mapping with TotalVI (PR #1092).
 
+* `workflows/annotation/totalvi_leiden` and `annotate/totalvi`: Added new workflows and components for cell type annotation using TotalVI integration followed by Leiden clustering, without scArches reference mapping (PR #1092).
 
 ## NEW FUNCTIONALITY
 
