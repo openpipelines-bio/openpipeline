@@ -38,6 +38,7 @@ workflow run_wf {
         "vdj_t_input": "vdj_t_input",
         "vdj_t_gd_input": "vdj_t_gd_input",
         "vdj_b_input": "vdj_b_input",
+        "vdj_denovo": "vdj_denovo",
         "agc_input": "agc_input",
         "library_id": "library_id",
         "library_type": "library_type",
