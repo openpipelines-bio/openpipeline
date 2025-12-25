@@ -2,7 +2,7 @@
 
 ## BREAKING CHANGES
 
-* `mapping/cellranger_multi`: bump Cell Ranger to version 10 (PR #1103).
+* `mapping/cellranger_multi`: bump Cell Ranger to version 10 (PR #1103 and #1119).
 
 * Removed `cellbender_remove_background_v0_2` (PR #1111).
 
