@@ -3424,7 +3424,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/tsne",
     "viash_version" : "0.9.4",
-    "git_commit" : "e126296c4d320632230ac130800d9d13221a09b9",
+    "git_commit" : "ecb3db88661269a594877847d352269fcaabcc3e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
