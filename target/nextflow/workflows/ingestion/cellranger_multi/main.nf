@@ -3993,7 +3993,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi",
     "viash_version" : "0.9.4",
-    "git_commit" : "3497ccd12faf663607f3c2e279174783bcb5e8d0",
+    "git_commit" : "61b2edb92b66fbe34687ada0745db591c2514d10",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -4087,6 +4087,7 @@ workflow run_wf {
         "vdj_t_input": "vdj_t_input",
         "vdj_t_gd_input": "vdj_t_gd_input",
         "vdj_b_input": "vdj_b_input",
+        "vdj_denovo": "vdj_denovo",
         "agc_input": "agc_input",
         "library_id": "library_id",
         "library_type": "library_type",
@@ -4119,7 +4120,7 @@ workflow run_wf {
         "barcode_sample_assignment": "barcode_sample_assignment",
         "ocm_barcode_ids": "ocm_barcode_ids",
         "min_crispr_umi": "min_crispr_umi",
-        "emptydrops_minimum_umis", "emptydrops_minimum_umis",
+        "emptydrops_minimum_umis": "emptydrops_minimum_umis",
         "hashtag_ids": "hashtag_ids",
         "probe_set": "probe_set",
         "filter_probes": "filter_probes",
