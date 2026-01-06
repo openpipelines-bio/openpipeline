@@ -164,6 +164,7 @@ VDJ_CONFIG_KEYS = {
     "vdj_inner_enrichment_primers": "inner-enrichment-primers",
     "vdj_r1_length": "r1-length",
     "vdj_r2_length": "r2-length",
+    "vdj_denovo": "denovo",
 }
 
 
@@ -542,13 +543,18 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             raise RuntimeError("Cell Ranger returned a nonzero exitcode!")
 
         logger.info("Checking if expected output files are present.")
-        # look for output dir file
+        # Sanity check the output: check for required files
         tmp_output_dir = temp_dir_path / temp_id / "outs"
         expected_files = {
-            Path("multi"): Path.is_dir,
             Path("per_sample_outs"): Path.is_dir,
             Path("config.csv"): Path.is_file,
+            Path("filtered_feature_bc_matrix"): Path.is_dir,
+            Path("filtered_feature_bc_matrix.h5"): Path.is_file,
+            Path("raw_feature_bc_matrix"): Path.is_dir,
+            Path("raw_feature_bc_matrix.h5"): Path.is_file,
         }
+        dir_contents = map(str, tmp_output_dir.iterdir())
+        logger.info("Directory contents: %s", ", ".join(dir_contents))
         for file_path, type_func in expected_files.items():
             output_path = tmp_output_dir / file_path
             if not type_func(output_path):
