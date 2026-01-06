@@ -2,11 +2,18 @@
 
 ## BREAKING CHANGES
 
-* `mapping/cellranger_multi`: bump Cell Ranger to version 10 (PR #1103).
+* `mapping/cellranger_multi`: bump Cell Ranger to version 10 (PR #1103 and #1119).
 
 * Removed `cellbender_remove_background_v0_2` (PR #1111).
 
+* `convert/from_cellranger_multi_to_h5mu`: VDJ related output is now stored in AIRR Rearrangement standard.
+   Because one cell can have multiple receptor chains, this relationship is represented as an `awkward` array
+   stored in `.obsm["airr"]` slot of the VDJ modality (PR #1109). 
+
+
 ## NEW FUNCTIONALITY
+
+* `convert/from_cellranger_multi_to_h5mu`: add support for Cell Ranger 10 (PR #1109). 
 
 * `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).
 
@@ -42,6 +49,8 @@
 
 ## MINOR CHANGES
 
+* `totalvi`, `celltypist`, `scanvi` and `scarches`: bump base container image to `nvcr.io/nvidia/pytorch:25.11-py3` (PR #1116)
+
 * `transform/normalize_total`, `transform/clr`, `transform/log1p`: Add disk resource labels (PR #1073).
 
 * `integrate/totalvi`: Add `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` arguments to include additional covariates during model training (PR #1076).
@@ -57,6 +66,8 @@
 * Bump `anndata` to `0.12.6` and mudata to `0.3.2` (PR #1111).
 
 ## BUG FIXES
+
+* `workflows/cellranger_multi`: fix `ocm_barcode_ids`, `min_crispr_umi`, `emptydrops_minimum_umis` and `hashtag_ids` arguments not being applied (PR #).
 
 * `differential_expression/create_pseudobulks`: Fixed the check to verify that the raw counts layer was passed (PR #1072).
 
