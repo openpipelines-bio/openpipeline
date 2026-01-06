@@ -243,6 +243,14 @@ def concatenate_modality(
         if mod is not None:
             try:
                 data = mu.read_h5ad(input_file, mod=mod)
+
+                # Remove obsp keys that are not in par["obsp_keys"]
+                if par["obsp_keys"]:
+                    # Keep only the obsp keys that are specified in par["obsp_keys"]
+                    keys_to_remove = set(data.obsp.keys()) - set(par["obsp_keys"])
+                    for key in keys_to_remove:
+                        del data.obsp[key]
+
                 mod_data[input_id] = data
                 mod_indices_combined = mod_indices_combined.append(data.obs.index)
             except KeyError as e:  # Modality does not exist for this sample, skip it
@@ -280,13 +288,6 @@ def concatenate_modality(
 
     if uns_merge_mode == "make_unique":
         concatenated_data = make_uns_keys_unique(mod_data, concatenated_data)
-
-    # Remove obsp keys that are not in par["obsp_keys"]
-    if par["obsp_keys"]:
-        # Keep only the obsp keys that are specified in par["obsp_keys"]
-        keys_to_remove = set(concatenated_data.obsp.keys()) - set(par["obsp_keys"])
-        for key in keys_to_remove:
-            del concatenated_data.obsp[key]
 
     return concatenated_data
 
