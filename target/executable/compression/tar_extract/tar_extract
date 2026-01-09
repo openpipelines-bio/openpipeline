@@ -446,9 +446,9 @@ function ViashDockerfile {
 FROM ubuntu:latest
 ENTRYPOINT []
 LABEL org.opencontainers.image.description="Companion container for running component compression tar_extract"
-LABEL org.opencontainers.image.created="2026-01-08T03:10:00Z"
+LABEL org.opencontainers.image.created="2026-01-09T03:10:39Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f73cdfd2aab83d85bc3e1051fdea16b2b2e20805"
+LABEL org.opencontainers.image.revision="b55074c69da6c822aaf2261f13e69fc58b4cb32c"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
