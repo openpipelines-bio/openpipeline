@@ -454,9 +454,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Toni Verbeiren"
 LABEL org.opencontainers.image.description="Companion container for running component demux bcl2fastq"
-LABEL org.opencontainers.image.created="2026-01-10T03:06:43Z"
+LABEL org.opencontainers.image.created="2026-01-11T03:17:12Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e103f1722a75afbaede6dc56dfa5bf4e966296f2"
+LABEL org.opencontainers.image.revision="9c05db4eaa29882faa0720ddf2651735a2179396"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
