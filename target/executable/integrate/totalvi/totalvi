@@ -12,7 +12,8 @@
 # files.
 # 
 # Component authors:
-#  * Vladimir Shitov
+#  * Dorien Roosen (author, maintainer)
+#  * Weiwei Schultz (contributor)
 
 set -e
 
@@ -449,14 +450,14 @@ function ViashDockerfile {
 FROM nvcr.io/nvidia/pytorch:25.11-py3
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.6" "mudata~=0.3.2" "scvi-tools[cuda]~=1.4.1" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.6" "mudata~=0.3.2" "scanpy~=1.10.4" "jax[cuda]" "scvi-tools~=1.3.2" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
-LABEL org.opencontainers.image.authors="Vladimir Shitov"
+LABEL org.opencontainers.image.authors="Dorien Roosen, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component integrate totalvi"
-LABEL org.opencontainers.image.created="2026-01-05T14:40:19Z"
+LABEL org.opencontainers.image.created="2026-01-13T09:41:18Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3d55e485d61597c0d292afa86b6b6984b5be2b85"
+LABEL org.opencontainers.image.revision="62aa4be02a75d90b75778a7d10f95101f931f3ed"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -576,43 +577,33 @@ VIASH_DOCKER_RUN_ARGS=(-i --rm)
 function ViashHelp {
   echo "totalvi main_build"
   echo ""
-  echo "Performs mapping to the reference by totalvi model:"
-  echo "https://docs.scvi-tools.org/en/stable/tutorials/notebooks/scarches_scvi_tools.html#Reference-mapping-with-TOTALVI"
+  echo "Performs TotalVI integration of CITE-seq and scRNA-seq data."
   echo ""
   echo "Inputs:"
   echo "    -i, --input"
   echo "        type: file, required parameter, file must exist"
-  echo "        Input h5mu file with query data to integrate with reference."
+  echo "        example: input.h5mu"
+  echo "        Input h5mu file to be integrated."
   echo ""
-  echo "    -r, --reference"
-  echo "        type: file, required parameter, file must exist"
-  echo "        Input h5mu file with reference data to train the TOTALVI model."
-  echo ""
-  echo "    -f, --force_retrain"
-  echo "        type: boolean_true"
-  echo "        If true, retrain the model and save it to reference_model_path"
-  echo ""
-  echo "    --query_modality"
-  echo "        type: string"
+  echo "    --rna_modality"
+  echo "        type: string, required parameter"
   echo "        default: rna"
   echo ""
-  echo "    --query_proteins_modality"
-  echo "        type: string"
+  echo "    --prot_modality"
+  echo "        type: string, required parameter"
+  echo "        default: prot"
   echo "        Name of the modality in the input (query) h5mu file containing protein"
   echo "        data"
   echo ""
-  echo "    --reference_modality"
+  echo "    --input_layer_rna"
   echo "        type: string"
-  echo "        default: rna"
+  echo "        Input layer to use from the rna modality for gene counts. If None, X is"
+  echo "        used"
   echo ""
-  echo "    --reference_proteins_modality"
+  echo "    --input_layer_protein"
   echo "        type: string"
-  echo "        default: prot"
-  echo "        Name of the modality containing proteins in the reference"
-  echo ""
-  echo "    --input_layer"
-  echo "        type: string"
-  echo "        Input layer to use. If None, X is used"
+  echo "        Input layer to use from the protein modality for protein counts. If"
+  echo "        None, X is used"
   echo ""
   echo "    --obs_batch"
   echo "        type: string"
@@ -646,15 +637,124 @@ function ViashHelp {
   echo "        used for biologically-relevant factors that you do _not_ want to correct"
   echo "        for."
   echo ""
+  echo "    --var_gene_names"
+  echo "        type: string"
+  echo "        .var column in the rna modality containing gene names. By default, use"
+  echo "        mod['rna'].var_names."
+  echo ""
+  echo "    --var_protein_names"
+  echo "        type: string"
+  echo "        .var column in the protein modality containing protein names. By"
+  echo "        default, use mod['prot'].var_names."
+  echo ""
   echo "    --var_input"
   echo "        type: string"
   echo "        .var column containing highly variable genes. By default, do not subset"
   echo "        genes."
   echo ""
+  echo "Data validity checks:"
+  echo "    --n_obs_min_count"
+  echo "        type: integer"
+  echo "        default: 0"
+  echo "        min: 0"
+  echo "        Minimum number of cells threshold ensuring that every obs_batch category"
+  echo "        has sufficient observations (cells) for model training."
+  echo ""
+  echo "    --n_var_gene_min_count"
+  echo "        type: integer"
+  echo "        default: 0"
+  echo "        min: 0"
+  echo "        Minimum number of genes threshold ensuring that sufficient observations"
+  echo "        (genes) are present for model training."
+  echo ""
+  echo "    --n_var_protein_min_count"
+  echo "        type: integer"
+  echo "        default: 0"
+  echo "        min: 0"
+  echo "        Minimum number of proteins threshold ensuring that sufficient"
+  echo "        observations (genes) are present for model training."
+  echo ""
+  echo "Model arguments:"
+  echo "    --n_dimensions_latent_space"
+  echo "        type: integer"
+  echo "        default: 20"
+  echo "        Dimensionality of the latent space."
+  echo ""
+  echo "    --gene_dispersion"
+  echo "        type: string"
+  echo "        default: gene"
+  echo "        choices: [ gene, gene-batch, gene-label, gene-cell ]"
+  echo "        Set the behavior for the dispersion for negative binomial distributions:"
+  echo "          - gene: dispersion parameter of negative binomial is constant per gene"
+  echo "        across cells"
+  echo "          - gene-batch: dispersion can differ between different batches"
+  echo "          - gene-label: dispersion can differ between different labels"
+  echo "          - gene-cell:  dispersion can differ for every gene in every cell"
+  echo ""
+  echo "    --protein_dispersion"
+  echo "        type: string"
+  echo "        default: protein"
+  echo "        choices: [ protein, protein-batch, protein-label, protein-cell ]"
+  echo "        Set the behavior for the dispersion for negative binomial distributions:"
+  echo "          - protein: dispersion parameter of negative binomial is constant per"
+  echo "        protein across cells"
+  echo "          - protein-batch: dispersion can differ between different batches"
+  echo "          - protein-label: dispersion can differ between different labels"
+  echo "          - protein-cell:  dispersion can differ for every protein in every cell"
+  echo ""
+  echo "    --gene_likelihood"
+  echo "        type: string"
+  echo "        default: nb"
+  echo "        choices: [ nb, zinb ]"
+  echo "        Model used to generate the expression data from a count-based likelihood"
+  echo "        distribution."
+  echo "        - nb: Negative binomial distribution"
+  echo "        - zinb: Zero-inflated negative binomial distribution"
+  echo ""
+  echo "    --latent_distribution"
+  echo "        type: string"
+  echo "        default: normal"
+  echo "        choices: [ normal, ln ]"
+  echo "        Set the latent distribution to use:"
+  echo "          - normal: Normal distribution"
+  echo "          - ln: Log-normal distribution (Normal( 0, 1) transformed by softmax)"
+  echo ""
+  echo "    --empirical_protein_background_prior"
+  echo "        type: boolean"
+  echo "        Set the initialization of protein background prior empirically."
+  echo "        This option fits a GMM for each of 100 cells per batch and averages the"
+  echo "        distributions."
+  echo "        Note that even with this option set to True, this only initializes a"
+  echo "        parameter that is learned during inference."
+  echo "        If False, randomly initializes."
+  echo "        By default, sets this to True if greater than 10 proteins are used."
+  echo ""
+  echo "    --override_missing_proteins"
+  echo "        type: boolean_true"
+  echo "        If True, will not treat proteins with all 0 expression in a particular"
+  echo "        batch as missing."
+  echo ""
+  echo "Training arguments:"
+  echo "    --max_epochs"
+  echo "        type: integer"
+  echo "        Number of passes through the dataset, defaults to (20000 / number of"
+  echo "        cells) * 400 or 400; whichever is smallest."
+  echo ""
+  echo "    --early_stopping"
+  echo "        type: boolean"
+  echo "        default: true"
+  echo "        Whether to perform early stopping with respect to the validation set."
+  echo ""
   echo "Outputs:"
   echo "    -o, --output"
   echo "        type: file, required parameter, output, file must exist"
   echo "        Output h5mu file."
+  echo ""
+  echo "    --output_model"
+  echo "        type: file, output, file must exist"
+  echo "        default: totalvi_model_reference"
+  echo "        Directory with the reference model. If not exists, trained model will be"
+  echo "        saved there"
   echo ""
   echo "    --obsm_output"
   echo "        type: string"
@@ -664,39 +764,19 @@ function ViashHelp {
   echo "    --obsm_normalized_rna_output"
   echo "        type: string"
   echo "        default: X_totalvi_normalized_rna"
-  echo "        In which .obsm slot to store the normalized RNA from TOTALVI."
+  echo "        In which .obsm slot to store the normalized RNA data from TOTALVI."
   echo ""
   echo "    --obsm_normalized_protein_output"
   echo "        type: string"
   echo "        default: X_totalvi_normalized_protein"
   echo "        In which .obsm slot to store the normalized protein data from TOTALVI."
   echo ""
-  echo "    --reference_model_path"
-  echo "        type: file, output, file must exist"
-  echo "        default: totalvi_model_reference"
-  echo "        Directory with the reference model. If not exists, trained model will be"
-  echo "        saved there"
-  echo ""
-  echo "    --query_model_path"
-  echo "        type: file, output, file must exist"
-  echo "        default: totalvi_model_query"
-  echo "        Directory, where the query model will be saved"
-  echo ""
-  echo "Learning parameters:"
-  echo "    --max_epochs"
-  echo "        type: integer"
-  echo "        default: 400"
-  echo "        Number of passes through the dataset"
-  echo ""
-  echo "    --max_query_epochs"
-  echo "        type: integer"
-  echo "        default: 200"
-  echo "        Number of passes through the dataset, when fine-tuning model for query"
-  echo ""
-  echo "    --weight_decay"
-  echo "        type: double"
-  echo "        default: 0.0"
-  echo "        Weight decay, when fine-tuning model for query"
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        Compression format to use for the output AnnData and/or Mudata objects."
+  echo "        By default no compression is applied."
   echo ""
   echo "Viash built in Computational Requirements:"
   echo "    ---cpus=INT"
@@ -765,86 +845,48 @@ while [[ $# -gt 0 ]]; do
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -i. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --reference)
-            [ -n "$VIASH_PAR_REFERENCE" ] && ViashError Bad arguments for option \'--reference\': \'$VIASH_PAR_REFERENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference. Use "--help" to get more information on the parameters. && exit 1
+        --rna_modality)
+            [ -n "$VIASH_PAR_RNA_MODALITY" ] && ViashError Bad arguments for option \'--rna_modality\': \'$VIASH_PAR_RNA_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_RNA_MODALITY="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --rna_modality. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --reference=*)
-            [ -n "$VIASH_PAR_REFERENCE" ] && ViashError Bad arguments for option \'--reference=*\': \'$VIASH_PAR_REFERENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE=$(ViashRemoveFlags "$1")
+        --rna_modality=*)
+            [ -n "$VIASH_PAR_RNA_MODALITY" ] && ViashError Bad arguments for option \'--rna_modality=*\': \'$VIASH_PAR_RNA_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_RNA_MODALITY=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        -r)
-            [ -n "$VIASH_PAR_REFERENCE" ] && ViashError Bad arguments for option \'-r\': \'$VIASH_PAR_REFERENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to -r. Use "--help" to get more information on the parameters. && exit 1
+        --prot_modality)
+            [ -n "$VIASH_PAR_PROT_MODALITY" ] && ViashError Bad arguments for option \'--prot_modality\': \'$VIASH_PAR_PROT_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_PROT_MODALITY="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --prot_modality. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --force_retrain)
-            [ -n "$VIASH_PAR_FORCE_RETRAIN" ] && ViashError Bad arguments for option \'--force_retrain\': \'$VIASH_PAR_FORCE_RETRAIN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_FORCE_RETRAIN=true
+        --prot_modality=*)
+            [ -n "$VIASH_PAR_PROT_MODALITY" ] && ViashError Bad arguments for option \'--prot_modality=*\': \'$VIASH_PAR_PROT_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_PROT_MODALITY=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        -f)
-            [ -n "$VIASH_PAR_FORCE_RETRAIN" ] && ViashError Bad arguments for option \'-f\': \'$VIASH_PAR_FORCE_RETRAIN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_FORCE_RETRAIN=true
-            shift 1
-            ;;
-        --query_modality)
-            [ -n "$VIASH_PAR_QUERY_MODALITY" ] && ViashError Bad arguments for option \'--query_modality\': \'$VIASH_PAR_QUERY_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_MODALITY="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --query_modality. Use "--help" to get more information on the parameters. && exit 1
+        --input_layer_rna)
+            [ -n "$VIASH_PAR_INPUT_LAYER_RNA" ] && ViashError Bad arguments for option \'--input_layer_rna\': \'$VIASH_PAR_INPUT_LAYER_RNA\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_LAYER_RNA="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_layer_rna. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --query_modality=*)
-            [ -n "$VIASH_PAR_QUERY_MODALITY" ] && ViashError Bad arguments for option \'--query_modality=*\': \'$VIASH_PAR_QUERY_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_MODALITY=$(ViashRemoveFlags "$1")
+        --input_layer_rna=*)
+            [ -n "$VIASH_PAR_INPUT_LAYER_RNA" ] && ViashError Bad arguments for option \'--input_layer_rna=*\': \'$VIASH_PAR_INPUT_LAYER_RNA\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_LAYER_RNA=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --query_proteins_modality)
-            [ -n "$VIASH_PAR_QUERY_PROTEINS_MODALITY" ] && ViashError Bad arguments for option \'--query_proteins_modality\': \'$VIASH_PAR_QUERY_PROTEINS_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_PROTEINS_MODALITY="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --query_proteins_modality. Use "--help" to get more information on the parameters. && exit 1
+        --input_layer_protein)
+            [ -n "$VIASH_PAR_INPUT_LAYER_PROTEIN" ] && ViashError Bad arguments for option \'--input_layer_protein\': \'$VIASH_PAR_INPUT_LAYER_PROTEIN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_LAYER_PROTEIN="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_layer_protein. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --query_proteins_modality=*)
-            [ -n "$VIASH_PAR_QUERY_PROTEINS_MODALITY" ] && ViashError Bad arguments for option \'--query_proteins_modality=*\': \'$VIASH_PAR_QUERY_PROTEINS_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_PROTEINS_MODALITY=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --reference_modality)
-            [ -n "$VIASH_PAR_REFERENCE_MODALITY" ] && ViashError Bad arguments for option \'--reference_modality\': \'$VIASH_PAR_REFERENCE_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_MODALITY="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_modality. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --reference_modality=*)
-            [ -n "$VIASH_PAR_REFERENCE_MODALITY" ] && ViashError Bad arguments for option \'--reference_modality=*\': \'$VIASH_PAR_REFERENCE_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_MODALITY=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --reference_proteins_modality)
-            [ -n "$VIASH_PAR_REFERENCE_PROTEINS_MODALITY" ] && ViashError Bad arguments for option \'--reference_proteins_modality\': \'$VIASH_PAR_REFERENCE_PROTEINS_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_PROTEINS_MODALITY="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_proteins_modality. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --reference_proteins_modality=*)
-            [ -n "$VIASH_PAR_REFERENCE_PROTEINS_MODALITY" ] && ViashError Bad arguments for option \'--reference_proteins_modality=*\': \'$VIASH_PAR_REFERENCE_PROTEINS_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_PROTEINS_MODALITY=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --input_layer)
-            [ -n "$VIASH_PAR_INPUT_LAYER" ] && ViashError Bad arguments for option \'--input_layer\': \'$VIASH_PAR_INPUT_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_LAYER="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_layer. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --input_layer=*)
-            [ -n "$VIASH_PAR_INPUT_LAYER" ] && ViashError Bad arguments for option \'--input_layer=*\': \'$VIASH_PAR_INPUT_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_LAYER=$(ViashRemoveFlags "$1")
+        --input_layer_protein=*)
+            [ -n "$VIASH_PAR_INPUT_LAYER_PROTEIN" ] && ViashError Bad arguments for option \'--input_layer_protein=*\': \'$VIASH_PAR_INPUT_LAYER_PROTEIN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_LAYER_PROTEIN=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --obs_batch)
@@ -903,6 +945,28 @@ while [[ $# -gt 0 ]]; do
             fi
             shift 1
             ;;
+        --var_gene_names)
+            [ -n "$VIASH_PAR_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--var_gene_names\': \'$VIASH_PAR_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_GENE_NAMES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --var_gene_names. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --var_gene_names=*)
+            [ -n "$VIASH_PAR_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--var_gene_names=*\': \'$VIASH_PAR_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --var_protein_names)
+            [ -n "$VIASH_PAR_VAR_PROTEIN_NAMES" ] && ViashError Bad arguments for option \'--var_protein_names\': \'$VIASH_PAR_VAR_PROTEIN_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_PROTEIN_NAMES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --var_protein_names. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --var_protein_names=*)
+            [ -n "$VIASH_PAR_VAR_PROTEIN_NAMES" ] && ViashError Bad arguments for option \'--var_protein_names=*\': \'$VIASH_PAR_VAR_PROTEIN_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_PROTEIN_NAMES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --var_input)
             [ -n "$VIASH_PAR_VAR_INPUT" ] && ViashError Bad arguments for option \'--var_input\': \'$VIASH_PAR_VAR_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_VAR_INPUT="$2"
@@ -912,6 +976,132 @@ while [[ $# -gt 0 ]]; do
         --var_input=*)
             [ -n "$VIASH_PAR_VAR_INPUT" ] && ViashError Bad arguments for option \'--var_input=*\': \'$VIASH_PAR_VAR_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_VAR_INPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --n_obs_min_count)
+            [ -n "$VIASH_PAR_N_OBS_MIN_COUNT" ] && ViashError Bad arguments for option \'--n_obs_min_count\': \'$VIASH_PAR_N_OBS_MIN_COUNT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_OBS_MIN_COUNT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --n_obs_min_count. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --n_obs_min_count=*)
+            [ -n "$VIASH_PAR_N_OBS_MIN_COUNT" ] && ViashError Bad arguments for option \'--n_obs_min_count=*\': \'$VIASH_PAR_N_OBS_MIN_COUNT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_OBS_MIN_COUNT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --n_var_gene_min_count)
+            [ -n "$VIASH_PAR_N_VAR_GENE_MIN_COUNT" ] && ViashError Bad arguments for option \'--n_var_gene_min_count\': \'$VIASH_PAR_N_VAR_GENE_MIN_COUNT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_VAR_GENE_MIN_COUNT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --n_var_gene_min_count. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --n_var_gene_min_count=*)
+            [ -n "$VIASH_PAR_N_VAR_GENE_MIN_COUNT" ] && ViashError Bad arguments for option \'--n_var_gene_min_count=*\': \'$VIASH_PAR_N_VAR_GENE_MIN_COUNT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_VAR_GENE_MIN_COUNT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --n_var_protein_min_count)
+            [ -n "$VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT" ] && ViashError Bad arguments for option \'--n_var_protein_min_count\': \'$VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --n_var_protein_min_count. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --n_var_protein_min_count=*)
+            [ -n "$VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT" ] && ViashError Bad arguments for option \'--n_var_protein_min_count=*\': \'$VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --n_dimensions_latent_space)
+            [ -n "$VIASH_PAR_N_DIMENSIONS_LATENT_SPACE" ] && ViashError Bad arguments for option \'--n_dimensions_latent_space\': \'$VIASH_PAR_N_DIMENSIONS_LATENT_SPACE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_DIMENSIONS_LATENT_SPACE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --n_dimensions_latent_space. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --n_dimensions_latent_space=*)
+            [ -n "$VIASH_PAR_N_DIMENSIONS_LATENT_SPACE" ] && ViashError Bad arguments for option \'--n_dimensions_latent_space=*\': \'$VIASH_PAR_N_DIMENSIONS_LATENT_SPACE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_DIMENSIONS_LATENT_SPACE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --gene_dispersion)
+            [ -n "$VIASH_PAR_GENE_DISPERSION" ] && ViashError Bad arguments for option \'--gene_dispersion\': \'$VIASH_PAR_GENE_DISPERSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_GENE_DISPERSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --gene_dispersion. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --gene_dispersion=*)
+            [ -n "$VIASH_PAR_GENE_DISPERSION" ] && ViashError Bad arguments for option \'--gene_dispersion=*\': \'$VIASH_PAR_GENE_DISPERSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_GENE_DISPERSION=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --protein_dispersion)
+            [ -n "$VIASH_PAR_PROTEIN_DISPERSION" ] && ViashError Bad arguments for option \'--protein_dispersion\': \'$VIASH_PAR_PROTEIN_DISPERSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_PROTEIN_DISPERSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --protein_dispersion. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --protein_dispersion=*)
+            [ -n "$VIASH_PAR_PROTEIN_DISPERSION" ] && ViashError Bad arguments for option \'--protein_dispersion=*\': \'$VIASH_PAR_PROTEIN_DISPERSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_PROTEIN_DISPERSION=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --gene_likelihood)
+            [ -n "$VIASH_PAR_GENE_LIKELIHOOD" ] && ViashError Bad arguments for option \'--gene_likelihood\': \'$VIASH_PAR_GENE_LIKELIHOOD\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_GENE_LIKELIHOOD="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --gene_likelihood. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --gene_likelihood=*)
+            [ -n "$VIASH_PAR_GENE_LIKELIHOOD" ] && ViashError Bad arguments for option \'--gene_likelihood=*\': \'$VIASH_PAR_GENE_LIKELIHOOD\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_GENE_LIKELIHOOD=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --latent_distribution)
+            [ -n "$VIASH_PAR_LATENT_DISTRIBUTION" ] && ViashError Bad arguments for option \'--latent_distribution\': \'$VIASH_PAR_LATENT_DISTRIBUTION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LATENT_DISTRIBUTION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --latent_distribution. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --latent_distribution=*)
+            [ -n "$VIASH_PAR_LATENT_DISTRIBUTION" ] && ViashError Bad arguments for option \'--latent_distribution=*\': \'$VIASH_PAR_LATENT_DISTRIBUTION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LATENT_DISTRIBUTION=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --empirical_protein_background_prior)
+            [ -n "$VIASH_PAR_EMPIRICAL_PROTEIN_BACKGROUND_PRIOR" ] && ViashError Bad arguments for option \'--empirical_protein_background_prior\': \'$VIASH_PAR_EMPIRICAL_PROTEIN_BACKGROUND_PRIOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EMPIRICAL_PROTEIN_BACKGROUND_PRIOR="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --empirical_protein_background_prior. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --empirical_protein_background_prior=*)
+            [ -n "$VIASH_PAR_EMPIRICAL_PROTEIN_BACKGROUND_PRIOR" ] && ViashError Bad arguments for option \'--empirical_protein_background_prior=*\': \'$VIASH_PAR_EMPIRICAL_PROTEIN_BACKGROUND_PRIOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EMPIRICAL_PROTEIN_BACKGROUND_PRIOR=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --override_missing_proteins)
+            [ -n "$VIASH_PAR_OVERRIDE_MISSING_PROTEINS" ] && ViashError Bad arguments for option \'--override_missing_proteins\': \'$VIASH_PAR_OVERRIDE_MISSING_PROTEINS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OVERRIDE_MISSING_PROTEINS=true
+            shift 1
+            ;;
+        --max_epochs)
+            [ -n "$VIASH_PAR_MAX_EPOCHS" ] && ViashError Bad arguments for option \'--max_epochs\': \'$VIASH_PAR_MAX_EPOCHS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MAX_EPOCHS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --max_epochs. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --max_epochs=*)
+            [ -n "$VIASH_PAR_MAX_EPOCHS" ] && ViashError Bad arguments for option \'--max_epochs=*\': \'$VIASH_PAR_MAX_EPOCHS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MAX_EPOCHS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --early_stopping)
+            [ -n "$VIASH_PAR_EARLY_STOPPING" ] && ViashError Bad arguments for option \'--early_stopping\': \'$VIASH_PAR_EARLY_STOPPING\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EARLY_STOPPING="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --early_stopping. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --early_stopping=*)
+            [ -n "$VIASH_PAR_EARLY_STOPPING" ] && ViashError Bad arguments for option \'--early_stopping=*\': \'$VIASH_PAR_EARLY_STOPPING\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EARLY_STOPPING=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -930,6 +1120,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT="$2"
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
+            ;;
+        --output_model)
+            [ -n "$VIASH_PAR_OUTPUT_MODEL" ] && ViashError Bad arguments for option \'--output_model\': \'$VIASH_PAR_OUTPUT_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_MODEL="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_model. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_model=*)
+            [ -n "$VIASH_PAR_OUTPUT_MODEL" ] && ViashError Bad arguments for option \'--output_model=*\': \'$VIASH_PAR_OUTPUT_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_MODEL=$(ViashRemoveFlags "$1")
+            shift 1
             ;;
         --obsm_output)
             [ -n "$VIASH_PAR_OBSM_OUTPUT" ] && ViashError Bad arguments for option \'--obsm_output\': \'$VIASH_PAR_OBSM_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
@@ -964,59 +1165,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OBSM_NORMALIZED_PROTEIN_OUTPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --reference_model_path)
-            [ -n "$VIASH_PAR_REFERENCE_MODEL_PATH" ] && ViashError Bad arguments for option \'--reference_model_path\': \'$VIASH_PAR_REFERENCE_MODEL_PATH\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_MODEL_PATH="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_model_path. Use "--help" to get more information on the parameters. && exit 1
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --reference_model_path=*)
-            [ -n "$VIASH_PAR_REFERENCE_MODEL_PATH" ] && ViashError Bad arguments for option \'--reference_model_path=*\': \'$VIASH_PAR_REFERENCE_MODEL_PATH\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_REFERENCE_MODEL_PATH=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --query_model_path)
-            [ -n "$VIASH_PAR_QUERY_MODEL_PATH" ] && ViashError Bad arguments for option \'--query_model_path\': \'$VIASH_PAR_QUERY_MODEL_PATH\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_MODEL_PATH="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --query_model_path. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --query_model_path=*)
-            [ -n "$VIASH_PAR_QUERY_MODEL_PATH" ] && ViashError Bad arguments for option \'--query_model_path=*\': \'$VIASH_PAR_QUERY_MODEL_PATH\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_QUERY_MODEL_PATH=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --max_epochs)
-            [ -n "$VIASH_PAR_MAX_EPOCHS" ] && ViashError Bad arguments for option \'--max_epochs\': \'$VIASH_PAR_MAX_EPOCHS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MAX_EPOCHS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --max_epochs. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --max_epochs=*)
-            [ -n "$VIASH_PAR_MAX_EPOCHS" ] && ViashError Bad arguments for option \'--max_epochs=*\': \'$VIASH_PAR_MAX_EPOCHS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MAX_EPOCHS=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --max_query_epochs)
-            [ -n "$VIASH_PAR_MAX_QUERY_EPOCHS" ] && ViashError Bad arguments for option \'--max_query_epochs\': \'$VIASH_PAR_MAX_QUERY_EPOCHS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MAX_QUERY_EPOCHS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --max_query_epochs. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --max_query_epochs=*)
-            [ -n "$VIASH_PAR_MAX_QUERY_EPOCHS" ] && ViashError Bad arguments for option \'--max_query_epochs=*\': \'$VIASH_PAR_MAX_QUERY_EPOCHS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MAX_QUERY_EPOCHS=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --weight_decay)
-            [ -n "$VIASH_PAR_WEIGHT_DECAY" ] && ViashError Bad arguments for option \'--weight_decay\': \'$VIASH_PAR_WEIGHT_DECAY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_WEIGHT_DECAY="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --weight_decay. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --weight_decay=*)
-            [ -n "$VIASH_PAR_WEIGHT_DECAY" ] && ViashError Bad arguments for option \'--weight_decay=*\': \'$VIASH_PAR_WEIGHT_DECAY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_WEIGHT_DECAY=$(ViashRemoveFlags "$1")
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---engine)
@@ -1193,8 +1350,12 @@ if [ -z ${VIASH_PAR_INPUT+x} ]; then
   ViashError '--input' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
-if [ -z ${VIASH_PAR_REFERENCE+x} ]; then
-  ViashError '--reference' is a required argument. Use "--help" to get more information on the parameters.
+if [ -z ${VIASH_PAR_RNA_MODALITY+x} ]; then
+  ViashError '--rna_modality' is a required argument. Use "--help" to get more information on the parameters.
+  exit 1
+fi
+if [ -z ${VIASH_PAR_PROT_MODALITY+x} ]; then
+  ViashError '--prot_modality' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
 if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
@@ -1227,20 +1388,41 @@ if [ -z ${VIASH_META_TEMP_DIR+x} ]; then
 fi
 
 # filling in defaults
-if [ -z ${VIASH_PAR_FORCE_RETRAIN+x} ]; then
-  VIASH_PAR_FORCE_RETRAIN="false"
-fi
-if [ -z ${VIASH_PAR_QUERY_MODALITY+x} ]; then
-  VIASH_PAR_QUERY_MODALITY="rna"
-fi
-if [ -z ${VIASH_PAR_REFERENCE_MODALITY+x} ]; then
-  VIASH_PAR_REFERENCE_MODALITY="rna"
-fi
-if [ -z ${VIASH_PAR_REFERENCE_PROTEINS_MODALITY+x} ]; then
-  VIASH_PAR_REFERENCE_PROTEINS_MODALITY="prot"
-fi
 if [ -z ${VIASH_PAR_OBS_BATCH+x} ]; then
   VIASH_PAR_OBS_BATCH="sample_id"
+fi
+if [ -z ${VIASH_PAR_N_OBS_MIN_COUNT+x} ]; then
+  VIASH_PAR_N_OBS_MIN_COUNT="0"
+fi
+if [ -z ${VIASH_PAR_N_VAR_GENE_MIN_COUNT+x} ]; then
+  VIASH_PAR_N_VAR_GENE_MIN_COUNT="0"
+fi
+if [ -z ${VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT+x} ]; then
+  VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT="0"
+fi
+if [ -z ${VIASH_PAR_N_DIMENSIONS_LATENT_SPACE+x} ]; then
+  VIASH_PAR_N_DIMENSIONS_LATENT_SPACE="20"
+fi
+if [ -z ${VIASH_PAR_GENE_DISPERSION+x} ]; then
+  VIASH_PAR_GENE_DISPERSION="gene"
+fi
+if [ -z ${VIASH_PAR_PROTEIN_DISPERSION+x} ]; then
+  VIASH_PAR_PROTEIN_DISPERSION="protein"
+fi
+if [ -z ${VIASH_PAR_GENE_LIKELIHOOD+x} ]; then
+  VIASH_PAR_GENE_LIKELIHOOD="nb"
+fi
+if [ -z ${VIASH_PAR_LATENT_DISTRIBUTION+x} ]; then
+  VIASH_PAR_LATENT_DISTRIBUTION="normal"
+fi
+if [ -z ${VIASH_PAR_OVERRIDE_MISSING_PROTEINS+x} ]; then
+  VIASH_PAR_OVERRIDE_MISSING_PROTEINS="false"
+fi
+if [ -z ${VIASH_PAR_EARLY_STOPPING+x} ]; then
+  VIASH_PAR_EARLY_STOPPING="true"
+fi
+if [ -z ${VIASH_PAR_OUTPUT_MODEL+x} ]; then
+  VIASH_PAR_OUTPUT_MODEL="totalvi_model_reference"
 fi
 if [ -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then
   VIASH_PAR_OBSM_OUTPUT="X_integrated_totalvi"
@@ -1251,36 +1433,59 @@ fi
 if [ -z ${VIASH_PAR_OBSM_NORMALIZED_PROTEIN_OUTPUT+x} ]; then
   VIASH_PAR_OBSM_NORMALIZED_PROTEIN_OUTPUT="X_totalvi_normalized_protein"
 fi
-if [ -z ${VIASH_PAR_REFERENCE_MODEL_PATH+x} ]; then
-  VIASH_PAR_REFERENCE_MODEL_PATH="totalvi_model_reference"
-fi
-if [ -z ${VIASH_PAR_QUERY_MODEL_PATH+x} ]; then
-  VIASH_PAR_QUERY_MODEL_PATH="totalvi_model_query"
-fi
-if [ -z ${VIASH_PAR_MAX_EPOCHS+x} ]; then
-  VIASH_PAR_MAX_EPOCHS="400"
-fi
-if [ -z ${VIASH_PAR_MAX_QUERY_EPOCHS+x} ]; then
-  VIASH_PAR_MAX_QUERY_EPOCHS="200"
-fi
-if [ -z ${VIASH_PAR_WEIGHT_DECAY+x} ]; then
-  VIASH_PAR_WEIGHT_DECAY="0.0"
-fi
 
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
   ViashError "Input file '$VIASH_PAR_INPUT' does not exist."
   exit 1
 fi
-if [ ! -z "$VIASH_PAR_REFERENCE" ] && [ ! -e "$VIASH_PAR_REFERENCE" ]; then
-  ViashError "Input file '$VIASH_PAR_REFERENCE' does not exist."
-  exit 1
-fi
 
 # check whether parameters values are of the right type
-if [[ -n "$VIASH_PAR_FORCE_RETRAIN" ]]; then
-  if ! [[ "$VIASH_PAR_FORCE_RETRAIN" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--force_retrain' has to be a boolean_true. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_N_OBS_MIN_COUNT" ]]; then
+  if ! [[ "$VIASH_PAR_N_OBS_MIN_COUNT" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--n_obs_min_count' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if [[ $VIASH_PAR_N_OBS_MIN_COUNT -lt 0 ]]; then
+    ViashError '--n_obs_min_count' has be more than or equal to 0. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_N_VAR_GENE_MIN_COUNT" ]]; then
+  if ! [[ "$VIASH_PAR_N_VAR_GENE_MIN_COUNT" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--n_var_gene_min_count' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if [[ $VIASH_PAR_N_VAR_GENE_MIN_COUNT -lt 0 ]]; then
+    ViashError '--n_var_gene_min_count' has be more than or equal to 0. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT" ]]; then
+  if ! [[ "$VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--n_var_protein_min_count' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if [[ $VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT -lt 0 ]]; then
+    ViashError '--n_var_protein_min_count' has be more than or equal to 0. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_N_DIMENSIONS_LATENT_SPACE" ]]; then
+  if ! [[ "$VIASH_PAR_N_DIMENSIONS_LATENT_SPACE" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--n_dimensions_latent_space' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_EMPIRICAL_PROTEIN_BACKGROUND_PRIOR" ]]; then
+  if ! [[ "$VIASH_PAR_EMPIRICAL_PROTEIN_BACKGROUND_PRIOR" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--empirical_protein_background_prior' has to be a boolean. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_OVERRIDE_MISSING_PROTEINS" ]]; then
+  if ! [[ "$VIASH_PAR_OVERRIDE_MISSING_PROTEINS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--override_missing_proteins' has to be a boolean_true. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -1290,15 +1495,9 @@ if [[ -n "$VIASH_PAR_MAX_EPOCHS" ]]; then
     exit 1
   fi
 fi
-if [[ -n "$VIASH_PAR_MAX_QUERY_EPOCHS" ]]; then
-  if ! [[ "$VIASH_PAR_MAX_QUERY_EPOCHS" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--max_query_epochs' has to be an integer. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_WEIGHT_DECAY" ]]; then
-  if ! [[ "$VIASH_PAR_WEIGHT_DECAY" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
-    ViashError '--weight_decay' has to be a double. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_EARLY_STOPPING" ]]; then
+  if ! [[ "$VIASH_PAR_EARLY_STOPPING" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--early_stopping' has to be a boolean. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -1375,15 +1574,73 @@ if [[ -n "$VIASH_META_MEMORY_PIB" ]]; then
   fi
 fi
 
+# check whether value is belongs to a set of choices
+if [ ! -z "$VIASH_PAR_GENE_DISPERSION" ]; then
+  VIASH_PAR_GENE_DISPERSION_CHOICES=("gene;gene-batch;gene-label;gene-cell")
+  IFS=';'
+  set -f
+  if ! [[ ";${VIASH_PAR_GENE_DISPERSION_CHOICES[*]};" =~ ";$VIASH_PAR_GENE_DISPERSION;" ]]; then
+    ViashError '--gene_dispersion' specified value of \'$VIASH_PAR_GENE_DISPERSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
+if [ ! -z "$VIASH_PAR_PROTEIN_DISPERSION" ]; then
+  VIASH_PAR_PROTEIN_DISPERSION_CHOICES=("protein;protein-batch;protein-label;protein-cell")
+  IFS=';'
+  set -f
+  if ! [[ ";${VIASH_PAR_PROTEIN_DISPERSION_CHOICES[*]};" =~ ";$VIASH_PAR_PROTEIN_DISPERSION;" ]]; then
+    ViashError '--protein_dispersion' specified value of \'$VIASH_PAR_PROTEIN_DISPERSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
+if [ ! -z "$VIASH_PAR_GENE_LIKELIHOOD" ]; then
+  VIASH_PAR_GENE_LIKELIHOOD_CHOICES=("nb;zinb")
+  IFS=';'
+  set -f
+  if ! [[ ";${VIASH_PAR_GENE_LIKELIHOOD_CHOICES[*]};" =~ ";$VIASH_PAR_GENE_LIKELIHOOD;" ]]; then
+    ViashError '--gene_likelihood' specified value of \'$VIASH_PAR_GENE_LIKELIHOOD\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
+if [ ! -z "$VIASH_PAR_LATENT_DISTRIBUTION" ]; then
+  VIASH_PAR_LATENT_DISTRIBUTION_CHOICES=("normal;ln")
+  IFS=';'
+  set -f
+  if ! [[ ";${VIASH_PAR_LATENT_DISTRIBUTION_CHOICES[*]};" =~ ";$VIASH_PAR_LATENT_DISTRIBUTION;" ]]; then
+    ViashError '--latent_distribution' specified value of \'$VIASH_PAR_LATENT_DISTRIBUTION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
+if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
+  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip;lzf")
+  IFS=';'
+  set -f
+  if ! [[ ";${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]};" =~ ";$VIASH_PAR_OUTPUT_COMPRESSION;" ]]; then
+    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
 # create parent directories of output files, if so desired
 if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT")" ]; then
   mkdir -p "$(dirname "$VIASH_PAR_OUTPUT")"
 fi
-if [ ! -z "$VIASH_PAR_REFERENCE_MODEL_PATH" ] && [ ! -d "$(dirname "$VIASH_PAR_REFERENCE_MODEL_PATH")" ]; then
-  mkdir -p "$(dirname "$VIASH_PAR_REFERENCE_MODEL_PATH")"
-fi
-if [ ! -z "$VIASH_PAR_QUERY_MODEL_PATH" ] && [ ! -d "$(dirname "$VIASH_PAR_QUERY_MODEL_PATH")" ]; then
-  mkdir -p "$(dirname "$VIASH_PAR_QUERY_MODEL_PATH")"
+if [ ! -z "$VIASH_PAR_OUTPUT_MODEL" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_MODEL")" ]; then
+  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_MODEL")"
 fi
 
 if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
@@ -1393,24 +1650,15 @@ if [ ! -z "$VIASH_PAR_INPUT" ]; then
   VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_INPUT")" )
   VIASH_PAR_INPUT=$(ViashDockerAutodetectMount "$VIASH_PAR_INPUT")
 fi
-if [ ! -z "$VIASH_PAR_REFERENCE" ]; then
-  VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_REFERENCE")" )
-  VIASH_PAR_REFERENCE=$(ViashDockerAutodetectMount "$VIASH_PAR_REFERENCE")
-fi
 if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
   VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_OUTPUT")" )
   VIASH_PAR_OUTPUT=$(ViashDockerAutodetectMount "$VIASH_PAR_OUTPUT")
   VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT" )
 fi
-if [ ! -z "$VIASH_PAR_REFERENCE_MODEL_PATH" ]; then
-  VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_REFERENCE_MODEL_PATH")" )
-  VIASH_PAR_REFERENCE_MODEL_PATH=$(ViashDockerAutodetectMount "$VIASH_PAR_REFERENCE_MODEL_PATH")
-  VIASH_CHOWN_VARS+=( "$VIASH_PAR_REFERENCE_MODEL_PATH" )
-fi
-if [ ! -z "$VIASH_PAR_QUERY_MODEL_PATH" ]; then
-  VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_QUERY_MODEL_PATH")" )
-  VIASH_PAR_QUERY_MODEL_PATH=$(ViashDockerAutodetectMount "$VIASH_PAR_QUERY_MODEL_PATH")
-  VIASH_CHOWN_VARS+=( "$VIASH_PAR_QUERY_MODEL_PATH" )
+if [ ! -z "$VIASH_PAR_OUTPUT_MODEL" ]; then
+  VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_OUTPUT_MODEL")" )
+  VIASH_PAR_OUTPUT_MODEL=$(ViashDockerAutodetectMount "$VIASH_PAR_OUTPUT_MODEL")
+  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT_MODEL" )
 fi
 if [ ! -z "$VIASH_META_RESOURCES_DIR" ]; then
   VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_META_RESOURCES_DIR")" )
@@ -1479,43 +1727,47 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
-from typing import Tuple
-
-import os
 import sys
-import mudata
-from anndata import AnnData  # For type hints
-from mudata import MuData  # For type hints
-import numpy as np
+import mudata as mu
+import anndata as ad
 import scvi
 from scipy.sparse import issparse
+from scanpy._utils import check_nonnegative_integers
 
 
 ### VIASH START
 # The following code has been auto-generated by Viash.
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'force_retrain': $( if [ ! -z ${VIASH_PAR_FORCE_RETRAIN+x} ]; then echo "r'${VIASH_PAR_FORCE_RETRAIN//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
-  'query_modality': $( if [ ! -z ${VIASH_PAR_QUERY_MODALITY+x} ]; then echo "r'${VIASH_PAR_QUERY_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'query_proteins_modality': $( if [ ! -z ${VIASH_PAR_QUERY_PROTEINS_MODALITY+x} ]; then echo "r'${VIASH_PAR_QUERY_PROTEINS_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'reference_modality': $( if [ ! -z ${VIASH_PAR_REFERENCE_MODALITY+x} ]; then echo "r'${VIASH_PAR_REFERENCE_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'reference_proteins_modality': $( if [ ! -z ${VIASH_PAR_REFERENCE_PROTEINS_MODALITY+x} ]; then echo "r'${VIASH_PAR_REFERENCE_PROTEINS_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'rna_modality': $( if [ ! -z ${VIASH_PAR_RNA_MODALITY+x} ]; then echo "r'${VIASH_PAR_RNA_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'prot_modality': $( if [ ! -z ${VIASH_PAR_PROT_MODALITY+x} ]; then echo "r'${VIASH_PAR_PROT_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_layer_rna': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER_RNA+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER_RNA//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_layer_protein': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER_PROTEIN+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER_PROTEIN//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_batch': $( if [ ! -z ${VIASH_PAR_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_size_factor': $( if [ ! -z ${VIASH_PAR_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_OBS_SIZE_FACTOR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_categorical_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CATEGORICAL_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CATEGORICAL_COVARIATE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CONTINUOUS_COVARIATE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'var_protein_names': $( if [ ! -z ${VIASH_PAR_VAR_PROTEIN_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_PROTEIN_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'n_obs_min_count': $( if [ ! -z ${VIASH_PAR_N_OBS_MIN_COUNT+x} ]; then echo "int(r'${VIASH_PAR_N_OBS_MIN_COUNT//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'n_var_gene_min_count': $( if [ ! -z ${VIASH_PAR_N_VAR_GENE_MIN_COUNT+x} ]; then echo "int(r'${VIASH_PAR_N_VAR_GENE_MIN_COUNT//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'n_var_protein_min_count': $( if [ ! -z ${VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT+x} ]; then echo "int(r'${VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'n_dimensions_latent_space': $( if [ ! -z ${VIASH_PAR_N_DIMENSIONS_LATENT_SPACE+x} ]; then echo "int(r'${VIASH_PAR_N_DIMENSIONS_LATENT_SPACE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'gene_dispersion': $( if [ ! -z ${VIASH_PAR_GENE_DISPERSION+x} ]; then echo "r'${VIASH_PAR_GENE_DISPERSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'protein_dispersion': $( if [ ! -z ${VIASH_PAR_PROTEIN_DISPERSION+x} ]; then echo "r'${VIASH_PAR_PROTEIN_DISPERSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'gene_likelihood': $( if [ ! -z ${VIASH_PAR_GENE_LIKELIHOOD+x} ]; then echo "r'${VIASH_PAR_GENE_LIKELIHOOD//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'latent_distribution': $( if [ ! -z ${VIASH_PAR_LATENT_DISTRIBUTION+x} ]; then echo "r'${VIASH_PAR_LATENT_DISTRIBUTION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'empirical_protein_background_prior': $( if [ ! -z ${VIASH_PAR_EMPIRICAL_PROTEIN_BACKGROUND_PRIOR+x} ]; then echo "r'${VIASH_PAR_EMPIRICAL_PROTEIN_BACKGROUND_PRIOR//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'override_missing_proteins': $( if [ ! -z ${VIASH_PAR_OVERRIDE_MISSING_PROTEINS+x} ]; then echo "r'${VIASH_PAR_OVERRIDE_MISSING_PROTEINS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'max_epochs': $( if [ ! -z ${VIASH_PAR_MAX_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_MAX_EPOCHS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'early_stopping': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_model': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_normalized_rna_output': $( if [ ! -z ${VIASH_PAR_OBSM_NORMALIZED_RNA_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_NORMALIZED_RNA_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_normalized_protein_output': $( if [ ! -z ${VIASH_PAR_OBSM_NORMALIZED_PROTEIN_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_NORMALIZED_PROTEIN_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'reference_model_path': $( if [ ! -z ${VIASH_PAR_REFERENCE_MODEL_PATH+x} ]; then echo "r'${VIASH_PAR_REFERENCE_MODEL_PATH//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'query_model_path': $( if [ ! -z ${VIASH_PAR_QUERY_MODEL_PATH+x} ]; then echo "r'${VIASH_PAR_QUERY_MODEL_PATH//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'max_epochs': $( if [ ! -z ${VIASH_PAR_MAX_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_MAX_EPOCHS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'max_query_epochs': $( if [ ! -z ${VIASH_PAR_MAX_QUERY_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_MAX_QUERY_EPOCHS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'weight_decay': $( if [ ! -z ${VIASH_PAR_WEIGHT_DECAY+x} ]; then echo "float(r'${VIASH_PAR_WEIGHT_DECAY//\'/\'\"\'\"r\'}')"; else echo None; fi )
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1545,178 +1797,164 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from subset_vars import subset_vars
+from set_var_index import set_var_index
 
 logger = setup_logger()
 
 
-def align_proteins_names(
-    adata_reference: AnnData,
-    mdata_query: MuData,
-    adata_query: AnnData,
-    reference_proteins_key: str,
-    query_proteins_key: str,
-) -> AnnData:
-    """Make sure that proteins are located in the same .obsm slot in reference and query. Pad query proteins with zeros if they are absent"""
-    proteins_reference = adata_reference.obsm[reference_proteins_key]
+def check_validity_anndata(
+    adata,
+    layer,
+    protein_modality,
+    obs_batch,
+    n_obs_min_count,
+    n_var_gene_min_count,
+    n_var_protein_min_count,
+):
+    assert check_nonnegative_integers(adata.layers[layer] if layer else adata.X), (
+        "Make sure input rna layer contains raw_counts"
+    )
 
-    # If query has no protein data, put matrix of zeros
-    if not query_proteins_key or query_proteins_key not in mdata_query.mod:
-        adata_query.obsm[reference_proteins_key] = np.zeros(
-            (adata_query.n_obs, proteins_reference.shape[1])
-        )
-    else:
-        # Make sure that proteins expression has the same key in query and reference
-        adata_query.obsm[reference_proteins_key] = adata_query.obsm[query_proteins_key]
+    assert len(set(adata.var_names)) == len(adata.var_names), (
+        "Dataset contains multiple genes with same gene name."
+    )
 
-    return adata_query
+    # Ensure every obs_batch category has sufficient observations
+    assert min(adata.obs[[obs_batch]].value_counts()) > n_obs_min_count, (
+        f"Anndata has fewer than {n_obs_min_count} cells."
+    )
+
+    assert adata.n_vars > n_var_gene_min_count, (
+        f"Anndata has fewer than {n_var_gene_min_count} genes."
+    )
+
+    assert len(set(adata.var_names)) == len(adata.var_names), (
+        "Dataset contains multiple genes with same gene name."
+    )
+
+    assert check_nonnegative_integers(adata.obsm[protein_modality]), (
+        "Make sure input protein layer contains raw_counts"
+    )
+
+    assert adata.obsm[protein_modality].shape[1] > n_var_protein_min_count, (
+        f"Anndata has fewer than {n_var_protein_min_count} proteins."
+    )
+
+    assert len(set(adata.uns[protein_modality])) == len(adata.uns[protein_modality]), (
+        "Dataset contains multiple proteins with same gene name."
+    )
 
 
-def extract_proteins_to_anndata(
-    mdata: MuData, rna_modality_key, protein_modality_key, input_layer, hvg_var_key=None
-) -> AnnData:
+def consolidate_modalities_to_anndata(
+    mdata: mu.MuData,
+    rna_modality: str,
+    protein_modality: str,
+    input_layer_protein: str | None,
+    hvg_var_key: str | None = None,
+) -> ad.AnnData:
     """TOTALVI requires data to be stored in AnnData format with protein counts in .obsm slot. This function performs the conversion"""
-    adata: AnnData = mdata.mod[rna_modality_key].copy()
 
+    adata = mdata.mod[rna_modality].copy()
     if hvg_var_key:
-        selected_genes = adata.var_names[adata.var[hvg_var_key]]
-        adata = adata[:, selected_genes].copy()
+        adata = subset_vars(adata, subset_col=hvg_var_key)
 
-    if protein_modality_key in mdata.mod:
-        # Put the proteins modality into .obsm slot
-        proteins_reference_adata = mdata.mod[protein_modality_key].copy()
+    adata = set_var_index(adata, var_name=par["var_gene_names"])
 
-        if input_layer is None:
-            proteins = proteins_reference_adata.X
-        else:
-            proteins = proteins_reference_adata.obsm[input_layer]
+    # Put the proteins modality into .obsm slot
+    prot_adata = mdata.mod[protein_modality].copy()
+    set_var_index(prot_adata, var_name=par["var_protein_names"])
 
-        if issparse(proteins):
-            proteins = proteins.toarray()
+    protein_layer = (
+        prot_adata.layers[input_layer_protein] if input_layer_protein else prot_adata.X
+    )
 
-        adata.obsm[protein_modality_key] = proteins
+    if issparse(protein_layer):
+        protein_layer = protein_layer.toarray()
+
+    adata.obsm[protein_modality] = protein_layer
+    adata.uns[protein_modality] = prot_adata.var_names
 
     return adata
 
 
-def build_reference_model(
-    adata_reference: AnnData, max_train_epochs: int = 400
-) -> scvi.model.TOTALVI:
-    vae_reference = scvi.model.TOTALVI(
-        adata_reference, use_layer_norm="both", use_batch_norm="none"
-    )
-    vae_reference.train(max_train_epochs)
+def main():
+    mdata = mu.read_h5mu(par["input"])
 
-    vae_reference.save(par["reference_model_path"])
-
-    return vae_reference
-
-
-def is_retraining_model() -> bool:
-    """Decide, whether reference model should be trained. It happens when no model exists or force_retrain flag is on"""
-
-    trained_model_exists = os.path.isdir(par["reference_model_path"]) and (
-        "model.pt" in os.listdir(par["reference_model_path"])
-    )
-    return not trained_model_exists or par["force_retrain"]
-
-
-def map_query_to_reference(
-    mdata_reference: MuData, mdata_query: MuData, adata_query: AnnData
-) -> Tuple[scvi.model.TOTALVI, AnnData]:
-    """Build model on the provided reference if necessary, and map query to the reference"""
-
-    adata_reference: AnnData = extract_proteins_to_anndata(
-        mdata_reference,
-        rna_modality_key=par["reference_modality"],
-        protein_modality_key=par["reference_proteins_modality"],
-        input_layer=par["input_layer"],
-        hvg_var_key=par["var_input"],
+    logger.info("Preparing data for TOTALVI...")
+    # Move protein counts to .obsm slot of the rna modality AnnData
+    # and protein names .uns slot to comply with TOTALVI input format
+    adata = consolidate_modalities_to_anndata(
+        mdata,
+        par["rna_modality"],
+        par["prot_modality"],
+        par["input_layer_protein"],
+        par["var_input"],
     )
 
+    check_validity_anndata(
+        adata,
+        par["input_layer_rna"],
+        par["prot_modality"],
+        par["obs_batch"],
+        par["n_obs_min_count"],
+        par["n_var_gene_min_count"],
+        par["n_var_protein_min_count"],
+    )
+
+    logger.info("Loading data for TOTALVI...")
     scvi.model.TOTALVI.setup_anndata(
-        adata_reference,
+        adata,
         batch_key=par["obs_batch"],
-        protein_expression_obsm_key=par["reference_proteins_modality"],
+        layer=par["input_layer_rna"],
+        protein_expression_obsm_key=par["prot_modality"],
+        protein_names_uns_key=par["prot_modality"],
         size_factor_key=par["obs_size_factor"],
         categorical_covariate_keys=par["obs_categorical_covariate"],
         continuous_covariate_keys=par["obs_continuous_covariate"],
     )
 
-    if is_retraining_model():
-        vae_reference = build_reference_model(
-            adata_reference, max_train_epochs=par["max_epochs"]
-        )
-    else:
-        vae_reference = scvi.model.TOTALVI.load(
-            dir_path=par["reference_model_path"], adata=adata_reference
-        )
-
-    adata_query: AnnData = align_proteins_names(
-        adata_reference,
-        mdata_query,
-        adata_query,
-        reference_proteins_key=par["reference_proteins_modality"],
-        query_proteins_key=par["query_proteins_modality"],
+    logger.info("Preparing TOTALVI model...")
+    model = scvi.model.TOTALVI(
+        adata,
+        n_latent=par["n_dimensions_latent_space"],
+        gene_dispersion=par["gene_dispersion"],
+        protein_dispersion=par["protein_dispersion"],
+        gene_likelihood=par["gene_likelihood"],
+        latent_distribution=par["latent_distribution"],
+        empirical_protein_background_prior=par["empirical_protein_background_prior"],
+        override_missing_proteins=par["override_missing_proteins"],
     )
 
-    # Reorder genes and pad missing genes with 0s
-    scvi.model.TOTALVI.prepare_query_anndata(adata_query, vae_reference)
-
-    # Train the model for query
-    vae_query = scvi.model.TOTALVI.load_query_data(adata_query, vae_reference)
-    vae_query.train(
-        par["max_query_epochs"], plan_kwargs=dict(weight_decay=par["weight_decay"])
+    logger.info("Training TOTALVI model...")
+    model.train(
+        max_epochs=par["max_epochs"],
+        early_stopping=par["early_stopping"],
+        check_val_every_n_epoch=1,
+        accelerator="auto",
     )
 
-    return vae_query, adata_query
-
-
-def main():
-    mdata_query = mudata.read(par["input"].strip())
-    adata_query = extract_proteins_to_anndata(
-        mdata_query,
-        rna_modality_key=par["query_modality"],
-        protein_modality_key=par["query_proteins_modality"],
-        input_layer=par["input_layer"],
-        hvg_var_key=par["var_input"],
+    logger.info("Getting the latent representation...")
+    mdata.mod[par["rna_modality"]].obsm[par["obsm_output"]] = (
+        model.get_latent_representation()
     )
 
-    if par["reference"].endswith(".h5mu"):
-        logger.info("Reading reference")
-        mdata_reference = mudata.read(par["reference"].strip())
-
-        logger.info("Mapping query to the reference")
-        vae_query, adata_query = map_query_to_reference(
-            mdata_reference, mdata_query, adata_query
-        )
-    else:
-        raise ValueError("Incorrect format of reference, please provide a .h5mu file")
-
-    adata_query.uns["integration_method"] = "totalvi"
-
-    logger.info("Getting the latent representation of query")
-    mdata_query.mod[par["query_modality"]].obsm[par["obsm_output"]] = (
-        vae_query.get_latent_representation()
-    )
-
-    norm_rna, norm_protein = vae_query.get_normalized_expression()
-    mdata_query.mod[par["query_modality"]].obsm[par["obsm_normalized_rna_output"]] = (
+    logger.info("Getting normalized expression...")
+    norm_rna, norm_protein = model.get_normalized_expression()
+    mdata.mod[par["rna_modality"]].obsm[par["obsm_normalized_rna_output"]] = (
         norm_rna.to_numpy()
     )
+    if par["prot_modality"] in mdata.mod:
+        mdata.mod[par["prot_modality"]].obsm[par["obsm_normalized_protein_output"]] = (
+            norm_protein.to_numpy()
+        )
 
-    if par["query_proteins_modality"] in mdata_query.mod:
-        mdata_query.mod[par["query_proteins_modality"]].obsm[
-            par["obsm_normalized_protein_output"]
-        ] = norm_protein.to_numpy()
+    logger.info("Saving integrated data...")
+    mdata.write_h5mu(par["output"], compression=par["output_compression"])
 
-    logger.info("Updating mdata")
-    mdata_query.update()
-
-    logger.info("Saving updated query data")
-    mdata_query.write_h5mu(par["output"].strip())
-
-    logger.info("Saving query model")
-    vae_query.save(par["query_model_path"], overwrite=True)
+    if par["output_model"]:
+        logger.info("Saving TOTALVI model...")
+        model.save(par["output_model"], overwrite=True)
 
 
 if __name__ == "__main__":
@@ -1734,17 +1972,11 @@ if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
   if [ ! -z "$VIASH_PAR_INPUT" ]; then
     VIASH_PAR_INPUT=$(ViashDockerStripAutomount "$VIASH_PAR_INPUT")
   fi
-  if [ ! -z "$VIASH_PAR_REFERENCE" ]; then
-    VIASH_PAR_REFERENCE=$(ViashDockerStripAutomount "$VIASH_PAR_REFERENCE")
-  fi
   if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
     VIASH_PAR_OUTPUT=$(ViashDockerStripAutomount "$VIASH_PAR_OUTPUT")
   fi
-  if [ ! -z "$VIASH_PAR_REFERENCE_MODEL_PATH" ]; then
-    VIASH_PAR_REFERENCE_MODEL_PATH=$(ViashDockerStripAutomount "$VIASH_PAR_REFERENCE_MODEL_PATH")
-  fi
-  if [ ! -z "$VIASH_PAR_QUERY_MODEL_PATH" ]; then
-    VIASH_PAR_QUERY_MODEL_PATH=$(ViashDockerStripAutomount "$VIASH_PAR_QUERY_MODEL_PATH")
+  if [ ! -z "$VIASH_PAR_OUTPUT_MODEL" ]; then
+    VIASH_PAR_OUTPUT_MODEL=$(ViashDockerStripAutomount "$VIASH_PAR_OUTPUT_MODEL")
   fi
   if [ ! -z "$VIASH_META_RESOURCES_DIR" ]; then
     VIASH_META_RESOURCES_DIR=$(ViashDockerStripAutomount "$VIASH_META_RESOURCES_DIR")
@@ -1766,12 +1998,8 @@ if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -e "$VIASH_PAR_OUTPUT" ]; then
   ViashError "Output file '$VIASH_PAR_OUTPUT' does not exist."
   exit 1
 fi
-if [ ! -z "$VIASH_PAR_REFERENCE_MODEL_PATH" ] && [ ! -e "$VIASH_PAR_REFERENCE_MODEL_PATH" ]; then
-  ViashError "Output file '$VIASH_PAR_REFERENCE_MODEL_PATH' does not exist."
-  exit 1
-fi
-if [ ! -z "$VIASH_PAR_QUERY_MODEL_PATH" ] && [ ! -e "$VIASH_PAR_QUERY_MODEL_PATH" ]; then
-  ViashError "Output file '$VIASH_PAR_QUERY_MODEL_PATH' does not exist."
+if [ ! -z "$VIASH_PAR_OUTPUT_MODEL" ] && [ ! -e "$VIASH_PAR_OUTPUT_MODEL" ]; then
+  ViashError "Output file '$VIASH_PAR_OUTPUT_MODEL' does not exist."
   exit 1
 fi
 

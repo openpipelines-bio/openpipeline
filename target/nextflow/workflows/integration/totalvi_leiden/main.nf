@@ -10,7 +10,7 @@
 // files.
 // 
 // Component authors:
-//  * Dries Schaumont (author)
+//  * Dorien Roosen (author)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -3038,17 +3038,16 @@ meta = [
   "version" : "main_build",
   "authors" : [
     {
-      "name" : "Dries Schaumont",
+      "name" : "Dorien Roosen",
       "roles" : [
         "author"
       ],
       "info" : {
         "role" : "Core Team Member",
         "links" : {
-          "email" : "dries@data-intuitive.com",
-          "github" : "DriesSchaumont",
-          "orcid" : "0000-0002-4389-0440",
-          "linkedin" : "dries-schaumont"
+          "email" : "dorien@data-intuitive.com",
+          "github" : "dorien-er",
+          "linkedin" : "dorien-roosen"
         },
         "organizations" : [
           {
@@ -3079,9 +3078,9 @@ meta = [
         {
           "type" : "file",
           "name" : "--input",
-          "description" : "Path to the sample.",
+          "description" : "Input h5mu file to be integrated.",
           "example" : [
-            "dataset.h5mu"
+            "input.h5mu"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3092,17 +3091,7 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--layer",
-          "description" : "use specified layer for expression values instead of the .X object from the modality.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--modality",
-          "description" : "Which modality to process.",
+          "name" : "--rna_modality",
           "default" : [
             "rna"
           ],
@@ -3114,7 +3103,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--prot_modality",
-          "description" : "Which modality to process.",
+          "description" : "Name of the modality in the input (query) h5mu file containing protein data",
           "default" : [
             "prot"
           ],
@@ -3124,75 +3113,27 @@ meta = [
           "multiple_sep" : ";"
         },
         {
-          "type" : "file",
-          "name" : "--reference",
-          "alternatives" : [
-            "-r"
-          ],
-          "description" : "Input h5mu file with reference data to train the TOTALVI model.",
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : true,
+          "type" : "string",
+          "name" : "--input_layer_rna",
+          "description" : "Input layer to use from the rna modality for gene counts. If None, X is used",
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "Outputs",
-      "arguments" : [
+        },
         {
-          "type" : "file",
-          "name" : "--output",
-          "description" : "Destination path to the output.",
-          "example" : [
-            "output.h5mu"
-          ],
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : true,
-          "direction" : "output",
+          "type" : "string",
+          "name" : "--input_layer_protein",
+          "description" : "Input layer to use from the protein modality for protein counts. If None, X is used",
+          "required" : false,
+          "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
         },
-        {
-          "type" : "file",
-          "name" : "--reference_model_path",
-          "description" : "Directory with the reference model. If not exists, trained model will be saved there",
-          "default" : [
-            "totalvi_model_reference"
-          ],
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : false,
-          "direction" : "output",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "file",
-          "name" : "--query_model_path",
-          "description" : "Directory, where the query model will be saved",
-          "default" : [
-            "totalvi_model_query"
-          ],
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : false,
-          "direction" : "output",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "General TotalVI Options",
-      "arguments" : [
         {
           "type" : "string",
           "name" : "--obs_batch",
-          "description" : ".Obs column name discriminating between your batches.",
+          "description" : "Column name discriminating between your batches.",
           "default" : [
             "sample_id"
           ],
@@ -3229,78 +3170,85 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "string",
+          "name" : "--var_gene_names",
+          "description" : ".var column in the rna modality containing gene names. By default, use mod['rna'].var_names.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--var_protein_names",
+          "description" : ".var column in the protein modality containing protein names. By default, use mod['prot'].var_names.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--var_input",
+          "description" : ".var column containing highly variable genes. By default, do not subset genes.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Outputs",
+      "arguments" : [
+        {
+          "type" : "file",
+          "name" : "--output",
+          "description" : "Destination path to the output.",
+          "example" : [
+            "output.h5mu"
+          ],
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : true,
+          "direction" : "output",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "file",
+          "name" : "--output_model",
+          "description" : "Directory where the trained reference model will be stored.",
+          "default" : [
+            "totalvi_model_reference"
+          ],
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : false,
+          "direction" : "output",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "TotalVI Training Options",
+      "arguments" : [
+        {
           "type" : "integer",
           "name" : "--max_epochs",
-          "description" : "Number of passes through the dataset",
-          "default" : [
-            400
-          ],
+          "description" : "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest.",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
         },
         {
-          "type" : "integer",
-          "name" : "--max_query_epochs",
-          "description" : "Number of passes through the dataset, when fine-tuning model for query",
+          "type" : "boolean",
+          "name" : "--early_stopping",
+          "description" : "Whether to perform early stopping with respect to the validation set.",
           "default" : [
-            200
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "double",
-          "name" : "--weight_decay",
-          "description" : "Weight decay, when fine-tuning model for query",
-          "default" : [
-            0.0
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "boolean_true",
-          "name" : "--force_retrain",
-          "description" : "If true, retrain the model and save it to reference_model_path",
-          "direction" : "input"
-        },
-        {
-          "type" : "string",
-          "name" : "--var_input",
-          "description" : "Boolean .var column to subset data with (e.g. containing highly variable genes). By default, do not subset genes.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "TotalVI integration options RNA",
-      "arguments" : [
-        {
-          "type" : "string",
-          "name" : "--rna_reference_modality",
-          "default" : [
-            "rna"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--rna_obsm_output",
-          "description" : "In which .obsm slot to store the normalized RNA from TOTALVI.",
-          "default" : [
-            "X_totalvi"
+            true
           ],
           "required" : false,
           "direction" : "input",
@@ -3310,14 +3258,14 @@ meta = [
       ]
     },
     {
-      "name" : "TotalVI integration options ADT",
+      "name" : "TotalVI Integration Options",
       "arguments" : [
         {
           "type" : "string",
-          "name" : "--prot_reference_modality",
-          "description" : "Name of the modality containing proteins in the reference",
+          "name" : "--obsm_integrated",
+          "description" : "In which .obsm slot to store the resulting integrated embedding.",
           "default" : [
-            "prot"
+            "X_integrated_totalvi"
           ],
           "required" : false,
           "direction" : "input",
@@ -3326,10 +3274,22 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--prot_obsm_output",
+          "name" : "--obsm_normalized_rna_output",
+          "description" : "In which .obsm slot to store the normalized RNA data from TOTALVI.",
+          "default" : [
+            "X_totalvi_normalized_rna"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--obsm_normalized_protein_output",
           "description" : "In which .obsm slot to store the normalized protein data from TOTALVI.",
           "default" : [
-            "X_totalvi"
+            "X_totalvi_normalized_protein"
           ],
           "required" : false,
           "direction" : "input",
@@ -3339,11 +3299,11 @@ meta = [
       ]
     },
     {
-      "name" : "Neighbour calculation RNA",
+      "name" : "Neighbour calculation",
       "arguments" : [
         {
           "type" : "string",
-          "name" : "--rna_uns_neighbors",
+          "name" : "--uns_neighbors",
           "description" : "In which .uns slot to store various neighbor output objects.",
           "default" : [
             "totalvi_integration_neighbors"
@@ -3355,7 +3315,7 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--rna_obsp_neighbor_distances",
+          "name" : "--obsp_neighbor_distances",
           "description" : "In which .obsp slot to store the distance matrix between the resulting neighbors.",
           "default" : [
             "totalvi_integration_distances"
@@ -3367,7 +3327,7 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--rna_obsp_neighbor_connectivities",
+          "name" : "--obsp_neighbor_connectivities",
           "description" : "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
           "default" : [
             "totalvi_integration_connectivities"
@@ -3380,52 +3340,11 @@ meta = [
       ]
     },
     {
-      "name" : "Neighbour calculation ADT",
+      "name" : "Clustering options",
       "arguments" : [
         {
           "type" : "string",
-          "name" : "--prot_uns_neighbors",
-          "description" : "In which .uns slot to store various neighbor output objects.",
-          "default" : [
-            "totalvi_integration_neighbors"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--prot_obsp_neighbor_distances",
-          "description" : "In which .obsp slot to store the distance matrix between the resulting neighbors.",
-          "default" : [
-            "totalvi_integration_distances"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--prot_obsp_neighbor_connectivities",
-          "description" : "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
-          "default" : [
-            "totalvi_integration_connectivities"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "Clustering options RNA",
-      "arguments" : [
-        {
-          "type" : "string",
-          "name" : "--rna_obs_cluster",
+          "name" : "--obs_cluster",
           "description" : "Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions\nresolutions specified in '--leiden_resolution'.\n",
           "default" : [
             "totalvi_integration_leiden"
@@ -3437,36 +3356,7 @@ meta = [
         },
         {
           "type" : "double",
-          "name" : "--rna_leiden_resolution",
-          "description" : "Control the coarseness of the clustering. Higher values lead to more clusters.",
-          "default" : [
-            1.0
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : true,
-          "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "Clustering options ADT",
-      "arguments" : [
-        {
-          "type" : "string",
-          "name" : "--prot_obs_cluster",
-          "description" : "Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions\nresolutions specified in '--leiden_resolution'.\n",
-          "default" : [
-            "totalvi_integration_leiden"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "double",
-          "name" : "--prot_leiden_resolution",
+          "name" : "--leiden_resolution",
           "description" : "Control the coarseness of the clustering. Higher values lead to more clusters.",
           "default" : [
             1.0
@@ -3513,7 +3403,7 @@ meta = [
       "dest" : "nextflow_labels.config"
     }
   ],
-  "description" : "Run totalVI integration followed by neighbour calculations, leiden clustering and run umap on the result.",
+  "description" : "Run totalVI integration, followed by neighbour calculations, leiden clustering and UMAP.",
   "test_resources" : [
     {
       "type" : "nextflow_script",
@@ -3634,7 +3524,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/totalvi_leiden",
     "viash_version" : "0.9.4",
-    "git_commit" : "3d55e485d61597c0d292afa86b6b6984b5be2b85",
+    "git_commit" : "62aa4be02a75d90b75778a7d10f95101f931f3ed",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3699,68 +3589,49 @@ workflow run_wf {
       [id, new_state]
     }
     | totalvi.run(
-      fromState: [
-        "input": "input",
-        "input_layer": "layer",
-        "obs_batch": "obs_batch",
-        "obs_size_factor": "obs_size_factor",
-        "obs_categorical_covariate": "obs_categorical_covariate",
-        "obs_continuous_covariate": "obs_continuous_covariate",
-        "query_modality": "modality",
-        "query_proteins_modality": "prot_modality",
-        "query_model_path": "query_model_path",
-        "obsm_normalized_rna_output": "rna_obsm_output",
-        "obsm_normalized_protein_output": "prot_obsm_output",
-        "reference_model_path": "reference_model_path",
-        "reference_modality": "rna_reference_modality",
-        "reference_proteins_modality": "prot_reference_modality",
-        "var_input": "var_input",
-        "force_retrain": "force_retrain",
-        "weight_decay": "weight_decay",
-        "max_epochs": "max_epochs",
-        "max_query_epochs": "max_query_epochs",
-        "reference": "reference"
-      ],
+      fromState: {id, state -> [
+        "input": state.input,
+        "rna_modality": state.rna_modality,
+        "prot_modality": state.prot_modality,
+        "input_layer_rna": state.input_layer_rna,
+        "input_layer_protein": state.input_layer_protein,
+        "obs_batch": state.obs_batch,
+        "obs_size_factor": state.obs_size_factor,
+        "obs_categorical_covariate": state.obs_categorical_covariate,
+        "obs_continuous_covariate": state.obs_continuous_covariate,
+        "var_gene_names": state.var_gene_names,
+        "var_protein_names": state.var_protein_names,
+        "var_input": state.var_input,
+        "max_epochs": state.max_epochs,
+        "early_stopping": state.early_stopping,
+        "obsm_output": state.obsm_integrated,
+        "obsm_normalized_rna_output": state.obsm_normalized_rna_output,
+        "obsm_normalized_protein_output": state.obsm_normalized_protein_output,
+        "output_model": state.output_model
+      ]},
       toState: [
         "input": "output",
-        "query_model_path": "query_model_path",
-        "reference_model_path": "reference_model_path",
+        "output_model": "output_model"
       ]
     )
-    | neighbors_leiden_umap.run( // For gene expression
-      key: "rna_neighbors_leiden_umap",
-      fromState: [
-        "input": "input",
-        "modality": "modality",
-        "obsm_input": "rna_obsm_output",
-        "uns_neighbors": "rna_uns_neighbors",
-        "obsp_neighbor_distances": "rna_obsp_neighbor_distances",
-        "obsp_neighbor_connectivities": "rna_obsp_neighbor_connectivities",
-        "obs_cluster": "rna_obs_cluster",
-        "leiden_resolution": "rna_leiden_resolution",
-        "uns_neighbors": "rna_uns_neighbors",
-        "obsm_umap": "obsm_umap",
-      ],
-      toState: ["input": "output"],
-    )
-    | neighbors_leiden_umap.run( // For ADT
-      key: "adt_neighbors_leiden_umap",
-      fromState: [
-        "input": "input",
-        "modality": "prot_modality",
-        "obsm_input": "prot_obsm_output",
-        "uns_neighbors": "prot_uns_neighbors",
-        "obsp_neighbor_distances": "prot_obsp_neighbor_distances",
-        "obsp_neighbor_connectivities": "prot_obsp_neighbor_connectivities",
-        "obs_cluster": "prot_obs_cluster",
-        "leiden_resolution": "prot_leiden_resolution",
-        "uns_neighbors": "prot_uns_neighbors",
-        "obsm_umap": "obsm_umap",
-        "output": "workflow_output",
-      ],
+
+    | neighbors_leiden_umap.run(
+      fromState: {id, state -> [
+        "input": state.input,
+        "modality": state.rna_modality,
+        "uns_neighbors": state.uns_neighbors,
+        "obsp_neighbor_distances": state.obsp_neighbor_distances,
+        "obsp_neighbor_connectivities": state.obsp_neighbor_connectivities,
+        "obs_cluster": state.obs_cluster,
+        "leiden_resolution": state.leiden_resolution,
+        "obsm_umap": state.obsm_umap,
+        "obsm_input": state.obsm_integrated,
+        "output": state.workflow_output
+      ]},
       toState: ["output": "output"],
     )
-    | setState(["output", "reference_model_path", "query_model_path"])
+
+    | setState(["output", "output_model"])
   emit:
   output_ch
 }

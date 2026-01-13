@@ -10,7 +10,8 @@
 // files.
 // 
 // Component authors:
-//  * Vladimir Shitov
+//  * Dorien Roosen (author, maintainer)
+//  * Weiwei Schultz (contributor)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -3038,20 +3039,38 @@ meta = [
   "version" : "main_build",
   "authors" : [
     {
-      "name" : "Vladimir Shitov",
+      "name" : "Dorien Roosen",
+      "roles" : [
+        "author",
+        "maintainer"
+      ],
       "info" : {
-        "role" : "Contributor",
+        "role" : "Core Team Member",
         "links" : {
-          "email" : "vladimir.shitov@helmholtz-muenchen.de",
-          "github" : "vladimirshitov",
-          "orcid" : "0000-0002-1960-8812",
-          "linkedin" : "vladimir-shitov-9a659513b"
+          "email" : "dorien@data-intuitive.com",
+          "github" : "dorien-er",
+          "linkedin" : "dorien-roosen"
         },
         "organizations" : [
           {
-            "name" : "Helmholtz Munich",
-            "href" : "https://www.helmholtz-munich.de",
-            "role" : "PhD Candidate"
+            "name" : "Data Intuitive",
+            "href" : "https://www.data-intuitive.com",
+            "role" : "Data Scientist"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "Weiwei Schultz",
+      "roles" : [
+        "contributor"
+      ],
+      "info" : {
+        "role" : "Contributor",
+        "organizations" : [
+          {
+            "name" : "Janssen R&D US",
+            "role" : "Associate Director Data Sciences"
           }
         ]
       }
@@ -3067,75 +3086,44 @@ meta = [
           "alternatives" : [
             "-i"
           ],
-          "description" : "Input h5mu file with query data to integrate with reference.",
+          "description" : "Input h5mu file to be integrated.",
+          "example" : [
+            "input.h5mu"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        },
-        {
-          "type" : "file",
-          "name" : "--reference",
-          "alternatives" : [
-            "-r"
-          ],
-          "description" : "Input h5mu file with reference data to train the TOTALVI model.",
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : true,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "boolean_true",
-          "name" : "--force_retrain",
-          "alternatives" : [
-            "-f"
-          ],
-          "description" : "If true, retrain the model and save it to reference_model_path",
-          "direction" : "input"
         },
         {
           "type" : "string",
-          "name" : "--query_modality",
+          "name" : "--rna_modality",
           "default" : [
             "rna"
           ],
-          "required" : false,
+          "required" : true,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
         },
         {
           "type" : "string",
-          "name" : "--query_proteins_modality",
+          "name" : "--prot_modality",
           "description" : "Name of the modality in the input (query) h5mu file containing protein data",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--reference_modality",
-          "default" : [
-            "rna"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--reference_proteins_modality",
-          "description" : "Name of the modality containing proteins in the reference",
           "default" : [
             "prot"
           ],
+          "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--input_layer_rna",
+          "description" : "Input layer to use from the rna modality for gene counts. If None, X is used",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3143,8 +3131,8 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--input_layer",
-          "description" : "Input layer to use. If None, X is used",
+          "name" : "--input_layer_protein",
+          "description" : "Input layer to use from the protein modality for protein counts. If None, X is used",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3191,8 +3179,196 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--var_gene_names",
+          "description" : ".var column in the rna modality containing gene names. By default, use mod['rna'].var_names.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--var_protein_names",
+          "description" : ".var column in the protein modality containing protein names. By default, use mod['prot'].var_names.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--var_input",
           "description" : ".var column containing highly variable genes. By default, do not subset genes.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Data validity checks",
+      "arguments" : [
+        {
+          "type" : "integer",
+          "name" : "--n_obs_min_count",
+          "description" : "Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training.",
+          "default" : [
+            0
+          ],
+          "required" : false,
+          "min" : 0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--n_var_gene_min_count",
+          "description" : "Minimum number of genes threshold ensuring that sufficient observations (genes) are present for model training.",
+          "default" : [
+            0
+          ],
+          "required" : false,
+          "min" : 0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--n_var_protein_min_count",
+          "description" : "Minimum number of proteins threshold ensuring that sufficient observations (genes) are present for model training.",
+          "default" : [
+            0
+          ],
+          "required" : false,
+          "min" : 0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Model arguments",
+      "arguments" : [
+        {
+          "type" : "integer",
+          "name" : "--n_dimensions_latent_space",
+          "description" : "Dimensionality of the latent space.",
+          "default" : [
+            20
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--gene_dispersion",
+          "description" : "Set the behavior for the dispersion for negative binomial distributions:\n  - gene: dispersion parameter of negative binomial is constant per gene across cells\n  - gene-batch: dispersion can differ between different batches\n  - gene-label: dispersion can differ between different labels\n  - gene-cell:  dispersion can differ for every gene in every cell\n",
+          "default" : [
+            "gene"
+          ],
+          "required" : false,
+          "choices" : [
+            "gene",
+            "gene-batch",
+            "gene-label",
+            "gene-cell"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--protein_dispersion",
+          "description" : "Set the behavior for the dispersion for negative binomial distributions:\n  - protein: dispersion parameter of negative binomial is constant per protein across cells\n  - protein-batch: dispersion can differ between different batches\n  - protein-label: dispersion can differ between different labels\n  - protein-cell:  dispersion can differ for every protein in every cell\n",
+          "default" : [
+            "protein"
+          ],
+          "required" : false,
+          "choices" : [
+            "protein",
+            "protein-batch",
+            "protein-label",
+            "protein-cell"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--gene_likelihood",
+          "description" : "Model used to generate the expression data from a count-based likelihood distribution.\n- nb: Negative binomial distribution\n- zinb: Zero-inflated negative binomial distribution\n",
+          "default" : [
+            "nb"
+          ],
+          "required" : false,
+          "choices" : [
+            "nb",
+            "zinb"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--latent_distribution",
+          "description" : "Set the latent distribution to use:\n  - normal: Normal distribution\n  - ln: Log-normal distribution (Normal( 0, 1) transformed by softmax)\n",
+          "default" : [
+            "normal"
+          ],
+          "required" : false,
+          "choices" : [
+            "normal",
+            "ln"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--empirical_protein_background_prior",
+          "description" : "Set the initialization of protein background prior empirically.\nThis option fits a GMM for each of 100 cells per batch and averages the distributions.\nNote that even with this option set to True, this only initializes a parameter that is learned during inference.\nIf False, randomly initializes.\nBy default, sets this to True if greater than 10 proteins are used.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--override_missing_proteins",
+          "description" : "If True, will not treat proteins with all 0 expression in a particular batch as missing.\n",
+          "direction" : "input"
+        }
+      ]
+    },
+    {
+      "name" : "Training arguments",
+      "arguments" : [
+        {
+          "type" : "integer",
+          "name" : "--max_epochs",
+          "description" : "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--early_stopping",
+          "description" : "Whether to perform early stopping with respect to the validation set.",
+          "default" : [
+            true
+          ],
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3218,6 +3394,20 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "file",
+          "name" : "--output_model",
+          "description" : "Directory with the reference model. If not exists, trained model will be saved there",
+          "default" : [
+            "totalvi_model_reference"
+          ],
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : false,
+          "direction" : "output",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "string",
           "name" : "--obsm_output",
           "description" : "In which .obsm slot to store the resulting integrated embedding.",
@@ -3232,7 +3422,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--obsm_normalized_rna_output",
-          "description" : "In which .obsm slot to store the normalized RNA from TOTALVI.",
+          "description" : "In which .obsm slot to store the normalized RNA data from TOTALVI.",
           "default" : [
             "X_totalvi_normalized_rna"
           ],
@@ -3254,70 +3444,17 @@ meta = [
           "multiple_sep" : ";"
         },
         {
-          "type" : "file",
-          "name" : "--reference_model_path",
-          "description" : "Directory with the reference model. If not exists, trained model will be saved there",
-          "default" : [
-            "totalvi_model_reference"
-          ],
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : false,
-          "direction" : "output",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "file",
-          "name" : "--query_model_path",
-          "description" : "Directory, where the query model will be saved",
-          "default" : [
-            "totalvi_model_query"
-          ],
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : false,
-          "direction" : "output",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "Learning parameters",
-      "arguments" : [
-        {
-          "type" : "integer",
-          "name" : "--max_epochs",
-          "description" : "Number of passes through the dataset",
-          "default" : [
-            400
+          "type" : "string",
+          "name" : "--output_compression",
+          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "example" : [
+            "gzip"
           ],
           "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "integer",
-          "name" : "--max_query_epochs",
-          "description" : "Number of passes through the dataset, when fine-tuning model for query",
-          "default" : [
-            200
+          "choices" : [
+            "gzip",
+            "lzf"
           ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "double",
-          "name" : "--weight_decay",
-          "description" : "Weight decay, when fine-tuning model for query",
-          "default" : [
-            0.0
-          ],
-          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3337,11 +3474,19 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/subset_vars.py"
+    },
+    {
+      "type" : "file",
+      "path" : "/src/utils/set_var_index.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
   ],
-  "description" : "Performs mapping to the reference by totalvi model: https://docs.scvi-tools.org/en/stable/tutorials/notebooks/scarches_scvi_tools.html#Reference-mapping-with-TOTALVI",
+  "description" : "Performs TotalVI integration of CITE-seq and scRNA-seq data.",
   "test_resources" : [
     {
       "type" : "python_script",
@@ -3353,6 +3498,11 @@ meta = [
       "path" : "/resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
     }
   ],
+  "info" : {
+    "links" : {
+      "documentation" : "https://docs.scvi-tools.org/en/1.3.2/tutorials/notebooks/multimodal/cite_scrna_integration_w_totalVI.html"
+    }
+  },
   "status" : "enabled",
   "scope" : {
     "image" : "public",
@@ -3376,7 +3526,8 @@ meta = [
         "label" : [
           "highmem",
           "highcpu",
-          "highdisk"
+          "highdisk",
+          "gpu"
         ],
         "tag" : "$id"
       },
@@ -3459,7 +3610,9 @@ meta = [
           "packages" : [
             "anndata~=0.12.6",
             "mudata~=0.3.2",
-            "scvi-tools[cuda]~=1.4.1"
+            "scanpy~=1.10.4",
+            "jax[cuda]",
+            "scvi-tools~=1.3.2"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3485,7 +3638,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi",
     "viash_version" : "0.9.4",
-    "git_commit" : "3d55e485d61597c0d292afa86b6b6984b5be2b85",
+    "git_commit" : "62aa4be02a75d90b75778a7d10f95101f931f3ed",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3541,43 +3694,47 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.py"
 cat > "$tempscript" << VIASHMAIN
-from typing import Tuple
-
-import os
 import sys
-import mudata
-from anndata import AnnData  # For type hints
-from mudata import MuData  # For type hints
-import numpy as np
+import mudata as mu
+import anndata as ad
 import scvi
 from scipy.sparse import issparse
+from scanpy._utils import check_nonnegative_integers
 
 
 ### VIASH START
 # The following code has been auto-generated by Viash.
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'force_retrain': $( if [ ! -z ${VIASH_PAR_FORCE_RETRAIN+x} ]; then echo "r'${VIASH_PAR_FORCE_RETRAIN//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'query_modality': $( if [ ! -z ${VIASH_PAR_QUERY_MODALITY+x} ]; then echo "r'${VIASH_PAR_QUERY_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'query_proteins_modality': $( if [ ! -z ${VIASH_PAR_QUERY_PROTEINS_MODALITY+x} ]; then echo "r'${VIASH_PAR_QUERY_PROTEINS_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'reference_modality': $( if [ ! -z ${VIASH_PAR_REFERENCE_MODALITY+x} ]; then echo "r'${VIASH_PAR_REFERENCE_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'reference_proteins_modality': $( if [ ! -z ${VIASH_PAR_REFERENCE_PROTEINS_MODALITY+x} ]; then echo "r'${VIASH_PAR_REFERENCE_PROTEINS_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'rna_modality': $( if [ ! -z ${VIASH_PAR_RNA_MODALITY+x} ]; then echo "r'${VIASH_PAR_RNA_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'prot_modality': $( if [ ! -z ${VIASH_PAR_PROT_MODALITY+x} ]; then echo "r'${VIASH_PAR_PROT_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_layer_rna': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER_RNA+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER_RNA//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_layer_protein': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER_PROTEIN+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER_PROTEIN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_batch': $( if [ ! -z ${VIASH_PAR_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_size_factor': $( if [ ! -z ${VIASH_PAR_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_OBS_SIZE_FACTOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_categorical_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CATEGORICAL_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CATEGORICAL_COVARIATE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CONTINUOUS_COVARIATE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'var_protein_names': $( if [ ! -z ${VIASH_PAR_VAR_PROTEIN_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_PROTEIN_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'n_obs_min_count': $( if [ ! -z ${VIASH_PAR_N_OBS_MIN_COUNT+x} ]; then echo "int(r'${VIASH_PAR_N_OBS_MIN_COUNT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'n_var_gene_min_count': $( if [ ! -z ${VIASH_PAR_N_VAR_GENE_MIN_COUNT+x} ]; then echo "int(r'${VIASH_PAR_N_VAR_GENE_MIN_COUNT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'n_var_protein_min_count': $( if [ ! -z ${VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT+x} ]; then echo "int(r'${VIASH_PAR_N_VAR_PROTEIN_MIN_COUNT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'n_dimensions_latent_space': $( if [ ! -z ${VIASH_PAR_N_DIMENSIONS_LATENT_SPACE+x} ]; then echo "int(r'${VIASH_PAR_N_DIMENSIONS_LATENT_SPACE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'gene_dispersion': $( if [ ! -z ${VIASH_PAR_GENE_DISPERSION+x} ]; then echo "r'${VIASH_PAR_GENE_DISPERSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'protein_dispersion': $( if [ ! -z ${VIASH_PAR_PROTEIN_DISPERSION+x} ]; then echo "r'${VIASH_PAR_PROTEIN_DISPERSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'gene_likelihood': $( if [ ! -z ${VIASH_PAR_GENE_LIKELIHOOD+x} ]; then echo "r'${VIASH_PAR_GENE_LIKELIHOOD//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'latent_distribution': $( if [ ! -z ${VIASH_PAR_LATENT_DISTRIBUTION+x} ]; then echo "r'${VIASH_PAR_LATENT_DISTRIBUTION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'empirical_protein_background_prior': $( if [ ! -z ${VIASH_PAR_EMPIRICAL_PROTEIN_BACKGROUND_PRIOR+x} ]; then echo "r'${VIASH_PAR_EMPIRICAL_PROTEIN_BACKGROUND_PRIOR//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'override_missing_proteins': $( if [ ! -z ${VIASH_PAR_OVERRIDE_MISSING_PROTEINS+x} ]; then echo "r'${VIASH_PAR_OVERRIDE_MISSING_PROTEINS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'max_epochs': $( if [ ! -z ${VIASH_PAR_MAX_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_MAX_EPOCHS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'early_stopping': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_model': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_normalized_rna_output': $( if [ ! -z ${VIASH_PAR_OBSM_NORMALIZED_RNA_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_NORMALIZED_RNA_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_normalized_protein_output': $( if [ ! -z ${VIASH_PAR_OBSM_NORMALIZED_PROTEIN_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_NORMALIZED_PROTEIN_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'reference_model_path': $( if [ ! -z ${VIASH_PAR_REFERENCE_MODEL_PATH+x} ]; then echo "r'${VIASH_PAR_REFERENCE_MODEL_PATH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'query_model_path': $( if [ ! -z ${VIASH_PAR_QUERY_MODEL_PATH+x} ]; then echo "r'${VIASH_PAR_QUERY_MODEL_PATH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'max_epochs': $( if [ ! -z ${VIASH_PAR_MAX_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_MAX_EPOCHS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'max_query_epochs': $( if [ ! -z ${VIASH_PAR_MAX_QUERY_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_MAX_QUERY_EPOCHS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'weight_decay': $( if [ ! -z ${VIASH_PAR_WEIGHT_DECAY+x} ]; then echo "float(r'${VIASH_PAR_WEIGHT_DECAY//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3607,178 +3764,164 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from subset_vars import subset_vars
+from set_var_index import set_var_index
 
 logger = setup_logger()
 
 
-def align_proteins_names(
-    adata_reference: AnnData,
-    mdata_query: MuData,
-    adata_query: AnnData,
-    reference_proteins_key: str,
-    query_proteins_key: str,
-) -> AnnData:
-    """Make sure that proteins are located in the same .obsm slot in reference and query. Pad query proteins with zeros if they are absent"""
-    proteins_reference = adata_reference.obsm[reference_proteins_key]
+def check_validity_anndata(
+    adata,
+    layer,
+    protein_modality,
+    obs_batch,
+    n_obs_min_count,
+    n_var_gene_min_count,
+    n_var_protein_min_count,
+):
+    assert check_nonnegative_integers(adata.layers[layer] if layer else adata.X), (
+        "Make sure input rna layer contains raw_counts"
+    )
 
-    # If query has no protein data, put matrix of zeros
-    if not query_proteins_key or query_proteins_key not in mdata_query.mod:
-        adata_query.obsm[reference_proteins_key] = np.zeros(
-            (adata_query.n_obs, proteins_reference.shape[1])
-        )
-    else:
-        # Make sure that proteins expression has the same key in query and reference
-        adata_query.obsm[reference_proteins_key] = adata_query.obsm[query_proteins_key]
+    assert len(set(adata.var_names)) == len(adata.var_names), (
+        "Dataset contains multiple genes with same gene name."
+    )
 
-    return adata_query
+    # Ensure every obs_batch category has sufficient observations
+    assert min(adata.obs[[obs_batch]].value_counts()) > n_obs_min_count, (
+        f"Anndata has fewer than {n_obs_min_count} cells."
+    )
+
+    assert adata.n_vars > n_var_gene_min_count, (
+        f"Anndata has fewer than {n_var_gene_min_count} genes."
+    )
+
+    assert len(set(adata.var_names)) == len(adata.var_names), (
+        "Dataset contains multiple genes with same gene name."
+    )
+
+    assert check_nonnegative_integers(adata.obsm[protein_modality]), (
+        "Make sure input protein layer contains raw_counts"
+    )
+
+    assert adata.obsm[protein_modality].shape[1] > n_var_protein_min_count, (
+        f"Anndata has fewer than {n_var_protein_min_count} proteins."
+    )
+
+    assert len(set(adata.uns[protein_modality])) == len(adata.uns[protein_modality]), (
+        "Dataset contains multiple proteins with same gene name."
+    )
 
 
-def extract_proteins_to_anndata(
-    mdata: MuData, rna_modality_key, protein_modality_key, input_layer, hvg_var_key=None
-) -> AnnData:
+def consolidate_modalities_to_anndata(
+    mdata: mu.MuData,
+    rna_modality: str,
+    protein_modality: str,
+    input_layer_protein: str | None,
+    hvg_var_key: str | None = None,
+) -> ad.AnnData:
     """TOTALVI requires data to be stored in AnnData format with protein counts in .obsm slot. This function performs the conversion"""
-    adata: AnnData = mdata.mod[rna_modality_key].copy()
 
+    adata = mdata.mod[rna_modality].copy()
     if hvg_var_key:
-        selected_genes = adata.var_names[adata.var[hvg_var_key]]
-        adata = adata[:, selected_genes].copy()
+        adata = subset_vars(adata, subset_col=hvg_var_key)
 
-    if protein_modality_key in mdata.mod:
-        # Put the proteins modality into .obsm slot
-        proteins_reference_adata = mdata.mod[protein_modality_key].copy()
+    adata = set_var_index(adata, var_name=par["var_gene_names"])
 
-        if input_layer is None:
-            proteins = proteins_reference_adata.X
-        else:
-            proteins = proteins_reference_adata.obsm[input_layer]
+    # Put the proteins modality into .obsm slot
+    prot_adata = mdata.mod[protein_modality].copy()
+    set_var_index(prot_adata, var_name=par["var_protein_names"])
 
-        if issparse(proteins):
-            proteins = proteins.toarray()
+    protein_layer = (
+        prot_adata.layers[input_layer_protein] if input_layer_protein else prot_adata.X
+    )
 
-        adata.obsm[protein_modality_key] = proteins
+    if issparse(protein_layer):
+        protein_layer = protein_layer.toarray()
+
+    adata.obsm[protein_modality] = protein_layer
+    adata.uns[protein_modality] = prot_adata.var_names
 
     return adata
 
 
-def build_reference_model(
-    adata_reference: AnnData, max_train_epochs: int = 400
-) -> scvi.model.TOTALVI:
-    vae_reference = scvi.model.TOTALVI(
-        adata_reference, use_layer_norm="both", use_batch_norm="none"
-    )
-    vae_reference.train(max_train_epochs)
+def main():
+    mdata = mu.read_h5mu(par["input"])
 
-    vae_reference.save(par["reference_model_path"])
-
-    return vae_reference
-
-
-def is_retraining_model() -> bool:
-    """Decide, whether reference model should be trained. It happens when no model exists or force_retrain flag is on"""
-
-    trained_model_exists = os.path.isdir(par["reference_model_path"]) and (
-        "model.pt" in os.listdir(par["reference_model_path"])
-    )
-    return not trained_model_exists or par["force_retrain"]
-
-
-def map_query_to_reference(
-    mdata_reference: MuData, mdata_query: MuData, adata_query: AnnData
-) -> Tuple[scvi.model.TOTALVI, AnnData]:
-    """Build model on the provided reference if necessary, and map query to the reference"""
-
-    adata_reference: AnnData = extract_proteins_to_anndata(
-        mdata_reference,
-        rna_modality_key=par["reference_modality"],
-        protein_modality_key=par["reference_proteins_modality"],
-        input_layer=par["input_layer"],
-        hvg_var_key=par["var_input"],
+    logger.info("Preparing data for TOTALVI...")
+    # Move protein counts to .obsm slot of the rna modality AnnData
+    # and protein names .uns slot to comply with TOTALVI input format
+    adata = consolidate_modalities_to_anndata(
+        mdata,
+        par["rna_modality"],
+        par["prot_modality"],
+        par["input_layer_protein"],
+        par["var_input"],
     )
 
+    check_validity_anndata(
+        adata,
+        par["input_layer_rna"],
+        par["prot_modality"],
+        par["obs_batch"],
+        par["n_obs_min_count"],
+        par["n_var_gene_min_count"],
+        par["n_var_protein_min_count"],
+    )
+
+    logger.info("Loading data for TOTALVI...")
     scvi.model.TOTALVI.setup_anndata(
-        adata_reference,
+        adata,
         batch_key=par["obs_batch"],
-        protein_expression_obsm_key=par["reference_proteins_modality"],
+        layer=par["input_layer_rna"],
+        protein_expression_obsm_key=par["prot_modality"],
+        protein_names_uns_key=par["prot_modality"],
         size_factor_key=par["obs_size_factor"],
         categorical_covariate_keys=par["obs_categorical_covariate"],
         continuous_covariate_keys=par["obs_continuous_covariate"],
     )
 
-    if is_retraining_model():
-        vae_reference = build_reference_model(
-            adata_reference, max_train_epochs=par["max_epochs"]
-        )
-    else:
-        vae_reference = scvi.model.TOTALVI.load(
-            dir_path=par["reference_model_path"], adata=adata_reference
-        )
-
-    adata_query: AnnData = align_proteins_names(
-        adata_reference,
-        mdata_query,
-        adata_query,
-        reference_proteins_key=par["reference_proteins_modality"],
-        query_proteins_key=par["query_proteins_modality"],
+    logger.info("Preparing TOTALVI model...")
+    model = scvi.model.TOTALVI(
+        adata,
+        n_latent=par["n_dimensions_latent_space"],
+        gene_dispersion=par["gene_dispersion"],
+        protein_dispersion=par["protein_dispersion"],
+        gene_likelihood=par["gene_likelihood"],
+        latent_distribution=par["latent_distribution"],
+        empirical_protein_background_prior=par["empirical_protein_background_prior"],
+        override_missing_proteins=par["override_missing_proteins"],
     )
 
-    # Reorder genes and pad missing genes with 0s
-    scvi.model.TOTALVI.prepare_query_anndata(adata_query, vae_reference)
-
-    # Train the model for query
-    vae_query = scvi.model.TOTALVI.load_query_data(adata_query, vae_reference)
-    vae_query.train(
-        par["max_query_epochs"], plan_kwargs=dict(weight_decay=par["weight_decay"])
+    logger.info("Training TOTALVI model...")
+    model.train(
+        max_epochs=par["max_epochs"],
+        early_stopping=par["early_stopping"],
+        check_val_every_n_epoch=1,
+        accelerator="auto",
     )
 
-    return vae_query, adata_query
-
-
-def main():
-    mdata_query = mudata.read(par["input"].strip())
-    adata_query = extract_proteins_to_anndata(
-        mdata_query,
-        rna_modality_key=par["query_modality"],
-        protein_modality_key=par["query_proteins_modality"],
-        input_layer=par["input_layer"],
-        hvg_var_key=par["var_input"],
+    logger.info("Getting the latent representation...")
+    mdata.mod[par["rna_modality"]].obsm[par["obsm_output"]] = (
+        model.get_latent_representation()
     )
 
-    if par["reference"].endswith(".h5mu"):
-        logger.info("Reading reference")
-        mdata_reference = mudata.read(par["reference"].strip())
-
-        logger.info("Mapping query to the reference")
-        vae_query, adata_query = map_query_to_reference(
-            mdata_reference, mdata_query, adata_query
-        )
-    else:
-        raise ValueError("Incorrect format of reference, please provide a .h5mu file")
-
-    adata_query.uns["integration_method"] = "totalvi"
-
-    logger.info("Getting the latent representation of query")
-    mdata_query.mod[par["query_modality"]].obsm[par["obsm_output"]] = (
-        vae_query.get_latent_representation()
-    )
-
-    norm_rna, norm_protein = vae_query.get_normalized_expression()
-    mdata_query.mod[par["query_modality"]].obsm[par["obsm_normalized_rna_output"]] = (
+    logger.info("Getting normalized expression...")
+    norm_rna, norm_protein = model.get_normalized_expression()
+    mdata.mod[par["rna_modality"]].obsm[par["obsm_normalized_rna_output"]] = (
         norm_rna.to_numpy()
     )
+    if par["prot_modality"] in mdata.mod:
+        mdata.mod[par["prot_modality"]].obsm[par["obsm_normalized_protein_output"]] = (
+            norm_protein.to_numpy()
+        )
 
-    if par["query_proteins_modality"] in mdata_query.mod:
-        mdata_query.mod[par["query_proteins_modality"]].obsm[
-            par["obsm_normalized_protein_output"]
-        ] = norm_protein.to_numpy()
+    logger.info("Saving integrated data...")
+    mdata.write_h5mu(par["output"], compression=par["output_compression"])
 
-    logger.info("Updating mdata")
-    mdata_query.update()
-
-    logger.info("Saving updated query data")
-    mdata_query.write_h5mu(par["output"].strip())
-
-    logger.info("Saving query model")
-    vae_query.save(par["query_model_path"], overwrite=True)
+    if par["output_model"]:
+        logger.info("Saving TOTALVI model...")
+        model.save(par["output_model"], overwrite=True)
 
 
 if __name__ == "__main__":
@@ -4170,7 +4313,8 @@ meta["defaults"] = [
   "label" : [
     "highmem",
     "highcpu",
-    "highdisk"
+    "highdisk",
+    "gpu"
   ],
   "tag" : "$id"
 }'''),

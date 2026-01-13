@@ -10,6 +10,7 @@
    Because one cell can have multiple receptor chains, this relationship is represented as an `awkward` array
    stored in `.obsm["airr"]` slot of the VDJ modality (PR #1109). 
 
+* `workflows/annotation/totalvi_scarches_leiden` and `annotate/totalvi_scarches`: Renamed previously implemented versions of `workflows/annotation/totalvi_leiden` and `annotate/totalvi` to reflect that scArches is used for reference mapping with TotalVI (PR #1092).
 
 ## NEW FUNCTIONALITY
 
@@ -26,6 +27,8 @@
 * `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083).
 
 * `workflows/integration/harmony_leiden`: add support for adding the output slots to a tileDB-SOMA database (PR #1095).
+
+* `workflows/annotation/totalvi_leiden` and `annotate/totalvi`: Added new workflows and components for cell type annotation using TotalVI integration followed by Leiden clustering, without scArches reference mapping (PR #1092).
 
 ## EXPERIMENTAL
 
