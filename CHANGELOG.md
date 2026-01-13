@@ -64,7 +64,7 @@
 
 * `genetic_demux/scsplit`: bump python to `3.13` and unpin pandas and numpy (were pinned to `<2.0` and `<2` respectively) (PR #1096).
 
-* Bump `anndata` to `0.12.6` and mudata to `0.3.2` (PR #1111).
+* Bump `anndata` to `0.12.7` and mudata to `0.3.2` (PR #1111 and PR #1125).
 
 ## BUG FIXES
 
