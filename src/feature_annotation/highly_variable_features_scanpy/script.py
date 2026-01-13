@@ -131,8 +131,8 @@ if par.get("features_to_exclude"):
         )
     # Store original var_names for later reindexing
     original_var_names = input_anndata.var_names.copy()
-    # Subset to non-excluded features for HVG calculation
-    input_anndata = input_anndata[:, ~excluded_features_mask].copy()
+    # Subset to non-excluded features for HVG calculation using subset_vars
+    input_anndata = subset_vars(input_anndata, ~excluded_features_mask)
     logger.info("\t%d features remaining for HVG calculation", input_anndata.n_vars)
 
 logger.info("\tUnfiltered data: %s", data)
