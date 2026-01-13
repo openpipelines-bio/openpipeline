@@ -450,14 +450,14 @@ function ViashDockerfile {
 FROM python:3.12
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.6" "mudata~=0.3.2" "scanpy~=1.10.4" "scikit-misc" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.7" "mudata~=0.3.2" "scanpy~=1.10.4" "scikit-misc" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component feature_annotation highly_variable_features_scanpy"
-LABEL org.opencontainers.image.created="2026-01-13T09:41:18Z"
+LABEL org.opencontainers.image.created="2026-01-13T16:28:32Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="62aa4be02a75d90b75778a7d10f95101f931f3ed"
+LABEL org.opencontainers.image.revision="246202e1a45722e18e6d38cf52bd2b1979f4416b"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

@@ -455,7 +455,7 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --user --upgrade pip && \
-  pip install --user --upgrade --no-cache-dir "anndata~=0.12.6" "mudata~=0.3.2" && \
+  pip install --user --upgrade --no-cache-dir "anndata~=0.12.7" "mudata~=0.3.2" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
@@ -467,14 +467,14 @@ RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TR
 RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
 RUN Rscript -e 'options(warn = 2); remotes::install_github(c("scverse/anndataR"), repos = "https://cran.rstudio.com")'
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.6" "mudata~=0.3.2" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.7" "mudata~=0.3.2" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_seurat_to_h5mu"
-LABEL org.opencontainers.image.created="2026-01-13T09:41:24Z"
+LABEL org.opencontainers.image.created="2026-01-13T16:28:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="62aa4be02a75d90b75778a7d10f95101f931f3ed"
+LABEL org.opencontainers.image.revision="246202e1a45722e18e6d38cf52bd2b1979f4416b"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
