@@ -245,14 +245,17 @@ def concatenate_modality(
                 data = mu.read_h5ad(input_file, mod=mod)
 
                 # Remove obsp keys that are not in par["obsp_keys"]
-                if par["obsp_keys"]:
-                    # Keep only the obsp keys that are specified in par["obsp_keys"]
-                    keys_to_remove = set(data.obsp.keys()) - set(par["obsp_keys"])
-                    for key in keys_to_remove:
+                obsp_keys_to_keep = par.get("obsp_keys") or []
+                obsp_keys_to_remove = set(data.obsp.keys()) - set(obsp_keys_to_keep)
+                for key in obsp_keys_to_remove:
+                    try:
                         del data.obsp[key]
+                    except KeyError:
+                        pass
 
                 mod_data[input_id] = data
                 mod_indices_combined = mod_indices_combined.append(data.obs.index)
+
             except KeyError as e:  # Modality does not exist for this sample, skip it
                 if (
                     f"Unable to synchronously open object (object '{mod}' doesn't exist)"

@@ -522,8 +522,8 @@ def test_concat_different_columns_per_modality(
         data_sample1_mod = data_sample1.mod[mod_name]
         data_sample2_mod = data_sample2.mod[mod_name]
         original_var_keys = set(
-            data_sample1_mod.var.columns.tolist()
-            + data_sample2_mod.var.columns.tolist()
+            data_sample1_mod.var.columns.to_list()
+            + data_sample2_mod.var.columns.to_list()
             + list(data_sample2_mod.varm.keys())
             + list(data_sample1_mod.varm.keys())
         )
