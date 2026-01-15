@@ -3320,7 +3320,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.12.6",
+            "anndata~=0.12.7",
             "mudata~=0.3.2",
             "pyarrow~=18.0.0"
           ],
@@ -3338,7 +3338,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count_to_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "013d8a332382c853d02e9c7e71ec6288c9db6bb6",
+    "git_commit" : "185b7b44b8b39ab43a23fac90a79b90bda79a8d6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

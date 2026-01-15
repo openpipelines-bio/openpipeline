@@ -2,16 +2,15 @@ name: "totalvi_leiden"
 namespace: "workflows/integration"
 version: "integration_build"
 authors:
-- name: "Dries Schaumont"
+- name: "Dorien Roosen"
   roles:
   - "author"
   info:
     role: "Core Team Member"
     links:
-      email: "dries@data-intuitive.com"
-      github: "DriesSchaumont"
-      orcid: "0000-0002-4389-0440"
-      linkedin: "dries-schaumont"
+      email: "dorien@data-intuitive.com"
+      github: "dorien-er"
+      linkedin: "dorien-roosen"
     organizations:
     - name: "Data Intuitive"
       href: "https://www.data-intuitive.com"
@@ -31,10 +30,10 @@ argument_groups:
     multiple_sep: ";"
   - type: "file"
     name: "--input"
-    description: "Path to the sample."
+    description: "Input h5mu file to be integrated."
     info: null
     example:
-    - "dataset.h5mu"
+    - "input.h5mu"
     must_exist: true
     create_parent: true
     required: true
@@ -42,17 +41,7 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--layer"
-    description: "use specified layer for expression values instead of the .X object\
-      \ from the modality."
-    info: null
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--modality"
-    description: "Which modality to process."
+    name: "--rna_modality"
     info: null
     default:
     - "rna"
@@ -62,7 +51,8 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--prot_modality"
-    description: "Which modality to process."
+    description: "Name of the modality in the input (query) h5mu file containing protein\
+      \ data"
     info: null
     default:
     - "prot"
@@ -70,62 +60,27 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "file"
-    name: "--reference"
-    alternatives:
-    - "-r"
-    description: "Input h5mu file with reference data to train the TOTALVI model."
+  - type: "string"
+    name: "--input_layer_rna"
+    description: "Input layer to use from the rna modality for gene counts. If None,\
+      \ X is used"
     info: null
-    must_exist: true
-    create_parent: true
-    required: true
+    required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
-- name: "Outputs"
-  arguments:
-  - type: "file"
-    name: "--output"
-    description: "Destination path to the output."
+  - type: "string"
+    name: "--input_layer_protein"
+    description: "Input layer to use from the protein modality for protein counts.\
+      \ If None, X is used"
     info: null
-    example:
-    - "output.h5mu"
-    must_exist: true
-    create_parent: true
-    required: true
-    direction: "output"
-    multiple: false
-    multiple_sep: ";"
-  - type: "file"
-    name: "--reference_model_path"
-    description: "Directory with the reference model. If not exists, trained model\
-      \ will be saved there"
-    info: null
-    default:
-    - "totalvi_model_reference"
-    must_exist: true
-    create_parent: true
     required: false
-    direction: "output"
+    direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "file"
-    name: "--query_model_path"
-    description: "Directory, where the query model will be saved"
-    info: null
-    default:
-    - "totalvi_model_query"
-    must_exist: true
-    create_parent: true
-    required: false
-    direction: "output"
-    multiple: false
-    multiple_sep: ";"
-- name: "General TotalVI Options"
-  arguments:
   - type: "string"
     name: "--obs_batch"
-    description: ".Obs column name discriminating between your batches."
+    description: "Column name discriminating between your batches."
     info: null
     default:
     - "sample_id"
@@ -167,98 +122,117 @@ argument_groups:
     direction: "input"
     multiple: true
     multiple_sep: ";"
+  - type: "string"
+    name: "--var_gene_names"
+    description: ".var column in the rna modality containing gene names. By default,\
+      \ use mod['rna'].var_names."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--var_protein_names"
+    description: ".var column in the protein modality containing protein names. By\
+      \ default, use mod['prot'].var_names."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--var_input"
+    description: ".var column containing highly variable genes. By default, do not\
+      \ subset genes."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Outputs"
+  arguments:
+  - type: "file"
+    name: "--output"
+    description: "Destination path to the output."
+    info: null
+    example:
+    - "output.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output_model"
+    description: "Directory where the trained reference model will be stored."
+    info: null
+    default:
+    - "totalvi_model_reference"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+- name: "TotalVI Training Options"
+  arguments:
   - type: "integer"
     name: "--max_epochs"
-    description: "Number of passes through the dataset"
+    description: "Number of passes through the dataset, defaults to (20000 / number\
+      \ of cells) * 400 or 400; whichever is smallest."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--early_stopping"
+    description: "Whether to perform early stopping with respect to the validation\
+      \ set."
     info: null
     default:
-    - 400
+    - true
     required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "integer"
-    name: "--max_query_epochs"
-    description: "Number of passes through the dataset, when fine-tuning model for\
-      \ query"
-    info: null
-    default:
-    - 200
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "double"
-    name: "--weight_decay"
-    description: "Weight decay, when fine-tuning model for query"
-    info: null
-    default:
-    - 0.0
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "boolean_true"
-    name: "--force_retrain"
-    description: "If true, retrain the model and save it to reference_model_path"
-    info: null
-    direction: "input"
-  - type: "string"
-    name: "--var_input"
-    description: "Boolean .var column to subset data with (e.g. containing highly\
-      \ variable genes). By default, do not subset genes."
-    info: null
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-- name: "TotalVI integration options RNA"
+- name: "TotalVI Integration Options"
   arguments:
   - type: "string"
-    name: "--rna_reference_modality"
+    name: "--obsm_integrated"
+    description: "In which .obsm slot to store the resulting integrated embedding."
     info: null
     default:
-    - "rna"
+    - "X_integrated_totalvi"
     required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--rna_obsm_output"
-    description: "In which .obsm slot to store the normalized RNA from TOTALVI."
+    name: "--obsm_normalized_rna_output"
+    description: "In which .obsm slot to store the normalized RNA data from TOTALVI."
     info: null
     default:
-    - "X_totalvi"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-- name: "TotalVI integration options ADT"
-  arguments:
-  - type: "string"
-    name: "--prot_reference_modality"
-    description: "Name of the modality containing proteins in the reference"
-    info: null
-    default:
-    - "prot"
+    - "X_totalvi_normalized_rna"
     required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--prot_obsm_output"
+    name: "--obsm_normalized_protein_output"
     description: "In which .obsm slot to store the normalized protein data from TOTALVI."
     info: null
     default:
-    - "X_totalvi"
+    - "X_totalvi_normalized_protein"
     required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
-- name: "Neighbour calculation RNA"
+- name: "Neighbour calculation"
   arguments:
   - type: "string"
-    name: "--rna_uns_neighbors"
+    name: "--uns_neighbors"
     description: "In which .uns slot to store various neighbor output objects."
     info: null
     default:
@@ -268,7 +242,7 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--rna_obsp_neighbor_distances"
+    name: "--obsp_neighbor_distances"
     description: "In which .obsp slot to store the distance matrix between the resulting\
       \ neighbors."
     info: null
@@ -279,7 +253,7 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--rna_obsp_neighbor_connectivities"
+    name: "--obsp_neighbor_connectivities"
     description: "In which .obsp slot to store the connectivities matrix between the\
       \ resulting neighbors."
     info: null
@@ -289,44 +263,10 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-- name: "Neighbour calculation ADT"
+- name: "Clustering options"
   arguments:
   - type: "string"
-    name: "--prot_uns_neighbors"
-    description: "In which .uns slot to store various neighbor output objects."
-    info: null
-    default:
-    - "totalvi_integration_neighbors"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--prot_obsp_neighbor_distances"
-    description: "In which .obsp slot to store the distance matrix between the resulting\
-      \ neighbors."
-    info: null
-    default:
-    - "totalvi_integration_distances"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--prot_obsp_neighbor_connectivities"
-    description: "In which .obsp slot to store the connectivities matrix between the\
-      \ resulting neighbors."
-    info: null
-    default:
-    - "totalvi_integration_connectivities"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-- name: "Clustering options RNA"
-  arguments:
-  - type: "string"
-    name: "--rna_obs_cluster"
+    name: "--obs_cluster"
     description: "Prefix for the .obs keys under which to add the cluster labels.\
       \ Newly created columns in .obs will \nbe created from the specified value for\
       \ '--obs_cluster' suffixed with an underscore and one of the resolutions\nresolutions\
@@ -339,33 +279,7 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "double"
-    name: "--rna_leiden_resolution"
-    description: "Control the coarseness of the clustering. Higher values lead to\
-      \ more clusters."
-    info: null
-    default:
-    - 1.0
-    required: false
-    direction: "input"
-    multiple: true
-    multiple_sep: ";"
-- name: "Clustering options ADT"
-  arguments:
-  - type: "string"
-    name: "--prot_obs_cluster"
-    description: "Prefix for the .obs keys under which to add the cluster labels.\
-      \ Newly created columns in .obs will \nbe created from the specified value for\
-      \ '--obs_cluster' suffixed with an underscore and one of the resolutions\nresolutions\
-      \ specified in '--leiden_resolution'.\n"
-    info: null
-    default:
-    - "totalvi_integration_leiden"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "double"
-    name: "--prot_leiden_resolution"
+    name: "--leiden_resolution"
     description: "Control the coarseness of the clustering. Higher values lead to\
       \ more clusters."
     info: null
@@ -397,8 +311,8 @@ resources:
 - type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
-description: "Run totalVI integration followed by neighbour calculations, leiden clustering\
-  \ and run umap on the result."
+description: "Run totalVI integration, followed by neighbour calculations, leiden\
+  \ clustering and UMAP."
 test_resources:
 - type: "nextflow_script"
   path: "test.nf"
@@ -493,7 +407,7 @@ build_info:
   output: "target/nextflow/workflows/integration/totalvi_leiden"
   executable: "target/nextflow/workflows/integration/totalvi_leiden/main.nf"
   viash_version: "0.9.4"
-  git_commit: "013d8a332382c853d02e9c7e71ec6288c9db6bb6"
+  git_commit: "185b7b44b8b39ab43a23fac90a79b90bda79a8d6"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/integrate/totalvi"

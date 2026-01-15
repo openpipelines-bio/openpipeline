@@ -452,14 +452,14 @@ function ViashDockerfile {
 FROM python:3.12
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.6" "mudata~=0.3.2" "scanpy~=1.10.4" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.7" "mudata~=0.3.2" "scanpy~=1.10.4" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Jakub Majercik, Dries De Maeyer, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component differential_expression create_pseudobulk"
-LABEL org.opencontainers.image.created="2026-01-13T09:11:13Z"
+LABEL org.opencontainers.image.created="2026-01-15T03:10:47Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="013d8a332382c853d02e9c7e71ec6288c9db6bb6"
+LABEL org.opencontainers.image.revision="185b7b44b8b39ab43a23fac90a79b90bda79a8d6"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
