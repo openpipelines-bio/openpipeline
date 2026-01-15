@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow concatenate_h5mu"
-LABEL org.opencontainers.image.created="2026-01-13T16:28:36Z"
+LABEL org.opencontainers.image.created="2026-01-15T10:17:05Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="246202e1a45722e18e6d38cf52bd2b1979f4416b"
+LABEL org.opencontainers.image.revision="04ac5e9067502cda2a55ff41a821102de8311653"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -644,6 +644,14 @@ function ViashHelp {
   echo "          - make_unique: identical to 'unique', but keys which are not unique"
   echo "        are made unique by prefixing them with the sample id."
   echo ""
+  echo "    --obsp_keys"
+  echo "        type: string, multiple values allowed"
+  echo "        List of \`.obsp\` keys for which block-diagonal concatenation should be"
+  echo "        performed."
+  echo "        If not provided, no \`.obsp\` keys will be concatenated."
+  echo "        Provided keys must be present in all samples for block concatenation to"
+  echo "        be performed."
+  echo ""
   echo "    --output_compression"
   echo "        type: string"
   echo "        example: gzip"
@@ -809,6 +817,23 @@ while [[ $# -gt 0 ]]; do
         --uns_merge_mode=*)
             [ -n "$VIASH_PAR_UNS_MERGE_MODE" ] && ViashError Bad arguments for option \'--uns_merge_mode=*\': \'$VIASH_PAR_UNS_MERGE_MODE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_UNS_MERGE_MODE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --obsp_keys)
+            if [ -z "$VIASH_PAR_OBSP_KEYS" ]; then
+              VIASH_PAR_OBSP_KEYS="$2"
+            else
+              VIASH_PAR_OBSP_KEYS="$VIASH_PAR_OBSP_KEYS;""$2"
+            fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsp_keys. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --obsp_keys=*)
+            if [ -z "$VIASH_PAR_OBSP_KEYS" ]; then
+              VIASH_PAR_OBSP_KEYS=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_OBSP_KEYS="$VIASH_PAR_OBSP_KEYS;"$(ViashRemoveFlags "$1")
+            fi
             shift 1
             ;;
         --output_compression)
@@ -1271,6 +1296,7 @@ par = {
   'obs_sample_name': $( if [ ! -z ${VIASH_PAR_OBS_SAMPLE_NAME+x} ]; then echo "r'${VIASH_PAR_OBS_SAMPLE_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'other_axis_mode': $( if [ ! -z ${VIASH_PAR_OTHER_AXIS_MODE+x} ]; then echo "r'${VIASH_PAR_OTHER_AXIS_MODE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'uns_merge_mode': $( if [ ! -z ${VIASH_PAR_UNS_MERGE_MODE+x} ]; then echo "r'${VIASH_PAR_UNS_MERGE_MODE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'obsp_keys': $( if [ ! -z ${VIASH_PAR_OBSP_KEYS+x} ]; then echo "r'${VIASH_PAR_OBSP_KEYS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
@@ -1515,8 +1541,19 @@ def concatenate_modality(
         if mod is not None:
             try:
                 data = mu.read_h5ad(input_file, mod=mod)
+
+                # Remove obsp keys that are not in par["obsp_keys"]
+                obsp_keys_to_keep = par.get("obsp_keys") or []
+                obsp_keys_to_remove = set(data.obsp.keys()) - set(obsp_keys_to_keep)
+                for key in obsp_keys_to_remove:
+                    try:
+                        del data.obsp[key]
+                    except KeyError:
+                        pass
+
                 mod_data[input_id] = data
                 mod_indices_combined = mod_indices_combined.append(data.obs.index)
+
             except KeyError as e:  # Modality does not exist for this sample, skip it
                 if (
                     f"Unable to synchronously open object (object '{mod}' doesn't exist)"
@@ -1540,6 +1577,7 @@ def concatenate_modality(
     concatenated_data = anndata.concat(
         mod_data.values(),
         join="outer",
+        pairwise=True if par["obsp_keys"] else False,
         merge=other_axis_mode_to_apply,
         uns_merge=uns_merge_mode_to_apply,
     )

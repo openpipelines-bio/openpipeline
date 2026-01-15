@@ -89,6 +89,14 @@
           ],
           "default": "make_unique"
         },
+        "obsp_keys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of `.obsp` keys for which block-diagonal concatenation should be performed.\nIf not provided, no `.obsp` keys will be concatenated.\nProvided keys must be present in all samples for block concatenation to be performed.\n",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
         "output_compression": {
           "type": "string",
           "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",

@@ -19,6 +19,7 @@ par = {
     ],
     "output": "foo.h5mu",
     "input_id": ["mouse", "human"],
+    "obsp_keys": [],
     "other_axis_mode": "move",
     "output_compression": "gzip",
     "uns_merge_mode": "make_unique",
@@ -242,8 +243,19 @@ def concatenate_modality(
         if mod is not None:
             try:
                 data = mu.read_h5ad(input_file, mod=mod)
+
+                # Remove obsp keys that are not in par["obsp_keys"]
+                obsp_keys_to_keep = par.get("obsp_keys") or []
+                obsp_keys_to_remove = set(data.obsp.keys()) - set(obsp_keys_to_keep)
+                for key in obsp_keys_to_remove:
+                    try:
+                        del data.obsp[key]
+                    except KeyError:
+                        pass
+
                 mod_data[input_id] = data
                 mod_indices_combined = mod_indices_combined.append(data.obs.index)
+
             except KeyError as e:  # Modality does not exist for this sample, skip it
                 if (
                     f"Unable to synchronously open object (object '{mod}' doesn't exist)"
@@ -267,6 +279,7 @@ def concatenate_modality(
     concatenated_data = anndata.concat(
         mod_data.values(),
         join="outer",
+        pairwise=True if par["obsp_keys"] else False,
         merge=other_axis_mode_to_apply,
         uns_merge=uns_merge_mode_to_apply,
     )
