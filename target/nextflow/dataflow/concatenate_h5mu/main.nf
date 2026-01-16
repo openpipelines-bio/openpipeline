@@ -3169,6 +3169,15 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--obsp_keys",
+          "description" : "List of `.obsp` keys for which block-diagonal concatenation should be performed.\nIf not provided, no `.obsp` keys will be concatenated.\nProvided keys must be present in all samples for block concatenation to be performed.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--output_compression",
           "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
           "example" : [
@@ -3378,7 +3387,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "185b7b44b8b39ab43a23fac90a79b90bda79a8d6",
+    "git_commit" : "7ab6d1ccf3cc5739a72c26592def8d480346cd06",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3457,6 +3466,7 @@ par = {
   'obs_sample_name': $( if [ ! -z ${VIASH_PAR_OBS_SAMPLE_NAME+x} ]; then echo "r'${VIASH_PAR_OBS_SAMPLE_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'other_axis_mode': $( if [ ! -z ${VIASH_PAR_OTHER_AXIS_MODE+x} ]; then echo "r'${VIASH_PAR_OTHER_AXIS_MODE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_merge_mode': $( if [ ! -z ${VIASH_PAR_UNS_MERGE_MODE+x} ]; then echo "r'${VIASH_PAR_UNS_MERGE_MODE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obsp_keys': $( if [ ! -z ${VIASH_PAR_OBSP_KEYS+x} ]; then echo "r'${VIASH_PAR_OBSP_KEYS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
@@ -3701,8 +3711,19 @@ def concatenate_modality(
         if mod is not None:
             try:
                 data = mu.read_h5ad(input_file, mod=mod)
+
+                # Remove obsp keys that are not in par["obsp_keys"]
+                obsp_keys_to_keep = par.get("obsp_keys") or []
+                obsp_keys_to_remove = set(data.obsp.keys()) - set(obsp_keys_to_keep)
+                for key in obsp_keys_to_remove:
+                    try:
+                        del data.obsp[key]
+                    except KeyError:
+                        pass
+
                 mod_data[input_id] = data
                 mod_indices_combined = mod_indices_combined.append(data.obs.index)
+
             except KeyError as e:  # Modality does not exist for this sample, skip it
                 if (
                     f"Unable to synchronously open object (object '{mod}' doesn't exist)"
@@ -3726,6 +3747,7 @@ def concatenate_modality(
     concatenated_data = anndata.concat(
         mod_data.values(),
         join="outer",
+        pairwise=True if par["obsp_keys"] else False,
         merge=other_axis_mode_to_apply,
         uns_merge=uns_merge_mode_to_apply,
     )
