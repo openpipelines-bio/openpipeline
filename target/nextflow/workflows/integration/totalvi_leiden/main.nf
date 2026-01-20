@@ -3416,6 +3416,15 @@ meta = [
       "path" : "/resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
     }
   ],
+  "info" : {
+    "name" : "totalVI Leiden",
+    "test_dependencies" : [
+      {
+        "name" : "totalvi_leiden_test",
+        "namespace" : "test_workflows/integration"
+      }
+    ]
+  },
   "status" : "enabled",
   "scope" : {
     "image" : "public",
@@ -3524,7 +3533,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/totalvi_leiden",
     "viash_version" : "0.9.4",
-    "git_commit" : "a850fbc76e86892bad673173a50e8c286d8652d3",
+    "git_commit" : "3cda79aeb33c134bb5d854ee3cdc2d81a685a5a3",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
