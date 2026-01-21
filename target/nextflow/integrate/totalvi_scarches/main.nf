@@ -3455,7 +3455,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "nvcr.io/nvidia/pytorch:25.11-py3",
+      "image" : "pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3464,9 +3464,9 @@ meta = [
           "user" : false,
           "packages" : [
             "anndata~=0.12.7",
+            "awkward",
             "mudata~=0.3.2",
-            "jax[cuda]",
-            "scvi-tools~=1.3.2"
+            "scvi-tools[cuda]~=1.4.1"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3492,7 +3492,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi_scarches",
     "viash_version" : "0.9.4",
-    "git_commit" : "6d8adc608e82097d1c72b03f592d532bfe1fbe82",
+    "git_commit" : "2b561b33f00045c38789612157aeb9929744c032",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -8,7 +8,7 @@
 
 * `convert/from_cellranger_multi_to_h5mu`: VDJ related output is now stored in AIRR Rearrangement standard.
    Because one cell can have multiple receptor chains, this relationship is represented as an `awkward` array
-   stored in `.obsm["airr"]` slot of the VDJ modality (PR #1109). 
+   stored in `.obsm["airr"]` slot of the VDJ modality (PR #1109 and PR #1130). 
 
 * `workflows/annotation/totalvi_scarches_leiden` and `annotate/totalvi_scarches`: Renamed previously implemented versions of `workflows/annotation/totalvi_leiden` and `annotate/totalvi` to reflect that scArches is used for reference mapping with TotalVI (PR #1092).
 
@@ -52,7 +52,9 @@
 
 ## MINOR CHANGES
 
-* `totalvi`, `celltypist`, `scanvi` and `scarches`: bump base container image to `nvcr.io/nvidia/pytorch:25.11-py3` (PR #1116)
+* `integrate/totalvi_scvarches`: bump version of `scvi-tools` in component from `1.3.2` to `1.4.1` (PR #1129)
+
+* `totalvi`, `celltypist`, `scanvi` and `scarches`: change container image to `pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime` (PR #1116 and PR #1129)
 
 * `transform/normalize_total`, `transform/clr`, `transform/log1p`: Add disk resource labels (PR #1073).
 

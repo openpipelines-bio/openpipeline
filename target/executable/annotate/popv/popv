@@ -459,16 +459,16 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "popv~=0.4.2" "numpy<2" "setuptools"
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.7" "mudata~=0.3.2" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.7" "awkward" "mudata~=0.3.2" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 RUN cd /opt && git clone --depth 1 https://github.com/YosefLab/PopV.git
 
 LABEL org.opencontainers.image.authors="Matthias Beyens, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component annotate popv"
-LABEL org.opencontainers.image.created="2026-01-21T03:12:10Z"
+LABEL org.opencontainers.image.created="2026-01-21T12:45:37Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6d8adc608e82097d1c72b03f592d532bfe1fbe82"
+LABEL org.opencontainers.image.revision="2b561b33f00045c38789612157aeb9929744c032"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

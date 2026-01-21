@@ -194,13 +194,12 @@
         },
         "protein_dispersion": {
           "type": "string",
-          "description": "Set the behavior for the dispersion for negative binomial distributions:\n  - protein: dispersion parameter of negative binomial is constant per protein across cells\n  - protein-batch: dispersion can differ between different batches\n  - protein-label: dispersion can differ between different labels\n  - protein-cell:  dispersion can differ for every protein in every cell\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"protein\"`, choices: ``protein`, `protein-batch`, `protein-label`, `protein-cell``. ",
+          "description": "Set the behavior for the dispersion for negative binomial distributions:\n  - protein: dispersion parameter of negative binomial is constant per protein across cells\n  - protein-batch: dispersion can differ between different batches\n  - protein-label: dispersion can differ between different labels\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"protein\"`, choices: ``protein`, `protein-batch`, `protein-label``. ",
           "enum": [
             "protein",
             "protein-batch",
-            "protein-label",
-            "protein-cell"
+            "protein-label"
           ],
           "default": "protein"
         },
