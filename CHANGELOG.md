@@ -52,7 +52,9 @@
 
 ## MINOR CHANGES
 
-* `totalvi`, `celltypist`, `scanvi` and `scarches`: bump base container image to `nvcr.io/nvidia/pytorch:25.11-py3` (PR #1116)
+* `integrate/totalvi_scvarches`: bump version of `scvi-tools` in component from `1.3.2` to `1.4.1` (PR #1129)
+
+* `totalvi`, `celltypist`, `scanvi` and `scarches`: change container image to `pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime` (PR #1116 and PR #1129)
 
 * `transform/normalize_total`, `transform/clr`, `transform/log1p`: Add disk resource labels (PR #1073).
 
