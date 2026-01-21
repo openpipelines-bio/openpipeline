@@ -6438,7 +6438,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star",
     "viash_version" : "0.9.4",
-    "git_commit" : "dc2ee5dcae39ede4cb8faef67785096bdf0a9d8b",
+    "git_commit" : "ce01bec85d880586d120f4819d3b1ce8893b7198",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

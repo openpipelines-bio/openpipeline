@@ -3286,7 +3286,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--protein_dispersion",
-          "description" : "Set the behavior for the dispersion for negative binomial distributions:\n  - protein: dispersion parameter of negative binomial is constant per protein across cells\n  - protein-batch: dispersion can differ between different batches\n  - protein-label: dispersion can differ between different labels\n  - protein-cell:  dispersion can differ for every protein in every cell\n",
+          "description" : "Set the behavior for the dispersion for negative binomial distributions:\n  - protein: dispersion parameter of negative binomial is constant per protein across cells\n  - protein-batch: dispersion can differ between different batches\n  - protein-label: dispersion can differ between different labels\n",
           "default" : [
             "protein"
           ],
@@ -3294,8 +3294,7 @@ meta = [
           "choices" : [
             "protein",
             "protein-batch",
-            "protein-label",
-            "protein-cell"
+            "protein-label"
           ],
           "direction" : "input",
           "multiple" : false,
@@ -3600,7 +3599,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "nvcr.io/nvidia/pytorch:25.11-py3",
+      "image" : "pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3609,10 +3608,10 @@ meta = [
           "user" : false,
           "packages" : [
             "anndata~=0.12.7",
+            "awkward",
             "mudata~=0.3.2",
             "scanpy~=1.10.4",
-            "jax[cuda]",
-            "scvi-tools~=1.3.2"
+            "scvi-tools[cuda]~=1.4.1"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3638,7 +3637,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi",
     "viash_version" : "0.9.4",
-    "git_commit" : "dc2ee5dcae39ede4cb8faef67785096bdf0a9d8b",
+    "git_commit" : "ce01bec85d880586d120f4819d3b1ce8893b7198",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

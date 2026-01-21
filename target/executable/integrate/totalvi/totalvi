@@ -447,17 +447,17 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM nvcr.io/nvidia/pytorch:25.11-py3
+FROM pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.7" "mudata~=0.3.2" "scanpy~=1.10.4" "jax[cuda]" "scvi-tools~=1.3.2" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.7" "awkward" "mudata~=0.3.2" "scanpy~=1.10.4" "scvi-tools[cuda]~=1.4.1" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component integrate totalvi"
-LABEL org.opencontainers.image.created="2026-01-19T13:01:29Z"
+LABEL org.opencontainers.image.created="2026-01-21T10:53:31Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="dc2ee5dcae39ede4cb8faef67785096bdf0a9d8b"
+LABEL org.opencontainers.image.revision="ce01bec85d880586d120f4819d3b1ce8893b7198"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -694,13 +694,12 @@ function ViashHelp {
   echo "    --protein_dispersion"
   echo "        type: string"
   echo "        default: protein"
-  echo "        choices: [ protein, protein-batch, protein-label, protein-cell ]"
+  echo "        choices: [ protein, protein-batch, protein-label ]"
   echo "        Set the behavior for the dispersion for negative binomial distributions:"
   echo "          - protein: dispersion parameter of negative binomial is constant per"
   echo "        protein across cells"
   echo "          - protein-batch: dispersion can differ between different batches"
   echo "          - protein-label: dispersion can differ between different labels"
-  echo "          - protein-cell:  dispersion can differ for every protein in every cell"
   echo ""
   echo "    --gene_likelihood"
   echo "        type: string"
@@ -1588,7 +1587,7 @@ if [ ! -z "$VIASH_PAR_GENE_DISPERSION" ]; then
 fi
 
 if [ ! -z "$VIASH_PAR_PROTEIN_DISPERSION" ]; then
-  VIASH_PAR_PROTEIN_DISPERSION_CHOICES=("protein;protein-batch;protein-label;protein-cell")
+  VIASH_PAR_PROTEIN_DISPERSION_CHOICES=("protein;protein-batch;protein-label")
   IFS=';'
   set -f
   if ! [[ ";${VIASH_PAR_PROTEIN_DISPERSION_CHOICES[*]};" =~ ";$VIASH_PAR_PROTEIN_DISPERSION;" ]]; then

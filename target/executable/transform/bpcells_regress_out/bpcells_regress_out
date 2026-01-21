@@ -462,14 +462,14 @@ RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TR
 RUN --mount=type=secret,id=GITHUB_TOKEN,env=GTIHUB_TOKEN
 RUN Rscript -e 'options(warn = 2); remotes::install_github(c("bnprks/BPCells/r"), repos = "https://cran.rstudio.com")'
 RUN pip install --user --upgrade pip && \
-  pip install --user --upgrade --no-cache-dir "anndata~=0.12.7" "mudata~=0.3.2" && \
+  pip install --user --upgrade --no-cache-dir "anndata~=0.12.7" "awkward" "mudata~=0.3.2" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Robrecht Cannoodt, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component transform bpcells_regress_out"
-LABEL org.opencontainers.image.created="2026-01-19T13:01:31Z"
+LABEL org.opencontainers.image.created="2026-01-21T10:53:33Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="dc2ee5dcae39ede4cb8faef67785096bdf0a9d8b"
+LABEL org.opencontainers.image.revision="ce01bec85d880586d120f4819d3b1ce8893b7198"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
