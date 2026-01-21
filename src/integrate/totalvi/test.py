@@ -1,4 +1,6 @@
 import mudata
+import sys
+import pytest
 from pathlib import Path
 
 ## VIASH START
@@ -19,6 +21,10 @@ def test_simple_execution(run_component, tmp_path):
         [
             "--input",
             input_file,
+            "--rna_modality",
+            "rna",
+            "--prot_modality",
+            "prot",
             "--var_input",
             "filter_with_hvg",
             "--output_model",
@@ -31,8 +37,8 @@ def test_simple_execution(run_component, tmp_path):
     )
 
     assert output_path.is_file()
-    assert Path(output_path).is_dir()
-    assert Path(f"{output_path}/model.pt").is_file()
+    assert Path(output_model_path).is_dir()
+    assert Path(f"{output_model_path}/model.pt").is_file()
 
     output_data = mudata.read_h5mu(output_path)
     input_data = mudata.read_h5mu(input_file)
@@ -66,6 +72,10 @@ def test_covariates(run_component, tmp_path):
         [
             "--input",
             input_file,
+            "--rna_modality",
+            "rna",
+            "--prot_modality",
+            "prot",
             "--var_input",
             "filter_with_hvg",
             "--obs_categorical_covariate",
@@ -112,6 +122,10 @@ def test_parameters(run_component, tmp_path):
         [
             "--input",
             input_file,
+            "--rna_modality",
+            "rna",
+            "--prot_modality",
+            "prot",
             "--var_input",
             "filter_with_hvg",
             "--obsm_output",
@@ -123,7 +137,7 @@ def test_parameters(run_component, tmp_path):
             "--gene_dispersion",
             "gene-batch",
             "--protein_dispersion",
-            "protein-cell",
+            "protein-batch",
             "--gene_likelihood",
             "zinb",
             "--latent_distribution",
@@ -148,3 +162,7 @@ def test_parameters(run_component, tmp_path):
     assert output_data.mod["rna"].obsm["test_rna"].dtype == "f"
     assert "test_prot" in output_data.mod["prot"].obsm
     assert output_data.mod["prot"].obsm["test_prot"].dtype == "f"
+
+
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__]))
