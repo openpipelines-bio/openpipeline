@@ -8,7 +8,7 @@
 
 * `convert/from_cellranger_multi_to_h5mu`: VDJ related output is now stored in AIRR Rearrangement standard.
    Because one cell can have multiple receptor chains, this relationship is represented as an `awkward` array
-   stored in `.obsm["airr"]` slot of the VDJ modality (PR #1109). 
+   stored in `.obsm["airr"]` slot of the VDJ modality (PR #1109 and PR #). 
 
 * `workflows/annotation/totalvi_scarches_leiden` and `annotate/totalvi_scarches`: Renamed previously implemented versions of `workflows/annotation/totalvi_leiden` and `annotate/totalvi` to reflect that scArches is used for reference mapping with TotalVI (PR #1092).
 

@@ -1,2 +1,3 @@
 packages:
   - anndata~=0.12.7
+  - awkward #Required for reading VDJ data stored in AIRR format
