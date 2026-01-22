@@ -24,7 +24,7 @@
 
 * `annotate/celltypist`: Enable CUDA acceleration for CellTypist annotation (PR #1091).
 
-* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083).
+* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083, #1114).
 
 * `workflows/integration/harmony_leiden`: add support for adding the output slots to a tileDB-SOMA database (PR #1095).
 
