@@ -4,7 +4,6 @@ import os
 import time
 import logging
 import logging.handlers
-import warnings
 import h5py
 import mudata as mu
 import pandas as pd
@@ -54,6 +53,9 @@ sys.path.append(meta["resources_dir"])
 from compress_h5mu import compress_h5mu
 
 _shared_logger_name = "leiden"
+
+if not par["n_iterations"]:
+    par["n_iterations"] = -1
 
 
 # Function to check available space in /dev/shm
@@ -153,18 +155,18 @@ def run_single_resolution(shared_csr_matrix, obs_names, resolution):
     try:
         connectivities = shared_csr_matrix.to_csr_matrix()
         adata = create_empty_anndata_with_connectivities(connectivities, obs_names)
-        with warnings.catch_warnings():
-            # In the future, the default backend for leiden will be igraph instead of leidenalg.
-            warnings.simplefilter(action="ignore", category=FutureWarning)
-            adata_out = sc.tl.leiden(
-                adata,
-                resolution=resolution,
-                key_added=str(resolution),
-                obsp="connectivities",
-                copy=True,
-            )
+        sc.tl.leiden(
+            adata,
+            resolution=resolution,
+            key_added=str(resolution),
+            obsp="connectivities",
+            flavor=par["flavor"],
+            n_iterations=par["n_iterations"],
+            random_state=par["seed"],
+            copy=False,  # A copy was already created above
+        )
         logger.info(f"Returning result for resolution {resolution}")
-        return adata_out.obs[str(resolution)]
+        return adata.obs[str(resolution)]
     finally:
         obs_names.shm.close()
         shared_csr_matrix.close()
