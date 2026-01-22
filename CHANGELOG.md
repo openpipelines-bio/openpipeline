@@ -52,6 +52,8 @@
 
 ## MINOR CHANGES
 
+* Bump `scanpy` to `1.11.4` (PR #1131)
+
 * `integrate/totalvi_scvarches`: bump version of `scvi-tools` in component from `1.3.2` to `1.4.1` (PR #1129)
 
 * `totalvi`, `celltypist`, `scanvi` and `scarches`: change container image to `pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime` (PR #1116 and PR #1129)
