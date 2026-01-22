@@ -164,46 +164,5 @@ def test_parameters(run_component, tmp_path):
     assert output_data.mod["prot"].obsm["test_prot"].dtype == "f"
 
 
-def test_parameters(run_component, tmp_path):
-    output_path = tmp_path / "output.h5mu"
-
-    run_component(
-        [
-            "--input",
-            input_file,
-            "--var_input",
-            "filter_with_hvg",
-            "--obsm_output",
-            "test_obsm_output",
-            "--obsm_normalized_rna_output",
-            "test_rna",
-            "--obsm_normalized_protein_output",
-            "test_prot",
-            "--gene_dispersion",
-            "gene-batch",
-            "--protein_dispersion",
-            "protein-cell",
-            "--gene_likelihood",
-            "zinb",
-            "--latent_distribution",
-            "ln",
-            "--n_dimensions_latent_space",
-            "10",
-            "--max_epochs",
-            "1",
-            "--output",
-            str(output_path),
-        ]
-    )
-
-    assert output_path.is_file()
-
-    output_data = mudata.read_h5mu(output_path)
-
-    assert "test_obsm_output" in output_data.mod["rna"].obsm
-    assert output_data.mod["rna"].obsm["test_obsm_output"].dtype == "f"
-    assert output_data.mod["rna"].obsm["test_obsm_output"].shape[1] == 10
-    assert "test_rna" in output_data.mod["rna"].obsm
-    assert output_data.mod["rna"].obsm["test_rna"].dtype == "f"
-    assert "test_prot" in output_data.mod["prot"].obsm
-    assert output_data.mod["prot"].obsm["test_prot"].dtype == "f"
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__]))
