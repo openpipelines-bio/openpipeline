@@ -3384,6 +3384,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/is_lognormalized.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3517,7 +3521,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "celltypist==1.6.3"
+            "celltypist==1.7.1"
           ],
           "upgrade" : true
         },
@@ -3563,7 +3567,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.4",
-    "git_commit" : "ce01bec85d880586d120f4819d3b1ce8893b7198",
+    "git_commit" : "84aeebd1dc323d87cf3c1d315583066e39443460",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3683,6 +3687,7 @@ from setup_logger import setup_logger
 from cross_check_genes import cross_check_genes
 from set_var_index import set_var_index
 from subset_vars import subset_vars
+from is_lognormalized import is_lognormalized
 
 logger = setup_logger()
 use_gpu = cuda_is_available()
@@ -3706,12 +3711,19 @@ def main(par):
     input_modality = set_var_index(
         input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
     )
+
     ## Fetch lognormalized counts
     lognorm_counts = (
         input_modality.layers[par["input_layer"]].copy()
         if par["input_layer"]
         else input_modality.X.copy()
     )
+
+    if not is_lognormalized(lognorm_counts, target_sum=10000):
+        raise ValueError(
+            "Invalid expression matrix, expect input layer to contain log1p normalized expression to 10000 counts per cell."
+        )
+
     ## Create AnnData object
     input_modality = ad.AnnData(
         X=lognorm_counts, var=pd.DataFrame(index=input_modality.var.index)
@@ -3728,6 +3740,12 @@ def main(par):
 
     elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
+
+        # Check expression before subsetting to HVG
+        if not is_lognormalized(lognorm_counts, target_sum=10000):
+            raise ValueError(
+                "Invalid expression matrix, expect reference layer to contain log1p normalized expression to 10000 counts per cell."
+            )
 
         # subset to HVG if required
         if par["reference_var_input"]:
@@ -3762,16 +3780,20 @@ def main(par):
         model = celltypist.train(
             reference_matrix,
             labels=labels,
-            genes=reference_modality.var.index,
+            genes=reference_modality.var.index.astype(
+                str
+            ),  # ensure string type, fails if categorical when making var indices unique
             C=par["C"],
             max_iter=par["max_iter"],
             use_SGD=par["use_SGD"],
             feature_selection=par["feature_selection"],
-            check_expression=True,
+            check_expression=False,  # if True, throws an error if lognormalized data are subset for HVG,
             use_GPU=use_gpu,
         )
 
     logger.info("Predicting CellTypist annotations")
+    # Make sure .var index is string dtype, fails if categorical when making var indices unique
+    input_modality.var.index = input_modality.var.index.astype(str)
     predictions = celltypist.annotate(
         input_modality, model, majority_voting=par["majority_voting"], use_GPU=use_gpu
     )
