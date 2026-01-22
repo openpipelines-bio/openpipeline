@@ -450,7 +450,7 @@ function ViashDockerfile {
 FROM nvcr.io/nvidia/pytorch:25.11-py3
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.10.4"
+  pip install --upgrade --no-cache-dir "scanpy~=1.11.4"
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "celltypist==1.7.1"
@@ -461,9 +461,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate celltypist"
-LABEL org.opencontainers.image.created="2026-01-22T08:21:19Z"
+LABEL org.opencontainers.image.created="2026-01-22T15:56:17Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="84aeebd1dc323d87cf3c1d315583066e39443460"
+LABEL org.opencontainers.image.revision="64f6f731739810280b66a98bff496e54b998d4c7"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

@@ -3446,7 +3446,7 @@ meta = [
             "anndata~=0.12.7",
             "awkward",
             "mudata~=0.3.2",
-            "scanpy~=1.10.4",
+            "scanpy~=1.11.4",
             "scrublet",
             "annoy==1.17.3"
           ],
@@ -3484,7 +3484,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.9.4",
-    "git_commit" : "84aeebd1dc323d87cf3c1d315583066e39443460",
+    "git_commit" : "64f6f731739810280b66a98bff496e54b998d4c7",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

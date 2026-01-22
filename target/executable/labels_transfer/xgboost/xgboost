@@ -461,13 +461,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.10.4" "xgboost~=2.1.3" "scikit-learn<1.6"
+  pip install --upgrade --no-cache-dir "scanpy~=1.11.4" "xgboost~=2.1.3" "scikit-learn<1.6"
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component labels_transfer xgboost"
-LABEL org.opencontainers.image.created="2026-01-22T08:21:17Z"
+LABEL org.opencontainers.image.created="2026-01-22T15:56:15Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="84aeebd1dc323d87cf3c1d315583066e39443460"
+LABEL org.opencontainers.image.revision="64f6f731739810280b66a98bff496e54b998d4c7"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
