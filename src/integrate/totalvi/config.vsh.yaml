@@ -214,7 +214,7 @@ engines:
     - type: python
       __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       packages:
-        - scvi-tools~=1.4.1
+        - scvi-tools[cuda]~=1.4.1
   test_setup:
     - type: python
       __merge__: [ /src/base/requirements/viashpy.yaml, .]
