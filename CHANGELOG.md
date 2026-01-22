@@ -52,7 +52,7 @@
 
 ## MINOR CHANGES
 
-* Bump `scanpy` to `1.11.4` (PR #)
+* Bump `scanpy` to `1.11.4` (PR #1131)
 
 * `integrate/totalvi_scvarches`: bump version of `scvi-tools` in component from `1.3.2` to `1.4.1` (PR #1129)
 
