@@ -63,6 +63,6 @@ def set_var_index(
             "when --sanitize_ensembl_ids is set to True."
         )
 
-    adata.var.index = gene_names
+    adata.var.index = gene_names.astype(str)
 
     return adata

@@ -24,7 +24,7 @@
 
 * `annotate/celltypist`: Enable CUDA acceleration for CellTypist annotation (PR #1091).
 
-* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083).
+* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083, #1114).
 
 * `workflows/integration/harmony_leiden`: add support for adding the output slots to a tileDB-SOMA database (PR #1095).
 
@@ -51,6 +51,8 @@
 * `mapping/samtools_sort` has been deprecated and will be removed in openpipeline 4.0. Use [vsh://biobox/samtools/samtools_sort](https://www.viash-hub.com/packages/biobox/latest/components/samtools/samtools_sort) instead.
 
 ## MINOR CHANGES
+
+* Bump `scanpy` to `1.11.4` (PR #1131)
 
 * `integrate/totalvi_scvarches`: bump version of `scvi-tools` in component from `1.3.2` to `1.4.1` (PR #1129)
 

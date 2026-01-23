@@ -452,14 +452,14 @@ function ViashDockerfile {
 FROM python:3.11
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.7" "awkward" "mudata~=0.3.2" "scanpy~=1.10.4" "cellxgene-census" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.7" "awkward" "mudata~=0.3.2" "scanpy~=1.11.4" "cellxgene-census" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Matthias Beyens, Dries De Maeyer, Robrecht Cannoodt, Kai Waldrant"
 LABEL org.opencontainers.image.description="Companion container for running component query cellxgene_census"
-LABEL org.opencontainers.image.created="2026-01-21T12:45:37Z"
+LABEL org.opencontainers.image.created="2026-01-23T03:12:22Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="2b561b33f00045c38789612157aeb9929744c032"
+LABEL org.opencontainers.image.revision="a9b892513f3b050566be17fdbb6340d6891ad1da"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

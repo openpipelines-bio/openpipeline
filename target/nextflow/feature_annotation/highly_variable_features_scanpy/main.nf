@@ -3439,7 +3439,7 @@ meta = [
             "anndata~=0.12.7",
             "awkward",
             "mudata~=0.3.2",
-            "scanpy~=1.10.4",
+            "scanpy~=1.11.4",
             "scikit-misc"
           ],
           "script" : [
@@ -3476,7 +3476,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.9.4",
-    "git_commit" : "2b561b33f00045c38789612157aeb9929744c032",
+    "git_commit" : "a9b892513f3b050566be17fdbb6340d6891ad1da",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

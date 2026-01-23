@@ -3347,7 +3347,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scanpy~=1.10.4",
+            "scanpy~=1.11.4",
             "muon~=0.1.7",
             "pysam~=0.22.0"
           ],
@@ -3372,7 +3372,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_atac_qc_metrics",
     "viash_version" : "0.9.4",
-    "git_commit" : "2b561b33f00045c38789612157aeb9929744c032",
+    "git_commit" : "a9b892513f3b050566be17fdbb6340d6891ad1da",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

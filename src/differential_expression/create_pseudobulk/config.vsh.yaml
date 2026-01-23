@@ -85,6 +85,7 @@ resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
+  - path: /src/utils/is_lognormalized.py
 
 test_resources:
   - type: python_script

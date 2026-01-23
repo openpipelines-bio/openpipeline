@@ -3269,6 +3269,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/utils/is_lognormalized.py"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3391,7 +3395,7 @@ meta = [
             "anndata~=0.12.7",
             "awkward",
             "mudata~=0.3.2",
-            "scanpy~=1.10.4"
+            "scanpy~=1.11.4"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3427,7 +3431,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/differential_expression/create_pseudobulk",
     "viash_version" : "0.9.4",
-    "git_commit" : "2b561b33f00045c38789612157aeb9929744c032",
+    "git_commit" : "a9b892513f3b050566be17fdbb6340d6891ad1da",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3483,7 +3487,6 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.py"
 cat > "$tempscript" << VIASHMAIN
-import numpy as np
 import mudata as mu
 import pandas as pd
 import sys
@@ -3531,21 +3534,9 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from is_lognormalized import is_lognormalized
 
 logger = setup_logger()
-
-
-def is_normalized(layer):
-    exp_layer = np.expm1(layer)  # Inverse of log1p
-    row_sums = np.asarray(np.sum(layer, axis=1)).ravel()
-    exp_row_sums = np.asarray(np.sum(exp_layer, axis=1)).ravel()
-
-    is_normalized = np.allclose(row_sums, row_sums[0])
-    is_log1p_normalized = np.isfinite(exp_row_sums).all() and np.allclose(
-        exp_row_sums, exp_row_sums[0]
-    )
-
-    return is_normalized or is_log1p_normalized
 
 
 def count_obs(adata, pb_adata, obs_cols):
@@ -3571,7 +3562,7 @@ def main():
     # Make sure .X contains raw counts
     if par["input_layer"]:
         adata.X = adata.layers[par["input_layer"]]
-    if is_normalized(adata.X):
+    if is_lognormalized(adata.X):
         raise ValueError("Input layer must contain raw counts.")
 
     # Sanitize pseudobulk aggregation fields
