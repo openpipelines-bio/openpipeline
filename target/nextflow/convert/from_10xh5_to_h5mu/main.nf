@@ -3446,7 +3446,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xh5_to_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "2991a87b81f984ee3245f78913ad7e416928f22a",
+    "git_commit" : "3faaa020cc914f7b2edfc1bd666022de238400ae",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
