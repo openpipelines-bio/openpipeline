@@ -3431,7 +3431,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/differential_expression/create_pseudobulk",
     "viash_version" : "0.9.4",
-    "git_commit" : "3faaa020cc914f7b2edfc1bd666022de238400ae",
+    "git_commit" : "b25720fb48555286b54aef04931c1148b457c2fe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
