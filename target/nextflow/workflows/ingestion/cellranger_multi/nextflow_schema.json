@@ -390,6 +390,11 @@
           "type": "integer",
           "description": "Limit the length of the input Read 2 sequence of V(D)J libraries to the first N bases, where N is a user-supplied value",
           "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "vdj_denovo": {
+          "type": "boolean",
+          "description": "Run in reference-free mode (i.e., do not use annotations)",
+          "help_text": "Type: `boolean`, multiple: `False`. "
         }
       }
     },

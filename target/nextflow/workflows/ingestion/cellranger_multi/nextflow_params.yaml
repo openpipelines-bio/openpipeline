@@ -49,6 +49,7 @@ gex_chemistry: "auto"
 # vdj_inner_enrichment_primers: "enrichment_primers.txt"
 # vdj_r1_length: 123
 # vdj_r2_length: 123
+# vdj_denovo: true
 
 # 3' Cell multiplexing parameters (CellPlex Multiplexing)
 # cell_multiplex_oligo_ids: ["foo"]

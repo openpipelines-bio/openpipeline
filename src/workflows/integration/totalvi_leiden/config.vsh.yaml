@@ -1,12 +1,15 @@
 name: "totalvi_leiden"
 namespace: "workflows/integration"
 scope: "public"
-description: "Run totalVI integration followed by neighbour calculations, leiden clustering and run umap on the result."
-authors:
-  - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ author ]
+description: "Run totalVI integration, followed by neighbour calculations, leiden clustering and UMAP."
 info:
+  name: totalVI Leiden
   test_dependencies:
+    - name: totalvi_leiden_test
+      namespace: test_workflows/integration
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author ]
 argument_groups:
   - name: "Inputs"
     arguments:
@@ -16,30 +19,71 @@ argument_groups:
         description: ID of the sample.
         example: foo
       - name: "--input"
-        required: true
         type: file
-        description: Path to the sample.
-        example: dataset.h5mu
-      - name: "--layer"
-        type: string
-        description: use specified layer for expression values instead of the .X object from the modality.
-        required: false
-      - name: "--modality"
-        description: Which modality to process.
+        description: Input h5mu file to be integrated.
+        example: input.h5mu
+        direction: input
+        required: true
+      - name: "--rna_modality"
         type: string
         default: "rna"
         required: false
       - name: "--prot_modality"
-        description: Which modality to process.
         type: string
         default: "prot"
+        description: Name of the modality in the input (query) h5mu file containing protein data
         required: false
-      - name: "--reference"
-        alternatives: ["-r"]
-        type: file
-        description: Input h5mu file with reference data to train the TOTALVI model.
-        direction: input
-        required: true
+      - name: "--input_layer_rna"
+        type: string
+        required: false
+        description: "Input layer to use from the rna modality for gene counts. If None, X is used"
+      - name: "--input_layer_protein"
+        type: string
+        required: false
+        description: "Input layer to use from the protein modality for protein counts. If None, X is used"
+      - name: "--obs_batch"
+        type: string
+        default: "sample_id"
+        required: false
+        description: Column name discriminating between your batches.
+      - name: "--obs_size_factor"
+        type: string
+        required: false
+        description: |
+          Key in adata.obs for size factor information. Instead of using library size as a size factor,
+          the provided size factor column will be used as offset in the mean of the likelihood.
+          Assumed to be on linear scale.
+      - name: "--obs_categorical_covariate"
+        type: string
+        required: false
+        multiple: true
+        description: |
+          Keys in adata.obs that correspond to categorical data. These covariates can be added in
+          addition to the batch covariate and are also treated as nuisance factors
+          (i.e., the model tries to minimize their effects on the latent space).
+          Thus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.
+      - name: "--obs_continuous_covariate"
+        type: string
+        required: false
+        multiple: true
+        description: |
+          Keys in adata.obs that correspond to continuous data. These covariates can be added in
+          addition to the batch covariate and are also treated as nuisance factors
+          (i.e., the model tries to minimize their effects on the latent space). Thus, these should not be
+          used for biologically-relevant factors that you do _not_ want to correct for.
+      - name: "--var_gene_names"
+        type: string
+        required: false
+        description: ".var column in the rna modality containing gene names. By default, use mod['rna'].var_names."
+      - name: "--var_protein_names"
+        type: string
+        required: false
+        description: ".var column in the protein modality containing protein names. By default, use mod['prot'].var_names."
+      - name: "--var_input"
+        type: string
+        required: false
+        description: ".var column containing highly variable genes. By default, do not subset genes."
+
   - name: "Outputs"
     arguments:
       - name: "--output"
@@ -48,126 +92,70 @@ argument_groups:
         direction: output
         description: Destination path to the output.
         example: output.h5mu
-      - name: "--reference_model_path"
+      - name: "--output_model"
         type: file
-        description: Directory with the reference model. If not exists, trained model will be saved there
+        description: Directory where the trained reference model will be stored.
         required: false
         default: "totalvi_model_reference/"
         direction: output
-      - name: "--query_model_path"
-        type: file
-        description: Directory, where the query model will be saved
-        required: false
-        default: "totalvi_model_query/"
-        direction: output
-  - name: General TotalVI Options
+
+  - name: TotalVI Training Options
     arguments:
-      - name: "--obs_batch"
-        type: string
-        description: .Obs column name discriminating between your batches.
-        required: false
-        default: "sample_id"
       - name: "--max_epochs"
         type: integer
-        description: "Number of passes through the dataset"
+        description: "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest."
         required: false
-        default: 400
-      - name: "--max_query_epochs"
-        type: integer
-        description: "Number of passes through the dataset, when fine-tuning model for query"
+      - name: "--early_stopping"
         required: false
-        default: 200
-      - name: "--weight_decay"
-        type: double
-        description: "Weight decay, when fine-tuning model for query"
-        required: false
-        default: 0.0
-      - name: "--force_retrain"
-        type: boolean_true
-        description: If true, retrain the model and save it to reference_model_path
-      - name: "--var_input"
-        type: string
-        required: false
-        description: "Boolean .var column to subset data with (e.g. containing highly variable genes). By default, do not subset genes."
-  - name: TotalVI integration options RNA
+        type: boolean
+        default: True
+        description: "Whether to perform early stopping with respect to the validation set."
+
+  - name: TotalVI Integration Options
     arguments:
-      - name: "--rna_reference_modality"
+      - name: "--obsm_integrated"
         type: string
-        default: "rna"
-        required: false
-      - name: "--rna_obsm_output"
+        default: "X_integrated_totalvi"
+        description: "In which .obsm slot to store the resulting integrated embedding."
+      - name: "--obsm_normalized_rna_output"
         type: string
-        default: "X_totalvi"
-        required: false
-        description: "In which .obsm slot to store the normalized RNA from TOTALVI."
-  - name: TotalVI integration options ADT
-    arguments:
-      - name: "--prot_reference_modality"
+        default: "X_totalvi_normalized_rna"
+        description: "In which .obsm slot to store the normalized RNA data from TOTALVI."
+      - name: "--obsm_normalized_protein_output"
         type: string
-        description: Name of the modality containing proteins in the reference
-        default: "prot"
-        required: false
-      - name: "--prot_obsm_output"
-        type: string  
-        default: "X_totalvi"
-        required: false
+        default: "X_totalvi_normalized_protein"
         description: "In which .obsm slot to store the normalized protein data from TOTALVI."
-  - name: Neighbour calculation RNA
+
+  - name: Neighbour calculation
     arguments:
-      - name: "--rna_uns_neighbors"
+      - name: "--uns_neighbors"
         type: string
         default: totalvi_integration_neighbors
         description: In which .uns slot to store various neighbor output objects.
-      - name: "--rna_obsp_neighbor_distances"
+      - name: "--obsp_neighbor_distances"
         type: string
         default: "totalvi_integration_distances"
         description: "In which .obsp slot to store the distance matrix between the resulting neighbors."
-      - name: "--rna_obsp_neighbor_connectivities"
+      - name: "--obsp_neighbor_connectivities"
         type: string
         default: "totalvi_integration_connectivities"
         description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
-  - name: Neighbour calculation ADT
+
+  - name: Clustering options
     arguments:
-      - name: "--prot_uns_neighbors"
-        type: string
-        default: totalvi_integration_neighbors
-        description: In which .uns slot to store various neighbor output objects.
-      - name: "--prot_obsp_neighbor_distances"
-        type: string
-        default: "totalvi_integration_distances"
-        description: "In which .obsp slot to store the distance matrix between the resulting neighbors."
-      - name: "--prot_obsp_neighbor_connectivities"
-        type: string
-        default: "totalvi_integration_connectivities"
-        description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
-  - name: Clustering options RNA
-    arguments:
-      - name: "--rna_obs_cluster"
+      - name: "--obs_cluster"
         type: string
         description: |
           Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will 
           be created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions
           resolutions specified in '--leiden_resolution'.
         default: "totalvi_integration_leiden"
-      - name: "--rna_leiden_resolution"
+      - name: "--leiden_resolution"
         type: double
         description: Control the coarseness of the clustering. Higher values lead to more clusters.
         default: [1]
         multiple: true
-  - name: Clustering options ADT
-    arguments:
-      - name: "--prot_obs_cluster"
-        type: string
-        description: |
-          Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will 
-          be created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions
-          resolutions specified in '--leiden_resolution'.
-        default: "totalvi_integration_leiden"
-      - name: "--prot_leiden_resolution"
-        type: double
-        description: Control the coarseness of the clustering. Higher values lead to more clusters.
-        default: [1]
-        multiple: true
+
   - name: Umap options
     arguments:
       - name: "--obsm_umap"
@@ -175,6 +163,7 @@ argument_groups:
         default: "X_totalvi_umap"
         required: false
         description: "In which .obsm slot to store the resulting UMAP embedding."
+
 dependencies:
   - name: integrate/totalvi
   - name: workflows/multiomics/neighbors_leiden_umap

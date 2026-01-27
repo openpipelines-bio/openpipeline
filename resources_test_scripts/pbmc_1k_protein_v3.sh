@@ -117,3 +117,8 @@ import mudata as mu
 mudata = mu.read_h5mu("${DIR}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu")
 mudata.mod["rna"].write_h5ad("${DIR}/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5ad")
 HEREDOC
+
+# Convert to Seurat
+viash run src/convert/from_h5mu_or_h5ad_to_seurat/config.vsh.yaml -- \
+  --input "${OUT}_mms.h5mu" \
+  --output "${OUT}_mms.rds" 

@@ -21,6 +21,8 @@ workflow run_wf {
               "var_input": "reference_var_hvg",
               "var_gene_names": "reference_var_gene_names",
               "obs_size_factor": "reference_obs_size_factor",
+              "obs_categorical_covariate": "reference_obs_categorical_covariate",
+              "obs_continuous_covariate": "reference_obs_continuous_covariate",
               "early_stopping": "early_stopping",
               "early_stopping_monitor": "early_stopping_monitor",
               "early_stopping_patience": "early_stopping_patience",
@@ -29,6 +31,7 @@ workflow run_wf {
               "reduce_lr_on_plateau": "reduce_lr_on_plateau",
               "lr_factor": "lr_factor",
               "lr_patience": "lr_patience",
+              "sanitize_ensembl_ids": "sanitize_ensembl_ids"
           ],
           args: [
               "obsm_output": "X_integrated_scvi"
@@ -61,6 +64,7 @@ workflow run_wf {
               "reduce_lr_on_plateau": "reduce_lr_on_plateau",
               "lr_factor": "lr_factor",
               "lr_patience": "lr_patience",
+              "sanitize_ensembl_ids": "sanitize_ensembl_ids"
           ],
           toState: [
               "reference": "output",
@@ -77,6 +81,8 @@ workflow run_wf {
               "input_obs_batch": "input_obs_batch_label",
               "input_var_gene_names": "input_var_gene_names",
               "input_obs_size_factor": "input_obs_size_factor",
+              "input_obs_categorical_covariate": "input_obs_categorical_covariate",
+              "input_obs_continuous_covariate": "input_obs_continuous_covariate",
               "reference": "scanvi_model",
               "obsm_output": "output_obsm_integrated",
               "obs_output_predictions": "output_obs_predictions",
@@ -90,7 +96,8 @@ workflow run_wf {
               "lr_factor": "lr_factor",
               "lr_patience": "lr_patience",
               "output": "workflow_output",
-              "model_output": "workflow_output_model"
+              "model_output": "workflow_output_model",
+              "sanitize_ensembl_ids": "sanitize_ensembl_ids"
           ],
           toState: [
               "input": "output",

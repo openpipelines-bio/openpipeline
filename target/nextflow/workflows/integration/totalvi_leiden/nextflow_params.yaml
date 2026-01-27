@@ -1,49 +1,39 @@
 # Inputs
 id: # please fill in - example: "foo"
-input: # please fill in - example: "dataset.h5mu"
-# layer: "foo"
-modality: "rna"
+input: # please fill in - example: "input.h5mu"
+rna_modality: "rna"
 prot_modality: "prot"
-reference: # please fill in - example: "path/to/file"
+# input_layer_rna: "foo"
+# input_layer_protein: "foo"
+obs_batch: "sample_id"
+# obs_size_factor: "foo"
+# obs_categorical_covariate: ["foo"]
+# obs_continuous_covariate: ["foo"]
+# var_gene_names: "foo"
+# var_protein_names: "foo"
+# var_input: "foo"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-# reference_model_path: "totalvi_model_reference"
-# query_model_path: "totalvi_model_query"
+# output_model: "totalvi_model_reference"
 
-# General TotalVI Options
-obs_batch: "sample_id"
-max_epochs: 400
-max_query_epochs: 200
-weight_decay: 0.0
-force_retrain: false
-# var_input: "foo"
+# TotalVI Training Options
+# max_epochs: 123
+early_stopping: true
 
-# TotalVI integration options RNA
-rna_reference_modality: "rna"
-rna_obsm_output: "X_totalvi"
+# TotalVI Integration Options
+obsm_integrated: "X_integrated_totalvi"
+obsm_normalized_rna_output: "X_totalvi_normalized_rna"
+obsm_normalized_protein_output: "X_totalvi_normalized_protein"
 
-# TotalVI integration options ADT
-prot_reference_modality: "prot"
-prot_obsm_output: "X_totalvi"
+# Neighbour calculation
+uns_neighbors: "totalvi_integration_neighbors"
+obsp_neighbor_distances: "totalvi_integration_distances"
+obsp_neighbor_connectivities: "totalvi_integration_connectivities"
 
-# Neighbour calculation RNA
-rna_uns_neighbors: "totalvi_integration_neighbors"
-rna_obsp_neighbor_distances: "totalvi_integration_distances"
-rna_obsp_neighbor_connectivities: "totalvi_integration_connectivities"
-
-# Neighbour calculation ADT
-prot_uns_neighbors: "totalvi_integration_neighbors"
-prot_obsp_neighbor_distances: "totalvi_integration_distances"
-prot_obsp_neighbor_connectivities: "totalvi_integration_connectivities"
-
-# Clustering options RNA
-rna_obs_cluster: "totalvi_integration_leiden"
-rna_leiden_resolution: [1.0]
-
-# Clustering options ADT
-prot_obs_cluster: "totalvi_integration_leiden"
-prot_leiden_resolution: [1.0]
+# Clustering options
+obs_cluster: "totalvi_integration_leiden"
+leiden_resolution: [1.0]
 
 # Umap options
 obsm_umap: "X_totalvi_umap"

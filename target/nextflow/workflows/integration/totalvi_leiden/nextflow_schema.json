@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "totalvi_leiden",
-  "description": "Run totalVI integration followed by neighbour calculations, leiden clustering and run umap on the result.",
+  "description": "Run totalVI integration, followed by neighbour calculations, leiden clustering and UMAP.",
   "type": "object",
   "$defs": {
     "Dataset input": {
@@ -32,32 +32,72 @@
           "type": "string",
           "format": "path",
           "exists": true,
-          "description": "Path to the sample.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"dataset.h5mu\"`. "
+          "description": "Input h5mu file to be integrated.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
-        "layer": {
+        "rna_modality": {
           "type": "string",
-          "description": "use specified layer for expression values instead of the .X object from the modality.",
-          "help_text": "Type: `string`, multiple: `False`. "
-        },
-        "modality": {
-          "type": "string",
-          "description": "Which modality to process.",
+          "description": "",
           "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
           "default": "rna"
         },
         "prot_modality": {
           "type": "string",
-          "description": "Which modality to process.",
+          "description": "Name of the modality in the input (query) h5mu file containing protein data",
           "help_text": "Type: `string`, multiple: `False`, default: `\"prot\"`. ",
           "default": "prot"
         },
-        "reference": {
+        "input_layer_rna": {
           "type": "string",
-          "format": "path",
-          "exists": true,
-          "description": "Input h5mu file with reference data to train the TOTALVI model.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
+          "description": "Input layer to use from the rna modality for gene counts",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "input_layer_protein": {
+          "type": "string",
+          "description": "Input layer to use from the protein modality for protein counts",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "obs_batch": {
+          "type": "string",
+          "description": "Column name discriminating between your batches.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"sample_id\"`. ",
+          "default": "sample_id"
+        },
+        "obs_size_factor": {
+          "type": "string",
+          "description": "Key in adata.obs for size factor information",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "obs_categorical_covariate": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keys in adata.obs that correspond to categorical data",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "obs_continuous_covariate": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keys in adata.obs that correspond to continuous data",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "var_gene_names": {
+          "type": "string",
+          "description": ".var column in the rna modality containing gene names",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "var_protein_names": {
+          "type": "string",
+          "description": ".var column in the protein modality containing protein names",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "var_input": {
+          "type": "string",
+          "description": ".var column containing highly variable genes",
+          "help_text": "Type: `string`, multiple: `False`. "
         }
       }
     },
@@ -73,120 +113,76 @@
           "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         },
-        "reference_model_path": {
+        "output_model": {
           "type": "string",
           "format": "path",
-          "description": "Directory with the reference model",
+          "description": "Directory where the trained reference model will be stored.",
           "help_text": "Type: `file`, multiple: `False`, default: `\"totalvi_model_reference\"`, direction: `output`. ",
           "default": "totalvi_model_reference"
-        },
-        "query_model_path": {
-          "type": "string",
-          "format": "path",
-          "description": "Directory, where the query model will be saved",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"totalvi_model_query\"`, direction: `output`. ",
-          "default": "totalvi_model_query"
         }
       }
     },
-    "general totalvi options": {
-      "title": "General TotalVI Options",
+    "totalvi training options": {
+      "title": "TotalVI Training Options",
       "type": "object",
       "description": "No description",
       "properties": {
-        "obs_batch": {
-          "type": "string",
-          "description": ".Obs column name discriminating between your batches.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"sample_id\"`. ",
-          "default": "sample_id"
-        },
         "max_epochs": {
           "type": "integer",
-          "description": "Number of passes through the dataset",
-          "help_text": "Type: `integer`, multiple: `False`, default: `400`. ",
-          "default": 400
+          "description": "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest.",
+          "help_text": "Type: `integer`, multiple: `False`. "
         },
-        "max_query_epochs": {
-          "type": "integer",
-          "description": "Number of passes through the dataset, when fine-tuning model for query",
-          "help_text": "Type: `integer`, multiple: `False`, default: `200`. ",
-          "default": 200
-        },
-        "weight_decay": {
-          "type": "number",
-          "description": "Weight decay, when fine-tuning model for query",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.0`. ",
-          "default": 0.0
-        },
-        "force_retrain": {
+        "early_stopping": {
           "type": "boolean",
-          "description": "If true, retrain the model and save it to reference_model_path",
-          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
-          "default": false
-        },
-        "var_input": {
-          "type": "string",
-          "description": "Boolean .var column to subset data with (e.g",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Whether to perform early stopping with respect to the validation set.",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
         }
       }
     },
-    "totalvi integration options rna": {
-      "title": "TotalVI integration options RNA",
+    "totalvi integration options": {
+      "title": "TotalVI Integration Options",
       "type": "object",
       "description": "No description",
       "properties": {
-        "rna_reference_modality": {
+        "obsm_integrated": {
           "type": "string",
-          "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "description": "In which .obsm slot to store the resulting integrated embedding.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_integrated_totalvi\"`. ",
+          "default": "X_integrated_totalvi"
         },
-        "rna_obsm_output": {
+        "obsm_normalized_rna_output": {
           "type": "string",
-          "description": "In which .obsm slot to store the normalized RNA from TOTALVI.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"X_totalvi\"`. ",
-          "default": "X_totalvi"
-        }
-      }
-    },
-    "totalvi integration options adt": {
-      "title": "TotalVI integration options ADT",
-      "type": "object",
-      "description": "No description",
-      "properties": {
-        "prot_reference_modality": {
-          "type": "string",
-          "description": "Name of the modality containing proteins in the reference",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"prot\"`. ",
-          "default": "prot"
+          "description": "In which .obsm slot to store the normalized RNA data from TOTALVI.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_totalvi_normalized_rna\"`. ",
+          "default": "X_totalvi_normalized_rna"
         },
-        "prot_obsm_output": {
+        "obsm_normalized_protein_output": {
           "type": "string",
           "description": "In which .obsm slot to store the normalized protein data from TOTALVI.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"X_totalvi\"`. ",
-          "default": "X_totalvi"
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_totalvi_normalized_protein\"`. ",
+          "default": "X_totalvi_normalized_protein"
         }
       }
     },
-    "neighbour calculation rna": {
-      "title": "Neighbour calculation RNA",
+    "neighbour calculation": {
+      "title": "Neighbour calculation",
       "type": "object",
       "description": "No description",
       "properties": {
-        "rna_uns_neighbors": {
+        "uns_neighbors": {
           "type": "string",
           "description": "In which .uns slot to store various neighbor output objects.",
           "help_text": "Type: `string`, multiple: `False`, default: `\"totalvi_integration_neighbors\"`. ",
           "default": "totalvi_integration_neighbors"
         },
-        "rna_obsp_neighbor_distances": {
+        "obsp_neighbor_distances": {
           "type": "string",
           "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
           "help_text": "Type: `string`, multiple: `False`, default: `\"totalvi_integration_distances\"`. ",
           "default": "totalvi_integration_distances"
         },
-        "rna_obsp_neighbor_connectivities": {
+        "obsp_neighbor_connectivities": {
           "type": "string",
           "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
           "help_text": "Type: `string`, multiple: `False`, default: `\"totalvi_integration_connectivities\"`. ",
@@ -194,67 +190,18 @@
         }
       }
     },
-    "neighbour calculation adt": {
-      "title": "Neighbour calculation ADT",
+    "clustering options": {
+      "title": "Clustering options",
       "type": "object",
       "description": "No description",
       "properties": {
-        "prot_uns_neighbors": {
-          "type": "string",
-          "description": "In which .uns slot to store various neighbor output objects.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"totalvi_integration_neighbors\"`. ",
-          "default": "totalvi_integration_neighbors"
-        },
-        "prot_obsp_neighbor_distances": {
-          "type": "string",
-          "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"totalvi_integration_distances\"`. ",
-          "default": "totalvi_integration_distances"
-        },
-        "prot_obsp_neighbor_connectivities": {
-          "type": "string",
-          "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"totalvi_integration_connectivities\"`. ",
-          "default": "totalvi_integration_connectivities"
-        }
-      }
-    },
-    "clustering options rna": {
-      "title": "Clustering options RNA",
-      "type": "object",
-      "description": "No description",
-      "properties": {
-        "rna_obs_cluster": {
+        "obs_cluster": {
           "type": "string",
           "description": "Prefix for the .obs keys under which to add the cluster labels",
           "help_text": "Type: `string`, multiple: `False`, default: `\"totalvi_integration_leiden\"`. ",
           "default": "totalvi_integration_leiden"
         },
-        "rna_leiden_resolution": {
-          "type": "array",
-          "items": {
-            "type": "number"
-          },
-          "description": "Control the coarseness of the clustering",
-          "help_text": "Type: `double`, multiple: `True`, default: `[1.0]`. ",
-          "default": [
-            1.0
-          ]
-        }
-      }
-    },
-    "clustering options adt": {
-      "title": "Clustering options ADT",
-      "type": "object",
-      "description": "No description",
-      "properties": {
-        "prot_obs_cluster": {
-          "type": "string",
-          "description": "Prefix for the .obs keys under which to add the cluster labels",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"totalvi_integration_leiden\"`. ",
-          "default": "totalvi_integration_leiden"
-        },
-        "prot_leiden_resolution": {
+        "leiden_resolution": {
           "type": "array",
           "items": {
             "type": "number"
@@ -301,25 +248,16 @@
       "$ref": "#/$defs/outputs"
     },
     {
-      "$ref": "#/$defs/general totalvi options"
+      "$ref": "#/$defs/totalvi training options"
     },
     {
-      "$ref": "#/$defs/totalvi integration options rna"
+      "$ref": "#/$defs/totalvi integration options"
     },
     {
-      "$ref": "#/$defs/totalvi integration options adt"
+      "$ref": "#/$defs/neighbour calculation"
     },
     {
-      "$ref": "#/$defs/neighbour calculation rna"
-    },
-    {
-      "$ref": "#/$defs/neighbour calculation adt"
-    },
-    {
-      "$ref": "#/$defs/clustering options rna"
-    },
-    {
-      "$ref": "#/$defs/clustering options adt"
+      "$ref": "#/$defs/clustering options"
     },
     {
       "$ref": "#/$defs/umap options"

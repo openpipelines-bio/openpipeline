@@ -1,6 +1,6 @@
 name: "velocyto"
 namespace: "velocity"
-version: "3.0.0"
+version: "v4.0.0"
 authors:
 - name: "Robrecht Cannoodt"
   roles:
@@ -103,6 +103,8 @@ resources:
   path: "script.sh"
   is_executable: true
 - type: "file"
+  path: "setup.py.patch"
+- type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
 description: "Runs the velocity analysis on a BAM file, outputting a loom file."
@@ -198,27 +200,30 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "python:3.10-slim-bookworm"
-  target_tag: "3.0.0"
+  image: "python:3.13"
+  target_tag: "v4.0.0"
   namespace_separator: "/"
   setup:
+  - type: "docker"
+    copy:
+    - "setup.py.patch /opt/setup.py.patch"
   - type: "apt"
     packages:
-    - "procps"
     - "build-essential"
     - "file"
+    - "git"
     interactive: false
   - type: "python"
     user: false
     pip:
-    - "numpy<2"
+    - "numpy"
     - "Cython"
     upgrade: true
-  - type: "python"
-    user: false
-    pip:
-    - "velocyto"
-    upgrade: true
+  - type: "docker"
+    run:
+    - "git clone --depth 1 https://github.com/velocyto-team/velocyto.py /tmp/velocyto.py\
+      \ && cd /tmp/velocyto.py && git checkout 56efe891ec3d383d83ad45360f58350c12824c4d\
+      \ && git apply /opt/setup.py.patch && pip install .\n"
   - type: "apt"
     packages:
     - "samtools"
@@ -238,9 +243,9 @@ build_info:
   output: "target/executable/velocity/velocyto"
   executable: "target/executable/velocity/velocyto/velocyto"
   viash_version: "0.9.4"
-  git_commit: "706b5ce24d313dcf947b7d9fe929630f1ad204e7"
+  git_commit: "f90d0a51c5ff8b48cdb2fad45fac652817e0c855"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.1.0-2-g706b5ce24d3"
+  git_tag: "2.1.0-3-gf90d0a51c5f"
 package_config:
   name: "openpipeline"
   summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
@@ -270,8 +275,8 @@ package_config:
   - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
     )'"
-  - ".version := \"3.0.0\""
-  - ".engines[.type == 'docker'].target_tag := '3.0.0'"
+  - ".version := \"v4.0.0\""
+  - ".engines[.type == 'docker'].target_tag := 'v4.0.0'"
   keywords:
   - "single-cell"
   - "multimodal"

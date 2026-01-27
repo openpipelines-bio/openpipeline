@@ -1,9 +1,7 @@
-import numpy as np
 import mudata as mu
 import pandas as pd
 import sys
 import scanpy as sc
-import scipy.sparse as sp
 
 ## VIASH START
 par = {
@@ -13,7 +11,6 @@ par = {
     "obs_label": "cell_type",
     "obs_groups": ["treatment", "donor_id", "disease"],
     "obs_cell_count": "n_cells",
-    "min_obs_per_sample": 5,
     "random_state": 0,
     "output": "test.h5mu",
     "output_compression": "gzip",
@@ -23,17 +20,9 @@ meta = {"resources_dir": "src/utils"}
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from is_lognormalized import is_lognormalized
 
 logger = setup_logger()
-
-
-def is_normalized(layer):
-    if sp.issparse(layer):
-        row_sums = np.array(layer.sum(axis=1)).flatten()
-    else:
-        row_sums = layer.sum(axis=1)
-
-    return np.allclose(row_sums, 1)
 
 
 def count_obs(adata, pb_adata, obs_cols):
@@ -59,7 +48,7 @@ def main():
     # Make sure .X contains raw counts
     if par["input_layer"]:
         adata.X = adata.layers[par["input_layer"]]
-    if is_normalized(adata.X):
+    if is_lognormalized(adata.X):
         raise ValueError("Input layer must contain raw counts.")
 
     # Sanitize pseudobulk aggregation fields
@@ -92,7 +81,6 @@ def main():
     # Filter pseudobulk samples based on minimum observation count
     logger.info("Filtering pseudobulk samples based on minimum observation count...")
     adata_pb.obs[par["obs_cell_count"]] = count_obs(adata, adata_pb, pseudobulk_cols)
-    adata_pb = adata_pb[adata_pb.obs[par["obs_cell_count"]] > par["min_obs_per_sample"]]
 
     logger.info(
         f"Final dataset: {adata_pb.n_obs} pseudobulk samples, {adata_pb.n_vars} genes"

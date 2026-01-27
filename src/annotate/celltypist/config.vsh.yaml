@@ -26,7 +26,7 @@ argument_groups:
         required: false
       - name: "--input_layer"
         type: string
-        description: The layer in the input data containing log normalized counts to be used for cell type annotation if .X is not to be used. 
+        description: The layer in the input data containing counts that are lognormalized to 10000, .X is not to be used. 
       - name: "--input_var_gene_names"
         type: string
         required: false
@@ -38,7 +38,11 @@ argument_groups:
         min: 1
         description: | 
           The minimum number of genes present in both the reference and query datasets.
-  
+      - name: "--sanitize_ensembl_ids"
+        type: boolean
+        description: Whether to sanitize ensembl ids by removing version numbers.
+        default: true
+
   - name: Reference
     description: Arguments related to the reference dataset.
     arguments:
@@ -50,22 +54,22 @@ argument_groups:
         required: false
       - name: "--reference_layer"
         type: string
-        description: The layer in the reference data to be used for cell type annotation if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.
+        description: The layer in the reference data containing counts that are lognormalized to 10000, if .X is not to be used.
         required: false
       - name: "--reference_obs_target"
         type: string
         description: The name of the adata obs column in the reference data containing cell type annotations.
         default: "cell_ontology_class"
-      - name: "--reference_var_gene_names"
-        type: string
-        required: false
-        description: |
-          The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
       - name: "--reference_var_input"
         type: string
         required: false
         description: |
           .var column containing highly variable genes. By default, do not subset genes.
+      - name: "--reference_var_gene_names"
+        type: string
+        required: false
+        description: |
+          The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
 
   - name: Model arguments
     description: Model arguments.
@@ -131,6 +135,7 @@ resources:
   - path: /src/utils/cross_check_genes.py
   - path: /src/utils/subset_vars.py
   - path: /src/utils/set_var_index.py
+  - path: /src/utils/is_lognormalized.py
 
 test_resources:
   - type: python_script
@@ -140,17 +145,13 @@ test_resources:
 
 engines:
   - type: docker
-    image: python:3.10-slim
+    image: nvcr.io/nvidia/pytorch:25.11-py3
     setup:
-      - type: apt
-        packages:
-          - libhdf5-dev
-          - procps
       - type: python
         __merge__: [ /src/base/requirements/scanpy.yaml, .]
       - type: python
         packages:
-          - celltypist==1.6.3
+          - celltypist==1.7.1
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
@@ -158,4 +159,4 @@ runners:
   - type: executable
   - type: nextflow
     directives:
-      label: [highcpu, highmem, highdisk]
+      label: [highcpu, highmem, highdisk, gpu]

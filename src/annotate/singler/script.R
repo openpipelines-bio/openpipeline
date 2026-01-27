@@ -20,7 +20,7 @@ par <- list(
   output = "singler_output.h5mu",
   output_compression = "gzip",
   output_obs_predictions = "singler_labels",
-  output_obs_probability = "singlr_proba",
+  output_obs_probability = "singler_proba",
   output_obsm_scores = "single_r_scores",
   output_obs_delta_next = "singler_delta_next",
   output_obs_pruned_predictions = "singler_pruned_labels",
@@ -61,21 +61,31 @@ get_layer <- function(adata, layer, var_gene_names) {
   }
 
   # Set matrix dimnames
-  input_gene_names <- sanitize_gene_names(adata, var_gene_names)
+  input_gene_names <- sanitize_ensembl_ids(adata, var_gene_names)
   dimnames(data) <- list(adata$obs_names, input_gene_names)
 
   # return output
   data
 }
 
-sanitize_gene_names <- function(adata, gene_symbol = NULL) {
+sanitize_ensembl_ids <- function(adata, gene_symbol = NULL) {
   if (is.null(gene_symbol)) {
     gene_names <- adata$var_names
   } else {
     gene_names <- adata$var[[gene_symbol]]
   }
-  # Remove version numbers (dot followed by digits at end of string)
-  sanitized <- gsub("\\.[0-9]+$", "", gene_names)
+
+  # Pattern matches Ensembl IDs: starts with ENS, followed by any characters,
+  # then an eleven digit number, optionally followed by .version_number
+  ensembl_pattern <- "^(ENS.*\\d{11})(?:\\.\\d+)?$"
+
+  # Remove version numbers for ensembl ids only
+  sanitized <- ifelse(
+    grepl(ensembl_pattern, gene_names, perl = TRUE),
+    gsub(ensembl_pattern, "\\1", gene_names, perl = TRUE),
+    as.character(gene_names)
+  )
+
   sanitized
 }
 

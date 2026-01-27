@@ -1,3 +1,87 @@
+# openpipelines 4.0.0
+
+## BREAKING CHANGES
+
+* `mapping/cellranger_multi`: bump Cell Ranger to version 10 (PR #1103 and #1119).
+
+* Removed `cellbender_remove_background_v0_2` (PR #1111).
+
+* `convert/from_cellranger_multi_to_h5mu`: VDJ related output is now stored in AIRR Rearrangement standard.
+   Because one cell can have multiple receptor chains, this relationship is represented as an `awkward` array
+   stored in `.obsm["airr"]` slot of the VDJ modality (PR #1109 and PR #1130). 
+
+* `workflows/annotation/totalvi_scarches_leiden` and `annotate/totalvi_scarches`: Renamed previously implemented versions of `workflows/annotation/totalvi_leiden` and `annotate/totalvi` to reflect that scArches is used for reference mapping with TotalVI (PR #1092).
+
+## NEW FUNCTIONALITY
+
+* `convert/from_cellranger_multi_to_h5mu`: add support for Cell Ranger 10 (PR #1109). 
+
+* `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).
+
+* `filter/delimit_counts`: Turns an .obs column of a MuData file containing count data into a boolean column based on thresholds (PR #1069)
+
+* `convert/from_seurat_to_h5mu`: Converts a Seurat object to a MuData object (PR #1078, #1079, #1082).
+
+* `annotate/celltypist`: Enable CUDA acceleration for CellTypist annotation (PR #1091).
+
+* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083, #1114).
+
+* `workflows/integration/harmony_leiden`: add support for adding the output slots to a tileDB-SOMA database (PR #1095).
+
+* `dataflow/concatenate_h5mu`: optionally perform block-diagonal concatenation of specified `.obsp` keys using `--obsp_keys` across input MuData objects (PR #1115).
+
+* `workflows/annotation/totalvi_leiden` and `annotate/totalvi`: Added new workflows and components for cell type annotation using TotalVI integration followed by Leiden clustering, without scArches reference mapping (PR #1092).
+
+## EXPERIMENTAL
+
+* `differential_expression/deseq2`: Performs differential expression analysis using DESeq2 on bulk or pseudobulk datasets (PR #1044).
+
+* `workflows/differential_expression/pseudobulk_deseq2`: Workflow for generating pseudobulk samples from single-cell data followed by DESeq2 differential expression analysis (PR #1044)
+
+* `differential_expression/create_pseudobulks`: Removed functionality to filter pseudobulk samples based on number of aggregated samples threshold, as this functionality is now covered in `filter/delimit_count` (PR #1044).
+
+* Deprecated all scGPT functionality (PR #1075).
+
+* Added `from_tiledb_to_h5mu` component (PR #1068).
+
+* `workflows/integration/scvi_leiden`: add support for adding the output slots to a tileDB-SOMA database (PR 1094).
+
+## MAJOR CHANGES
+
+* `mapping/samtools_sort` has been deprecated and will be removed in openpipeline 4.0. Use [vsh://biobox/samtools/samtools_sort](https://www.viash-hub.com/packages/biobox/latest/components/samtools/samtools_sort) instead.
+
+## MINOR CHANGES
+
+* Bump `scanpy` to `1.11.4` (PR #1131)
+
+* `integrate/totalvi_scvarches`: bump version of `scvi-tools` in component from `1.3.2` to `1.4.1` (PR #1129)
+
+* `totalvi`, `celltypist`, `scanvi` and `scarches`: change container image to `pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime` (PR #1116 and PR #1129)
+
+* `transform/normalize_total`, `transform/clr`, `transform/log1p`: Add disk resource labels (PR #1073).
+
+* `integrate/totalvi`: Add `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` arguments to include additional covariates during model training (PR #1076).
+  
+* `workflows/integration`: Surface `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` in the `totalvi_leiden` and `scvi_leiden` workflows (PR #1076).
+  
+* `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
+
+* Various components and workflows in `integrate`, `annotate`, `workflows/integration` and `workflows/annotation`: Optionally disable ensembl id sanitation (by stripping the version number) using the `--sanitize_ensembl_ids` argument (PR #1084).
+
+* `genetic_demux/scsplit`: bump python to `3.13` and unpin pandas and numpy (were pinned to `<2.0` and `<2` respectively) (PR #1096).
+
+* Bump `anndata` to `0.12.7` and mudata to `0.3.2` (PR #1111 and PR #1125).
+
+## BUG FIXES
+
+* `workflows/cellranger_multi`: fix `ocm_barcode_ids`, `min_crispr_umi`, `emptydrops_minimum_umis` and `hashtag_ids` arguments not being applied (PR #).
+
+* `differential_expression/create_pseudobulks`: Fixed the check to verify that the raw counts layer was passed (PR #1072).
+
+* `filter/filter_with_counts`: this component would sometimes crash (segfault) when processing malformatted sparse matrices. A proper error message is now provided in this case (PR #1086).
+
+* `cluster/leiden`: fix an issue where using an input modality with missing`.X` caused `KeyError` (`Unable to synchronously open object`) (PR #1093).
+
 # openpipelines 3.0.0
 
 ## BREAKING CHANGES
@@ -34,6 +118,8 @@ Warning: These experimental features are subject to change in future releases.
   to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis (PR #1042).
 
 * Added `annotate/singler`: Cell type annotation using SingleR (PR #1051).
+
+* Added `tiledb_soma_healthcheck` component (PR #1055). 
 
 * Added `tiledb/move_mudata_obsm_to_tiledb` (PR #1065).
 

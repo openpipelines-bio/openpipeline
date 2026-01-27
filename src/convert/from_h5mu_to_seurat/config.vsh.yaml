@@ -46,8 +46,14 @@ engines:
           - libgeos-dev
       - type: r
         cran: [ anndata, hdf5r, testthat, SeuratObject, Seurat ]
-      - type: r
-        github: pmbio/MuDataSeurat@empty-tables-and-nullable
+      # Until viash r requirements supports passing secrets
+      # --mount only applies to ONE single docker RUN instruction  
+      # - type: r
+      #   github: pmbio/MuDataSeurat@empty-tables-and-nullable
+      - type: docker
+        run:
+          - --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
+          - Rscript -e 'options(warn = 2); remotes::install_github(c("pmbio/MuDataSeurat@empty-tables-and-nullable"), repos = "https://cran.rstudio.com")'
 runners:
   - type: executable
   - type: nextflow

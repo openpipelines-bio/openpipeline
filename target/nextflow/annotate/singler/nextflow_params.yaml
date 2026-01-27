@@ -20,6 +20,7 @@ quantile: 0.8
 fine_tune: true
 fine_tuning_threshold: 0.05
 prune: true
+sanitize_ensembl_ids: true
 
 # Outputs
 # output: "$id.$key.output.h5mu"

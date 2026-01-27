@@ -1,27 +1,42 @@
 # Inputs
-input: # please fill in - example: "path/to/file"
-reference: # please fill in - example: "path/to/file"
-force_retrain: false
-query_modality: "rna"
-# query_proteins_modality: "foo"
-reference_modality: "rna"
-reference_proteins_modality: "prot"
-# input_layer: "foo"
+input: # please fill in - example: "input.h5mu"
+rna_modality: # please fill in - example: "rna"
+prot_modality: # please fill in - example: "prot"
+# input_layer_rna: "foo"
+# input_layer_protein: "foo"
 obs_batch: "sample_id"
+# obs_size_factor: "foo"
+# obs_categorical_covariate: ["foo"]
+# obs_continuous_covariate: ["foo"]
+# var_gene_names: "foo"
+# var_protein_names: "foo"
 # var_input: "foo"
+
+# Data validity checks
+n_obs_min_count: 0
+n_var_gene_min_count: 0
+n_var_protein_min_count: 0
+
+# Model arguments
+n_dimensions_latent_space: 20
+gene_dispersion: "gene"
+protein_dispersion: "protein"
+gene_likelihood: "nb"
+latent_distribution: "normal"
+# empirical_protein_background_prior: true
+override_missing_proteins: false
+
+# Training arguments
+# max_epochs: 123
+early_stopping: true
 
 # Outputs
 # output: "$id.$key.output"
+# output_model: "totalvi_model_reference"
 obsm_output: "X_integrated_totalvi"
 obsm_normalized_rna_output: "X_totalvi_normalized_rna"
 obsm_normalized_protein_output: "X_totalvi_normalized_protein"
-# reference_model_path: "totalvi_model_reference"
-# query_model_path: "totalvi_model_query"
-
-# Learning parameters
-max_epochs: 400
-max_query_epochs: 200
-weight_decay: 0.0
+# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

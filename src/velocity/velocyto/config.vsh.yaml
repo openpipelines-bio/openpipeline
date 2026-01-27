@@ -45,6 +45,8 @@ arguments:
 resources:
   - type: bash_script
     path: script.sh
+  - path: setup.py.patch
+
 test_resources:
   - type: python_script
     path: test.py
@@ -54,20 +56,22 @@ test_resources:
 
 engines:
   - type: docker
-    image: python:3.10-slim-bookworm
+    image: python:3.13
     setup:
+      - type: docker
+        copy: ["setup.py.patch /opt/setup.py.patch"]
       - type: apt
         packages:
-          - procps
           - build-essential
           - file
+          - git
       - type: python
         pip:
-          - numpy<2
+          - numpy
           - Cython
-      - type: python
-        pip:
-          - velocyto
+      - type: docker
+        run: |
+          git clone --depth 1 https://github.com/velocyto-team/velocyto.py /tmp/velocyto.py && cd /tmp/velocyto.py && git checkout 56efe891ec3d383d83ad45360f58350c12824c4d && git apply /opt/setup.py.patch && pip install .
       - type: apt
         packages:
           - samtools

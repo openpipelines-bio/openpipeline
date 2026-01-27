@@ -1,6 +1,6 @@
 name: "rna_multisample"
 namespace: "workflows/rna"
-version: "3.0.0"
+version: "v4.0.0"
 authors:
 - name: "Dries De Maeyer"
   roles:
@@ -328,12 +328,6 @@ scope:
   image: "public"
   target: "public"
 dependencies:
-- name: "transform/normalize_total"
-  repository:
-    type: "local"
-- name: "transform/log1p"
-  repository:
-    type: "local"
 - name: "feature_annotation/highly_variable_features_scanpy"
   repository:
     type: "local"
@@ -341,13 +335,13 @@ dependencies:
   alias: "rna_qc"
   repository:
     type: "local"
-- name: "transform/delete_layer"
-  repository:
-    type: "local"
 - name: "metadata/add_id"
   repository:
     type: "local"
 - name: "transform/scale"
+  repository:
+    type: "local"
+- name: "workflows/rna/log_normalize"
   repository:
     type: "local"
 license: "MIT"
@@ -425,17 +419,15 @@ build_info:
   output: "target/nextflow/workflows/rna/rna_multisample"
   executable: "target/nextflow/workflows/rna/rna_multisample/main.nf"
   viash_version: "0.9.4"
-  git_commit: "706b5ce24d313dcf947b7d9fe929630f1ad204e7"
+  git_commit: "f90d0a51c5ff8b48cdb2fad45fac652817e0c855"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.1.0-2-g706b5ce24d3"
+  git_tag: "2.1.0-3-gf90d0a51c5f"
   dependencies:
-  - "target/nextflow/transform/normalize_total"
-  - "target/nextflow/transform/log1p"
   - "target/nextflow/feature_annotation/highly_variable_features_scanpy"
   - "target/nextflow/workflows/qc/qc"
-  - "target/nextflow/transform/delete_layer"
   - "target/nextflow/metadata/add_id"
   - "target/nextflow/transform/scale"
+  - "target/_private/nextflow/workflows/rna/log_normalize"
 package_config:
   name: "openpipeline"
   summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
@@ -465,7 +457,7 @@ package_config:
   - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
     )'"
-  - ".version := \"3.0.0\""
+  - ".version := \"v4.0.0\""
   keywords:
   - "single-cell"
   - "multimodal"

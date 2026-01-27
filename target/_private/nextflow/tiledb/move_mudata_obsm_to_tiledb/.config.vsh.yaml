@@ -1,6 +1,6 @@
 name: "move_mudata_obsm_to_tiledb"
 namespace: "tiledb"
-version: "3.0.0"
+version: "v4.0.0"
 authors:
 - name: "Dries Schaumont"
   roles:
@@ -47,6 +47,17 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+  - type: "boolean"
+    name: "--s3_no_sign_request"
+    description: "Do not sign S3 requests. Credentials will not be loaded if this\
+      \ argument is provided.\n"
+    info: null
+    default:
+    - false
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
   - type: "string"
     name: "--output_modality"
     description: "TileDB-SOMA measurement to add the output to.\n"
@@ -64,7 +75,7 @@ argument_groups:
     info: null
     must_exist: true
     create_parent: true
-    required: false
+    required: true
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -72,7 +83,7 @@ argument_groups:
     name: "--modality"
     description: "Modality where to take the .obsm from.\n"
     info: null
-    required: false
+    required: true
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -84,6 +95,18 @@ argument_groups:
     required: false
     direction: "input"
     multiple: true
+    multiple_sep: ";"
+- name: "TileDB-SOMA output"
+  arguments:
+  - type: "file"
+    name: "--output_tiledb"
+    description: "Output to a directory instead of adding to the existing database.\n"
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
     multiple_sep: ";"
 resources:
 - type: "python_script"
@@ -124,6 +147,8 @@ runners:
   - "AWS_ACCESS_KEY_ID"
   - "--env"
   - "AWS_SECRET_ACCESS_KEY"
+  - "--env"
+  - "AWS_DEFAULT_REGION"
 - type: "nextflow"
   id: "nextflow"
   directives:
@@ -194,18 +219,22 @@ engines:
 - type: "docker"
   id: "docker"
   image: "python:3.12"
-  target_tag: "3.0.0"
+  target_tag: "v4.0.0"
   namespace_separator: "/"
   setup:
   - type: "python"
     user: false
     packages:
-    - "anndata~=0.11.1"
-    - "mudata~=0.3.1"
+    - "anndata~=0.12.7"
+    - "awkward"
+    - "mudata~=0.3.2"
     - "tiledbsoma"
+    - "boto3"
+    - "awscli"
     script:
-    - "exec(\"try:\\n  import awkward\\nexcept ModuleNotFoundError:\\n  exit(0)\\\
-      nelse:  exit(1)\")"
+    - "exec(\"try:\\n  import zarr; from importlib.metadata import version\\nexcept\
+      \ ModuleNotFoundError:\\n  exit(0)\\nelse:  assert int(version(\\\"zarr\\\"\
+      ).partition(\\\".\\\")[0]) > 2\")"
     upgrade: true
   test_setup:
   - type: "apt"
@@ -223,7 +252,6 @@ engines:
     user: false
     packages:
     - "moto[server]"
-    - "boto3"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -234,9 +262,9 @@ build_info:
   output: "target/_private/nextflow/tiledb/move_mudata_obsm_to_tiledb"
   executable: "target/_private/nextflow/tiledb/move_mudata_obsm_to_tiledb/main.nf"
   viash_version: "0.9.4"
-  git_commit: "706b5ce24d313dcf947b7d9fe929630f1ad204e7"
+  git_commit: "f90d0a51c5ff8b48cdb2fad45fac652817e0c855"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.1.0-2-g706b5ce24d3"
+  git_tag: "2.1.0-3-gf90d0a51c5f"
 package_config:
   name: "openpipeline"
   summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
@@ -266,8 +294,8 @@ package_config:
   - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
     )'"
-  - ".version := \"3.0.0\""
-  - ".engines[.type == 'docker'].target_tag := '3.0.0'"
+  - ".version := \"v4.0.0\""
+  - ".engines[.type == 'docker'].target_tag := 'v4.0.0'"
   keywords:
   - "single-cell"
   - "multimodal"

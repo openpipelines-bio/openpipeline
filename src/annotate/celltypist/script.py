@@ -3,7 +3,7 @@ import celltypist
 import mudata as mu
 import anndata as ad
 import pandas as pd
-import numpy as np
+from torch.cuda import is_available as cuda_is_available
 
 ## VIASH START
 par = {
@@ -11,19 +11,18 @@ par = {
     "output": "output.h5mu",
     "modality": "rna",
     # "reference": None,
+    "reference_var_input": None,
     "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "model": None,
     # "model": "resources_test/annotation_test_data/celltypist_model_Immune_All_Low.pkl",
-    "input_layer": "log_normalized",
+    "input_layer": None,
     "reference_layer": "log_normalized",
     "input_reference_gene_overlap": 100,
     "reference_obs_target": "cell_ontology_class",
-    "reference_var_input": None,
-    "check_expression": False,
     "feature_selection": True,
     "majority_voting": True,
     "output_compression": "gzip",
-    "input_var_gene_names": None,
+    "input_var_gene_names": "dup_idx",
     "reference_var_gene_names": "ensemblid",
     "C": 1.0,
     "max_iter": 1000,
@@ -31,6 +30,7 @@ par = {
     "min_prop": 0,
     "output_obs_predictions": "celltypist_pred",
     "output_obs_probability": "celltypist_probability",
+    "sanitize_ensembl_ids": False,
 }
 meta = {"resources_dir": "src/utils"}
 ## VIASH END
@@ -40,14 +40,11 @@ from setup_logger import setup_logger
 from cross_check_genes import cross_check_genes
 from set_var_index import set_var_index
 from subset_vars import subset_vars
+from is_lognormalized import is_lognormalized
 
 logger = setup_logger()
-
-
-def check_celltypist_format(indata):
-    if np.abs(np.expm1(indata[0]).sum() - 10000) > 1:
-        return False
-    return True
+use_gpu = cuda_is_available()
+logger.info("GPU enabled? %s", use_gpu)
 
 
 def main(par):
@@ -64,13 +61,22 @@ def main(par):
 
     # Provide correct format of query data for celltypist annotation
     ## Sanitize gene names and set as index
-    input_modality = set_var_index(input_modality, par["input_var_gene_names"])
+    input_modality = set_var_index(
+        input_modality, par["input_var_gene_names"], par["sanitize_ensembl_ids"]
+    )
+
     ## Fetch lognormalized counts
     lognorm_counts = (
         input_modality.layers[par["input_layer"]].copy()
         if par["input_layer"]
         else input_modality.X.copy()
     )
+
+    if not is_lognormalized(lognorm_counts, target_sum=10000):
+        raise ValueError(
+            "Invalid expression matrix, expect input layer to contain log1p normalized expression to 10000 counts per cell."
+        )
+
     ## Create AnnData object
     input_modality = ad.AnnData(
         X=lognorm_counts, var=pd.DataFrame(index=input_modality.var.index)
@@ -88,6 +94,12 @@ def main(par):
     elif par["reference"]:
         reference_modality = mu.read_h5mu(par["reference"]).mod[par["modality"]]
 
+        # Check expression before subsetting to HVG
+        if not is_lognormalized(lognorm_counts, target_sum=10000):
+            raise ValueError(
+                "Invalid expression matrix, expect reference layer to contain log1p normalized expression to 10000 counts per cell."
+            )
+
         # subset to HVG if required
         if par["reference_var_input"]:
             reference_modality = subset_vars(
@@ -97,7 +109,9 @@ def main(par):
         # Set var names to the desired gene name format (gene symbol, ensembl id, etc.)
         # CellTypist requires query gene names to be in index
         reference_modality = set_var_index(
-            reference_modality, par["reference_var_gene_names"]
+            reference_modality,
+            par["reference_var_gene_names"],
+            par["sanitize_ensembl_ids"],
         )
 
         # Ensure enough overlap between genes in query and reference
@@ -119,17 +133,22 @@ def main(par):
         model = celltypist.train(
             reference_matrix,
             labels=labels,
-            genes=reference_modality.var.index,
+            genes=reference_modality.var.index.astype(
+                str
+            ),  # ensure string type, fails if categorical when making var indices unique
             C=par["C"],
             max_iter=par["max_iter"],
             use_SGD=par["use_SGD"],
             feature_selection=par["feature_selection"],
-            check_expression=True,
+            check_expression=False,  # if True, throws an error if lognormalized data are subset for HVG,
+            use_GPU=use_gpu,
         )
 
     logger.info("Predicting CellTypist annotations")
+    # Make sure .var index is string dtype, fails if categorical when making var indices unique
+    input_modality.var.index = input_modality.var.index.astype(str)
     predictions = celltypist.annotate(
-        input_modality, model, majority_voting=par["majority_voting"]
+        input_modality, model, majority_voting=par["majority_voting"], use_GPU=use_gpu
     )
 
     input_adata.obs[par["output_obs_predictions"]] = predictions.predicted_labels[

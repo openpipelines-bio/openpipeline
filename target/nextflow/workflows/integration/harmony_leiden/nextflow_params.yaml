@@ -1,11 +1,17 @@
 # Inputs
-id: # please fill in - example: "foo"
-input: # please fill in - example: "dataset.h5mu"
+# input: "dataset.h5mu"
+# tiledb_input_uri: "s3://bucket/path"
+# tiledb_s3_region: "us-west-2"
+# tiledb_endpoint: "foo"
+tiledb_s3_no_sign_request: false
+
+# Input slots
 layer: "log_normalized"
 modality: "rna"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
+# output_tiledb: "$id.$key.output_tiledb"
 
 # Neighbour calculation
 uns_neighbors: "harmonypy_integration_neighbors"

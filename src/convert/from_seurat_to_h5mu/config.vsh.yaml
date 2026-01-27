@@ -1,0 +1,151 @@
+name: "from_seurat_to_h5mu"
+namespace: "convert"
+scope: "public"
+description: |
+  Converts a Seurat file into an H5MU file.
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+- name: Inputs
+  arguments:
+  - name: "--input"
+    alternatives: ["-i"]
+    type: file
+    description: Input Seurat file
+    direction: input
+    required: true
+    example: input.rds  
+  - name: "--assay"
+    type: string
+    default: "RNA"
+    description: Name of the assay to be mapped.
+
+- name: Conversion parameters
+  arguments:
+  - name: "--layers_mapping"
+    type: string
+    default: 'True'
+    example: '{"layer": "seurat_layer"}'
+    description: |
+      Mapping of Seurat's Layers to AnnData layers. 
+      If True, all layers will be mapped by name. 
+      If False, no layers will be mapped.
+      For custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.
+  - name: "--obs_mapping"
+    type: string
+    default: 'True'
+    example: '{"obs_field": "seurat_observation"}'
+    description: |
+      Mapping of Seurat's observation columns to AnnData obs columns. 
+      If True, all observation columns will be mapped by name. If False, no columns will be mapped.
+      For custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.
+  - name: "--var_mapping"
+    type: string
+    default: 'True'
+    example: '{"var_field": "seurat_feature"}'
+    description: |
+      Mapping of Seurat's feature rows to AnnData var columns.
+      If True, all features will be mapped by name. If False, no features will be mapped.
+      For custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.
+  - name: "--uns_mapping"
+    type: string
+    default: 'True'
+    example: '{"uns_field": "seurat_Misc"}'
+    description: |
+      Mapping of Seurat's Misc to AnnData uns. 
+      If True, all fields will be mapped by name. If False, no fields will be mapped.
+      For custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.
+  - name: "--obsm_mapping"
+    type: string
+    default: 'True'
+    example: '{"obsm_field": "seurat_Embedding"}'
+    description: |
+      Mapping of Seurat's Embeddings to AnnData obsm fields. 
+      If True, all fields will be mapped by name. If False, no fields will be mapped.
+      For custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.
+  - name: "--varm_mapping"
+    type: string
+    default: 'True'
+    example: '{"varm_field": "seurat_Loadings"}'
+    description: |
+      Mapping of Seurat's Loadings to AnnData varm fields. 
+      If True, all fields will be mapped by name. If False, no fields will be mapped.
+      For custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.
+  - name: "--obsp_mapping"
+    type: string
+    default: 'True'
+    example: '{"obsp_field": "seurat_Graph"}'
+    description: |
+      Mapping of Seurat's Graphs to AnnData obsp fields.
+      If True, all fields will be mapped by name. If False, no fields will be mapped.
+      For custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.
+  - name: "--varp_mapping"
+    type: string
+    default: 'True'
+    example: '{"varp_field": "seurat_Misc"}'
+    description: |
+      Mapping of Seurat's Misc to AnnData varp fields. 
+      If True, all fields will be mapped by name. If False, no fields will be mapped.
+      For custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.
+  - name: "--x_mapping"
+    type: string
+    description: A string specifying Seurat's Layer to mapped to the .X slot, If not provided, no data will be copied to the .X slot.
+
+- name: Outputs
+  arguments:
+  - name: "--modality"
+    type: string
+    default: "rna"
+    required: false
+    description: Name of the modality to be created.
+  - name: "--output"
+    alternatives: ["-o"]
+    type: file
+    description: Output H5MU file
+    direction: output
+    required: true
+    example: output.h5mu
+  __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: r_script
+    path: script.R
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3/
+  
+engines:
+  - type: docker
+    image: rocker/r2u:24.04
+    setup:
+      - type: docker
+        env: 
+          - RETICULATE_PYTHON=/usr/bin/python
+          - PIP_BREAK_SYSTEM_PACKAGES=1
+      - type: docker
+      - type: apt
+        packages: [ libhdf5-dev, python3, python3-pip, python3-dev, python-is-python3 ]
+      - type: python
+        user: true
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
+      - type: r
+        cran: [ anndata, Seurat, SeuratObject ]
+        bioc: [ scrapper, bit64 ]
+        # Until viash r requirements supports passing secrets
+        # --mount only applies to ONE single docker RUN instruction  
+        # github: scverse/anndataR
+      - type: docker
+        run:
+          - --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
+          - Rscript -e 'options(warn = 2); remotes::install_github(c("scverse/anndataR"), repos = "https://cran.rstudio.com")'
+      - type: python
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [lowmem, lowcpu]

@@ -1,58 +1,173 @@
 name: totalvi
 namespace: "integrate"
 scope: "public"
-description: "Performs mapping to the reference by totalvi model: https://docs.scvi-tools.org/en/stable/tutorials/notebooks/scarches_scvi_tools.html#Reference-mapping-with-TOTALVI"
+description: "Performs TotalVI integration of CITE-seq and scRNA-seq data."
+info:
+  links:
+    documentation: https://docs.scvi-tools.org/en/1.3.2/tutorials/notebooks/multimodal/cite_scrna_integration_w_totalVI.html
 authors:
-  - __merge__: /src/authors/vladimir_shitov.yaml
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author, maintainer ]
+  - __merge__: /src/authors/weiwei_schultz.yaml
+    roles: [ contributor ]
 argument_groups:
   - name: Inputs
     arguments:
       - name: "--input"
         alternatives: ["-i"]
         type: file
-        description: Input h5mu file with query data to integrate with reference.
+        description: Input h5mu file to be integrated.
+        example: input.h5mu
         direction: input
         required: true
-      - name: "--reference"
-        alternatives: ["-r"]
-        type: file
-        description: Input h5mu file with reference data to train the TOTALVI model.
-        direction: input
+      - name: "--rna_modality"
+        type: string
+        default: "rna"
         required: true
-      - name: "--force_retrain"
-        alternatives: ["-f"]
-        type: boolean_true
-        description: If true, retrain the model and save it to reference_model_path
-      - name: "--query_modality"
+      - name: "--prot_modality"
         type: string
-        default: "rna"
-        required: false
-      - name: "--query_proteins_modality"
-        type: string
-        description: Name of the modality in the input (query) h5mu file containing protein data
-        required: false
-      - name: "--reference_modality"
-        type: string
-        default: "rna"
-        required: false
-      - name: "--reference_proteins_modality"
-        type: string
-        description: Name of the modality containing proteins in the reference
         default: "prot"
-        required: false
-      - name: "--input_layer"
+        description: Name of the modality in the input (query) h5mu file containing protein data
+        required: true
+      - name: "--input_layer_rna"
         type: string
         required: false
-        description: "Input layer to use. If None, X is used"
+        description: "Input layer to use from the rna modality for gene counts. If None, X is used"
+      - name: "--input_layer_protein"
+        type: string
+        required: false
+        description: "Input layer to use from the protein modality for protein counts. If None, X is used"
       - name: "--obs_batch"
         type: string
         default: "sample_id"
         required: false
         description: Column name discriminating between your batches.
+      - name: "--obs_size_factor"
+        type: string
+        required: false
+        description: |
+          Key in adata.obs for size factor information. Instead of using library size as a size factor,
+          the provided size factor column will be used as offset in the mean of the likelihood.
+          Assumed to be on linear scale.
+      - name: "--obs_categorical_covariate"
+        type: string
+        required: false
+        multiple: true
+        description: |
+          Keys in adata.obs that correspond to categorical data. These covariates can be added in
+          addition to the batch covariate and are also treated as nuisance factors
+          (i.e., the model tries to minimize their effects on the latent space).
+          Thus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.
+      - name: "--obs_continuous_covariate"
+        type: string
+        required: false
+        multiple: true
+        description: |
+          Keys in adata.obs that correspond to continuous data. These covariates can be added in
+          addition to the batch covariate and are also treated as nuisance factors
+          (i.e., the model tries to minimize their effects on the latent space). Thus, these should not be
+          used for biologically-relevant factors that you do _not_ want to correct for.
+      - name: "--var_gene_names"
+        type: string
+        required: false
+        description: ".var column in the rna modality containing gene names. By default, use mod['rna'].var_names."
+      - name: "--var_protein_names"
+        type: string
+        required: false
+        description: ".var column in the protein modality containing protein names. By default, use mod['prot'].var_names."
       - name: "--var_input"
         type: string
         required: false
         description: ".var column containing highly variable genes. By default, do not subset genes."
+  - name: Data validity checks
+    arguments:
+      - name: "--n_obs_min_count"
+        type: integer
+        description: "Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training."
+        required: false
+        min: 0
+        default: 0
+      - name: "--n_var_gene_min_count"
+        type: integer
+        description: "Minimum number of genes threshold ensuring that sufficient observations (genes) are present for model training."
+        required: false
+        min: 0
+        default: 0
+      - name: "--n_var_protein_min_count"
+        type: integer
+        description: "Minimum number of proteins threshold ensuring that sufficient observations (genes) are present for model training."
+        required: false
+        min: 0
+        default: 0
+  - name: Model arguments
+    arguments:
+      - name: "--n_dimensions_latent_space"
+        type: integer
+        description: "Dimensionality of the latent space."
+        required: false
+        default: 20
+      - name: "--gene_dispersion"
+        type: string
+        description: |
+          Set the behavior for the dispersion for negative binomial distributions:
+            - gene: dispersion parameter of negative binomial is constant per gene across cells
+            - gene-batch: dispersion can differ between different batches
+            - gene-label: dispersion can differ between different labels
+            - gene-cell:  dispersion can differ for every gene in every cell
+        required: false
+        default: "gene"
+        choices: [ "gene", "gene-batch", "gene-label", "gene-cell" ]
+      - name: "--protein_dispersion"
+        type: string
+        description: |
+          Set the behavior for the dispersion for negative binomial distributions:
+            - protein: dispersion parameter of negative binomial is constant per protein across cells
+            - protein-batch: dispersion can differ between different batches
+            - protein-label: dispersion can differ between different labels
+        required: false
+        default: "protein"
+        choices: [ "protein", "protein-batch", "protein-label" ]
+      - name: "--gene_likelihood"
+        type: string
+        default: "nb"
+        choices: ["nb", "zinb"]
+        description: |
+          Model used to generate the expression data from a count-based likelihood distribution.
+          - nb: Negative binomial distribution
+          - zinb: Zero-inflated negative binomial distribution
+      - name: "--latent_distribution"
+        type: string
+        description: |
+          Set the latent distribution to use:
+            - normal: Normal distribution
+            - ln: Log-normal distribution (Normal( 0, 1) transformed by softmax)
+        required: false
+        default: "normal"
+        choices: [ "normal", "ln" ]
+      - name: "--empirical_protein_background_prior"
+        type: boolean
+        description: |
+          Set the initialization of protein background prior empirically.
+          This option fits a GMM for each of 100 cells per batch and averages the distributions.
+          Note that even with this option set to True, this only initializes a parameter that is learned during inference.
+          If False, randomly initializes.
+          By default, sets this to True if greater than 10 proteins are used.
+        required: false
+      - name: "--override_missing_proteins"
+        type: boolean_true
+        description: |
+          If True, will not treat proteins with all 0 expression in a particular batch as missing.
+  - name: Training arguments
+    arguments:
+      - name: "--max_epochs"
+        type: integer
+        description: "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest."
+        required: false
+      - name: "--early_stopping"
+        required: false
+        type: boolean
+        default: True
+        description: "Whether to perform early stopping with respect to the validation set."
   - name: Outputs
     arguments:
       - name: "--output"
@@ -61,54 +176,32 @@ argument_groups:
         description: Output h5mu file.
         direction: output
         required: true
-      - name: "--obsm_output"
-        type: string
-        default: "X_integrated_totalvi"
-        required: false
-        description: "In which .obsm slot to store the resulting integrated embedding."
-      - name: "--obsm_normalized_rna_output"
-        type: string
-        default: "X_totalvi_normalized_rna"
-        required: false
-        description: "In which .obsm slot to store the normalized RNA from TOTALVI."
-      - name: "--obsm_normalized_protein_output"
-        type: string
-        default: "X_totalvi_normalized_protein"
-        required: false
-        description: "In which .obsm slot to store the normalized protein data from TOTALVI."
-      - name: "--reference_model_path"
+      - name: "--output_model"
         type: file
         description: Directory with the reference model. If not exists, trained model will be saved there
         required: false
         default: "totalvi_model_reference/"
         direction: output
-      - name: "--query_model_path"
-        type: file
-        description: Directory, where the query model will be saved
-        required: false
-        default: "totalvi_model_query/"
-        direction: output
-  - name: "Learning parameters"
-    arguments:
-      - name: "--max_epochs"
-        type: integer
-        description: "Number of passes through the dataset"
-        required: false
-        default: 400
-      - name: "--max_query_epochs"
-        type: integer
-        description: "Number of passes through the dataset, when fine-tuning model for query"
-        required: false
-        default: 200
-      - name: "--weight_decay"
-        type: double
-        description: "Weight decay, when fine-tuning model for query"
-        required: false
-        default: 0.0
+      - name: "--obsm_output"
+        type: string
+        default: "X_integrated_totalvi"
+        description: "In which .obsm slot to store the resulting integrated embedding."
+      - name: "--obsm_normalized_rna_output"
+        type: string
+        default: "X_totalvi_normalized_rna"
+        description: "In which .obsm slot to store the normalized RNA data from TOTALVI."
+      - name: "--obsm_normalized_protein_output"
+        type: string
+        default: "X_totalvi_normalized_protein"
+        description: "In which .obsm slot to store the normalized protein data from TOTALVI."
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
 resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
+  - path: /src/utils/subset_vars.py
+  - path: /src/utils/set_var_index.py
 test_resources:
   - type: python_script
     path: test.py
@@ -116,19 +209,19 @@ test_resources:
 
 engines:
 - type: docker
-  image: nvcr.io/nvidia/pytorch:25.05-py3
+  image: pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime
   setup:
     - type: python
-      __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+      __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       packages:
-        - jax[cuda]
-        - scvi-tools~=1.3.1
+        - scvi-tools[cuda]~=1.4.1
   test_setup:
     - type: python
       __merge__: [ /src/base/requirements/viashpy.yaml, .]
 
 runners:
 - type: executable
+  # docker_run_args: ["--gpus all"]
 - type: nextflow
   directives:
-    label: [highmem, highcpu, highdisk]
+    label: [ highmem, highcpu, highdisk, gpu ]
