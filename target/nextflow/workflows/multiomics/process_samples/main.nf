@@ -4027,6 +4027,10 @@ workflow run_wf {
       )
       | flatMap {id, state ->
         def outputDir = state.output
+        log.info "DEBUG_CSV: state.output_types: ${state.output_types}"
+        log.info "DEBUG_CSV: state.output_types.toUriString(): ${state.output_types.toUriString()}"
+        log.info "DEBUG_CSV: state.output_types.isFile(): ${state.output_types.isFile()}"
+        log.info "DEBUG_CSV: state.output_types.text: ${state.output_types.text}"
         def types = readCsv(state.output_types.toUriString())
         
         types.collect{ dat ->
