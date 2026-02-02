@@ -4031,7 +4031,7 @@ workflow run_wf {
       )
       | flatMap {id, state ->
         def outputDir = state.output
-        def types = readCsv(state.output_types.toUriString())
+        def types = state.output_types.splitCsv(header: true, sep: ",", strip: true)
         
         types.collect{ dat ->
           // def new_id = id + "_" + dat.name
