@@ -43,7 +43,11 @@ workflow run_wf {
       // by reading the output csv (the csv contains 1 line per output file)
       | flatMap {id, state ->
         def outputDir = state.output
-        def types = readCsv(state.output_types.toUriString())
+        def csv = state.output_types.splitCsv(strip: true, sep: ",").findAll{!it[0].startsWith("#")}
+        def header = csv.head()
+        def types = csv.tail().collect { row ->
+            [header, row].transpose().collectEntries()
+        }
         
         types.collect{ dat ->
           def new_id = state.original_id + "_${dat.name}" // Make a unique ID by appending the modality name.
