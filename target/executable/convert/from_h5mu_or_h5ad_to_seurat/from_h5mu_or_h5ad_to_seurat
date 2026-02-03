@@ -459,9 +459,9 @@ RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
 RUN Rscript -e 'options(warn = 2); remotes::install_github(c("scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a"), repos = "https://cran.rstudio.com")'
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5mu_or_h5ad_to_seurat"
-LABEL org.opencontainers.image.created="2026-02-02T03:31:38Z"
+LABEL org.opencontainers.image.created="2026-02-03T03:27:22Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e7ec5972e712425f19e52327981575bfbc2cd34c"
+LABEL org.opencontainers.image.revision="ae3f022efdc780ca3b0c3ae65455cd6abfe906fb"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
