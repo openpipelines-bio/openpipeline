@@ -52,11 +52,7 @@ workflow run_wf {
       )
       | flatMap {id, state ->
         def outputDir = state.output
-        def csv = state.output_types.splitCsv(strip: true, sep: ",").findAll{!it[0].startsWith("#")}
-        def header = csv.head()
-        def types = csv.tail().collect { row ->
-            [header, row].transpose().collectEntries()
-        }
+        def types = readCsv(state.output_types.toUriString())
         
         types.collect{ dat ->
           // def new_id = id + "_" + dat.name

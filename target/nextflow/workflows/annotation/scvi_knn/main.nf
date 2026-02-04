@@ -3689,7 +3689,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scvi_knn",
     "viash_version" : "0.9.4",
-    "git_commit" : "af44f4a360cd27cb1f64ab1192a08564695f4864",
+    "git_commit" : "fe66da1838223395775ab8540dc58d46bbdc90eb",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3805,11 +3805,7 @@ workflow run_wf {
       )
       | flatMap {id, state ->
         def outputDir = state.output
-        def csv = state.output_types.splitCsv(strip: true, sep: ",").findAll{!it[0].startsWith("#")}
-        def header = csv.head()
-        def types = csv.tail().collect { row ->
-            [header, row].transpose().collectEntries()
-        }
+        def types = readCsv(state.output_types.toUriString())
         
         types.collect{ dat ->
           // def new_id = id + "_" + dat.name
@@ -3947,11 +3943,7 @@ workflow run_wf {
             ]
             return [id, new_state]
           }
-          def csv = state.output_files.splitCsv(strip: true, sep: ",").findAll{!it[0].startsWith("#")}
-          def header = csv.head()
-          def files = csv.tail().collect { row ->
-              [header, row].transpose().collectEntries()
-          }
+          def files = readCsv(state.output_files.toUriString())
           def query_file = files.findAll{ dat -> dat.name == 'query' }
           assert query_file.size() == 1, 'there should only be one query file'
           def reference_file = files.findAll{ dat -> dat.name == 'reference' }

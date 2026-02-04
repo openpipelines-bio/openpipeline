@@ -3513,7 +3513,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.9.4",
-    "git_commit" : "af44f4a360cd27cb1f64ab1192a08564695f4864",
+    "git_commit" : "fe66da1838223395775ab8540dc58d46bbdc90eb",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3620,11 +3620,7 @@ workflow run_wf {
       // by reading the output csv (the csv contains 1 line per output file)
       | flatMap {id, state ->
         def outputDir = state.output
-        def csv = state.output_types.splitCsv(strip: true, sep: ",").findAll{!it[0].startsWith("#")}
-        def header = csv.head()
-        def types = csv.tail().collect { row ->
-            [header, row].transpose().collectEntries()
-        }
+        def types = readCsv(state.output_types.toUriString())
         
         types.collect{ dat ->
           def new_id = state.original_id + "_${dat.name}" // Make a unique ID by appending the modality name.

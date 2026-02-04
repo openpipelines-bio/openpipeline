@@ -117,11 +117,7 @@ workflow run_wf {
   output_ch = h5mu_stub_ch.concat(h5mu_ch)
     | flatMap {id, state ->
       def h5mu_list = state.output_h5mu
-      def csv = state.sample_csv.splitCsv(strip: true, sep: ",").findAll{!it[0].startsWith("#")}
-      def header = csv.head()
-      def samples = csv.tail().collect { row ->
-          [header, row].transpose().collectEntries()
-      }
+      def samples = readCsv(state.sample_csv.toUriString())
       println "Samples: $samples" 
       def result = h5mu_list.collect{ h5mu_file ->
         println "H5mu: ${h5mu_file}, getName: ${h5mu_file.getName()}"
