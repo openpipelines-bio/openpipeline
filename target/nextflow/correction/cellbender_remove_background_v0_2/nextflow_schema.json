@@ -1,0 +1,231 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cellbender_remove_background_v0_2",
+  "description": "Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.\n\nThis module removes counts due to ambient RNA molecules and random barcode swapping from (raw) UMI-based scRNA-seq count matrices. \nAt the moment, only the count matrices produced by the CellRanger count pipeline is supported. Support for additional tools and protocols \nwill be added in the future. A quick start tutorial can be found here.\n\nFleming et al. 2022, bioRxiv.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "List of modalities to process.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Full count matrix as an h5mu file, with background RNA removed",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "layer_output": {
+          "type": "string",
+          "description": "Output layer",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"corrected\"`. ",
+          "default": "corrected"
+        },
+        "obs_latent_rt_efficiency": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"latent_rt_efficiency\"`. ",
+          "default": "latent_rt_efficiency"
+        },
+        "obs_latent_cell_probability": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"latent_cell_probability\"`. ",
+          "default": "latent_cell_probability"
+        },
+        "obs_latent_scale": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"latent_scale\"`. ",
+          "default": "latent_scale"
+        },
+        "var_ambient_expression": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"ambient_expression\"`. ",
+          "default": "ambient_expression"
+        },
+        "obsm_latent_gene_encoding": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"cellbender_latent_gene_encoding\"`. ",
+          "default": "cellbender_latent_gene_encoding"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "expected_cells": {
+          "type": "integer",
+          "description": "Number of cells expected in the dataset (a rough estimate within a factor of 2 is sufficient).",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1000`. "
+        },
+        "total_droplets_included": {
+          "type": "integer",
+          "description": "The number of droplets from the rank-ordered UMI plot\nthat will be analyzed",
+          "help_text": "Type: `integer`, multiple: `False`, example: `25000`. "
+        },
+        "expected_cells_from_qc": {
+          "type": "boolean",
+          "description": "Will use the Cell Ranger QC to determine the estimated number of cells",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
+        },
+        "model": {
+          "type": "string",
+          "description": "Which model is being used for count data",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"full\"`, choices: ``simple`, `ambient`, `swapping`, `full``. ",
+          "enum": [
+            "simple",
+            "ambient",
+            "swapping",
+            "full"
+          ],
+          "default": "full"
+        },
+        "epochs": {
+          "type": "integer",
+          "description": "Number of epochs to train.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `150`. ",
+          "default": 150
+        },
+        "low_count_threshold": {
+          "type": "integer",
+          "description": "Droplets with UMI counts below this number are completely \nexcluded from the analysis",
+          "help_text": "Type: `integer`, multiple: `False`, default: `15`. ",
+          "default": 15
+        },
+        "z_dim": {
+          "type": "integer",
+          "description": "Dimension of latent variable z.\n",
+          "help_text": "Type: `integer`, multiple: `False`, default: `100`. ",
+          "default": 100
+        },
+        "z_layers": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Dimension of hidden layers in the encoder for z.\n",
+          "help_text": "Type: `integer`, multiple: `True`, default: `[500]`. ",
+          "default": [
+            500
+          ]
+        },
+        "training_fraction": {
+          "type": "number",
+          "description": "Training detail: the fraction of the data used for training.\nThe rest is never seen by the inference algorithm",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.9`. ",
+          "default": 0.9
+        },
+        "empty_drop_training_fraction": {
+          "type": "number",
+          "description": "Training detail: the fraction of the training data each epoch that \nis drawn (randomly sampled) from surely empty droplets.\n",
+          "help_text": "Type: `double`, multiple: `False`, default: `0.5`. ",
+          "default": 0.5
+        },
+        "fpr": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "Target false positive rate in (0, 1)",
+          "help_text": "Type: `double`, multiple: `True`, default: `[0.01]`. ",
+          "default": [
+            0.01
+          ]
+        },
+        "exclude_antibody_capture": {
+          "type": "boolean",
+          "description": "Including the flag --exclude-antibody-capture will\ncause remove-background to operate on gene counts\nonly, ignoring other features.\n",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "learning_rate": {
+          "type": "number",
+          "description": "Training detail: lower learning rate for inference",
+          "help_text": "Type: `double`, multiple: `False`, example: `1.0E-4`. "
+        },
+        "cuda": {
+          "type": "boolean",
+          "description": "Including the flag --cuda will run the inference on a\nGPU.\n",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}
