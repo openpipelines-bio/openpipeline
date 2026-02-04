@@ -1,3 +1,9 @@
+# openpipelines 3.0.2
+
+## BUG FIXES
+
+* Fix parsing of CSV's failing when using remote paths (S3), causing an `InvocationTargetException` error (backported from PR #1133).
+
 # openpipelines 3.0.1
 
 ## BUG FIXES
