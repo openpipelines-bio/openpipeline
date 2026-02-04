@@ -3993,7 +3993,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi",
     "viash_version" : "0.9.4",
-    "git_commit" : "64f6f731739810280b66a98bff496e54b998d4c7",
+    "git_commit" : "4edb1fb672d8e3cd058b4100e184e98e734cf1ce",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -4166,7 +4166,11 @@ workflow run_wf {
   output_ch = h5mu_stub_ch.concat(h5mu_ch)
     | flatMap {id, state ->
       def h5mu_list = state.output_h5mu
-      def samples = readCsv(state.sample_csv.toUriString())
+      def csv = state.sample_csv.splitCsv(strip: true, sep: ",").findAll{!it[0].startsWith("#")}
+      def header = csv.head()
+      def samples = csv.tail().collect { row ->
+          [header, row].transpose().collectEntries()
+      }
       println "Samples: $samples" 
       def result = h5mu_list.collect{ h5mu_file ->
         println "H5mu: ${h5mu_file}, getName: ${h5mu_file.getName()}"
