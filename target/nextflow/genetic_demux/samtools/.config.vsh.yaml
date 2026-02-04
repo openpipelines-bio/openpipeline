@@ -1,0 +1,217 @@
+name: "samtools"
+namespace: "genetic_demux"
+version: "v4.0.1"
+authors:
+- name: "Xichen Wu"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      github: "wxicu"
+      linkedin: "xichen-wu"
+      orcid: "0009-0008-2168-4508"
+    organizations:
+    - name: "Helmholtz Munich"
+      href: "https://www.helmholtz-munich.de"
+      role: "Student Assistant"
+argument_groups:
+- name: "Arguments"
+  arguments:
+  - type: "file"
+    name: "--bam"
+    description: "Input bam file for filtering."
+    info: null
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output"
+    description: "Samtools output directory."
+    info: null
+    example:
+    - "samtools_out"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "bash_script"
+  path: "script.sh"
+  is_executable: true
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Filter the BAM according to the instruction of scSplit via Samtools."
+test_resources:
+- type: "bash_script"
+  path: "test.sh"
+  is_executable: true
+- type: "file"
+  path: "demuxafy_test_data"
+info: null
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "midmem"
+    - "midcpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "python:3.12"
+  target_tag: "v4.0.0"
+  namespace_separator: "/"
+  setup:
+  - type: "apt"
+    packages:
+    - "wget"
+    - "gcc"
+    - "make"
+    - "libbz2-dev"
+    - "zlib1g-dev"
+    - "libncurses5-dev"
+    - "libncursesw5-dev"
+    - "liblzma-dev"
+    interactive: false
+  - type: "docker"
+    run:
+    - "wget https://github.com/samtools/samtools/releases/download/1.16.1/samtools-1.16.1.tar.bz2\
+      \ && tar jxf samtools-1.16.1.tar.bz2 && rm samtools-1.16.1.tar.bz2 && cd samtools-1.16.1\
+      \ && make prefix=/usr/local install"
+  - type: "python"
+    user: false
+    pip:
+    - "umi_tools"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/genetic_demux/samtools/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "docker"
+  output: "target/nextflow/genetic_demux/samtools"
+  executable: "target/nextflow/genetic_demux/samtools/main.nf"
+  viash_version: "0.9.4"
+  git_commit: "063ee1778554c07795b867f80d3ce8c30afcce5d"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "4.0.0-2-g063ee177855"
+package_config:
+  name: "openpipeline"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.4"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"v4.0.1\""
+  - ".engines[.type == 'docker'].target_tag := 'v4.0.0'"
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"
