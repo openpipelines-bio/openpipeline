@@ -1,8 +1,0 @@
-# Arguments
-input_gtf: # please fill in - example: "transcriptome_annotation.gtf.gz"
-# output_gtf: "$id.$key.output_gtf.gz"
-attribute: # please fill in - example: ["gene_type:transcribed_unprocessed_pseudogene", "gene_type:miRNA"]
-
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
