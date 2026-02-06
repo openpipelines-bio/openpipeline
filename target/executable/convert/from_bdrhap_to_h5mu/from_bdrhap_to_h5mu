@@ -459,9 +459,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_bdrhap_to_h5mu"
-LABEL org.opencontainers.image.created="2026-02-05T03:25:59Z"
+LABEL org.opencontainers.image.created="2026-02-06T03:25:05Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="41bfdbb926b77dcb47c2d25d2ccc4b218e882961"
+LABEL org.opencontainers.image.revision="b54960ecf597f53efea24763f197a00546b8fdad"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
