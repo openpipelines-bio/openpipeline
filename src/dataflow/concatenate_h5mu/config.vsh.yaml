@@ -63,6 +63,14 @@ arguments:
     type: string
     choices: ["same", "unique", "first", "only", "make_unique"]
     default: make_unique
+  - name: "--obsp_keys"
+    type: string
+    multiple: true
+    description: |
+      List of `.obsp` keys for which block-diagonal concatenation should be performed.
+      If not provided, no `.obsp` keys will be concatenated.
+      Provided keys must be present in all samples for block concatenation to be performed.
+    required: false
 __merge__: [., /src/base/h5_compression_argument.yaml]
 
 resources:
@@ -87,6 +95,8 @@ engines:
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
     test_setup:
       - type: python
+        packages:
+          - pytest-benchmark
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
 runners:
   - type: executable

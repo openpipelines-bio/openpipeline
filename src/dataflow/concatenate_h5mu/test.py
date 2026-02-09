@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 import re
 import sys
+import scipy.sparse as sp
 from openpipeline_testutils.utils import remove_annotation_column
 from operator import attrgetter
 
@@ -69,6 +70,8 @@ def sample_1_modality_1():
             ),
         },
     )
+    A1 = np.array([[0, 1], [2, 0]])
+    ad1.obsp["connectivities"] = sp.csr_matrix(A1)
     # ad1 = ad.AnnData(df, obs=obs, var=var)
     return ad1
 
@@ -163,6 +166,8 @@ def sample_2_modality_1():
             ),
         },
     )
+    A2 = np.array([[0, 3, 4], [5, 0, 6], [7, 8, 0]])
+    ad3.obsp["connectivities"] = sp.csr_matrix(A2)
     return ad3
 
 
@@ -368,7 +373,12 @@ def test_concatenate_samples_with_same_observation_ids_raises(
 
 
 def test_concat_different_var_columns_per_sample(
-    run_component, sample_1_h5mu, sample_2_h5mu, random_h5mu_path, write_mudata_to_file
+    run_component,
+    sample_1_h5mu,
+    sample_2_h5mu,
+    random_h5mu_path,
+    write_mudata_to_file,
+    benchmark,
 ):
     """
     Test what happens when concatenating samples with differing auxiliary
@@ -397,7 +407,8 @@ def test_concat_different_var_columns_per_sample(
     input_sample1_path = write_mudata_to_file(sample_1_h5mu)
     input_sample2_path = write_mudata_to_file(sample_2_h5mu)
 
-    run_component(
+    benchmark(
+        run_component,
         [
             "--input_id",
             "sample1;sample2",
@@ -409,9 +420,8 @@ def test_concat_different_var_columns_per_sample(
             output_path,
             "--other_axis_mode",
             "move",
-        ]
+        ],
     )
-
     assert Path(output_path).is_file()
     concatenated_data = md.read(output_path)
 
@@ -450,7 +460,12 @@ def test_concat_different_var_columns_per_sample(
 
 
 def test_concat_different_columns_per_modality(
-    run_component, sample_1_h5mu, sample_2_h5mu, write_mudata_to_file, random_h5mu_path
+    run_component,
+    sample_1_h5mu,
+    sample_2_h5mu,
+    write_mudata_to_file,
+    random_h5mu_path,
+    benchmark,
 ):
     """
     Test what happens when concatenating samples that have auxiliary columns
@@ -474,7 +489,8 @@ def test_concat_different_columns_per_modality(
     input_sample2_path = write_mudata_to_file(sample_2_h5mu)
 
     output_path = random_h5mu_path()
-    run_component(
+    benchmark(
+        run_component,
         [
             "--input_id",
             "sample1;sample2",
@@ -486,7 +502,7 @@ def test_concat_different_columns_per_modality(
             output_path,
             "--other_axis_mode",
             "move",
-        ]
+        ],
     )
 
     assert Path(output_path).is_file() is True
@@ -541,7 +557,12 @@ def test_concat_different_columns_per_modality(
 
 
 def test_concat_different_columns_per_modality_and_per_sample(
-    run_component, sample_1_h5mu, sample_2_h5mu, write_mudata_to_file, random_h5mu_path
+    run_component,
+    sample_1_h5mu,
+    sample_2_h5mu,
+    write_mudata_to_file,
+    random_h5mu_path,
+    benchmark,
 ):
     """
     Test what happens when concatenating samples that have auxiliary columns
@@ -558,7 +579,8 @@ def test_concat_different_columns_per_modality_and_per_sample(
     input_sample2_path = write_mudata_to_file(sample_2_h5mu)
     output_path = random_h5mu_path()
 
-    run_component(
+    benchmark(
+        run_component,
         [
             "--input_id",
             "mouse;human",
@@ -570,7 +592,7 @@ def test_concat_different_columns_per_modality_and_per_sample(
             output_path,
             "--other_axis_mode",
             "move",
-        ]
+        ],
     )
 
     assert Path(output_path).is_file()
@@ -646,6 +668,7 @@ def test_concat_remove_na(
     test_value_dtype,
     expected,
     change_column_contents,
+    benchmark,
 ):
     """
     Test concatenation of samples where the column from one sample contains NA values
@@ -665,8 +688,8 @@ def test_concat_remove_na(
         test_value_dtype
     )
     output_path = random_h5mu_path()
-
-    run_component(
+    benchmark(
+        run_component,
         [
             "--input_id",
             "sample1;sample2",
@@ -678,7 +701,7 @@ def test_concat_remove_na(
             output_path,
             "--other_axis_mode",
             "move",
-        ]
+        ],
     )
 
     assert Path(output_path).is_file()
@@ -988,7 +1011,12 @@ def test_resolve_annotation_conflict_missing_column(
 
 
 def test_mode_move(
-    run_component, sample_1_h5mu, sample_2_h5mu, random_h5mu_path, write_mudata_to_file
+    run_component,
+    sample_1_h5mu,
+    sample_2_h5mu,
+    random_h5mu_path,
+    write_mudata_to_file,
+    benchmark,
 ):
     """
     Test that in case of a conflict, the conflicting columns are move to the multidimensional annotation slot
@@ -996,7 +1024,8 @@ def test_mode_move(
     of the column and the columns of the dataframe should contain the sample names.
     """
     output_path = random_h5mu_path()
-    run_component(
+    benchmark(
+        run_component,
         [
             "--input_id",
             "sample1;sample2",
@@ -1008,7 +1037,7 @@ def test_mode_move(
             output_path,
             "--other_axis_mode",
             "move",
-        ]
+        ],
     )
     assert output_path.is_file()
     concatenated_data = md.read(output_path)
@@ -1118,14 +1147,20 @@ def test_concat_var_obs_names_order(
 
 
 def test_keep_uns(
-    run_component, sample_1_h5mu, sample_2_h5mu, write_mudata_to_file, random_h5mu_path
+    run_component,
+    sample_1_h5mu,
+    sample_2_h5mu,
+    write_mudata_to_file,
+    random_h5mu_path,
+    benchmark,
 ):
     sample_1_h5mu.uns["global_uns_sample1"] = "dolor"
     sample_1_h5mu.uns["overlapping_global"] = "sed"
     sample_2_h5mu.uns["global_uns_sample2"] = "amet"
     sample_2_h5mu.uns["overlapping_global"] = "elit"
     output_path = random_h5mu_path()
-    run_component(
+    benchmark(
+        run_component,
         [
             "--input_id",
             "sample1;sample2",
@@ -1139,7 +1174,7 @@ def test_keep_uns(
             "move",
             "--uns_merge_mode",
             "make_unique",
-        ]
+        ],
     )
     assert output_path.is_file()
     concatenated_data = md.read(output_path)
@@ -1194,5 +1229,77 @@ def test_subset_modalities(
     assert set(concatenated_data.mod.keys()) == set(["mod1"])
 
 
+def test_obsp_block_diag_concat(
+    run_component,
+    sample_1_h5mu,
+    sample_2_h5mu,
+    write_mudata_to_file,
+    random_h5mu_path,
+):
+    """
+    Test that `.obsp` for a given key is concatenated as a block-diagonal matrix
+    across samples for the same modality (here: mod1), and that the block order
+    matches the sample order.
+    """
+
+    output_path = random_h5mu_path()
+    run_component(
+        [
+            "--input_id",
+            "sample1;sample2",
+            "--input",
+            write_mudata_to_file(sample_1_h5mu),
+            "--input",
+            write_mudata_to_file(sample_2_h5mu),
+            "--output",
+            output_path,
+            "--other_axis_mode",
+            "move",
+            "--uns_merge_mode",
+            "make_unique",
+            "--obsp_keys",
+            "connectivities",
+        ]
+    )
+
+    concatenated = md.read(output_path)
+    mod1 = concatenated["mod1"]
+    mod2 = concatenated["mod2"]
+
+    assert "connectivities" in mod1.obsp
+    assert "connectivities" not in mod2.obsp
+
+    expected = sp.csr_matrix(
+        [
+            [0, 1, 0, 0, 0],
+            [2, 0, 0, 0, 0],
+            [0, 0, 0, 3, 4],
+            [0, 0, 5, 0, 6],
+            [0, 0, 7, 8, 0],
+        ]
+    )
+
+    pairwise_obsp = mod1.obsp["connectivities"].tocsr()
+    assert pairwise_obsp.shape == expected.shape, (
+        "obsp 'connectivities' has incorrect shape after concatenation"
+    )
+    assert (pairwise_obsp - expected).nnz == 0, (
+        "obsp 'connectivities' not correctly concatenated as block-diagonal matrix"
+    )
+
+
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__, "-v"]))
+    sys.exit(
+        pytest.main(
+            [
+                __file__,
+                "-v",
+                "--benchmark-group-by",
+                "func",
+                "--benchmark-time-unit",
+                "s",
+                "--benchmark-columns",
+                "min, max, mean, stddev, median, iqr, outliers, ops",
+            ]
+        )
+    )

@@ -4,18 +4,25 @@
 
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to filter out features from highly variable gene selection based on a user-defined list of feature names (PR #1121).
 
+# openpipelines 4.0.1
+
+## BUG FIXES
+
+* Fix parsing of CSV's failing when using remote paths (S3), causing an `InvocationTargetException` error (PR #1133).
+
 # openpipelines 4.0.0
 
 ## BREAKING CHANGES
 
-* `mapping/cellranger_multi`: bump Cell Ranger to version 10 (PR #1103).
+* `mapping/cellranger_multi`: bump Cell Ranger to version 10 (PR #1103 and #1119).
 
 * Removed `cellbender_remove_background_v0_2` (PR #1111).
 
 * `convert/from_cellranger_multi_to_h5mu`: VDJ related output is now stored in AIRR Rearrangement standard.
    Because one cell can have multiple receptor chains, this relationship is represented as an `awkward` array
-   stored in `.obsm["airr"]` slot of the VDJ modality (PR #1109). 
+   stored in `.obsm["airr"]` slot of the VDJ modality (PR #1109 and PR #1130). 
 
+* `workflows/annotation/totalvi_scarches_leiden` and `annotate/totalvi_scarches`: Renamed previously implemented versions of `workflows/annotation/totalvi_leiden` and `annotate/totalvi` to reflect that scArches is used for reference mapping with TotalVI (PR #1092).
 
 ## NEW FUNCTIONALITY
 
@@ -29,9 +36,13 @@
 
 * `annotate/celltypist`: Enable CUDA acceleration for CellTypist annotation (PR #1091).
 
-* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083).
+* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083, #1114).
 
 * `workflows/integration/harmony_leiden`: add support for adding the output slots to a tileDB-SOMA database (PR #1095).
+
+* `dataflow/concatenate_h5mu`: optionally perform block-diagonal concatenation of specified `.obsp` keys using `--obsp_keys` across input MuData objects (PR #1115).
+
+* `workflows/annotation/totalvi_leiden` and `annotate/totalvi`: Added new workflows and components for cell type annotation using TotalVI integration followed by Leiden clustering, without scArches reference mapping (PR #1092).
 
 ## EXPERIMENTAL
 
@@ -53,7 +64,11 @@
 
 ## MINOR CHANGES
 
-* `totalvi`, `celltypist`, `scanvi` and `scarches`: bump base container image to `nvcr.io/nvidia/pytorch:25.11-py3` (PR #1116)
+* Bump `scanpy` to `1.11.4` (PR #1131)
+
+* `integrate/totalvi_scvarches`: bump version of `scvi-tools` in component from `1.3.2` to `1.4.1` (PR #1129)
+
+* `totalvi`, `celltypist`, `scanvi` and `scarches`: change container image to `pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime` (PR #1116 and PR #1129)
 
 * `transform/normalize_total`, `transform/clr`, `transform/log1p`: Add disk resource labels (PR #1073).
 
@@ -67,9 +82,11 @@
 
 * `genetic_demux/scsplit`: bump python to `3.13` and unpin pandas and numpy (were pinned to `<2.0` and `<2` respectively) (PR #1096).
 
-* Bump `anndata` to `0.12.6` and mudata to `0.3.2` (PR #1111).
+* Bump `anndata` to `0.12.7` and mudata to `0.3.2` (PR #1111 and PR #1125).
 
 ## BUG FIXES
+
+* `workflows/cellranger_multi`: fix `ocm_barcode_ids`, `min_crispr_umi`, `emptydrops_minimum_umis` and `hashtag_ids` arguments not being applied (PR #).
 
 * `differential_expression/create_pseudobulks`: Fixed the check to verify that the raw counts layer was passed (PR #1072).
 

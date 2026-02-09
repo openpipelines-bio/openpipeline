@@ -1,6 +1,7 @@
 nextflow.enable.dsl=2
 
 include { totalvi_leiden } from params.rootDir + "/target/nextflow/workflows/integration/totalvi_leiden/main.nf"
+include { totalvi_leiden_test } from params.rootDir + "/target/_test/nextflow/test_workflows/integration/totalvi_leiden_test/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 
@@ -12,40 +13,17 @@ workflow test_wf {
       [
         id: "simple_execution_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        reference: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        prot_modality: "prot",
-        prot_reference_modality: "prot",
+        output_model: "totalvi_model",
         var_input: "filter_with_hvg",
-        reference_model_path: "totalvi_reference_model",
-        query_model_path: "totalvi_query_model",
-        max_epochs: 1,
-        max_query_epochs: 1,
+        max_epochs: 1
       ],
       [
-        id: "no_prot_leiden_resolutions_test",
+        id: "no_leiden_resolutions_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        reference: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        prot_modality: "prot",
-        prot_reference_modality: "prot",
+        output_model: "totalvi_model",
         var_input: "filter_with_hvg",
-        reference_model_path: "totalvi_reference_model",
-        query_model_path: "totalvi_query_model",
         max_epochs: 1,
-        max_query_epochs: 1,
-        prot_leiden_resolution: []
-      ],
-      [
-        id: "no_rna_leiden_resolutions_test",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        reference: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        prot_modality: "prot",
-        prot_reference_modality: "prot",
-        var_input: "filter_with_hvg",
-        reference_model_path: "totalvi_reference_model",
-        query_model_path: "totalvi_query_model",
-        max_epochs: 1,
-        max_query_epochs: 1,
-        rna_leiden_resolution: []
+        leiden_resolution: []
       ]
     ])
     | map{ state -> [state.id, state] }
@@ -64,22 +42,26 @@ workflow test_wf {
       assert state.output.isFile() : "'output' should be a file."
       assert state.output.toString().endsWith(".h5mu") : "Output file should end with '.h5mu'. Found: ${state.output}"
 
-      // check reference_model
-      assert state.containsKey("reference_model_path") : "Output should contain key 'reference_model_path'."
-      assert state.reference_model_path.isDirectory() : "'reference_model_path' should be a directory."
-      assert state.reference_model_path.toString().endsWith("_reference_model") : "Model output directory should end with '_reference_model'. Found: ${state.reference_model_path}"
+      // check output_model
+      assert state.containsKey("output_model") : "Output should contain key 'output_model'."
+      assert state.output_model.isDirectory() : "'output_model' should be a directory."
+      assert state.output_model.toString().endsWith("totalvi_model") : "Model output directory should end with 'output_model'. Found: ${state.output_model}"
 
-      // check query_model
-      assert state.containsKey("query_model_path") : "Output should contain key 'query_model_path'."
-      assert state.query_model_path.isDirectory() : "'query_model_path' should be a directory."
-      assert state.query_model_path.toString().endsWith("_query_model") : "Model output directory should end with '_query_model'. Found: ${state.query_model_path}" 
-      
-      
       "Output: $output"
     }
+    | totalvi_leiden_test.run(
+        fromState: [
+          "input": "output"
+        ],
+        args: [
+          "expected_modalities": ["rna", "prot"]
+        ]
+    )
+
+  output_ch
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
-      assert output_list.size() == 3 : "output channel should contain 3 events"
-      assert output_list.collect{it[0]} == ["no_prot_leiden_resolutions_test", "no_rna_leiden_resolutions_test", "simple_execution_test"]
+      assert output_list.size() == 2 : "output channel should contain 2 events"
+      assert output_list.collect{it[0]} == ["no_leiden_resolutions_test", "simple_execution_test"]
     }
 }
