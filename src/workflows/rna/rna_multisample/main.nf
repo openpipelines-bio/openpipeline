@@ -42,7 +42,8 @@ workflow run_wf {
           "var_name_filter": state.highly_variable_features_var_output,
           "n_top_features": state.highly_variable_features_n_top_features,
           "flavor": state.highly_variable_features_flavor,
-          "obs_batch_key": state.highly_variable_features_obs_batch_key
+          "obs_batch_key": state.highly_variable_features_obs_batch_key,
+          "features_to_exclude": state.highly_variable_features_features_to_exclude
         ]
       },
       toState: ["input": "output"],
