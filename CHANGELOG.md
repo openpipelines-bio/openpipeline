@@ -1,3 +1,9 @@
+# openpipelines 4.0.2
+
+## BUG FIXES
+
+* `convert/from_cellranger_multi_to_h5mu`: fix converting Cell Ranger output that contains no feature reference CSV file (PR #)
+
 # openpipelines 4.0.1
 
 ## BUG FIXES
