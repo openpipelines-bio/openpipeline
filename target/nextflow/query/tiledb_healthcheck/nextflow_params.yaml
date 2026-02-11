@@ -1,9 +1,0 @@
-# Input database
-input_uri: # please fill in - example: "s3://bucket/path"
-s3_region: # please fill in - example: "foo"
-
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
