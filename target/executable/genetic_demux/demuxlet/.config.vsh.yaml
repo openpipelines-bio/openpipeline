@@ -1,0 +1,499 @@
+name: "demuxlet"
+namespace: "genetic_demux"
+version: "v4.0.2"
+authors:
+- name: "Xichen Wu"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      github: "wxicu"
+      linkedin: "xichen-wu"
+      orcid: "0009-0008-2168-4508"
+    organizations:
+    - name: "Helmholtz Munich"
+      href: "https://www.helmholtz-munich.de"
+      role: "Student Assistant"
+argument_groups:
+- name: "Input"
+  arguments:
+  - type: "file"
+    name: "--sam"
+    description: "Input SAM/BAM/CRAM file. Must be sorted by coordinates and indexed."
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--tag_group"
+    description: "Tag representing readgroup or cell barcodes, in the case to partition\
+      \ the BAM file into multiple groups. For 10x genomics, use CB."
+    info: null
+    default:
+    - "CB"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--tag_umi"
+    description: "Tag representing UMIs. For 10x genomiucs, use UB."
+    info: null
+    default:
+    - "UB"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--plp"
+    description: "Input pileup format. If the value is a string, it will be considered\
+      \ as the path of the plp file. If the value is boolean true, it will perform\
+      \ dscpileup."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--vcf"
+    description: "Input VCF/BCF file, containing the individual genotypes (GT), posterior\
+      \ probability (GP), or genotype likelihood (PL)."
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--field"
+    description: "FORMAT field to extract the genotype, likelihood, or posterior from"
+    info: null
+    default:
+    - "GT"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--geno_error_offset"
+    description: "Offset of genotype error rate. [error] = [offset] + [1-offset]*[coeff]*[1-r2]"
+    info: null
+    default:
+    - 0.1
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--geno_error_coeff"
+    description: "Slope of genotype error rate. [error] = [offset] + [1-offset]*[coeff]*[1-r2]"
+    info: null
+    default:
+    - 0.0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--r2_info"
+    description: "INFO field name representing R2 value. Used for representing imputation\
+      \ quality."
+    info: null
+    default:
+    - "R2"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--min_mac"
+    description: "Minimum minor allele frequency."
+    info: null
+    default:
+    - 1
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--min_call_rate"
+    description: "Minimum call rate."
+    info: null
+    default:
+    - 0.5
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--alpha"
+    description: "Grid of alpha to search for (default is 0.1, 0.2, 0.3, 0.4, 0.5)"
+    info: null
+    default:
+    - "0.5"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--doublet_prior"
+    description: "Prior of doublet"
+    info: null
+    default:
+    - 0.5
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--sm"
+    description: "List of sample IDs to compare to (default: use all)."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--sm_list"
+    description: "File containing the list of sample IDs to compare."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--sam_verbose"
+    description: "Verbose message frequency for SAM/BAM/CRAM."
+    info: null
+    default:
+    - 1000000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--vcf_verbose"
+    description: "Verbose message frequency for VCF/BCF."
+    info: null
+    default:
+    - 1000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--cap_bq"
+    description: "Maximum base quality (higher BQ will be capped)."
+    info: null
+    default:
+    - 20
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--min_bq"
+    description: "Minimum base quality to consider (lower BQ will be skipped)."
+    info: null
+    default:
+    - 13
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--min_mq"
+    description: "Minimum mapping quality to consider (lower MQ will be ignored)."
+    info: null
+    default:
+    - 20
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--min_td"
+    description: "Minimum distance to the tail (lower will be ignored)."
+    info: null
+    default:
+    - 0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--excl_flag"
+    description: "SAM/BAM FLAGs to be excluded."
+    info: null
+    default:
+    - 3844
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--group_list"
+    description: "List of tag readgroup/cell barcode to consider in this run. All\
+      \ other barcodes will be ignored. This is useful for parallelized run."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--min_total"
+    description: "Minimum number of total reads for a droplet/cell to be considered."
+    info: null
+    default:
+    - 0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--min_snp"
+    description: "Minimum number of SNPs with coverage for a droplet/cell to be considered."
+    info: null
+    default:
+    - 0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--min_umi"
+    description: "Minimum number of UMIs for a droplet/cell to be considered."
+    info: null
+    default:
+    - 0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Output"
+  arguments:
+  - type: "file"
+    name: "--output"
+    alternatives:
+    - "-o"
+    description: "Output directory"
+    info: null
+    example:
+    - "demux"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--out"
+    description: "demuxlet output file prefix"
+    info: null
+    example:
+    - "demuxlet"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "r_script"
+  path: "script.R"
+  is_executable: true
+- type: "file"
+  path: "demuxlet.patch"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Demuxlet is a software tool to deconvolute sample identity and identify\
+  \ multiplets when\nmultiple samples are pooled by barcoded single cell sequencing.\
+  \ If external genotyping data\nfor each sample is available (e.g. from SNP arrays),\
+  \ demuxlet would be recommended. Be careful\nthat the parameters on the github is\
+  \ not in line with the newest help version.\n"
+test_resources:
+- type: "bash_script"
+  path: "test.sh"
+  is_executable: true
+- type: "file"
+  path: "demuxafy_test_data"
+info: null
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "midmem"
+    - "midcpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "ubuntu:24.04"
+  target_tag: "v4.0.0"
+  namespace_separator: "/"
+  setup:
+  - type: "docker"
+    copy:
+    - "demuxlet.patch /opt/demuxlet.patch"
+  - type: "apt"
+    packages:
+    - "autoconf"
+    - "wget"
+    - "git"
+    - "build-essential"
+    - "libcurl4-openssl-dev"
+    - "cmake"
+    - "libbz2-dev"
+    - "libssl-dev"
+    - "liblzma-dev"
+    - "zlib1g-dev"
+    - "r-base"
+    interactive: false
+  - type: "docker"
+    run:
+    - "git clone https://github.com/samtools/htslib.git /tmp/htslib && cd /tmp/htslib\
+      \ && git submodule update --init --recursive && autoreconf -i && ./configure\
+      \ --prefix=/usr/local/ && make && make install"
+  - type: "docker"
+    run:
+    - "git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle &&\
+      \ cd /tmp/popscle && git apply /opt/demuxlet.patch && mkdir -p /tmp/popscle/build\
+      \ && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle\
+      \ /usr/local/bin"
+  - type: "r"
+    cran:
+    - "readr"
+    - "processx"
+    - "dplyr"
+    bioc_force_install: false
+    warnings_as_errors: true
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/genetic_demux/demuxlet/config.vsh.yaml"
+  runner: "executable"
+  engine: "docker"
+  output: "target/executable/genetic_demux/demuxlet"
+  executable: "target/executable/genetic_demux/demuxlet/demuxlet"
+  viash_version: "0.9.4"
+  git_commit: "c0c0af6066061c3814d7b81276b539d6ffa7ffbd"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "v4.0.1-2-gc0c0af60660"
+package_config:
+  name: "openpipeline"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.4"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"v4.0.2\""
+  - ".engines[.type == 'docker'].target_tag := 'v4.0.0'"
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

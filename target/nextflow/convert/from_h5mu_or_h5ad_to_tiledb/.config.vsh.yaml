@@ -1,0 +1,425 @@
+name: "from_h5mu_or_h5ad_to_tiledb"
+namespace: "convert"
+version: "v4.0.2"
+authors:
+- name: "Dries Schaumont"
+  roles:
+  - "author"
+  - "maintainer"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "dries@data-intuitive.com"
+      github: "DriesSchaumont"
+      orcid: "0000-0002-4389-0440"
+      linkedin: "dries-schaumont"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Scientist"
+argument_groups:
+- name: "Input"
+  arguments:
+  - type: "file"
+    name: "--input"
+    description: "Input AnnData or MuData file. When an AnnData file is provided,\
+      \ it is automatically assumed to \ncontain transcriptome counts.\n"
+    info: null
+    example:
+    - "input.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "RNA modality"
+  arguments:
+  - type: "string"
+    name: "--rna_modality"
+    description: "The name used for the RNA modality. Used when input file is a MuData\
+      \ object.\n"
+    info: null
+    default:
+    - "rna"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--rna_raw_layer_input"
+    description: "Location of the layer containing the raw transcriptome counts. Layers\
+      \ are looked for in .layers,\nexcept when using the value 'X'; in which case\
+      \ .X is used.\n"
+    info: null
+    example:
+    - "X"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--rna_normalized_layer_input"
+    description: "Location of the layer containing the normalized counts. Layers are\
+      \ looked for in .layers,\nexcept when using the value 'X'; in which case .X\
+      \ is used.\n"
+    info: null
+    example:
+    - "log_normalized"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--rna_var_gene_names_input"
+    description: "Column in .var that provides the gene names. If not specified, the\
+      \ index from the input is used.\n"
+    info: null
+    example:
+    - "gene_symbol"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Protein modality"
+  arguments:
+  - type: "string"
+    name: "--prot_modality"
+    description: "The name used for the protein modality. Used when input file is\
+      \ a MuData object.\nWhen not specified, the protein modality will not be processed.\n"
+    info: null
+    example:
+    - "prot"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--prot_raw_layer_input"
+    description: "Location of the layer containing the raw protein counts. Layers\
+      \ are looked for in .layers,\nexcept when using the value 'X'; in which case\
+      \ .X is used.\n"
+    info: null
+    example:
+    - "X"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--prot_normalized_layer_input"
+    description: "Location of the layer containing the normalized counts. Layers are\
+      \ looked for in .layers,\nexcept when using the value 'X'; in which case .X\
+      \ is used.\n"
+    info: null
+    example:
+    - "clr"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Output slots"
+  arguments:
+  - type: "string"
+    name: "--rna_modality_output"
+    description: "TileDB Measurement name where the RNA modality will be stored.\n"
+    info: null
+    default:
+    - "rna"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--prot_modality_output"
+    description: "Name of the TileDB Measurement where the protein modality will be\
+      \ stored.\n"
+    info: null
+    default:
+    - "prot"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--obs_index_name_output"
+    description: "Name of the index that is used to describe the cells (observations).\n"
+    info: null
+    default:
+    - "cell_id"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--rna_var_index_name_output"
+    description: "Output name of the index that is used to describe the genes.\n"
+    info: null
+    default:
+    - "rna_index"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--rna_raw_layer_output"
+    description: "Output location for the raw transcriptomics counts.\n"
+    info: null
+    default:
+    - "X"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--rna_normalized_layer_output"
+    description: "Output location for the normalized RNA counts.\n"
+    info: null
+    default:
+    - "log_normalized"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--rna_var_gene_names_output"
+    description: "Name of the .var column that specifies the gene games.\n"
+    info: null
+    default:
+    - "gene_symbol"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--prot_var_index_name_output"
+    description: "Output name of the index that is used to describe the proteins.\
+      \ \n"
+    info: null
+    default:
+    - "prot_index"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--prot_raw_layer_output"
+    description: "Output location for the raw protein counts.\n"
+    info: null
+    default:
+    - "X"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--prot_normalized_layer_output"
+    description: "Output location for the normalized protein counts.\n"
+    info: null
+    default:
+    - "log_normalized"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Output arguments"
+  arguments:
+  - type: "file"
+    name: "--tiledb_dir"
+    description: "Directory where the TileDB output will be written to.\n"
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "python_script"
+  path: "script.py"
+  is_executable: true
+- type: "file"
+  path: "setup_logger.py"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Convert a MuData or AnnData object to tiledb. Currently, transcriptome\
+  \ and protein modalities are supported.\n\nNOTE: The functionality provided by this\
+  \ component is experimental and may be subject to change. \n"
+test_resources:
+- type: "python_script"
+  path: "test.py"
+  is_executable: true
+info: null
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "midmem"
+    - "midcpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "python:3.12-slim"
+  target_tag: "v4.0.0"
+  namespace_separator: "/"
+  setup:
+  - type: "apt"
+    packages:
+    - "procps"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "anndata~=0.12.7"
+    - "awkward"
+    - "mudata~=0.3.2"
+    - "tiledbsoma"
+    script:
+    - "exec(\"try:\\n  import zarr; from importlib.metadata import version\\nexcept\
+      \ ModuleNotFoundError:\\n  exit(0)\\nelse:  assert int(version(\\\"zarr\\\"\
+      ).partition(\\\".\\\")[0]) > 2\")"
+    upgrade: true
+  test_setup:
+  - type: "apt"
+    packages:
+    - "git"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.8.0"
+    github:
+    - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+    upgrade: true
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.8.0"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/convert/from_h5mu_or_h5ad_to_tiledb/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "docker"
+  output: "target/nextflow/convert/from_h5mu_or_h5ad_to_tiledb"
+  executable: "target/nextflow/convert/from_h5mu_or_h5ad_to_tiledb/main.nf"
+  viash_version: "0.9.4"
+  git_commit: "c0c0af6066061c3814d7b81276b539d6ffa7ffbd"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "v4.0.1-2-gc0c0af60660"
+package_config:
+  name: "openpipeline"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.4"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"v4.0.2\""
+  - ".engines[.type == 'docker'].target_tag := 'v4.0.0'"
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

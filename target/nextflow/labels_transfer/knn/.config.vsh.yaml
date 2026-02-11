@@ -1,0 +1,499 @@
+name: "knn"
+namespace: "labels_transfer"
+version: "v4.0.2"
+authors:
+- name: "Dorien Roosen"
+  roles:
+  - "maintainer"
+  - "author"
+  info:
+    role: "Core Team Member"
+    links:
+      email: "dorien@data-intuitive.com"
+      github: "dorien-er"
+      linkedin: "dorien-roosen"
+    organizations:
+    - name: "Data Intuitive"
+      href: "https://www.data-intuitive.com"
+      role: "Data Scientist"
+- name: "Vladimir Shitov"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      email: "vladimir.shitov@helmholtz-muenchen.de"
+      github: "vladimirshitov"
+      orcid: "0000-0002-1960-8812"
+      linkedin: "vladimir-shitov-9a659513b"
+    organizations:
+    - name: "Helmholtz Munich"
+      href: "https://www.helmholtz-munich.de"
+      role: "PhD Candidate"
+argument_groups:
+- name: "Input dataset (query) arguments"
+  arguments:
+  - type: "file"
+    name: "--input"
+    description: "The query data to transfer the labels to. Should be a .h5mu file."
+    info:
+      label: "Query"
+      file_format:
+        type: "h5mu"
+        mod:
+          rna:
+            description: "Modality in AnnData format containing RNA data."
+            required: true
+            slots:
+              X:
+                type: "double"
+                name: "features"
+                required: false
+                description: "The expression data to use for the classifier's inference,\
+                  \ if `--input_obsm_features` argument is not provided.\n"
+              obsm:
+              - type: "double"
+                name: "features"
+                example: "X_scvi"
+                required: false
+                description: "The embedding to use for the classifier's inference.\
+                  \ Override using the `--input_obsm_features` argument. If not provided,\
+                  \ the `.X` slot will be used instead.\nMake sure that embedding\
+                  \ was obtained in the same way as the reference embedding (e.g.\
+                  \ by the same model or preprocessing).\n"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--modality"
+    description: "Which modality to use."
+    info: null
+    default:
+    - "rna"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--input_obsm_features"
+    description: "The `.obsm` key of the embedding to use for the classifier's inference.\
+      \ If not provided, the `.X` slot will be used instead.\nMake sure that embedding\
+      \ was obtained in the same way as the reference embedding (e.g. by the same\
+      \ model or preprocessing).\n"
+    info: null
+    example:
+    - "X_scvi"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Reference dataset arguments"
+  arguments:
+  - type: "file"
+    name: "--reference"
+    description: "The reference data to train classifiers on."
+    info:
+      label: "Reference"
+      file_format:
+        type: "h5mu"
+        mod:
+          rna:
+            description: "Modality in AnnData format containing RNA data."
+            required: true
+            slots:
+              X:
+                type: "double"
+                name: "features"
+                required: false
+                description: "The expression data to use for the classifier's training,\
+                  \ if `--input_obsm_features` argument is not provided.\n"
+              obsm:
+              - type: "double"
+                name: "features"
+                example: "X_scvi"
+                description: "The embedding to use for the classifier's training.\
+                  \ Override using the `--reference_obsm_features` argument.\nMake\
+                  \ sure that embedding was obtained in the same way as the query\
+                  \ embedding (e.g. by the same model or preprocessing).\n"
+                required: true
+              obs:
+              - type: "string"
+                name: "targets"
+                multiple: true
+                example:
+                - "ann_level_1"
+                - "ann_level_2"
+                - "ann_level_3"
+                - "ann_level_4"
+                - "ann_level_5"
+                - "ann_finest_level"
+                description: "The target labels to transfer. Override using the `--reference_obs_targets`\
+                  \ argument."
+                required: true
+    example:
+    - "reference.h5mu"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--reference_obsm_features"
+    description: "The `.obsm` key of the embedding to use for the classifier's training.\
+      \ If not provided, the `.X` slot will be used instead.\nMake sure that embedding\
+      \ was obtained in the same way as the query embedding (e.g. by the same model\
+      \ or preprocessing).\n"
+    info: null
+    example:
+    - "X_scvi"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--reference_obs_targets"
+    description: "The `.obs` key(s) of the target labels to tranfer."
+    info: null
+    default:
+    - "ann_level_1"
+    - "ann_level_2"
+    - "ann_level_3"
+    - "ann_level_4"
+    - "ann_level_5"
+    - "ann_finest_level"
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+- name: "Outputs"
+  arguments:
+  - type: "file"
+    name: "--output"
+    description: "The query data in .h5mu format with predicted labels transfered\
+      \ from the reference."
+    info:
+      label: "Output data"
+      file_format:
+        type: "h5mu"
+        mod:
+          rna:
+            description: "Modality in AnnData format containing RNA data."
+            required: true
+            obs:
+            - type: "string"
+              name: "predictions"
+              description: "The predicted labels. Override using the `--output_obs_predictions`\
+                \ argument."
+              required: true
+            - type: "double"
+              name: "probability"
+              description: "The probability of the predicted labels. Override using\
+                \ the `--output_obs_probability` argument."
+              required: false
+            obsm:
+            - type: "double"
+              name: "X_scvi"
+              description: "The embedding used for the classifier's inference. Could\
+                \ have any name, specified by `input_obsm_features` argument.\""
+              required: false
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_obs_predictions"
+    description: "In which `.obs` slots to store the predicted information.\nIf provided,\
+      \ must have the same length as `--reference_obs_targets`.\nIf empty, will default\
+      \ to the `reference_obs_targets` combined with the `\"_pred\"` suffix.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_obs_probability"
+    description: "In which `.obs` slots to store the probability of the predictions.\n\
+      If provided, must have the same length as `--reference_obs_targets`.\nIf empty,\
+      \ will default to the `reference_obs_targets` combined with the `\"_probability\"\
+      ` suffix.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_compression"
+    description: "Compression format to use for the output AnnData and/or Mudata objects.\n\
+      By default no compression is applied.\n"
+    info: null
+    example:
+    - "gzip"
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Input dataset (query) arguments"
+  arguments:
+  - type: "string"
+    name: "--input_obsm_distances"
+    description: "The `.obsm` key of the input (query) dataset containing pre-calculated\
+      \ distances. \nIf not provided, the distances will be calculated using PyNNDescent.\n\
+      Make sure the distance matrix contains distances relative to the reference dataset\
+      \ and were obtained in the same way as the reference embedding.\n"
+    info: null
+    example:
+    - "bbknn_distances"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Reference dataset arguments"
+  arguments:
+  - type: "string"
+    name: "--reference_obsm_distances"
+    description: "The `.obsm` key of the reference dataset containing pre-calculated\
+      \ distances. \nIf not provided, the distances will be calculated using PyNNDescent.\n"
+    info: null
+    example:
+    - "bbknn_distances"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "KNN label transfer arguments"
+  arguments:
+  - type: "string"
+    name: "--weights"
+    description: "Weight function used in prediction. Possible values are:\n- `uniform`\
+      \ - all points in each neighborhood are weighted equally \n- `distance` - weight\
+      \ points by the inverse of their distance\n- `gaussian` - weight points by the\
+      \ sum of their Gaussian kernel similarities to each sample\n"
+    info: null
+    default:
+    - "uniform"
+    required: false
+    choices:
+    - "uniform"
+    - "distance"
+    - "gaussian"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--n_neighbors"
+    description: "The number of neighbors to use in k-neighbor graph structure used\
+      \ for fast approximate nearest neighbor search with PyNNDescent. \nLarger values\
+      \ will result in more accurate search results at the cost of computation time.\n"
+    info: null
+    default:
+    - 15
+    required: false
+    min: 5
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "python_script"
+  path: "script.py"
+  is_executable: true
+- type: "file"
+  path: "helper.py"
+- type: "file"
+  path: "compress_h5mu.py"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "This component performs label transfer from reference to query using\
+  \ a K-Neirest Neighbors classifier.\n"
+test_resources:
+- type: "python_script"
+  path: "test.py"
+  is_executable: true
+- type: "file"
+  path: "annotation_test_data"
+- type: "file"
+  path: "pbmc_1k_protein_v3"
+info: null
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "highmem"
+    - "highcpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "python:3.12"
+  target_tag: "v4.0.0"
+  namespace_separator: "/"
+  setup:
+  - type: "apt"
+    packages:
+    - "procps"
+    - "pkg-config"
+    - "libhdf5-dev"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "anndata~=0.12.7"
+    - "awkward"
+    - "mudata~=0.3.2"
+    script:
+    - "exec(\"try:\\n  import zarr; from importlib.metadata import version\\nexcept\
+      \ ModuleNotFoundError:\\n  exit(0)\\nelse:  assert int(version(\\\"zarr\\\"\
+      ).partition(\\\".\\\")[0]) > 2\")"
+    upgrade: true
+  - type: "python"
+    user: false
+    packages:
+    - "pynndescent~=0.5.10"
+    - "numpy<2"
+    upgrade: true
+  test_setup:
+  - type: "apt"
+    packages:
+    - "git"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.8.0"
+    github:
+    - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/labels_transfer/knn/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "docker"
+  output: "target/nextflow/labels_transfer/knn"
+  executable: "target/nextflow/labels_transfer/knn/main.nf"
+  viash_version: "0.9.4"
+  git_commit: "c0c0af6066061c3814d7b81276b539d6ffa7ffbd"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "v4.0.1-2-gc0c0af60660"
+package_config:
+  name: "openpipeline"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.4"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"v4.0.2\""
+  - ".engines[.type == 'docker'].target_tag := 'v4.0.0'"
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

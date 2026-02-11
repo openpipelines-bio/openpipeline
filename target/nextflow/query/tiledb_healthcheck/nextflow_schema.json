@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "tiledb_healthcheck",
+  "description": "Checks if a provided location can be queried as a TileDB-SOMA database.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "input database": {
+      "title": "Input database",
+      "type": "object",
+      "description": "Open a TileDB SOMA database by URI.",
+      "properties": {
+        "input_uri": {
+          "type": "string",
+          "description": "If specified, a URI containing the TileDB-SOMA objects.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"s3://bucket/path\"`. "
+        },
+        "s3_region": {
+          "type": "string",
+          "description": "Region where the TileDB-SOMA database is hosted.\n",
+          "help_text": "Type: `string`, multiple: `False`, required. "
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/input database"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

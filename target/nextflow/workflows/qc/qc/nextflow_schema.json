@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "qc",
+  "description": "A pipeline to add basic qc statistics to a MuData ",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID of the sample.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"foo\"`. "
+        },
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Path to the sample.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality to process.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "layer": {
+          "type": "string",
+          "description": "Layer to calculate qc metrics for.",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"raw_counts\"`. "
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Destination path to the output.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        }
+      }
+    },
+    "mitochondrial & ribosomal gene detection": {
+      "title": "Mitochondrial & Ribosomal Gene Detection",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "var_gene_names": {
+          "type": "string",
+          "description": ".var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as mitochondrial or ribosomal genes, respectively.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gene_symbol\"`. "
+        },
+        "var_name_mitochondrial_genes": {
+          "type": "string",
+          "description": "In which .var slot to store a boolean array corresponding the mitochondrial genes.\n",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "obs_name_mitochondrial_fraction": {
+          "type": "string",
+          "description": ".Obs slot to store the fraction of reads found to be mitochondrial",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "mitochondrial_gene_regex": {
+          "type": "string",
+          "description": "Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"^[mM][tT]-\"`. ",
+          "default": "^[mM][tT]-"
+        },
+        "var_name_ribosomal_genes": {
+          "type": "string",
+          "description": "In which .var slot to store a boolean array corresponding the ribosomal genes.\n",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "obs_name_ribosomal_fraction": {
+          "type": "string",
+          "description": "When specified, write the fraction of counts originating from ribosomal genes \n(based on --ribosomal_gene_regex) to an .obs column with the specified name.\nRequires --var_name_ribosomal_genes.\n",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "ribosomal_gene_regex": {
+          "type": "string",
+          "description": "Regex string that identifies ribosomal genes from --var_gene_names.\nBy default will detect human and mouse ribosomal genes from a gene symbol.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"^[Mm]?[Rr][Pp][LlSs]\"`. ",
+          "default": "^[Mm]?[Rr][Pp][LlSs]"
+        }
+      }
+    },
+    "qc metrics calculation options": {
+      "title": "QC metrics calculation options",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "var_qc_metrics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled 'True', \ncompared to the total sum of the values for all genes",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"ercc,highly_variable\"]`. "
+        },
+        "top_n_vars": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated",
+          "help_text": "Type: `integer`, multiple: `True`, default: `[50,100,200,500]`. ",
+          "default": [
+            50,
+            100,
+            200,
+            500
+          ]
+        },
+        "output_obs_num_nonzero_vars": {
+          "type": "string",
+          "description": "Name of column in .obs describing, for each observation, the number of stored values\n(including explicit zeroes)",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"num_nonzero_vars\"`. ",
+          "default": "num_nonzero_vars"
+        },
+        "output_obs_total_counts_vars": {
+          "type": "string",
+          "description": "Name of the column for .obs describing, for each observation (row),\nthe sum of the stored values in the columns.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"total_counts\"`. ",
+          "default": "total_counts"
+        },
+        "output_var_num_nonzero_obs": {
+          "type": "string",
+          "description": "Name of column describing, for each feature, the number of stored values\n(including explicit zeroes)",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"num_nonzero_obs\"`. ",
+          "default": "num_nonzero_obs"
+        },
+        "output_var_total_counts_obs": {
+          "type": "string",
+          "description": "Name of the column in .var describing, for each feature (column),\nthe sum of the stored values in the rows.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"total_counts\"`. ",
+          "default": "total_counts"
+        },
+        "output_var_obs_mean": {
+          "type": "string",
+          "description": "Name of the column in .obs providing the mean of the values in each row.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"obs_mean\"`. ",
+          "default": "obs_mean"
+        },
+        "output_var_pct_dropout": {
+          "type": "string",
+          "description": "Name of the column in .obs providing for each feature the percentage of\nobservations the feature does not appear on (i.e",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"pct_dropout\"`. ",
+          "default": "pct_dropout"
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/mitochondrial & ribosomal gene detection"
+    },
+    {
+      "$ref": "#/$defs/qc metrics calculation options"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}
