@@ -2,6 +2,7 @@ import sys
 import pytest
 import math
 from mudata import read_h5mu
+from shutil import copytree
 
 ## VIASH START
 meta = {
@@ -259,6 +260,45 @@ def test_antibody_and_cell_barcode_probes(run_component, tmp_path, input_4plex_d
         [
             "--input",
             input_4plex_dtc,
+            "--output",
+            str(output_path_template),
+            "--output_compression",
+            "gzip",
+            "--sample_csv",
+            samples_csv,
+        ]
+    )
+    assert output_dir.is_dir()
+
+    # check output
+    samples = [item for item in output_dir.iterdir() if item.is_file()]
+    assert len(samples) == 4
+    output_path = samples[0]
+    converted_data = read_h5mu(output_path)
+    assert list(converted_data.mod.keys()) == ["rna", "prot"]
+
+
+def test_no_feature_reference(run_component, tmp_path, input_4plex_dtc):
+    # Create a copy of the input without a feature reference
+    input_without_feature_reference = tmp_path / "input_without_feature_reference"
+    copytree(input_4plex_dtc, input_without_feature_reference)
+    try:
+        (input_without_feature_reference / "feature_reference.csv").unlink()
+    except FileNotFoundError:
+        (
+            input_without_feature_reference
+            / "multi"
+            / "count"
+            / "feature_reference.csv"
+        ).unlink()
+    output_dir = tmp_path / "converted"
+    output_path_template = output_dir / "*.h5mu"
+    samples_csv = tmp_path / "samples.csv"
+    # run component
+    run_component(
+        [
+            "--input",
+            input_without_feature_reference,
             "--output",
             str(output_path_template),
             "--output_compression",

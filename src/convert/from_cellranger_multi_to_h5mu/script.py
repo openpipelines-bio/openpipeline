@@ -150,7 +150,7 @@ def gather_input_data(dir: Path):
         found_input["count"] = dir
 
     feature_reference = found_input["count"] / "feature_reference.csv"
-    if feature_reference:
+    if feature_reference.is_file():
         found_input["feature_reference"] = feature_reference
 
     per_sample_outs_dir = dir / "per_sample_outs"
