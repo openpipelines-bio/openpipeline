@@ -456,9 +456,9 @@ RUN wget https://github.com/samtools/htslib/releases/download/1.16/htslib-1.16.t
 RUN git clone https://github.com/single-cell-genetics/cellsnp-lite.git && cd cellsnp-lite && autoreconf -iv && ./configure --with-htslib=/htslib-1.16 && make && make install
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux cellsnp"
-LABEL org.opencontainers.image.created="2026-02-12T03:33:34Z"
+LABEL org.opencontainers.image.created="2026-02-13T03:33:10Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="39d2efafce1d0b38c365f2d4a094b4b2b0f34a64"
+LABEL org.opencontainers.image.revision="6a6f42107b296633b9bc707136d031b77c64e7ba"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

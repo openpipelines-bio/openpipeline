@@ -378,7 +378,7 @@ build_info:
   output: "target/executable/convert/from_h5mu_or_h5ad_to_tiledb"
   executable: "target/executable/convert/from_h5mu_or_h5ad_to_tiledb/from_h5mu_or_h5ad_to_tiledb"
   viash_version: "0.9.4"
-  git_commit: "39d2efafce1d0b38c365f2d4a094b4b2b0f34a64"
+  git_commit: "6a6f42107b296633b9bc707136d031b77c64e7ba"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
