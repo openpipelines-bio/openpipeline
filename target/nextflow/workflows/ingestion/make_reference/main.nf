@@ -3537,7 +3537,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/make_reference",
     "viash_version" : "0.9.4",
-    "git_commit" : "6a6f42107b296633b9bc707136d031b77c64e7ba",
+    "git_commit" : "9f7f036a181a3e99a582f5753f467842872842a4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
