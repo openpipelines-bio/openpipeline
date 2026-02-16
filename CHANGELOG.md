@@ -2,7 +2,7 @@
 
 ## MINOR CHANGES
 
-* `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #)
+* `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137)
 
 # openpipelines 4.0.2
 
