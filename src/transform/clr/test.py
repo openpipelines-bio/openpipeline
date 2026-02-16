@@ -1,7 +1,11 @@
 import sys
 import pytest
-from mudata import read_h5mu
+from mudata import read_h5mu, MuData
 import numpy as np
+import anndata
+import pandas as pd
+import subprocess
+import re
 
 ## VIASH START
 meta = {
@@ -41,6 +45,40 @@ def test_clr(run_component, tmp_path):
         input_col / np.exp(np.log1p(input_col).sum(axis=0) / input_col.size)
     )
     np.testing.assert_allclose(result_col, expected_col)
+
+
+def test_clr_not_enough_observation_raises(run_component, tmp_path):
+    """
+    Test case where input contains no or very few observations.
+
+    Normalization is impossible, but the CLR implementation
+    from muon does not provide a descriptive error message.
+    """
+    output_file = tmp_path / "foo.h5mu"
+    empty_array = pd.DataFrame(
+        {"a": [1], "b": [2], "c": [3]}, dtype=np.float64, index=pd.Index(["obs1"])
+    )
+    empty_anndata = anndata.AnnData(X=empty_array)
+    empty_input = MuData({"prot": empty_anndata})
+    empty_input_path = tmp_path / "empty_input.h5mu"
+    empty_input.write_h5mu(empty_input_path)
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                empty_input_path,
+                "--output",
+                str(output_file),
+                "--output_compression",
+                "gzip",
+                "--output_layer",
+                "clr",
+            ]
+        )
+    assert re.search(
+        r"Need at least two observations to perform CLR normalization\. Found: 1",
+        err.value.stdout.decode("utf-8"),
+    )
 
 
 def test_clr_select_input_layer(run_component, tmp_path):
