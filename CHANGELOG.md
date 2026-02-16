@@ -1,3 +1,9 @@
+# openpipelines unreleased
+
+## MINOR CHANGES
+
+* `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #)
+
 # openpipelines 4.0.2
 
 ## BUG FIXES
