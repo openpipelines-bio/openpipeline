@@ -8,9 +8,9 @@ from collections import defaultdict
 
 ### VIASH START
 par = {
-    "input": "cart_atomx_process_samples.h5mu",
+    "input": "harmony_knn/integrated.pynndescent_knn.output",
     "modality": "rna",
-    "obs_feature": "sample_id",
+    "obs_feature": "dataset",
     "output": "reference_download/sample_split",
     "drop_obs_nan": "true",
     "output_compression": None,
@@ -20,18 +20,18 @@ par = {
 meta = {
     "resources_dir": "src/utils",
 }
-# import anndata as ad
+import anndata as ad
 
-# df = pd.DataFrame(
-#     [[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"]
-# )
-# var3 = pd.DataFrame(["d", "e", "g"], index=df.columns, columns=["Feat"])
-# obs3 = pd.DataFrame(["C C", "C_C"], index=df.index, columns=["Obs"])
-# ad3 = ad.AnnData(df, obs=obs3, var=var3)
-# mdata = mu.MuData({"rna": ad3})
-# mdata.write_h5mu("test_san.h5mu")
-# par["input"] = "test_san.h5mu"
-# par["obs_feature"] = "Obs"
+df = pd.DataFrame(
+    [[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"]
+)
+var3 = pd.DataFrame(["d", "e", "g"], index=df.columns, columns=["Feat"])
+obs3 = pd.DataFrame(["C C", "C_C"], index=df.index, columns=["Obs"])
+ad3 = ad.AnnData(df, obs=obs3, var=var3)
+mdata = mu.MuData({"rna": ad3})
+mdata.write_h5mu("test_san.h5mu")
+par["input"] = "test_san.h5mu"
+par["obs_feature"] = "Obs"
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
