@@ -1,0 +1,38 @@
+# Inputs
+# input: "dataset.h5mu"
+# tiledb_input_uri: "s3://bucket/path"
+# tiledb_s3_region: "us-west-2"
+# tiledb_endpoint: "foo"
+tiledb_s3_no_sign_request: false
+
+# Input slots
+layer: "log_normalized"
+modality: "rna"
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_tiledb: "$id.$key.output_tiledb"
+
+# Neighbour calculation
+uns_neighbors: "harmonypy_integration_neighbors"
+obsp_neighbor_distances: "harmonypy_integration_distances"
+obsp_neighbor_connectivities: "harmonypy_integration_connectivities"
+
+# Harmony integration options
+embedding: "X_pca"
+obsm_integrated: "X_pca_integrated"
+obs_covariates: # please fill in - example: ["batch", "sample"]
+theta: [2.0]
+
+# Clustering options
+obs_cluster: "harmony_integration_leiden"
+leiden_resolution: [1.0]
+
+# Umap options
+obsm_umap: "X_leiden_harmony_umap"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments
