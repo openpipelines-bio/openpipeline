@@ -1,4 +1,4 @@
-# openpipelines x.x.x
+# openpipelines 4.0.3
 
 * `dataflow/split_h5mu`: ensure subsetted modality is written as a .copy() (not a view) before writing file, to prevent `obsp` sparse indexing errors during serialization (PR #1138).
 
