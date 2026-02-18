@@ -349,7 +349,6 @@ def test_sample_split_sparse_obsp(
 
     s1 = mu.read_h5mu(s1_file)
     s2 = mu.read_h5mu(s2_file)
-    input_h5mu = mu.read_h5mu(input_h5mu_path_sparse_obsp)
 
     # Still contains both modalities
     assert s1.n_mod == 2
@@ -360,8 +359,8 @@ def test_sample_split_sparse_obsp(
     assert s2.mod["mod4"].n_obs == 1
 
     # Other modality unchanged
-    assert s1.mod["mod2"].n_obs == input_h5mu.mod["mod2"].n_obs
-    assert s2.mod["mod2"].n_obs == input_h5mu.mod["mod2"].n_obs
+    assert s1.mod["mod2"].n_obs == input_h5mu_sparse_obsp.mod["mod2"].n_obs
+    assert s2.mod["mod2"].n_obs == input_h5mu_sparse_obsp.mod["mod2"].n_obs
 
     # .obsp should be correctly subset to (1, 1) and still present
     assert "connectivities" in s1.mod["mod4"].obsp.keys()
