@@ -17,6 +17,9 @@ par = {
     "output_files": "reference_download/sample_files.csv",
     "ensure_unique_filenames": True,
 }
+meta = {
+    "resources_dir": "src/utils",
+}
 import anndata as ad
 
 df = pd.DataFrame(
@@ -79,30 +82,32 @@ def main():
             f"Filtering modality '{par['modality']}' observations by .obs['{par['obs_feature']}'] == {obs_name}"
         )
         mdata_obs = mdata.copy()
-        adata_obs = mdata_obs.mod[par["modality"]]
+        adata_full = mdata_obs.mod[par["modality"]]
 
         # split the samples
-        adata_obs = adata_obs[adata_obs.obs[par["obs_feature"]] == obs_name]
-        mdata_obs_name = f"{input_file.stem}_{file_name}.h5mu"
-        obs_files.append(mdata_obs_name)
+        mask = adata_full.obs[par["obs_feature"]] == obs_name
+        adata_obs = adata_full[mask].copy()
 
         # Dropping columns that only have nan values after splitting
         if par["drop_obs_nan"]:
             logger.info("Dropping all .obs columns with NaN values")
-            adata_obs.obs.dropna(axis=1, how="all", inplace=True)
+            adata_obs.obs = adata_obs.obs.dropna(axis=1, how="all")
+
+        mdata_obs.mod[par["modality"]] = adata_obs
+
+        mdata_obs_name = f"{input_file.stem}_{file_name}.h5mu"
+        out_path = output_dir / mdata_obs_name
 
         # replace mdata file with modality adata contianing split samples
         logger.info(
-            f"Writing h5mu filtered for {par['obs_feature']} {obs_name} to file {output_dir / mdata_obs_name}"
-        )
-        mdata_obs.mod[par["modality"]] = adata_obs
-        mdata_obs.write_h5mu(
-            output_dir / mdata_obs_name, compression=par["output_compression"]
+            f"Writing h5mu filtered for {par['obs_feature']} {obs_name} to file {out_path}"
         )
 
+        mdata_obs.write_h5mu(out_path, compression=par["output_compression"])
+
         # avoid keeping files in memory
-        del mdata_obs
-        del adata_obs
+        obs_files.append(mdata_obs_name)
+        del mdata_obs, adata_obs
         gc.collect()
 
     logger.info(f"Writing output_files CSV file to {par['output_files']}")
