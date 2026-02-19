@@ -3757,7 +3757,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.9.4",
-    "git_commit" : "e7db35d98a285d78cfdcc24183ee6d170745334a",
+    "git_commit" : "6e524ac91957732f1f2fe1155b364f83957d1e4a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
