@@ -3564,6 +3564,13 @@ temp_obsp = {
 pca_key = temp_uns[neigh_key]["params"]["use_rep"]
 temp_obsm = {pca_key: data.obsm[pca_key]}
 
+for key_, val_ in (temp_obsp | temp_obsm).items():
+    if issparse(val_):
+        logger.info("%s is sparse", key_)
+        val_.check_format()
+        continue
+    logger.info("%s is not sparse, type: %s", key_, type(val_))
+
 temp_adata = ad.AnnData(obsm=temp_obsm, obsp=temp_obsp, uns=temp_uns, shape=data.shape)
 
 sc.tl.umap(
