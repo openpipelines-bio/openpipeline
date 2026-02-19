@@ -3486,6 +3486,7 @@ import mudata as mu
 import sys
 import anndata as ad
 import faulthandler
+from scipy.sparse import issparse
 
 faulthandler.enable()
 
