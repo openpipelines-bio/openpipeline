@@ -76,23 +76,33 @@ argument_groups:
         description: Whether to sanitize ensembl ids by removing version numbers.
         default: true
 
+  - name: Reference model
+    description: Pre-trained scANVI model to map the query data onto.
+    arguments:
+      - name: "--reference_model"
+        required: false
+        type: file
+        description: Path to pre-trained scANVI model.
+        example: scanvi_model/
+
   - name: Reference input
+    description: Reference dataset input arguments to train scANVI model on. Only used if no reference model is provided.
     arguments:
       - name: "--reference"
-        required: true
+        required: false
         type: file
         description: Reference dataset consisting of the labeled observations to train the KNN classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset.
         example: reference.h5mu
       - name: "--reference_obs_target"
         type: string
         example: cell_type
-        required: true
+        required: false
         description: The `.obs` key containing the target labels.
       - name: "--reference_obs_batch_label"
         type: string
         description:  "The .obs field in the reference dataset containing the batch labels."
         example: "sample"
-        required: true
+        required: false
       - name: "--reference_obs_size_factor"
         type: string
         required: false
@@ -250,6 +260,8 @@ test_resources:
     path: test.nf
     entrypoint: test_wf
   - path: /resources_test/annotation_test_data/TS_Blood_filtered.h5mu
+  - path: /resources_test/annotation_test_data/scanvi_model/
+  - path: /resources_test/annotation_test_data/scanvi_covariate_model/
   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 
 runners:

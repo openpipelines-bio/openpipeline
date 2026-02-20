@@ -47,6 +47,9 @@
 * `dataflow/concatenate_h5mu`: optionally perform block-diagonal concatenation of specified `.obsp` keys using `--obsp_keys` across input MuData objects (PR #1115).
 
 * `workflows/annotation/totalvi_leiden` and `annotate/totalvi`: Added new workflows and components for cell type annotation using TotalVI integration followed by Leiden clustering, without scArches reference mapping (PR #1092).
+* `workflows/embedding/scanvi_model`: Generate a scANVI emedding model (PR #1104).
+
+* `workflows/annotation/scanvi_scarches`: Accept either a reference model or dataset to perform scANVI annotation (PR#1104).
 
 ## EXPERIMENTAL
 
