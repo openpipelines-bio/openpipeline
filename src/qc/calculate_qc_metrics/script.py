@@ -16,7 +16,7 @@ mudata.set_options(pull_on_update=True)
 
 ## VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    "input": "/home/di/code/openpipelines-multisample/83abfb78-c0d0-4d7c-8430-2c7fb6122b4b.zarr",
     "output": "foo.h5mu",
     "modality": "rna",
     "layer": None,
@@ -44,7 +44,7 @@ def mudata_opener(file_loc, mode=None):
     open_mudata = None
     input_is_zarr = False
     try:
-        open_mudata = zarr.open(file_loc, mode=mode)
+        open_mudata = zarr.open(file_loc, zarr_format=3, mode=mode)
         input_is_zarr = True
         yield open_mudata, input_is_zarr
     except (zarr.errors.GroupNotFoundError, NotADirectoryError):
@@ -280,12 +280,11 @@ def main():
     )
     # In order to match the format (zarr or h5) of the input to the output
     modality_anndatas = {}
-
     with mudata_opener(par["input"], mode="r") as (open_mudata, input_is_zarr):
         logger.info(
             "Openened %s in %s format.", par["input"], "zarr" if input_is_zarr else "h5"
         )
-        mods = open_mudata["mod"].keys()
+        mods = list(open_mudata["mod"].keys())
         logger.info("Found modalities: %s", ", ".join(mods))
         # Create AnnData object for only the metadata (var and obs)
         # We need all of the modalities for this in order to be able to adjust
