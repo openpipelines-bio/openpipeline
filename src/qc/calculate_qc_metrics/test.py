@@ -475,4 +475,4 @@ def test_large(run_component, input_mudata_random, random_h5mu_path):
 
 
 if __name__ == "__main__":
-    sys.exit(pytest.main([f"{__file__}::test_add_qc", "-v", "-x"]))
+    sys.exit(pytest.main([__file__, "-v", "-x"]))
