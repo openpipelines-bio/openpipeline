@@ -11,8 +11,6 @@ from functools import partial
 import zarr
 
 settings.zarr_write_format = 3
-# Avoid FutureWarning for mudata 0.4
-mudata.set_options(pull_on_update=True)
 
 ## VIASH START
 par = {
@@ -337,7 +335,11 @@ def main():
     else:
         logger.info("Copied input directory %s", par["input"], par["output"])
     logger.info("Using a %s writer", "zarr" if input_is_zarr else "H5")
-    write_opener = partial(zarr.open, zarr_format=3) if input_is_zarr else h5py.File
+    write_opener = (
+        partial(zarr.open, zarr_format=3, use_consolidated=False)
+        if input_is_zarr
+        else h5py.File
+    )
     context = (
         nullcontext if input_is_zarr else closing
     )  # zarr format does not need to be closed
@@ -351,6 +353,8 @@ def main():
         )
         write_elem(open_output, "var", mudata_skeleton.var)
         write_elem(open_output, "obs", mudata_skeleton.obs)
+    if input_is_zarr:
+        zarr.consolidate_metadata(open_output.store)
     logger.info("Finished!")
 
 

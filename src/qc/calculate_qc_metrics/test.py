@@ -8,7 +8,6 @@ import scanpy as sc
 import pandas as pd
 import scipy
 import uuid
-from zarr.errors import GroupNotFoundError
 from pandas.testing import assert_series_equal
 from itertools import product
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
@@ -36,11 +35,13 @@ def input_path(tmp_path, file_format):
     orig_path = Path(
         f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
     )
+    output_ext = "h5mu" if file_format == "h5" else "zarr"
+    output_path = tmp_path / f"{str(uuid.uuid4())}.{output_ext}"
     if file_format == "zarr":
-        output_path = tmp_path / f"{str(uuid.uuid4())}.zarr"
         md.read_h5mu(orig_path).write_zarr(output_path)
-        return output_path
-    return orig_path
+    else:
+        md.read_h5mu(orig_path).write_h5mu(output_path)
+    return output_path
 
 
 @pytest.fixture(params=[(50000, 100)])
@@ -63,10 +64,11 @@ def input_mudata_random(request):
 
 
 @pytest.fixture
-def input_mudata(input_path):
-    try:
+def input_mudata(input_path, file_format):
+    assert file_format in ("zarr", "h5")
+    if file_format == "zarr":
         mudata = md.read_zarr(input_path)
-    except GroupNotFoundError:
+    else:
         mudata = md.read_h5mu(input_path)
     # create a less sparse matrix to increase the variability in qc statistics
     rng = np.random.default_rng()
@@ -114,7 +116,7 @@ def mudata_with_boolean_column(tmp_path, input_mudata, request, file_format):
     return new_input_path
 
 
-def test_add_qc(run_component, input_path, random_path):
+def test_add_qc(run_component, input_path, random_path, file_format):
     output_path = random_path(input_path.suffix.lstrip("."))
     run_component(
         [
@@ -132,18 +134,13 @@ def test_add_qc(run_component, input_path, random_path):
     )
 
     assert output_path.exists()
-    is_zarr = False
-    try:
+    assert file_format in ("h5", "zarr")
+    if file_format == "zarr":
         data_with_qc = md.read_zarr(output_path)
-        is_zarr = True
-    except GroupNotFoundError:
-        data_with_qc = md.read(output_path)
-    try:
         input_data = md.read_zarr(input_path)
-        assert is_zarr
-    except GroupNotFoundError:
+    else:
+        data_with_qc = md.read(output_path)
         input_data = md.read(input_path)
-        assert not is_zarr
     assert data_with_qc.shape == input_data.shape
     mean_using_dense = np.mean(input_data["rna"].X.todense(), axis=0)
     np.testing.assert_allclose(
@@ -171,7 +168,7 @@ def test_add_qc(run_component, input_path, random_path):
     data_with_qc.obs = data_with_qc.obs.drop(
         columns=list(map("rna:{}".format, expected_obs_columns)), errors="errors"
     )
-    assert_annotation_objects_equal(input_path, data_with_qc)
+    assert_annotation_objects_equal(input_data, data_with_qc)
 
 
 @pytest.mark.parametrize(
@@ -286,13 +283,13 @@ def test_qc_metrics_optional(
 
 
 def test_calculcate_qc_var_qc_metrics(
-    run_component, mudata_with_boolean_column, random_path
+    run_component, mudata_with_boolean_column, random_path, file_format
 ):
     output_path = random_path(mudata_with_boolean_column.suffix.lstrip("."))
-
-    try:
+    assert file_format in ("h5", "zarr")
+    if file_format == "zarr":
         input_data = md.read_zarr(mudata_with_boolean_column)
-    except GroupNotFoundError:
+    else:
         input_data = md.read_h5mu(mudata_with_boolean_column)
     args = [
         "--input",
@@ -311,9 +308,9 @@ def test_calculcate_qc_var_qc_metrics(
 
     run_component(args)
     assert output_path.exists()
-    try:
+    if file_format == "zarr":
         output = md.read_zarr(output_path)
-    except GroupNotFoundError:
+    else:
         output = md.read_h5mu(output_path)
     data_with_qc = output["rna"]
     for qc_metric in ("pct_custom", "total_counts_custom"):
@@ -478,4 +475,4 @@ def test_large(run_component, input_mudata_random, random_h5mu_path):
 
 
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__, "-v"]))
+    sys.exit(pytest.main([f"{__file__}::test_add_qc", "-v", "-x"]))
