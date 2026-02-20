@@ -16,7 +16,7 @@ mudata.set_options(pull_on_update=True)
 
 ## VIASH START
 par = {
-    "input": "/home/di/code/openpipelines-multisample/83abfb78-c0d0-4d7c-8430-2c7fb6122b4b.zarr",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     "output": "foo.h5mu",
     "modality": "rna",
     "layer": None,
