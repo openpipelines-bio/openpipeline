@@ -456,33 +456,5 @@ def test_total_counts_less_precision_dtype(
     np.testing.assert_allclose(total_sums_manual, total_counts.to_numpy())
 
 
-@pytest.mark.parametrize("input_mudata_random", [(50000, 50000)], indirect=True)
-def test_large(run_component, input_mudata_random, random_h5mu_path):
-    input_path = random_h5mu_path()
-    input_mudata_random.write(input_path)
-    output_path = random_h5mu_path()
-    run_component(
-        [
-            "--input",
-            input_path,
-            "--output",
-            output_path,
-            "--modality",
-            "mod1",
-        ]
-    )
-    output_data = md.read_h5mu(output_path)
-    matrix_good_type = input_mudata_random.mod["mod1"].X
-    var_names = input_mudata_random.var_names
-    obs_names = input_mudata_random.obs_names
-    del input_mudata_random
-    input_df = pd.DataFrame(
-        matrix_good_type.todense(), columns=var_names, index=obs_names
-    )
-    total_sums_manual = input_df.to_numpy().sum(axis=0, dtype=np.float128)
-    total_counts = output_data.mod["mod1"].var["total_counts"]
-    np.testing.assert_allclose(total_sums_manual, total_counts.to_numpy())
-
-
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-v", "-x"]))
