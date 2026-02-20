@@ -110,7 +110,7 @@ def mudata_with_boolean_column(tmp_path, input_mudata, request, file_format):
     )
     new_input_path = tmp_path / new_file_name
     write_func = (
-        input_mudata.write_zarr if request.param == "zarr" else input_mudata.write
+        input_mudata.write_zarr if file_format == "zarr" else input_mudata.write
     )
     write_func(new_input_path)
     return new_input_path
@@ -189,6 +189,7 @@ def test_qc_metrics_set_output_column(
     annotation_matrix,
     arg_value,
     random_path,
+    file_format,
 ):
     output_path = random_path(input_mudata_path.suffix.lstrip("."))
     args = [
@@ -218,7 +219,10 @@ def test_qc_metrics_set_output_column(
     defaults = {"var": default_var_columns, "obs": default_obs_columns}
     defaults[annotation_matrix].update({optional_parameter.strip("-"): arg_value})
     assert output_path.exists()
-    data_with_qc = md.read(output_path)
+    if file_format == "zarr":
+        data_with_qc = md.read_zarr(output_path)
+    else:
+        data_with_qc = md.read(output_path)
     for attribute_name in ("var", "obs"):
         setattr(
             data_with_qc.mod["rna"],
@@ -260,8 +264,9 @@ def test_qc_metrics_optional(
     annotation_matrix,
     expected_missing,
     random_path,
+    file_format,
 ):
-    output_path = random_path(input_mudata_path.suffix.lstrip("."))
+    output_path = random_path("h5mu" if not file_format == "zarr" else "zarr")
     args = [
         "--input",
         input_mudata_path,
@@ -277,7 +282,10 @@ def test_qc_metrics_optional(
 
     run_component(args)
     assert output_path.exists()
-    data_with_qc = md.read("foo.h5mu")
+    if file_format == "zarr":
+        data_with_qc = md.read_zarr(output_path)
+    else:
+        data_with_qc = md.read(output_path)
     matrix = getattr(data_with_qc.mod["rna"], annotation_matrix)
     assert matrix.filter(regex=expected_missing, axis=1).empty
 
@@ -285,7 +293,7 @@ def test_qc_metrics_optional(
 def test_calculcate_qc_var_qc_metrics(
     run_component, mudata_with_boolean_column, random_path, file_format
 ):
-    output_path = random_path(mudata_with_boolean_column.suffix.lstrip("."))
+    output_path = random_path("h5mu" if not file_format == "zarr" else "zarr")
     assert file_format in ("h5", "zarr")
     if file_format == "zarr":
         input_data = md.read_zarr(mudata_with_boolean_column)
@@ -333,9 +341,9 @@ def test_calculcate_qc_var_qc_metrics(
 
 
 def test_compare_scanpy(
-    run_component, mudata_with_boolean_column, input_mudata, random_h5mu_path
+    run_component, mudata_with_boolean_column, input_mudata, random_path, file_format
 ):
-    output_path = random_h5mu_path()
+    output_path = random_path("h5mu" if not file_format == "zarr" else "zarr")
 
     run_component(
         [
@@ -353,9 +361,11 @@ def test_compare_scanpy(
             "False",
         ]
     )
-    assert output_path.is_file()
-
-    component_data = md.read(output_path)
+    assert output_path.exists()
+    if file_format == "zarr":
+        component_data = md.read_zarr(output_path)
+    else:
+        component_data = md.read(output_path)
     rna_mod = component_data.mod["rna"]
 
     # Replicate --var_qc_metrics_fill_na_value False
