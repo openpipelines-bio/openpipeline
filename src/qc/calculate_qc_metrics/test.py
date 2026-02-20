@@ -12,6 +12,8 @@ from pandas.testing import assert_series_equal
 from itertools import product
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
+ad.settings.zarr_write_format = 3
+
 ## VIASH START
 meta = {
     "executable": "./target/executable/qc/calculate_qc_metrics/calculate_qc_metrics",
