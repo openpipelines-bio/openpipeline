@@ -8,6 +8,7 @@ import scanpy as sc
 import pandas as pd
 import scipy
 import uuid
+from zarr.errors import GroupNotFoundError
 from pandas.testing import assert_series_equal
 from itertools import product
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
@@ -24,30 +25,49 @@ meta = {
 ## VIASH END
 
 
-@pytest.fixture
-def input_path():
-    return f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+@pytest.fixture(params=["h5", "zarr"])
+def file_format(request):
+    return request.param
 
 
 @pytest.fixture
-def input_mudata_random():
+def input_path(tmp_path, file_format):
+    assert file_format in ("h5", "zarr")
+    orig_path = Path(
+        f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+    )
+    if file_format == "zarr":
+        output_path = tmp_path / f"{str(uuid.uuid4())}.zarr"
+        md.read_h5mu(orig_path).write_zarr(output_path)
+        return output_path
+    return orig_path
+
+
+@pytest.fixture(params=[(50000, 100)])
+def input_mudata_random(request):
+    assert isinstance(request.param, tuple)
+    assert len(request.param) == 2
     rng = np.random.default_rng(seed=1)
+    nrows, ncols = request.param
     random_counts = scipy.sparse.random(
-        50000, 100, density=0.8, format="csr", dtype=np.uint32, random_state=rng
+        nrows, ncols, density=0.8, format="csr", dtype=np.uint32, random_state=rng
     )
     good_dtype = random_counts.astype(np.float32)
     del random_counts
     mod1 = ad.AnnData(
         X=good_dtype,
-        obs=pd.DataFrame(index=pd.RangeIndex(50000)),
-        var=pd.DataFrame(index=pd.RangeIndex(100)),
+        obs=pd.DataFrame(index=pd.RangeIndex(nrows)),
+        var=pd.DataFrame(index=pd.RangeIndex(ncols)),
     )
     return md.MuData({"mod1": mod1})
 
 
 @pytest.fixture
 def input_mudata(input_path):
-    mudata = md.read_h5mu(input_path)
+    try:
+        mudata = md.read_zarr(input_path)
+    except GroupNotFoundError:
+        mudata = md.read_h5mu(input_path)
     # create a less sparse matrix to increase the variability in qc statistics
     rng = np.random.default_rng()
     random_counts = scipy.sparse.random(
@@ -58,17 +78,24 @@ def input_mudata(input_path):
 
 
 @pytest.fixture
-def input_mudata_path(tmp_path, input_mudata):
-    output_path = tmp_path / f"{str(uuid.uuid4())}.h5mu"
-    input_mudata.write(output_path)
+def input_mudata_path(tmp_path, input_mudata, file_format):
+    assert file_format in ("h5", "zarr")
+    output_path = (
+        tmp_path / f"{str(uuid.uuid4())}.{'zarr' if file_format == 'zarr' else 'h5mu'}"
+    )
+    write_func = (
+        input_mudata.write_zarr if file_format == "zarr" else input_mudata.write
+    )
+    write_func(output_path)
     return output_path
 
 
 @pytest.fixture(
     params=product([True, False, np.nan, "random"], ["bool", pd.BooleanDtype()])
 )
-def mudata_with_boolean_column(tmp_path, input_mudata, request):
+def mudata_with_boolean_column(tmp_path, input_mudata, request, file_format):
     requested_value, requested_type = request.param
+    assert file_format in ("zarr", "h5")
     input_var = input_mudata.mod["rna"].var
     input_var["custom"] = requested_value
     if requested_value == "random":
@@ -76,13 +103,19 @@ def mudata_with_boolean_column(tmp_path, input_mudata, request):
             [True, False], len(input_var), p=[0.20, 0.80]
         )
     input_var["custom"] = input_var["custom"].astype(requested_type)
-    new_input_path = tmp_path / "input_with_custom_col.h5mu"
-    input_mudata.write(new_input_path)
+    new_file_name = (
+        f"input_with_custom_col.{'zarr' if file_format == 'zarr' else 'h5mu'}"
+    )
+    new_input_path = tmp_path / new_file_name
+    write_func = (
+        input_mudata.write_zarr if request.param == "zarr" else input_mudata.write
+    )
+    write_func(new_input_path)
     return new_input_path
 
 
-def test_add_qc(run_component, input_path, random_h5mu_path):
-    output_path = random_h5mu_path()
+def test_add_qc(run_component, input_path, random_path):
+    output_path = random_path(input_path.suffix.lstrip("."))
     run_component(
         [
             "--input",
@@ -98,8 +131,25 @@ def test_add_qc(run_component, input_path, random_h5mu_path):
         ]
     )
 
-    assert output_path.is_file()
-    data_with_qc = md.read(output_path)
+    assert output_path.exists()
+    is_zarr = False
+    try:
+        data_with_qc = md.read_zarr(output_path)
+        is_zarr = True
+    except GroupNotFoundError:
+        data_with_qc = md.read(output_path)
+    try:
+        input_data = md.read_zarr(input_path)
+        assert is_zarr
+    except GroupNotFoundError:
+        input_data = md.read(input_path)
+        assert not is_zarr
+    assert data_with_qc.shape == input_data.shape
+    mean_using_dense = np.mean(input_data["rna"].X.todense(), axis=0)
+    np.testing.assert_allclose(
+        np.ravel(mean_using_dense.A), data_with_qc["rna"].var["obs_mean"].to_numpy()
+    )
+
     expected_obs_columns = [
         f"pct_of_counts_in_top_{top_n_var}_vars" for top_n_var in ("10", "20", "90")
     ] + ["total_counts", "num_nonzero_vars"]
@@ -141,14 +191,14 @@ def test_qc_metrics_set_output_column(
     optional_parameter,
     annotation_matrix,
     arg_value,
-    random_h5mu_path,
+    random_path,
 ):
-    output_h5mu = random_h5mu_path()
+    output_path = random_path(input_mudata_path.suffix.lstrip("."))
     args = [
         "--input",
         input_mudata_path,
         "--output",
-        output_h5mu,
+        output_path,
         "--modality",
         "rna",
         "--output_compression",
@@ -170,8 +220,8 @@ def test_qc_metrics_set_output_column(
     }
     defaults = {"var": default_var_columns, "obs": default_obs_columns}
     defaults[annotation_matrix].update({optional_parameter.strip("-"): arg_value})
-    assert output_h5mu.is_file()
-    data_with_qc = md.read(output_h5mu)
+    assert output_path.exists()
+    data_with_qc = md.read(output_path)
     for attribute_name in ("var", "obs"):
         setattr(
             data_with_qc.mod["rna"],
@@ -212,12 +262,14 @@ def test_qc_metrics_optional(
     optional_parameter,
     annotation_matrix,
     expected_missing,
+    random_path,
 ):
+    output_path = random_path(input_mudata_path.suffix.lstrip("."))
     args = [
         "--input",
         input_mudata_path,
         "--output",
-        "foo.h5mu",
+        output_path,
         "--modality",
         "rna",
         "--output_compression",
@@ -227,17 +279,21 @@ def test_qc_metrics_optional(
         args.extend([optional_parameter, ""])
 
     run_component(args)
-    assert Path("foo.h5mu").is_file()
+    assert output_path.exists()
     data_with_qc = md.read("foo.h5mu")
     matrix = getattr(data_with_qc.mod["rna"], annotation_matrix)
     assert matrix.filter(regex=expected_missing, axis=1).empty
 
 
 def test_calculcate_qc_var_qc_metrics(
-    run_component, mudata_with_boolean_column, random_h5mu_path
+    run_component, mudata_with_boolean_column, random_path
 ):
-    output_path = random_h5mu_path()
-    input_data = md.read_h5mu(mudata_with_boolean_column)
+    output_path = random_path(mudata_with_boolean_column.suffix.lstrip("."))
+
+    try:
+        input_data = md.read_zarr(mudata_with_boolean_column)
+    except GroupNotFoundError:
+        input_data = md.read_h5mu(mudata_with_boolean_column)
     args = [
         "--input",
         str(mudata_with_boolean_column),
@@ -254,8 +310,12 @@ def test_calculcate_qc_var_qc_metrics(
         args.extend(["--var_qc_metrics_fill_na_value", "True"])
 
     run_component(args)
-    assert output_path.is_file()
-    data_with_qc = md.read(output_path)["rna"]
+    assert output_path.exists()
+    try:
+        output = md.read_zarr(output_path)
+    except GroupNotFoundError:
+        output = md.read_h5mu(output_path)
+    data_with_qc = output["rna"]
     for qc_metric in ("pct_custom", "total_counts_custom"):
         assert qc_metric in data_with_qc.obs
     # Do a percentage calculation based on indexes
@@ -355,6 +415,11 @@ def test_compare_scanpy(
         )
 
 
+@pytest.mark.parametrize(
+    "input_mudata_random",
+    [(5000, 50000)],
+    indirect=True,
+)
 def test_total_counts_less_precision_dtype(
     run_component, input_mudata_random, random_h5mu_path
 ):
@@ -384,5 +449,33 @@ def test_total_counts_less_precision_dtype(
     np.testing.assert_allclose(total_sums_manual, total_counts.to_numpy())
 
 
+@pytest.mark.parametrize("input_mudata_random", [(50000, 50000)], indirect=True)
+def test_large(run_component, input_mudata_random, random_h5mu_path):
+    input_path = random_h5mu_path()
+    input_mudata_random.write(input_path)
+    output_path = random_h5mu_path()
+    run_component(
+        [
+            "--input",
+            input_path,
+            "--output",
+            output_path,
+            "--modality",
+            "mod1",
+        ]
+    )
+    output_data = md.read_h5mu(output_path)
+    matrix_good_type = input_mudata_random.mod["mod1"].X
+    var_names = input_mudata_random.var_names
+    obs_names = input_mudata_random.obs_names
+    del input_mudata_random
+    input_df = pd.DataFrame(
+        matrix_good_type.todense(), columns=var_names, index=obs_names
+    )
+    total_sums_manual = input_df.to_numpy().sum(axis=0, dtype=np.float128)
+    total_counts = output_data.mod["mod1"].var["total_counts"]
+    np.testing.assert_allclose(total_sums_manual, total_counts.to_numpy())
+
+
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__]))
+    sys.exit(pytest.main([__file__, "-v"]))
