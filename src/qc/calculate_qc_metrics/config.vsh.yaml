@@ -132,7 +132,7 @@ test_resources:
   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
 engines:
   - type: docker
-    image: python:3.11-slim
+    image: python:3.13-slim
     setup:
       - type: apt
         packages: 
