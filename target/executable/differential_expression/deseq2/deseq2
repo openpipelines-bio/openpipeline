@@ -464,9 +464,9 @@ RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
 RUN Rscript -e 'options(warn = 2); remotes::install_github(c("scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a"), repos = "https://cran.rstudio.com")'
 LABEL org.opencontainers.image.authors="Jakub Majercik, Dorien Roosen, Dries De Maeyer, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component differential_expression deseq2"
-LABEL org.opencontainers.image.created="2026-02-20T03:25:51Z"
+LABEL org.opencontainers.image.created="2026-02-21T03:21:28Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c1c9381c36efa93aca5fe5f518718ac629f29004"
+LABEL org.opencontainers.image.revision="41aa6b163806f540de333591f70a8b3603ba56c9"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
