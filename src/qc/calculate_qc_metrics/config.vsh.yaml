@@ -28,7 +28,7 @@ argument_groups:
     arguments:
       - name: "--input"
         type: file
-        description: Input h5mu file
+        description: Input data. Can be encoded in H5 or Zarr (v3) format.
         direction: input
         required: true
         example: input.h5mu
@@ -116,7 +116,7 @@ argument_groups:
     arguments:
       - name: "--output"
         type: file
-        description: Output h5mu file.
+        description: Output data. Can be encoded using H5 or Zarr v3, matching the format of the input data.
         direction: output
         example: output.h5mu
     __merge__: [., /src/base/h5_compression_argument.yaml]
