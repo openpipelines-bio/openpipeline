@@ -35,12 +35,10 @@ def input_path(tmp_path, file_format):
     orig_path = Path(
         f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
     )
-    output_ext = "h5mu" if file_format == "h5" else "zarr"
-    output_path = tmp_path / f"{str(uuid.uuid4())}.{output_ext}"
-    if file_format == "zarr":
-        md.read_h5mu(orig_path).write_zarr(output_path)
-    else:
-        md.read_h5mu(orig_path).write_h5mu(output_path)
+    if file_format == "h5":
+        return orig_path
+    output_path = tmp_path / f"{str(uuid.uuid4())}.zarr"
+    md.read_h5mu(orig_path).write_zarr(output_path)
     return output_path
 
 
