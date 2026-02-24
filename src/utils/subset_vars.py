@@ -32,12 +32,8 @@ def subset_vars(adata, subset_col):
     else:
         raise TypeError("subset_col must be a string (column name) or a boolean mask (Series, Index, ndarray, or list).")
 
-    # Normalize boolean dtype
-    if mask.dtype == "boolean":
-        mask = mask.astype("bool")
-
     # Validate mask
-    if mask.dtype != "bool":
+    if not pd.api.types.is_bool_dtype(mask):
         raise ValueError(f"Expected mask to be boolean, but found {mask.dtype}. Can not subset data.")
     if mask.isna().sum() > 0:
         raise ValueError("Mask contains NaN values. Can not subset data.")

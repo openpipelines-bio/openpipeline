@@ -2,7 +2,7 @@
 
 ## NEW FUNCTIONALITY
 
-* `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to filter out features from highly variable gene selection based on a user-defined list of feature names (PR #1121).
+* `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).
 
 # openpipelines 4.0.1
 
