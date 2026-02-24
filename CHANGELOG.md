@@ -1,8 +1,29 @@
-# openpipelines x.x.x
+# openpipelines (unreleased)
 
-## NEW FUNCTIONALITY
+## NEW FEATURES
+
+* `qc/calculate_qc_metrics`: added support for MuData encoded in Zarr format (PR #1140).
 
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).
+
+## MAJOR CHANGES
+
+* `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
+
+## MINOR CHANGES
+
+* `qc/calculate_qc_metrics`: bump python version to `3.13` (PR #1140).
+
+
+# openpipelines 4.0.3
+
+* `dataflow/split_h5mu`: ensure subsetted modality is written as a .copy() (not a view) before writing file, to prevent `obsp` sparse indexing errors during serialization (PR #1138).
+
+# openpipelines 4.0.2
+
+## BUG FIXES
+
+* `convert/from_cellranger_multi_to_h5mu`: fix converting Cell Ranger output that contains no feature reference CSV file (PR #1136)
 
 # openpipelines 4.0.1
 
