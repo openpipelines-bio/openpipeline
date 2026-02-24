@@ -72,6 +72,25 @@ argument_groups:
         required: false
         type: integer
         description: Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor is set to 'seurat_v3'.
+      - name: "--highly_variable_features_var_name_filter_to_exclude"
+        required: false
+        type: string
+        multiple: true
+        description: |
+          List of feature names to exclude from HVG calculation.
+          Common use cases include excluding mitochondrial genes, ribosomal genes,
+          or cell cycle genes that may dominate variance but are not biologically
+          informative for clustering. Features in this list will be excluded from
+          HVG selection but remain in the output data.
+        example: ["MT-CO1", "MT-CO2", "MT-ND1"]
+      - name: "--highly_variable_features_features_to_exclude"
+        required: false
+        type: string
+        multiple: true
+        description: |
+          User-defined list of feature names to exclude from HVG calculation. 
+          These features will be excluded from HVG selection but will remain in the output data.
+        example: ["MT-CO1", "MT-CO2", "MT-ND1"]
   - name: "QC metrics calculation options"
     arguments:
       - name: "--var_qc_metrics"
