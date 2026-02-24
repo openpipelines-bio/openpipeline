@@ -30,14 +30,20 @@ def subset_vars(adata, subset_col):
     elif isinstance(subset_col, (pd.Index, np.ndarray, list)):
         mask = pd.Series(subset_col, index=adata.var.index)
     else:
-        raise TypeError("subset_col must be a string (column name) or a boolean mask (Series, Index, ndarray, or list).")
+        raise TypeError(
+            "subset_col must be a string (column name) or a boolean mask (Series, Index, ndarray, or list)."
+        )
 
     # Validate mask
     if not pd.api.types.is_bool_dtype(mask):
-        raise ValueError(f"Expected mask to be boolean, but found {mask.dtype}. Can not subset data.")
+        raise ValueError(
+            f"Expected mask to be boolean, but found {mask.dtype}. Can not subset data."
+        )
     if mask.isna().sum() > 0:
         raise ValueError("Mask contains NaN values. Can not subset data.")
     if len(mask) != adata.n_vars:
-        raise ValueError(f"Mask length {len(mask)} does not match number of variables {adata.n_vars}.")
+        raise ValueError(
+            f"Mask length {len(mask)} does not match number of variables {adata.n_vars}."
+        )
 
     return adata[:, mask].copy()
