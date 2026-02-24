@@ -10,6 +10,7 @@ input: # please fill in - example: ["input.h5mu"]
 # Highly variable features detection
 highly_variable_features_var_output: "filter_with_hvg"
 highly_variable_features_obs_batch_key: "sample_id"
+# highly_variable_features_features_to_exclude: ["MT-CO1", "MT-CO2", "MT-ND1"]
 
 # QC metrics calculation options
 var_qc_metrics: ["filter_with_hvg"]

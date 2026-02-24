@@ -80,6 +80,14 @@
           "description": "If specified, highly-variable genes are selected within each batch separately and merged",
           "help_text": "Type: `string`, multiple: `False`, default: `\"sample_id\"`. ",
           "default": "sample_id"
+        },
+        "highly_variable_features_features_to_exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "User-defined list of feature names to exclude from HVG calculation",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"MT-CO1\";\"MT-CO2\";\"MT-ND1\"]`. "
         }
       }
     },

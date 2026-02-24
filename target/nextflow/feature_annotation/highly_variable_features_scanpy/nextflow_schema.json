@@ -46,6 +46,14 @@
           "description": "If specified, use boolean array in adata.var[var_input] to calculate hvg on subset of vars.\n",
           "help_text": "Type: `string`, multiple: `False`. "
         },
+        "features_to_exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "User-defined list of feature names to exclude before HVG calculation",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"MT-CO1\";\"MT-CO2\";\"MT-ND1\"]`. "
+        },
         "output": {
           "type": "string",
           "format": "path",

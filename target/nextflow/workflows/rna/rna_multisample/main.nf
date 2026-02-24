@@ -3247,6 +3247,34 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--highly_variable_features_var_name_filter_to_exclude",
+          "description" : "List of feature names to exclude from HVG calculation.\nCommon use cases include excluding mitochondrial genes, ribosomal genes,\nor cell cycle genes that may dominate variance but are not biologically\ninformative for clustering. Features in this list will be excluded from\nHVG selection but remain in the output data.\n",
+          "example" : [
+            "MT-CO1",
+            "MT-CO2",
+            "MT-ND1"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--highly_variable_features_features_to_exclude",
+          "description" : "User-defined list of feature names to exclude from HVG calculation. \nThese features will be excluded from HVG selection but will remain in the output data.\n",
+          "example" : [
+            "MT-CO1",
+            "MT-CO2",
+            "MT-ND1"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3557,7 +3585,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample",
     "viash_version" : "0.9.4",
-    "git_commit" : "a70e0ebded487ec79760eeb474acf717c441e6ba",
+    "git_commit" : "e9c25baabc0ed985cadcb9ee59e642d0fe63ef88",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3658,7 +3686,8 @@ workflow run_wf {
           "var_name_filter": state.highly_variable_features_var_output,
           "n_top_features": state.highly_variable_features_n_top_features,
           "flavor": state.highly_variable_features_flavor,
-          "obs_batch_key": state.highly_variable_features_obs_batch_key
+          "obs_batch_key": state.highly_variable_features_obs_batch_key,
+          "features_to_exclude": state.highly_variable_features_features_to_exclude
         ]
       },
       toState: ["input": "output"],

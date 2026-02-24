@@ -3,6 +3,7 @@ input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # layer: "foo"
 # var_input: "foo"
+# features_to_exclude: ["MT-CO1", "MT-CO2", "MT-ND1"]
 # output: "$id.$key.output.h5mu"
 var_name_filter: "filter_with_hvg"
 varm_name: "hvg"
