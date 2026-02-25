@@ -3137,6 +3137,20 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "string",
+          "name" : "--features_to_exclude",
+          "description" : "User-defined list of feature names to exclude before HVG calculation. \nThese features will be excluded from HVG selection but will remain in the output data.\n",
+          "example" : [
+            "MT-CO1",
+            "MT-CO2",
+            "MT-ND1"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "file",
           "name" : "--output",
           "description" : "Output h5mu file.",
@@ -3476,7 +3490,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.9.4",
-    "git_commit" : "f2cf75c635be407984e88df0a1aa17d3dd5210cd",
+    "git_commit" : "de66348ecdbc09a9a245ed943d350783955f0cee",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3546,6 +3560,7 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'features_to_exclude': $( if [ ! -z ${VIASH_PAR_FEATURES_TO_EXCLUDE+x} ]; then echo "r'${VIASH_PAR_FEATURES_TO_EXCLUDE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_name_filter': $( if [ ! -z ${VIASH_PAR_VAR_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_VAR_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'varm_name': $( if [ ! -z ${VIASH_PAR_VARM_NAME+x} ]; then echo "r'${VIASH_PAR_VARM_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3644,6 +3659,38 @@ if par["var_input"]:
     input_anndata.var[par["var_input"]] = data.var[par["var_input"]]
     input_anndata = subset_vars(input_anndata, par["var_input"])
 
+# Exclude user-specified features from HVG calculation
+excluded_features_mask = None
+if par.get("features_to_exclude"):
+    features_to_exclude = set(par["features_to_exclude"])
+    logger.info(
+        "\\\\tExcluding %d specified features from HVG calculation",
+        len(features_to_exclude),
+    )
+    excluded_features_mask = input_anndata.var_names.isin(features_to_exclude)
+    n_excluded = excluded_features_mask.sum()
+    n_not_found = len(features_to_exclude) - n_excluded
+    if n_not_found > 0:
+        not_found = features_to_exclude - set(
+            input_anndata.var_names[excluded_features_mask]
+        )
+        logger.warning(
+            "\\\\t%d features to exclude were not found in the data: %s",
+            n_not_found,
+            list(not_found)[:10],
+        )
+    logger.info("\\\\tExcluding %d features from HVG calculation", n_excluded)
+    if n_excluded == input_anndata.n_vars:
+        raise ValueError(
+            f"All features ({n_excluded}) are in the exclusion list. "
+            "Please check your --features_to_exclude list."
+        )
+    # Store original var_names for later reindexing
+    original_var_names = input_anndata.var_names.copy()
+    # Subset to non-excluded features for HVG calculation using subset_vars
+    input_anndata = subset_vars(input_anndata, ~excluded_features_mask)
+    logger.info("\\\\t%d features remaining for HVG calculation", input_anndata.n_vars)
+
 logger.info("\\\\tUnfiltered data: %s", data)
 
 logger.info("\\\\tComputing hvg")
@@ -3683,6 +3730,17 @@ try:
     out = sc.pp.highly_variable_genes(**hvg_args)
     if par["var_input"] is not None:
         out.index = input_anndata.var.index
+        out = out.reindex(index=data.var.index, method=None)
+        out.highly_variable = out.highly_variable.fillna(False)
+        assert (out.index == data.var.index).all(), (
+            "Expected output index values to be equivalent to the input index"
+        )
+    elif par.get("features_to_exclude") is not None:
+        # Reindex to include excluded features, marking them as non-HVG
+        out.index = input_anndata.var.index
+        out = out.reindex(index=original_var_names, method=None)
+        out.highly_variable = out.highly_variable.fillna(False)
+        # Further reindex to match data.var.index (for consistency with var_input path)
         out = out.reindex(index=data.var.index, method=None)
         out.highly_variable = out.highly_variable.fillna(False)
         assert (out.index == data.var.index).all(), (

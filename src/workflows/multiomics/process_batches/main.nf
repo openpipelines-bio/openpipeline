@@ -76,6 +76,7 @@ workflow run_wf {
       "rna": [
         "highly_variable_features_var_output": "highly_variable_features_var_output",
         "highly_variable_features_obs_batch_key": "highly_variable_features_obs_batch_key",
+        "highly_variable_features_features_to_exclude": "highly_variable_features_features_to_exclude",
         "var_qc_metrics": "var_qc_metrics",
         "top_n_vars": "top_n_vars",
         "layer": "rna_layer",
