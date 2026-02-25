@@ -40,6 +40,14 @@ arguments:
     description: |
       If specified, use boolean array in adata.var[var_input] to calculate hvg on subset of vars.
     required: false
+  - name: "--features_to_exclude"
+    type: string
+    multiple: true
+    description: |
+      User-defined list of feature names to exclude before HVG calculation. 
+      These features will be excluded from HVG selection but will remain in the output data.
+    required: false
+    example: ["MT-CO1", "MT-CO2", "MT-ND1"]
   # output
   - name: "--output"
     type: file
