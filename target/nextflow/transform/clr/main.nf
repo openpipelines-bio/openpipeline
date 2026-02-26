@@ -3332,7 +3332,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr",
     "viash_version" : "0.9.4",
-    "git_commit" : "de66348ecdbc09a9a245ed943d350783955f0cee",
+    "git_commit" : "c200f800530f406a8f723519ac26eceeab22a78f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3441,6 +3441,10 @@ def main():
     input_data = read_h5ad(par["input"], mod=par["modality"])
     if par["input_layer"]:
         input_data = AnnData(X=input_data.layers[par["input_layer"]])
+    number_of_observations = input_data.n_obs
+    assert number_of_observations > 1, (
+        f"Need at least two observations to perform CLR normalization. Found: {number_of_observations}"
+    )
     # CLR always normalizes the .X layer, so we have to create an AnnData file with
     # the input layer at .X
     normalized_counts = pt.pp.clr(input_data, axis=par["axis"], inplace=False)

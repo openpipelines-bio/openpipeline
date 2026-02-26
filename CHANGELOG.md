@@ -14,6 +14,7 @@
 
 * `qc/calculate_qc_metrics`: bump python version to `3.13` (PR #1140).
 
+* `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137)
 
 # openpipelines 4.0.3
 
