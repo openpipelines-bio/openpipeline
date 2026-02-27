@@ -3472,7 +3472,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/dsc_pileup",
     "viash_version" : "0.9.4",
-    "git_commit" : "c200f800530f406a8f723519ac26eceeab22a78f",
+    "git_commit" : "cb7f61abf67ca9408547cf7286059e2be0ec42e4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
