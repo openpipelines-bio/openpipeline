@@ -11,7 +11,7 @@ authors:
 info:
   name: "scANVI model workflow"
   test_dependencies:
-    - name: scanvi_model_test
+    - name: scanvi_embedding_model_test
       namespace: test_workflows/embedding_model
 
 argument_groups:
@@ -128,6 +128,26 @@ argument_groups:
         direction: output
         description: The query data in .h5mu format with predicted labels predicted from the classifier trained on the reference.
         example: output.h5mu
+      - name: "--output_obsm_integrated_scvi"
+        type: string
+        required: false
+        description: The .obsm field in the output h5mu object where the scVI latent representation will be stored.
+        default: "X_integrated_scvi"
+      - name: "--output_obsm_integrated_scanvi"
+        type: string
+        required: false
+        description: The .obsm field in the output h5mu object where the scANVI latent representation will be stored.
+        default: "X_integrated_scanvi"
+      - name: "--output_obs_predictions"
+        type: string
+        required: false
+        description: The .obs field in the output h5mu object where the predicted labels from the scANVI classifier will be stored.
+        default: "scanvi_pred"
+      - name: "--output_obs_probabilities"
+        type: string
+        required: false
+        description: The .obs field in the output h5mu object where the predicted probabilities from the scANVI classifier will be stored.
+        default: "scanvi_probabilities"
       - name: "--output_compression"
         type: string
         description: |

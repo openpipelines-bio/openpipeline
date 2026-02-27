@@ -82,7 +82,9 @@ argument_groups:
       - name: "--reference_model"
         required: false
         type: file
-        description: Path to pre-trained scANVI model.
+        description: |
+          Path to pre-trained scANVI model.
+          If both `--reference` and `--reference_model` are provided, the reference model will be used and the reference dataset will be ignored.
         example: scanvi_model/
 
   - name: Reference input
@@ -91,7 +93,10 @@ argument_groups:
       - name: "--reference"
         required: false
         type: file
-        description: Reference dataset consisting of the labeled observations to train the KNN classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset.
+        description: |
+          Reference dataset consisting of the labeled observations to train the KNN classifier on.
+          The dataset is expected to be pre-processed in the same way as the --input query dataset.
+          If both `--reference` and `--reference_model` are provided, the reference model will be used and the reference dataset will be ignored.
         example: reference.h5mu
       - name: "--reference_obs_target"
         type: string
@@ -220,18 +225,21 @@ argument_groups:
         direction: output
         description: The query data in .h5mu format with predicted labels predicted from the classifier trained on the reference.
         example: output.h5mu
-      - name: "--output_obs_predictions"
-        type: string
-        default: "scanvi_pred"
-        description: "In which .obs slot to store the predicted labels."
-      - name: "--output_obs_probability"
-        type: string
-        default: "scanvi_probabilities"
-        description: "In which. obs slot to store the probabilities of the predicted labels."
       - name: "--output_obsm_integrated"
         type: string
+        required: false
+        description: The .obsm field in the output h5mu object where the scANVI latent representation will be stored.
         default: "X_integrated_scanvi"
-        description: "In which .obsm slot to store the integrated embedding."
+      - name: "--output_obs_predictions"
+        type: string
+        required: false
+        description: The .obs field in the output h5mu object where the predicted labels from the scANVI classifier will be stored.
+        default: "scanvi_pred"
+      - name: "--output_obs_probabilities"
+        type: string
+        required: false
+        description: The .obs field in the output h5mu object where the predicted probabilities from the scANVI classifier will be stored.
+        default: "scanvi_probabilities"
       - name: "--output_compression"
         type: string
         description: |
@@ -245,8 +253,7 @@ argument_groups:
         description: Path to the resulting scANVI model that was updated with query data.
       
 dependencies:
-  - name: integrate/scvi
-  - name: annotate/scanvi
+  - name: workflows/embedding_model/scanvi_model
   - name: integrate/scarches
   - name: workflows/multiomics/neighbors_leiden_umap
 

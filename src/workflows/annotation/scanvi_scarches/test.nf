@@ -12,7 +12,7 @@ workflow test_wf {
   output_ch = Channel.fromList(
     [
       [
-        id: "simple_execution_test",
+        id: "reference_dataset_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         input_obs_batch_label: "sample_id",
         reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
@@ -63,7 +63,7 @@ workflow test_wf {
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain 1 event"
-      assert output_list.collect{it[0]} == ["simple_execution_test"]
+      assert output_list.collect{it[0]} == ["reference_dataset_test"]
     }
   }
 
@@ -75,7 +75,7 @@ workflow test_wf_2 {
   output_ch = Channel.fromList(
     [
       [
-        id: "simple_execution_test",
+        id: "reference_covariates_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         input_obs_batch_label: "sample_id",
         input_obs_categorical_covariate: ["sample_id"],
@@ -129,7 +129,7 @@ workflow test_wf_2 {
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain 1 event"
-      assert output_list.collect{it[0]} == ["simple_execution_test"]
+      assert output_list.collect{it[0]} == ["reference_covariates_test"]
     }
   }
 
@@ -140,7 +140,7 @@ workflow test_wf_3 {
   output_ch = Channel.fromList(
     [
       [
-        id: "simple_execution_test",
+        id: "reference_model_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         input_obs_batch_label: "sample_id",
         reference_model: resources_test.resolve("annotation_test_data/scanvi_model/"),
@@ -188,7 +188,7 @@ workflow test_wf_3 {
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain 1 event"
-      assert output_list.collect{it[0]} == ["simple_execution_test"]
+      assert output_list.collect{it[0]} == ["reference_model_test"]
     }
   }
 
@@ -199,7 +199,7 @@ workflow test_wf_4 {
   output_ch = Channel.fromList(
     [
       [
-        id: "simple_execution_test",
+        id: "reference_covariate_model_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         input_obs_batch_label: "sample_id",
         input_obs_categorical_covariate: ["sample_id", "sample_id"],
@@ -249,6 +249,6 @@ workflow test_wf_4 {
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain 1 event"
-      assert output_list.collect{it[0]} == ["simple_execution_test"]
+      assert output_list.collect{it[0]} == ["reference_covariate_model_test"]
     }
   }

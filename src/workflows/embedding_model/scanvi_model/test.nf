@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 
 include { scanvi_model } from params.rootDir + "/target/nextflow/workflows/embedding_model/scanvi_model/main.nf"
-include { scanvi_model_test } from params.rootDir + "/target/_test/nextflow/test_workflows/embedding_model/scanvi_model_test/main.nf"
+include { scanvi_embedding_model_test } from params.rootDir + "/target/_test/nextflow/test_workflows/embedding_model/scanvi_embedding_model_test/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 
@@ -46,7 +46,7 @@ workflow test_wf {
 
     "Output: $output"
     }
-    | scanvi_model_test.run(
+    | scanvi_embedding_model_test.run(
         fromState: [
           "input": "output",
           "model": "output_scanvi_model"
@@ -103,7 +103,7 @@ workflow test_wf {
 
     "Output: $output"
     }
-    | scanvi_model_test.run(
+    | scanvi_embedding_model_test.run(
         fromState: [
           "input": "output",
           "model": "output_scanvi_model"

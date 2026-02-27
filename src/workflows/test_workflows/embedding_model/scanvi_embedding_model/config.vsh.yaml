@@ -1,4 +1,4 @@
-name: "scanvi_model_test"
+name: "scanvi_embedding_model_test"
 namespace: "test_workflows/embedding_model"
 scope: "test"
 description: "This component tests the output of the scanvi embedding model generation."
@@ -34,7 +34,7 @@ engines:
     setup:
       - type: python
         packages:
-        - scvi-tools~=1.3.1
+        - scvi-tools~=1.4.1
     __merge__: /src/base/requirements/testworkflows_setup.yaml
 runners:
   - type: executable

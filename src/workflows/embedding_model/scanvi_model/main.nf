@@ -31,9 +31,7 @@ workflow run_wf {
               "reduce_lr_on_plateau": "reduce_lr_on_plateau",
               "lr_factor": "lr_factor",
               "lr_patience": "lr_patience",
-          ],
-          args: [
-              "obsm_output": "X_integrated_scvi"
+              "obsm_output": "output_obsm_integrated_scvi"
           ],
           toState: [
               "reference": "output",
@@ -60,11 +58,9 @@ workflow run_wf {
               "reduce_lr_on_plateau": "reduce_lr_on_plateau",
               "lr_factor": "lr_factor",
               "lr_patience": "lr_patience",
-          ],
-          args: [
-              "obsm_output": "X_integrated_scanvi",
-              "obs_output_predictions": "scanvi_pred",
-              "obs_output_probabilities": "scanvi_probabilities"
+              "obsm_output": "output_obsm_integrated_scanvi",
+              "obs_output_predictions": "output_obs_predictions",
+              "obs_output_probabilities": "output_obs_probabilities"
           ],
           toState: [
               "output": "output",
