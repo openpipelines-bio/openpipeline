@@ -3528,7 +3528,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/svm_annotation",
     "viash_version" : "0.9.4",
-    "git_commit" : "e4598e9c638cde8edf8d41100f467d9184c31c86",
+    "git_commit" : "5ef5d1e484d8aee77c28421c19e7623c098da16f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
