@@ -16,6 +16,8 @@
 
 * `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137)
 
+* Bump viash to 0.9.7 (PR #)
+
 # openpipelines 4.0.3
 
 * `dataflow/split_h5mu`: ensure subsetted modality is written as a .copy() (not a view) before writing file, to prevent `obsp` sparse indexing errors during serialization (PR #1138).
