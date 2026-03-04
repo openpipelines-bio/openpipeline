@@ -178,7 +178,7 @@ jobs:
         find ./resources_test/ "${to_not_remove[@]}" -type f -exec rm {} +
         tree ./resources_test/
     - name: Login to the nvidia container registry
-      uses: docker/login-action@v3
+      uses: docker/login-action@v4
       env: 
           NVIDIA_PASSWORD: ${{ secrets.NVIDIA_PASSWORD }}
       if: ${{ env.NVIDIA_PASSWORD != '' }}
@@ -188,7 +188,7 @@ jobs:
         password: ${{ env.NVIDIA_PASSWORD }}
 
     - name: Login to container registry
-      uses: docker/login-action@v3
+      uses: docker/login-action@v4
       with:
         registry: ghcr.io
         username: ${{ secrets.GTHB_USER }}
