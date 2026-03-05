@@ -1,0 +1,392 @@
+import mudata as mu
+import sys
+from pathlib import Path
+import pytest
+import numpy as np
+import subprocess
+import re
+
+## VIASH START
+meta = {
+    "executable": "./target/executable/filter/filter_with_quantile/filter_with_quantile",
+    "resources_dir": "src/utils",
+    "config": "./src/filter/filter_with_quantile/config.vsh.yaml",
+}
+
+## VIASH END
+
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+
+logger = setup_logger()
+
+
+@pytest.fixture
+def base_h5mu():
+    """Load the base h5mu data without additional columns."""
+    path = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+    return mu.read_h5mu(path)
+
+
+@pytest.fixture
+def input_h5mu(base_h5mu):
+    """Base h5mu data with random normal columns for standard tests."""
+    input_data = base_h5mu.copy()
+
+    # Generate normally distributed integers between 0 and 100 for .obs
+    random_normal = np.random.normal(50, 5, input_data.mod["rna"].n_obs)
+    input_data.mod["rna"].obs["random_normal_int"] = np.clip(
+        random_normal, 0, 100
+    ).astype(int)
+
+    # Generate normally distributed integers between 0 and 100 for .var
+    random_normal_var = np.random.normal(50, 5, input_data.mod["rna"].n_vars)
+    input_data.mod["rna"].var["random_normal_int"] = np.clip(
+        random_normal_var, 0, 100
+    ).astype(int)
+
+    return input_data
+
+
+@pytest.fixture
+def input_h5mu_with_nan(input_h5mu):
+    """H5mu data with additional NaN columns for error testing."""
+    input_data = input_h5mu.copy()
+
+    # Add columns with NaN values for testing error handling
+    obs_with_nan = np.random.normal(50, 5, input_data.mod["rna"].n_obs)
+    obs_with_nan[0:3] = np.nan  # Add some NaN values
+    input_data.mod["rna"].obs["random_with_nan"] = obs_with_nan
+
+    var_with_nan = np.random.normal(50, 5, input_data.mod["rna"].n_vars)
+    var_with_nan[0:2] = np.nan  # Add some NaN values
+    input_data.mod["rna"].var["random_with_nan"] = var_with_nan
+
+    return input_data
+
+
+@pytest.fixture
+def input_path(input_h5mu, random_h5mu_path):
+    path = random_h5mu_path()
+    input_h5mu.write(path)
+    return path
+
+
+@pytest.fixture
+def input_path_with_nan(input_h5mu_with_nan, random_h5mu_path):
+    path = random_h5mu_path()
+    input_h5mu_with_nan.write(path)
+    return path
+
+
+@pytest.fixture
+def input_n_rna_obs(input_h5mu):
+    return input_h5mu.mod["rna"].n_obs
+
+
+@pytest.fixture
+def input_n_prot_obs(input_h5mu):
+    return input_h5mu.mod["prot"].n_obs
+
+
+@pytest.fixture
+def input_n_rna_vars(input_h5mu):
+    return input_h5mu.mod["rna"].n_vars
+
+
+@pytest.fixture
+def input_n_prot_vars(input_h5mu):
+    return input_h5mu.mod["prot"].n_vars
+
+
+def test_filter_mask(
+    run_component,
+    input_path,
+    random_h5mu_path,
+    input_n_rna_obs,
+    input_n_prot_obs,
+    input_n_rna_vars,
+    input_n_prot_vars,
+):
+    output_path = random_h5mu_path()
+
+    args = [
+        "--input",
+        input_path,
+        "--output",
+        output_path,
+        "--obs_column",
+        "random_normal_int",
+        "--var_column",
+        "random_normal_int",
+        "--obs_min_quantile",
+        "0.1",
+        "--obs_max_quantile",
+        "0.9",
+        "--var_min_quantile",
+        "0.05",
+        "--var_max_quantile",
+        "0.95",
+    ]
+
+    run_component(args)
+
+    assert Path(output_path).is_file()
+    mu_out = mu.read_h5mu(output_path)
+    rna_mod = mu_out.mod["rna"]
+    prot_mod = mu_out.mod["prot"]
+
+    assert "filter_with_quantile" in rna_mod.obs
+    assert "filter_with_quantile" in rna_mod.var
+
+    new_obs = rna_mod.n_obs
+    new_vars = rna_mod.n_vars
+    assert new_obs == input_n_rna_obs
+    assert new_vars == input_n_rna_vars
+
+    assert prot_mod.n_obs == input_n_prot_obs
+    assert prot_mod.n_vars == input_n_prot_vars
+
+    obs_filter = rna_mod.obs["filter_with_quantile"]
+    obs_filter_fraction = sum(obs_filter) / len(obs_filter)
+    var_filter = rna_mod.var["filter_with_quantile"]
+    var_filter_fraction = sum(var_filter) / len(var_filter)
+
+    assert np.isclose(obs_filter_fraction, 0.8, atol=0.1), (
+        f"Expected ~80% of obs to be kept, but got {obs_filter_fraction:.2f}"
+    )
+    assert np.isclose(var_filter_fraction, 0.9, atol=0.05), (
+        f"Expected ~90% of vars to be kept, but got {var_filter_fraction:.2f}"
+    )
+
+
+def test_subset(
+    run_component,
+    input_path,
+    random_h5mu_path,
+    input_n_rna_obs,
+    input_n_prot_obs,
+    input_n_rna_vars,
+    input_n_prot_vars,
+):
+    output_path = random_h5mu_path()
+
+    args = [
+        "--input",
+        input_path,
+        "--output",
+        output_path,
+        "--obs_column",
+        "random_normal_int",
+        "--var_column",
+        "random_normal_int",
+        "--obs_min_quantile",
+        "0.1",
+        "--obs_max_quantile",
+        "0.9",
+        "--var_min_quantile",
+        "0.05",
+        "--var_max_quantile",
+        "0.95",
+        "--do_subset",
+        "True",
+    ]
+
+    run_component(args)
+
+    assert Path(output_path).is_file()
+    mu_out = mu.read_h5mu(output_path)
+    rna_mod = mu_out.mod["rna"]
+    prot_mod = mu_out.mod["prot"]
+
+    assert "filter_with_quantile" in rna_mod.obs
+    assert "filter_with_quantile" in rna_mod.var
+
+    new_obs = rna_mod.n_obs
+    new_vars = rna_mod.n_vars
+
+    assert np.isclose(new_obs / input_n_rna_obs, 0.8, atol=0.1), (
+        "Expected .obs to be subset."
+    )
+    assert np.isclose(new_vars / input_n_rna_vars, 0.9, atol=0.05), (
+        "Expected .var to be subset."
+    )
+
+    assert prot_mod.n_obs == input_n_prot_obs
+    assert prot_mod.n_vars == input_n_prot_vars
+
+
+def test_no_quantiles(
+    run_component, input_path, random_h5mu_path, input_n_rna_obs, input_n_rna_vars
+):
+    output_path = random_h5mu_path()
+
+    args = [
+        "--input",
+        input_path,
+        "--output",
+        output_path,
+        "--obs_column",
+        "random_normal_int",
+        "--var_column",
+        "random_normal_int",
+    ]
+
+    run_component(args)
+
+    assert Path(output_path).is_file()
+    mu_out = mu.read_h5mu(output_path)
+    rna_mod = mu_out.mod["rna"]
+
+    assert "filter_with_quantile" in rna_mod.obs
+    assert "filter_with_quantile" in rna_mod.var
+
+    obs_filter = rna_mod.obs["filter_with_quantile"].sum()
+    var_filter = rna_mod.var["filter_with_quantile"].sum()
+
+    assert obs_filter == input_n_rna_obs, (
+        "Expected all obs to be kept when no quantiles are set."
+    )
+    assert var_filter == input_n_rna_vars, (
+        "Expected all vars to be kept when no quantiles are set."
+    )
+
+
+def test_no_filter_columns(
+    run_component, input_path, random_h5mu_path, input_n_rna_obs, input_n_rna_vars
+):
+    output_path = random_h5mu_path()
+
+    args = ["--input", input_path, "--output", output_path]
+
+    run_component(args)
+
+    assert Path(output_path).is_file()
+    mu_out = mu.read_h5mu(output_path)
+    rna_mod = mu_out.mod["rna"]
+
+    assert "filter_with_quantile" not in rna_mod.obs
+    assert "filter_with_quantile" not in rna_mod.var
+
+    assert rna_mod.n_obs == input_n_rna_obs, (
+        "Expected no filtering to be applied when no filter columns are set."
+    )
+    assert rna_mod.n_vars == input_n_rna_vars, (
+        "Expected no filtering to be applied when no filter columns are set."
+    )
+
+
+def test_raises_with_non_numeric_column(
+    run_component,
+    input_path,
+    random_h5mu_path,
+):
+    output_path = random_h5mu_path()
+    # fails because input data are not correctly lognormalized
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                input_path,
+                "--output",
+                output_path,
+                "--var_column",
+                "gene_symbol",
+                "--var_min_quantile",
+                "0.1",
+            ]
+        )
+    assert re.search(
+        r"Column 'gene_symbol' must contain numeric data for quantile filtering",
+        err.value.stdout.decode("utf-8"),
+    )
+
+
+def test_raises_with_non_existent_column(
+    run_component,
+    input_path,
+    random_h5mu_path,
+):
+    output_path = random_h5mu_path()
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                input_path,
+                "--output",
+                output_path,
+                "--var_column",
+                "non_existent_column",
+            ]
+        )
+    assert re.search(
+        r"Column 'non_existent_column' not found in .var. Available columns: .*",
+        err.value.stdout.decode("utf-8"),
+    )
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                input_path,
+                "--output",
+                output_path,
+                "--obs_column",
+                "non_existent_column",
+            ]
+        )
+    assert re.search(
+        r"Column 'non_existent_column' not found in .obs. Available columns: .*",
+        err.value.stdout.decode("utf-8"),
+    )
+
+
+def test_raises_with_nan(
+    run_component,
+    input_path_with_nan,
+    random_h5mu_path,
+):
+    output_path = random_h5mu_path()
+
+    # Test with obs column containing NaN values
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                input_path_with_nan,
+                "--output",
+                output_path,
+                "--obs_column",
+                "random_with_nan",
+                "--obs_min_quantile",
+                "0.1",
+            ]
+        )
+    assert re.search(
+        r"Column contains NaN values. Please clean the data before applying quantile filtering.",
+        err.value.stdout.decode("utf-8"),
+    )
+
+    # Test with var column containing NaN values
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                input_path_with_nan,
+                "--output",
+                output_path,
+                "--var_column",
+                "random_with_nan",
+                "--var_min_quantile",
+                "0.1",
+            ]
+        )
+    assert re.search(
+        r"Column contains NaN values. Please clean the data before applying quantile filtering.",
+        err.value.stdout.decode("utf-8"),
+    )
+
+
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__]))
