@@ -136,8 +136,7 @@ workflow run_wf {
       | filter{id, state -> state.modality !in singlesample_arguments.keySet()}
 
     output_ch = multisample_ch_unknown.mix(multisample_ch_known)
-      | view {"After singlesample processing: $it"}
-      // Group the modalities back together per input sample
+      // Group the modalities back together
       | groupTuple(by: 0, sort: "hash")
       | view {"After toSortedList: $it"}
       | map { id, states ->
