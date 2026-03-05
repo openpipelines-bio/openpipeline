@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform clr"
-LABEL org.opencontainers.image.created="2026-02-24T14:41:25Z"
+LABEL org.opencontainers.image.created="2026-03-05T08:35:06Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e9c25baabc0ed985cadcb9ee59e642d0fe63ef88"
+LABEL org.opencontainers.image.revision="d0a890a741f64b126723955ac8097f065d092065"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1219,6 +1219,10 @@ def main():
     input_data = read_h5ad(par["input"], mod=par["modality"])
     if par["input_layer"]:
         input_data = AnnData(X=input_data.layers[par["input_layer"]])
+    number_of_observations = input_data.n_obs
+    assert number_of_observations > 1, (
+        f"Need at least two observations to perform CLR normalization. Found: {number_of_observations}"
+    )
     # CLR always normalizes the .X layer, so we have to create an AnnData file with
     # the input layer at .X
     normalized_counts = pt.pp.clr(input_data, axis=par["axis"], inplace=False)
