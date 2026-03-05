@@ -96,7 +96,7 @@ def main():
 
         if par["obs_min_quantile"] is None and par["obs_max_quantile"] is None:
             logger.warning(
-                "No `--obs_min_quantile` or `--obs_max_quantile` provided, so no observation filtering will be applied."
+                "No `--obs_min_quantile` or `--obs_max_quantile` provided, so .obs filtering will be applied."
             )
             obs_filter = np.ones(adata.n_obs, dtype=bool)  # Keep all observations
 
@@ -130,9 +130,9 @@ def main():
 
         if par["var_min_quantile"] is None and par["var_max_quantile"] is None:
             logger.warning(
-                "No `--var_min_quantile` or `--var_max_quantile` provided, so no variable filtering will be applied."
+                "No `--var_min_quantile` or `--var_max_quantile` provided, no .var filtering will be applied."
             )
-            var_filter = np.ones(adata.n_vars, dtype=bool)  # Keep all variables
+            var_filter = np.ones(adata.n_vars, dtype=bool)  # Keep all features
 
         else:
             values = adata.var[par["var_column"]].values
