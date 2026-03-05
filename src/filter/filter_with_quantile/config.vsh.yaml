@@ -4,7 +4,7 @@ scope: "public"
 description: |
   Filter observations or features from an .h5mu file based on quantile thresholds of numeric values.
   
-  This component removes observations or features that fall outside specified quantile ranges for one or more columns in .obs or .var.
+  This component removes observations or features that fall outside specified quantile ranges in .obs or .var. columns.
   
   For example, you can filter out observations with total UMI counts in the bottom 5% (quantile < 0.05) or 
   top 5% (quantile > 0.95), or retain an intermediate range (0.1 < quantile < 0.9).
