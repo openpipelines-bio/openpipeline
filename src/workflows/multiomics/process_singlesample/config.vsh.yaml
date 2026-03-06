@@ -2,14 +2,12 @@ name: "process_singlesample"
 namespace: "workflows/multiomics"
 scope: "public"
 description: "A pipeline to analyse a single multiomics sample."
-# info:
-#   test_dependencies:
-#     - name: move_layer
-#       namespace: transform
-#     - name: remove_modality
-#       namespace: filter
-#     - name: assert_test_workflow_2_output
-#       namespace: test_workflows/multiomics/process_singlesample
+info:
+  test_dependencies:
+    - name: workflow_test
+      namespace: test_workflows/multiomics/process_singlesample
+    - name: workflow2_test
+      namespace: test_workflows/multiomics/process_singlesample
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author ]
@@ -263,17 +261,7 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf2
-  - type: nextflow_script
-    path: test.nf
-    entrypoint: test_wf3
-  - type: nextflow_script
-    path: test.nf
-    entrypoint: test_wf4
-  - type: nextflow_script
-    path: test.nf
-    entrypoint: test_wf5
   - path: /resources_test/concat_test_data
   - path: /resources_test/pbmc_1k_protein_v3
-  - path: /resources_test/10x_5k_lung_crispr
 runners:
   - type: nextflow
