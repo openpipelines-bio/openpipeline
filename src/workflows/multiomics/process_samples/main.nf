@@ -54,10 +54,10 @@ workflow run_wf {
         },
         toState: ["input": "output"]
       )
-      | view {"Before list: $it"}
+
       // Collect all samples before concatenation
       | toList()
-      | view {"After list: $it"}
+
       // Concatenation: single, multi-modal MuData objects into a single multi-modal MuData object. 
       | map { sample_list ->
         def old_ids = sample_list.collect { id, state -> id }
@@ -103,7 +103,6 @@ workflow run_wf {
       )
 
       | view {"After concatenation: $it"}
-      | niceView()
 
       | process_batches.run(
         fromState: {id, state ->
