@@ -454,9 +454,9 @@ RUN pip install --upgrade pip && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.description="Companion container for running component metadata join_uns_to_obs"
-LABEL org.opencontainers.image.created="2026-03-05T03:23:48Z"
+LABEL org.opencontainers.image.created="2026-03-06T03:23:02Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ffecab172070b994a63d2329140a208a22619053"
+LABEL org.opencontainers.image.revision="a06e69f62a4b4e0e08a420e592a82bb710327dcf"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
