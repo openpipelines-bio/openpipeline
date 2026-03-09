@@ -147,8 +147,8 @@ workflow run_wf {
       },
       args: [
           "obs_column": "total_counts",
-          "obs_name_filter": "filter_with_quantile",
-          "var_name_filter": "filter_with_quantile"
+          "obs_name_filter": "filter_with_percentile",
+          "var_name_filter": "filter_with_percentile"
       ],
       toState: ["input": "output"]
     )
@@ -189,7 +189,7 @@ workflow run_wf {
           obs_filter += ["filter_ribosomal"]
         }
         if (state.min_counts_percentile || state.max_counts_percentile) {
-          obs_filter += ["filter_with_quantile"]
+          obs_filter += ["filter_with_percentile"]
         }
         stateMapping += ["obs_filter": obs_filter]
         return stateMapping

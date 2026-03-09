@@ -54,8 +54,7 @@ workflow run_wf {
       args: [
           "modality": "prot",
           "obs_column": "total_counts",
-          "obs_name_filter": "filter_with_quantile",
-          "var_name_filter": "filter_with_quantile"
+          "obs_name_filter": "filter_with_percentile"
       ],
       toState: ["input": "output"]
     )
@@ -85,7 +84,7 @@ workflow run_wf {
         // from a modality.
         def obs_filter = ["filter_with_counts"]
         if (state.min_counts_percentile || state.max_counts_percentile) {
-          obs_filter += ["filter_with_quantile"]
+          obs_filter += ["filter_with_percentile"]
         }
         def newState = [
           "input": state.input,

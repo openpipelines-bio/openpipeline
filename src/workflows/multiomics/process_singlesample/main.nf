@@ -68,6 +68,8 @@ workflow run_wf {
       "rna": [
         "min_counts": "rna_min_counts",
         "max_counts": "rna_max_counts",
+        "min_percentile_counts": "rna_min_percentile_counts",
+        "max_percentile_counts": "rna_max_percentile_counts",
         "min_genes_per_cell": "rna_min_genes_per_cell",
         "max_genes_per_cell": "rna_max_genes_per_cell",
         "min_cells_per_gene": "rna_min_cells_per_gene",
@@ -88,6 +90,8 @@ workflow run_wf {
       "prot": [
         "min_counts": "prot_min_counts",
         "max_counts": "prot_max_counts",
+        "min_percentile_counts": "prot_min_percentile_counts",
+        "max_percentile_counts": "prot_max_percentile_counts",
         "min_proteins_per_cell": "prot_min_proteins_per_cell",
         "max_proteins_per_cell": "prot_max_proteins_per_cell",
         "min_cells_per_protein": "prot_min_cells_per_protein",
