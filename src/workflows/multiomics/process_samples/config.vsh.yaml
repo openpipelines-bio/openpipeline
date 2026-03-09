@@ -79,6 +79,17 @@ argument_groups:
         type: integer
         description: Maximum number of counts captured per cell.
   
+      - name: "--rna_min_percentile_counts"
+        example: 0.05
+        type: double
+        description: |
+          Minimum percentile of counts captured per cell.
+      - name: "--rna_max_percentile_counts"
+        example: 0.95
+        type: double
+        description: |
+          Maximum percentile of counts captured per cell.
+
       - name: "--rna_min_genes_per_cell"
         type: integer
         example: 200
@@ -126,6 +137,17 @@ argument_groups:
         type: integer
         example: 5000000
 
+      - name: "--prot_min_percentile_counts"
+        example: 0.05
+        type: double
+        description: |
+          Minimum percentile of counts captured per cell.
+      - name: "--prot_max_percentile_counts"
+        example: 0.95
+        type: double
+        description: |
+          Maximum percentile of counts captured per cell.
+  
       - name: "--prot_min_proteins_per_cell"
         type: integer
         example: 200
