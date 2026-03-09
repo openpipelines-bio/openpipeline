@@ -10,19 +10,6 @@ workflow run_wf {
         def new_state = state + ["workflow_output": state.output]
         [id, new_state]
       }
-      // If requested to be detected, make sure the mitochondrial and ribosomal genes
-      // are added to the input of the qc metrics calculation
-      | map {id, state ->
-        def var_qc_default = [state.highly_variable_features_var_output]
-        if (state.var_name_mitochondrial_genes) {
-          var_qc_default.add(state.var_name_mitochondrial_genes)
-        }
-        if (state.var_name_ribosomal_genes) {
-          var_qc_default.add(state.var_name_ribosomal_genes)
-        }
-        def newState = state + ["var_qc_metrics": var_qc_default.join(",")]
-        [id, newState]
-      }
       // If requested, add the id of the events (samples) a column in .obs. 
       // Also allows to make .obs_names (the .obs index) unique, by prefixing the values with an unique id per .h5mu file.
       // The latter is usefull to avoid duplicate observations during concatenation.

@@ -3,13 +3,28 @@ workflow run_wf {
     input_ch
 
   main:
-    output_ch = input_ch
+    singlesample_ch = input_ch
       // Make sure there is not conflict between the output from this workflow
       // And the output from any of the components
       | map {id, state ->
         def new_state = state + ["workflow_output": state.output]
         [id, new_state]
       }
+
+      // If requested to be detected, make sure the mitochondrial and ribosomal genes
+      // are added to the input of the qc metrics calculation
+      | map {id, state ->
+        def var_qc_default = [state.highly_variable_features_var_output]
+        if (state.var_name_mitochondrial_genes) {
+          var_qc_default.add(state.var_name_mitochondrial_genes)
+        }
+        if (state.var_name_ribosomal_genes) {
+          var_qc_default.add(state.var_name_ribosomal_genes)
+        }
+        def newState = state + ["var_qc_metrics": var_qc_default.join(",")]
+        [id, newState]
+      }
+
       | process_singlesample.run(
         fromState: {id, state ->
           [
@@ -47,14 +62,43 @@ workflow run_wf {
             "mitochondrial_gene_regex": state.mitochondrial_gene_regex,
             "var_name_ribosomal_genes": state.var_name_ribosomal_genes,
             "obs_name_ribosomal_fraction": state.obs_name_ribosomal_fraction,
-            "ribosomal_gene_regex": state.ribosomal_gene_regex,
-            "var_qc_metrics": state.var_qc_metrics,
-            "top_n_vars": state.top_n_vars,
-          ]
+            "ribosomal_gene_regex": state.ribosomal_gene_regex
+            ]
         },
         toState: ["input": "output"]
       )
+  
+    def singlesample_arguments = [
+      "rna_min_counts",
+      "rna_max_counts",
+      "rna_min_genes_per_cell",
+      "rna_max_genes_per_cell",
+      "rna_min_cells_per_gene",
+      "rna_min_fraction_mito",
+      "rna_max_fraction_mito",
+      "rna_min_fraction_ribo",
+      "rna_max_fraction_ribo",
+      "skip_scrublet_doublet_detection",
+      "prot_min_counts",
+      "prot_max_counts",
+      "prot_min_proteins_per_cell",
+      "prot_max_proteins_per_cell",
+      "prot_min_cells_per_protein",
+      "gdo_min_counts",
+      "gdo_max_counts",
+      "gdo_min_guides_per_cell",
+      "gdo_max_guides_per_cell",
+      "gdo_min_cells_per_guide",
+      "var_gene_names",
+      "var_name_mitochondrial_genes",
+      "obs_name_mitochondrial_fraction",
+      "mitochondrial_gene_regex",
+      "var_name_ribosomal_genes",
+      "obs_name_ribosomal_fraction",
+      "ribosomal_gene_regex"
+    ]
 
+    concat_ch = singlesample_ch
       // Collect all samples before concatenation
       | toList()
 
@@ -75,7 +119,7 @@ workflow run_wf {
         def all_state_keys = states.inject([].toSet()){ current_keys, state ->
             def new_keys = current_keys + state.keySet()
             return new_keys
-        }.minus(["output", "input_id", "input", "_meta", "id"])
+        }.minus(["output", "input_id", "input", "_meta", "id"] + singlesample_arguments)
         // Create the new state from the keys, values should be the same across samples
         def new_state = all_state_keys.inject([:]){ old_state, argument_name ->
             argument_values = states.collect{it.get(argument_name)}.unique()
@@ -104,6 +148,7 @@ workflow run_wf {
 
       | view {"After concatenation: $it"}
 
+    multisample_ch = concat_ch
       | process_batches.run(
         fromState: {id, state ->
           [
@@ -138,5 +183,5 @@ workflow run_wf {
       | view {"After process_batches: $it"}
 
   emit:
-    output_ch
+    multisample_ch
 }
