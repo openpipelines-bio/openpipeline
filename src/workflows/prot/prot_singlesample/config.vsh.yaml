@@ -48,6 +48,17 @@ argument_groups:
         type: integer
         description: Maximum number of counts captured per cell.
   
+      - name: "--min_percentile_counts"
+        example: 0.05
+        type: double
+        description: |
+          Minimum percentile of counts captured per cell.
+      - name: "--max_percentile_counts"
+        example: 0.95
+        type: double
+        description: |
+          Maximum percentile of counts captured per cell.
+  
       - name: "--min_proteins_per_cell"
         type: integer
         example: 200
@@ -63,7 +74,9 @@ argument_groups:
         description: Minimum of non-zero values per gene.
 dependencies:
   - name: filter/filter_with_counts
+  - name: filter/filter_with_quantile
   - name: filter/do_filter
+  - name: workflows/qc/qc
 resources:
   - type: nextflow_script
     path: main.nf
@@ -74,6 +87,9 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf2
   - path: /resources_test/pbmc_1k_protein_v3
 runners:
   - type: nextflow
