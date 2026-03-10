@@ -10,6 +10,8 @@
 
 * `workflows/multiomics/process_singlesample`: New workflow for processing RNA, protein and GDO modalities of individual samples. This functionality was extracted from `process_samples` into a reusable subworkflow (PR #1147).
 
+* `workflows/rna/rna_singlesample`, `workflows/prot/prot_singlesample`, `workflows/multiomics/process_singlesample` and `workflows/multiomics/process_samples`: support to optionally filter total counts per cell by percentile (PR #1148).
+
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
