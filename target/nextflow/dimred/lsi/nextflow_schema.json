@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "lsi",
+  "description": "Runs Latent Semantic Indexing. Computes cell embeddings, feature loadings and singular values. Uses the implementation of scipy.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Path to input h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "On which modality to run LSI on.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"atac\"`. ",
+          "default": "atac"
+        },
+        "layer": {
+          "type": "string",
+          "description": "Use specified layer for expression values",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "var_input": {
+          "type": "string",
+          "description": "Column name in .var matrix that will be used to select which genes to run the LSI on",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "obsm_output": {
+          "type": "string",
+          "description": "In which .obsm slot to store the resulting embedding.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_lsi\"`. ",
+          "default": "X_lsi"
+        },
+        "varm_output": {
+          "type": "string",
+          "description": "In which .varm slot to store the resulting loadings matrix.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"lsi\"`. ",
+          "default": "lsi"
+        },
+        "uns_output": {
+          "type": "string",
+          "description": "In which .uns slot to store the stdev.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"lsi\"`. ",
+          "default": "lsi"
+        },
+        "overwrite": {
+          "type": "boolean",
+          "description": "Allow overwriting .obsm, .varm and .uns slots.",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "lsi options": {
+      "title": "LSI options",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "num_components": {
+          "type": "integer",
+          "description": "Number of components to compute.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `50`. ",
+          "default": 50
+        },
+        "scale_embeddings": {
+          "type": "boolean",
+          "description": "Scale embeddings to zero mean and unit variance.",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/lsi options"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+# Inputs
+input: # please fill in - example: "path/to/file"
+modality: "rna"
+# input_layer: "foo"
+obs_label: # please fill in - example: "foo"
+# obs_groups: ["foo"]
+
+# Arguments
+aggregation_method: "sum"
+random_state: 0
+obs_cell_count: "n_cells"
+
+# Outputs
+# output: "$id.$key.output"
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

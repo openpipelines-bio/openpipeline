@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "filter_with_quantile",
+  "description": "Filter observations or features from an .h5mu file based on quantile thresholds of numeric values.\n\nThis component removes observations or features that fall outside specified quantile ranges in .obs or .var. columns.\n\nFor example, you can filter out observations with total UMI counts in the bottom 5% (quantile < 0.05) or \ntop 5% (quantile > 0.95), or retain an intermediate range (0.1 < quantile < 0.9).\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality from the input MuData file to process.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "obs_column": {
+          "type": "string",
+          "description": "Name of the column in .obs to use for quantile-based filtering.\nIf not specified, no .obs filtering will be performed.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"total_counts\"`. "
+        },
+        "var_column": {
+          "type": "string",
+          "description": "Name of the column in .var to use for quantile-based filtering.\nIf not specified, no .var filtering will be performed.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"mean_counts\"`. "
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "obs_name_filter": {
+          "type": "string",
+          "description": "In which .obs slot to store a boolean array corresponding to which observations should be removed.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"filter_with_quantile\"`. ",
+          "default": "filter_with_quantile"
+        },
+        "var_name_filter": {
+          "type": "string",
+          "description": "In which .var slot to store a boolean array corresponding to which variables should be removed.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"filter_with_quantile\"`. ",
+          "default": "filter_with_quantile"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "filters": {
+      "title": "Filters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "do_subset": {
+          "type": "boolean",
+          "description": "Whether to subset before storing the output.",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "obs_min_quantile": {
+          "type": "number",
+          "description": "Minimum quantile threshold for .obs filtering",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.05`. "
+        },
+        "obs_max_quantile": {
+          "type": "number",
+          "description": "Maximum quantile threshold for .obs filtering",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.95`. "
+        },
+        "var_min_quantile": {
+          "type": "number",
+          "description": "Minimum quantile threshold for .var filtering",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.01`. "
+        },
+        "var_max_quantile": {
+          "type": "number",
+          "description": "Maximum quantile threshold for .var filtering",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.99`. "
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/filters"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}
