@@ -3498,7 +3498,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_or_h5ad_to_tiledb",
     "viash_version" : "0.9.4",
-    "git_commit" : "f7185dc258e6bc36d6e6cf2fd4e80d1c8867f16d",
+    "git_commit" : "679fcafeafd8714e97cf428c3f0dc0316c398e68",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
