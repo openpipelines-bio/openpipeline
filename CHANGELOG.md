@@ -2,6 +2,9 @@
 
 ## NEW FEATURES
 
+* `dimred`: add PHATE dimensionality reduction component (PR #xxx):
+  - `dimred/phate`: computes a PHATE embedding from any `.obsm` matrix (e.g. `X_pca` or proportion vectors); stores result in `.obsm["X_phate"]`. Supports configurable `knn`, `decay`, `t`, `gamma`, and `n_components`.
+
 * `metadata`: add subpopulation proportion calculation component (PR #xxx):
   - `metadata/calculate_proportions`: computes participant × subpopulation cell proportion matrix from a single-cell atlas; stores results in `.uns["proportions"]` (dict) and `.obsm["proportions"]` (per-cell proportion vectors).
 
