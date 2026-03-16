@@ -15,7 +15,7 @@ import tempfile
 
 ## VIASH START
 par = {
-    "input": "/tmp/pytest-of-di/pytest-7/test_vdj_no_cells_v9_0/10x_5k_anticmv_10x_5k_anticmv_no_vdj",
+    "input": "resources_test/10x_4plex_dtc/processed/10x_4plex_dtc.cellranger_multi.output",
     "output": "*.h5mu",
     "uns_metrics": "metrics_cellranger",
     "output_compression": "gzip",
