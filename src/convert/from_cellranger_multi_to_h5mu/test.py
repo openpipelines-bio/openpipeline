@@ -32,8 +32,12 @@ def input_no_vdj_cells(request, tmp_path):
     original_input = f"{meta['resources_dir']}/{base[request.param]}/processed/10x_5k_anticmv.cellranger_multi.output"
     result_dir = tmp_path / f"10x_5k_anticmv_{base[request.param]}_no_vdj"
     copytree(original_input, result_dir)
-    library_type_dir = multi_dir if (multi_dir := (result_dir / "multi")).is_dir() else result_dir
-    all_contig_annotations_json = library_type_dir / "vdj_t" / "all_contig_annotations.json"
+    library_type_dir = (
+        multi_dir if (multi_dir := (result_dir / "multi")).is_dir() else result_dir
+    )
+    all_contig_annotations_json = (
+        library_type_dir / "vdj_t" / "all_contig_annotations.json"
+    )
     with all_contig_annotations_json.open("w") as open_json:
         json.dump([], open_json, indent=4)
     return result_dir
@@ -343,7 +347,7 @@ def test_vdj_no_cells(run_component, tmp_path, input_no_vdj_cells):
 
     Scirpy cannot create empty anndata files, so this needs to be done manually.
     Scirpy raises the following error:
-    KeyError: "None of ['cell_id'] are in the columns" 
+    KeyError: "None of ['cell_id'] are in the columns"
     """
     output_dir = tmp_path / "converted"
     output_path_template = output_dir / "*.h5mu"
