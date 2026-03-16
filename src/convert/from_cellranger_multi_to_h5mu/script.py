@@ -3,6 +3,7 @@ import sys
 import scanpy
 import pandas as pd
 import mudata
+import anndata
 import numpy as np
 from scirpy.io import read_10x_vdj
 from collections import defaultdict
@@ -14,7 +15,7 @@ import tempfile
 
 ## VIASH START
 par = {
-    "input": "resources_test/10x_4plex_dtc/processed/10x_4plex_dtc.cellranger_multi.output",
+    "input": "/tmp/pytest-of-di/pytest-7/test_vdj_no_cells_v9_0/10x_5k_anticmv_10x_5k_anticmv_no_vdj",
     "output": "*.h5mu",
     "uns_metrics": "metrics_cellranger",
     "output_compression": "gzip",
@@ -375,13 +376,15 @@ def process_vdj(mudatas: dict[str, mudata.MuData], vdj_folder_path: str):
     with all_config_json_file.open("r") as open_json:
         json_obj = json.load(open_json)
     for _, mudata_obj in mudatas.items():
+        vdj_anndata = anndata.AnnData()
         json_for_sample = [
             entry for entry in json_obj if entry["barcode"] in mudata_obj.obs_names
         ]
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".json") as tfile:
-            json.dump(json_for_sample, tfile, indent=4)
-            tfile.flush()
-            vdj_anndata = read_10x_vdj(tfile.name)
+        if json_for_sample:
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".json") as tfile:
+                json.dump(json_for_sample, tfile, indent=4)
+                tfile.flush()
+                vdj_anndata = read_10x_vdj(tfile.name)
         mudata_obj.mod[vdj_type] = vdj_anndata
     return mudatas
 
