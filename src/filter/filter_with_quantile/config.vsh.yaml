@@ -84,6 +84,14 @@ argument_groups:
         max: 1
         example: 0.99
         required: false
+      - name: "--min_values_for_quantile"
+        type: integer
+        description: |
+          Minimum number of values required to apply quantile filtering. If fewer values are present,
+          quantile filtering will be skipped to prevent data loss. 
+        default: 10
+        min: 2
+        required: false
   
   - name: Outputs
     arguments:
