@@ -20,7 +20,7 @@
 
 ## BUG FIXES
 
-* `convert/from_cellranger_multi_to_h5mu`: fix converting VDJ data when one or more samples has no AIRR data.
+* `convert/from_cellranger_multi_to_h5mu`: fix converting VDJ data when one or more samples has no AIRR data (PR #1149).
 
 # openpipelines 4.0.3
 
