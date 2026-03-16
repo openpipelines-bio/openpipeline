@@ -3179,6 +3179,19 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--min_values_for_quantile",
+          "description" : "Minimum number of values required to apply quantile filtering. If fewer values are present,\nquantile filtering will be skipped to prevent data loss. \n",
+          "default" : [
+            10
+          ],
+          "required" : false,
+          "min" : 2,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3422,9 +3435,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_quantile",
     "viash_version" : "0.9.4",
-    "git_commit" : "688a524a04981a52040996c6072c6b693ff70c94",
+    "git_commit" : "60d8ebf42027f9417b7d98d131384a3f5b4704e4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2141-g688a524a049"
+    "git_tag" : "0.2.0-2142-g60d8ebf4202"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3498,6 +3511,7 @@ par = {
   'obs_max_quantile': $( if [ ! -z ${VIASH_PAR_OBS_MAX_QUANTILE+x} ]; then echo "float(r'${VIASH_PAR_OBS_MAX_QUANTILE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'var_min_quantile': $( if [ ! -z ${VIASH_PAR_VAR_MIN_QUANTILE+x} ]; then echo "float(r'${VIASH_PAR_VAR_MIN_QUANTILE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'var_max_quantile': $( if [ ! -z ${VIASH_PAR_VAR_MAX_QUANTILE+x} ]; then echo "float(r'${VIASH_PAR_VAR_MAX_QUANTILE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'min_values_for_quantile': $( if [ ! -z ${VIASH_PAR_MIN_VALUES_FOR_QUANTILE+x} ]; then echo "int(r'${VIASH_PAR_MIN_VALUES_FOR_QUANTILE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_name_filter': $( if [ ! -z ${VIASH_PAR_VAR_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_VAR_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3531,11 +3545,14 @@ dep = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
 
-def filter_by_quantile(values, min_quantile=None, max_quantile=None):
+def filter_by_quantile(
+    values, min_quantile=None, max_quantile=None, min_values_for_quantile=10
+):
     """
     Create a boolean mask based on quantile thresholds.
 
@@ -3547,6 +3564,9 @@ def filter_by_quantile(values, min_quantile=None, max_quantile=None):
         Minimum quantile threshold (0.0-1.0). Values below this quantile are filtered out.
     max_quantile : float, optional
         Maximum quantile threshold (0.0-1.0). Values above this quantile are filtered out.
+    min_values_for_quantile : int, default 10
+        Minimum number of values required to apply quantile filtering. If fewer values are present,
+        filtering will be skipped to prevent data loss.
 
     Returns:
     --------
@@ -3554,12 +3574,21 @@ def filter_by_quantile(values, min_quantile=None, max_quantile=None):
         Boolean array where True indicates the value should be kept
     """
     mask = np.ones(len(values), dtype=bool)
+    n_values = len(values)
 
     # Check for NaN values and raise error if found
     if pd.isna(values).any():
         raise ValueError(
             "Column contains NaN values. Please clean the data before applying quantile filtering."
         )
+
+    # Check if there's sufficient data for quantile filtering
+    if n_values < min_values_for_quantile:
+        logger.info(
+            f"Insufficient data ({n_values} values) for quantile filtering. "
+            f"Minimum required: {min_values_for_quantile}. Keeping all data."
+        )
+        return mask
 
     if min_quantile is not None:
         logger.info(f"Applying minimum quantile filter: {min_quantile}")
@@ -3587,91 +3616,80 @@ def main():
     logger = setup_logger()
 
     logger.info(f"Loading input file: {par['input']}")
-    mdata = mu.read_h5mu(par["input"])
-    adata = mdata.mod[par["modality"]].copy()
+    adata = mu.read_h5ad(par["input"], mod=par["modality"])
 
-    # Apply obs filtering
-    if par["obs_column"] is not None:
-        logger.info(f"Applying observation filtering on column: {par['obs_column']}")
+    filter_config = {
+        "obs": {
+            "filter": "observations",
+            "column": par["obs_column"],
+            "min_quantile": par["obs_min_quantile"],
+            "max_quantile": par["obs_max_quantile"],
+            "name_filter": par["obs_name_filter"],
+        },
+        "var": {
+            "filter": "features",
+            "column": par["var_column"],
+            "min_quantile": par["var_min_quantile"],
+            "max_quantile": par["var_max_quantile"],
+            "name_filter": par["var_name_filter"],
+        },
+    }
 
-        if par["obs_column"] not in adata.obs.columns:
-            raise ValueError(
-                f"Column '{par['obs_column']}' not found in .obs. Available columns: {list(adata.obs.columns)}"
+    filter_results = {}
+    for filter_type, config in filter_config.items():
+        if config["column"] is not None:
+            logger.info(
+                f"Applying {config['filter']} filtering on column: {config['column']}"
             )
 
-        if par["obs_min_quantile"] is None and par["obs_max_quantile"] is None:
-            logger.warning(
-                "No \\`--obs_min_quantile\\` or \\`--obs_max_quantile\\` provided, so .obs filtering will be applied."
-            )
-            obs_filter = np.ones(adata.n_obs, dtype=bool)  # Keep all observations
-
-        else:
-            values = adata.obs[par["obs_column"]].values
-
-            # Check if column contains numeric data
-            if not pd.api.types.is_numeric_dtype(values):
+            data_frame = getattr(adata, filter_type)
+            if config["column"] not in data_frame.columns:
                 raise ValueError(
-                    f"Column '{par['obs_column']}' must contain numeric data for quantile filtering"
+                    f"Column '{config['column']}' not found in .{filter_type}. Available columns: {list(data_frame.columns)}"
                 )
 
-            obs_filter = filter_by_quantile(
-                values,
-                min_quantile=par["obs_min_quantile"],
-                max_quantile=par["obs_max_quantile"],
-            )
+            if config["min_quantile"] is None and config["max_quantile"] is None:
+                logger.warning(
+                    f"No \\`--{filter_type}_min_quantile\\` or \\`--{filter_type}_max_quantile\\` provided, no {config['filter']} filtering will be applied."
+                )
+                filtered_values = np.ones(data_frame.shape[0], dtype=bool)  # Keep all
+            else:
+                values = data_frame[config["column"]].values
 
-        # Store filter masks
-        logger.info(f"Storing observation filter in .obs['{par['obs_name_filter']}']")
-        adata.obs[par["obs_name_filter"]] = obs_filter
+                # Check if column contains numeric data
+                if not pd.api.types.is_numeric_dtype(values):
+                    raise ValueError(
+                        f"Column '{config['column']}' must contain numeric data for quantile filtering"
+                    )
 
-    # Apply var filtering
-    if par["var_column"] is not None:
-        logger.info(f"Applying variable filtering on column: {par['var_column']}")
-
-        if par["var_column"] not in adata.var.columns:
-            raise ValueError(
-                f"Column '{par['var_column']}' not found in .var. Available columns: {list(adata.var.columns)}"
-            )
-
-        if par["var_min_quantile"] is None and par["var_max_quantile"] is None:
-            logger.warning(
-                "No \\`--var_min_quantile\\` or \\`--var_max_quantile\\` provided, no .var filtering will be applied."
-            )
-            var_filter = np.ones(adata.n_vars, dtype=bool)  # Keep all features
-
-        else:
-            values = adata.var[par["var_column"]].values
-
-            # Check if column contains numeric data
-            if not pd.api.types.is_numeric_dtype(values):
-                raise ValueError(
-                    f"Column '{par['var_column']}' must contain numeric data for quantile filtering"
+                filtered_values = filter_by_quantile(
+                    values,
+                    min_quantile=config["min_quantile"],
+                    max_quantile=config["max_quantile"],
+                    min_values_for_quantile=par["min_values_for_quantile"],
                 )
 
-            var_filter = filter_by_quantile(
-                values,
-                min_quantile=par["var_min_quantile"],
-                max_quantile=par["var_max_quantile"],
+            # Store filter masks
+            logger.info(
+                f"Storing {config['filter']} filter in .{filter_type}['{config['name_filter']}']"
             )
-
-        # Store filter masks
-        logger.info(f"Storing variable filter in .var['{par['var_name_filter']}']")
-        adata.var[par["var_name_filter"]] = var_filter
+            data_frame[config["name_filter"]] = filtered_values
+            filter_results[f"{filter_type}_filter"] = filtered_values
 
     # Apply subsetting if requested
     if par["do_subset"]:
         logger.info("Subsetting data based on filter masks")
         original_shape = adata.shape
-        adata = adata[obs_filter, var_filter].copy()
+        obs_mask = filter_results.get("obs_filter", np.ones(adata.n_obs, dtype=bool))
+        var_mask = filter_results.get("var_filter", np.ones(adata.n_vars, dtype=bool))
+        adata = adata[obs_mask, var_mask].copy()
         logger.info(f"Data shape: {original_shape} -> {adata.shape}")
-
-    # Update the modality in mdata
-    mdata.mod[par["modality"]] = adata
 
     # Write output
     logger.info(f"Writing output to: {par['output']}")
-    mdata.write_h5mu(par["output"])
-
+    write_h5ad_to_h5mu_with_compression(
+        par["output"], par["input"], par["modality"], adata, par["output_compression"]
+    )
     logger.info("Filtering complete!")
 
 

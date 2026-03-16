@@ -3099,6 +3099,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "umi_tools.patch"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3215,6 +3219,12 @@ meta = [
       "namespace_separator" : "/",
       "setup" : [
         {
+          "type" : "docker",
+          "copy" : [
+            "umi_tools.patch /opt/umi_tools.patch"
+          ]
+        },
+        {
           "type" : "apt",
           "packages" : [
             "wget",
@@ -3224,21 +3234,22 @@ meta = [
             "zlib1g-dev",
             "libncurses5-dev",
             "libncursesw5-dev",
-            "liblzma-dev"
+            "liblzma-dev",
+            "samtools"
           ],
           "interactive" : false
         },
         {
           "type" : "docker",
           "run" : [
-            "wget https://github.com/samtools/samtools/releases/download/1.16.1/samtools-1.16.1.tar.bz2 && tar jxf samtools-1.16.1.tar.bz2 && rm samtools-1.16.1.tar.bz2 && cd samtools-1.16.1 && make prefix=/usr/local install"
+            "git clone --branch v1.1.6 --single-branch https://github.com/CGATOxford/UMI-tools.git && git apply --directory=UMI-tools /opt/umi_tools.patch"
           ]
         },
         {
           "type" : "python",
           "user" : false,
           "pip" : [
-            "umi_tools"
+            "./UMI-tools"
           ],
           "upgrade" : true
         }
@@ -3251,9 +3262,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/samtools",
     "viash_version" : "0.9.4",
-    "git_commit" : "688a524a04981a52040996c6072c6b693ff70c94",
+    "git_commit" : "60d8ebf42027f9417b7d98d131384a3f5b4704e4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2141-g688a524a049"
+    "git_tag" : "0.2.0-2142-g60d8ebf4202"
   },
   "package_config" : {
     "name" : "openpipeline",

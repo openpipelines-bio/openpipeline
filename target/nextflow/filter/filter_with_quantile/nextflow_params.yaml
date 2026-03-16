@@ -10,6 +10,7 @@ do_subset: false
 # obs_max_quantile: 0.95
 # var_min_quantile: 0.01
 # var_max_quantile: 0.99
+min_values_for_quantile: 10
 
 # Outputs
 # output: "$id.$key.output.h5mu"

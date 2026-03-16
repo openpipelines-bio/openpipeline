@@ -113,6 +113,12 @@
           "type": "number",
           "description": "Maximum quantile threshold for .var filtering",
           "help_text": "Type: `double`, multiple: `False`, example: `0.99`. "
+        },
+        "min_values_for_quantile": {
+          "type": "integer",
+          "description": "Minimum number of values required to apply quantile filtering",
+          "help_text": "Type: `integer`, multiple: `False`, default: `10`. ",
+          "default": 10
         }
       }
     },

@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 import pytest
 import numpy as np
+import pandas as pd
 import subprocess
 import re
 
@@ -50,19 +51,29 @@ def input_h5mu(base_h5mu):
 
 @pytest.fixture
 def input_h5mu_with_nan(input_h5mu):
-    """H5mu data with additional NaN columns for error testing."""
-    input_data = input_h5mu.copy()
+    """Factory fixture for H5mu data with different NaN types for error testing."""
 
-    # Add columns with NaN values for testing error handling
-    obs_with_nan = np.random.normal(50, 5, input_data.mod["rna"].n_obs)
-    obs_with_nan[0:3] = np.nan  # Add some NaN values
-    input_data.mod["rna"].obs["random_with_nan"] = obs_with_nan
+    def _create_data_with_nan(na_value):
+        input_data = input_h5mu.copy()
 
-    var_with_nan = np.random.normal(50, 5, input_data.mod["rna"].n_vars)
-    var_with_nan[0:2] = np.nan  # Add some NaN values
-    input_data.mod["rna"].var["random_with_nan"] = var_with_nan
+        # Add columns with NaN values for testing error handling
+        # Use appropriate dtype based on NA type
+        obs_values = np.random.normal(50, 5, input_data.mod["rna"].n_obs)
+        var_values = np.random.normal(50, 5, input_data.mod["rna"].n_vars)
 
-    return input_data
+        # Add NA values to numerical data
+        obs_series = pd.Series(obs_values, dtype="float64")
+        var_series = pd.Series(var_values, dtype="float64")
+
+        obs_series.iloc[0:3] = na_value  # Add specific NA values
+        var_series.iloc[0:2] = na_value  # Add specific NA values
+
+        input_data.mod["rna"].obs["random_with_nan"] = obs_series
+        input_data.mod["rna"].var["random_with_nan"] = var_series
+
+        return input_data
+
+    return _create_data_with_nan
 
 
 @pytest.fixture
@@ -73,10 +84,16 @@ def input_path(input_h5mu, random_h5mu_path):
 
 
 @pytest.fixture
-def input_path_with_nan(input_h5mu_with_nan, random_h5mu_path):
-    path = random_h5mu_path()
-    input_h5mu_with_nan.write(path)
-    return path
+def input_path_with_nan_factory(input_h5mu_with_nan, random_h5mu_path):
+    """Factory fixture for creating input paths with different NaN types."""
+
+    def _create_path_with_nan(na_value):
+        data = input_h5mu_with_nan(na_value)
+        path = random_h5mu_path()
+        data.write(path)
+        return path
+
+    return _create_path_with_nan
 
 
 @pytest.fixture
@@ -342,11 +359,16 @@ def test_raises_with_non_existent_column(
     )
 
 
+@pytest.mark.parametrize("na_value,na_name", [(np.nan, "np.nan"), (pd.NA, "pd.NA")])
 def test_raises_with_nan(
     run_component,
-    input_path_with_nan,
+    input_path_with_nan_factory,
     random_h5mu_path,
+    na_value,
+    na_name,
 ):
+    # Create input path with specific NA value
+    input_path = input_path_with_nan_factory(na_value)
     output_path = random_h5mu_path()
 
     # Test with obs column containing NaN values
@@ -354,7 +376,7 @@ def test_raises_with_nan(
         run_component(
             [
                 "--input",
-                input_path_with_nan,
+                input_path,
                 "--output",
                 output_path,
                 "--obs_column",
@@ -363,9 +385,13 @@ def test_raises_with_nan(
                 "0.1",
             ]
         )
+
+    error_message = err.value.stdout.decode("utf-8")
     assert re.search(
         r"Column contains NaN values. Please clean the data before applying quantile filtering.",
-        err.value.stdout.decode("utf-8"),
+        error_message,
+    ), (
+        f"Expected NaN error message for {na_name} in obs column, but got: {error_message}"
     )
 
     # Test with var column containing NaN values
@@ -373,7 +399,7 @@ def test_raises_with_nan(
         run_component(
             [
                 "--input",
-                input_path_with_nan,
+                input_path,
                 "--output",
                 output_path,
                 "--var_column",
@@ -382,9 +408,13 @@ def test_raises_with_nan(
                 "0.1",
             ]
         )
+
+    error_message = err.value.stdout.decode("utf-8")
     assert re.search(
         r"Column contains NaN values. Please clean the data before applying quantile filtering.",
-        err.value.stdout.decode("utf-8"),
+        error_message,
+    ), (
+        f"Expected NaN error message for {na_name} in var column, but got: {error_message}"
     )
 
 
