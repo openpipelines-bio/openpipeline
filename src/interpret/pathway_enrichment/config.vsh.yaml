@@ -1,0 +1,211 @@
+name: pathway_enrichment
+namespace: "interpret"
+scope: "public"
+description: |
+  Performs gene set enrichment analysis on differential expression results using GSEApy.
+  Supports two methods:
+  - `prerank`: pre-ranked GSEA (all genes ranked by fold change; no significance cutoff required)
+  - `ora`: over-representation analysis on the set of significant DE genes
+
+  Gene sets can be specified as Enrichr library names (downloaded at runtime) or as a local GMT file.
+keywords: [ pathway enrichment, GSEA, ORA, gseapy, differential expression ]
+links:
+  homepage: https://gseapy.readthedocs.io
+  documentation: https://gseapy.readthedocs.io/en/latest/
+  repository: https://github.com/zqfang/GSEApy
+references:
+  doi: 10.1093/bioinformatics/btac757
+license: MIT
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: |
+          Input h5mu file. Results are stored in `.uns[uns_key]` of the chosen modality.
+        direction: input
+        required: true
+        example: input.h5mu
+
+      - name: "--modality"
+        type: string
+        default: "rna"
+        required: false
+        description: Which modality to attach enrichment results to.
+
+      - name: "--input_degenes"
+        type: file
+        description: |
+          CSV file with differential expression results, as produced by
+          `differential_expression/deseq2`. Must contain a gene name column (index or
+          `--gene_column`) plus fold-change (`--fc_column`) and p-value (`--pval_column`)
+          columns.
+        direction: input
+        required: true
+        example: deseq2_analysis.csv
+
+      - name: "--gene_column"
+        type: string
+        required: false
+        description: |
+          Column in the DE CSV containing gene symbols. If not provided, the row index is
+          used as gene names.
+        example: gene_symbol
+
+  - name: Arguments
+    arguments:
+      - name: "--method"
+        type: string
+        choices: [ prerank, ora ]
+        default: "prerank"
+        required: false
+        description: |
+          Enrichment method.
+          - `prerank`: all genes are ranked by `--fc_column`; classical pre-ranked GSEA.
+          - `ora`: over-representation analysis on genes passing `--pval_threshold` and
+            `--fc_threshold`.
+
+      - name: "--gene_sets"
+        type: string
+        multiple: true
+        default: [ "MSigDB_Hallmark_2020" ]
+        required: false
+        description: |
+          One or more gene set libraries. Each value is either:
+          - An Enrichr library name (e.g. `MSigDB_Hallmark_2020`, `GO_Biological_Process_2023`,
+            `KEGG_2021_Human`) — downloaded from Enrichr at runtime.
+          - A path to a local GMT file.
+        example: [ "MSigDB_Hallmark_2020", "GO_Biological_Process_2023" ]
+
+      - name: "--fc_column"
+        type: string
+        default: "log2FoldChange"
+        required: false
+        description: |
+          Column in the DE CSV used for gene ranking (prerank) or direction filtering (ORA).
+
+      - name: "--pval_column"
+        type: string
+        default: "padj"
+        required: false
+        description: |
+          Column in the DE CSV used to select significant genes for ORA.
+          Ignored when `--method prerank`.
+
+      - name: "--pval_threshold"
+        type: double
+        default: 0.05
+        min: 0
+        max: 1
+        required: false
+        description: |
+          Adjusted p-value cutoff for significant genes in ORA.
+
+      - name: "--fc_threshold"
+        type: double
+        default: 0.0
+        min: 0
+        required: false
+        description: |
+          Minimum absolute log2 fold change for significant genes in ORA.
+
+      - name: "--organism"
+        type: string
+        default: "Human"
+        choices: [ Human, Mouse ]
+        required: false
+        description: Organism, used to look up Enrichr gene sets.
+
+      - name: "--min_size"
+        type: integer
+        default: 15
+        min: 1
+        required: false
+        description: Minimum number of genes in a gene set to be tested.
+
+      - name: "--max_size"
+        type: integer
+        default: 500
+        min: 1
+        required: false
+        description: Maximum number of genes in a gene set to be tested.
+
+      - name: "--permutation_num"
+        type: integer
+        default: 1000
+        min: 0
+        required: false
+        description: |
+          Number of permutations for the prerank GSEA null distribution.
+          Set to 0 to skip permutation testing (faster, no p-values).
+
+      - name: "--seed"
+        type: integer
+        default: 42
+        required: false
+        description: Random seed for reproducibility.
+
+      - name: "--uns_key"
+        type: string
+        default: "pathway_enrichment"
+        required: false
+        description: |
+          Key under `.uns` in the output h5mu where enrichment results are stored.
+          Results are stored as a dict keyed by gene set library name.
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file with enrichment results added to `.uns[uns_key]`.
+        direction: output
+        required: true
+        example: output.h5mu
+
+      - name: "--output_csv_dir"
+        type: file
+        description: |
+          Output directory for enrichment result CSV files (one per gene set library).
+          Each file is named `{gene_set_library}.{method}.csv`.
+        direction: output
+        required: true
+        example: pathway_enrichment_results/
+
+    __merge__: [ ., /src/base/h5_compression_argument.yaml ]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: test_data/
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml, . ]
+        packages:
+          - gseapy~=1.1.3
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, . ]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [ midmem, midcpu ]

@@ -2,6 +2,12 @@
 
 ## NEW FEATURES
 
+* `metadata`: add subpopulation proportion calculation component (PR #xxx):
+  - `metadata/calculate_proportions`: computes participant × subpopulation cell proportion matrix from a single-cell atlas; stores results in `.uns["proportions"]` (dict) and `.obsm["proportions"]` (per-cell proportion vectors).
+
+* `interpret`: add gene set enrichment analysis component (PR #xxx):
+  - `interpret/pathway_enrichment`: performs pre-ranked GSEA or ORA on DESeq2 results using GSEApy; stores results in `.uns["pathway_enrichment"]` and writes per-library CSV files.
+
 * `qc/calculate_qc_metrics`: added support for MuData encoded in Zarr format (PR #1140).
 
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).

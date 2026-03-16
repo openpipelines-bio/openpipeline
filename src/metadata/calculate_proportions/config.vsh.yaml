@@ -1,0 +1,116 @@
+name: calculate_proportions
+namespace: "metadata"
+scope: "public"
+description: |
+  Calculate per-participant cell-type subpopulation proportions from a single-cell dataset.
+
+  For each participant (identified by `--obs_participant_id`) and each subpopulation
+  (identified by `--obs_subpopulation`), computes the fraction of that participant's
+  cells that belong to each subpopulation.  The resulting participant × subpopulation
+  proportion matrix is stored in:
+
+  * `.uns[<uns_output>]` — a serialised dict (rows = participants, columns = subpopulations)
+  * `.obsm[<obsm_output>]` — per-cell matrix: each cell carries the proportion vector
+    of its own participant (shape n_cells × n_subpopulations)
+
+  Missing combinations (a participant has zero cells in a given subpopulation) are
+  filled with 0.  Rows are normalised to sum to 1.
+
+  This is the first step of the BEYOND methodology
+  (Habib et al., "Scaling single-cell analyses to millions of cells", 2024).
+keywords: [proportions, subpopulation, metadata, BEYOND]
+links:
+  repository: https://github.com/openpipelines-bio/openpipeline
+references:
+  doi: []
+license: MIT
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: "Input"
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: Path to the input `.h5mu` file.
+        required: true
+        example: atlas.h5mu
+      - name: "--modality"
+        type: string
+        description: Modality from the MuData object to process.
+        default: "rna"
+        required: false
+      - name: "--obs_participant_id"
+        type: string
+        description: |
+          `.obs` column containing a participant / donor identifier.
+          Used as the row index of the proportion matrix.
+        default: "participant_id"
+        required: false
+        example: "participant_id"
+      - name: "--obs_subpopulation"
+        type: string
+        description: |
+          `.obs` column containing subpopulation labels (e.g. Leiden cluster IDs
+          or named cell subtypes).  Used as the column index of the proportion matrix.
+        default: "subpopulation"
+        required: false
+        example: "subpopulation"
+
+  - name: "Output"
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Path to the output `.h5mu` file.
+        direction: output
+        required: true
+        example: "atlas_with_proportions.h5mu"
+      - name: "--uns_output"
+        type: string
+        description: |
+          Key under `.uns` where the proportion matrix will be stored as a
+          serialised dict (`{participant: {subpopulation: fraction}}`).
+        default: "proportions"
+        required: false
+        example: "proportions"
+      - name: "--obsm_output"
+        type: string
+        description: |
+          Key under `.obsm` where each cell's participant proportion vector
+          will be stored (shape: n_cells × n_subpopulations).
+        default: "proportions"
+        required: false
+        example: "proportions"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /src/utils/setup_logger.py
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+        packages:
+          - pandas>=2.0
+    __merge__: [/src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [ singlecpu, lowmem ]
