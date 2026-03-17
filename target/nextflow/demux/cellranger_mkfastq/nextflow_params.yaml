@@ -1,0 +1,9 @@
+# Arguments
+input: # please fill in - example: "/path/to/bcl"
+sample_sheet: # please fill in - example: "SampleSheet.csv"
+# output: "fastqs"
+# reports: "$id.$key.reports"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
