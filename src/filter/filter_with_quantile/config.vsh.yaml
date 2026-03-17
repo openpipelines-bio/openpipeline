@@ -43,11 +43,20 @@ argument_groups:
         example: "mean_counts"
         required: false
 
+
   - name: Filters
     arguments:
       - name: "--do_subset"
         type: boolean_true
         description: Whether to subset before storing the output.
+      - name: "--obs_log1p_transform"
+        type: boolean
+        default: true
+        description: |
+          Apply log1p transformation to the obs_column values before calculating quantiles.
+          The transformed values will be stored as 'log1p_{obs_column}' in .obs.
+          This is useful for highly skewed data where log transformation can improve quantile-based filtering.
+        required: false
       - name: "--obs_min_quantile"
         type: double
         description: |
@@ -65,6 +74,14 @@ argument_groups:
         min: 0
         max: 1
         example: 0.95
+        required: false
+      - name: "--var_log1p_transform"
+        type: boolean
+        default: true
+        description: |
+          Apply log1p transformation to the var_column values before calculating quantiles.
+          The transformed values will be stored as 'log1p_{var_column}' in .var.
+          This is useful for highly skewed data where log transformation can improve quantile-based filtering.
         required: false
       - name: "--var_min_quantile"
         type: double
@@ -104,6 +121,18 @@ argument_groups:
         type: string
         default: "filter_with_quantile"
         description: In which .obs slot to store a boolean array corresponding to which observations should be removed.
+      - name: "--obs_log1p_column"
+        type: string
+        description: |
+          Name for the column where log1p transformed obs values will be stored.
+          If not provided, defaults to 'log1p_{obs_column}'.
+        example: "log1p_total_counts"
+      - name: "--var_log1p_column"
+        type: string
+        description: |
+          Name for the column where log1p transformed var values will be stored.
+          If not provided, defaults to 'log1p_{var_column}'.
+        example: "log1p_total_counts"
       - name: "--var_name_filter"
         type: string
         default: "filter_with_quantile"

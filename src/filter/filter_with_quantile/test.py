@@ -77,6 +77,30 @@ def input_h5mu_with_nan(input_h5mu):
 
 
 @pytest.fixture
+def input_h5mu_skewed(base_h5mu):
+    """H5mu data with skewed distribution that benefits from log1p transformation."""
+    input_data = base_h5mu.copy()
+
+    # Generate exponentially distributed (skewed) data that will benefit from log1p transformation
+    # Using exponential distribution with different scales for obs and var
+    exp_obs_values = np.random.exponential(scale=10, size=input_data.mod["rna"].n_obs)
+    exp_var_values = np.random.exponential(scale=5, size=input_data.mod["rna"].n_vars)
+
+    # Convert to integers to simulate count-like data
+    input_data.mod["rna"].obs["skewed_counts"] = exp_obs_values.astype(int)
+    input_data.mod["rna"].var["skewed_counts"] = exp_var_values.astype(int)
+
+    return input_data
+
+
+@pytest.fixture
+def input_path_skewed(input_h5mu_skewed, random_h5mu_path):
+    path = random_h5mu_path()
+    input_h5mu_skewed.write(path)
+    return path
+
+
+@pytest.fixture
 def input_path(input_h5mu, random_h5mu_path):
     path = random_h5mu_path()
     input_h5mu.write(path)
@@ -415,6 +439,184 @@ def test_raises_with_nan(
         error_message,
     ), (
         f"Expected NaN error message for {na_name} in var column, but got: {error_message}"
+    )
+
+
+def test_log1p_transformation(
+    run_component,
+    input_path_skewed,
+    random_h5mu_path,
+    input_h5mu_skewed,
+):
+    """Test that log1p transformation is applied correctly and creates expected columns."""
+    output_path = random_h5mu_path()
+
+    args = [
+        "--input",
+        input_path_skewed,
+        "--output",
+        output_path,
+        "--obs_column",
+        "skewed_counts",
+        "--var_column",
+        "skewed_counts",
+        "--obs_log1p_transform",
+        "True",
+        "--var_log1p_transform",
+        "True",
+        "--obs_min_quantile",
+        "0.1",
+        "--obs_max_quantile",
+        "0.9",
+        "--var_min_quantile",
+        "0.05",
+        "--var_max_quantile",
+        "0.95",
+    ]
+
+    run_component(args)
+
+    assert Path(output_path).is_file()
+    mu_out = mu.read_h5mu(output_path)
+    rna_mod = mu_out.mod["rna"]
+
+    # Check that log1p transformed columns were created
+    assert "log1p_skewed_counts" in rna_mod.obs.columns, (
+        "Expected log1p_skewed_counts column to be created in .obs"
+    )
+    assert "log1p_skewed_counts" in rna_mod.var.columns, (
+        "Expected log1p_skewed_counts column to be created in .var"
+    )
+
+    # Check that filter columns were created
+    assert "filter_with_quantile" in rna_mod.obs
+    assert "filter_with_quantile" in rna_mod.var
+
+    # Validate log1p transformation correctness
+    original_obs_values = input_h5mu_skewed.mod["rna"].obs["skewed_counts"].values
+    original_var_values = input_h5mu_skewed.mod["rna"].var["skewed_counts"].values
+
+    expected_obs_log1p = np.log1p(original_obs_values)
+    expected_var_log1p = np.log1p(original_var_values)
+
+    actual_obs_log1p = rna_mod.obs["log1p_skewed_counts"].values
+    actual_var_log1p = rna_mod.var["log1p_skewed_counts"].values
+
+    # Check that log1p transformation was applied correctly
+    np.testing.assert_array_almost_equal(
+        expected_obs_log1p,
+        actual_obs_log1p,
+        decimal=10,
+        err_msg="log1p transformation not applied correctly to obs column",
+    )
+    np.testing.assert_array_almost_equal(
+        expected_var_log1p,
+        actual_var_log1p,
+        decimal=10,
+        err_msg="log1p transformation not applied correctly to var column",
+    )
+
+    # Check that filtering was applied (some values should be filtered out)
+    obs_filter = rna_mod.obs["filter_with_quantile"]
+    var_filter = rna_mod.var["filter_with_quantile"]
+
+    obs_filter_fraction = sum(obs_filter) / len(obs_filter)
+    var_filter_fraction = sum(var_filter) / len(var_filter)
+
+    # Should be approximately 80% and 90% respectively, allowing some tolerance
+    assert np.isclose(obs_filter_fraction, 0.8, atol=0.5), (
+        f"Expected ~80% of obs to be kept after log1p transformation and filtering, "
+        f"but got {obs_filter_fraction:.2f}"
+    )
+    assert np.isclose(var_filter_fraction, 0.9, atol=0.1), (
+        f"Expected ~90% of vars to be kept after log1p transformation and filtering, "
+        f"but got {var_filter_fraction:.2f}"
+    )
+
+
+def test_log1p_custom_column_names(
+    run_component,
+    input_path_skewed,
+    random_h5mu_path,
+    input_h5mu_skewed,
+):
+    """Test that custom log1p column names work correctly."""
+    output_path = random_h5mu_path()
+
+    custom_obs_column = "custom_obs_log_transformed"
+    custom_var_column = "custom_var_log_transformed"
+
+    args = [
+        "--input",
+        input_path_skewed,
+        "--output",
+        output_path,
+        "--obs_column",
+        "skewed_counts",
+        "--var_column",
+        "skewed_counts",
+        "--obs_log1p_transform",
+        "True",
+        "--var_log1p_transform",
+        "True",
+        "--obs_log1p_column",
+        custom_obs_column,
+        "--var_log1p_column",
+        custom_var_column,
+        "--obs_min_quantile",
+        "0.1",
+        "--obs_max_quantile",
+        "0.9",
+        "--var_min_quantile",
+        "0.05",
+        "--var_max_quantile",
+        "0.95",
+    ]
+
+    run_component(args)
+
+    assert Path(output_path).is_file()
+    mu_out = mu.read_h5mu(output_path)
+    rna_mod = mu_out.mod["rna"]
+
+    # Check that custom named log1p columns were created
+    assert custom_obs_column in rna_mod.obs.columns, (
+        f"Expected {custom_obs_column} column to be created in .obs"
+    )
+    assert custom_var_column in rna_mod.var.columns, (
+        f"Expected {custom_var_column} column to be created in .var"
+    )
+
+    # Make sure default column names were NOT created
+    assert "log1p_skewed_counts" not in rna_mod.obs.columns, (
+        "Default log1p_skewed_counts should not be created when custom name is provided"
+    )
+    assert "log1p_skewed_counts" not in rna_mod.var.columns, (
+        "Default log1p_skewed_counts should not be created when custom name is provided"
+    )
+
+    # Validate transformation correctness with custom column names
+    original_obs_values = input_h5mu_skewed.mod["rna"].obs["skewed_counts"].values
+    original_var_values = input_h5mu_skewed.mod["rna"].var["skewed_counts"].values
+
+    expected_obs_log1p = np.log1p(original_obs_values)
+    expected_var_log1p = np.log1p(original_var_values)
+
+    actual_obs_log1p = rna_mod.obs[custom_obs_column].values
+    actual_var_log1p = rna_mod.var[custom_var_column].values
+
+    # Check that log1p transformation was applied correctly to custom columns
+    np.testing.assert_array_almost_equal(
+        expected_obs_log1p,
+        actual_obs_log1p,
+        decimal=10,
+        err_msg="log1p transformation not applied correctly to custom obs column",
+    )
+    np.testing.assert_array_almost_equal(
+        expected_var_log1p,
+        actual_var_log1p,
+        decimal=10,
+        err_msg="log1p transformation not applied correctly to custom var column",
     )
 
 

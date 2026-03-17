@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import sys
 import numpy as np
 import pandas as pd
@@ -20,6 +18,10 @@ par = {
     "var_name_filter": "filter_with_quantile",
     "do_subset": False,
     "min_values_for_quantile": 10,
+    "obs_log1p_transform": False,
+    "var_log1p_transform": False,
+    "obs_log1p_column": None,
+    "var_log1p_column": None,
 }
 
 meta = {"resources_dir": "src/utils"}
@@ -107,6 +109,8 @@ def main():
             "min_quantile": par["obs_min_quantile"],
             "max_quantile": par["obs_max_quantile"],
             "name_filter": par["obs_name_filter"],
+            "log1p_transform": par["obs_log1p_transform"],
+            "log1p_column": par["obs_log1p_column"],
         },
         "var": {
             "filter": "features",
@@ -114,6 +118,8 @@ def main():
             "min_quantile": par["var_min_quantile"],
             "max_quantile": par["var_max_quantile"],
             "name_filter": par["var_name_filter"],
+            "log1p_transform": par["var_log1p_transform"],
+            "log1p_column": par["var_log1p_column"],
         },
     }
 
@@ -144,8 +150,26 @@ def main():
                         f"Column '{config['column']}' must contain numeric data for quantile filtering"
                     )
 
+                # Apply log1p transformation if requested
+                if config["log1p_transform"]:
+                    logger.info(f"Applying log1p transformation to {config['column']}")
+                    # Use custom column name if provided, otherwise default to log1p_{column}
+                    log1p_column_name = (
+                        config.get("log1p_column") or f"log1p_{config['column']}"
+                    )
+                    log1p_values = np.log1p(values)
+                    data_frame[log1p_column_name] = log1p_values
+                    logger.info(
+                        f"Stored log1p transformed values in .{filter_type}['{log1p_column_name}']"
+                    )
+                    # Use transformed values for quantile filtering
+                    filter_values = log1p_values
+                else:
+                    # Use original values for quantile filtering
+                    filter_values = values
+
                 filtered_values = filter_by_quantile(
-                    values,
+                    filter_values,
                     min_quantile=config["min_quantile"],
                     max_quantile=config["max_quantile"],
                     min_values_for_quantile=par["min_values_for_quantile"],
