@@ -9,12 +9,12 @@ uncovering trajectories of brain aging via coordinated cellular community dynami
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-│  INPUT: per-library scRNA-seq FASTQ files + reference genome                               │
+│  INPUT: per-library scRNA-seq FASTQ files + reference genome                                │
 └────────────────────────────────┬────────────────────────────────────────────────────────────┘
                                  │
                     ┌────────────▼────────────┐
                     │  mapping/               │   [EXISTING]
-                    │  cellranger_multi        │
+                    │  cellranger_multi       │
                     └────────────┬────────────┘
                                  │  output folder (raw + filtered matrices)
                     ┌────────────▼────────────┐
@@ -92,91 +92,91 @@ uncovering trajectories of brain aging via coordinated cellular community dynami
            │  (one h5mu per cell type, processed in parallel)
            │
   ┌────────▼────────────────────────────────────────────────────────────┐
-  │  PER-CELL-TYPE BLOCK (Excitatory neurons, Inhibitory, Astrocytes…) │
+  │  PER-CELL-TYPE BLOCK (Excitatory neurons, Inhibitory, Astrocytes…)  │
   │                                                                     │
-  │  ┌─────────────────────────────┐                                   │
-  │  │ dimred/pca (cell-type PCA)  │  [EXISTING]                       │
-  │  └──────────────┬──────────────┘                                   │
+  │  ┌─────────────────────────────┐                                    │
+  │  │ dimred/pca (cell-type PCA)  │  [EXISTING]                        │
+  │  └──────────────┬──────────────┘                                    │
   │                 │                                                   │
-  │  ┌──────────────▼──────────────┐                                   │
-  │  │ neighbors/find_neighbors    │  [EXISTING]                       │
-  │  └──────────────┬──────────────┘                                   │
+  │  ┌──────────────▼──────────────┐                                    │
+  │  │ neighbors/find_neighbors    │  [EXISTING]                        │
+  │  └──────────────┬──────────────┘                                    │
   │                 │                                                   │
-  │  ┌──────────────▼──────────────┐                                   │
-  │  │ cluster/leiden              │  [EXISTING]  (subpopulations)     │
-  │  └──────────────┬──────────────┘                                   │
+  │  ┌──────────────▼──────────────┐                                    │
+  │  │ cluster/leiden              │  [EXISTING]  (subpopulations)      │
+  │  └──────────────┬──────────────┘                                    │
   │                 │                                                   │
-  │  ┌──────────────▼──────────────┐                                   │
-  │  │ filter/do_filter            │  [EXISTING]  (remove low-quality  │
-  │  │ (remove doublets + low-QC)  │               subclusters)        │
-  │  └──────────────┬──────────────┘                                   │
+  │  ┌──────────────▼──────────────┐                                    │
+  │  │ filter/do_filter            │  [EXISTING]  (remove low-quality   │
+  │  │ (remove doublets + low-QC)  │               subclusters)         │
+  │  └──────────────┬──────────────┘                                    │
   │                 │                                                   │
-  │  ┌──────────────▼──────────────┐                                   │
-  │  │ dimred/umap                 │  [EXISTING]                       │
-  │  └──────────────┬──────────────┘                                   │
+  │  ┌──────────────▼──────────────┐                                    │
+  │  │ dimred/umap                 │  [EXISTING]                        │
+  │  └──────────────┬──────────────┘                                    │
   │                 │                                                   │
-  │  ┌──────────────▼──────────────┐                                   │
-  │  │ differential_expression/    │  [EXISTING]                       │
-  │  │  create_pseudobulk          │                                   │
-  │  └──────────────┬──────────────┘                                   │
+  │  ┌──────────────▼──────────────┐                                    │
+  │  │ differential_expression/    │  [EXISTING]                        │
+  │  │  create_pseudobulk          │                                    │
+  │  └──────────────┬──────────────┘                                    │
   │                 │                                                   │
-  │  ┌──────────────▼──────────────┐                                   │
-  │  │ differential_expression/    │  [EXISTING]                       │
-  │  │  deseq2                     │  (subpopulation marker genes)     │
-  │  └──────────────┬──────────────┘                                   │
+  │  ┌──────────────▼──────────────┐                                    │
+  │  │ differential_expression/    │  [EXISTING]                        │
+  │  │  deseq2                     │  (subpopulation marker genes)      │
+  │  └──────────────┬──────────────┘                                    │
   │                 │                                                   │
-  │  ┌──────────────▼──────────────┐                                   │
-  │  │ interpret/pathway_enrichment│  [NEW #7]  GSEA/ORA per           │
-  │  │                             │            subpopulation          │
-  │  └──────────────┬──────────────┘                                   │
-  └──────────────────┴───────────────────────────────────────────────┘
+  │  ┌──────────────▼──────────────┐                                    │
+  │  │ interpret/pathway_enrichment│  [NEW #7]  GSEA/ORA per            │
+  │  │                             │            subpopulation           │
+  │  └──────────────┬──────────────┘                                    │
+  └─────────────────┴───────────────────────────────────────────────────┘
                     │  annotated subpopulations (all cell types merged)
                     │
-        ┌───────────▼────────────────────────┐
+        ┌───────────▼─────────────────────────┐
         │ dataflow/concatenate_h5mu           │  [EXISTING]
         │  (merge cell-type objects → atlas)  │
-        └───────────┬────────────────────────┘
+        └───────────┬─────────────────────────┘
                     │  full atlas h5mu with obs["subpopulation"]
                     │
-        ┌───────────▼────────────────────────┐
+        ┌───────────▼─────────────────────────┐
         │ metadata/calculate_proportions      │  [NEW #1]
         │  obs["participant_id"] ×            │
         │  obs["subpopulation"] → proportion  │
         │  matrix stored in uns/obsm          │
-        └───────────┬────────────────────────┘
+        └───────────┬─────────────────────────┘
                     │  h5mu with participant × subpopulation proportions
                     │
-        ┌───────────▼────────────────────────┐
+        ┌───────────▼─────────────────────────┐
         │ dimred/phate                        │  [NEW #2]
         │  input: proportion matrix           │
         │  output: obsm["X_phate"]            │
         │  → cellular landscape               │
-        └───────────┬────────────────────────┘
+        └───────────┬─────────────────────────┘
                     │  h5mu with PHATE landscape
                     │
-                    ├───────────────────────────────────┐
-                    │                                   │
-        ┌───────────▼────────────────────────┐ ┌───────▼───────────────────────────┐
-        │ trajectory/palantir                 │ │ trajectory/via                    │
-        │  input: X_phate + start cell        │ │  input: X_phate + root cluster    │
-        │  output:                            │ │  output:                          │
-        │    obs["palantir_pseudotime"]        │ │    obs["via_pseudotime"]           │
-        │    obsm["fate_probabilities"]        │ │    obsm["via_graph"]               │
-        │  [NEW #3]                           │ │  [NEW #4]  (validation/alt)       │
-        └───────────┬────────────────────────┘ └───────────────────────────────────┘
+                    ├────────────────────────────────────┐
+                    │                                    │
+        ┌───────────▼─────────────────────────┐ ┌────────▼───────────────────────────┐
+        │ trajectory/palantir                 │ │ trajectory/via                     │
+        │  input: X_phate + start cell        │ │  input: X_phate + root cluster     │
+        │  output:                            │ │  output:                           │
+        │    obs["palantir_pseudotime"]       │ │    obs["via_pseudotime"]           │
+        │    obsm["fate_probabilities"]       │ │    obsm["via_graph"]               │
+        │  [NEW #3]                           │ │  [NEW #4]  (validation/alt)        │
+        └───────────┬─────────────────────────┘ └────────────────────────────────────┘
                     │  pseudotime + fate probabilities
                     │
-        ┌───────────▼────────────────────────┐
+        ┌───────────▼─────────────────────────┐
         │ trajectory/pseudotime_dynamics      │  [NEW #5]
         │  input: proportion matrix +         │
         │         pseudotime                  │
         │  output: GAM fits per subpopulation │
         │    uns["dynamics"]["peak_time"]     │
         │    uns["dynamics"]["gam_params"]    │
-        └───────────┬────────────────────────┘
+        └───────────┬─────────────────────────┘
                     │  dynamics curves per subpopulation
                     │
-        ┌───────────▼────────────────────────┐
+        ┌───────────▼─────────────────────────┐
         │ cluster/cellular_communities        │  [NEW #6]
         │  input: proportion matrix +         │
         │         dynamics curves             │
@@ -191,10 +191,10 @@ uncovering trajectories of brain aging via coordinated cellular community dynami
         │  output:                            │
         │    uns["cellular_communities"]      │
         │    obs["community_id"]              │
-        └───────────┬────────────────────────┘
+        └───────────┬─────────────────────────┘
                     │  cellular communities
                     │
-        ┌───────────▼────────────────────────┐
+        ┌───────────▼─────────────────────────┐
         │ stats/trait_associations            │  [NEW #8]
         │  input: proportion matrix +         │
         │         community assignments +     │
@@ -203,8 +203,8 @@ uncovering trajectories of brain aging via coordinated cellular community dynami
         │  output:                            │
         │    uns["trait_associations"]        │
         │    (subpopulation/community ×       │
-        │     trait: β, p, FDR)              │
-        └───────────┬────────────────────────┘
+        │     trait: β, p, FDR)               │
+        └───────────┬─────────────────────────┘
                     │
 ┌───────────────────▼───────────────────────────────────────────────────┐
 │  OUTPUTS                                                              │
@@ -219,7 +219,7 @@ uncovering trajectories of brain aging via coordinated cellular community dynami
 │    uns["dynamics"]          GAM-fitted proportion dynamics            │
 │    uns["cellular_communities"] Community membership + metadata        │
 │    uns["trait_associations"]  Per-subpop/community trait stats        │
-│    uns["pathway_enrichment"]  Per-subpop GSEA/ORA results            │
+│    uns["pathway_enrichment"]  Per-subpop GSEA/ORA results             │
 │                                                                       │
 │  proportions.h5mu           Participant × subpopulation matrix        │
 │  de_results/                Per-subpopulation DESeq2 tables           │
@@ -279,7 +279,7 @@ uncovering trajectories of brain aging via coordinated cellular community dynami
 | 1 | `calculate_proportions` | `metadata/` | Group-by aggregation (participant × subpopulation) | Python |
 | 2 | `phate` | `dimred/` | PHATE embedding (KrishnaswamyLab/phate) | Python |
 | 3 | `palantir` | `trajectory/` | Pseudotime + fate probabilities (palantir package) | Python |
-| 4 | `via` | `trajectory/` | Trajectory inference (pyVIA package) | Python |
+| 4 | `via` | `trajectory/` | Trajectory inference (pyVIA package) | Python | **BLOCKED** — pyVIA 0.2.4 has hard incompatibilities with scipy>=1.12 (required by anndata) and numpy>=2. See [blocking issues](#trajectory-via-blocked). |
 | 5 | `pseudotime_dynamics` | `trajectory/` | GAM fits of proportions along pseudotime (pygam / mgcv) | Python/R |
 | 6 | `cellular_communities` | `cluster/` | Co-occurrence + dynamics similarity → community clustering | Python |
 | 7 | `pathway_enrichment` | `interpret/` | GSEA / ORA (gseapy, MSigDB/GO/KEGG) | Python |
@@ -411,13 +411,34 @@ src/workflows/beyond/
 | 5 | `trajectory/pseudotime_dynamics` | 3 days | palantir | Critical |
 | 6 | `cluster/cellular_communities` | 5 days | pseudotime_dynamics | Critical |
 | 7 | `interpret/pathway_enrichment` | 2 days | deseq2 output | High |
-| 4 | `trajectory/via` | 2 days | phate | Medium |
+| 4 | `trajectory/via` | 2 days | phate | ~~Medium~~ **BLOCKED** |
 | 8 | `stats/trait_associations` | 3 days | communities | Medium |
 | — | Workflows | 3 days | all components | Last |
 | **Total** | | **~23 days** | | |
 
-Components 1–6 are the **critical path**. Components 4, 7, 8, and workflows can be
-parallelized once the critical path is unblocked.
+Components 1–6 are the **critical path**. Components 7, 8, and workflows can be
+parallelized once the critical path is unblocked. Component 4 is blocked (see below).
+
+---
+
+## trajectory/via — BLOCKED {#trajectory-via-blocked}
+
+**Status**: Skipped — pyVIA 0.2.4 is incompatible with the anndata base stack.
+
+| Issue | Detail |
+|---|---|
+| `numpy.bool8` removed in NumPy 2.x | `nptyping` (pyVIA dep) uses `np.bool8`; requires `numpy<2` |
+| `scipy>=1.12` required by anndata | pyVIA's `csr_matrix(zip(*edges))` breaks with newer scipy API when edge lists are empty after Jaccard pruning |
+| Markov NaN crash | Even after patching `get_sparse_from_igraph`, isolated nodes in pruned graph → zero row-sum → NaN transition probabilities → `_simulate_markov` crashes |
+
+**Resolution options (future)**:
+1. Check whether the original BEYOND_DLPFC R code uses pyVIA or an R-native tool (slingshot / monocle3); if R-native, rewrite as `r_script`
+2. Wait for a pyVIA release that supports scipy>=1.12
+3. Pin `scipy<1.11` in a separate Docker image (breaks anndata base stack sharing)
+
+Palantir (`trajectory/palantir`) fully covers the pseudotime requirement for the BEYOND critical path.
+
+---
 
 #   Architecture to run the "full" pipeline
 
