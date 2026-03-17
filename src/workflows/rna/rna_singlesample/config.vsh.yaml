@@ -47,6 +47,22 @@ argument_groups:
         example: 5000000
         type: integer
         description: Maximum number of counts captured per cell.
+
+      - name: "--min_percentile_counts"
+        example: 0.05
+        type: double
+        description: |
+          Minimum percentile of counts captured per cell.
+      - name: "--max_percentile_counts"
+        example: 0.95
+        type: double
+        description: |
+          Maximum percentile of counts captured per cell.
+      - name: "--log_transform_total_counts"
+        type: boolean
+        default: true
+        description: |
+          Whether to log-transform the total counts before calculating percentile-based filtering thresholds.
   
       - name: "--min_genes_per_cell"
         type: integer
@@ -154,6 +170,7 @@ resources:
     path: /src/workflows/utils/
 dependencies:
   - name: filter/filter_with_counts
+  - name: filter/filter_with_quantile
   - name: filter/filter_with_scrublet
   - name: filter/do_filter
   - name: filter/delimit_fraction

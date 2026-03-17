@@ -41,16 +41,17 @@ workflow run_wf {
       [id, state + new_state]
     }
     | qc.run(
+      key: "qc_rna",
       fromState: { id, state ->
-        // The rna singlesample processing allows detecting mitochondrial genes and filtering based
-        // on the fraction of mitochondrial genes per cell
-        // This behaviour is optional based on the presence of var_name_mitochondrial_genes
-        // The behavior of other components must be tuned to this argument as well
+        // The rna singlesample processing allows for the optional filtering based on:
+        // 1) fraction of mitochondrial genes per cell
+        // 2) fraction of ribosomal genes per cell
+        // 3) percentile of counts per cell
+        // The behavior of the QC component must be tuned to the presence of these arguments.
         def args = [
           "id": id,
           "input": state.input,
-          // disable other qc metric calculations
-          // only mitochondrial gene detection is required at this point
+          // disable all qc metrics by default
           "top_n_vars": [],
           "output_obs_num_nonzero_vars": null,
           "output_obs_total_counts_vars": null,
@@ -63,6 +64,12 @@ workflow run_wf {
           "layer": state.layer,
         ]
         
+        if (state.min_percentile_counts || state.max_percentile_counts) {
+        // If percentile-based filtering is enabled, total counts per cell must be calculated.
+          args += [
+            "output_obs_total_counts_vars": "total_counts"
+          ]
+        }
         if (state.var_name_mitochondrial_genes) {
           // Check if user has defined var columns to calculate metrics
           def new_var_qc_metrics = state.var_qc_metrics != null ? state.var_qc_metrics : []
@@ -100,6 +107,7 @@ workflow run_wf {
       toState: ["input": "output"]
     )
     | delimit_fraction.run(
+      key: "filter_mitochondrial",
       runIf: {id, state -> state.var_name_mitochondrial_genes},
       fromState: {id, state -> 
       [
@@ -113,6 +121,7 @@ workflow run_wf {
       toState: ["input": "output"]
     )
     | delimit_fraction.run(
+      key: "filter_ribosomal",
       runIf: {id, state -> state.var_name_ribosomal_genes},
       fromState: {id, state -> 
       [
@@ -125,7 +134,26 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
-    // cell filtering
+    // cell filtering based on quantiles
+    | filter_with_quantile.run(
+      key: "rna_filter_by_percentile",
+      runIf: { id, state -> state.min_percentile_counts || state.max_percentile_counts },
+      fromState: { id, state ->
+        [
+          "input": state.input,
+          "obs_min_quantile": state.min_percentile_counts,
+          "obs_max_quantile": state.max_percentile_counts,
+          "log_transform": state.log_transform_total_counts
+        ]
+      },
+      args: [
+          "obs_column": "total_counts",
+          "obs_name_filter": "filter_with_percentile",
+          "var_name_filter": "filter_with_percentile"
+      ],
+      toState: ["input": "output"]
+    )
+    // cell filtering based on counts
     | filter_with_counts.run(
       key: "rna_filter_with_counts",
       fromState: { id, state ->
@@ -160,6 +188,9 @@ workflow run_wf {
         }
         if (state.var_name_ribosomal_genes) {
           obs_filter += ["filter_ribosomal"]
+        }
+        if (state.min_counts_percentile || state.max_counts_percentile) {
+          obs_filter += ["filter_with_percentile"]
         }
         stateMapping += ["obs_filter": obs_filter]
         return stateMapping
