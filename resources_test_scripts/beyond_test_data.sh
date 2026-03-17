@@ -2,14 +2,20 @@
 # Generates synthetic multi-donor snRNA-seq atlas for testing BEYOND components.
 #
 # Produces: resources_test/beyond_test_data/
-#   atlas.h5mu          — 480 cells × 2000 genes; 8 donors; 3 cell types;
-#                         9 subpopulations (3 per type); obs/obsm ready for
-#                         BEYOND components (calculate_proportions, phate, etc.)
-#   de_ExN.csv          — synthetic DESeq2 results for ExN subpopulations
-#   de_InN.csv          — synthetic DESeq2 results for InN subpopulations
-#   de_Ast.csv          — synthetic DESeq2 results for Ast subpopulations
-#   gene_sets.gmt       — tiny local GMT file (6 gene sets) for pathway_enrichment
-#   traits.csv          — synthetic clinical traits table (participant × trait)
+#   atlas.h5mu              — 144 cells × 2000 genes; 8 donors; 3 cell types;
+#                             9 subpopulations (3 per type); obs/obsm ready for
+#                             BEYOND components (calculate_proportions, phate, etc.)
+#   proportions_output.h5mu — atlas + uns["proportions"] + obsm["proportions"]
+#                             (simulates output of metadata/calculate_proportions)
+#   pseudotime_output.h5mu  — proportions_output + obs["palantir_pseudotime"]
+#                             (simulates output of trajectory/palantir)
+#   dynamics_output.h5mu    — pseudotime_output + uns["dynamics"]
+#                             (simulates output of trajectory/pseudotime_dynamics)
+#   de_ExN.csv              — synthetic DESeq2 results for ExN subpopulations
+#   de_InN.csv              — synthetic DESeq2 results for InN subpopulations
+#   de_Ast.csv              — synthetic DESeq2 results for Ast subpopulations
+#   gene_sets.gmt           — tiny local GMT file (6 gene sets) for pathway_enrichment
+#   traits.csv              — synthetic clinical traits table (participant × trait)
 #
 # Usage: bash resources_test_scripts/beyond_test_data.sh
 
@@ -159,6 +165,75 @@ traits = pd.DataFrame({
 traits_path = f"{out}/traits.csv"
 traits.to_csv(traits_path, index=False)
 print(f"Wrote {traits_path}  ({N_DONORS} donors × 5 traits)")
+
+# ── Proportions output (simulates metadata/calculate_proportions output) ──────
+counts_df = (
+    adata.obs.groupby(["participant_id", "subpopulation"], observed=True)
+    .size()
+    .unstack(fill_value=0)
+)
+proportions_df = counts_df.div(counts_df.sum(axis=1), axis=0)
+adata.uns["proportions"] = proportions_df.to_dict()
+
+# Per-cell proportion vectors in obsm (each cell gets its participant's row)
+participant_ids_arr = adata.obs["participant_id"].values
+obsm_matrix = np.array(
+    [
+        proportions_df.loc[pid].values if pid in proportions_df.index
+        else np.zeros(len(proportions_df.columns))
+        for pid in participant_ids_arr
+    ],
+    dtype=np.float64,
+)
+adata.obsm["proportions"] = pd.DataFrame(
+    obsm_matrix,
+    index=adata.obs_names,
+    columns=proportions_df.columns.astype(str),
+)
+prop_path = f"{out}/proportions_output.h5mu"
+mu.MuData({"rna": adata}).write_h5mu(prop_path, compression="gzip")
+print(
+    f"Wrote {prop_path}  "
+    f"({len(proportions_df)} participants × {len(proportions_df.columns)} subpopulations)"
+)
+
+# ── Pseudotime output (simulates trajectory/palantir output) ──────────────────
+donor_order = sorted(proportions_df.index)
+donor_pt = {
+    d: float(i) / max(len(donor_order) - 1, 1)
+    for i, d in enumerate(donor_order)
+}
+adata.obs["palantir_pseudotime"] = [
+    float(np.clip(donor_pt[pid] + rng.normal(0, 0.02), 0, 1))
+    for pid in adata.obs["participant_id"]
+]
+pt_path = f"{out}/pseudotime_output.h5mu"
+mu.MuData({"rna": adata}).write_h5mu(pt_path, compression="gzip")
+print(f"Wrote {pt_path}  ({len(donor_order)} donors with synthetic palantir_pseudotime)")
+
+# ── Dynamics output (simulates trajectory/pseudotime_dynamics output) ─────────
+n_bins = 100
+grid = np.linspace(0, 1, n_bins)
+subpop_list = list(proportions_df.columns)
+
+def _sigmoid(x, x0, k=10.0):
+    return 1.0 / (1.0 + np.exp(-k * (x - x0)))
+
+dynamics = {}
+for j, sp in enumerate(subpop_list):
+    peak_t = 0.1 + j * (0.8 / max(len(subpop_list) - 1, 1))
+    fitted = _sigmoid(grid, peak_t).tolist()
+    dynamics[sp] = {
+        "pseudotime_grid": grid.tolist(),
+        "proportion_fitted": fitted,
+        "peak_pseudotime": float(grid[int(np.argmax(fitted))]),
+        "r_squared": 0.85,
+        "p_value": 0.001,
+    }
+adata.uns["dynamics"] = dynamics
+dyn_path = f"{out}/dynamics_output.h5mu"
+mu.MuData({"rna": adata}).write_h5mu(dyn_path, compression="gzip")
+print(f"Wrote {dyn_path}  ({len(subpop_list)} subpopulation dynamics curves)")
 PYEOF
 
 echo ""

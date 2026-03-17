@@ -1,0 +1,159 @@
+name: cellular_communities
+namespace: "cluster"
+scope: "public"
+description: |
+  Detects cellular communities by combining co-occurrence and dynamics similarity
+  of subpopulations — the core clustering step of the BEYOND methodology.
+
+  Two subpopulation × subpopulation similarity matrices are computed:
+
+  1. **Co-occurrence similarity**: Pearson correlation of participant proportion
+     vectors across subpopulations. Subpopulations that tend to expand or contract
+     together receive a high score.
+
+  2. **Dynamics similarity**: Pearson correlation of GAM-fitted proportion curves
+     along pseudotime. Subpopulations with parallel temporal trajectories receive
+     a high score.
+
+  The combined similarity (weighted sum controlled by `--alpha`) is converted to a
+  distance matrix and Ward-linkage hierarchical clustering is applied to group
+  subpopulations into `--n_communities` cellular communities.
+
+  Outputs:
+    - `obs["community_id"]`    — community label for every cell
+    - `uns["cellular_communities"]` — subpopulation → community mapping + metadata
+
+keywords: [ cellular communities, clustering, co-occurrence, dynamics, BEYOND ]
+links:
+  repository: https://github.com/naomihabiblab/BEYOND_DLPFC
+references:
+  doi: []
+license: MIT
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: Input h5mu file with proportion matrix and dynamics in uns.
+        direction: input
+        required: true
+        example: input.h5mu
+
+      - name: "--modality"
+        type: string
+        default: "rna"
+        required: false
+        description: Modality to read and write.
+
+      - name: "--obs_subpopulation"
+        type: string
+        default: "subpopulation"
+        required: false
+        description: ".obs column identifying each cell's subpopulation label."
+
+      - name: "--uns_proportions"
+        type: string
+        default: "proportions"
+        required: false
+        description: ".uns key with participant x subpopulation proportion dict (from metadata/calculate_proportions)."
+
+      - name: "--uns_dynamics"
+        type: string
+        default: "dynamics"
+        required: false
+        description: ".uns key with per-subpopulation dynamics dicts (from trajectory/pseudotime_dynamics)."
+
+  - name: Arguments
+    arguments:
+      - name: "--n_communities"
+        type: integer
+        required: true
+        min: 2
+        description: Number of cellular communities to detect.
+        example: 6
+
+      - name: "--alpha"
+        type: double
+        default: 0.5
+        min: 0.0
+        max: 1.0
+        required: false
+        description: |
+          Weight for the co-occurrence similarity matrix.
+          Final similarity = alpha * co_occurrence + (1 - alpha) * dynamics.
+          Set to 1.0 for purely co-occurrence-based clustering, 0.0 for dynamics only.
+
+      - name: "--method"
+        type: string
+        default: "hierarchical"
+        choices: [hierarchical, spectral]
+        required: false
+        description: Clustering method. 'hierarchical' uses Ward linkage; 'spectral' uses spectral clustering.
+
+      - name: "--linkage"
+        type: string
+        default: "ward"
+        choices: [ward, complete, average, single]
+        required: false
+        description: Linkage criterion for hierarchical clustering. Ignored when --method spectral.
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu with community labels in obs and uns.
+        direction: output
+        required: true
+        example: output.h5mu
+
+      - name: "--obs_community_id"
+        type: string
+        default: "community_id"
+        required: false
+        description: ".obs column name for community labels assigned to each cell."
+
+      - name: "--uns_output"
+        type: string
+        default: "cellular_communities"
+        required: false
+        description: ".uns key where community metadata is stored."
+
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: test_data/
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+        packages:
+          - scikit-learn
+    test_setup:
+      - type: python
+        __merge__: [/src/base/requirements/viashpy.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [midcpu, midmem, middisk]

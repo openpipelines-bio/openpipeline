@@ -69,9 +69,8 @@ def test_basic(run_component, tmp_path):
     assert isinstance(prop_dict, dict)
 
     # Reconstruct DataFrame from dict and check shape
+    # uns dict is column-first (subpop → donor → value); pd.DataFrame restores original shape
     prop_df = pd.DataFrame(prop_dict)
-    # uns dict is stored column-first (subpop → donor → value), so transpose
-    prop_df = pd.DataFrame(prop_dict).T
     assert prop_df.shape == (3, 4)
 
     # Each row must sum to 1
@@ -97,7 +96,7 @@ def test_uniform_proportions(run_component, tmp_path):
 
     result = read_h5mu(str(output_path))
     prop_dict = result.mod["rna"].uns["proportions"]
-    prop_df = pd.DataFrame(prop_dict).T
+    prop_df = pd.DataFrame(prop_dict)
     expected = 1.0 / n_subpops
     np.testing.assert_allclose(prop_df.values, expected, atol=1e-10)
 

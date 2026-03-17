@@ -38,6 +38,18 @@ from setup_logger import setup_logger
 logger = setup_logger()
 
 
+def _resolve_gene_set(gs):
+    """Return gs unchanged if it is an Enrichr library name or an existing path.
+    Inside a Docker container viash mounts host paths under /viash_automount/.
+    If gs looks like an absolute path but doesn't exist, try the automounted path."""
+    if os.path.isfile(gs):
+        return gs
+    automounted = "/viash_automount" + gs
+    if os.path.isfile(automounted):
+        return automounted
+    return gs  # treat as Enrichr library name
+
+
 def _load_de_table(csv_path, gene_column):
     """Load DESeq2 CSV and return a DataFrame indexed by gene name."""
     de = pd.read_csv(csv_path, index_col=0)
@@ -108,7 +120,7 @@ def _run_ora(de, gene_sets, output_dir, par, n_jobs):
         res = gp.enrichr(
             gene_list=gene_list,
             gene_sets=gs,
-            organism=par["organism"],
+            organism=par["organism"].lower(),
             outdir=None,
             no_plot=True,
             verbose=False,
@@ -135,16 +147,17 @@ def main():
     os.makedirs(par["output_csv_dir"], exist_ok=True)
 
     n_jobs = max(1, (meta.get("cpus") or 1))
+    gene_sets = [_resolve_gene_set(gs) for gs in par["gene_sets"]]
 
     if par["method"] == "prerank":
-        enrichment_results = _run_prerank(de, par["gene_sets"], par["output_csv_dir"], par, n_jobs)
+        enrichment_results = _run_prerank(de, gene_sets, par["output_csv_dir"], par, n_jobs)
     elif par["method"] == "ora":
         if par["pval_column"] not in de.columns:
             raise ValueError(
                 f"--pval_column '{par['pval_column']}' not found. "
                 f"Available: {list(de.columns)}"
             )
-        enrichment_results = _run_ora(de, par["gene_sets"], par["output_csv_dir"], par, n_jobs)
+        enrichment_results = _run_ora(de, gene_sets, par["output_csv_dir"], par, n_jobs)
     else:
         raise ValueError(f"Unknown method '{par['method']}'. Choose 'prerank' or 'ora'.")
 

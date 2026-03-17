@@ -1,0 +1,139 @@
+name: via
+namespace: "trajectory"
+scope: "public"
+description: |
+  Computes pseudotime trajectory using pyVIA (Trajectory Inference via Adaptive Networks).
+
+  VIA runs graph-based trajectory inference on a low-dimensional embedding (e.g. PHATE,
+  PCA, UMAP). It requires per-cell cluster labels and a root cluster or root cell index.
+
+  Outputs:
+    - `obs["via_pseudotime"]`   — Markov pseudotime per cell
+    - `uns["via_graph"]`        — edge list of the VIA cluster graph (source, target, weight)
+
+keywords: [ via, trajectory, pseudotime, BEYOND ]
+links:
+  repository: https://github.com/naomihabiblab/BEYOND_DLPFC
+references:
+  doi: []
+license: MIT
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: Input h5mu file with low-dimensional embedding in obsm.
+        direction: input
+        required: true
+        example: input.h5mu
+
+      - name: "--modality"
+        type: string
+        default: "rna"
+        required: false
+        description: Modality to read and write.
+
+      - name: "--obsm_key"
+        type: string
+        default: "X_phate"
+        required: false
+        description: ".obsm key containing the embedding coordinates used for trajectory inference (e.g. X_phate, X_pca)."
+
+      - name: "--obs_cluster"
+        type: string
+        default: "leiden"
+        required: false
+        description: ".obs column with per-cell cluster labels used as VIA graph nodes."
+
+  - name: Arguments
+    arguments:
+      - name: "--root_user"
+        type: string
+        required: true
+        description: |
+          Root of the trajectory. Either a cluster label (string matching a value in
+          --obs_cluster) or a cell index (integer as string, e.g. "0"). If a cluster
+          label is given, VIA uses cells in that cluster as the root.
+        example: "0"
+
+      - name: "--knn"
+        type: integer
+        default: 15
+        required: false
+        description: Number of k-nearest neighbors for the VIA graph.
+
+      - name: "--random_seed"
+        type: integer
+        default: 42
+        required: false
+        description: Random seed for reproducibility.
+
+      - name: "--n_iter_leiden"
+        type: integer
+        default: 5
+        required: false
+        description: Number of Leiden iterations for VIA's internal community detection.
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu with via_pseudotime in obs and via_graph in uns.
+        direction: output
+        required: true
+        example: output.h5mu
+
+      - name: "--obs_pseudotime"
+        type: string
+        default: "via_pseudotime"
+        required: false
+        description: ".obs column name for VIA Markov pseudotime values."
+
+      - name: "--uns_graph"
+        type: string
+        default: "via_graph"
+        required: false
+        description: ".uns key for the VIA cluster graph edge list."
+
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: test_data/
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+          - build-essential
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+        packages:
+          - "numpy<2"
+          - pyVIA
+          - s_gd2
+    test_setup:
+      - type: python
+        __merge__: [/src/base/requirements/viashpy.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [midcpu, midmem, middisk]

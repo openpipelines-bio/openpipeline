@@ -1,50 +1,30 @@
 #!/usr/bin/env bash
-# Generate synthetic test data for dimred/phate.
+# Test data for dimred/phate.
+# Delegates to resources_test_scripts/beyond_test_data.sh.
+# Input: resources_test/beyond_test_data/proportions_output.h5mu
+#   (has obsm["proportions"] — participant-proportions broadcast per cell,
+#    as produced by metadata/calculate_proportions)
+#
 # Run from the repo root:
 #   bash src/dimred/phate/test_data/test_data_script.sh
 
 set -eo pipefail
 
-python3 - <<'PYEOF'
-import numpy as np
-import pandas as pd
-from anndata import AnnData
-from mudata import MuData
-import pathlib
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../.." && pwd)"
+BEYOND_DIR="${REPO_ROOT}/resources_test/beyond_test_data"
 
-out_dir = pathlib.Path("src/dimred/phate/test_data")
-out_dir.mkdir(parents=True, exist_ok=True)
+if [[ ! -f "${BEYOND_DIR}/proportions_output.h5mu" ]]; then
+  echo "Generating BEYOND test data..."
+  bash "${REPO_ROOT}/resources_test_scripts/beyond_test_data.sh"
+fi
 
-rng = np.random.default_rng(42)
-n_obs = 150
-n_pcs = 20
-n_genes = 200
-
-# Simulate a trajectory: points spiralling in PCA space
-t = np.linspace(0, 4 * np.pi, n_obs)
-curve = np.column_stack([np.sin(t), np.cos(t), t / (4 * np.pi)])
-X_pca = curve @ rng.standard_normal((3, n_pcs))
-X_pca += rng.standard_normal((n_obs, n_pcs)) * 0.15
-
-obs = pd.DataFrame(
-    {"cell_type": np.repeat(["TypeA", "TypeB", "TypeC"], n_obs // 3)},
-    index=[f"cell_{i}" for i in range(n_obs)],
-)
-var = pd.DataFrame(index=[f"gene_{g}" for g in range(n_genes)])
-X = rng.integers(0, 1000, size=(n_obs, n_genes)).astype(float)
-
-adata = AnnData(X=X, obs=obs, var=var)
-adata.obsm["X_pca"] = X_pca.astype(np.float32)
-
-mdata = MuData({"rna": adata})
-out_file = out_dir / "phate_input.h5mu"
-mdata.write_h5mu(str(out_file))
-print(f"Written: {out_file}  ({n_obs} cells, {n_pcs} PCs)")
-PYEOF
-
+echo "Test data for dimred/phate:"
+echo "  input:  ${BEYOND_DIR}/proportions_output.h5mu  (obsm_input=proportions)"
 echo ""
 echo "Run the component manually:"
 echo ""
 echo "  viash run src/dimred/phate/config.vsh.yaml -- \\"
-echo "    --input  src/dimred/phate/test_data/phate_input.h5mu \\"
-echo "    --output src/dimred/phate/test_data/phate_output.h5mu"
+echo "    --input       ${BEYOND_DIR}/proportions_output.h5mu \\"
+echo "    --obsm_input  proportions \\"
+echo "    --output      ${BEYOND_DIR}/phate_output.h5mu"

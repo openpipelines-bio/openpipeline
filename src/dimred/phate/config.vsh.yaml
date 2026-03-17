@@ -143,7 +143,6 @@ engines:
         __merge__: /src/base/requirements/anndata_mudata.yaml
         packages:
           - phate>=1.0.11
-          - scprep>=1.2.3
     __merge__: [/src/base/requirements/python_test_setup.yaml, .]
 
 runners:
