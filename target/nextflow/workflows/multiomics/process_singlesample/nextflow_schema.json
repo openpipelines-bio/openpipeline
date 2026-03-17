@@ -116,6 +116,12 @@
           "description": "Maximum percentile of counts captured per cell.\n",
           "help_text": "Type: `double`, multiple: `False`, example: `0.95`. "
         },
+        "rna_log_transform_total_counts": {
+          "type": "boolean",
+          "description": "Whether to log-transform the total counts before calculating percentile-based filtering thresholds.\nThis will only affect percentile-based filtering, not the count-based filtering.\n",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
+        },
         "rna_min_genes_per_cell": {
           "type": "integer",
           "description": "Minimum of non-zero values per cell.",
@@ -183,6 +189,12 @@
           "type": "number",
           "description": "Maximum percentile of counts captured per cell.\n",
           "help_text": "Type: `double`, multiple: `False`, example: `0.95`. "
+        },
+        "prot_log_transform_total_counts": {
+          "type": "boolean",
+          "description": "Whether to log-transform the total counts before calculating percentile-based filtering thresholds.\nThis will only affect percentile-based filtering, not the count-based filtering.\n",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
         },
         "prot_min_proteins_per_cell": {
           "type": "integer",

@@ -58,6 +58,11 @@ argument_groups:
         type: double
         description: |
           Maximum percentile of counts captured per cell.
+      - name: "--log_transform_total_counts"
+        type: boolean
+        default: true
+        description: |
+          Whether to log-transform the total counts before calculating percentile-based filtering thresholds.
   
       - name: "--min_proteins_per_cell"
         type: integer

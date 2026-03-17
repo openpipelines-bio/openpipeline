@@ -3125,6 +3125,18 @@ meta = [
           "direction" : "input"
         },
         {
+          "type" : "boolean",
+          "name" : "--obs_log1p_transform",
+          "description" : "Apply log1p transformation to the obs_column values before calculating quantiles.\nThe transformed values will be stored as 'log1p_{obs_column}' in .obs.\nThis is useful for highly skewed data where log transformation can improve quantile-based filtering.\n",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "double",
           "name" : "--obs_min_quantile",
           "description" : "Minimum quantile threshold for .obs filtering. Observations with values below this quantile will be removed.\nValue should be between 0.0 and 1.0.\n",
@@ -3148,6 +3160,18 @@ meta = [
           "required" : false,
           "min" : 0.0,
           "max" : 1.0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--var_log1p_transform",
+          "description" : "Apply log1p transformation to the var_column values before calculating quantiles.\nThe transformed values will be stored as 'log1p_{var_column}' in .var.\nThis is useful for highly skewed data where log transformation can improve quantile-based filtering.\n",
+          "default" : [
+            true
+          ],
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3218,6 +3242,30 @@ meta = [
           "description" : "In which .obs slot to store a boolean array corresponding to which observations should be removed.",
           "default" : [
             "filter_with_quantile"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--obs_log1p_column",
+          "description" : "Name for the column where log1p transformed obs values will be stored.\nIf not provided, defaults to 'log1p_{obs_column}'.\n",
+          "example" : [
+            "log1p_total_counts"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--var_log1p_column",
+          "description" : "Name for the column where log1p transformed var values will be stored.\nIf not provided, defaults to 'log1p_{var_column}'.\n",
+          "example" : [
+            "log1p_total_counts"
           ],
           "required" : false,
           "direction" : "input",
@@ -3435,9 +3483,9 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_quantile",
     "viash_version" : "0.9.4",
-    "git_commit" : "60d8ebf42027f9417b7d98d131384a3f5b4704e4",
+    "git_commit" : "2b0e8fc5f581fe0745698246b966660b36e9f46f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2142-g60d8ebf4202"
+    "git_tag" : "0.2.0-2143-g2b0e8fc5f58"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3507,13 +3555,17 @@ par = {
   'obs_column': $( if [ ! -z ${VIASH_PAR_OBS_COLUMN+x} ]; then echo "r'${VIASH_PAR_OBS_COLUMN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_column': $( if [ ! -z ${VIASH_PAR_VAR_COLUMN+x} ]; then echo "r'${VIASH_PAR_VAR_COLUMN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'do_subset': $( if [ ! -z ${VIASH_PAR_DO_SUBSET+x} ]; then echo "r'${VIASH_PAR_DO_SUBSET//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'obs_log1p_transform': $( if [ ! -z ${VIASH_PAR_OBS_LOG1P_TRANSFORM+x} ]; then echo "r'${VIASH_PAR_OBS_LOG1P_TRANSFORM//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'obs_min_quantile': $( if [ ! -z ${VIASH_PAR_OBS_MIN_QUANTILE+x} ]; then echo "float(r'${VIASH_PAR_OBS_MIN_QUANTILE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'obs_max_quantile': $( if [ ! -z ${VIASH_PAR_OBS_MAX_QUANTILE+x} ]; then echo "float(r'${VIASH_PAR_OBS_MAX_QUANTILE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'var_log1p_transform': $( if [ ! -z ${VIASH_PAR_VAR_LOG1P_TRANSFORM+x} ]; then echo "r'${VIASH_PAR_VAR_LOG1P_TRANSFORM//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'var_min_quantile': $( if [ ! -z ${VIASH_PAR_VAR_MIN_QUANTILE+x} ]; then echo "float(r'${VIASH_PAR_VAR_MIN_QUANTILE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'var_max_quantile': $( if [ ! -z ${VIASH_PAR_VAR_MAX_QUANTILE+x} ]; then echo "float(r'${VIASH_PAR_VAR_MAX_QUANTILE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_values_for_quantile': $( if [ ! -z ${VIASH_PAR_MIN_VALUES_FOR_QUANTILE+x} ]; then echo "int(r'${VIASH_PAR_MIN_VALUES_FOR_QUANTILE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_log1p_column': $( if [ ! -z ${VIASH_PAR_OBS_LOG1P_COLUMN+x} ]; then echo "r'${VIASH_PAR_OBS_LOG1P_COLUMN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'var_log1p_column': $( if [ ! -z ${VIASH_PAR_VAR_LOG1P_COLUMN+x} ]; then echo "r'${VIASH_PAR_VAR_LOG1P_COLUMN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_name_filter': $( if [ ! -z ${VIASH_PAR_VAR_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_VAR_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
@@ -3625,6 +3677,8 @@ def main():
             "min_quantile": par["obs_min_quantile"],
             "max_quantile": par["obs_max_quantile"],
             "name_filter": par["obs_name_filter"],
+            "log1p_transform": par["obs_log1p_transform"],
+            "log1p_column": par["obs_log1p_column"],
         },
         "var": {
             "filter": "features",
@@ -3632,6 +3686,8 @@ def main():
             "min_quantile": par["var_min_quantile"],
             "max_quantile": par["var_max_quantile"],
             "name_filter": par["var_name_filter"],
+            "log1p_transform": par["var_log1p_transform"],
+            "log1p_column": par["var_log1p_column"],
         },
     }
 
@@ -3662,8 +3718,26 @@ def main():
                         f"Column '{config['column']}' must contain numeric data for quantile filtering"
                     )
 
+                # Apply log1p transformation if requested
+                if config["log1p_transform"]:
+                    logger.info(f"Applying log1p transformation to {config['column']}")
+                    # Use custom column name if provided, otherwise default to log1p_{column}
+                    log1p_column_name = (
+                        config.get("log1p_column") or f"log1p_{config['column']}"
+                    )
+                    log1p_values = np.log1p(values)
+                    data_frame[log1p_column_name] = log1p_values
+                    logger.info(
+                        f"Stored log1p transformed values in .{filter_type}['{log1p_column_name}']"
+                    )
+                    # Use transformed values for quantile filtering
+                    filter_values = log1p_values
+                else:
+                    # Use original values for quantile filtering
+                    filter_values = values
+
                 filtered_values = filter_by_quantile(
-                    values,
+                    filter_values,
                     min_quantile=config["min_quantile"],
                     max_quantile=config["max_quantile"],
                     min_values_for_quantile=par["min_values_for_quantile"],

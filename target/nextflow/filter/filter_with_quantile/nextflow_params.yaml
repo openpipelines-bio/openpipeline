@@ -6,8 +6,10 @@ modality: "rna"
 
 # Filters
 do_subset: false
+obs_log1p_transform: true
 # obs_min_quantile: 0.05
 # obs_max_quantile: 0.95
+var_log1p_transform: true
 # var_min_quantile: 0.01
 # var_max_quantile: 0.99
 min_values_for_quantile: 10
@@ -15,6 +17,8 @@ min_values_for_quantile: 10
 # Outputs
 # output: "$id.$key.output.h5mu"
 obs_name_filter: "filter_with_quantile"
+# obs_log1p_column: "log1p_total_counts"
+# var_log1p_column: "log1p_total_counts"
 var_name_filter: "filter_with_quantile"
 # output_compression: "gzip"
 

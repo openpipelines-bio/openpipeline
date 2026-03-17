@@ -3223,6 +3223,18 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "boolean",
+          "name" : "--log_transform_total_counts",
+          "description" : "Whether to log-transform the total counts before calculating percentile-based filtering thresholds.\n",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "integer",
           "name" : "--min_genes_per_cell",
           "description" : "Minimum of non-zero values per cell.",
@@ -3571,9 +3583,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample",
     "viash_version" : "0.9.4",
-    "git_commit" : "60d8ebf42027f9417b7d98d131384a3f5b4704e4",
+    "git_commit" : "2b0e8fc5f581fe0745698246b966660b36e9f46f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2142-g60d8ebf4202"
+    "git_tag" : "0.2.0-2143-g2b0e8fc5f58"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3774,6 +3786,7 @@ workflow run_wf {
           "input": state.input,
           "obs_min_quantile": state.min_percentile_counts,
           "obs_max_quantile": state.max_percentile_counts,
+          "log_transform": state.log_transform_total_counts
         ]
       },
       args: [

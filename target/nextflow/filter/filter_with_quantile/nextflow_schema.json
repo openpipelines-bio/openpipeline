@@ -66,6 +66,16 @@
           "help_text": "Type: `string`, multiple: `False`, default: `\"filter_with_quantile\"`. ",
           "default": "filter_with_quantile"
         },
+        "obs_log1p_column": {
+          "type": "string",
+          "description": "Name for the column where log1p transformed obs values will be stored.\nIf not provided, defaults to 'log1p_{obs_column}'.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"log1p_total_counts\"`. "
+        },
+        "var_log1p_column": {
+          "type": "string",
+          "description": "Name for the column where log1p transformed var values will be stored.\nIf not provided, defaults to 'log1p_{var_column}'.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"log1p_total_counts\"`. "
+        },
         "var_name_filter": {
           "type": "string",
           "description": "In which .var slot to store a boolean array corresponding to which variables should be removed.",
@@ -94,6 +104,12 @@
           "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
           "default": false
         },
+        "obs_log1p_transform": {
+          "type": "boolean",
+          "description": "Apply log1p transformation to the obs_column values before calculating quantiles.\nThe transformed values will be stored as 'log1p_{obs_column}' in .obs.\nThis is useful for highly skewed data where log transformation can improve quantile-based filtering.\n",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
+        },
         "obs_min_quantile": {
           "type": "number",
           "description": "Minimum quantile threshold for .obs filtering",
@@ -103,6 +119,12 @@
           "type": "number",
           "description": "Maximum quantile threshold for .obs filtering",
           "help_text": "Type: `double`, multiple: `False`, example: `0.95`. "
+        },
+        "var_log1p_transform": {
+          "type": "boolean",
+          "description": "Apply log1p transformation to the var_column values before calculating quantiles.\nThe transformed values will be stored as 'log1p_{var_column}' in .var.\nThis is useful for highly skewed data where log transformation can improve quantile-based filtering.\n",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
         },
         "var_min_quantile": {
           "type": "number",

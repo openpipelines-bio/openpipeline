@@ -3234,6 +3234,18 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "boolean",
+          "name" : "--rna_log_transform_total_counts",
+          "description" : "Whether to log-transform the total counts before calculating percentile-based filtering thresholds.\nThis will only affect percentile-based filtering, not the count-based filtering.\n",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "integer",
           "name" : "--rna_min_genes_per_cell",
           "description" : "Minimum of non-zero values per cell.",
@@ -3370,6 +3382,18 @@ meta = [
           "description" : "Maximum percentile of counts captured per cell.\n",
           "example" : [
             0.95
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--prot_log_transform_total_counts",
+          "description" : "Whether to log-transform the total counts before calculating percentile-based filtering thresholds.\nThis will only affect percentile-based filtering, not the count-based filtering.\n",
+          "default" : [
+            true
           ],
           "required" : false,
           "direction" : "input",
@@ -3742,9 +3766,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_singlesample",
     "viash_version" : "0.9.4",
-    "git_commit" : "60d8ebf42027f9417b7d98d131384a3f5b4704e4",
+    "git_commit" : "2b0e8fc5f581fe0745698246b966660b36e9f46f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2142-g60d8ebf4202"
+    "git_tag" : "0.2.0-2143-g2b0e8fc5f58"
   },
   "package_config" : {
     "name" : "openpipeline",
@@ -3873,6 +3897,7 @@ workflow run_wf {
         "max_counts": "rna_max_counts",
         "min_percentile_counts": "rna_min_percentile_counts",
         "max_percentile_counts": "rna_max_percentile_counts",
+        "log_transform_total_counts": "rna_log_transform_total_counts",
         "min_genes_per_cell": "rna_min_genes_per_cell",
         "max_genes_per_cell": "rna_max_genes_per_cell",
         "min_cells_per_gene": "rna_min_cells_per_gene",
@@ -3895,6 +3920,7 @@ workflow run_wf {
         "max_counts": "prot_max_counts",
         "min_percentile_counts": "prot_min_percentile_counts",
         "max_percentile_counts": "prot_max_percentile_counts",
+        "log_transform_total_counts": "prot_log_transform_total_counts",
         "min_proteins_per_cell": "prot_min_proteins_per_cell",
         "max_proteins_per_cell": "prot_max_proteins_per_cell",
         "min_cells_per_protein": "prot_min_cells_per_protein",

@@ -196,6 +196,7 @@ def test_rna_obs_slots(output_h5mu):
         "filter_with_percentile",
         "num_nonzero_vars",
         "total_counts",
+        "log1p_total_counts",
     ]
     assert all(
         column_name in obs_df.columns

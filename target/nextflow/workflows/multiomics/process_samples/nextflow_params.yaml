@@ -18,6 +18,7 @@ add_id_make_observation_keys_unique: true
 # rna_max_counts: 5000000
 # rna_min_percentile_counts: 0.05
 # rna_max_percentile_counts: 0.95
+rna_log_transform_total_counts: true
 # rna_min_genes_per_cell: 200
 # rna_max_genes_per_cell: 1500000
 # rna_min_cells_per_gene: 3
@@ -32,6 +33,7 @@ skip_scrublet_doublet_detection: false
 # prot_max_counts: 5000000
 # prot_min_percentile_counts: 0.05
 # prot_max_percentile_counts: 0.95
+prot_log_transform_total_counts: true
 # prot_min_proteins_per_cell: 200
 # prot_max_proteins_per_cell: 100000000
 # prot_min_cells_per_protein: 3
