@@ -20,6 +20,12 @@
 
 * `workflows/multiomics/process_samples`: Refactored to use the new `process_singlesample` subworkflow (PR #1147).
 
+# openpipelines 4.0.4
+
+## BUG FIXES
+
+* `convert/from_cellranger_multi_to_h5mu`: fix converting VDJ data when one or more samples has no AIRR data (PR #1149).
+
 # openpipelines 4.0.3
 
 * `dataflow/split_h5mu`: ensure subsetted modality is written as a .copy() (not a view) before writing file, to prevent `obsp` sparse indexing errors during serialization (PR #1138).
