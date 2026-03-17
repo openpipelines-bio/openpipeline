@@ -1,15 +1,43 @@
 # openpipelines (unreleased)
 
-## NEW FEATURES
+## NEW FUNCTIONALITY
 
-* `dimred`: add PHATE dimensionality reduction component (PR #xxx):
-  - `dimred/phate`: computes a PHATE embedding from any `.obsm` matrix (e.g. `X_pca` or proportion vectors); stores result in `.obsm["X_phate"]`. Supports configurable `knn`, `decay`, `t`, `gamma`, and `n_components`.
+* BEYOND methodology components (PR #xxx) — 7 new components implementing the
+  Habib-lab BEYOND pipeline for cellular community discovery in snRNA-seq data
+  (reference: naomihabiblab/BEYOND_DLPFC):
 
-* `metadata`: add subpopulation proportion calculation component (PR #xxx):
-  - `metadata/calculate_proportions`: computes participant × subpopulation cell proportion matrix from a single-cell atlas; stores results in `.uns["proportions"]` (dict) and `.obsm["proportions"]` (per-cell proportion vectors).
+  - `metadata/calculate_proportions`: computes a participant × subpopulation cell
+    proportion matrix from a single-cell atlas; stores results in `.uns["proportions"]`
+    (column-first dict) and `.obsm["proportions"]` (per-cell proportion vectors).
 
-* `interpret`: add gene set enrichment analysis component (PR #xxx):
-  - `interpret/pathway_enrichment`: performs pre-ranked GSEA or ORA on DESeq2 results using GSEApy; stores results in `.uns["pathway_enrichment"]` and writes per-library CSV files.
+  - `dimred/phate`: computes a PHATE embedding from any `.obsm` matrix (e.g. `X_pca`
+    or proportion vectors); stores result in `.obsm["X_phate"]`. Supports configurable
+    `knn`, `decay`, `t`, `gamma`, and `n_components`.
+
+  - `trajectory/palantir`: computes pseudotime and fate probabilities using Palantir
+    (1.3.3 API); stores results in `obs["palantir_pseudotime"]`, `obs["palantir_entropy"]`,
+    `obsm["palantir_fate_probabilities"]`, and `uns["palantir_waypoints"]`. Supports
+    automatic start-cell selection from a cluster label or an explicit barcode.
+
+  - `trajectory/pseudotime_dynamics`: fits a cubic spline (scipy.interpolate.UnivariateSpline)
+    of participant proportion versus pseudotime per subpopulation; stores fitted curves,
+    peak pseudotime, R², and p-value in `.uns["dynamics"]`.
+
+  - `cluster/cellular_communities`: detects cellular communities by combining
+    co-occurrence similarity (Pearson correlation of participant proportion vectors) and
+    dynamics similarity (Pearson correlation of fitted proportion curves); applies
+    hierarchical (Ward) or spectral clustering; stores community labels in
+    `obs["community_id"]` and full metadata in `uns["cellular_communities"]`.
+
+  - `interpret/pathway_enrichment`: performs pre-ranked GSEA or ORA on DESeq2 results
+    using GSEApy; supports Enrichr library names or custom GMT files; stores results in
+    `.uns["pathway_enrichment"]` and writes per-library CSV files.
+
+  - `stats/trait_associations` *(new namespace)*: tests associations between
+    subpopulation proportions and clinical/biological traits using linear mixed models
+    (statsmodels MixedLM) or OLS when no random effect is specified; applies
+    BH/Bonferroni FDR correction across all (subpopulation, trait) pairs; stores results
+    in `.uns["trait_associations"]` and optionally writes a CSV.
 
 * `qc/calculate_qc_metrics`: added support for MuData encoded in Zarr format (PR #1140).
 
