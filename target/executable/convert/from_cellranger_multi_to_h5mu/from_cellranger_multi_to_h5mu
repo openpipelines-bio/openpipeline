@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_cellranger_multi_to_h5mu"
-LABEL org.opencontainers.image.created="2026-03-17T03:27:01Z"
+LABEL org.opencontainers.image.created="2026-03-18T03:32:20Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6d20f9f436951a45c4d15fc4a1eac9f315628328"
+LABEL org.opencontainers.image.revision="8f93cc1441109aa82a2cf7475135eb07f6dee885"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1148,6 +1148,7 @@ import sys
 import scanpy
 import pandas as pd
 import mudata
+import anndata
 import numpy as np
 from scirpy.io import read_10x_vdj
 from collections import defaultdict
@@ -1544,13 +1545,15 @@ def process_vdj(mudatas: dict[str, mudata.MuData], vdj_folder_path: str):
     with all_config_json_file.open("r") as open_json:
         json_obj = json.load(open_json)
     for _, mudata_obj in mudatas.items():
+        vdj_anndata = anndata.AnnData()
         json_for_sample = [
             entry for entry in json_obj if entry["barcode"] in mudata_obj.obs_names
         ]
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".json") as tfile:
-            json.dump(json_for_sample, tfile, indent=4)
-            tfile.flush()
-            vdj_anndata = read_10x_vdj(tfile.name)
+        if json_for_sample:
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".json") as tfile:
+                json.dump(json_for_sample, tfile, indent=4)
+                tfile.flush()
+                vdj_anndata = read_10x_vdj(tfile.name)
         mudata_obj.mod[vdj_type] = vdj_anndata
     return mudatas
 

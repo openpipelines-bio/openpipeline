@@ -3347,7 +3347,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu",
     "viash_version" : "0.9.4",
-    "git_commit" : "6d20f9f436951a45c4d15fc4a1eac9f315628328",
+    "git_commit" : "8f93cc1441109aa82a2cf7475135eb07f6dee885",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3408,6 +3408,7 @@ import sys
 import scanpy
 import pandas as pd
 import mudata
+import anndata
 import numpy as np
 from scirpy.io import read_10x_vdj
 from collections import defaultdict
@@ -3804,13 +3805,15 @@ def process_vdj(mudatas: dict[str, mudata.MuData], vdj_folder_path: str):
     with all_config_json_file.open("r") as open_json:
         json_obj = json.load(open_json)
     for _, mudata_obj in mudatas.items():
+        vdj_anndata = anndata.AnnData()
         json_for_sample = [
             entry for entry in json_obj if entry["barcode"] in mudata_obj.obs_names
         ]
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".json") as tfile:
-            json.dump(json_for_sample, tfile, indent=4)
-            tfile.flush()
-            vdj_anndata = read_10x_vdj(tfile.name)
+        if json_for_sample:
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".json") as tfile:
+                json.dump(json_for_sample, tfile, indent=4)
+                tfile.flush()
+                vdj_anndata = read_10x_vdj(tfile.name)
         mudata_obj.mod[vdj_type] = vdj_anndata
     return mudatas
 
