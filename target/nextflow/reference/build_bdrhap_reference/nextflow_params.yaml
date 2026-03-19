@@ -1,0 +1,17 @@
+# Inputs
+genome_fasta: # please fill in - example: ["genome_sequence.fa.gz"]
+gtf: # please fill in - example: ["transcriptome_annotation.gtf.gz"]
+# extra_sequences: ["path/to/file"]
+
+# Outputs
+# reference_archive: "$id.$key.reference_archive.gz"
+
+# Arguments
+mitochondrial_contigs: ["chrM", "chrMT", "M", "MT"]
+filtering_off: false
+wta_only_index: false
+# extra_star_params: "--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

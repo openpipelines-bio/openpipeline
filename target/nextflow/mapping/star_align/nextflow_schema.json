@@ -1,0 +1,1336 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "star_align",
+  "description": "Align fastq files using STAR.",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "input/output": {
+      "title": "Input/Output",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "exists": true,
+          "description": "The FASTQ files to be analyzed",
+          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `[\"mysample_S1_L001_R1_001.fastq.gz\";\"mysample_S1_L001_R2_001.fastq.gz\"]`. "
+        },
+        "reference": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Path to the reference built by star_build_reference",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"/path/to/reference\"`. "
+        },
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Path to output directory",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`, example: `\"/path/to/foo\"`. ",
+          "default": "$id.$key.output"
+        }
+      }
+    },
+    "run parameters": {
+      "title": "Run Parameters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "runRNGseed": {
+          "type": "integer",
+          "description": "random number generator seed.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `777`. "
+        }
+      }
+    },
+    "genome parameters": {
+      "title": "Genome Parameters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "genomeLoad": {
+          "type": "string",
+          "description": "mode of shared memory usage for the genome files",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"NoSharedMemory\"`. "
+        },
+        "genomeFastaFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "description": "path(s) to the fasta files with the genome sequences, separated by spaces",
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`. "
+        },
+        "genomeFileSizes": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "genome files exact sizes in bytes",
+          "help_text": "Type: `integer`, multiple: `True`, example: `[0]`. "
+        },
+        "genomeTransformOutput": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "which output to transform back to original genome\n\n- SAM     ..",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "genomeChrSetMitochondrial": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "names of the mitochondrial chromosomes",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"chrM\";\"M\";\"MT\"]`. "
+        }
+      }
+    },
+    "splice junctions database": {
+      "title": "Splice Junctions Database",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "sjdbFileChrStartEnd": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "path to the files with genomic coordinates (chr <tab> start <tab> end <tab> strand) for the splice junction introns",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "sjdbGTFfile": {
+          "type": "string",
+          "format": "path",
+          "description": "path to the GTF file with annotations",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        },
+        "sjdbGTFchrPrefix": {
+          "type": "string",
+          "description": "prefix for chromosome names in a GTF file (e.g",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "sjdbGTFfeatureExon": {
+          "type": "string",
+          "description": "feature type in GTF file to be used as exons for building transcripts",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"exon\"`. "
+        },
+        "sjdbGTFtagExonParentTranscript": {
+          "type": "string",
+          "description": "GTF attribute name for parent transcript ID (default \"transcript_id\" works for GTF files)",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"transcript_id\"`. "
+        },
+        "sjdbGTFtagExonParentGene": {
+          "type": "string",
+          "description": "GTF attribute name for parent gene ID (default \"gene_id\" works for GTF files)",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gene_id\"`. "
+        },
+        "sjdbGTFtagExonParentGeneName": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "GTF attribute name for parent gene name",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"gene_name\"]`. "
+        },
+        "sjdbGTFtagExonParentGeneType": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "GTF attribute name for parent gene type",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"gene_type\";\"gene_biotype\"]`. "
+        },
+        "sjdbOverhang": {
+          "type": "integer",
+          "description": "length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1)",
+          "help_text": "Type: `integer`, multiple: `False`, example: `100`. "
+        },
+        "sjdbScore": {
+          "type": "integer",
+          "description": "extra alignment score for alignments that cross database junctions",
+          "help_text": "Type: `integer`, multiple: `False`, example: `2`. "
+        },
+        "sjdbInsertSave": {
+          "type": "string",
+          "description": "which files to save when sjdb junctions are inserted on the fly at the mapping step\n\n- Basic ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Basic\"`. "
+        }
+      }
+    },
+    "variation parameters": {
+      "title": "Variation parameters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "varVCFfile": {
+          "type": "string",
+          "description": "path to the VCF file that contains variation data",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "read parameters": {
+      "title": "Read Parameters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "readFilesType": {
+          "type": "string",
+          "description": "format of input read files\n\n- Fastx       ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Fastx\"`. "
+        },
+        "readFilesSAMattrKeep": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "for --readFilesType SAM SE/PE, which SAM tags to keep in the output BAM, e.g.: --readFilesSAMtagsKeep RG PL\n\n- All     ..",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"All\"]`. "
+        },
+        "readFilesManifest": {
+          "type": "string",
+          "format": "path",
+          "description": "path to the \"manifest\" file with the names of read files",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+        },
+        "readFilesPrefix": {
+          "type": "string",
+          "description": "prefix for the read files names, i.e",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "readFilesCommand": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "command line to execute for each of the input file",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "readMapNumber": {
+          "type": "integer",
+          "description": "number of reads to map from the beginning of the file\n\n-1: map all reads",
+          "help_text": "Type: `integer`, multiple: `False`, example: `-1`. "
+        },
+        "readMatesLengthsIn": {
+          "type": "string",
+          "description": "Equal/NotEqual - lengths of names,sequences,qualities for both mates are the same  / not the same",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"NotEqual\"`. "
+        },
+        "readNameSeparator": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "character(s) separating the part of the read names that will be trimmed in output (read name after space is always trimmed)",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"/\"]`. "
+        },
+        "readQualityScoreBase": {
+          "type": "integer",
+          "description": "number to be subtracted from the ASCII code to get Phred quality score",
+          "help_text": "Type: `integer`, multiple: `False`, example: `33`. "
+        }
+      }
+    },
+    "read clipping": {
+      "title": "Read Clipping",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "clipAdapterType": {
+          "type": "string",
+          "description": "adapter clipping type\n\n- Hamming ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Hamming\"`. "
+        },
+        "clip3pNbases": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "number(s) of bases to clip from 3p of each mate",
+          "help_text": "Type: `integer`, multiple: `True`, example: `[0]`. "
+        },
+        "clip3pAdapterSeq": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "adapter sequences to clip from 3p of each mate",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "clip3pAdapterMMp": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "max proportion of mismatches for 3p adapter clipping for each mate",
+          "help_text": "Type: `double`, multiple: `True`, example: `[0.1]`. "
+        },
+        "clip3pAfterAdapterNbases": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "number of bases to clip from 3p of each mate after the adapter clipping",
+          "help_text": "Type: `integer`, multiple: `True`, example: `[0]`. "
+        },
+        "clip5pNbases": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "number(s) of bases to clip from 5p of each mate",
+          "help_text": "Type: `integer`, multiple: `True`, example: `[0]`. "
+        }
+      }
+    },
+    "limits": {
+      "title": "Limits",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "limitGenomeGenerateRAM": {
+          "type": "string",
+          "description": "maximum available RAM (bytes) for genome generation",
+          "help_text": "Type: `long`, multiple: `False`, example: `31000000000`. "
+        },
+        "limitIObufferSize": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "max available buffers size (bytes) for input/output, per thread",
+          "help_text": "Type: `long`, multiple: `True`, example: `[30000000;50000000]`. "
+        },
+        "limitOutSAMoneReadBytes": {
+          "type": "string",
+          "description": "max size of the SAM record (bytes) for one read",
+          "help_text": "Type: `long`, multiple: `False`, example: `100000`. "
+        },
+        "limitOutSJoneRead": {
+          "type": "integer",
+          "description": "max number of junctions for one read (including all multi-mappers)",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1000`. "
+        },
+        "limitOutSJcollapsed": {
+          "type": "integer",
+          "description": "max number of collapsed junctions",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1000000`. "
+        },
+        "limitBAMsortRAM": {
+          "type": "string",
+          "description": "maximum available RAM (bytes) for sorting BAM",
+          "help_text": "Type: `long`, multiple: `False`, example: `0`. "
+        },
+        "limitSjdbInsertNsj": {
+          "type": "integer",
+          "description": "maximum number of junctions to be inserted to the genome on the fly at the mapping stage, including those from annotations and those detected in the 1st step of the 2-pass run",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1000000`. "
+        },
+        "limitNreadsSoft": {
+          "type": "integer",
+          "description": "soft limit on the number of reads",
+          "help_text": "Type: `integer`, multiple: `False`, example: `-1`. "
+        }
+      }
+    },
+    "output: general": {
+      "title": "Output: general",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "outTmpKeep": {
+          "type": "string",
+          "description": "whether to keep the temporary files after STAR runs is finished\n\n- None ..",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "outStd": {
+          "type": "string",
+          "description": "which output will be directed to stdout (standard out)\n\n- Log                    ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Log\"`. "
+        },
+        "outReadsUnmapped": {
+          "type": "string",
+          "description": "output of unmapped and partially mapped (i.e",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "outQSconversionAdd": {
+          "type": "integer",
+          "description": "add this number to the quality score (e.g",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "outMultimapperOrder": {
+          "type": "string",
+          "description": "order of multimapping alignments in the output files\n\n- Old_2.4             ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Old_2.4\"`. "
+        }
+      }
+    },
+    "output: sam and bam": {
+      "title": "Output: SAM and BAM",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "outSAMtype": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "type of SAM/BAM output\n\n1st word:\n- BAM  ..",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"SAM\"]`. "
+        },
+        "outSAMmode": {
+          "type": "string",
+          "description": "mode of SAM output\n\n- None ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Full\"`. "
+        },
+        "outSAMstrandField": {
+          "type": "string",
+          "description": "Cufflinks-like strand field flag\n\n- None        ..",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "outSAMattributes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "a string of desired SAM attributes, in the order desired for the output SAM",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"Standard\"]`. "
+        },
+        "outSAMattrIHstart": {
+          "type": "integer",
+          "description": "start value for the IH attribute",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1`. "
+        },
+        "outSAMunmapped": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "output of unmapped reads in the SAM format\n\n1st word:\n- None   ..",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "outSAMorder": {
+          "type": "string",
+          "description": "type of sorting for the SAM output\n\nPaired: one mate after the other for all paired alignments\nPairedKeepInputOrder: one mate after the other for all paired alignments, the order is kept the same as in the input FASTQ files",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Paired\"`. "
+        },
+        "outSAMprimaryFlag": {
+          "type": "string",
+          "description": "which alignments are considered primary - all others will be marked with 0x100 bit in the FLAG\n\n- OneBestScore ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"OneBestScore\"`. "
+        },
+        "outSAMreadID": {
+          "type": "string",
+          "description": "read ID record type\n\n- Standard ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Standard\"`. "
+        },
+        "outSAMmapqUnique": {
+          "type": "integer",
+          "description": "0 to 255: the MAPQ value for unique mappers",
+          "help_text": "Type: `integer`, multiple: `False`, example: `255`. "
+        },
+        "outSAMflagOR": {
+          "type": "integer",
+          "description": "0 to 65535: sam FLAG will be bitwise OR'd with this value, i.e",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "outSAMflagAND": {
+          "type": "integer",
+          "description": "0 to 65535: sam FLAG will be bitwise AND'd with this value, i.e",
+          "help_text": "Type: `integer`, multiple: `False`, example: `65535`. "
+        },
+        "outSAMattrRGline": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "SAM/BAM read group line",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "outSAMheaderHD": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "@HD (header) line of the SAM header",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "outSAMheaderPG": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "extra @PG (software) line of the SAM header (in addition to STAR)",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "outSAMheaderCommentFile": {
+          "type": "string",
+          "description": "path to the file with @CO (comment) lines of the SAM header",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "outSAMfilter": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "filter the output into main SAM/BAM files\n\n- KeepOnlyAddedReferences ..",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "outSAMmultNmax": {
+          "type": "integer",
+          "description": "max number of multiple alignments for a read that will be output to the SAM/BAM files",
+          "help_text": "Type: `integer`, multiple: `False`, example: `-1`. "
+        },
+        "outSAMtlen": {
+          "type": "integer",
+          "description": "calculation method for the TLEN field in the SAM/BAM files\n\n- 1 ..",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1`. "
+        },
+        "outBAMcompression": {
+          "type": "integer",
+          "description": "-1 to 10  BAM compression level, -1=default compression (6?), 0=no compression, 10=maximum compression",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1`. "
+        },
+        "outBAMsortingThreadN": {
+          "type": "integer",
+          "description": ">=0: number of threads for BAM sorting",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "outBAMsortingBinsN": {
+          "type": "integer",
+          "description": ">0:  number of genome bins for coordinate-sorting",
+          "help_text": "Type: `integer`, multiple: `False`, example: `50`. "
+        }
+      }
+    },
+    "bam processing": {
+      "title": "BAM processing",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "bamRemoveDuplicatesType": {
+          "type": "string",
+          "description": "mark duplicates in the BAM file, for now only works with (i) sorted BAM fed with inputBAMfile, and (ii) for paired-end alignments only\n\n- -                       ..",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "bamRemoveDuplicatesMate2basesN": {
+          "type": "integer",
+          "description": "number of bases from the 5' of mate 2 to use in collapsing (e.g",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        }
+      }
+    },
+    "output wiggle": {
+      "title": "Output Wiggle",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "outWigType": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "type of signal output, e.g",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "outWigStrand": {
+          "type": "string",
+          "description": "strandedness of wiggle/bedGraph output\n\n- Stranded   ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Stranded\"`. "
+        },
+        "outWigReferencesPrefix": {
+          "type": "string",
+          "description": "prefix matching reference names to include in the output wiggle file, e.g",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "outWigNorm": {
+          "type": "string",
+          "description": "type of normalization for the signal\n\n- RPM    ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"RPM\"`. "
+        }
+      }
+    },
+    "output filtering": {
+      "title": "Output Filtering",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "outFilterType": {
+          "type": "string",
+          "description": "type of filtering\n\n- Normal  ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Normal\"`. "
+        },
+        "outFilterMultimapScoreRange": {
+          "type": "integer",
+          "description": "the score range below the maximum score for multimapping alignments",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1`. "
+        },
+        "outFilterMultimapNmax": {
+          "type": "integer",
+          "description": "maximum number of loci the read is allowed to map to",
+          "help_text": "Type: `integer`, multiple: `False`, example: `10`. "
+        },
+        "outFilterMismatchNmax": {
+          "type": "integer",
+          "description": "alignment will be output only if it has no more mismatches than this value.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `10`. "
+        },
+        "outFilterMismatchNoverLmax": {
+          "type": "number",
+          "description": "alignment will be output only if its ratio of mismatches to *mapped* length is less than or equal to this value.",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.3`. "
+        },
+        "outFilterMismatchNoverReadLmax": {
+          "type": "number",
+          "description": "alignment will be output only if its ratio of mismatches to *read* length is less than or equal to this value.",
+          "help_text": "Type: `double`, multiple: `False`, example: `1.0`. "
+        },
+        "outFilterScoreMin": {
+          "type": "integer",
+          "description": "alignment will be output only if its score is higher than or equal to this value.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "outFilterScoreMinOverLread": {
+          "type": "number",
+          "description": "same as outFilterScoreMin, but normalized to read length (sum of mates' lengths for paired-end reads)",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.66`. "
+        },
+        "outFilterMatchNmin": {
+          "type": "integer",
+          "description": "alignment will be output only if the number of matched bases is higher than or equal to this value.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "outFilterMatchNminOverLread": {
+          "type": "number",
+          "description": "sam as outFilterMatchNmin, but normalized to the read length (sum of mates' lengths for paired-end reads).",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.66`. "
+        },
+        "outFilterIntronMotifs": {
+          "type": "string",
+          "description": "filter alignment using their motifs\n\n- None                           ..",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "outFilterIntronStrands": {
+          "type": "string",
+          "description": "filter alignments\n\n- RemoveInconsistentStrands      ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"RemoveInconsistentStrands\"`. "
+        }
+      }
+    },
+    "output splice junctions (sj.out.tab)": {
+      "title": "Output splice junctions (SJ.out.tab)",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "outSJtype": {
+          "type": "string",
+          "description": "type of splice junction output\n\n- Standard    ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Standard\"`. "
+        }
+      }
+    },
+    "output filtering: splice junctions": {
+      "title": "Output Filtering: Splice Junctions",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "outSJfilterReads": {
+          "type": "string",
+          "description": "which reads to consider for collapsed splice junctions output\n\n- All     ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"All\"`. "
+        },
+        "outSJfilterOverhangMin": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "minimum overhang length for splice junctions on both sides for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif",
+          "help_text": "Type: `integer`, multiple: `True`, example: `[30;12;12;12]`. "
+        },
+        "outSJfilterCountUniqueMin": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "minimum uniquely mapping read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif",
+          "help_text": "Type: `integer`, multiple: `True`, example: `[3;1;1;1]`. "
+        },
+        "outSJfilterCountTotalMin": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "minimum total (multi-mapping+unique) read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif",
+          "help_text": "Type: `integer`, multiple: `True`, example: `[3;1;1;1]`. "
+        },
+        "outSJfilterDistToOtherSJmin": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "minimum allowed distance to other junctions' donor/acceptor\n\ndoes not apply to annotated junctions",
+          "help_text": "Type: `integer`, multiple: `True`, example: `[10;0;5;10]`. "
+        },
+        "outSJfilterIntronMaxVsReadN": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "maximum gap allowed for junctions supported by 1,2,3,,,N reads\n\ni.e",
+          "help_text": "Type: `integer`, multiple: `True`, example: `[50000;100000;200000]`. "
+        }
+      }
+    },
+    "scoring": {
+      "title": "Scoring",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "scoreGap": {
+          "type": "integer",
+          "description": "splice junction penalty (independent on intron motif)",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "scoreGapNoncan": {
+          "type": "integer",
+          "description": "non-canonical junction penalty (in addition to scoreGap)",
+          "help_text": "Type: `integer`, multiple: `False`, example: `-8`. "
+        },
+        "scoreGapGCAG": {
+          "type": "integer",
+          "description": "GC/AG and CT/GC junction penalty (in addition to scoreGap)",
+          "help_text": "Type: `integer`, multiple: `False`, example: `-4`. "
+        },
+        "scoreGapATAC": {
+          "type": "integer",
+          "description": "AT/AC  and GT/AT junction penalty  (in addition to scoreGap)",
+          "help_text": "Type: `integer`, multiple: `False`, example: `-8`. "
+        },
+        "scoreGenomicLengthLog2scale": {
+          "type": "integer",
+          "description": "extra score logarithmically scaled with genomic length of the alignment: scoreGenomicLengthLog2scale*log2(genomicLength)",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "scoreDelOpen": {
+          "type": "integer",
+          "description": "deletion open penalty",
+          "help_text": "Type: `integer`, multiple: `False`, example: `-2`. "
+        },
+        "scoreDelBase": {
+          "type": "integer",
+          "description": "deletion extension penalty per base (in addition to scoreDelOpen)",
+          "help_text": "Type: `integer`, multiple: `False`, example: `-2`. "
+        },
+        "scoreInsOpen": {
+          "type": "integer",
+          "description": "insertion open penalty",
+          "help_text": "Type: `integer`, multiple: `False`, example: `-2`. "
+        },
+        "scoreInsBase": {
+          "type": "integer",
+          "description": "insertion extension penalty per base (in addition to scoreInsOpen)",
+          "help_text": "Type: `integer`, multiple: `False`, example: `-2`. "
+        },
+        "scoreStitchSJshift": {
+          "type": "integer",
+          "description": "maximum score reduction while searching for SJ boundaries in the stitching step",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1`. "
+        }
+      }
+    },
+    "alignments and seeding": {
+      "title": "Alignments and Seeding",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "seedSearchStartLmax": {
+          "type": "integer",
+          "description": "defines the search start point through the read - the read is split into pieces no longer than this value",
+          "help_text": "Type: `integer`, multiple: `False`, example: `50`. "
+        },
+        "seedSearchStartLmaxOverLread": {
+          "type": "number",
+          "description": "seedSearchStartLmax normalized to read length (sum of mates' lengths for paired-end reads)",
+          "help_text": "Type: `double`, multiple: `False`, example: `1.0`. "
+        },
+        "seedSearchLmax": {
+          "type": "integer",
+          "description": "defines the maximum length of the seeds, if =0 seed length is not limited",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "seedMultimapNmax": {
+          "type": "integer",
+          "description": "only pieces that map fewer than this value are utilized in the stitching procedure",
+          "help_text": "Type: `integer`, multiple: `False`, example: `10000`. "
+        },
+        "seedPerReadNmax": {
+          "type": "integer",
+          "description": "max number of seeds per read",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1000`. "
+        },
+        "seedPerWindowNmax": {
+          "type": "integer",
+          "description": "max number of seeds per window",
+          "help_text": "Type: `integer`, multiple: `False`, example: `50`. "
+        },
+        "seedNoneLociPerWindow": {
+          "type": "integer",
+          "description": "max number of one seed loci per window",
+          "help_text": "Type: `integer`, multiple: `False`, example: `10`. "
+        },
+        "seedSplitMin": {
+          "type": "integer",
+          "description": "min length of the seed sequences split by Ns or mate gap",
+          "help_text": "Type: `integer`, multiple: `False`, example: `12`. "
+        },
+        "seedMapMin": {
+          "type": "integer",
+          "description": "min length of seeds to be mapped",
+          "help_text": "Type: `integer`, multiple: `False`, example: `5`. "
+        },
+        "alignIntronMin": {
+          "type": "integer",
+          "description": "minimum intron size, genomic gap is considered intron if its length>=alignIntronMin, otherwise it is considered Deletion",
+          "help_text": "Type: `integer`, multiple: `False`, example: `21`. "
+        },
+        "alignIntronMax": {
+          "type": "integer",
+          "description": "maximum intron size, if 0, max intron size will be determined by (2^winBinNbits)*winAnchorDistNbins",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "alignMatesGapMax": {
+          "type": "integer",
+          "description": "maximum gap between two mates, if 0, max intron gap will be determined by (2^winBinNbits)*winAnchorDistNbins",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "alignSJoverhangMin": {
+          "type": "integer",
+          "description": "minimum overhang (i.e",
+          "help_text": "Type: `integer`, multiple: `False`, example: `5`. "
+        },
+        "alignSJstitchMismatchNmax": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "maximum number of mismatches for stitching of the splice junctions (-1: no limit).\n\n(1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif.",
+          "help_text": "Type: `integer`, multiple: `True`, example: `[0;-1;0;0]`. "
+        },
+        "alignSJDBoverhangMin": {
+          "type": "integer",
+          "description": "minimum overhang (i.e",
+          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+        },
+        "alignSplicedMateMapLmin": {
+          "type": "integer",
+          "description": "minimum mapped length for a read mate that is spliced",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "alignSplicedMateMapLminOverLmate": {
+          "type": "number",
+          "description": "alignSplicedMateMapLmin normalized to mate length",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.66`. "
+        },
+        "alignWindowsPerReadNmax": {
+          "type": "integer",
+          "description": "max number of windows per read",
+          "help_text": "Type: `integer`, multiple: `False`, example: `10000`. "
+        },
+        "alignTranscriptsPerWindowNmax": {
+          "type": "integer",
+          "description": "max number of transcripts per window",
+          "help_text": "Type: `integer`, multiple: `False`, example: `100`. "
+        },
+        "alignTranscriptsPerReadNmax": {
+          "type": "integer",
+          "description": "max number of different alignments per read to consider",
+          "help_text": "Type: `integer`, multiple: `False`, example: `10000`. "
+        },
+        "alignEndsType": {
+          "type": "string",
+          "description": "type of read ends alignment\n\n- Local             ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Local\"`. "
+        },
+        "alignEndsProtrude": {
+          "type": "string",
+          "description": "allow protrusion of alignment ends, i.e",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"0    ConcordantPair\"`. "
+        },
+        "alignSoftClipAtReferenceEnds": {
+          "type": "string",
+          "description": "allow the soft-clipping of the alignments past the end of the chromosomes\n\n- Yes ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Yes\"`. "
+        },
+        "alignInsertionFlush": {
+          "type": "string",
+          "description": "how to flush ambiguous insertion positions\n\n- None    ..",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "paired-end reads": {
+      "title": "Paired-End reads",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "peOverlapNbasesMin": {
+          "type": "integer",
+          "description": "minimum number of overlapping bases to trigger mates merging and realignment",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "peOverlapMMp": {
+          "type": "number",
+          "description": "maximum proportion of mismatched bases in the overlap area",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.01`. "
+        }
+      }
+    },
+    "windows, anchors, binning": {
+      "title": "Windows, Anchors, Binning",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "winAnchorMultimapNmax": {
+          "type": "integer",
+          "description": "max number of loci anchors are allowed to map to",
+          "help_text": "Type: `integer`, multiple: `False`, example: `50`. "
+        },
+        "winBinNbits": {
+          "type": "integer",
+          "description": "=log2(winBin), where winBin is the size of the bin for the windows/clustering, each window will occupy an integer number of bins.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `16`. "
+        },
+        "winAnchorDistNbins": {
+          "type": "integer",
+          "description": "max number of bins between two anchors that allows aggregation of anchors into one window",
+          "help_text": "Type: `integer`, multiple: `False`, example: `9`. "
+        },
+        "winFlankNbins": {
+          "type": "integer",
+          "description": "log2(winFlank), where win Flank is the size of the left and right flanking regions for each window",
+          "help_text": "Type: `integer`, multiple: `False`, example: `4`. "
+        },
+        "winReadCoverageRelativeMin": {
+          "type": "number",
+          "description": "minimum relative coverage of the read sequence by the seeds in a window, for STARlong algorithm only.",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.5`. "
+        },
+        "winReadCoverageBasesMin": {
+          "type": "integer",
+          "description": "minimum number of bases covered by the seeds in a window , for STARlong algorithm only.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        }
+      }
+    },
+    "chimeric alignments": {
+      "title": "Chimeric Alignments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "chimOutType": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "type of chimeric output\n\n- Junctions       ..",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"Junctions\"]`. "
+        },
+        "chimSegmentMin": {
+          "type": "integer",
+          "description": "minimum length of chimeric segment length, if ==0, no chimeric output",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "chimScoreMin": {
+          "type": "integer",
+          "description": "minimum total (summed) score of the chimeric segments",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "chimScoreDropMax": {
+          "type": "integer",
+          "description": "max drop (difference) of chimeric score (the sum of scores of all chimeric segments) from the read length",
+          "help_text": "Type: `integer`, multiple: `False`, example: `20`. "
+        },
+        "chimScoreSeparation": {
+          "type": "integer",
+          "description": "minimum difference (separation) between the best chimeric score and the next one",
+          "help_text": "Type: `integer`, multiple: `False`, example: `10`. "
+        },
+        "chimScoreJunctionNonGTAG": {
+          "type": "integer",
+          "description": "penalty for a non-GT/AG chimeric junction",
+          "help_text": "Type: `integer`, multiple: `False`, example: `-1`. "
+        },
+        "chimJunctionOverhangMin": {
+          "type": "integer",
+          "description": "minimum overhang for a chimeric junction",
+          "help_text": "Type: `integer`, multiple: `False`, example: `20`. "
+        },
+        "chimSegmentReadGapMax": {
+          "type": "integer",
+          "description": "maximum gap in the read sequence between chimeric segments",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "chimFilter": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "different filters for chimeric alignments\n\n- None ..",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"banGenomicN\"]`. "
+        },
+        "chimMainSegmentMultNmax": {
+          "type": "integer",
+          "description": "maximum number of multi-alignments for the main chimeric segment",
+          "help_text": "Type: `integer`, multiple: `False`, example: `10`. "
+        },
+        "chimMultimapNmax": {
+          "type": "integer",
+          "description": "maximum number of chimeric multi-alignments\n\n- 0 ..",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "chimMultimapScoreRange": {
+          "type": "integer",
+          "description": "the score range for multi-mapping chimeras below the best chimeric score",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1`. "
+        },
+        "chimNonchimScoreDropMin": {
+          "type": "integer",
+          "description": "to trigger chimeric detection, the drop in the best non-chimeric alignment score with respect to the read length has to be greater than this value",
+          "help_text": "Type: `integer`, multiple: `False`, example: `20`. "
+        },
+        "chimOutJunctionFormat": {
+          "type": "integer",
+          "description": "formatting type for the Chimeric.out.junction file\n\n- 0 ..",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        }
+      }
+    },
+    "quantification of annotations": {
+      "title": "Quantification of Annotations",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "quantMode": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "types of quantification requested\n\n- -                ..",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "quantTranscriptomeBAMcompression": {
+          "type": "integer",
+          "description": "-2 to 10  transcriptome BAM compression level\n\n- -2  ..",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1`. "
+        },
+        "quantTranscriptomeBan": {
+          "type": "string",
+          "description": "prohibit various alignment type\n\n- IndelSoftclipSingleend  ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"IndelSoftclipSingleend\"`. "
+        }
+      }
+    },
+    "2-pass mapping": {
+      "title": "2-pass Mapping",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "twopassMode": {
+          "type": "string",
+          "description": "2-pass mapping mode.\n\n- None        ..",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "twopass1readsN": {
+          "type": "integer",
+          "description": "number of reads to process for the 1st step",
+          "help_text": "Type: `integer`, multiple: `False`, example: `-1`. "
+        }
+      }
+    },
+    "wasp parameters": {
+      "title": "WASP parameters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "waspOutputMode": {
+          "type": "string",
+          "description": "WASP allele-specific output type",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "starsolo (single cell rna-seq) parameters": {
+      "title": "STARsolo (single cell RNA-seq) parameters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "soloType": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "type of single-cell RNA-seq\n\n- CB_UMI_Simple   ..",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "soloCBwhitelist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "file(s) with whitelist(s) of cell barcodes",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "soloCBstart": {
+          "type": "integer",
+          "description": "cell barcode start base",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1`. "
+        },
+        "soloCBlen": {
+          "type": "integer",
+          "description": "cell barcode length",
+          "help_text": "Type: `integer`, multiple: `False`, example: `16`. "
+        },
+        "soloUMIstart": {
+          "type": "integer",
+          "description": "UMI start base",
+          "help_text": "Type: `integer`, multiple: `False`, example: `17`. "
+        },
+        "soloUMIlen": {
+          "type": "integer",
+          "description": "UMI length",
+          "help_text": "Type: `integer`, multiple: `False`, example: `10`. "
+        },
+        "soloBarcodeReadLength": {
+          "type": "integer",
+          "description": "length of the barcode read\n\n- 1   ..",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1`. "
+        },
+        "soloBarcodeMate": {
+          "type": "integer",
+          "description": "identifies which read mate contains the barcode (CB+UMI) sequence\n\n- 0   ..",
+          "help_text": "Type: `integer`, multiple: `False`, example: `0`. "
+        },
+        "soloCBposition": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "position of Cell Barcode(s) on the barcode read.\n\nPresently only works with --soloType CB_UMI_Complex, and barcodes are assumed to be on Read2.\nFormat for each barcode: startAnchor_startPosition_endAnchor_endPosition\nstart(end)Anchor defines the Anchor Base for the CB: 0: read start; 1: read end; 2: adapter start; 3: adapter end\nstart(end)Position is the 0-based position with of the CB start(end) with respect to the Anchor Base\nString for different barcodes are separated by space.\nExample: inDrop (Zilionis et al, Nat",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "soloUMIposition": {
+          "type": "string",
+          "description": "position of the UMI on the barcode read, same as soloCBposition\n\nExample: inDrop (Zilionis et al, Nat",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "soloAdapterSequence": {
+          "type": "string",
+          "description": "adapter sequence to anchor barcodes",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "soloAdapterMismatchesNmax": {
+          "type": "integer",
+          "description": "maximum number of mismatches allowed in adapter sequence.",
+          "help_text": "Type: `integer`, multiple: `False`, example: `1`. "
+        },
+        "soloCBmatchWLtype": {
+          "type": "string",
+          "description": "matching the Cell Barcodes to the WhiteList\n\n- Exact                           ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"1MM_multi\"`. "
+        },
+        "soloInputSAMattrBarcodeSeq": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "when inputting reads from a SAM file (--readsFileType SAM SE/PE), these SAM attributes mark the barcode sequence (in proper order).\n\nFor instance, for 10X CellRanger or STARsolo BAMs, use --soloInputSAMattrBarcodeSeq CR UR .\nThis parameter is required when running STARsolo with input from SAM.",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "soloInputSAMattrBarcodeQual": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "when inputting reads from a SAM file (--readsFileType SAM SE/PE), these SAM attributes mark the barcode qualities (in proper order).\n\nFor instance, for 10X CellRanger or STARsolo BAMs, use --soloInputSAMattrBarcodeQual CY UY .\nIf this parameter is '-' (default), the quality 'H' will be assigned to all bases.",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "soloStrand": {
+          "type": "string",
+          "description": "strandedness of the solo libraries:\n\n- Unstranded  ..",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Forward\"`. "
+        },
+        "soloFeatures": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "genomic features for which the UMI counts per Cell Barcode are collected\n\n- Gene            ..",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"Gene\"]`. "
+        },
+        "soloMultiMappers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "counting method for reads mapping to multiple genes\n\n- Unique     ..",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"Unique\"]`. "
+        },
+        "soloUMIdedup": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "type of UMI deduplication (collapsing) algorithm\n\n- 1MM_All                     ..",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"1MM_All\"]`. "
+        },
+        "soloUMIfiltering": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "type of UMI filtering (for reads uniquely mapping to genes)\n\n- -                  ..",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "soloOutFileNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "file names for STARsolo output:\n\nfile_name_prefix   gene_names   barcode_sequences   cell_feature_count_matrix",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"Solo.out/\";\"features.tsv\";\"barcodes.tsv\";\"matrix.mtx\"]`. "
+        },
+        "soloCellFilter": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "cell filtering type and parameters\n\n- None            ..",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"CellRanger2.2\";\"3000\";\"0.99\";\"10\"]`. "
+        },
+        "soloOutFormatFeaturesGeneField3": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "field 3 in the Gene features.tsv file",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"Gene Expression\"]`. "
+        },
+        "soloCellReadStats": {
+          "type": "string",
+          "description": "Output reads statistics for each CB\n\n- Standard    ..",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/input/output"
+    },
+    {
+      "$ref": "#/$defs/run parameters"
+    },
+    {
+      "$ref": "#/$defs/genome parameters"
+    },
+    {
+      "$ref": "#/$defs/splice junctions database"
+    },
+    {
+      "$ref": "#/$defs/variation parameters"
+    },
+    {
+      "$ref": "#/$defs/read parameters"
+    },
+    {
+      "$ref": "#/$defs/read clipping"
+    },
+    {
+      "$ref": "#/$defs/limits"
+    },
+    {
+      "$ref": "#/$defs/output: general"
+    },
+    {
+      "$ref": "#/$defs/output: sam and bam"
+    },
+    {
+      "$ref": "#/$defs/bam processing"
+    },
+    {
+      "$ref": "#/$defs/output wiggle"
+    },
+    {
+      "$ref": "#/$defs/output filtering"
+    },
+    {
+      "$ref": "#/$defs/output splice junctions (sj.out.tab)"
+    },
+    {
+      "$ref": "#/$defs/output filtering: splice junctions"
+    },
+    {
+      "$ref": "#/$defs/scoring"
+    },
+    {
+      "$ref": "#/$defs/alignments and seeding"
+    },
+    {
+      "$ref": "#/$defs/paired-end reads"
+    },
+    {
+      "$ref": "#/$defs/windows, anchors, binning"
+    },
+    {
+      "$ref": "#/$defs/chimeric alignments"
+    },
+    {
+      "$ref": "#/$defs/quantification of annotations"
+    },
+    {
+      "$ref": "#/$defs/2-pass mapping"
+    },
+    {
+      "$ref": "#/$defs/wasp parameters"
+    },
+    {
+      "$ref": "#/$defs/starsolo (single cell rna-seq) parameters"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "consensus_vote",
+  "description": "Combines cell type predictions from multiple annotation methods into a single consensus prediction using a weighted majority vote. \nFor each cell, each method votes for its predicted cell type, optionally weighted by the probability score and/or a per-method weight.\nThe consensus prediction is the cell type with the highest total weighted vote.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "Input dataset arguments.",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file containing cell type predictions in .obs.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality to process.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "input_obs_predictions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "One or more .obs column names containing cell type predictions (labels) from\ndifferent annotation methods.\n",
+          "help_text": "Type: `string`, multiple: `True`, required, example: `[\"scanvi_pred\";\"celltypist_pred\"]`. "
+        },
+        "input_obs_probabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "One or more .obs column names containing prediction probability scores,\none per method in --input_obs_predictions",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"scanvi_prob\";\"celltypist_prob\";\"singler_prob\"]`. "
+        },
+        "tie_label": {
+          "type": "string",
+          "description": "Label to assign when two or more cell types receive equal votes.\nIf not provided, tied cells are assigned None (missing value).\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"Unknown\"`. "
+        },
+        "weights": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "Per-method weights for the consensus vote",
+          "help_text": "Type: `double`, multiple: `True`, example: `[1.0;2.0]`. "
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "Output arguments.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "output_obs_predictions": {
+          "type": "string",
+          "description": "In which `.obs` slot to store the consensus predicted cell type.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"consensus_pred\"`. ",
+          "default": "consensus_pred"
+        },
+        "output_obs_score": {
+          "type": "string",
+          "description": "In which `.obs` slot to store the consensus score, defined as the fraction\nof total weight assigned to the winning cell type.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"consensus_score\"`. ",
+          "default": "consensus_score"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

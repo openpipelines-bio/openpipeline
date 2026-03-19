@@ -1,0 +1,37 @@
+# Input
+# sam: "path/to/file"
+tag_group: "CB"
+tag_umi: "UB"
+# plp: "foo"
+# vcf: "path/to/file"
+field: "GT"
+geno_error_offset: 0.1
+geno_error_coeff: 0.0
+r2_info: "R2"
+min_mac: 1
+min_call_rate: 0.5
+alpha: "0.5"
+doublet_prior: 0.5
+# sm: "foo"
+# sm_list: "foo"
+sam_verbose: 1000000
+vcf_verbose: 1000
+cap_bq: 20
+min_bq: 13
+min_mq: 20
+min_td: 0
+excl_flag: 3844
+# group_list: "foo"
+min_total: 0
+min_snp: 0
+min_umi: 0
+
+# Output
+# output: "$id.$key.output"
+# out: "demuxlet"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments

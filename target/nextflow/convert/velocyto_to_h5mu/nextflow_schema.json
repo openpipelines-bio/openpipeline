@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "velocyto_to_h5mu",
+  "description": "Convert a velocyto loom file to a h5mu file.\n\nIf an input h5mu file is also provided, the velocity\nh5ad object will get added to that h5mu instead.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input_loom": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Path to the input loom file.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.loom\"`. "
+        },
+        "input_h5mu": {
+          "type": "string",
+          "format": "path",
+          "description": "If a MuData file is provided,",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "The name of the modality to operate on.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna_velocity\"`. ",
+          "default": "rna_velocity"
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Path to the output MuData file.",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "layer_spliced": {
+          "type": "string",
+          "description": "Output layer for the spliced reads.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"velo_spliced\"`. ",
+          "default": "velo_spliced"
+        },
+        "layer_unspliced": {
+          "type": "string",
+          "description": "Output layer for the unspliced reads.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"velo_unspliced\"`. ",
+          "default": "velo_unspliced"
+        },
+        "layer_ambiguous": {
+          "type": "string",
+          "description": "Output layer for the ambiguous reads.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"velo_ambiguous\"`. ",
+          "default": "velo_ambiguous"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}
