@@ -2,9 +2,8 @@ name: consensus_vote
 namespace: annotate
 scope: "public"
 description: |
-  Combines cell type predictions from multiple annotation methods into a single
-  consensus prediction using a weighted majority vote. For each cell, each method
-  votes for its predicted cell type, optionally weighted by a per-method weight.
+  Combines cell type predictions from multiple annotation methods into a single consensus prediction using a weighted majority vote. 
+  For each cell, each method votes for its predicted cell type, optionally weighted by the probability score and/or a per-method weight.
   The consensus prediction is the cell type with the highest total weighted vote.
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
@@ -33,6 +32,16 @@ argument_groups:
         required: true
         multiple: true
         example: ["scanvi_pred", "celltypist_pred"]
+      - name: "--input_obs_probabilities"
+        type: string
+        description: |
+          One or more .obs column names containing prediction probability scores,
+          one per method in --input_obs_predictions. When provided, each method's
+          vote is scaled by the probability score for that cell (in addition to
+          any per-method --weights). Must be the same length as --input_obs_predictions.
+        required: false
+        multiple: true
+        example: ["scanvi_prob", "celltypist_prob", "singler_prob"]
       - name: "--tie_label"
         type: string
         description: |
@@ -86,7 +95,7 @@ test_resources:
 
 engines:
   - type: docker
-    image: python:3.12-slim
+    image: python:3.13-slim
     setup:
       - type: apt
         packages:

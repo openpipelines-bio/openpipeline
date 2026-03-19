@@ -8,6 +8,7 @@ par = {
     "input": "consensus_test.h5mu",
     "modality": "rna",
     "input_obs_predictions": ["scanvi_pred", "celltypist_pred", "singler_pred"],
+    "input_obs_probabilities": ["scanvi_prob", "celltypist_prob", "singler_prob"],
     "weights": None,
     "tie_label": None,
     "output": "consensus_test_output.h5mu",
@@ -29,21 +30,29 @@ def _weighted_majority(row, weights, tie_label=None):
     vote_totals = {}
     for label, w in zip(row, weights):
         vote_totals[label] = vote_totals.get(label, 0.0) + w
+    total = sum(vote_totals.values())
     top_score = max(vote_totals.values())
     winners = [label for label, score in vote_totals.items() if score == top_score]
+    normalized_score = top_score / total if total > 0 else 0.0
     if len(winners) > 1:
-        return tie_label, top_score
-    return winners[0], top_score
+        return tie_label, normalized_score
+    return winners[0], normalized_score
 
 
 def main():
     prediction_cols = par["input_obs_predictions"]
+    prob_cols = par["input_obs_probabilities"]
     weights = par["weights"]
 
     if weights and len(weights) != len(prediction_cols):
         raise ValueError(
             f"--weights must have the same length as --input_obs_predictions. "
             f"Got {len(weights)} weights for {len(prediction_cols)} prediction columns."
+        )
+    if prob_cols and len(prob_cols) != len(prediction_cols):
+        raise ValueError(
+            f"--input_obs_probabilities must have the same length as --input_obs_predictions. "
+            f"Got {len(prob_cols)} probability columns for {len(prediction_cols)} prediction columns."
         )
 
     logger.info("Reading input data.")
@@ -52,6 +61,10 @@ def main():
     for col in prediction_cols:
         if col not in adata.obs.columns:
             raise ValueError(f"Prediction column '{col}' not found in .obs.")
+    if prob_cols:
+        for col in prob_cols:
+            if col not in adata.obs.columns:
+                raise ValueError(f"Probability column '{col}' not found in .obs.")
 
     n_methods = len(prediction_cols)
     weights_arr = (
@@ -61,9 +74,18 @@ def main():
 
     logger.info("Computing weighted majority vote.")
     pred_df = adata.obs[prediction_cols].astype(str)
-    results = pred_df.apply(
-        _weighted_majority, axis=1, weights=weights_arr, tie_label=par["tie_label"]
-    )
+
+    if prob_cols:
+        prob_arr = adata.obs[prob_cols].astype(float).values  # (n_cells, n_methods)
+        effective_weights = weights_arr * prob_arr  # (n_cells, n_methods)
+        results = [
+            _weighted_majority(pred_df.iloc[i], effective_weights[i], par["tie_label"])
+            for i in range(len(pred_df))
+        ]
+    else:
+        results = pred_df.apply(
+            _weighted_majority, axis=1, weights=weights_arr, tie_label=par["tie_label"]
+        )
     consensus_predictions, consensus_scores = zip(*results)
 
     logger.info("Writing output data.")

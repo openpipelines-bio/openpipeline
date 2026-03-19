@@ -24,6 +24,7 @@ def input_mdata(write_mudata_to_file):
     for method in ["scanvi", "celltypist", "singler"]:
         preds = np.random.choice(cell_types, size=n_obs)
         obs[f"{method}_pred"] = pd.Categorical(preds, categories=cell_types)
+        obs[f"{method}_prob"] = np.random.uniform(0.5, 1.0, size=n_obs)
 
     rna = ad.AnnData(
         X=np.random.rand(n_obs, 10),
@@ -189,6 +190,65 @@ def test_tie_label(run_component, random_h5mu_path, tied_mdata):
     output_mudata = mu.read_h5mu(output_file)
     predictions = output_mudata.mod["rna"].obs["consensus_pred"]
     assert (predictions == "Unknown").all(), "All tied predictions should be 'Unknown'."
+
+
+def test_with_probabilities(run_component, random_h5mu_path, input_mdata):
+    output_file = random_h5mu_path()
+
+    run_component(
+        [
+            "--input",
+            input_mdata,
+            "--input_obs_predictions",
+            "scanvi_pred",
+            "--input_obs_predictions",
+            "celltypist_pred",
+            "--input_obs_predictions",
+            "singler_pred",
+            "--input_obs_probabilities",
+            "scanvi_prob",
+            "--input_obs_probabilities",
+            "celltypist_prob",
+            "--input_obs_probabilities",
+            "singler_prob",
+            "--output",
+            output_file,
+        ]
+    )
+
+    assert os.path.exists(output_file), "Output file does not exist."
+    output_mudata = mu.read_h5mu(output_file)
+
+    assert {"consensus_pred", "consensus_score"}.issubset(
+        output_mudata.mod["rna"].obs.keys()
+    ), "Required keys not found in .obs."
+    assert not output_mudata.mod["rna"].obs["consensus_pred"].isna().all(), (
+        "Not all probability-weighted consensus predictions should be NA."
+    )
+
+
+def test_mismatched_probabilities_error(run_component, random_h5mu_path, input_mdata):
+    output_file = random_h5mu_path()
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                input_mdata,
+                "--input_obs_predictions",
+                "scanvi_pred",
+                "--input_obs_predictions",
+                "celltypist_pred",
+                "--input_obs_probabilities",
+                "scanvi_prob",
+                "--output",
+                output_file,
+            ]
+        )
+    assert re.search(
+        r"ValueError: --input_obs_probabilities must have the same length as --input_obs_predictions",
+        err.value.stdout.decode("utf-8"),
+    )
 
 
 def test_mismatched_weights_error(run_component, random_h5mu_path, input_mdata):
