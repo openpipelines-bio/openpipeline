@@ -6,6 +6,10 @@
 
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).
 
+* `workflows/embedding/scanvi_model`: Generate a scANVI emedding model (PR #1104).
+
+* `workflows/annotation/scanvi_scarches`: Accept either a reference model or dataset to perform scANVI annotation (PR#1104).
+
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
@@ -71,6 +75,10 @@
 * `dataflow/concatenate_h5mu`: optionally perform block-diagonal concatenation of specified `.obsp` keys using `--obsp_keys` across input MuData objects (PR #1115).
 
 * `workflows/annotation/totalvi_leiden` and `annotate/totalvi`: Added new workflows and components for cell type annotation using TotalVI integration followed by Leiden clustering, without scArches reference mapping (PR #1092).
+
+* `workflows/embedding/scanvi_model`: Generate a scANVI emedding model (PR #1104).
+
+* `workflows/annotation/scanvi_scarches`: Accept either a reference model or dataset to perform scANVI annotation (PR#1104).
 
 ## EXPERIMENTAL
 
