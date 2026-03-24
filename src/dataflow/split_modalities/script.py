@@ -35,7 +35,7 @@ def main() -> None:
     logger.info("Checking which modalities exist for '%s'", par["input"])
     with mudata_opener(input_file, mode="r") as (open_mudata, input_is_zarr):
         logger.info(
-            "Openened %s in %s format.", par["input"], "zarr" if input_is_zarr else "h5"
+            "Opened %s in %s format.", par["input"], "zarr" if input_is_zarr else "h5"
         )
 
         modalities = list(open_mudata["mod"].keys())
