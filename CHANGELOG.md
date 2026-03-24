@@ -16,6 +16,8 @@
 
 * `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137)
 
+* Bump viash to 0.9.7 (PR #1145)
+
 # openpipelines 4.0.4
 
 ## BUG FIXES
