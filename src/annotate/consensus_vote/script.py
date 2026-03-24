@@ -27,6 +27,7 @@ logger = setup_logger()
 
 
 def _weighted_majority(row, weights, tie_label=None):
+    weights = weights.loc[row.name]
     vote_totals = {}
     for label, w in zip(row, weights):
         vote_totals[label] = vote_totals.get(label, 0.0) + w
@@ -58,17 +59,19 @@ def main():
     logger.info("Reading input data.")
     adata = mu.read_h5ad(par["input"], mod=par["modality"])
 
-    for col in prediction_cols:
-        if col not in adata.obs.columns:
-            raise ValueError(f"Prediction column '{col}' not found in .obs.")
+    cols_to_check = [prediction_cols]
     if prob_cols:
-        for col in prob_cols:
+        cols_to_check.append(prob_cols)
+    for cols in cols_to_check:
+        for col in cols:
             if col not in adata.obs.columns:
-                raise ValueError(f"Probability column '{col}' not found in .obs.")
+                raise ValueError(f"Column '{col}' not found in .obs.")
 
     n_methods = len(prediction_cols)
     weights_arr = (
-        np.array(weights, dtype=float) if weights else np.ones(n_methods, dtype=float)
+        np.array(weights, dtype=np.float32)
+        if weights
+        else np.ones(n_methods, dtype=np.float32)
     )
     weights_arr = weights_arr / weights_arr.sum()
 
@@ -76,16 +79,15 @@ def main():
     pred_df = adata.obs[prediction_cols].astype(str)
 
     if prob_cols:
-        prob_arr = adata.obs[prob_cols].astype(float).values  # (n_cells, n_methods)
-        effective_weights = weights_arr * prob_arr  # (n_cells, n_methods)
-        results = [
-            _weighted_majority(pred_df.iloc[i], effective_weights[i], par["tie_label"])
-            for i in range(len(pred_df))
-        ]
+        weights_arr = (
+            adata.obs[prob_cols].astype(np.float32) * weights_arr
+        )  # (n_cells, n_methods)
     else:
-        results = pred_df.apply(
-            _weighted_majority, axis=1, weights=weights_arr, tie_label=par["tie_label"]
-        )
+        weights_arr = pd.DataFrame([weights_arr] * len(pred_df), index=pred_df.index)
+
+    results = pred_df.apply(
+        _weighted_majority, axis=1, weights=weights_arr, tie_label=par["tie_label"]
+    )
     consensus_predictions, consensus_scores = zip(*results)
 
     logger.info("Writing output data.")

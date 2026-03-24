@@ -290,7 +290,7 @@ def test_missing_prediction_column_error(run_component, random_h5mu_path, input_
             ]
         )
     assert re.search(
-        r"ValueError: Prediction column 'nonexistent_pred' not found in .obs",
+        r"ValueError: Column 'nonexistent_pred' not found in .obs",
         err.value.stdout.decode("utf-8"),
     )
 
