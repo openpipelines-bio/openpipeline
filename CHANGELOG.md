@@ -20,6 +20,8 @@
 
 * `workflows/multiomics/process_samples`: Refactored to use the new `process_singlesample` subworkflow (PR #1147).
 
+* Bump viash to 0.9.7 (PR #1145)
+
 # openpipelines 4.0.4
 
 ## BUG FIXES
