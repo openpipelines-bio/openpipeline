@@ -18,6 +18,10 @@
 
 * Bump viash to 0.9.7 (PR #1145)
 
+## BUG FIXES
+
+* `dataflow/split_h5mu`: pin scipy version to <1.17 to avoid regression that corrupts large sparse matrix indexing (PR #).
+
 # openpipelines 4.0.4
 
 ## BUG FIXES

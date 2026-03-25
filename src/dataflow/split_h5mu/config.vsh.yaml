@@ -65,6 +65,10 @@ engines:
           - procps
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
+        packages:
+          # Pinning scipy because https://github.com/scverse/anndata/issues/339
+          - scipy~=1.16.3
+    test_setup:
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
   - type: executable
