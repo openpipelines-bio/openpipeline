@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cellxgene_census",
+  "description": "Query cells from a CellxGene Census or custom TileDBSoma object.\nAside from fetching the cells' RNA counts (`.X`), cell metadata\n(`.obs`) and gene metadata (`.var`), this component also fetches\nthe dataset metadata and joins it into the cell metadata.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "Output arguments.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "output_modality": {
+          "type": "string",
+          "description": "Which modality to store the output in.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "output_layer_counts": {
+          "type": "string",
+          "description": "Which layer to store the raw counts in",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "input database": {
+      "title": "Input database",
+      "type": "object",
+      "description": "Open CellxGene Census by version or URI.",
+      "properties": {
+        "input_uri": {
+          "type": "string",
+          "description": "If specified, a URI containing the Census SOMA objects",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"s3://bucket/path\"`. "
+        },
+        "census_version": {
+          "type": "string",
+          "description": "Which release of CellxGene census to use",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"stable\"`. "
+        },
+        "add_dataset_metadata": {
+          "type": "boolean",
+          "description": "If true, the experiment metadata will be added to the cell metadata",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
+    },
+    "cell query": {
+      "title": "Cell query",
+      "type": "object",
+      "description": "Arguments related to the query.",
+      "properties": {
+        "species": {
+          "type": "string",
+          "description": "The organism to query, usually one of `Homo sapiens` or `Mus musculus`.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"homo_sapiens\"`. "
+        },
+        "obs_value_filter": {
+          "type": "string",
+          "description": "Filter for selecting the `obs` metadata (i.e",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] and suspension_type == 'cell'\"`. "
+        }
+      }
+    },
+    "filter cells by grouping": {
+      "title": "Filter cells by grouping",
+      "type": "object",
+      "description": "Filter groups with fewer than X number of cells.",
+      "properties": {
+        "cell_filter_grouping": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A subset of 'obs' columns by which to group the cells for filtering.\nOnly groups surpassing or equal to the `--cell_filter_minimum_count`\nthreshold will be retained",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"dataset_id\";\"tissue\";\"assay\";\"disease\";\"cell_type\"]`. "
+        },
+        "cell_filter_minimum_count": {
+          "type": "integer",
+          "description": "A minimum number of cells per group to retain",
+          "help_text": "Type: `integer`, multiple: `False`, example: `100`. "
+        }
+      }
+    },
+    "count filtering": {
+      "title": "Count filtering",
+      "type": "object",
+      "description": "Arguments related to filtering cells and genes by counts.",
+      "properties": {
+        "cell_filter_min_genes": {
+          "type": "integer",
+          "description": "Remove cells with less than this number of genes.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `50`. ",
+          "default": 50
+        },
+        "cell_filter_min_counts": {
+          "type": "integer",
+          "description": "Remove cells with less than this number of counts.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
+          "default": 0
+        },
+        "gene_filter_min_cells": {
+          "type": "integer",
+          "description": "Remove genes expressed in less than this number of cells.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `5`. ",
+          "default": 5
+        },
+        "gene_filter_min_counts": {
+          "type": "integer",
+          "description": "Remove genes with less than this number of counts.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
+          "default": 0
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/input database"
+    },
+    {
+      "$ref": "#/$defs/cell query"
+    },
+    {
+      "$ref": "#/$defs/filter cells by grouping"
+    },
+    {
+      "$ref": "#/$defs/count filtering"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}
