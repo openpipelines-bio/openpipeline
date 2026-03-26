@@ -5,7 +5,7 @@ import pandas as pd
 
 ## VIASH START
 par = {
-    "input": "consensus_test.h5mu",
+    "input": "test_with_probabilities.h5mu",
     "modality": "rna",
     "input_obs_predictions": ["scanvi_pred", "celltypist_pred", "singler_pred"],
     "input_obs_probabilities": ["scanvi_prob", "celltypist_prob", "singler_prob"],
@@ -24,20 +24,6 @@ from setup_logger import setup_logger
 from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
-
-
-def _weighted_majority(row, weights, tie_label=None):
-    weights = weights.loc[row.name]
-    vote_totals = {}
-    for label, w in zip(row, weights):
-        vote_totals[label] = vote_totals.get(label, 0.0) + w
-    total = sum(vote_totals.values())
-    top_score = max(vote_totals.values())
-    winners = [label for label, score in vote_totals.items() if score == top_score]
-    normalized_score = top_score / total if total > 0 else 0.0
-    if len(winners) > 1:
-        return tie_label, normalized_score
-    return winners[0], normalized_score
 
 
 def main():
@@ -67,32 +53,65 @@ def main():
             if col not in adata.obs.columns:
                 raise ValueError(f"Column '{col}' not found in .obs.")
 
+    # Each method is treated equally by default, unless user specific weights are provided
     n_methods = len(prediction_cols)
-    weights_arr = (
-        np.array(weights, dtype=np.float32)
-        if weights
-        else np.ones(n_methods, dtype=np.float32)
-    )
+    logger.info("Initializing weights to matrix of ones")
+    weights_arr = np.ones(n_methods, dtype=np.float32)
+    if weights:
+        logger.info("Applying user-provided weights.")
+        weights_arr = np.array(weights, dtype=np.float32)
+    logger.info("Normalizing weights")
     weights_arr = weights_arr / weights_arr.sum()
+
+    # Apply the weights to the probabilities in the data
+    weights = pd.DataFrame(
+        [weights_arr] * adata.n_obs, index=adata.obs.index, columns=prediction_cols
+    )
+    if prob_cols:
+        logger.info("Scaling the weights with the probabilities from each method")
+        weights = weights * adata.obs[prob_cols].astype(np.float32).to_numpy()
+        assert pd.notna(weights).all(axis=None)
 
     logger.info("Computing weighted majority vote.")
     pred_df = adata.obs[prediction_cols].astype(str)
 
-    if prob_cols:
-        weights_arr = (
-            adata.obs[prob_cols].astype(np.float32) * weights_arr
-        )  # (n_cells, n_methods)
-    else:
-        weights_arr = pd.DataFrame([weights_arr] * len(pred_df), index=pred_df.index)
-
-    results = pred_df.apply(
-        _weighted_majority, axis=1, weights=weights_arr, tie_label=par["tie_label"]
+    # For each cell and each method (index), get the label and the weight
+    incidences_weights = pd.DataFrame(
+        {"label": pred_df.stack(), "weights": weights.stack()}
     )
-    consensus_predictions, consensus_scores = zip(*results)
-
-    logger.info("Writing output data.")
-    adata.obs[par["output_obs_predictions"]] = pd.Categorical(consensus_predictions)
-    adata.obs[par["output_obs_score"]] = consensus_scores
+    # Move the label to the index, there might be duplicate indices now
+    incidences_weights = incidences_weights.set_index("label", append=True).rename_axis(
+        ["cell_id", "method", "label"]
+    )
+    # Sum the weights per label, from this the labels with the largest weights need to be selected
+    summed_weights = incidences_weights.groupby(level=["cell_id", "label"]).sum()
+    # Find the weight that is the largest per group
+    max_weight_per_group = summed_weights.groupby(level="cell_id").transform("max")
+    # Use the value to look-up the corresponding IDs and labels
+    max_weights_mask = summed_weights["weights"] == max_weight_per_group["weights"]
+    entries_for_max_weights = summed_weights[max_weights_mask].reset_index(
+        level="label"
+    )
+    # Find the cases where there is a tie
+    is_duplicated = max_weights_mask.groupby(level="cell_id").sum() > 1
+    # For the ties, overwrite the label. If a cell is in the frame more than once it is because of a tie.
+    entries_for_max_weights.loc[is_duplicated, ["label"]] = par["tie_label"]
+    # Now its safe to just take the first index in case of duplicates, since the label and the score is the same.
+    entries_for_max_weights = entries_for_max_weights[
+        ~entries_for_max_weights.index.duplicated()
+    ]
+    # Normalize the weights
+    normalized_scores = (
+        entries_for_max_weights["weights"]
+        / incidences_weights["weights"].groupby(level="cell_id").sum()
+    )
+    # Handle devision by 0
+    normalized_scores = normalized_scores.replace([np.inf, -np.inf], 0.0).fillna(0.0)
+    logger.info("Moving the output to the anndata.")
+    adata.obs[par["output_obs_predictions"]] = entries_for_max_weights["label"].astype(
+        "category"
+    )
+    adata.obs[par["output_obs_score"]] = normalized_scores
 
     logger.info("Writing output data...")
     write_h5ad_to_h5mu_with_compression(

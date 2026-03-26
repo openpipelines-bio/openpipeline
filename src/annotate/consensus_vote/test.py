@@ -10,7 +10,11 @@ import pandas as pd
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
-meta = {"resources_dir": "resources_test"}
+meta = {
+    "resources_dir": "resources_test",
+    "executable": "./target/docker/annotate/consensus_vote",
+    "config": "./src/annotate/consensus_vote/config.vsh.yaml",
+}
 ## VIASH END
 
 
