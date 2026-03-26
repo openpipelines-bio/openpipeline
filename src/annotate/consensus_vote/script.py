@@ -5,7 +5,7 @@ import pandas as pd
 
 ## VIASH START
 par = {
-    "input": "consensus_test.h5mu",
+    "input": "test_with_probabilities.h5mu",
     "modality": "rna",
     "input_obs_predictions": ["scanvi_pred", "celltypist_pred", "singler_pred"],
     "input_obs_probabilities": ["scanvi_prob", "celltypist_prob", "singler_prob"],
@@ -69,7 +69,8 @@ def main():
     )
     if prob_cols:
         logger.info("Scaling the weights with the probabilities from each method")
-        weights = weights * adata.obs[prob_cols].astype(np.float32)
+        weights = weights * adata.obs[prob_cols].astype(np.float32).to_numpy()
+        assert pd.notna(weights).all(axis=None)
 
     logger.info("Computing weighted majority vote.")
     pred_df = adata.obs[prediction_cols].astype(str)
