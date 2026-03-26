@@ -3180,7 +3180,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--output_compression",
-          "description" : "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "description" : "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
           "example" : [
             "gzip"
           ],
@@ -3369,7 +3369,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p",
     "viash_version" : "0.9.7",
-    "git_commit" : "9f5d0943cbdb49b26b2d23ff1b42dc6179de8657",
+    "git_commit" : "c8fdf2e5ce083fb202a9c2da399b655d6a767f7d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
