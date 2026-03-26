@@ -8,6 +8,12 @@
 
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).
 
+* `filter/filter_with_quantile`: added a component to filter numerical .obs or .var columns based on quantile thresholds, with optional subsetting (PR #1146).
+
+* `workflows/multiomics/process_singlesample`: New workflow for processing RNA, protein and GDO modalities of individual samples. This functionality was extracted from `process_samples` into a reusable subworkflow (PR #1147).
+
+* `workflows/rna/rna_singlesample`, `workflows/prot/prot_singlesample`, `workflows/multiomics/process_singlesample` and `workflows/multiomics/process_samples`: support to optionally filter total counts per cell by percentile (PR #1148).
+
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
@@ -18,7 +24,9 @@
 
 * `qc/calculate_qc_metrics`: bump python version to `3.13` (PR #1140).
 
-* `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137)
+* `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137).
+
+* `workflows/multiomics/process_samples`: Refactored to use the new `process_singlesample` subworkflow (PR #1147).
 
 * Bump viash to 0.9.7 (PR #1145)
 

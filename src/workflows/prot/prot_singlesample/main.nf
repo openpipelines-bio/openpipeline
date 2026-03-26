@@ -8,7 +8,57 @@ workflow run_wf {
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
+  | qc.run(
+    key: "qc_prot",
+    fromState: { id, state ->
+      // The prot singlesample processing allows for optional filtering based on the percentile distribution of counts
+      // The behavior of the QC component must be tuned to the presence of the percentile-based filtering arguments as well
+      def args = [
+        "id": id,
+        "input": state.input,
+        // disable all qc metrics by default
+        "top_n_vars": [],
+        "output_obs_num_nonzero_vars": null,
+        "output_obs_total_counts_vars": null,
+        "output_var_num_nonzero_obs": null,
+        "output_var_total_counts_obs": null,
+        "output_var_obs_mean": null,
+        "output_var_pct_dropout": null,
+        "output": state.output,
+        "modality": "prot",
+        "layer": state.layer,
+      ]
+        
+      if (state.min_percentile_counts || state.max_percentile_counts) {
+      // If percentile-based filtering is enabled, total counts per cell must be calculated.
+        args += [
+          "output_obs_total_counts_vars": "total_counts"
+        ]
+      }
+
+      return args
+      },
+      toState: ["input": "output"]
+    )
     // filtering
+    | filter_with_quantile.run(
+      key: "prot_filter_by_percentile",
+      runIf: { id, state -> state.min_percentile_counts || state.max_percentile_counts },
+      fromState: { id, state ->
+        [
+          "input": state.input,
+          "obs_min_quantile": state.min_percentile_counts,
+          "obs_max_quantile": state.max_percentile_counts,
+          "log_transform": state.log_transform_total_counts
+        ]
+      },
+      args: [
+          "modality": "prot",
+          "obs_column": "total_counts",
+          "obs_name_filter": "filter_with_percentile"
+      ],
+      toState: ["input": "output"]
+    )
     | filter_with_counts.run(
       key: "prot_filter_with_counts",
       fromState: { id, state ->
@@ -33,9 +83,13 @@ workflow run_wf {
       fromState : { id, state ->
         // do_filter does not need a layer argument because it filters all layers
         // from a modality.
+        def obs_filter = ["filter_with_counts"]
+        if (state.min_counts_percentile || state.max_counts_percentile) {
+          obs_filter += ["filter_with_percentile"]
+        }
         def newState = [
           "input": state.input,
-          "obs_filter": "filter_with_counts",
+          "obs_filter": obs_filter,
           "modality": "prot",
           "var_filter": "filter_with_counts",
           "output_compression": "gzip",
