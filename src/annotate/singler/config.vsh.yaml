@@ -78,7 +78,7 @@ argument_groups:
         default: "filter_with_hvg"
         required: false
         description: |
-          .var column containing a boolean mask corresponding to genes to be used for marker selection. By default, do not subset genes.
+          .var column containing a boolean mask corresponding to genes to be used for marker selection. If not provided, genes will not be subset.
 
   - name: Arguments
     description: Arguments related to the training of and classification with the SingleR model

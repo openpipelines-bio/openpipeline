@@ -65,7 +65,7 @@ argument_groups:
         default: "filter_with_hvg"
         required: false
         description: |
-          .var column containing highly variable genes. By default, do not subset genes.
+          .var column containing highly variable genes. If not provided, genes will not be subset.
       - name: "--reference_var_gene_names"
         type: string
         required: false
