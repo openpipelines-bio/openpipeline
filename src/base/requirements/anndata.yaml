@@ -1,4 +1,4 @@
 packages:
   - anndata~=0.12.7
   - awkward #Required for reading VDJ data stored in AIRR format
-  - scipy~=1.16.3 # Pinning scipy because https://github.com/scverse/anndata/issues/339
+  - scipy!=1.17.* # Pinning scipy because https://github.com/scverse/anndata/issues/339
