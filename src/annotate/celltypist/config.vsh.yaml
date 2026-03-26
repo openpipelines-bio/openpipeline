@@ -62,6 +62,7 @@ argument_groups:
         default: "cell_ontology_class"
       - name: "--reference_var_input"
         type: string
+        default: "filter_with_hvg"
         required: false
         description: |
           .var column containing highly variable genes. By default, do not subset genes.
