@@ -1,5 +1,6 @@
 import sys
 import os
+import scanpy as sc
 import pytest
 import mudata as mu
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
@@ -14,17 +15,36 @@ input_file = (
 reference_file = f"{meta['resources_dir']}/TS_Blood_filtered.h5mu"
 
 
+def log_normalize(adata):
+    adata_lognorm = adata.copy()
+    sc.pp.normalize_total(adata_lognorm, target_sum=1e4)
+    sc.pp.log1p(adata_lognorm)
+    adata.layers["log_normalized"] = adata_lognorm.X
+    return adata
+
+
+@pytest.fixture
+def input_path(write_mudata_to_file):
+    mdata = mu.read_h5mu(input_file)
+    adata = mdata.mod["rna"].copy()
+    adata_lognorm = log_normalize(adata)
+    mdata.mod["rna"] = adata_lognorm
+    return write_mudata_to_file(mdata)
+
+
 def test_simple_execution(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
 
     run_component(
         [
             "--input",
-            input_file,
+            input_path,
             "--input_var_gene_names",
             "gene_symbol",
             "--reference",
             reference_file,
+            "--reference_var_input",
+            "highly_variable",
             "--reference_obs_target",
             "cell_ontology_class",
             "--output",
@@ -78,7 +98,7 @@ def test_params(run_component, random_h5mu_path):
     run_component(
         [
             "--input",
-            input_file,
+            input_path,
             "--reference",
             reference_file,
             "--reference_obs_target",

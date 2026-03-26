@@ -187,6 +187,9 @@ engines:
       - type: python
         user: true
         __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/scanpy.yaml, .]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 
 runners:
