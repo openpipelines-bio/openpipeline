@@ -454,9 +454,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux freebayes"
-LABEL org.opencontainers.image.created="2026-03-25T03:30:48Z"
+LABEL org.opencontainers.image.created="2026-03-26T03:36:15Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="669772ec9e938b01216ddeb1cb5efe69aec62cf1"
+LABEL org.opencontainers.image.revision="64576ef1ae542e05726713cdf95ab7c0cbc52cbf"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
