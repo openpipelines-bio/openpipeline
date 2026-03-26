@@ -3377,6 +3377,7 @@ meta = [
           "packages" : [
             "anndata~=0.12.7",
             "awkward",
+            "scipy!=1.17.*",
             "mudata~=0.3.2"
           ],
           "script" : [
@@ -3413,7 +3414,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/bpcells_regress_out",
     "viash_version" : "0.9.7",
-    "git_commit" : "e4a2cabb2eeee12a6734215982e75d32bab14748",
+    "git_commit" : "9f5d0943cbdb49b26b2d23ff1b42dc6179de8657",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
