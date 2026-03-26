@@ -106,7 +106,7 @@ def main():
         / incidences_weights["weights"].groupby(level="cell_id").sum()
     )
     # Handle devision by 0
-    normalized_scores = normalized_scores.replace([np.inf, -np.inf], 0.0)
+    normalized_scores = normalized_scores.replace([np.inf, -np.inf], 0.0).fillna(0.0)
     logger.info("Moving the output to the anndata.")
     adata.obs[par["output_obs_predictions"]] = entries_for_max_weights["label"].astype(
         "category"
