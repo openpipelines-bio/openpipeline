@@ -457,14 +457,14 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "gtfparse"
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.7" "awkward" "mudata~=0.3.2" "pyarrow~=18.0.0" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.7" "awkward" "scipy!=1.17.*" "mudata~=0.3.2" "pyarrow~=18.0.0" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Angela Oliveira Pisco"
 LABEL org.opencontainers.image.description="Companion container for running component mapping htseq_count_to_h5mu"
-LABEL org.opencontainers.image.created="2026-03-26T03:36:12Z"
+LABEL org.opencontainers.image.created="2026-03-27T03:37:32Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="64576ef1ae542e05726713cdf95ab7c0cbc52cbf"
+LABEL org.opencontainers.image.revision="7faddc61888f6b2804501e4f4a20cc8029670ad1"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -612,7 +612,7 @@ function ViashHelp {
   echo "        type: string"
   echo "        example: gzip"
   echo "        choices: [ gzip, lzf ]"
-  echo "        Compression format to use for the output AnnData and/or Mudata objects."
+  echo "        Compression format to use for the output AnnData and/or Mudata H5 files."
   echo "        By default no compression is applied."
   echo ""
   echo "Viash built in Computational Requirements:"

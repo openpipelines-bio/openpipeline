@@ -4,6 +4,8 @@
 
 * `qc/calculate_qc_metrics`: added support for MuData encoded in Zarr format (PR #1140).
 
+* `dataflow/split_modalities`: added support for MuData encoded in Zarr format (PR #1152)
+
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).
 
 ## MAJOR CHANGES
@@ -12,11 +14,17 @@
 
 ## MINOR CHANGES
 
+* `dataflow/split_modalities`: improve memory consumption by only reading one modality at the same time (PR #1152).
+
 * `qc/calculate_qc_metrics`: bump python version to `3.13` (PR #1140).
 
 * `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137)
 
 * Bump viash to 0.9.7 (PR #1145)
+
+## BUG FIXES
+
+* `dataflow/split_h5mu`: pin scipy version to 1.16.3 to avoid regression that corrupts large sparse matrix indexing (PR #1153).
 
 # openpipelines 4.0.4
 

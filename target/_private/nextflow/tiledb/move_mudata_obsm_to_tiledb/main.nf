@@ -3325,6 +3325,7 @@ meta = [
           "packages" : [
             "anndata~=0.12.7",
             "awkward",
+            "scipy!=1.17.*",
             "mudata~=0.3.2",
             "tiledbsoma",
             "boto3",
@@ -3372,7 +3373,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/_private/nextflow/tiledb/move_mudata_obsm_to_tiledb",
     "viash_version" : "0.9.7",
-    "git_commit" : "64576ef1ae542e05726713cdf95ab7c0cbc52cbf",
+    "git_commit" : "7faddc61888f6b2804501e4f4a20cc8029670ad1",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
