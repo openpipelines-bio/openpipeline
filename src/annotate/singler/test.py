@@ -32,7 +32,7 @@ def input_path(write_mudata_to_file):
     return write_mudata_to_file(mdata)
 
 
-def test_simple_execution(run_component, random_h5mu_path):
+def test_simple_execution(run_component, random_h5mu_path, input_path):
     output_file = random_h5mu_path()
 
     run_component(
@@ -92,7 +92,7 @@ def test_simple_execution(run_component, random_h5mu_path):
     )
 
 
-def test_params(run_component, random_h5mu_path):
+def test_params(run_component, random_h5mu_path, input_path):
     output_file = random_h5mu_path()
 
     run_component(
