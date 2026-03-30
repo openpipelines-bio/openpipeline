@@ -8,6 +8,8 @@
 
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).
 
+* `filter/filter_with_quantile`: added a component to filter numerical .obs or .var columns based on quantile thresholds, with optional subsetting (PR #1146).
+
 * `workflows/multiomics/process_singlesample`: New workflow for processing RNA, protein and GDO modalities of individual samples. This functionality was extracted from `process_samples` into a reusable subworkflow (PR #1147).
 
 ## MAJOR CHANGES
