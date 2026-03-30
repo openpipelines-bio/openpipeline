@@ -1,6 +1,6 @@
-name: "process_singlesample"
+name: "process_singlesample_base"
 namespace: "workflows/multiomics"
-scope: "public"
+scope: "private"
 description: "A pipeline to analyse a single multiomics sample."
 info:
   test_dependencies:
@@ -11,11 +11,22 @@ info:
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author ]
-__merge__: process_singlesample.yaml
+
+argument_groups:
+  - name: Output State
+    arguments:
+      - name: --output_modality
+        type: string
+        direction: output
+__merge__: [., /src/workflows/multiomics/process_singlesample/process_singlesample.yaml]
 
 dependencies:
-  - name: dataflow/merge
-  - name: workflows/multiomics/process_singlesample_base
+  - name: metadata/add_id
+  - name: workflows/multiomics/split_modalities
+    alias: split_modalities_workflow
+  - name: workflows/rna/rna_singlesample
+  - name: workflows/prot/prot_singlesample
+  - name: workflows/gdo/gdo_singlesample
 
 resources:
   - type: nextflow_script
