@@ -1,3 +1,59 @@
+# openpipelines (unreleased)
+
+## NEW FEATURES
+
+* `qc/calculate_qc_metrics`: added support for MuData encoded in Zarr format (PR #1140).
+
+* `dataflow/split_modalities`: added support for MuData encoded in Zarr format (PR #1152)
+
+* `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).
+
+* `filter/filter_with_quantile`: added a component to filter numerical .obs or .var columns based on quantile thresholds, with optional subsetting (PR #1146).
+
+## MAJOR CHANGES
+
+* `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
+
+## MINOR CHANGES
+
+* `dataflow/split_modalities`: improve memory consumption by only reading one modality at the same time (PR #1152).
+
+* `qc/calculate_qc_metrics`: bump python version to `3.13` (PR #1140).
+
+* `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137)
+
+* Bump viash to 0.9.7 (PR #1145)
+
+* `cluster/leiden`: added `flavor`, `n_iterations` and `seed` arguments (PR #1132)
+
+* `cluster/leiden`: avoid creating unnecessary copies of the output data (PR #1132).
+
+## BUG FIXES
+
+* `dataflow/split_h5mu`: pin scipy version to 1.16.3 to avoid regression that corrupts large sparse matrix indexing (PR #1153).
+
+# openpipelines 4.0.4
+
+## BUG FIXES
+
+* `convert/from_cellranger_multi_to_h5mu`: fix converting VDJ data when one or more samples has no AIRR data (PR #1149).
+
+# openpipelines 4.0.3
+
+* `dataflow/split_h5mu`: ensure subsetted modality is written as a .copy() (not a view) before writing file, to prevent `obsp` sparse indexing errors during serialization (PR #1138).
+
+# openpipelines 4.0.2
+
+## BUG FIXES
+
+* `convert/from_cellranger_multi_to_h5mu`: fix converting Cell Ranger output that contains no feature reference CSV file (PR #1136)
+
+# openpipelines 4.0.1
+
+## BUG FIXES
+
+* Fix parsing of CSV's failing when using remote paths (S3), causing an `InvocationTargetException` error (PR #1133).
+
 # openpipelines 4.0.0
 
 ## BREAKING CHANGES
@@ -51,10 +107,6 @@
 * `mapping/samtools_sort` has been deprecated and will be removed in openpipeline 4.0. Use [vsh://biobox/samtools/samtools_sort](https://www.viash-hub.com/packages/biobox/latest/components/samtools/samtools_sort) instead.
 
 ## MINOR CHANGES
-
-* `cluster/leiden`: added `flavor`, `n_iterations` and `seed` arguments (PR #)
-
-* `cluster/leiden`: avoid creating unnecessary copies of the output data (PR #).
 
 * Bump `scanpy` to `1.11.4` (PR #)
 

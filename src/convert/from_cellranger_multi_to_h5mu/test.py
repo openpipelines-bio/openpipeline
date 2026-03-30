@@ -2,6 +2,8 @@ import sys
 import pytest
 import math
 from mudata import read_h5mu
+from shutil import copytree
+import json
 
 ## VIASH START
 meta = {
@@ -19,6 +21,26 @@ def input_anticmv(request):
         "v10": "10x_5k_anticmv_v10",
     }
     return f"{meta['resources_dir']}/{base[request.param]}/processed/10x_5k_anticmv.cellranger_multi.output"
+
+
+@pytest.fixture(params=["v9", "v10"])
+def input_no_vdj_cells(request, tmp_path):
+    base = {
+        "v9": "10x_5k_anticmv",
+        "v10": "10x_5k_anticmv_v10",
+    }
+    original_input = f"{meta['resources_dir']}/{base[request.param]}/processed/10x_5k_anticmv.cellranger_multi.output"
+    result_dir = tmp_path / f"10x_5k_anticmv_{base[request.param]}_no_vdj"
+    copytree(original_input, result_dir)
+    library_type_dir = (
+        multi_dir if (multi_dir := (result_dir / "multi")).is_dir() else result_dir
+    )
+    all_contig_annotations_json = (
+        library_type_dir / "vdj_t" / "all_contig_annotations.json"
+    )
+    with all_contig_annotations_json.open("w") as open_json:
+        json.dump([], open_json, indent=4)
+    return result_dir
 
 
 @pytest.fixture(params=["v9", "v10"])
@@ -275,6 +297,79 @@ def test_antibody_and_cell_barcode_probes(run_component, tmp_path, input_4plex_d
     output_path = samples[0]
     converted_data = read_h5mu(output_path)
     assert list(converted_data.mod.keys()) == ["rna", "prot"]
+
+
+def test_no_feature_reference(run_component, tmp_path, input_4plex_dtc):
+    # Create a copy of the input without a feature reference
+    input_without_feature_reference = tmp_path / "input_without_feature_reference"
+    copytree(input_4plex_dtc, input_without_feature_reference)
+    try:
+        (input_without_feature_reference / "feature_reference.csv").unlink()
+    except FileNotFoundError:
+        (
+            input_without_feature_reference
+            / "multi"
+            / "count"
+            / "feature_reference.csv"
+        ).unlink()
+    output_dir = tmp_path / "converted"
+    output_path_template = output_dir / "*.h5mu"
+    samples_csv = tmp_path / "samples.csv"
+    # run component
+    run_component(
+        [
+            "--input",
+            input_without_feature_reference,
+            "--output",
+            str(output_path_template),
+            "--output_compression",
+            "gzip",
+            "--sample_csv",
+            samples_csv,
+        ]
+    )
+    assert output_dir.is_dir()
+
+    # check output
+    samples = [item for item in output_dir.iterdir() if item.is_file()]
+    assert len(samples) == 4
+    output_path = samples[0]
+    converted_data = read_h5mu(output_path)
+    assert list(converted_data.mod.keys()) == ["rna", "prot"]
+
+
+def test_vdj_no_cells(run_component, tmp_path, input_no_vdj_cells):
+    """
+    Test what happens when a VDJ analysis was performed by Cell Ranger,
+    but no output is provided for one or more samples. This can cause trouble
+    there is just a complete lack of VDJ information for all samples,
+    or VDJ information is missing for one or more samples when multiplexing.
+
+    Scirpy cannot create empty anndata files, so this needs to be done manually.
+    Scirpy raises the following error:
+    KeyError: "None of ['cell_id'] are in the columns"
+    """
+    output_dir = tmp_path / "converted"
+    output_path_template = output_dir / "*.h5mu"
+    samples_csv = tmp_path / "samples.csv"
+    run_component(
+        [
+            "--input",
+            input_no_vdj_cells,
+            "--output",
+            str(output_path_template),
+            "--output_compression",
+            "gzip",
+            "--sample_csv",
+            samples_csv,
+        ]
+    )
+    assert output_dir.is_dir()
+    samples = [item for item in output_dir.iterdir() if item.is_file()]
+    assert len(samples) == 1
+    output_path = samples[0]
+    converted_data = read_h5mu(output_path)
+    assert converted_data["vdj_t"].n_obs == 0
 
 
 if __name__ == "__main__":
