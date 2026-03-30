@@ -2,12 +2,6 @@ name: "process_singlesample_base"
 namespace: "workflows/multiomics"
 scope: "private"
 description: "A pipeline to analyse a single multiomics sample."
-info:
-  test_dependencies:
-    - name: workflow_test
-      namespace: test_workflows/multiomics/process_singlesample
-    - name: workflow2_test
-      namespace: test_workflows/multiomics/process_singlesample
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author ]
@@ -35,14 +29,5 @@ resources:
   - type: file
     path: /src/workflows/utils/
 
-test_resources:
-  - type: nextflow_script
-    path: test.nf
-    entrypoint: test_wf
-  - type: nextflow_script
-    path: test.nf
-    entrypoint: test_wf2
-  - path: /resources_test/concat_test_data
-  - path: /resources_test/pbmc_1k_protein_v3
 runners:
   - type: nextflow
