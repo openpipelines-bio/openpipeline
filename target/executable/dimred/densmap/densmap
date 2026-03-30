@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component dimred densmap"
-LABEL org.opencontainers.image.created="2026-03-26T08:21:58Z"
+LABEL org.opencontainers.image.created="2026-03-30T08:27:13Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c8fdf2e5ce083fb202a9c2da399b655d6a767f7d"
+LABEL org.opencontainers.image.revision="6b78a70e5f197b49032837cec6ca15c2aded23a0"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
