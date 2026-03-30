@@ -24,6 +24,10 @@
 
 * Bump viash to 0.9.7 (PR #1145)
 
+* `cluster/leiden`: added `flavor`, `n_iterations` and `seed` arguments (PR #1132)
+
+* `cluster/leiden`: avoid creating unnecessary copies of the output data (PR #1132).
+
 ## BUG FIXES
 
 * `dataflow/split_h5mu`: pin scipy version to 1.16.3 to avoid regression that corrupts large sparse matrix indexing (PR #1153).
