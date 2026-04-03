@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow concatenate_h5mu"
-LABEL org.opencontainers.image.created="2026-04-02T03:34:22Z"
+LABEL org.opencontainers.image.created="2026-04-03T03:35:12Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c307b7338b37d56ef773bf84b5bb73f516a52a2b"
+LABEL org.opencontainers.image.revision="56cbe11c3fa5e34941081f7300847f98b7dbbd91"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
