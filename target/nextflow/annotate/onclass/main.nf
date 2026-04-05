@@ -3536,7 +3536,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/onclass",
     "viash_version" : "0.9.7",
-    "git_commit" : "415454daceb89a250cf14ad6c3a816b990d190d8",
+    "git_commit" : "0db31f9db79739d941777600e87111679761f534",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
