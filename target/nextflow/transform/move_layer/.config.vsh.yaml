@@ -215,7 +215,7 @@ build_info:
   output: "target/nextflow/transform/move_layer"
   executable: "target/nextflow/transform/move_layer/main.nf"
   viash_version: "0.9.7"
-  git_commit: "0db31f9db79739d941777600e87111679761f534"
+  git_commit: "c075510c3d1fe07c8e5033cedc8c815e89b129bf"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
