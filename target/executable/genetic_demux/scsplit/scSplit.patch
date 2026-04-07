@@ -1,0 +1,98 @@
+diff --git a/scSplit b/scSplit
+index 4847737..068fa04 100755
+--- a/scSplit
++++ b/scSplit
+@@ -16,7 +16,9 @@ from scipy.sparse import csr_matrix
+ from sklearn.cluster import KMeans
+ from sklearn.decomposition import PCA
+ from sklearn.preprocessing import StandardScaler
+-import os, sys, io, vcf, csv, math, datetime, pickle, argparse, gzip
++import os, sys, io, csv, math, datetime, pickle, argparse, gzip
++import vcfpy as vcf
++
+
+
+ class mixed_VCF:
+@@ -86,15 +88,15 @@ class models:
+         self.ref_bc_mtx, self.alt_bc_mtx = base_calls_mtx[0], base_calls_mtx[1]
+         self.all_POS, self.barcodes = base_calls_mtx[2].tolist(), base_calls_mtx[3].tolist()
+         self.num = num
+-        self.P_s_c = pd.DataFrame(0, index = self.barcodes, columns = range(self.num))
+-        self.lP_c_s = pd.DataFrame(0, index = self.barcodes, columns = range(self.num))
++        self.P_s_c = pd.DataFrame(0, index = self.barcodes, columns = range(self.num), dtype="float")
++        self.lP_c_s = pd.DataFrame(0, index = self.barcodes, columns = range(self.num), dtype="float")
+         self.lP_s = [np.log2(1/self.num)] * self.num
+         self.assigned, self.reassigned = [], []
+         self.convergence = 0
+         for _ in range(self.num):
+             self.assigned.append([])
+             self.reassigned.append([])
+-        self.model_af = pd.DataFrame(0, index=self.all_POS, columns=range(self.num))
++        self.model_af = pd.DataFrame(0, index=self.all_POS, columns=range(self.num), dtype="float")
+         self.pseudo = 1
+
+         # background alt count proportion, with pseudo count added for 0 counts on multi-base SNPs
+@@ -142,7 +144,7 @@ class models:
+                         self.initial[n].append(self.barcodes[col])
+                 barcode_alt = np.array(self.alt_bc_mtx[:, icols[kmeans.labels_==n]].sum(axis=1))
+                 barcode_ref = np.array(self.ref_bc_mtx[:, icols[kmeans.labels_==n]].sum(axis=1))
+-                self.model_af.loc[:, n] = (barcode_alt + self.k_alt) / (barcode_alt + barcode_ref + self.pseudo)
++                self.model_af.loc[:, n] = ((barcode_alt + self.k_alt) / (barcode_alt + barcode_ref + self.pseudo)).ravel()
+
+
+     def run_EM(self, output):
+@@ -194,7 +196,7 @@ class models:
+         """
+
+         self.model_af = pd.DataFrame((self.alt_bc_mtx.dot(self.P_s_c) + self.k_alt) / ((self.alt_bc_mtx + self.ref_bc_mtx).dot(self.P_s_c) + self.pseudo),
+-                                        index = self.all_POS, columns = range(self.num))
++                                        index = self.all_POS, columns = range(self.num), dtype="float")
+         self.lP_s = np.log2(self.P_s_c.sum(axis=0)) - np.log2(self.P_s_c.sum(axis=0).sum())
+
+
+@@ -211,7 +213,7 @@ class models:
+         """
+         Locate the doublet state
+         """
+-        cross_state = pd.DataFrame(0, index = range(self.num), columns = range(self.num))
++        cross_state = pd.DataFrame(0, index = range(self.num), columns = range(self.num), dtype="float")
+         for i in range(self.num):
+             for j in range(self.num):
+                 index = []
+@@ -262,17 +264,17 @@ class models:
+         self.dist_variants, ncols = [], self.num - 1 + (self.doublet < 0) * 1
+         if len(pos) != 0:
+             snv = [self.all_POS[i] for i in pos]
+-            N_ref_mtx, N_alt_mtx = pd.DataFrame(0, index=snv, columns=range(self.num)), pd.DataFrame(0, index=snv, columns=range(self.num))
++            N_ref_mtx, N_alt_mtx = pd.DataFrame(0, index=snv, columns=range(self.num), dtype="int64"), pd.DataFrame(0, index=snv, columns=range(self.num), dtype="int64")
+         else:
+-            N_ref_mtx, N_alt_mtx = pd.DataFrame(0, index=self.all_POS, columns=range(self.num)), pd.DataFrame(0, index=self.all_POS, columns=range(self.num))
++            N_ref_mtx, N_alt_mtx = pd.DataFrame(0, index=self.all_POS, columns=range(self.num), dtype="int64"), pd.DataFrame(0, index=self.all_POS, columns=range(self.num), dtype="int64")
+
+         for n in range(self.num):
+             bc_idx = [i for i, e in enumerate(self.barcodes) if e in self.reassigned[n]]
+             # REF/ALT alleles counts from cells assigned to state n
+             if len(pos) == 0:
+-                N_ref_mtx.loc[:, n], N_alt_mtx.loc[:, n] = self.ref_bc_mtx[:, bc_idx].sum(axis=1), self.alt_bc_mtx[:, bc_idx].sum(axis=1)
++                N_ref_mtx.loc[:, n], N_alt_mtx.loc[:, n] = self.ref_bc_mtx[:, bc_idx].sum(axis=1).ravel(), self.alt_bc_mtx[:, bc_idx].sum(axis=1).ravel()
+             else:
+-                N_ref_mtx.loc[:, n], N_alt_mtx.loc[:, n] = self.ref_bc_mtx[pos][:, bc_idx].sum(axis=1), self.alt_bc_mtx[pos][:, bc_idx].sum(axis=1)
++                N_ref_mtx.loc[:, n], N_alt_mtx.loc[:, n] = self.ref_bc_mtx[pos][:, bc_idx].sum(axis=1).ravel(), self.alt_bc_mtx[pos][:, bc_idx].sum(axis=1).ravel()
+
+         # judge N(A) or N(R) for each cluster
+         if self.doublet == -1:
+@@ -585,12 +587,12 @@ Options:
+             assignment['Barcode'] = model.reassigned[n]
+             if n != model.doublet:
+                 assignment['Cluster'] = 'SNG-' + str(n)
+-                assignments = assignments.append(assignment)
++                assignments = pd.concat([assignments, assignment])
+         if doublets != 0:   # if doublet cluster is expected
+             assignment = pd.DataFrame()
+             assignment['Barcode'] = model.reassigned[model.doublet]
+             assignment['Cluster'] = 'DBL-' + str(model.doublet)
+-            assignments = assignments.append(assignment)
++            assignments = pd.concat([assignments, assignment])
+         assignments.to_csv(os.path.join(args.out, r'scSplit_result.csv'), sep='\t', index=False)
+         model.P_s_c.to_csv(os.path.join(args.out, r'scSplit_P_s_c.csv'))
+         with open(os.path.join(args.out, r'scSplit_dist_variants.txt'), 'w') as logfile:
