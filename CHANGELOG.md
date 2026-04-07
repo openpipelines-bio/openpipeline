@@ -24,6 +24,8 @@
 
 ## BUG FIXES
 
+* `mapping/cellranger_multi`: support input FASTQ files from multiple flow cells. Each source directory gets its own subdirectory in the temporary symlinks folder, and library rows are expanded so that each `(fastq_id, fastqs_dir)` pair appears as a separate row in the CellRanger multi config (PR #1160).
+
 * `dataflow/split_h5mu`: pin scipy version to 1.16.3 to avoid regression that corrupts large sparse matrix indexing (PR #1153).
 
 # openpipelines 4.0.4
