@@ -30,9 +30,8 @@ par = {
     "library_id": [
         "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset",
         "5k_human_antiCMV_T_TBNK_connect_AB_subset",
-        "5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
     ],
-    "library_type": ["Gene Expression", "Antibody Capture", "VDJ"],
+    "library_type": ["Gene Expression", "Antibody Capture"],
     "gex_input": None,
     "abc_input": None,
     "cgc_input": None,
@@ -79,6 +78,7 @@ par = {
     "vdj_inner_enrichment_primers": None,
     "vdj_r1_length": None,
     "vdj_r2_length": None,
+    "vdj_denovo": None,
     "control_id": None,
     "mhc_allele": None,
     "gex_reference": "resources_test/reference_gencodev41_chr1/reference_cellranger.tar.gz",
@@ -482,15 +482,53 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             par[reference_par_name] = untar(par[reference_par_name], temp_dir_path)
 
         logger.info("Creating symbolic links to temporary directory")
-        # Creating symlinks of fastq files to tempdir
+        # Group input fastqs by source directory. Files from different directories
+        # (e.g. the same sample sequenced across multiple flow cells) can share
+        # identical filenames, so each source directory gets its own numbered subdir.
+        source_dir_groups: dict[Path, list[Path]] = {}
+        for fastq in par["input"]:
+            source_dir_groups.setdefault(fastq.parent, []).append(fastq)
+
         input_symlinks_dir = temp_dir_path / "input_symlinks"
         input_symlinks_dir.mkdir()
-        for fastq in par["input"]:
-            destination = input_symlinks_dir / fastq.name
-            destination.symlink_to(fastq)
+        dir_to_subdir: dict[Path, Path] = {}
+        for i, src_dir in enumerate(source_dir_groups):
+            subdir = input_symlinks_dir / str(i)
+            subdir.mkdir()
+            dir_to_subdir[src_dir] = subdir
+            for fastq in source_dir_groups[src_dir]:
+                (subdir / fastq.name).symlink_to(fastq)
+
+        # When input spans multiple source directories, expand library rows so that
+        # each (fastq_id, fastqs_dir) pair appears as its own row. CellRanger multi
+        # supports duplicate fastq_id values across rows with different fastqs paths —
+        # that is the documented way to merge data from multiple flow cells.
+        if len(dir_to_subdir) > 1:
+            expand_indices: list[int] = []
+            expanded_fastqs: list[str] = []
+            for j, lib_id in enumerate(par["library_id"]):
+                matching_subdirs = [
+                    subdir
+                    for src_dir, subdir in dir_to_subdir.items()
+                    if any(
+                        re.match(re.escape(lib_id) + r"_", f.name)
+                        for f in source_dir_groups[src_dir]
+                    )
+                ]
+                for subdir in matching_subdirs or [next(iter(dir_to_subdir.values()))]:
+                    expand_indices.append(j)
+                    expanded_fastqs.append(str(subdir))
+            par["library_id"] = [par["library_id"][j] for j in expand_indices]
+            par["library_type"] = [par["library_type"][j] for j in expand_indices]
+            for param in ["library_subsample", "library_lanes", "library_chemistry"]:
+                if par[param] is not None:
+                    par[param] = [par[param][j] for j in expand_indices]
+            fastq_dirs = expanded_fastqs
+        else:
+            fastq_dirs = next(iter(dir_to_subdir.values()), input_symlinks_dir)
 
         logger.info("Creating config file")
-        config_content = generate_config(par, input_symlinks_dir)
+        config_content = generate_config(par, fastq_dirs)
         logger.info("Using config: \n\t%s", config_content.replace("\n", "\n\t"))
         par["output"].mkdir(parents=True, exist_ok=True)
         config_file = par["output"] / "config.csv"

@@ -724,5 +724,71 @@ def test_cellranger_no_cpus_or_mem_specifier(run_component, random_path):
     run_component(args)
 
 
+def test_cellranger_multi_multi_flowcell_input(run_component, random_path):
+    """Files with identical names from different flow cells must not collide.
+
+    CellRanger multi supports duplicate fastq_id values across rows with different
+    fastqs paths — that is the documented way to merge data from multiple flow cells.
+    The generated config should have one row per (library_id, flow-cell dir) pair.
+    """
+    import shutil
+
+    flowcell_1 = random_path()
+    flowcell_2 = random_path()
+    flowcell_1.mkdir()
+    flowcell_2.mkdir()
+
+    # Copy files into both directories — symlinks are followed by Path.resolve(),
+    # which would make both flow cells appear to come from the same source directory.
+    for src in [input1_R1, input1_R2, input2_R1, input2_R2]:
+        shutil.copy(src, flowcell_1 / src.name)
+        shutil.copy(src, flowcell_2 / src.name)
+
+    outputpath = random_path()
+    run_component(
+        [
+            "--output",
+            outputpath,
+            "--input",
+            flowcell_1 / input1_R1.name,
+            "--input",
+            flowcell_1 / input1_R2.name,
+            "--input",
+            flowcell_1 / input2_R1.name,
+            "--input",
+            flowcell_1 / input2_R2.name,
+            "--input",
+            flowcell_2 / input1_R1.name,
+            "--input",
+            flowcell_2 / input1_R2.name,
+            "--input",
+            flowcell_2 / input2_R1.name,
+            "--input",
+            flowcell_2 / input2_R2.name,
+            "--library_id",
+            "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset",
+            "--library_type",
+            "Gene Expression;Antibody Capture",
+            "--gex_reference",
+            gex_reference,
+            "--feature_reference",
+            feature_reference,
+            "--gex_generate_bam",
+            "false",
+            "--dryrun",
+        ]
+    )
+
+    config_path = outputpath / "config.csv"
+    assert config_path.is_file()
+    config_contents = config_path.read_text()
+
+    # Each library should appear twice in the config — once per flow cell directory
+    assert config_contents.count("5k_human_antiCMV_T_TBNK_connect_GEX_1_subset") == 2
+    assert config_contents.count("5k_human_antiCMV_T_TBNK_connect_AB_subset") == 2
+    assert config_contents.count("Gene Expression") == 2
+    assert config_contents.count("Antibody Capture") == 2
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
