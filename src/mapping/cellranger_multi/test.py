@@ -725,11 +725,9 @@ def test_cellranger_no_cpus_or_mem_specifier(run_component, random_path):
 
 
 def test_cellranger_multi_multi_flowcell_input(run_component, random_path):
-    """Files with identical names from different flow cells must not collide.
-
-    CellRanger multi supports duplicate fastq_id values across rows with different
-    fastqs paths — that is the documented way to merge data from multiple flow cells.
-    The generated config should have one row per (library_id, flow-cell dir) pair.
+    """Test that files with identical fastq filenames arising from separate flow cell directories are correctly resolved.
+    See https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-specifying-fastqs and
+    https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/running-pipelines/cr-5p-multi
     """
     import shutil
 
@@ -738,8 +736,7 @@ def test_cellranger_multi_multi_flowcell_input(run_component, random_path):
     flowcell_1.mkdir()
     flowcell_2.mkdir()
 
-    # Copy files into both directories — symlinks are followed by Path.resolve(),
-    # which would make both flow cells appear to come from the same source directory.
+    # Copy files to simulate flow cell directories containing identical file names
     for src in [input1_R1, input1_R2, input2_R1, input2_R2]:
         shutil.copy(src, flowcell_1 / src.name)
         shutil.copy(src, flowcell_2 / src.name)
