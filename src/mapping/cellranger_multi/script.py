@@ -504,18 +504,20 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         # supports duplicate fastq_id values across rows with different fastqs paths —
         # that is the documented way to merge data from multiple flow cells.
         if len(dir_to_subdir) > 1:
+            # Build an exact lib_id → subdirs mapping from the actual input files
+            # using infer_library_id_from_path, so there is no regex guessing or
+            # silent fallback that could assign a library to the wrong directory.
+            lib_id_to_subdirs: dict[str, list[Path]] = {}
+            for fastq in par["input"]:
+                inferred_lib_id = infer_library_id_from_path(fastq.name)
+                subdir = dir_to_subdir[fastq.parent]
+                if subdir not in lib_id_to_subdirs.get(inferred_lib_id, []):
+                    lib_id_to_subdirs.setdefault(inferred_lib_id, []).append(subdir)
+
             expand_indices: list[int] = []
             expanded_fastqs: list[str] = []
             for j, lib_id in enumerate(par["library_id"]):
-                matching_subdirs = [
-                    subdir
-                    for src_dir, subdir in dir_to_subdir.items()
-                    if any(
-                        re.match(re.escape(lib_id) + r"_", f.name)
-                        for f in source_dir_groups[src_dir]
-                    )
-                ]
-                for subdir in matching_subdirs or [next(iter(dir_to_subdir.values()))]:
+                for subdir in lib_id_to_subdirs.get(lib_id, []):
                     expand_indices.append(j)
                     expanded_fastqs.append(str(subdir))
             par["library_id"] = [par["library_id"][j] for j in expand_indices]
