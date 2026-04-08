@@ -30,8 +30,9 @@ par = {
     "library_id": [
         "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset",
         "5k_human_antiCMV_T_TBNK_connect_AB_subset",
+        "5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
     ],
-    "library_type": ["Gene Expression", "Antibody Capture"],
+    "library_type": ["Gene Expression", "Antibody Capture", "VDJ"],
     "gex_input": None,
     "abc_input": None,
     "cgc_input": None,
