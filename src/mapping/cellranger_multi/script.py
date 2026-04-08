@@ -20,12 +20,12 @@ CELL_RANGER_EXEC = shutil.which("cellranger")
 par = {
     "output": "./cellranger_test_output",
     "input": [
-        "resources_test/10x_5k_anticmv/flowcell1/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz",
-        "resources_test/10x_5k_anticmv/flowcell1/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz",
-        "resources_test/10x_5k_anticmv/flowcell1/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz",
-        "resources_test/10x_5k_anticmv/flowcell1/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz",
-        "resources_test/10x_5k_anticmv/flowcell2/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz",
-        "resources_test/10x_5k_anticmv/flowcell2/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz",
+        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz",
+        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz",
+        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz",
+        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz",
+        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz",
+        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz",
     ],
     "library_id": [
         "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset",
@@ -543,6 +543,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             par[reference_par_name] = untar(par[reference_par_name], temp_dir_path)
 
         logger.info("Creating symbolic links to temporary directory")
+        # Creating symlinks of fastq files to tempdir
         dir_to_subdir = create_input_symlinks(par["input"], temp_dir_path)
         par, input_symlinks_dir = expand_library_params_across_directories(
             par, dir_to_subdir
