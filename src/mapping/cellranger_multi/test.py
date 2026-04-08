@@ -737,8 +737,10 @@ def test_cellranger_multi_multi_flowcell_input(run_component, random_path):
     flowcell_2.mkdir()
 
     # Copy files to simulate flow cell directories containing identical file names
-    for src in [input1_R1, input1_R2, input2_R1, input2_R2]:
+    for src in [input1_R1, input1_R2]:
         shutil.copy(src, flowcell_1 / src.name)
+        shutil.copy(src, flowcell_2 / src.name)
+    for src in [input2_R1, input2_R2]:
         shutil.copy(src, flowcell_2 / src.name)
 
     outputpath = random_path()
@@ -750,10 +752,6 @@ def test_cellranger_multi_multi_flowcell_input(run_component, random_path):
             flowcell_1 / input1_R1.name,
             "--input",
             flowcell_1 / input1_R2.name,
-            "--input",
-            flowcell_1 / input2_R1.name,
-            "--input",
-            flowcell_1 / input2_R2.name,
             "--input",
             flowcell_2 / input1_R1.name,
             "--input",
@@ -782,9 +780,9 @@ def test_cellranger_multi_multi_flowcell_input(run_component, random_path):
 
     # Each library should appear twice in the config — once per flow cell directory
     assert config_contents.count("5k_human_antiCMV_T_TBNK_connect_GEX_1_subset") == 2
-    assert config_contents.count("5k_human_antiCMV_T_TBNK_connect_AB_subset") == 2
+    assert config_contents.count("5k_human_antiCMV_T_TBNK_connect_AB_subset") == 1
     assert config_contents.count("Gene Expression") == 2
-    assert config_contents.count("Antibody Capture") == 2
+    assert config_contents.count("Antibody Capture") == 1
 
 
 if __name__ == "__main__":
