@@ -503,7 +503,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         # each (fastq_id, fastqs_dir) pair appears as its own row. CellRanger multi
         # supports duplicate fastq_id values across rows with different fastqs path.
         if len(dir_to_subdir) > 1:
-            # Build an exact lib_id → subdirs mapping from the actual input files
+            # Build an exact lib_id to subdirs mapping from the actual input files
             # using infer_library_id_from_path, so there is no regex guessing or
             # silent fallback that could assign a library to the wrong directory.
             # See https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-specifying-fastqs and
