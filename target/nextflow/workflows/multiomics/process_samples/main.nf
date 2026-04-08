@@ -3926,9 +3926,9 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.9.7",
-    "git_commit" : "beb0906417750b1ef30497681287cf3bb48ebe06",
+    "git_commit" : "d85885460d5ba2c5579c176b5071fe9407070d21",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-2131-gbeb09064177"
+    "git_tag" : "0.2.0-2132-gd85885460d5"
   },
   "package_config" : {
     "name" : "openpipeline",

@@ -501,12 +501,13 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
 
         # When input spans multiple source directories, expand library rows so that
         # each (fastq_id, fastqs_dir) pair appears as its own row. CellRanger multi
-        # supports duplicate fastq_id values across rows with different fastqs paths —
-        # that is the documented way to merge data from multiple flow cells.
+        # supports duplicate fastq_id values across rows with different fastqs path.
         if len(dir_to_subdir) > 1:
-            # Build an exact lib_id → subdirs mapping from the actual input files
+            # Build an exact lib_id to subdirs mapping from the actual input files
             # using infer_library_id_from_path, so there is no regex guessing or
             # silent fallback that could assign a library to the wrong directory.
+            # See https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-specifying-fastqs and
+            # https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/running-pipelines/cr-5p-multi
             lib_id_to_subdirs: dict[str, list[Path]] = {}
             for fastq in par["input"]:
                 inferred_lib_id = infer_library_id_from_path(fastq.name)

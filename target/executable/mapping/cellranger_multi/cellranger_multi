@@ -463,9 +463,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Angela Oliveira Pisco, Robrecht Cannoodt, Dries De Maeyer, Weiwei Schultz, Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_multi"
-LABEL org.opencontainers.image.created="2026-04-07T15:24:27Z"
+LABEL org.opencontainers.image.created="2026-04-08T06:23:01Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="beb0906417750b1ef30497681287cf3bb48ebe06"
+LABEL org.opencontainers.image.revision="d85885460d5ba2c5579c176b5071fe9407070d21"
 LABEL org.opencontainers.image.version="multi-flowcell-support_build"
 
 VIASHDOCKER
@@ -3249,12 +3249,13 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
 
         # When input spans multiple source directories, expand library rows so that
         # each (fastq_id, fastqs_dir) pair appears as its own row. CellRanger multi
-        # supports duplicate fastq_id values across rows with different fastqs paths —
-        # that is the documented way to merge data from multiple flow cells.
+        # supports duplicate fastq_id values across rows with different fastqs path.
         if len(dir_to_subdir) > 1:
-            # Build an exact lib_id → subdirs mapping from the actual input files
+            # Build an exact lib_id to subdirs mapping from the actual input files
             # using infer_library_id_from_path, so there is no regex guessing or
             # silent fallback that could assign a library to the wrong directory.
+            # See https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-specifying-fastqs and
+            # https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/running-pipelines/cr-5p-multi
             lib_id_to_subdirs: dict[str, list[Path]] = {}
             for fastq in par["input"]:
                 inferred_lib_id = infer_library_id_from_path(fastq.name)
