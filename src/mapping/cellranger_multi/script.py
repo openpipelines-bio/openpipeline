@@ -20,12 +20,12 @@ CELL_RANGER_EXEC = shutil.which("cellranger")
 par = {
     "output": "./cellranger_test_output",
     "input": [
-        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz",
-        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz",
-        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz",
-        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz",
-        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz",
-        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz",
+        "resources_test/10x_5k_anticmv/flowcell1/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz",
+        "resources_test/10x_5k_anticmv/flowcell1/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz",
+        "resources_test/10x_5k_anticmv/flowcell1/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz",
+        "resources_test/10x_5k_anticmv/flowcell1/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz",
+        "resources_test/10x_5k_anticmv/flowcell2/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz",
+        "resources_test/10x_5k_anticmv/flowcell2/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz",
     ],
     "library_id": [
         "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset",
@@ -293,6 +293,67 @@ def check_subset_dict_equal_length(
     )
 
 
+def create_input_symlinks(
+    input_paths: list[Path], temp_dir_path: Path
+) -> dict[Path, Path]:
+    """Group FASTQs by source directory and symlink them into numbered subdirectories.
+
+    Files from different directories (e.g. the same sample sequenced across multiple
+    flow cells) can share identical filenames, so each source directory gets its own
+    numbered subdir.
+    See https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-specifying-fastqs
+
+    Returns a mapping from original source directory to symlink subdir.
+    """
+    source_dir_groups = {}
+    for fastq in input_paths:
+        source_dir_groups.setdefault(fastq.parent, []).append(fastq)
+
+    dir_to_subdir = {}
+    for i, src_dir in enumerate(source_dir_groups):
+        subdir = temp_dir_path / f"input_symlinks_{i}"
+        subdir.mkdir()
+        dir_to_subdir[src_dir] = subdir
+        for fastq in source_dir_groups[src_dir]:
+            (subdir / fastq.name).symlink_to(fastq)
+    return dir_to_subdir
+
+
+def expand_library_params_across_directories(
+    par: dict[str, Any], dir_to_subdir: dict[Path, Path]
+) -> tuple[dict[str, Any], list[str] | Path]:
+    """Expand library params when input samples span multiple directories.
+
+    CellRanger multi supports duplicate fastq_id (library_id) values across rows with different
+    fastqs paths. Returns updated par and input_symlinks_dir (list for multiple directories,
+    single Path otherwise).
+    See https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/running-pipelines/cr-5p-multi
+    """
+    if len(dir_to_subdir) <= 1:
+        return par, next(iter(dir_to_subdir.values()))
+
+    # identify library_id per subdir based on the input fastq files
+    lib_id_to_subdirs = {}
+    for fastq in par["input"]:
+        inferred_lib_id = infer_library_id_from_path(fastq.name)
+        subdir = dir_to_subdir[fastq.parent]
+        if subdir not in lib_id_to_subdirs.get(inferred_lib_id, []):
+            lib_id_to_subdirs.setdefault(inferred_lib_id, []).append(subdir)
+
+    expand_indices = []
+    expanded_fastqs = []
+    for j, lib_id in enumerate(par["library_id"]):
+        for subdir in lib_id_to_subdirs.get(lib_id, []):
+            expand_indices.append(j)
+            expanded_fastqs.append(str(subdir))
+    par["library_id"] = [par["library_id"][j] for j in expand_indices]
+    par["library_type"] = [par["library_type"][j] for j in expand_indices]
+    for param in ["library_subsample", "library_lanes", "library_chemistry"]:
+        if par[param] is not None:
+            par[param] = [par[param][j] for j in expand_indices]
+    return par, expanded_fastqs
+
+
 def resolve_input_directories_to_fastq_paths(input_paths: list[str]) -> list[Path]:
     input_paths = [Path(fastq) for fastq in input_paths]
     if len(input_paths) == 1 and input_paths[0].is_dir():
@@ -482,56 +543,13 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             par[reference_par_name] = untar(par[reference_par_name], temp_dir_path)
 
         logger.info("Creating symbolic links to temporary directory")
-        # Group input fastqs by source directory. Files from different directories
-        # (e.g. the same sample sequenced across multiple flow cells) can share
-        # identical filenames, so each source directory gets its own numbered subdir.
-        source_dir_groups: dict[Path, list[Path]] = {}
-        for fastq in par["input"]:
-            source_dir_groups.setdefault(fastq.parent, []).append(fastq)
-
-        input_symlinks_dir = temp_dir_path / "input_symlinks"
-        input_symlinks_dir.mkdir()
-        dir_to_subdir: dict[Path, Path] = {}
-        for i, src_dir in enumerate(source_dir_groups):
-            subdir = input_symlinks_dir / str(i)
-            subdir.mkdir()
-            dir_to_subdir[src_dir] = subdir
-            for fastq in source_dir_groups[src_dir]:
-                (subdir / fastq.name).symlink_to(fastq)
-
-        # When input spans multiple source directories, expand library rows so that
-        # each (fastq_id, fastqs_dir) pair appears as its own row. CellRanger multi
-        # supports duplicate fastq_id values across rows with different fastqs path.
-        if len(dir_to_subdir) > 1:
-            # Build an exact lib_id to subdirs mapping from the actual input files
-            # using infer_library_id_from_path, so there is no regex guessing or
-            # silent fallback that could assign a library to the wrong directory.
-            # See https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-specifying-fastqs and
-            # https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/running-pipelines/cr-5p-multi
-            lib_id_to_subdirs: dict[str, list[Path]] = {}
-            for fastq in par["input"]:
-                inferred_lib_id = infer_library_id_from_path(fastq.name)
-                subdir = dir_to_subdir[fastq.parent]
-                if subdir not in lib_id_to_subdirs.get(inferred_lib_id, []):
-                    lib_id_to_subdirs.setdefault(inferred_lib_id, []).append(subdir)
-
-            expand_indices: list[int] = []
-            expanded_fastqs: list[str] = []
-            for j, lib_id in enumerate(par["library_id"]):
-                for subdir in lib_id_to_subdirs.get(lib_id, []):
-                    expand_indices.append(j)
-                    expanded_fastqs.append(str(subdir))
-            par["library_id"] = [par["library_id"][j] for j in expand_indices]
-            par["library_type"] = [par["library_type"][j] for j in expand_indices]
-            for param in ["library_subsample", "library_lanes", "library_chemistry"]:
-                if par[param] is not None:
-                    par[param] = [par[param][j] for j in expand_indices]
-            fastq_dirs = expanded_fastqs
-        else:
-            fastq_dirs = next(iter(dir_to_subdir.values()), input_symlinks_dir)
+        dir_to_subdir = create_input_symlinks(par["input"], temp_dir_path)
+        par, input_symlinks_dir = expand_library_params_across_directories(
+            par, dir_to_subdir
+        )
 
         logger.info("Creating config file")
-        config_content = generate_config(par, fastq_dirs)
+        config_content = generate_config(par, input_symlinks_dir)
         logger.info("Using config: \n\t%s", config_content.replace("\n", "\n\t"))
         par["output"].mkdir(parents=True, exist_ok=True)
         config_file = par["output"] / "config.csv"

@@ -725,10 +725,7 @@ def test_cellranger_no_cpus_or_mem_specifier(run_component, random_path):
 
 
 def test_cellranger_multi_multi_flowcell_input(run_component, random_path):
-    """Test that files with identical fastq filenames arising from separate flow cell directories are correctly resolved.
-    See https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-specifying-fastqs and
-    https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/running-pipelines/cr-5p-multi
-    """
+    """Test that files with identical fastq filenames arising from separate directories (e.g. flowcells) are correctly resolved."""
     import shutil
 
     flowcell_1 = random_path()
