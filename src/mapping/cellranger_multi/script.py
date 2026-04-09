@@ -21,11 +21,11 @@ par = {
     "output": "./cellranger_test_output",
     "input": [
         "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz",
-        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz",
+        # "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz",
         "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz",
-        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz",
+        # "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz",
         "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz",
-        "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz",
+        # "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz",
     ],
     "library_id": [
         "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset",
@@ -303,6 +303,7 @@ def create_input_symlinks(
     flow cells) can share identical filenames, so each source directory gets its own
     numbered subdir.
     See https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-specifying-fastqs
+    and https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/running-pipelines/cr-5p-multi
 
     Returns a mapping from original source directory to symlink subdir.
     """
@@ -322,17 +323,11 @@ def create_input_symlinks(
 
 def expand_library_params_across_directories(
     par: dict[str, Any], dir_to_subdir: dict[Path, Path]
-) -> tuple[dict[str, Any], list[str] | Path]:
-    """Expand library params when input samples span multiple directories.
+) -> tuple[dict[str, Any], list[str]]:
+    """Expand library params so each library ID is repeated once per subdirectory it appears in.
 
-    CellRanger multi supports duplicate fastq_id (library_id) values across rows with different
-    fastqs paths. Returns updated par and input_symlinks_dir (list for multiple directories,
-    single Path otherwise).
-    See https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/running-pipelines/cr-5p-multi
+    Returns updated par and a per-library list of fastq paths (one entry per expanded row).
     """
-    if len(dir_to_subdir) <= 1:
-        return par, next(iter(dir_to_subdir.values()))
-
     # identify library_id per subdir based on the input fastq files
     lib_id_to_subdirs = {}
     for fastq in par["input"]:
@@ -341,6 +336,21 @@ def expand_library_params_across_directories(
         if subdir not in lib_id_to_subdirs.get(inferred_lib_id, []):
             lib_id_to_subdirs.setdefault(inferred_lib_id, []).append(subdir)
 
+    # ensure all library_ids have matching fastq files in the input directories
+    missing = [
+        lib_id for lib_id in par["library_id"] if lib_id not in lib_id_to_subdirs
+    ]
+    if missing:
+        raise ValueError(
+            f"The following library IDs have no matching FASTQ files in any input directory: "
+            f"{missing}. Check that --library_id values match the FASTQ file names."
+        )
+
+    if len(dir_to_subdir) <= 1:
+        fastq_path = str(next(iter(dir_to_subdir.values())))
+        return par, [fastq_path] * len(par["library_id"])
+
+    # expand library params per subdir
     expand_indices = []
     expanded_fastqs = []
     for j, lib_id in enumerate(par["library_id"]):
@@ -485,7 +495,7 @@ def generate_csv_category(name: str, args: dict[str, str], orient: str) -> list[
     return title + values + [""]
 
 
-def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
+def generate_config(par: dict[str, Any], fastq_dir: str | list[str]) -> str:
     content_list = []
     par["fastqs"] = fastq_dir
     libraries = dict(LIBRARY_CONFIG_KEYS, **{"fastqs": "fastqs"})

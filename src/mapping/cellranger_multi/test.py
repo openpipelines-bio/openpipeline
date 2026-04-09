@@ -725,15 +725,14 @@ def test_cellranger_no_cpus_or_mem_specifier(run_component, random_path):
 
 
 def test_cellranger_multi_multi_flowcell_input(run_component, random_path):
-    """Test that files with identical fastq filenames arising from separate directories (e.g. flowcells) are correctly resolved."""
-    import shutil
-
     flowcell_1 = random_path()
     flowcell_2 = random_path()
     flowcell_1.mkdir()
     flowcell_2.mkdir()
 
     # Copy files to simulate flow cell directories containing identical file names
+    import shutil
+
     for src in [input1_R1, input1_R2]:
         shutil.copy(src, flowcell_1 / src.name)
         shutil.copy(src, flowcell_2 / src.name)
@@ -775,11 +774,49 @@ def test_cellranger_multi_multi_flowcell_input(run_component, random_path):
     assert config_path.is_file()
     config_contents = config_path.read_text()
 
-    # Each library should appear twice in the config — once per flow cell directory
+    # Check that all libraries across flow cell directories are correctly represented
     assert config_contents.count("5k_human_antiCMV_T_TBNK_connect_GEX_1_subset") == 2
     assert config_contents.count("5k_human_antiCMV_T_TBNK_connect_AB_subset") == 1
     assert config_contents.count("Gene Expression") == 2
     assert config_contents.count("Antibody Capture") == 1
+
+
+def test_raise_with_missing_library_id(run_component, random_path):
+    outputpath = random_path()
+
+    args = [
+        "--output",
+        outputpath,
+        "--input",
+        input1_R1,
+        "--input",
+        input1_R2,
+        "--input",
+        input2_R1,
+        "--input",
+        input2_R2,
+        "--input",
+        input3_R1,
+        "--input",
+        input3_R2,
+        "--gex_reference",
+        gex_reference,
+        "--vdj_reference",
+        vdj_reference,
+        "--feature_reference",
+        feature_reference,
+        "--library_id",
+        "non_existing_library_id;5k_human_antiCMV_T_TBNK_connect_AB_subset;5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
+        "--library_type",
+        "Gene Expression;Antibody Capture;VDJ",
+    ]
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args)
+    assert re.search(
+        r"The following library IDs have no matching FASTQ files in any input directory: \['non_existing_library_id'\]. Check that --library_id values match the FASTQ file names.",
+        err.value.stdout.decode("utf-8"),
+    )
 
 
 if __name__ == "__main__":
