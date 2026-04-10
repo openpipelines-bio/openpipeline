@@ -38,15 +38,47 @@ from setup_logger import setup_logger
 logger = setup_logger()
 
 
-def _resolve_gene_set(gs):
-    """Return gs unchanged if it is an Enrichr library name or an existing path.
-    Inside a Docker container viash mounts host paths under /viash_automount/.
-    If gs looks like an absolute path but doesn't exist, try the automounted path."""
+def _resolve_gene_set(gs, input_paths=None):
+    """Return the accessible path for a GMT file, or gs unchanged for Enrichr names.
+
+    Inside a Docker container viash mounts the host filesystem under /viash_automount.
+    File-type arguments (--input, --input_degenes) are automatically converted to their
+    /viash_automount/... paths, but string-type arguments like --gene_sets are not.
+
+    Strategy:
+    1. If gs is already an accessible file path, return it as-is.
+    2. If absolute: prepend /viash_automount.
+    3. If relative: walk up the directory tree of each known automounted input path
+       until the relative path resolves to an existing file (finds the host CWD).
+    4. Fall through: treat as an Enrichr library name.
+    """
     if os.path.isfile(gs):
         return gs
-    automounted = "/viash_automount" + gs
-    if os.path.isfile(automounted):
-        return automounted
+
+    mount_root = "/viash_automount"
+    if not os.path.isdir(mount_root):
+        return gs  # not running inside Docker
+
+    if os.path.isabs(gs):
+        candidate = mount_root + gs
+        if os.path.isfile(candidate):
+            return candidate
+        return gs
+
+    # Relative path: infer host CWD by walking up from automounted input paths
+    for inp in (input_paths or []):
+        if not (inp and inp.startswith(mount_root)):
+            continue
+        d = os.path.dirname(inp)
+        while d and d != mount_root:
+            candidate = os.path.join(d, gs)
+            if os.path.isfile(candidate):
+                return candidate
+            parent = os.path.dirname(d)
+            if parent == d:
+                break
+            d = parent
+
     return gs  # treat as Enrichr library name
 
 
@@ -147,7 +179,8 @@ def main():
     os.makedirs(par["output_csv_dir"], exist_ok=True)
 
     n_jobs = max(1, (meta.get("cpus") or 1))
-    gene_sets = [_resolve_gene_set(gs) for gs in par["gene_sets"]]
+    input_paths = [par.get("input"), par.get("input_degenes")]
+    gene_sets = [_resolve_gene_set(gs, input_paths=input_paths) for gs in par["gene_sets"]]
 
     if par["method"] == "prerank":
         enrichment_results = _run_prerank(de, gene_sets, par["output_csv_dir"], par, n_jobs)

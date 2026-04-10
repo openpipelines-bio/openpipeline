@@ -147,6 +147,7 @@ engines:
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
         packages:
+          - scipy
           - scikit-learn
     test_setup:
       - type: python

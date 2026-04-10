@@ -6,8 +6,8 @@ description: |
   pseudotime to reveal which cell subpopulations expand or contract along a disease trajectory.
 
   For each participant the median single-cell pseudotime is used as a scalar pseudotime
-  coordinate.  A LinearGAM (pygam) with a B-spline smooth is then fitted per subpopulation
-  using participant-level proportions as the response.
+  coordinate.  A UnivariateSpline is then fitted per subpopulation using participant-level
+  proportions as the response.
 
   Results are stored per subpopulation in `.uns[--uns_output]`:
     - `pseudotime_grid`    — evenly-spaced pseudotime values used for prediction
@@ -132,6 +132,8 @@ engines:
           - procps
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
+        packages:
+          - scipy
     test_setup:
       - type: python
         __merge__: [/src/base/requirements/viashpy.yaml, .]

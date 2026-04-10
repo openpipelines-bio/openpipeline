@@ -2,7 +2,7 @@
 # Generates synthetic per-sample h5mu files and a reference h5mu for testing
 # the beyond/atlas_building workflow.
 #
-# Produces: resources_test/beyond_atlas_test/
+# Produces: resources_test/beyond_test_data/
 #   donor_01.h5mu … donor_04.h5mu  — 180 cells × 500 genes, raw counts, 3 cell types
 #                                     var["gene_symbol"]: GENE00000…GENE00486 + 13 MT- genes
 #   reference.h5mu                 — 90 cells × 500 genes, raw counts, obs["cell_type"]
@@ -15,7 +15,7 @@ set -eo pipefail
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
 
-OUT="resources_test/beyond_atlas_test"
+OUT="resources_test/beyond_test_data"
 mkdir -p "$OUT"
 
 python3 - <<'PYEOF'
@@ -26,7 +26,7 @@ import anndata as ad
 import mudata as mu
 from scipy.sparse import csr_matrix
 
-out = "resources_test/beyond_atlas_test"
+out = "resources_test/beyond_test_data"
 rng = np.random.default_rng(42)
 
 N_GENES = 500

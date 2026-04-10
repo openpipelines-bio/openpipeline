@@ -9,7 +9,7 @@ workflow test_wf {
 
   shared = [
     output:                                  "atlas.h5mu",
-    reference:                               resources_test.resolve("beyond_atlas_test/reference.h5mu"),
+    reference:                               resources_test.resolve("beyond_test_data/reference.h5mu"),
     reference_obs_target:                    "cell_type",
     obs_covariates:                          ["participant_id"],
     highly_variable_features_obs_batch_key:  "participant_id",
@@ -21,10 +21,10 @@ workflow test_wf {
   ]
 
   Channel.fromList([
-    [ id: "donor_01", input: resources_test.resolve("beyond_atlas_test/donor_01.h5mu") ] + shared,
-    [ id: "donor_02", input: resources_test.resolve("beyond_atlas_test/donor_02.h5mu") ] + shared,
-    [ id: "donor_03", input: resources_test.resolve("beyond_atlas_test/donor_03.h5mu") ] + shared,
-    [ id: "donor_04", input: resources_test.resolve("beyond_atlas_test/donor_04.h5mu") ] + shared,
+    [ id: "donor_01", input: resources_test.resolve("beyond_test_data/donor_01.h5mu") ] + shared,
+    [ id: "donor_02", input: resources_test.resolve("beyond_test_data/donor_02.h5mu") ] + shared,
+    [ id: "donor_03", input: resources_test.resolve("beyond_test_data/donor_03.h5mu") ] + shared,
+    [ id: "donor_04", input: resources_test.resolve("beyond_test_data/donor_04.h5mu") ] + shared,
   ])
   | map { state -> [state.id, state] }
   | atlas_building

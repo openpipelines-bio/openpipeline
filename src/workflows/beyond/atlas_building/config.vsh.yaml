@@ -220,7 +220,7 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf
-  - path: /resources_test/beyond_atlas_test
+  - path: /resources_test/beyond_test_data
 
 runners:
   - type: nextflow
