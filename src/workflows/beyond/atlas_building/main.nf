@@ -76,6 +76,7 @@ workflow run_wf {
         ]
       }
     | concatenate_h5mu.run(
+        key: "concatenate_per_sample",
         fromState: [
           "input":    "input",
           "input_id": "input_id",
@@ -103,6 +104,7 @@ workflow run_wf {
   // ── 4. PCA ─────────────────────────────────────────────────────────────────
   pca_ch = multisample_ch
     | pca.run(
+        key: "pca_atlas",
         args: [ "obsm_output": "X_pca", "output_compression": "gzip" ],
         fromState: { id, state -> [
           "input":     state.input,
@@ -145,7 +147,7 @@ workflow run_wf {
   // ── 7. Split atlas by broad cell type (obs["celltypist_pred"]) ─────────────
   split_ch = annotated_ch
     | split_h5mu.run(
-        args: [ "output": "*.h5mu", "output_compression": "gzip" ],
+        args: [ "output": "split_by_celltype", "output_files": "split_files.csv", "output_compression": "gzip" ],
         fromState: { id, state -> [
           "input":       state.input,
           "obs_feature": state.obs_celltypist_pred,
@@ -159,18 +161,17 @@ workflow run_wf {
       )
     // Expand one event per cell type
     | flatMap { id, state ->
-        def csv_entries = state.split_output_files
-          .splitCsv(strip: true, sep: ",")
-          .findAll { !it[0].startsWith("#") }
-        def header = csv_entries.head()
-        csv_entries.tail().collect { row ->
-          def entry   = [header, row].transpose().collectEntries()
-          def cell_type_id = id + "_" + entry.cell_type
-          [ cell_type_id,
+        def lines  = state.split_output_files.readLines()
+        def header = lines[0].split(",")*.trim()
+        lines.drop(1).findAll { !it.startsWith("#") && !it.isBlank() }.collect { line ->
+          def values = line.split(",")*.trim()
+          def entry  = [header, values].transpose().collectEntries()
+          def subtype_id = id + "_" + entry.name
+          [ subtype_id,
             state + [
               "input":     state.split_output_dir.resolve(entry.filename),
-              "cell_type": entry.cell_type,
-              "_meta":     [ "join_id": id ],
+              "cell_type": entry.name,
+              "_meta":     [ "join_id": state._meta?.join_id ?: id ],
             ]
           ]
         }
@@ -179,7 +180,8 @@ workflow run_wf {
   // ── 8. Per-cell-type: PCA → neighbors → Leiden (subpopulations) ────────────
   pertype_ch = split_ch
     | pca.run(
-        args: [ "obsm_output": "X_pca_celltype", "output_compression": "gzip" ],
+        key: "pca_celltype",
+        args: [ "obsm_output": "X_pca_celltype", "output_compression": "gzip", "overwrite": true ],
         fromState: { id, state -> [
           "input":  state.input,
           "output": state.workflow_output,
@@ -188,12 +190,17 @@ workflow run_wf {
       )
     | neighbors_leiden_umap.run(
         fromState: { id, state -> [
-          "input":           state.input,
-          "obsm_input":      "X_pca_celltype",
-          "leiden_resolution": state.subpop_leiden_resolution,
-          "obs_cluster":     state.obs_subpopulation,
-          "output":          state.workflow_output,
+          "input":                      state.input,
+          "obsm_input":                 "X_pca_celltype",
+          "leiden_resolution":          state.subpop_leiden_resolution,
+          "obs_cluster":                state.obs_subpopulation,
+          "output":                     state.workflow_output,
         ]},
+        args: [
+          "uns_neighbors":              "neighbors",
+          "obsp_neighbor_distances":    "distances",
+          "obsp_neighbor_connectivities": "connectivities",
+        ],
         toState: [ "input": "output" ]
       )
 
@@ -212,6 +219,7 @@ workflow run_wf {
         ]
       }
     | concatenate_h5mu.run(
+        key: "concatenate_final",
         fromState: [
           "input":    "input",
           "input_id": "input_id",

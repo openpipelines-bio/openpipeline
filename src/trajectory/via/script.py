@@ -92,6 +92,29 @@ def main():
     via_core.get_sparse_from_igraph = _patched_get_sparse_from_igraph
     via_utils.get_sparse_from_igraph = _patched_get_sparse_from_igraph
 
+    # pyVIA bug-fix: _simulate_markov computes P = A / A.sum(axis=1) without guarding
+    # against zero-sum rows (sink nodes in the directed cluster graph).  Such rows produce
+    # NaN probabilities that crash np.random.choice in multiprocessing workers.
+    # Fix: add a self-loop to every zero-sum row so the row normalises to a valid absorbing
+    # state rather than NaN.  This matches the "lazy random walk" semantics VIA intends for
+    # terminal/sink clusters.
+    _orig_simulate_markov = via_core.VIA._simulate_markov
+
+    def _safe_simulate_markov(self_via, A, *args, **kwargs):
+        row_sums = np.array(A.sum(axis=1)).flatten()
+        zero_rows = np.where(row_sums == 0)[0]
+        if zero_rows.size:
+            if hasattr(A, "tolil"):
+                A = A.tolil()
+                A[zero_rows, zero_rows] = 1.0
+                A = A.toarray()  # VIA's _simulate_markov expects a dense array
+            else:
+                A = A.copy()
+                A[zero_rows, zero_rows] = 1.0
+        return _orig_simulate_markov(self_via, A, *args, **kwargs)
+
+    via_core.VIA._simulate_markov = _safe_simulate_markov
+
     v = via_core.VIA(
         data=embedding,
         true_label=cluster_labels,
@@ -100,8 +123,7 @@ def main():
         random_seed=par["random_seed"],
         n_iter_leiden=par["n_iter_leiden"],
         num_threads=meta.get("cpus") or 1,
-        jac_weighted_edges=False,   # disable Jaccard pruning that can empty the graph
-        keep_all_local_dist=True,   # retain all local edges
+        preserve_disconnected=True,   # keep isolated cluster-graph components intact
     )
     v.run_VIA()
     logger.info("VIA run complete.")
@@ -119,7 +141,7 @@ def main():
     adata.uns[par["uns_graph"]] = {
         "source": [int(e[0]) for e in edge_list],
         "target": [int(e[1]) for e in edge_list],
-        "weight": [float(e[2]) for e in edge_list],
+        "weight": [float(e[2]) if len(e) > 2 else 1.0 for e in edge_list],
     }
     logger.info("Stored VIA graph with %d edges in .uns['%s'].", len(edge_list), par["uns_graph"])
 

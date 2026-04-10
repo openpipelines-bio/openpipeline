@@ -116,9 +116,11 @@ argument_groups:
         description: .var column to flag highly variable features.
       - name: "--highly_variable_features_obs_batch_key"
         type: string
-        default: "sample_id"
+        default: "participant_id"
         required: false
-        description: .obs batch key for per-batch HVF selection.
+        description: |
+          .obs batch key for per-batch HVF selection. Defaults to "participant_id",
+          which is the column written by add_id (see --obs_participant_id).
       - name: "--highly_variable_features_n_top_features"
         type: integer
         required: false
@@ -130,10 +132,10 @@ argument_groups:
         type: string
         multiple: true
         required: true
-        example: ["sample_id"]
+        example: ["participant_id"]
         description: |
           .obs column(s) to regress out during Harmony integration.
-          Must include the participant/batch column (e.g. sample_id).
+          Must include the participant/batch column (e.g. participant_id).
       - name: "--leiden_resolution"
         type: double
         multiple: true
@@ -213,6 +215,12 @@ resources:
     entrypoint: run_wf
   - type: file
     path: /src/workflows/utils/
+
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - path: /resources_test/beyond_atlas_test
 
 runners:
   - type: nextflow

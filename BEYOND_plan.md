@@ -272,14 +272,14 @@ uncovering trajectories of brain aging via coordinated cellular community dynami
 | `mapping/cellranger_multi` | Outputs a folder, not h5mu | Follow with `convert/from_cellranger_multi_to_h5mu` using the raw matrix; cellbender then runs on the resulting raw h5mu |
 | `annotate/celltypist` | Output stored as `obs["celltypist_pred"]`, not `obs["cell_type"]` | Add `metadata/move_obsm_to_obs` or direct rename step before `dataflow/split_h5mu`; also requires a pretrained `--model` (.pkl) or a `--reference` h5mu with `--reference_obs_target` |
 
-### Not available — must be built (8 new components)
+### New components (all built)
 
 | # | Component | Namespace | Method | Language |
 |---|---|---|---|---|
 | 1 | `calculate_proportions` | `metadata/` | Group-by aggregation (participant × subpopulation) | Python |
 | 2 | `phate` | `dimred/` | PHATE embedding (KrishnaswamyLab/phate) | Python |
 | 3 | `palantir` | `trajectory/` | Pseudotime + fate probabilities (palantir package) | Python |
-| 4 | `via` | `trajectory/` | Trajectory inference (pyVIA package) | Python | **BLOCKED** — pyVIA 0.2.4 has hard incompatibilities with scipy>=1.12 (required by anndata) and numpy>=2. See [blocking issues](#trajectory-via-blocked). |
+| 4 | `via` | `trajectory/` | Trajectory inference (pyVIA package) | Python |
 | 5 | `pseudotime_dynamics` | `trajectory/` | GAM fits of proportions along pseudotime (pygam / mgcv) | Python/R |
 | 6 | `cellular_communities` | `cluster/` | Co-occurrence + dynamics similarity → community clustering | Python |
 | 7 | `pathway_enrichment` | `interpret/` | GSEA / ORA (gseapy, MSigDB/GO/KEGG) | Python |
@@ -289,9 +289,9 @@ uncovering trajectories of brain aging via coordinated cellular community dynami
 
 ## Implementation Plan
 
-### Phase 1 — Proportion matrix (prerequisite for everything BEYOND)
+### Phase 1 — Proportion matrix (prerequisite for everything BEYOND) [DONE]
 
-**`metadata/calculate_proportions`** — ~1 day
+**`metadata/calculate_proportions`**
 
 - Input: h5mu with `obs["participant_id"]` and `obs["subpopulation"]`
 - Output: h5mu with participant × subpopulation proportion matrix in `uns["proportions"]`
@@ -300,7 +300,7 @@ uncovering trajectories of brain aging via coordinated cellular community dynami
 
 ---
 
-### Phase 2 — PHATE landscape (`dimred/phate`)  — ~1 day
+### Phase 2 — PHATE landscape (`dimred/phate`) [DONE]
 
 - Input: h5mu, `--obsm_input` key (e.g. `X_pca` or `proportions`)
 - Output: h5mu with `obsm["X_phate"]`
@@ -310,9 +310,9 @@ uncovering trajectories of brain aging via coordinated cellular community dynami
 
 ---
 
-### Phase 3 — Trajectory inference
+### Phase 3 — Trajectory inference [DONE]
 
-**`trajectory/palantir`** — ~3 days
+**`trajectory/palantir`**
 
 - Input: h5mu, `--obsm_key` (X_phate recommended), `--start_cell` or `--start_cell_cluster`
 - Output: h5mu with `obs["palantir_pseudotime"]`, `obsm["palantir_fate_probabilities"]`,
@@ -322,14 +322,14 @@ uncovering trajectories of brain aging via coordinated cellular community dynami
   `n_jobs`, `scale_components`
 - Note: use `reticulate`-free pure Python; write output back with anndata
 
-**`trajectory/via`** — ~2 days
+**`trajectory/via`**
 
 - Input: h5mu, `--obsm_key`, `--root_user` (cluster label or cell ID)
 - Output: h5mu with `obs["via_pseudotime"]`, `uns["via_graph"]`
 - Package: `pyVIA` (pip)
 - Serve as validation/alternative to Palantir; both can run in parallel in workflow
 
-**`trajectory/pseudotime_dynamics`** — ~3 days
+**`trajectory/pseudotime_dynamics`**
 
 - Input: h5mu with `obs["palantir_pseudotime"]` and `uns["proportions"]`
 - Output: h5mu with `uns["dynamics"]`:
@@ -341,7 +341,7 @@ uncovering trajectories of brain aging via coordinated cellular community dynami
 
 ---
 
-### Phase 4 — BEYOND core (`cluster/cellular_communities`) — ~5 days
+### Phase 4 — BEYOND core (`cluster/cellular_communities`) [DONE]
 
 The novel BEYOND method itself:
 
@@ -361,9 +361,9 @@ The novel BEYOND method itself:
 
 ---
 
-### Phase 5 — Supporting analyses
+### Phase 5 — Supporting analyses [DONE]
 
-**`interpret/pathway_enrichment`** — ~2 days
+**`interpret/pathway_enrichment`**
 
 - Input: DE result table (CSV from deseq2), gene set GMT file or database name
 - Output: h5mu `uns["pathway_enrichment"]` + CSV result table
@@ -371,7 +371,7 @@ The novel BEYOND method itself:
 - Key params: `--gene_set` (MSigDB_Hallmark, GO_Biological_Process, KEGG…),
   `--method` (gsea / enrichr / ora), `--fc_column`, `--pval_column`
 
-**`stats/trait_associations`** — ~3 days  *(new namespace `stats/`)*
+**`stats/trait_associations`** *(new namespace `stats/`)*
 
 - Input: h5mu with proportion matrix + community assignments, clinical trait CSV
   (participant_id + trait columns)
@@ -381,62 +381,38 @@ The novel BEYOND method itself:
 
 ---
 
-### Phase 6 — Nextflow workflows — ~3 days
+### Phase 6 — Nextflow workflows
 
-New workflow directory: `src/workflows/beyond/`
+Consolidated to two workflows under `src/workflows/beyond/`:
 
 ```
 src/workflows/beyond/
-  config.vsh.yaml
-  1_preprocessing.nf          cellranger_multi → from_cellranger_multi_to_h5mu → cellbender → qc → filter → scrublet
-  2_cell_type_atlas.nf        normalize → HVF → pca → harmonypy → neighbors → leiden
-                              → celltypist (+ rename obs["celltypist_pred"] → obs["cell_type"]) → split
-                              → per-type leiden → concatenate → calculate_proportions
-  3_landscape.nf              phate
-  4_trajectories.nf           palantir → pseudotime_dynamics  (+ via in parallel for validation)
-  5_communities.nf            cellular_communities
-  6_associations.nf           pathway_enrichment + trait_associations
-  beyond.nf                   master workflow chaining 1→2→3→4→5→6
+  atlas_building/   [DONE]   per-sample h5mu → add_id → rna_singlesample (QC/filter/scrublet)
+                             → concatenate → rna_multisample (normalize/HVF) → pca → harmony_leiden
+                             → celltypist → split_h5mu → per-cell-type pca/leiden → concatenate
+                             → final atlas with obs["subpopulation"]
+
+  trajectory_analysis/  [TODO]   atlas h5mu → calculate_proportions → phate
+                                 → palantir + via (parallel) → pseudotime_dynamics
+                                 → cellular_communities → pathway_enrichment + trait_associations
 ```
 
 ---
 
-## Build Order & Effort
+## Build Order
 
-| # | Component | Effort | Depends on | Priority |
+| # | Component | Depends on | Priority | Status |
 |---|---|---|---|---|
-| 1 | `metadata/calculate_proportions` | 1 day | atlas h5mu | Critical |
-| 2 | `dimred/phate` | 1 day | proportions | Critical |
-| 3 | `trajectory/palantir` | 3 days | phate | Critical |
-| 5 | `trajectory/pseudotime_dynamics` | 3 days | palantir | Critical |
-| 6 | `cluster/cellular_communities` | 5 days | pseudotime_dynamics | Critical |
-| 7 | `interpret/pathway_enrichment` | 2 days | deseq2 output | High |
-| 4 | `trajectory/via` | 2 days | phate | ~~Medium~~ **BLOCKED** |
-| 8 | `stats/trait_associations` | 3 days | communities | Medium |
-| — | Workflows | 3 days | all components | Last |
-| **Total** | | **~23 days** | | |
-
-Components 1–6 are the **critical path**. Components 7, 8, and workflows can be
-parallelized once the critical path is unblocked. Component 4 is blocked (see below).
-
----
-
-## trajectory/via — BLOCKED {#trajectory-via-blocked}
-
-**Status**: Skipped — pyVIA 0.2.4 is incompatible with the anndata base stack.
-
-| Issue | Detail |
-|---|---|
-| `numpy.bool8` removed in NumPy 2.x | `nptyping` (pyVIA dep) uses `np.bool8`; requires `numpy<2` |
-| `scipy>=1.12` required by anndata | pyVIA's `csr_matrix(zip(*edges))` breaks with newer scipy API when edge lists are empty after Jaccard pruning |
-| Markov NaN crash | Even after patching `get_sparse_from_igraph`, isolated nodes in pruned graph → zero row-sum → NaN transition probabilities → `_simulate_markov` crashes |
-
-**Resolution options (future)**:
-1. Check whether the original BEYOND_DLPFC R code uses pyVIA or an R-native tool (slingshot / monocle3); if R-native, rewrite as `r_script`
-2. Wait for a pyVIA release that supports scipy>=1.12
-3. Pin `scipy<1.11` in a separate Docker image (breaks anndata base stack sharing)
-
-Palantir (`trajectory/palantir`) fully covers the pseudotime requirement for the BEYOND critical path.
+| 1 | `metadata/calculate_proportions` | atlas h5mu | Critical | Done |
+| 2 | `dimred/phate` | proportions | Critical | Done |
+| 3 | `trajectory/palantir` | phate | Critical | Done |
+| 5 | `trajectory/pseudotime_dynamics` | palantir | Critical | Done |
+| 6 | `cluster/cellular_communities` | pseudotime_dynamics | Critical | Done |
+| 7 | `interpret/pathway_enrichment` | deseq2 output | High | Done |
+| 4 | `trajectory/via` | phate | Medium | Done |
+| 8 | `stats/trait_associations` | communities | Medium | Done |
+| — | `beyond/atlas_building` workflow | all components | Last | Done |
+| — | `beyond/trajectory_analysis` workflow | all components | Last | TODO |
 
 ---
 
@@ -446,8 +422,7 @@ The right split:
 
 1. ingestion/cellranger_multi (EXISTS) — FASTQs → per-sample h5mu
 2. ingestion/cellranger_postprocessing (EXISTS) — cellbender + initial filter
-3. beyond/atlas_building (NEW, done ↑) — per-sample h5mu → atlas with obs["subpopulation"]
-4. beyond/trajectory_analysis (NEW, to build) — atlas → BEYOND outputs
+3. beyond/atlas_building (DONE) — per-sample h5mu → atlas with obs["subpopulation"]
+4. beyond/trajectory_analysis (TODO) — atlas → BEYOND outputs
 
 Key reasons: atlas_building is useful for any snRNA-seq project (not BEYOND-specific); trajectory_analysis can be applied to any existing atlas; Nextflow -resume works at sub-workflow boundaries; cellranger version bumps don't touch trajectory code.
-

@@ -348,6 +348,23 @@ def concatenate_modalities(
         )
         mu.write_h5ad(output_file_uncompressed, data=new_mod, mod=mod_name)
 
+    # mu.write_h5ad only updates the modality slot in the h5mu file; the global
+    # obs/var/obsm/varm/obsmap/varmap are still from the initial empty mdata.write() (shape 0).
+    # Reconstruct them so that mu.read_h5mu() works correctly downstream.
+    mod_anndatas_for_global = {
+        mod_name: mu.read_h5ad(output_file_uncompressed, mod=mod_name)
+        for mod_name in modalities
+    }
+    if mod_anndatas_for_global:
+        mudata_global = mu.MuData(mod_anndatas_for_global)
+        with H5File(output_file_uncompressed, "r+") as h5f:
+            anndata.experimental.write_elem(h5f, "obs", mudata_global.obs)
+            anndata.experimental.write_elem(h5f, "var", mudata_global.var)
+            anndata.experimental.write_elem(h5f, "obsm", dict(mudata_global.obsm))
+            anndata.experimental.write_elem(h5f, "varm", dict(mudata_global.varm))
+            anndata.experimental.write_elem(h5f, "obsmap", dict(mudata_global.obsmap))
+            anndata.experimental.write_elem(h5f, "varmap", dict(mudata_global.varmap))
+
     if compression:
         compress_h5mu(output_file_uncompressed, output_file, compression=compression)
         output_file_uncompressed.unlink()
