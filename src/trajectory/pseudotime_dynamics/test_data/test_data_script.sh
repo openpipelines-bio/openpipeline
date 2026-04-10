@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test data for trajectory/pseudotime_dynamics.
-# Delegates to resources_test_scripts/beyond_test_data.sh.
+# Delegates to resources_test_scripts/beyond_trajectory_test_data.sh.
 # Input: resources_test/beyond_test_data/pseudotime_output.h5mu
 #   (has obs["palantir_pseudotime"] and uns["proportions"],
 #    as produced by trajectory/palantir after metadata/calculate_proportions)
@@ -16,7 +16,7 @@ BEYOND_DIR="${REPO_ROOT}/resources_test/beyond_test_data"
 
 if [[ ! -f "${BEYOND_DIR}/pseudotime_output.h5mu" ]]; then
   echo "Generating BEYOND test data..."
-  bash "${REPO_ROOT}/resources_test_scripts/beyond_test_data.sh"
+  bash "${REPO_ROOT}/resources_test_scripts/beyond_trajectory_test_data.sh"
 fi
 
 echo "Test data for trajectory/pseudotime_dynamics:"

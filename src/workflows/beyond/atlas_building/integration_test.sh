@@ -6,7 +6,7 @@ cd "$REPO_ROOT"
 
 # Generate test data if needed
 if [[ ! -f resources_test/beyond_atlas_test/donor_01.h5mu ]]; then
-  bash resources_test_scripts/beyond_atlas_test_data.sh
+  bash resources_test_scripts/beyond_atlas_building_test_data.sh
 fi
 
 nextflow run . \

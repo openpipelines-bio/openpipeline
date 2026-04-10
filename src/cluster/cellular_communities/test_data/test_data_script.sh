@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test data for cluster/cellular_communities.
-# Delegates to resources_test_scripts/beyond_test_data.sh.
+# Delegates to resources_test_scripts/beyond_trajectory_test_data.sh.
 # Input: resources_test/beyond_test_data/dynamics_output.h5mu
 #   (has uns["proportions"] and uns["dynamics"],
 #    as produced by trajectory/pseudotime_dynamics)
@@ -16,7 +16,7 @@ BEYOND_DIR="${REPO_ROOT}/resources_test/beyond_test_data"
 
 if [[ ! -f "${BEYOND_DIR}/dynamics_output.h5mu" ]]; then
   echo "Generating BEYOND test data..."
-  bash "${REPO_ROOT}/resources_test_scripts/beyond_test_data.sh"
+  bash "${REPO_ROOT}/resources_test_scripts/beyond_trajectory_test_data.sh"
 fi
 
 echo "Test data for cluster/cellular_communities:"

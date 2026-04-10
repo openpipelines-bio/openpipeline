@@ -8,7 +8,7 @@
 #   reference.h5mu                 — 90 cells × 500 genes, raw counts, obs["cell_type"]
 #                                     same var["gene_symbol"] layout as donor files
 #
-# Usage: bash resources_test_scripts/beyond_atlas_test_data.sh
+# Usage: bash resources_test_scripts/beyond_atlas_building_test_data.sh
 
 set -eo pipefail
 

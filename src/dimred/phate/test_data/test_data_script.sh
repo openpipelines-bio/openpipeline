@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test data for dimred/phate.
-# Delegates to resources_test_scripts/beyond_test_data.sh.
+# Delegates to resources_test_scripts/beyond_trajectory_test_data.sh.
 # Input: resources_test/beyond_test_data/proportions_output.h5mu
 #   (has obsm["proportions"] — participant-proportions broadcast per cell,
 #    as produced by metadata/calculate_proportions)
@@ -16,7 +16,7 @@ BEYOND_DIR="${REPO_ROOT}/resources_test/beyond_test_data"
 
 if [[ ! -f "${BEYOND_DIR}/proportions_output.h5mu" ]]; then
   echo "Generating BEYOND test data..."
-  bash "${REPO_ROOT}/resources_test_scripts/beyond_test_data.sh"
+  bash "${REPO_ROOT}/resources_test_scripts/beyond_trajectory_test_data.sh"
 fi
 
 echo "Test data for dimred/phate:"

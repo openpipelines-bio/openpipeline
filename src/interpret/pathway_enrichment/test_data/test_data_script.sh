@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test data for interpret/pathway_enrichment.
-# Delegates to resources_test_scripts/beyond_test_data.sh.
+# Delegates to resources_test_scripts/beyond_trajectory_test_data.sh.
 # Inputs:
 #   resources_test/beyond_test_data/atlas.h5mu      — h5mu with gene names GENE00000–GENE01999
 #   resources_test/beyond_test_data/de_ExN.csv      — DESeq2 results (same gene names)
@@ -17,7 +17,7 @@ BEYOND_DIR="${REPO_ROOT}/resources_test/beyond_test_data"
 
 if [[ ! -f "${BEYOND_DIR}/atlas.h5mu" ]]; then
   echo "Generating BEYOND test data..."
-  bash "${REPO_ROOT}/resources_test_scripts/beyond_test_data.sh"
+  bash "${REPO_ROOT}/resources_test_scripts/beyond_trajectory_test_data.sh"
 fi
 
 echo "Test data for interpret/pathway_enrichment:"

@@ -2,9 +2,10 @@
 # Generates synthetic multi-donor snRNA-seq atlas for testing BEYOND components.
 #
 # Produces: resources_test/beyond_test_data/
-#   atlas.h5mu              — 144 cells × 2000 genes; 8 donors; 3 cell types;
-#                             9 subpopulations (3 per type); obs/obsm ready for
-#                             BEYOND components (calculate_proportions, phate, etc.)
+#   atlas.h5mu              — ~576 cells × 2000 genes; 8 donors; 3 cell types;
+#                             9 subpopulations (3 per type, ~64 cells each, Poisson-variable
+#                             per donor); unique proportion vectors per donor for PHATE;
+#                             sized to pass VIA/Palantir default knn settings
 #   proportions_output.h5mu — atlas + uns["proportions"] + obsm["proportions"]
 #                             (simulates output of metadata/calculate_proportions)
 #   pseudotime_output.h5mu  — proportions_output + obs["palantir_pseudotime"]
@@ -17,7 +18,7 @@
 #   gene_sets.gmt           — tiny local GMT file (6 gene sets) for pathway_enrichment
 #   traits.csv              — synthetic clinical traits table (participant × trait)
 #
-# Usage: bash resources_test_scripts/beyond_test_data.sh
+# Usage: bash resources_test_scripts/beyond_trajectory_test_data.sh
 
 set -eo pipefail
 
@@ -43,7 +44,7 @@ rng = np.random.default_rng(42)
 N_DONORS     = 8
 CELL_TYPES   = ["ExN", "InN", "Ast"]
 SUBPOPS      = {ct: [f"{ct}.{i}" for i in range(1, 4)] for ct in CELL_TYPES}
-CELLS_PER_DONOR_PER_SUBPOP = 2   # 2 × 3 subpops × 3 cell types × 8 donors = 144 cells
+CELLS_PER_DONOR_PER_SUBPOP_MEAN = 8   # Poisson mean; actual counts vary → unique proportions per donor
 N_GENES      = 2000
 
 gene_names   = [f"GENE{i:05d}" for i in range(N_GENES)]
@@ -61,7 +62,8 @@ for ct in CELL_TYPES:
     for sp in SUBPOPS[ct]:
         sp_idx = SUBPOPS[ct].index(sp)
         for donor in donors:
-            for _ in range(CELLS_PER_DONOR_PER_SUBPOP):
+            n_cells = max(4, int(rng.poisson(CELLS_PER_DONOR_PER_SUBPOP_MEAN)))
+            for _ in range(n_cells):
                 expr = rng.negative_binomial(2, 0.5, N_GENES).astype("float32")
                 expr[ct_signature[ct]] += rng.negative_binomial(8, 0.3, sig_size)
                 sp_sig = list(range(300 + sp_idx * 10, 300 + (sp_idx + 1) * 10))
