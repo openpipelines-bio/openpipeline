@@ -87,11 +87,16 @@ def test_move_obs_columns(
     output = random_path(extension="h5mu")
     run_component(
         [
-            "--input_source", str(source_h5mu_path),
-            "--input_target", str(target_h5mu_path),
-            "--source_modality", "rna",
-            "--obs", "cell_type",
-            "--output", str(output),
+            "--input_source",
+            str(source_h5mu_path),
+            "--input_target",
+            str(target_h5mu_path),
+            "--source_modality",
+            "rna",
+            "--obs",
+            "cell_type",
+            "--output",
+            str(output),
         ]
     )
     assert output.is_file()
@@ -121,11 +126,18 @@ def test_move_var_columns(
     output = random_path(extension="h5mu")
     run_component(
         [
-            "--input_source", str(source_h5mu_path),
-            "--input_target", str(target_h5mu_path),
-            "--source_modality", "rna",
-            "--var", "gene_name", "--var", "dispersions",
-            "--output", str(output),
+            "--input_source",
+            str(source_h5mu_path),
+            "--input_target",
+            str(target_h5mu_path),
+            "--source_modality",
+            "rna",
+            "--var",
+            "gene_name",
+            "--var",
+            "dispersions",
+            "--output",
+            str(output),
         ]
     )
     rna = mu.read_h5mu(output).mod["rna"]
@@ -145,12 +157,18 @@ def test_move_obsm_and_uns(
     output = random_path(extension="h5mu")
     run_component(
         [
-            "--input_source", str(source_h5mu_path),
-            "--input_target", str(target_h5mu_path),
-            "--source_modality", "rna",
-            "--obsm", "X_pca",
-            "--uns", "method",
-            "--output", str(output),
+            "--input_source",
+            str(source_h5mu_path),
+            "--input_target",
+            str(target_h5mu_path),
+            "--source_modality",
+            "rna",
+            "--obsm",
+            "X_pca",
+            "--uns",
+            "method",
+            "--output",
+            str(output),
         ]
     )
     rna = mu.read_h5mu(output).mod["rna"]
@@ -172,13 +190,20 @@ def test_move_varm_obsp_varp(
     output = random_path(extension="h5mu")
     run_component(
         [
-            "--input_source", str(source_h5mu_path),
-            "--input_target", str(target_h5mu_path),
-            "--source_modality", "rna",
-            "--varm", "PCs",
-            "--obsp", "distances",
-            "--varp", "correlations",
-            "--output", str(output),
+            "--input_source",
+            str(source_h5mu_path),
+            "--input_target",
+            str(target_h5mu_path),
+            "--source_modality",
+            "rna",
+            "--varm",
+            "PCs",
+            "--obsp",
+            "distances",
+            "--varp",
+            "correlations",
+            "--output",
+            str(output),
         ]
     )
     rna = mu.read_h5mu(output).mod["rna"]
@@ -193,24 +218,33 @@ def test_move_varm_obsp_varp(
     assert rna.varp["correlations"].shape == (3, 3)
 
 
-def test_move_all_slots(
-    run_component, random_path, source_h5mu_path, target_h5mu_path
-):
+def test_move_all_slots(run_component, random_path, source_h5mu_path, target_h5mu_path):
     """Move at least one key from every slot type in a single invocation."""
     output = random_path(extension="h5mu")
     run_component(
         [
-            "--input_source", str(source_h5mu_path),
-            "--input_target", str(target_h5mu_path),
-            "--source_modality", "rna",
-            "--obs", "cell_type",
-            "--var", "gene_name",
-            "--obsm", "X_pca",
-            "--varm", "PCs",
-            "--obsp", "distances",
-            "--varp", "correlations",
-            "--uns", "method",
-            "--output", str(output),
+            "--input_source",
+            str(source_h5mu_path),
+            "--input_target",
+            str(target_h5mu_path),
+            "--source_modality",
+            "rna",
+            "--obs",
+            "cell_type",
+            "--var",
+            "gene_name",
+            "--obsm",
+            "X_pca",
+            "--varm",
+            "PCs",
+            "--obsp",
+            "distances",
+            "--varp",
+            "correlations",
+            "--uns",
+            "method",
+            "--output",
+            str(output),
         ]
     )
     rna = mu.read_h5mu(output).mod["rna"]
@@ -231,11 +265,16 @@ def test_target_modality_defaults_to_source(
     output = random_path(extension="h5mu")
     run_component(
         [
-            "--input_source", str(source_h5mu_path),
-            "--input_target", str(target_h5mu_path),
-            "--source_modality", "rna",
-            "--obs", "cell_type",
-            "--output", str(output),
+            "--input_source",
+            str(source_h5mu_path),
+            "--input_target",
+            str(target_h5mu_path),
+            "--source_modality",
+            "rna",
+            "--obs",
+            "cell_type",
+            "--output",
+            str(output),
         ]
     )
     result = mu.read_h5mu(output)
@@ -262,12 +301,18 @@ def test_cross_modality_move(
     output = random_path(extension="h5mu")
     run_component(
         [
-            "--input_source", str(source_path),
-            "--input_target", str(target_path),
-            "--source_modality", "rna",
-            "--target_modality", "prot",
-            "--obs", "cell_type",
-            "--output", str(output),
+            "--input_source",
+            str(source_path),
+            "--input_target",
+            str(target_path),
+            "--source_modality",
+            "rna",
+            "--target_modality",
+            "prot",
+            "--obs",
+            "cell_type",
+            "--output",
+            str(output),
         ]
     )
     result = mu.read_h5mu(output)
@@ -283,11 +328,16 @@ def test_missing_obs_column_raises_error(
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(
             [
-                "--input_source", str(source_h5mu_path),
-                "--input_target", str(target_h5mu_path),
-                "--source_modality", "rna",
-                "--obs", "nonexistent_column",
-                "--output", str(output),
+                "--input_source",
+                str(source_h5mu_path),
+                "--input_target",
+                str(target_h5mu_path),
+                "--source_modality",
+                "rna",
+                "--obs",
+                "nonexistent_column",
+                "--output",
+                str(output),
             ]
         )
     assert re.search(
@@ -304,11 +354,16 @@ def test_missing_obsm_key_raises_error(
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(
             [
-                "--input_source", str(source_h5mu_path),
-                "--input_target", str(target_h5mu_path),
-                "--source_modality", "rna",
-                "--obsm", "X_umap",
-                "--output", str(output),
+                "--input_source",
+                str(source_h5mu_path),
+                "--input_target",
+                str(target_h5mu_path),
+                "--source_modality",
+                "rna",
+                "--obsm",
+                "X_umap",
+                "--output",
+                str(output),
             ]
         )
     assert re.search(
@@ -325,11 +380,16 @@ def test_missing_source_modality_raises_error(
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(
             [
-                "--input_source", str(source_h5mu_path),
-                "--input_target", str(target_h5mu_path),
-                "--source_modality", "nonexistent",
-                "--obs", "cell_type",
-                "--output", str(output),
+                "--input_source",
+                str(source_h5mu_path),
+                "--input_target",
+                str(target_h5mu_path),
+                "--source_modality",
+                "nonexistent",
+                "--obs",
+                "cell_type",
+                "--output",
+                str(output),
             ]
         )
     assert re.search(
@@ -360,11 +420,16 @@ def test_overwrites_existing_slot(
     output = random_path(extension="h5mu")
     run_component(
         [
-            "--input_source", str(source_path),
-            "--input_target", str(target_path),
-            "--source_modality", "rna",
-            "--obs", "cell_type",
-            "--output", str(output),
+            "--input_source",
+            str(source_path),
+            "--input_target",
+            str(target_path),
+            "--source_modality",
+            "rna",
+            "--obs",
+            "cell_type",
+            "--output",
+            str(output),
         ]
     )
     rna = mu.read_h5mu(output).mod["rna"]
