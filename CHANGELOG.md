@@ -12,7 +12,7 @@
 
 * `dimred/pca`: added possibility to do chunked processing using arguments `chunks` and `chunk_size`. Also added a `seed` argument in order to better control the variability between executions (PR #1157).
 
-* `workflows/multiomics/process_singlesample`: New workflow for processing RNA, protein and GDO modalities of individual samples. This functionality was extracted from `process_samples` into a reusable subworkflow (PR #1147).
+* `workflows/multiomics/process_singlesample`: New workflow for processing RNA, protein and GDO modalities of individual samples (PR #1147).
 
 ## MAJOR CHANGES
 
@@ -28,7 +28,7 @@
 
 * Bump viash to 0.9.7 (PR #1145)
 
-* `workflows/multiomics/process_samples`: Refactored to use the new `process_singlesample` subworkflow (PR #1147).
+* `workflows/multiomics/process_samples`: refactored to use a shared `process_singlesample_base` subworkflow, which is also used by the new `process_singlesample` workflow to avoid code duplication (PR #1147).
 
 ## BUG FIXES
 
