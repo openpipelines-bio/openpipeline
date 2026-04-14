@@ -10,6 +10,8 @@
 
 * `filter/filter_with_quantile`: added a component to filter numerical .obs or .var columns based on quantile thresholds, with optional subsetting (PR #1146).
 
+* `dimred/pca`: added possibility to do chunked processing using arguments `chunks` and `chunk_size`. Also added a `seed` argument in order to better control the variability between executions (PR #1157).
+
 * `workflows/multiomics/process_singlesample`: New workflow for processing RNA, protein and GDO modalities of individual samples. This functionality was extracted from `process_samples` into a reusable subworkflow (PR #1147).
 
 ## MAJOR CHANGES
@@ -22,11 +24,11 @@
 
 * `qc/calculate_qc_metrics`: bump python version to `3.13` (PR #1140).
 
-* `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137).
-
-* `workflows/multiomics/process_samples`: Refactored to use the new `process_singlesample` subworkflow (PR #1147).
+* `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137)
 
 * Bump viash to 0.9.7 (PR #1145)
+
+* `workflows/multiomics/process_samples`: Refactored to use the new `process_singlesample` subworkflow (PR #1147).
 
 ## BUG FIXES
 
