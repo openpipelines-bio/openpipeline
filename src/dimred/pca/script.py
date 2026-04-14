@@ -1,6 +1,7 @@
 import scanpy as sc
 import mudata as mu
 import sys
+import pandas as pd
 from anndata import AnnData
 
 ## VIASH START
@@ -17,6 +18,8 @@ par = {
     "uns_output": "pca_variance",
     "overwrite": True,
 }
+
+meta = {"resources_dir": "src/utils"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -31,11 +34,24 @@ data = mu.read_h5ad(par["input"], mod=par["modality"])
 logger.info("Computing PCA components for modality '%s'", par["modality"])
 if par["layer"] and par["layer"] not in data.layers:
     raise ValueError(f"{par['layer']} was not found in modality {par['modality']}.")
-layer = data.X if not par["layer"] else data.layers[par["layer"]]
-adata_input_layer = AnnData(layer)
-adata_input_layer.var.index = data.var.index
 
-use_highly_variable = False
+chunked, chunk_size = par["chunked"], par["chunk_size"]
+if chunked:
+    if not chunk_size:
+        raise ValueError(
+            "Requested to perform an incremental PCA "
+            "('chunked'), but the chunk size is not set."
+        )
+    if chunk_size < par["num_components"]:
+        raise ValueError(
+            f"The requested chunk size ({chunk_size}) must not be smaller "
+            f"than the number of components ({par['num_components']})"
+        )
+
+layer = data.X if not par["layer"] else data.layers[par["layer"]]
+adata_input_layer = AnnData(layer, var=pd.DataFrame([], index=data.var.index))
+
+mask_var = None
 if par["var_input"]:
     if par["var_input"] not in data.var.columns:
         raise ValueError(
@@ -43,15 +59,18 @@ if par["var_input"]:
             "as a selection of genes to run the PCA on, "
             f"but the column is not available for modality {par['modality']}"
         )
-    use_highly_variable = True
-    adata_input_layer.var["highly_variable"] = data.var[par["var_input"]]
+    mask_var = data.var[par["var_input"]]
 
 # run pca
-output_adata = sc.tl.pca(
+sc.tl.pca(
     adata_input_layer,
     n_comps=par["num_components"],
-    copy=True,
-    use_highly_variable=use_highly_variable,
+    copy=False,  # A copy was already created
+    return_info=True,
+    mask_var=mask_var,
+    chunked=chunked,
+    chunk_size=chunk_size,
+    random_state=par["seed"],
 )
 
 # store output in specific objects
@@ -70,11 +89,11 @@ for parameter_name, field in check_exist_dict.items():
             )
         del getattr(data, field)[par[parameter_name]]
 
-data.obsm[par["obsm_output"]] = output_adata.obsm["X_pca"]
-data.varm[par["varm_output"]] = output_adata.varm["PCs"]
+data.obsm[par["obsm_output"]] = adata_input_layer.obsm["X_pca"]
+data.varm[par["varm_output"]] = adata_input_layer.varm["PCs"]
 data.uns[par["uns_output"]] = {
-    "variance": output_adata.uns["pca"]["variance"],
-    "variance_ratio": output_adata.uns["pca"]["variance_ratio"],
+    "variance": adata_input_layer.uns["pca"]["variance"],
+    "variance_ratio": adata_input_layer.uns["pca"]["variance_ratio"],
 }
 
 
