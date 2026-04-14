@@ -18,6 +18,22 @@ authors:
 argument_groups:
 - name: "Arguments"
   arguments:
+  - type: "string"
+    name: "--output_compression"
+    description: "Compression format to use for the output AnnData and/or Mudata H5\
+      \ files.\nBy default no compression is applied.\n"
+    info: null
+    example:
+    - "gzip"
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "inputs"
+  arguments:
   - type: "file"
     name: "--input"
     alternatives:
@@ -62,6 +78,47 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+- name: "Options"
+  arguments:
+  - type: "integer"
+    name: "--num_components"
+    description: "Number of principal components to compute. Defaults to 50, or 1\
+      \ - minimum dimension size of selected representation."
+    info: null
+    example:
+    - 25
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--chunked"
+    description: "If True, perform an incremental PCA on segments of a predefined\
+      \ size. Setting this flag automatically implies zero centering.\nMust be specified\
+      \ together with --chunk_size.\n"
+    info: null
+    direction: "input"
+  - type: "integer"
+    name: "--chunk_size"
+    description: "Number of observations to include in each chunk. Required if chunked=True\
+      \ was passed.\n"
+    info: null
+    required: false
+    min: 2
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--seed"
+    description: "Used to set the initial states for the optimization. \n"
+    info: null
+    required: false
+    min: 0
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Outputs"
+  arguments:
   - type: "file"
     name: "--output"
     alternatives:
@@ -106,36 +163,11 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "integer"
-    name: "--num_components"
-    description: "Number of principal components to compute. Defaults to 50, or 1\
-      \ - minimum dimension size of selected representation."
-    info: null
-    example:
-    - 25
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
   - type: "boolean_true"
     name: "--overwrite"
     description: "Allow overwriting .obsm, .varm and .uns slots."
     info: null
     direction: "input"
-  - type: "string"
-    name: "--output_compression"
-    description: "Compression format to use for the output AnnData and/or Mudata H5\
-      \ files.\nBy default no compression is applied.\n"
-    info: null
-    example:
-    - "gzip"
-    required: false
-    choices:
-    - "gzip"
-    - "lzf"
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
 resources:
 - type: "python_script"
   path: "script.py"
@@ -147,8 +179,7 @@ resources:
 - type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
-description: "Computes PCA coordinates, loadings and variance decomposition. Uses\
-  \ the implementation of scikit-learn [Pedregosa11].\n"
+description: "Computes PCA coordinates, loadings and variance decomposition.\n"
 test_resources:
 - type: "python_script"
   path: "test.py"
@@ -238,7 +269,7 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "python:3.12-slim"
+  image: "python:3.13-slim"
   target_tag: "integration_build"
   namespace_separator: "/"
   setup:
@@ -260,10 +291,16 @@ engines:
       ).partition(\\\".\\\")[0]) > 2\")"
     upgrade: true
   test_setup:
+  - type: "apt"
+    packages:
+    - "git"
+    interactive: false
   - type: "python"
     user: false
     packages:
     - "viashpy==0.8.0"
+    github:
+    - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -274,7 +311,7 @@ build_info:
   output: "target/executable/dimred/pca"
   executable: "target/executable/dimred/pca/pca"
   viash_version: "0.9.7"
-  git_commit: "451300c9b9fb346b7fad2d6d0108d2ad8f570175"
+  git_commit: "95fae9cdfb16e7390a8ea67214303dc99d3d2445"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

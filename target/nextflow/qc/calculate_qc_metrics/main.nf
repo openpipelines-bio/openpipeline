@@ -3439,7 +3439,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scanpy"
+            "scanpy~=1.11.4"
           ],
           "upgrade" : true
         }
@@ -3452,7 +3452,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.9.7",
-    "git_commit" : "451300c9b9fb346b7fad2d6d0108d2ad8f570175",
+    "git_commit" : "95fae9cdfb16e7390a8ea67214303dc99d3d2445",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

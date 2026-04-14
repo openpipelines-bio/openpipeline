@@ -3074,6 +3074,27 @@ meta = [
       "name" : "Arguments",
       "arguments" : [
         {
+          "type" : "string",
+          "name" : "--output_compression",
+          "description" : "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
+          "example" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "inputs",
+      "arguments" : [
+        {
           "type" : "file",
           "name" : "--input",
           "alternatives" : [
@@ -3122,7 +3143,55 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Options",
+      "arguments" : [
+        {
+          "type" : "integer",
+          "name" : "--num_components",
+          "description" : "Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.",
+          "example" : [
+            25
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         },
+        {
+          "type" : "boolean_true",
+          "name" : "--chunked",
+          "description" : "If True, perform an incremental PCA on segments of a predefined size. Setting this flag automatically implies zero centering.\nMust be specified together with --chunk_size.\n",
+          "direction" : "input"
+        },
+        {
+          "type" : "integer",
+          "name" : "--chunk_size",
+          "description" : "Number of observations to include in each chunk. Required if chunked=True was passed.\n",
+          "required" : false,
+          "min" : 2,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--seed",
+          "description" : "Used to set the initial states for the optimization. \n",
+          "required" : false,
+          "min" : 0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Outputs",
+      "arguments" : [
         {
           "type" : "file",
           "name" : "--output",
@@ -3177,38 +3246,10 @@ meta = [
           "multiple_sep" : ";"
         },
         {
-          "type" : "integer",
-          "name" : "--num_components",
-          "description" : "Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.",
-          "example" : [
-            25
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
           "type" : "boolean_true",
           "name" : "--overwrite",
           "description" : "Allow overwriting .obsm, .varm and .uns slots.",
           "direction" : "input"
-        },
-        {
-          "type" : "string",
-          "name" : "--output_compression",
-          "description" : "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "example" : [
-            "gzip"
-          ],
-          "required" : false,
-          "choices" : [
-            "gzip",
-            "lzf"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
         }
       ]
     }
@@ -3233,7 +3274,7 @@ meta = [
       "dest" : "nextflow_labels.config"
     }
   ],
-  "description" : "Computes PCA coordinates, loadings and variance decomposition. Uses the implementation of scikit-learn [Pedregosa11].\n",
+  "description" : "Computes PCA coordinates, loadings and variance decomposition.\n",
   "test_resources" : [
     {
       "type" : "python_script",
@@ -3341,7 +3382,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.12-slim",
+      "image" : "python:3.13-slim",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3370,10 +3411,20 @@ meta = [
       ],
       "test_setup" : [
         {
+          "type" : "apt",
+          "packages" : [
+            "git"
+          ],
+          "interactive" : false
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
             "viashpy==0.8.0"
+          ],
+          "github" : [
+            "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
         }
@@ -3386,7 +3437,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/pca",
     "viash_version" : "0.9.7",
-    "git_commit" : "451300c9b9fb346b7fad2d6d0108d2ad8f570175",
+    "git_commit" : "95fae9cdfb16e7390a8ea67214303dc99d3d2445",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3445,22 +3496,26 @@ cat > "$tempscript" << VIASHMAIN
 import scanpy as sc
 import mudata as mu
 import sys
+import pandas as pd
 from anndata import AnnData
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
 par = {
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int(r'${VIASH_PAR_NUM_COMPONENTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'chunked': $( if [ ! -z ${VIASH_PAR_CHUNKED+x} ]; then echo "r'${VIASH_PAR_CHUNKED//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'chunk_size': $( if [ ! -z ${VIASH_PAR_CHUNK_SIZE+x} ]; then echo "int(r'${VIASH_PAR_CHUNK_SIZE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int(r'${VIASH_PAR_SEED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'varm_output': $( if [ ! -z ${VIASH_PAR_VARM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_VARM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_output': $( if [ ! -z ${VIASH_PAR_UNS_OUTPUT+x} ]; then echo "r'${VIASH_PAR_UNS_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int(r'${VIASH_PAR_NUM_COMPONENTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'overwrite': $( if [ ! -z ${VIASH_PAR_OVERWRITE+x} ]; then echo "r'${VIASH_PAR_OVERWRITE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'overwrite': $( if [ ! -z ${VIASH_PAR_OVERWRITE+x} ]; then echo "r'${VIASH_PAR_OVERWRITE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3500,11 +3555,24 @@ data = mu.read_h5ad(par["input"], mod=par["modality"])
 logger.info("Computing PCA components for modality '%s'", par["modality"])
 if par["layer"] and par["layer"] not in data.layers:
     raise ValueError(f"{par['layer']} was not found in modality {par['modality']}.")
-layer = data.X if not par["layer"] else data.layers[par["layer"]]
-adata_input_layer = AnnData(layer)
-adata_input_layer.var.index = data.var.index
 
-use_highly_variable = False
+chunked, chunk_size = par["chunked"], par["chunk_size"]
+if chunked:
+    if not chunk_size:
+        raise ValueError(
+            "Requested to perform an incremental PCA "
+            "('chunked'), but the chunk size is not set."
+        )
+    if chunk_size < par["num_components"]:
+        raise ValueError(
+            f"The requested chunk size ({chunk_size}) must not be smaller "
+            f"than the number of components ({par['num_components']})"
+        )
+
+layer = data.X if not par["layer"] else data.layers[par["layer"]]
+adata_input_layer = AnnData(layer, var=pd.DataFrame([], index=data.var.index))
+
+mask_var = None
 if par["var_input"]:
     if par["var_input"] not in data.var.columns:
         raise ValueError(
@@ -3512,15 +3580,18 @@ if par["var_input"]:
             "as a selection of genes to run the PCA on, "
             f"but the column is not available for modality {par['modality']}"
         )
-    use_highly_variable = True
-    adata_input_layer.var["highly_variable"] = data.var[par["var_input"]]
+    mask_var = data.var[par["var_input"]]
 
 # run pca
-output_adata = sc.tl.pca(
+sc.tl.pca(
     adata_input_layer,
     n_comps=par["num_components"],
-    copy=True,
-    use_highly_variable=use_highly_variable,
+    copy=False,  # A copy was already created
+    return_info=True,
+    mask_var=mask_var,
+    chunked=chunked,
+    chunk_size=chunk_size,
+    random_state=par["seed"],
 )
 
 # store output in specific objects
@@ -3539,11 +3610,11 @@ for parameter_name, field in check_exist_dict.items():
             )
         del getattr(data, field)[par[parameter_name]]
 
-data.obsm[par["obsm_output"]] = output_adata.obsm["X_pca"]
-data.varm[par["varm_output"]] = output_adata.varm["PCs"]
+data.obsm[par["obsm_output"]] = adata_input_layer.obsm["X_pca"]
+data.varm[par["varm_output"]] = adata_input_layer.varm["PCs"]
 data.uns[par["uns_output"]] = {
-    "variance": output_adata.uns["pca"]["variance"],
-    "variance_ratio": output_adata.uns["pca"]["variance_ratio"],
+    "variance": adata_input_layer.uns["pca"]["variance"],
+    "variance_ratio": adata_input_layer.uns["pca"]["variance_ratio"],
 }
 
 

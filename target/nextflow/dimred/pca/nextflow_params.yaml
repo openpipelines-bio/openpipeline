@@ -1,15 +1,24 @@
 # Arguments
+# output_compression: "gzip"
+
+# inputs
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # layer: "foo"
 # var_input: "filter_with_hvg"
+
+# Options
+# num_components: 25
+chunked: false
+# chunk_size: 123
+# seed: 123
+
+# Outputs
 # output: "$id.$key.output.h5mu"
 obsm_output: "X_pca"
 varm_output: "pca_loadings"
 uns_output: "pca_variance"
-# num_components: 25
 overwrite: false
-# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
