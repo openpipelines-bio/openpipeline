@@ -65,7 +65,7 @@ disease = np.random.choice(["healthy", "diseased"], size=n_cells, p=[0.5, 0.5])
 sub_ref_adata_final.obs["treatment"] = treatment
 sub_ref_adata_final.obs["disease"] = disease
 
-# Strip raw slot - not needed for annotation and causes compatibility issues
+# Strip raw slot - not needed for annotation and causes compatibility issues between AnnData/MuData versions
 sub_ref_adata_final = sub_ref_adata_final.copy()
 sub_ref_adata_final.raw = None
 
