@@ -1,0 +1,132 @@
+name: move_anndata_slots
+namespace: "dataflow"
+scope: "public"
+description: |
+  Move slots (.obs, .var, .obsm, .varm, .obsp, .varp, .uns) from a modality
+  in a source MuData file into a modality in a target MuData file.
+  The specified slots are copied from the source modality into the target
+  modality, overwriting any existing data at those slots.
+
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: "Source"
+    arguments:
+      - name: "--input_source"
+        type: file
+        description: Source h5mu file to read slots from.
+        direction: input
+        required: true
+        example: source.h5mu
+      - name: "--source_modality"
+        type: string
+        description: Modality in the source h5mu file to read slots from.
+        default: "rna"
+        required: false
+
+  - name: "Target"
+    arguments:
+      - name: "--input_target"
+        type: file
+        description: Target h5mu file to write slots into.
+        direction: input
+        required: true
+        example: target.h5mu
+      - name: "--target_modality"
+        type: string
+        description: |
+          Modality in the target h5mu file to write slots into.
+          Defaults to the value of --source_modality.
+        required: false
+
+  - name: "Slots to move"
+    arguments:
+      - name: "--obs"
+        type: string
+        description: |
+          Column names from .obs to move from the source modality to the
+          target modality. If not provided, .obs is not moved.
+        multiple: true
+        required: false
+      - name: "--var"
+        type: string
+        description: |
+          Column names from .var to move from the source modality to the
+          target modality. If not provided, .var is not moved.
+        multiple: true
+        required: false
+      - name: "--obsm"
+        type: string
+        description: |
+          Keys from .obsm to move from the source modality to the target
+          modality. If not provided, .obsm is not moved.
+        multiple: true
+        required: false
+      - name: "--varm"
+        type: string
+        description: |
+          Keys from .varm to move from the source modality to the target
+          modality. If not provided, .varm is not moved.
+        multiple: true
+        required: false
+      - name: "--obsp"
+        type: string
+        description: |
+          Keys from .obsp to move from the source modality to the target
+          modality. If not provided, .obsp is not moved.
+        multiple: true
+        required: false
+      - name: "--varp"
+        type: string
+        description: |
+          Keys from .varp to move from the source modality to the target
+          modality. If not provided, .varp is not moved.
+        multiple: true
+        required: false
+      - name: "--uns"
+        type: string
+        description: |
+          Keys from .uns to move from the source modality to the target
+          modality. If not provided, .uns is not moved.
+        multiple: true
+        required: false
+
+  - name: "Output"
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file (the target with slots added from the source).
+        direction: output
+        required: true
+        example: output.h5mu
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+    __merge__: [/src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [ singlecpu, lowmem ]
