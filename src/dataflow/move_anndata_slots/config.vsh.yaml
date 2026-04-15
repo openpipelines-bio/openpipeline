@@ -8,7 +8,7 @@ description: |
   modality, overwriting any existing data at those slots.
 
 authors:
-  - __merge__: /src/authors/dorien_roosen.yaml
+  - __merge__: /src/authors/jakub_majercik.yaml
     roles: [ author ]
 
 argument_groups:
@@ -93,6 +93,15 @@ argument_groups:
         multiple: true
         required: false
 
+  - name: "Options"
+    arguments:
+      - name: "--allow_overwrite"
+        type: boolean_true
+        description: |
+          Allow overwriting keys that already exist in the target modality.
+          By default, the component raises an error if a key already exists.
+          When enabled, existing keys are overwritten with a warning.
+
   - name: "Output"
     arguments:
       - name: "--output"
@@ -116,7 +125,7 @@ test_resources:
 
 engines:
   - type: docker
-    image: python:3.12-slim
+    image: python:3.13-slim
     setup:
       - type: apt
         packages:

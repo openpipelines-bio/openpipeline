@@ -341,7 +341,7 @@ def test_missing_obs_column_raises_error(
             ]
         )
     assert re.search(
-        r"ValueError.*\.obs columns were not found.*nonexistent_column",
+        r"ValueError.*\.obs keys were not found.*nonexistent_column",
         err.value.stdout.decode("utf-8"),
     )
 
@@ -398,11 +398,9 @@ def test_missing_source_modality_raises_error(
     )
 
 
-def test_overwrites_existing_slot(
-    run_component, random_path, write_mudata_to_file, source_modality
-):
-    """Moving a column that already exists in the target should overwrite it."""
-    # Target already has a "cell_type" column with different values
+@pytest.fixture
+def overwrite_fixture(write_mudata_to_file, source_modality):
+    """Source and target where target already has a 'cell_type' obs column."""
     target_adata = ad.AnnData(
         pd.DataFrame(
             [[10, 20, 30], [40, 50, 60]],
@@ -416,7 +414,37 @@ def test_overwrites_existing_slot(
     )
     source_path = write_mudata_to_file(mu.MuData({"rna": source_modality}))
     target_path = write_mudata_to_file(mu.MuData({"rna": target_adata}))
+    return source_path, target_path
 
+
+def test_overwrite_errors_by_default(run_component, random_path, overwrite_fixture):
+    """Overwriting an existing key should error when --allow_overwrite is not set."""
+    source_path, target_path = overwrite_fixture
+    output = random_path(extension="h5mu")
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input_source",
+                str(source_path),
+                "--input_target",
+                str(target_path),
+                "--source_modality",
+                "rna",
+                "--obs",
+                "cell_type",
+                "--output",
+                str(output),
+            ]
+        )
+    assert re.search(
+        r"ValueError.*\.obs keys already exist.*cell_type",
+        err.value.stdout.decode("utf-8"),
+    )
+
+
+def test_overwrite_with_allow_flag(run_component, random_path, overwrite_fixture):
+    """With --allow_overwrite, existing keys are overwritten successfully."""
+    source_path, target_path = overwrite_fixture
     output = random_path(extension="h5mu")
     run_component(
         [
@@ -428,12 +456,120 @@ def test_overwrites_existing_slot(
             "rna",
             "--obs",
             "cell_type",
+            "--allow_overwrite",
             "--output",
             str(output),
         ]
     )
     rna = mu.read_h5mu(output).mod["rna"]
     assert list(rna.obs["cell_type"]) == ["T-cell", "B-cell"]
+
+
+def test_move_multiple_obs_columns(
+    run_component, random_path, source_h5mu_path, target_h5mu_path
+):
+    """Move multiple .obs columns in one invocation."""
+    output = random_path(extension="h5mu")
+    run_component(
+        [
+            "--input_source",
+            str(source_h5mu_path),
+            "--input_target",
+            str(target_h5mu_path),
+            "--source_modality",
+            "rna",
+            "--obs",
+            "cell_type",
+            "--obs",
+            "score",
+            "--output",
+            str(output),
+        ]
+    )
+    rna = mu.read_h5mu(output).mod["rna"]
+    assert "cell_type" in rna.obs.columns
+    assert "score" in rna.obs.columns
+    assert list(rna.obs["cell_type"]) == ["T-cell", "B-cell"]
+    assert list(rna.obs["score"]) == [0.9, 0.8]
+
+
+def test_move_multiple_obsm_keys(
+    run_component, random_path, write_mudata_to_file, target_modality
+):
+    """Move multiple .obsm keys in one invocation."""
+    source_adata = ad.AnnData(
+        pd.DataFrame(
+            [[1, 2, 3], [4, 5, 6]],
+            index=["obs1", "obs2"],
+            columns=["var1", "var2", "var3"],
+        )
+    )
+    source_adata.obsm["X_pca"] = np.array([[0.1, 0.2], [0.3, 0.4]])
+    source_adata.obsm["X_umap"] = np.array([[1.0, 2.0], [3.0, 4.0]])
+    source_path = write_mudata_to_file(mu.MuData({"rna": source_adata}))
+    target_path = write_mudata_to_file(mu.MuData({"rna": target_modality}))
+
+    output = random_path(extension="h5mu")
+    run_component(
+        [
+            "--input_source",
+            str(source_path),
+            "--input_target",
+            str(target_path),
+            "--source_modality",
+            "rna",
+            "--obsm",
+            "X_pca",
+            "--obsm",
+            "X_umap",
+            "--output",
+            str(output),
+        ]
+    )
+    rna = mu.read_h5mu(output).mod["rna"]
+    assert "X_pca" in rna.obsm
+    assert "X_umap" in rna.obsm
+    np.testing.assert_array_almost_equal(
+        rna.obsm["X_umap"], np.array([[1.0, 2.0], [3.0, 4.0]])
+    )
+
+
+def test_move_categorical_and_string_obs(
+    run_component, random_path, write_mudata_to_file, target_modality
+):
+    """Move .obs columns containing categorical and string data."""
+    source_adata = ad.AnnData(
+        pd.DataFrame(
+            [[1, 2, 3], [4, 5, 6]],
+            index=["obs1", "obs2"],
+            columns=["var1", "var2", "var3"],
+        )
+    )
+    source_adata.obs["label"] = pd.Categorical(["cluster_A", "cluster_B"])
+    source_adata.obs["description"] = ["first sample", "second sample"]
+    source_path = write_mudata_to_file(mu.MuData({"rna": source_adata}))
+    target_path = write_mudata_to_file(mu.MuData({"rna": target_modality}))
+
+    output = random_path(extension="h5mu")
+    run_component(
+        [
+            "--input_source",
+            str(source_path),
+            "--input_target",
+            str(target_path),
+            "--source_modality",
+            "rna",
+            "--obs",
+            "label",
+            "--obs",
+            "description",
+            "--output",
+            str(output),
+        ]
+    )
+    rna = mu.read_h5mu(output).mod["rna"]
+    assert list(rna.obs["label"]) == ["cluster_A", "cluster_B"]
+    assert list(rna.obs["description"]) == ["first sample", "second sample"]
 
 
 if __name__ == "__main__":
