@@ -56,7 +56,7 @@ except KeyError:
     )
 
 # .obs/.var are DataFrames (column access), .obsm/.varm/.obsp/.varp are array
-# containers, and .uns is a dict — but all support key-based get/set via getattr.
+# containers, and .uns is a dict -- all support key-based get/set via getattr.
 _slots = [
     ("obs", par["obs"]),
     ("var", par["var"]),
