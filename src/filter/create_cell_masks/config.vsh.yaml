@@ -1,0 +1,112 @@
+name: create_cell_masks
+namespace: "filter"
+scope: "public"
+label: Create cell masks
+summary: Create boolean cell masks using a set of provided filters
+description: |
+  Create boolean cell masks using a set of provided filters. These masks are
+  stored so that they can be used to select cells in later stages.
+authors:
+  - __merge__: /src/authors/luke_zappia.yaml
+    roles: [ author, maintainer ]
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: --input
+        type: file
+        required: true
+        example: input.h5mu
+        description: A MuData file containing the data to filter
+
+  - name: Outputs
+    arguments:
+      - name: --output
+        type: file
+        direction: output
+        default: output.h5mu
+        summary: |
+          The output MuData file with the created cell masks
+        description: |
+          The output MuData file with the created cell masks.
+          Individual cell masks are stored as a `DataFrame` in `.obsm` and
+          summary masks for each filter group are stored as boolean columns in
+          `.obs`.
+
+  - name: Parameters
+    arguments:
+      - name: --modality
+        type: string
+        required: true
+        example: "rna"
+        summary: |
+          The name of the modality to use from the MuData object
+        description: |
+          The name of the modality to use from the MuData object.
+          This specifies which AnnData object within the MuData file should be
+          filtered.
+      - name: --filters
+        type: string
+        required: true
+        multiple: true
+        multiple_sep: ","
+        example: "total_counts:gt:100:rna,cell_volume:lt:10"
+        summary: |
+          A comma-separated set of filters to create cell masks in format
+          `<column>:<operator>:<value>:<group>`
+        description: |
+          A set of filters to create cell masks. Each filter should be specified
+          in the format `<column>:<operator>:<value>:<group>`, where:
+
+          - `<column>` is the name of a column in `.obs` (e.g., `total_counts`,
+            `n_genes`)
+          - `<operator>` is the name of a comparison operator, one of `lt`
+            (less than), `gt` (greater than), `le` (less or equal), `ge`
+            (greater or equal), `eq` (equal) or `ne` (not equal)
+          - `<value>` is the threshold value for the filter
+          - `<group>` (optional) a group label used to name the created mask
+
+          For example, the filter `total_counts:gt:100:rna` creates a mask
+          selecting cells with `total_counts` greater than 100. The created mask
+          will be named `rna_total_counts`.
+
+          Individual filters are separated by commas.
+      - name: --prefix
+        type: string
+        default: "cell"
+        summary: |
+          A prefix to use for naming the cell masks `DataFrame` and `.obs`
+          columns
+        description: |
+          A prefix to use for naming the cell masks `DataFrame` and `.obs`
+          columns.The `DataFrame` containing individual cell masks in `.obsm`
+          will be named `<prefix>_masks` (e.g., `cell_masks`) and the summary
+          columns in `.obs` will be named `<prefix>_mask_<group>` (e.g.,
+          `cell_mask_rna`).
+
+resources:
+  - type: python_script
+    path: script.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, . ]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [singlecpu, lowmem, lowdisk]
