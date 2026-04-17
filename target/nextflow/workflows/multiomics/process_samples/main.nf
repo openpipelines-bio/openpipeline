@@ -3813,7 +3813,19 @@ meta = [
       }
     },
     {
-      "name" : "workflows/multiomics/process_singlesample_base",
+      "name" : "workflows/rna/rna_singlesample",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
+      "name" : "workflows/prot/prot_singlesample",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
+      "name" : "workflows/gdo/gdo_singlesample",
       "repository" : {
         "type" : "local"
       }
@@ -3914,7 +3926,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.9.7",
-    "git_commit" : "95fae9cdfb16e7390a8ea67214303dc99d3d2445",
+    "git_commit" : "c58cc44b7cc84715a656c0d1b1980d28d0225862",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3967,7 +3979,9 @@ include { split_modalities as split_modalities_workflow_viashalias } from "${met
 split_modalities_workflow = split_modalities_workflow_viashalias.run(key: "split_modalities_workflow")
 include { merge } from "${meta.resources_dir}/../../../../nextflow/dataflow/merge/main.nf"
 include { concatenate_h5mu } from "${meta.resources_dir}/../../../../nextflow/dataflow/concatenate_h5mu/main.nf"
-include { process_singlesample_base } from "${meta.resources_dir}/../../../../_private/nextflow/workflows/multiomics/process_singlesample_base/main.nf"
+include { rna_singlesample } from "${meta.resources_dir}/../../../../nextflow/workflows/rna/rna_singlesample/main.nf"
+include { prot_singlesample } from "${meta.resources_dir}/../../../../nextflow/workflows/prot/prot_singlesample/main.nf"
+include { gdo_singlesample } from "${meta.resources_dir}/../../../../nextflow/workflows/gdo/gdo_singlesample/main.nf"
 include { process_batches } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/process_batches/main.nf"
 
 // inner workflow
@@ -3977,52 +3991,13 @@ workflow run_wf {
     input_ch
 
   main:
-
-  def singlesample_arguments = [
-      "input": "input",
-      "rna_layer": "rna_layer",
-      "prot_layer": "prot_layer",
-      "gdo_layer": "gdo_layer",
-      "add_id_to_obs": "add_id_to_obs",
-      "add_id_obs_output": "add_id_obs_output",
-      "add_id_make_observation_keys_unique": "add_id_make_observation_keys_unique",
-      "rna_min_counts": "rna_min_counts",
-      "rna_max_counts": "rna_max_counts",
-      "rna_min_genes_per_cell": "rna_min_genes_per_cell",
-      "rna_max_genes_per_cell": "rna_max_genes_per_cell",
-      "rna_min_cells_per_gene": "rna_min_cells_per_gene",
-      "rna_min_fraction_mito": "rna_min_fraction_mito",
-      "rna_max_fraction_mito": "rna_max_fraction_mito",
-      "rna_min_fraction_ribo": "rna_min_fraction_ribo",
-      "rna_max_fraction_ribo": "rna_max_fraction_ribo",
-      "skip_scrublet_doublet_detection": "skip_scrublet_doublet_detection",
-      "prot_min_counts": "prot_min_counts",
-      "prot_max_counts": "prot_max_counts",
-      "prot_min_proteins_per_cell": "prot_min_proteins_per_cell",
-      "prot_max_proteins_per_cell": "prot_max_proteins_per_cell",
-      "prot_min_cells_per_protein": "prot_min_cells_per_protein",
-      "gdo_min_counts": "gdo_min_counts",
-      "gdo_max_counts": "gdo_max_counts",
-      "gdo_min_guides_per_cell": "gdo_min_guides_per_cell",
-      "gdo_max_guides_per_cell": "gdo_max_guides_per_cell",
-      "gdo_min_cells_per_guide": "gdo_min_cells_per_guide",
-      "var_gene_names": "var_gene_names",
-      "var_name_mitochondrial_genes": "var_name_mitochondrial_genes",
-      "obs_name_mitochondrial_fraction": "obs_name_mitochondrial_fraction",
-      "mitochondrial_gene_regex": "mitochondrial_gene_regex",
-      "var_name_ribosomal_genes": "var_name_ribosomal_genes",
-      "obs_name_ribosomal_fraction": "obs_name_ribosomal_fraction",
-      "ribosomal_gene_regex": "ribosomal_gene_regex"
-    ]
-
-    singlesample_ch = input_ch
+    modalities_ch = input_ch
       // Make sure there is not conflict between the output from this workflow
       // And the output from any of the components
       | map {id, state ->
         def new_state = state + ["workflow_output": state.output]
         [id, new_state]
       }
-
       // If requested to be detected, make sure the mitochondrial and ribosomal genes
       // are added to the input of the qc metrics calculation
       | map {id, state ->
@@ -4036,21 +4011,129 @@ workflow run_wf {
         def newState = state + ["var_qc_metrics": var_qc_default.join(",")]
         [id, newState]
       }
-      | process_singlesample_base.run(
-        fromState: singlesample_arguments,
-        toState: [
-          "input": "output",
-          "modality": "output_modality"
-        ]
+      // If requested, add the id of the events (samples) a column in .obs. 
+      // Also allows to make .obs_names (the .obs index) unique, by prefixing the values with an unique id per .h5mu file.
+      // The latter is usefull to avoid duplicate observations during concatenation.
+      | add_id.run(
+        filter: {id, state -> state.add_id_to_obs },
+        fromState: {id, state -> 
+          def newState = [
+            "input": state.input,
+            "input_id": id,
+            "make_observation_keys_unique": state.add_id_make_observation_keys_unique,
+            "obs_output": state.add_id_obs_output,
+            "add_id_to_obs": state.add_id_to_obs
+          ]
+          newState
+        },
+        toState: {id, output, state ->
+          def keysToRemove = ["add_id_to_obs", "add_id_obs_output", "add_id_make_observation_keys_unique"]
+          def newState = state.findAll{it.key !in keysToRemove}
+          newState + ["input": output.output]
+        }
       )
-  
-    concat_ch = singlesample_ch
-      // Remove arguments for singlesample processing from state.
+      | split_modalities_workflow.run(
+        fromState: {id, state ->
+          def newState = ["input": state.input, "id": id]
+        },
+        toState: ["output": "output", "output_types": "output_types"]
+      )
+      | flatMap {id, state ->
+        def outputDir = state.output
+        def csv = state.output_types.splitCsv(strip: true, sep: ",").findAll{!it[0].startsWith("#")}
+        def header = csv.head()
+        def types = csv.tail().collect { row ->
+            [header, row].transpose().collectEntries()
+        }
+        
+        types.collect{ dat ->
+          // def new_id = id + "_" + dat.name
+          def new_id = id // it's okay because the channel will get split up anyways
+          def new_data = outputDir.resolve(dat.filename)
+          [ new_id, state + ["input": new_data, modality: dat.name]]
+        }
+      }
+      // Remove arguments from split modalities from state
       | map {id, state -> 
-        def allwayskeep = ["input", "gdo_layer", "rna_layer", "prot_layer", "workflow_output"]
-        def newState = state.findAll{(it.key !in singlesample_arguments.values() + ["id"]) || (it.key in allwayskeep)}
+        def keysToRemove = ["output_types"]
+        def newState = state.findAll{it.key !in keysToRemove}
         [id, newState]
       }
+      | view {"After splitting modalities: $it"}
+
+
+    //
+    // Singlesample processing
+    //
+    def singlesample_arguments = [
+      "rna": [
+        "min_counts": "rna_min_counts",
+        "max_counts": "rna_max_counts",
+        "min_genes_per_cell": "rna_min_genes_per_cell",
+        "max_genes_per_cell": "rna_max_genes_per_cell",
+        "min_cells_per_gene": "rna_min_cells_per_gene",
+        "min_fraction_mito": "rna_min_fraction_mito",
+        "max_fraction_mito": "rna_max_fraction_mito",
+        "var_name_mitochondrial_genes": "var_name_mitochondrial_genes",
+        "obs_name_mitochondrial_fraction": "obs_name_mitochondrial_fraction",
+        "var_gene_names": "var_gene_names",
+        "mitochondrial_gene_regex": "mitochondrial_gene_regex",
+        "min_fraction_ribo": "rna_min_fraction_ribo",
+        "max_fraction_ribo": "rna_max_fraction_ribo",
+        "var_name_ribosomal_genes": "var_name_ribosomal_genes",
+        "obs_name_ribosomal_fraction": "obs_name_ribosomal_fraction",
+        "ribosomal_gene_regex": "ribosomal_gene_regex",
+        "layer": "rna_layer",
+        "skip_scrublet_doublet_detection": "skip_scrublet_doublet_detection"
+      ],
+      "prot": [
+        "min_counts": "prot_min_counts",
+        "max_counts": "prot_max_counts",
+        "min_proteins_per_cell": "prot_min_proteins_per_cell",
+        "max_proteins_per_cell": "prot_max_proteins_per_cell",
+        "min_cells_per_protein": "prot_min_cells_per_protein",
+        "layer": "prot_layer",
+      ],
+      "gdo": [
+        "min_counts": "gdo_min_counts",
+        "max_counts": "gdo_max_counts",
+        "min_guides_per_cell": "gdo_min_guides_per_cell",
+        "max_guides_per_cell": "gdo_max_guides_per_cell",
+        "min_cells_per_guide": "gdo_min_cells_per_guide",
+        "layer": "gdo_layer",
+      ], 
+    ].asImmutable()
+
+    multisample_ch_known = modalities_ch 
+      // run the singlesample processing
+      | runEach(
+        components: [rna_singlesample, prot_singlesample, gdo_singlesample],
+        filter: { id, state, component ->
+          state.modality + "_singlesample" == component.config.name
+        },
+        fromState: { id, state, component ->
+          def newState = singlesample_arguments.get(state.modality).collectEntries{key_, value_ -> 
+            [key_, state[value_]]
+          }
+          return newState + ["id": id, "input": state.input]
+        },
+        toState: ["input": "output"],
+      )
+
+    multisample_ch_unknown = modalities_ch
+      | filter{id, state -> state.modality !in singlesample_arguments.keySet()}
+
+    output_ch = multisample_ch_unknown.mix(multisample_ch_known)
+      // Remove arguments for singlesample processing from state.
+      | map {id, state -> 
+        def keysToRemove = singlesample_arguments.inject([]){currentKeys, modality, stateMapping -> 
+            currentKeys += stateMapping.values()
+        }
+        def allwayskeep = ["gdo_layer", "rna_layer", "prot_layer", "workflow_output"]
+        def newState = state.findAll{(it.key !in keysToRemove + ["id"]) || (it.key in allwayskeep)}
+        [id, newState]
+      }
+      | view {"After singlesample processing: $it"}
 
       //
       // Concatenation: join observations across samples together per modality. 
@@ -4102,6 +4185,7 @@ workflow run_wf {
           newState + ["input": output.output]
         }, 
       )
+
       | view {"After concatenation: $it"}
       | toSortedList()
       | map {modalities_states -> 
@@ -4124,8 +4208,6 @@ workflow run_wf {
           }
          ["merged", new_state + ["input": new_input, "_meta": ["join_id": join_id]]]
       }
-
-    multisample_ch = concat_ch
       | process_batches.run(
         fromState: {id, state ->
           [
@@ -4160,7 +4242,7 @@ workflow run_wf {
       | view {"After process_batches: $it"}
 
   emit:
-    multisample_ch
+    output_ch
 }
 
 // inner workflow hook
