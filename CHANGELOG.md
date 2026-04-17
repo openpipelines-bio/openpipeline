@@ -12,6 +12,8 @@
 
 * `dimred/pca`: added possibility to do chunked processing using arguments `chunks` and `chunk_size`. Also added a `seed` argument in order to better control the variability between executions (PR #1157).
 
+* `dataflow/move_anndata_slots`: added a component to selectively move AnnData slots from a modality in a source MuData file into a modality in a target MuData file (PR #1163).
+
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
