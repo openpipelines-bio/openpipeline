@@ -572,5 +572,126 @@ def test_move_categorical_and_string_obs(
     assert list(rna.obs["description"]) == ["first sample", "second sample"]
 
 
+def test_mismatched_obs_indices_raises_error(
+    run_component, random_path, write_mudata_to_file
+):
+    """Source and target with different observation IDs should error."""
+    source = ad.AnnData(
+        pd.DataFrame([[1, 2]], index=["cellA"], columns=["var1", "var2"]),
+        obs=pd.DataFrame({"score": [0.5]}, index=["cellA"]),
+    )
+    target = ad.AnnData(
+        pd.DataFrame([[3, 4]], index=["cellX"], columns=["var1", "var2"]),
+    )
+    source_path = write_mudata_to_file(mu.MuData({"rna": source}))
+    target_path = write_mudata_to_file(mu.MuData({"rna": target}))
+
+    output = random_path(extension="h5mu")
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input_source",
+                str(source_path),
+                "--input_target",
+                str(target_path),
+                "--source_modality",
+                "rna",
+                "--obs",
+                "score",
+                "--output",
+                str(output),
+            ]
+        )
+    assert re.search(
+        r"ValueError.*Index mismatch.*obs",
+        err.value.stdout.decode("utf-8"),
+    )
+
+
+def test_mismatched_var_indices_raises_error(
+    run_component, random_path, write_mudata_to_file
+):
+    """Source and target with different variable IDs should error."""
+    source = ad.AnnData(
+        pd.DataFrame([[1, 2]], index=["obs1"], columns=["geneA", "geneB"]),
+        var=pd.DataFrame({"name": ["A", "B"]}, index=["geneA", "geneB"]),
+    )
+    target = ad.AnnData(
+        pd.DataFrame([[3, 4]], index=["obs1"], columns=["geneX", "geneY"]),
+    )
+    source_path = write_mudata_to_file(mu.MuData({"rna": source}))
+    target_path = write_mudata_to_file(mu.MuData({"rna": target}))
+
+    output = random_path(extension="h5mu")
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input_source",
+                str(source_path),
+                "--input_target",
+                str(target_path),
+                "--source_modality",
+                "rna",
+                "--var",
+                "name",
+                "--output",
+                str(output),
+            ]
+        )
+    assert re.search(
+        r"ValueError.*Index mismatch.*var",
+        err.value.stdout.decode("utf-8"),
+    )
+
+
+def test_reindexes_when_order_differs(run_component, random_path, write_mudata_to_file):
+    """Source and target with same IDs but different order should align correctly."""
+    source = ad.AnnData(
+        pd.DataFrame(
+            [[1, 2], [3, 4]],
+            index=["obs2", "obs1"],
+            columns=["var1", "var2"],
+        ),
+        obs=pd.DataFrame({"label": ["second", "first"]}, index=["obs2", "obs1"]),
+    )
+    source.obsm["X_pca"] = np.array([[0.2, 0.2], [0.1, 0.1]])
+
+    target = ad.AnnData(
+        pd.DataFrame(
+            [[10, 20], [30, 40]],
+            index=["obs1", "obs2"],
+            columns=["var1", "var2"],
+        ),
+    )
+    source_path = write_mudata_to_file(mu.MuData({"rna": source}))
+    target_path = write_mudata_to_file(mu.MuData({"rna": target}))
+
+    output = random_path(extension="h5mu")
+    run_component(
+        [
+            "--input_source",
+            str(source_path),
+            "--input_target",
+            str(target_path),
+            "--source_modality",
+            "rna",
+            "--obs",
+            "label",
+            "--obsm",
+            "X_pca",
+            "--output",
+            str(output),
+        ]
+    )
+    rna = mu.read_h5mu(output).mod["rna"]
+
+    # obs1 should get "first", obs2 should get "second" (aligned by index, not position)
+    assert list(rna.obs["label"]) == ["first", "second"]
+    # obsm should also be reindexed: obs1 -> [0.1, 0.1], obs2 -> [0.2, 0.2]
+    np.testing.assert_array_almost_equal(
+        rna.obsm["X_pca"], np.array([[0.1, 0.1], [0.2, 0.2]])
+    )
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

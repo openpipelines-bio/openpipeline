@@ -55,6 +55,30 @@ except KeyError:
         f"'{par['input_target']}'."
     )
 
+# Validate indices for the axes relevant to the requested slots.
+needs_obs = any(par[s] for s in ("obs", "obsm", "obsp"))
+needs_var = any(par[s] for s in ("var", "varm", "varp"))
+
+mismatches = []
+if needs_obs and set(source_mod.obs_names) != set(target_mod.obs_names):
+    mismatches.append("obs")
+if needs_var and set(source_mod.var_names) != set(target_mod.var_names):
+    mismatches.append("var")
+if mismatches:
+    raise ValueError(
+        "Index mismatch between source and target modalities: "
+        + " and ".join(mismatches)
+        + " indices do not match."
+    )
+
+# Reindex source to match target order if needed.
+if needs_obs and not (source_mod.obs_names == target_mod.obs_names).all():
+    logger.info("Reindexing source observations to match target order.")
+    source_mod = source_mod[target_mod.obs_names, :]
+if needs_var and not (source_mod.var_names == target_mod.var_names).all():
+    logger.info("Reindexing source variables to match target order.")
+    source_mod = source_mod[:, target_mod.var_names]
+
 # .obs/.var are DataFrames (column access), .obsm/.varm/.obsp/.varp are array
 # containers, and .uns is a dict -- all support key-based get/set via getattr.
 _slots = [
