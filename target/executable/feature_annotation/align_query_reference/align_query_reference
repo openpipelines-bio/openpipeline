@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component feature_annotation align_query_reference"
-LABEL org.opencontainers.image.created="2026-04-17T03:44:45Z"
+LABEL org.opencontainers.image.created="2026-04-18T03:36:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c58cc44b7cc84715a656c0d1b1980d28d0225862"
+LABEL org.opencontainers.image.revision="f9d703d238c7eb3f59d56f4a67c52af9ced41f89"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
