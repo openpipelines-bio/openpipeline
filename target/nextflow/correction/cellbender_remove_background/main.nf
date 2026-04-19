@@ -3701,7 +3701,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background",
     "viash_version" : "0.9.7",
-    "git_commit" : "f9d703d238c7eb3f59d56f4a67c52af9ced41f89",
+    "git_commit" : "f48a2580491fe0c9ed469bee948a38ef69b55b45",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
