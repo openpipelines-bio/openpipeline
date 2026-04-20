@@ -18,6 +18,8 @@
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
 
+* `annotate/popv`: bump version to 0.6.1 (PR #1167).
+
 ## MINOR CHANGES
 
 * `dataflow/split_modalities`: improve memory consumption by only reading one modality at the same time (PR #1152).

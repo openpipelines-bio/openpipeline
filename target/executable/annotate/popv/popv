@@ -447,7 +447,7 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM python:3.11-slim
+FROM pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime
 ENTRYPOINT []
 ENV CFLAGS="-mno-avx512f -mno-avx2"
 ENV CPPFLAGS="-mno-avx512f -mno-avx2"
@@ -456,7 +456,7 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "popv~=0.4.2" "numpy<2" "setuptools"
+  pip install --upgrade --no-cache-dir "popv~=0.6.1"
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.12.7" "awkward" "scipy!=1.17.*" "mudata~=0.3.2" && \
@@ -466,9 +466,9 @@ RUN cd /opt && git clone --depth 1 https://github.com/YosefLab/PopV.git
 
 LABEL org.opencontainers.image.authors="Matthias Beyens, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component annotate popv"
-LABEL org.opencontainers.image.created="2026-04-20T08:07:55Z"
+LABEL org.opencontainers.image.created="2026-04-20T09:59:36Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3c47079350b6412f40b897c72d23a633000b40ab"
+LABEL org.opencontainers.image.revision="bcc0e1023eaaf028d50432dec22cfd2fac005ff1"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -676,10 +676,10 @@ function ViashHelp {
   echo ""
   echo "    --methods"
   echo "        type: string, required parameter, multiple values allowed"
-  echo "        example: knn_on_scvi;scanvi"
-  echo "        choices: [ celltypist, knn_on_bbknn, knn_on_scanorama, knn_on_scvi,"
-  echo "onclass, rf, scanvi, svm ]"
-  echo "        Methods to call cell types. By default, runs to knn_on_scvi and scanvi."
+  echo "        example: KNN_SCVI;SCANVI_POPV"
+  echo "        choices: [ CELLTYPIST, KNN_BBKNN, KNN_HARMONY, KNN_SCANORAMA, KNN_SCVI,"
+  echo "ONCLASS, Random_Forest, SCANVI_POPV, Support_Vector ]"
+  echo "        Methods to call cell types. By default, runs KNN_SCVI and SCANVI_POPV."
   echo ""
   echo "Viash built in Computational Requirements:"
   echo "    ---cpus=INT"
@@ -1220,7 +1220,7 @@ if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
 fi
 
 if [ ! -z "$VIASH_PAR_METHODS" ]; then
-  VIASH_PAR_METHODS_CHOICES=("celltypist;knn_on_bbknn;knn_on_scanorama;knn_on_scvi;onclass;rf;scanvi;svm")
+  VIASH_PAR_METHODS_CHOICES=("CELLTYPIST;KNN_BBKNN;KNN_HARMONY;KNN_SCANORAMA;KNN_SCVI;ONCLASS;Random_Forest;SCANVI_POPV;Support_Vector")
   IFS=';'
   set -f
   for val in $VIASH_PAR_METHODS; do
@@ -1396,6 +1396,7 @@ logger = setup_logger()
 
 use_gpu = cuda_is_available()
 logger.info("GPU enabled? %s", use_gpu)
+popv.settings.accelerator = "cuda" if use_gpu else "cpu"
 
 
 # Helper functions
@@ -1494,11 +1495,11 @@ def main(par, meta):
         pq = popv.preprocessing.Process_Query(
             # input
             query_adata=input_modality,
-            query_labels_key=par["input_obs_label"],
             query_batch_key=par["input_obs_batch"],
-            query_layers_key=None,  # this is taken care of by subset
+            query_layer_key=None,  # this is taken care of by subset
             # reference
             ref_adata=reference,
+            ref_layer_key=None,  # this is taken care of by subset
             ref_labels_key=par["reference_obs_label"],
             ref_batch_key=par["reference_obs_batch"],
             # options
@@ -1513,7 +1514,6 @@ def main(par, meta):
             save_path_trained_models=temp_dir,
             # hardcoded values
             cl_obo_folder=cl_obo_folder,
-            accelerator="cuda" if use_gpu else "cpu",
         )
         method_kwargs = {}
         if "scanorama" in par["methods"]:
