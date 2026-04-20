@@ -3369,7 +3369,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p",
     "viash_version" : "0.9.7",
-    "git_commit" : "6b78a70e5f197b49032837cec6ca15c2aded23a0",
+    "git_commit" : "3c47079350b6412f40b897c72d23a633000b40ab",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3427,7 +3427,6 @@ tempscript=".viash_script.py"
 cat > "$tempscript" << VIASHMAIN
 import scanpy as sc
 import mudata as mu
-import anndata as ad
 import sys
 
 ## VIASH START
@@ -3479,23 +3478,20 @@ assert data.var_names.is_unique, "Expected var_names to be unique."
 
 logger.info("Performing log transformation")
 # Make our own copy with not a lot of data
-# this avoid excessive memory usage and accidental overwrites
+# this avoid excessive memory usage
 input_layer = data.layers[par["input_layer"]] if par["input_layer"] else data.X
-data_for_scanpy = ad.AnnData(X=input_layer.copy())
-sc.pp.log1p(
-    data_for_scanpy,
-    base=par["base"],
-    layer=None,  # use X
-    copy=False,
-)  # allow overwrites in the copy that was made
 
-# Scanpy will overwrite the input layer.
-# So fetch input layer from the copy and use it to populate the output slot
+transformed_matrix = sc.pp.log1p(
+    input_layer,
+    base=par["base"],
+    copy=True,  # Avoid accidental overwrites
+)
+
 if par["output_layer"]:
-    data.layers[par["output_layer"]] = data_for_scanpy.X
+    data.layers[par["output_layer"]] = transformed_matrix
 else:
-    data.X = data_for_scanpy.X
-data.uns["log1p"] = data_for_scanpy.uns["log1p"].copy()
+    data.X = transformed_matrix
+data.uns["log1p"] = {"base": par["base"]}
 
 logger.info("Writing to file %s", par["output"])
 write_h5ad_to_h5mu_with_compression(

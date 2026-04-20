@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_bdrhap_reference"
-LABEL org.opencontainers.image.created="2026-03-30T08:27:11Z"
+LABEL org.opencontainers.image.created="2026-04-20T08:07:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6b78a70e5f197b49032837cec6ca15c2aded23a0"
+LABEL org.opencontainers.image.revision="3c47079350b6412f40b897c72d23a633000b40ab"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
