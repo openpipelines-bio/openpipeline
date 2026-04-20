@@ -1,0 +1,145 @@
+name: insert_partial_items
+namespace: "dataflow"
+scope: "public"
+label: Insert partial items
+summary: |
+  Insert items from one MuData object into another. The object being
+  inserted into must have a superset of the cells in the object being inserted.
+authors:
+  - __merge__: /src/authors/luke_zappia.yaml
+    roles: [ author, maintainer ]
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: --input_base
+        type: file
+        required: true
+        summary: The base MuData to insert into
+        description: |
+          Path to the H5MU file for the base MuData that items will be
+          inserted into
+      - name: --modality_base
+        type: string
+        default: rna
+        summary: The modality to insert into
+        description: The name of the modality in the base MuData to insert into
+      - name: --input_insert
+        type: file
+        required: true
+        summary: The MuData to insert
+        description: |
+          Path to the H5MU file for the MuData that items will be inserted
+          from
+      - name: --modality_insert
+        type: string
+        default: rna
+        summary: The modality to insert from
+        description: The name of the modality in the insert MuData to insert from
+
+  - name: Outputs
+    arguments:
+      - name: --output
+        type: file
+        direction: output
+        default: output.h5mu
+        description: The output H5MU file with the inserted items
+
+  - name: Slots
+    description: |
+      Arguments that define the items to insert. Each slot supports explicit
+      item names, or the special string '__auto__' to automatically select all
+      items from insert that are not present in the base MuData. If an argument
+      is not set nothing will be inserted for that slot.
+    arguments:
+      - name: --obs
+        type: string
+        multiple: true
+        multiple_sep: ","
+        example: "obs1,obs2"
+        description: |
+          A list of .obs columns to insert. Use '__auto__' to automatically
+          include all .obs columns from insert that are not in base.
+      - name: --var
+        type: string
+        multiple: true
+        multiple_sep: ","
+        example: "var1,var2"
+        description: |
+          A list of .var columns to insert. Use '__auto__' to automatically
+          include all .var columns from insert that are not in base.
+      - name: --layers
+        type: string
+        multiple: true
+        multiple_sep: ","
+        example: "layer1,layer2"
+        description: |
+          A list of .layers to insert. Use '__auto__' to automatically include
+          all layers from insert that are not in base.
+      - name: --obsm
+        type: string
+        multiple: true
+        multiple_sep: ","
+        example: "obsm1,obsm2"
+        description: |
+          A list of .obsm to insert. Use '__auto__' to automatically include
+          all .obsm from insert that are not in base.
+      - name: --varm
+        type: string
+        multiple: true
+        multiple_sep: ","
+        example: "varm1,varm2"
+        description: |
+          A list of .varm to insert. Use '__auto__' to automatically include
+          all .varm from insert that are not in base.
+      - name: --obsp
+        type: string
+        multiple: true
+        multiple_sep: ","
+        example: "obsp1,obsp2"
+        description: |
+          A list of .obsp to insert. Use '__auto__' to automatically include
+          all .obsp from insert that are not in base.
+      - name: --varp
+        type: string
+        multiple: true
+        multiple_sep: ","
+        example: "varp1,varp2"
+        description: |
+          A list of .varp to insert. Use '__auto__' to automatically include
+          all .varp from insert that are not in base.
+      - name: --uns
+        type: string
+        multiple: true
+        multiple_sep: ","
+        example: "uns1,uns2"
+        description: |
+          A list of .uns entries to insert. Use '__auto__' to automatically
+          include all .uns items from insert that are not in base.
+
+resources:
+  - type: python_script
+    path: script.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, . ]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [singlecpu, lowmem, lowdisk]

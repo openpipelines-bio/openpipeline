@@ -12,6 +12,8 @@
 
 * `dimred/pca`: added possibility to do chunked processing using arguments `chunks` and `chunk_size`. Also added a `seed` argument in order to better control the variability between executions (PR #1157).
 
+* `dataflow/insert_partial_items`: added a component to insert items from one MuData object into another (PR #1166).
+
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
