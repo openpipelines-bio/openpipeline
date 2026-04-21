@@ -12,9 +12,13 @@
 
 * `dimred/pca`: added possibility to do chunked processing using arguments `chunks` and `chunk_size`. Also added a `seed` argument in order to better control the variability between executions (PR #1157).
 
+* `workflows/multiomics/process_singlesample`: New workflow for processing RNA, protein and GDO modalities of individual samples (PR #1147).
+
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
+
+* `annotate/popv`: bump version to 0.6.1 (PR #1167).
 
 ## MINOR CHANGES
 
@@ -25,6 +29,8 @@
 * `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137)
 
 * Bump viash to 0.9.7 (PR #1145)
+
+* `workflows/multiomics/process_samples`: refactored to use a shared `process_singlesample_base` subworkflow, which is also used by the new `process_singlesample` workflow to avoid code duplication (PR #1147).
 
 ## BUG FIXES
 

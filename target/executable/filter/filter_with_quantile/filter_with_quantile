@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_quantile"
-LABEL org.opencontainers.image.created="2026-04-20T03:48:10Z"
+LABEL org.opencontainers.image.created="2026-04-21T03:45:20Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="87466c9510403f918be7cdd0cef74e4359e5e549"
+LABEL org.opencontainers.image.revision="4e2d09013a3cfce871f5d315897bd2782db24c55"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

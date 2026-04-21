@@ -3278,21 +3278,22 @@ meta = [
         {
           "type" : "string",
           "name" : "--methods",
-          "description" : "Methods to call cell types. By default, runs to knn_on_scvi and scanvi.",
+          "description" : "Methods to call cell types. By default, runs KNN_SCVI and SCANVI_POPV.",
           "example" : [
-            "knn_on_scvi",
-            "scanvi"
+            "KNN_SCVI",
+            "SCANVI_POPV"
           ],
           "required" : true,
           "choices" : [
-            "celltypist",
-            "knn_on_bbknn",
-            "knn_on_scanorama",
-            "knn_on_scvi",
-            "onclass",
-            "rf",
-            "scanvi",
-            "svm"
+            "CELLTYPIST",
+            "KNN_BBKNN",
+            "KNN_HARMONY",
+            "KNN_SCANORAMA",
+            "KNN_SCVI",
+            "ONCLASS",
+            "Random_Forest",
+            "SCANVI_POPV",
+            "Support_Vector"
           ],
           "direction" : "input",
           "multiple" : true,
@@ -3429,7 +3430,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.11-slim",
+      "image" : "pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3453,9 +3454,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "popv~=0.4.2",
-            "numpy<2",
-            "setuptools"
+            "popv~=0.6.1"
           ],
           "upgrade" : true
         },
@@ -3498,7 +3497,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv",
     "viash_version" : "0.9.7",
-    "git_commit" : "87466c9510403f918be7cdd0cef74e4359e5e549",
+    "git_commit" : "4e2d09013a3cfce871f5d315897bd2782db24c55",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3629,6 +3628,7 @@ logger = setup_logger()
 
 use_gpu = cuda_is_available()
 logger.info("GPU enabled? %s", use_gpu)
+popv.settings.accelerator = "cuda" if use_gpu else "cpu"
 
 
 # Helper functions
@@ -3727,11 +3727,11 @@ def main(par, meta):
         pq = popv.preprocessing.Process_Query(
             # input
             query_adata=input_modality,
-            query_labels_key=par["input_obs_label"],
             query_batch_key=par["input_obs_batch"],
-            query_layers_key=None,  # this is taken care of by subset
+            query_layer_key=None,  # this is taken care of by subset
             # reference
             ref_adata=reference,
+            ref_layer_key=None,  # this is taken care of by subset
             ref_labels_key=par["reference_obs_label"],
             ref_batch_key=par["reference_obs_batch"],
             # options
@@ -3746,7 +3746,6 @@ def main(par, meta):
             save_path_trained_models=temp_dir,
             # hardcoded values
             cl_obo_folder=cl_obo_folder,
-            accelerator="cuda" if use_gpu else "cpu",
         )
         method_kwargs = {}
         if "scanorama" in par["methods"]:
