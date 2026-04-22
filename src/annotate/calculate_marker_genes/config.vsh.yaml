@@ -1,9 +1,6 @@
 name: calculate_marker_genes
 namespace: annotate
 scope: "public"
-authors:
-  - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author ]
 
 description: |
   Calculate marker genes for clusters in a MuData object using scanpy's
