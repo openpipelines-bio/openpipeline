@@ -12,6 +12,7 @@ import tarfile
 from pathlib import Path
 import shutil
 from itertools import chain
+from collections import defaultdict
 
 CELL_RANGER_EXEC = shutil.which("cellranger")
 
@@ -41,6 +42,7 @@ par = {
     "vdj_t_input": None,
     "vdj_t_gd_input": None,
     "vdj_b_input": None,
+    "vdj_denovo": None,
     "agc_input": None,
     "library_lanes": None,
     "library_subsample": None,
@@ -234,29 +236,20 @@ def infer_library_id_from_path(input_path: str) -> str:
 
 
 def transform_helper_inputs(par: dict[str, Any]) -> dict[str, Any]:
-    helper_input = {"input": [], "library_id": [], "library_type": []}
+    empty_result = pd.DataFrame(
+        [], index=pd.Index([], name="library_id"), columns=["fastqs", "library_type"]
+    )
+    input_type_result = [empty_result]
     for input_type, library_type in HELPER_INPUT.items():
         if par[input_type]:
-            par[input_type] = resolve_input_directories_to_fastq_paths(par[input_type])
+            fastqs = resolve_input_directories_to_fastq_paths(par[input_type])
+            input_type_result.append(
+                get_fastq_to_library_id_mapping(
+                    fastqs, defaultdict(lambda: library_type)
+                )
+            )
 
-            library_ids = [
-                infer_library_id_from_path(path.name) for path in par[input_type]
-            ]
-
-            library_id_dict = {}
-            for fastq, library_id in zip(par[input_type], library_ids):
-                library_id_dict.setdefault(library_id, []).append(fastq)
-
-            for library_id, input in library_id_dict.items():
-                helper_input["input"] += input
-                helper_input["library_id"].append(library_id)
-                helper_input["library_type"].append(library_type)
-
-    assert len(helper_input["library_id"]) == len(set(helper_input["library_id"])), (
-        "File names passed to feature type-specific inputs must be unique"
-    )
-
-    return helper_input
+    return pd.concat(input_type_result)
 
 
 def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
@@ -265,10 +258,6 @@ def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
         for key, li in dic.items()
         if li is not None and isinstance(li, (list, tuple, set))
     }
-
-
-def strip_margin(text: str) -> str:
-    return re.sub("(\n?)[ \t]*\|", "\\1", text)
 
 
 def subset_dict(
@@ -294,7 +283,7 @@ def check_subset_dict_equal_length(
 
 
 def resolve_input_directories_to_fastq_paths(input_paths: list[str]) -> list[Path]:
-    input_paths = [Path(fastq) for fastq in input_paths]
+    input_paths = [Path(fastq).resolve() for fastq in input_paths]
     if len(input_paths) == 1 and input_paths[0].is_dir():
         logger.info(
             "Detected a directory in input paths, "
@@ -313,6 +302,62 @@ def resolve_input_directories_to_fastq_paths(input_paths: list[str]) -> list[Pat
         )
 
     return input_paths
+
+
+def get_fastq_to_library_id_mapping(
+    fastq_files: list[Path], library_type_per_id: dict[str, str]
+):
+    # Get the library_ids from the actual FASTQ files.
+    fastq_library_ids = {}
+    for fastq_file in fastq_files:
+        fastq_library_id = infer_library_id_from_path(fastq_file.name)
+        # Cellranger takes the directories as input. FASTQs for a library
+        # might be split across multiple directories and one directoy may contain
+        # multiple FASTQ files. Take the set.
+        fastq_library_ids.setdefault(fastq_library_id, set()).add(fastq_file.parent)
+    all_fastq_libraries = (
+        pd.Series(fastq_library_ids)
+        .rename_axis("library_id")
+        .to_frame(name="fastqs")
+        .explode("fastqs")
+    )
+    # Because the FASTQ files may originate from globbing an input directory
+    # the list needs to be filtered with the requested libraries from the library_id argument
+    filtered_fastq_libraries = all_fastq_libraries
+    if library_type_per_id.keys():
+        library_ids = list(library_type_per_id.keys())
+        keys_not_present = pd.Index(library_ids, name="library_id").difference(
+            all_fastq_libraries.index
+        )
+        assert keys_not_present.empty, (
+            f"No FASTQ files found for the following library ids: {','.join(keys_not_present)}"
+        )
+        filtered_fastq_libraries = all_fastq_libraries.loc[library_ids]
+
+    # Add the library_type from the input
+    return filtered_fastq_libraries.assign(
+        library_type=filtered_fastq_libraries.index.map(library_type_per_id)
+    )
+
+
+def transform_base_input(par):
+    if par["input"]:
+        assert len(par["library_type"]) > 0, (
+            "--library_type must be defined when passing input to --input"
+        )
+        assert len(par["library_id"]) > 0, (
+            "--library_id must be defined when passing input to --input"
+        )
+        # if par["input"] is a directory, look for fastq files
+        fastq_files = resolve_input_directories_to_fastq_paths(par["input"])
+        library_type_per_id = {
+            library_id: library_type
+            for library_id, library_type in zip(par["library_id"], par["library_type"])
+        }
+        return get_fastq_to_library_id_mapping(fastq_files, library_type_per_id)
+    return pd.DataFrame(
+        [], index=pd.Index([], name="library_id"), columns=["fastqs", "library_type"]
+    )
 
 
 def make_paths_absolute(par: dict[str, Any], config: Path | str):
@@ -377,30 +422,22 @@ def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> st
 
 
 def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
-    if par["input"]:
-        assert len(par["library_type"]) > 0, (
-            "--library_type must be defined when passing input to --input"
-        )
-        assert len(par["library_id"]) > 0, (
-            "--library_id must be defined when passing input to --input"
-        )
-
-        # if par["input"] is a directory, look for fastq files
-        par["input"] = resolve_input_directories_to_fastq_paths(par["input"])
-
-    # add helper input
+    # Get input from base argument (--input)
+    base_input = transform_base_input(par)
+    # Get the input from the helper arguments (e.g. --gex_input)
     helper_input = transform_helper_inputs(par)
-    for key in ["input", "library_id", "library_type"]:
-        par[key] = (par[key] if par[key] else []) + helper_input[key]
 
-        assert len(par[key]) > 0, (
-            f"Either --{key} or feature type-specific input (e.g. --gex_input, --abc_input, ...) must be defined"
-        )
+    all_input = pd.concat([base_input, helper_input])
 
-    # check lengths of libraries metadata
-    library_dict = subset_dict(par, LIBRARY_PARAMS)
-    check_subset_dict_equal_length("Library", library_dict)
+    # Transfer the input to par
+    # TODO: This is a bit ugly, it is probably better to
+    # let this function return the all_input dataframe
+    # and use it as input for generting the Cell Ranger config
+    par["fastqs"] = all_input["fastqs"].to_list()
+    par["library_type"] = all_input["library_type"].to_list()
+    par["library_id"] = all_input.index.to_list()
 
+    # Check if inputs for the samples config section match lengths
     samples_dict = subset_dict(par, SAMPLE_PARAMS)
     check_subset_dict_equal_length("Samples", samples_dict)
 
@@ -423,11 +460,9 @@ def generate_csv_category(name: str, args: dict[str, str], orient: str) -> list[
     return title + values + [""]
 
 
-def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
+def generate_config(par: dict[str, Any]) -> str:
     content_list = []
-    par["fastqs"] = fastq_dir
-    libraries = dict(LIBRARY_CONFIG_KEYS, **{"fastqs": "fastqs"})
-    # TODO: use the union (|) operator when python is updated to 3.9
+    libraries = LIBRARY_CONFIG_KEYS | {"fastqs": "fastqs"}
     all_sections = REFERENCE_SECTIONS | {
         "libraries": (libraries, "columns"),
         "samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns"),
@@ -481,16 +516,8 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         for reference_par_name in REFERENCES:
             par[reference_par_name] = untar(par[reference_par_name], temp_dir_path)
 
-        logger.info("Creating symbolic links to temporary directory")
-        # Creating symlinks of fastq files to tempdir
-        input_symlinks_dir = temp_dir_path / "input_symlinks"
-        input_symlinks_dir.mkdir()
-        for fastq in par["input"]:
-            destination = input_symlinks_dir / fastq.name
-            destination.symlink_to(fastq)
-
         logger.info("Creating config file")
-        config_content = generate_config(par, input_symlinks_dir)
+        config_content = generate_config(par)
         logger.info("Using config: \n\t%s", config_content.replace("\n", "\n\t"))
         par["output"].mkdir(parents=True, exist_ok=True)
         config_file = par["output"] / "config.csv"
