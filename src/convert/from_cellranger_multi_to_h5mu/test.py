@@ -338,6 +338,85 @@ def test_no_feature_reference(run_component, tmp_path, input_4plex_dtc):
     assert list(converted_data.mod.keys()) == ["rna", "prot"]
 
 
+def test_cellranger_multi_output_filtered_data(run_component, tmp_path, input_anticmv):
+    output_dir = tmp_path / "converted"
+    output_path_template = output_dir / "*.h5mu"
+    samples_csv = tmp_path / "samples.csv"
+    run_component(
+        [
+            "--input",
+            input_anticmv,
+            "--output",
+            str(output_path_template),
+            "--output_compression",
+            "gzip",
+            "--sample_csv",
+            samples_csv,
+            "--output_filtered_data",
+        ]
+    )
+    assert output_dir.is_dir()
+    samples = [item for item in output_dir.iterdir() if item.is_file()]
+    assert len(samples) == 1
+    filtered_data = read_h5mu(samples[0])
+    assert list(filtered_data.mod.keys()) == ["rna", "prot", "vdj_t"]
+    assert filtered_data.mod["rna"].n_obs == 3798
+
+
+def test_cellranger_multi_output_filtered_data_multiplexed(
+    run_component, tmp_path, input_fixed_rna
+):
+    output_dir = tmp_path / "converted"
+    output_path_template = output_dir / "*.h5mu"
+    samples_csv = tmp_path / "samples.csv"
+    run_component(
+        [
+            "--input",
+            input_fixed_rna,
+            "--output",
+            str(output_path_template),
+            "--output_compression",
+            "gzip",
+            "--sample_csv",
+            samples_csv,
+            "--output_filtered_data",
+        ]
+    )
+    assert output_dir.is_dir()
+    samples = [item for item in output_dir.iterdir() if item.is_file()]
+    sample_names = {item.name.removesuffix(".h5mu") for item in samples}
+    assert sample_names == {
+        "Colorectal_BC3",
+        "Liver_BC1",
+        "Ovarian_BC2",
+        "Pancreas_BC4",
+    }
+    expected_n_obs_by_version = {
+        "v9": {
+            "Colorectal_BC3": 1910,
+            "Liver_BC1": 1779,
+            "Ovarian_BC2": 1941,
+            "Pancreas_BC4": 862,
+        },
+        "v10": {
+            "Colorectal_BC3": 1915,
+            "Liver_BC1": 1784,
+            "Ovarian_BC2": 1946,
+            "Pancreas_BC4": 866,
+        },
+    }
+    expected_n_obs = expected_n_obs_by_version[
+        "v10" if "_v10" in input_fixed_rna else "v9"
+    ]
+    actual_n_obs = {}
+    for output_path in samples:
+        converted_data = read_h5mu(output_path)
+        assert list(converted_data.mod.keys()) == ["rna", "prot"]
+        sample_name = output_path.name.removesuffix(".h5mu")
+        actual_n_obs[sample_name] = converted_data.mod["rna"].n_obs
+    assert actual_n_obs == expected_n_obs
+
+
 def test_vdj_no_cells(run_component, tmp_path, input_no_vdj_cells):
     """
     Test what happens when a VDJ analysis was performed by Cell Ranger,
