@@ -14,6 +14,8 @@
 
 * `workflows/multiomics/process_singlesample`: New workflow for processing RNA, protein and GDO modalities of individual samples (PR #1147).
 
+* `transform/clear_slots`: New component that can be used to remove all items from slots of a MuData object (PR #1171).
+
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
