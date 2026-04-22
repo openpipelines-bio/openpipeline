@@ -8,6 +8,8 @@
 
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).
 
+* `annotate/consensus_vote`: new component computing a (weighted) majority vote across cell type labels from multiple annotation methods (PR #1151).
+* 
 * `filter/filter_with_quantile`: added a component to filter numerical .obs or .var columns based on quantile thresholds, with optional subsetting (PR #1146).
 
 * `dimred/pca`: added possibility to do chunked processing using arguments `chunks` and `chunk_size`. Also added a `seed` argument in order to better control the variability between executions (PR #1157).
