@@ -3,6 +3,44 @@ workflow run_wf {
     input_ch
 
   main:
+
+  def singlesample_arguments = [
+      "input": "input",
+      "rna_layer": "rna_layer",
+      "prot_layer": "prot_layer",
+      "gdo_layer": "gdo_layer",
+      "add_id_to_obs": "add_id_to_obs",
+      "add_id_obs_output": "add_id_obs_output",
+      "add_id_make_observation_keys_unique": "add_id_make_observation_keys_unique",
+      "rna_min_counts": "rna_min_counts",
+      "rna_max_counts": "rna_max_counts",
+      "rna_min_genes_per_cell": "rna_min_genes_per_cell",
+      "rna_max_genes_per_cell": "rna_max_genes_per_cell",
+      "rna_min_cells_per_gene": "rna_min_cells_per_gene",
+      "rna_min_fraction_mito": "rna_min_fraction_mito",
+      "rna_max_fraction_mito": "rna_max_fraction_mito",
+      "rna_min_fraction_ribo": "rna_min_fraction_ribo",
+      "rna_max_fraction_ribo": "rna_max_fraction_ribo",
+      "skip_scrublet_doublet_detection": "skip_scrublet_doublet_detection",
+      "prot_min_counts": "prot_min_counts",
+      "prot_max_counts": "prot_max_counts",
+      "prot_min_proteins_per_cell": "prot_min_proteins_per_cell",
+      "prot_max_proteins_per_cell": "prot_max_proteins_per_cell",
+      "prot_min_cells_per_protein": "prot_min_cells_per_protein",
+      "gdo_min_counts": "gdo_min_counts",
+      "gdo_max_counts": "gdo_max_counts",
+      "gdo_min_guides_per_cell": "gdo_min_guides_per_cell",
+      "gdo_max_guides_per_cell": "gdo_max_guides_per_cell",
+      "gdo_min_cells_per_guide": "gdo_min_cells_per_guide",
+      "var_gene_names": "var_gene_names",
+      "var_name_mitochondrial_genes": "var_name_mitochondrial_genes",
+      "obs_name_mitochondrial_fraction": "obs_name_mitochondrial_fraction",
+      "mitochondrial_gene_regex": "mitochondrial_gene_regex",
+      "var_name_ribosomal_genes": "var_name_ribosomal_genes",
+      "obs_name_ribosomal_fraction": "obs_name_ribosomal_fraction",
+      "ribosomal_gene_regex": "ribosomal_gene_regex"
+    ]
+
     singlesample_ch = input_ch
       // Make sure there is not conflict between the output from this workflow
       // And the output from any of the components
@@ -24,100 +62,35 @@ workflow run_wf {
         def newState = state + ["var_qc_metrics": var_qc_default.join(",")]
         [id, newState]
       }
-
-      | process_singlesample.run(
-        fromState: {id, state ->
-          [
-            "id": id,
-            "input": state.input,
-            "rna_layer": state.rna_layer,
-            "prot_layer": state.prot_layer,
-            "gdo_layer": state.gdo_layer,
-            "add_id_to_obs": state.add_id_to_obs,
-            "add_id_obs_output": state.add_id_obs_output,
-            "add_id_make_observation_keys_unique": state.add_id_make_observation_keys_unique,
-            "rna_min_counts": state.rna_min_counts,
-            "rna_max_counts": state.rna_max_counts,
-            "rna_min_percentile_counts": state.rna_min_percentile_counts,
-            "rna_max_percentile_counts": state.rna_max_percentile_counts,
-            "rna_log_transform_total_counts": state.rna_log_transform_total_counts,
-            "rna_min_genes_per_cell": state.rna_min_genes_per_cell,
-            "rna_max_genes_per_cell": state.rna_max_genes_per_cell,
-            "rna_min_cells_per_gene": state.rna_min_cells_per_gene,
-            "rna_min_fraction_mito": state.rna_min_fraction_mito,
-            "rna_max_fraction_mito": state.rna_max_fraction_mito,
-            "rna_min_fraction_ribo": state.rna_min_fraction_ribo,
-            "rna_max_fraction_ribo": state.rna_max_fraction_ribo,
-            "skip_scrublet_doublet_detection": state.skip_scrublet_doublet_detection,
-            "prot_min_counts": state.prot_min_counts,
-            "prot_max_counts": state.prot_max_counts,
-            "prot_min_percentile_counts": state.prot_min_percentile_counts,
-            "prot_max_percentile_counts": state.prot_max_percentile_counts,
-            "prot_log_transform_total_counts": state.prot_log_transform_total_counts,
-            "prot_min_proteins_per_cell": state.prot_min_proteins_per_cell,
-            "prot_max_proteins_per_cell": state.prot_max_proteins_per_cell,
-            "prot_min_cells_per_protein": state.prot_min_cells_per_protein,
-            "gdo_min_counts": state.gdo_min_counts,
-            "gdo_max_counts": state.gdo_max_counts,
-            "gdo_min_guides_per_cell": state.gdo_min_guides_per_cell,
-            "gdo_max_guides_per_cell": state.gdo_max_guides_per_cell,
-            "gdo_min_cells_per_guide": state.gdo_min_cells_per_guide,
-            "var_gene_names": state.var_gene_names,
-            "var_name_mitochondrial_genes": state.var_name_mitochondrial_genes,
-            "obs_name_mitochondrial_fraction": state.obs_name_mitochondrial_fraction,
-            "mitochondrial_gene_regex": state.mitochondrial_gene_regex,
-            "var_name_ribosomal_genes": state.var_name_ribosomal_genes,
-            "obs_name_ribosomal_fraction": state.obs_name_ribosomal_fraction,
-            "ribosomal_gene_regex": state.ribosomal_gene_regex
-            ]
-        },
-        toState: ["input": "output"]
+      | process_singlesample_base.run(
+        fromState: singlesample_arguments,
+        toState: [
+          "input": "output",
+          "modality": "output_modality"
+        ]
       )
   
-    def singlesample_arguments = [
-      "rna_min_counts",
-      "rna_max_counts",
-      "rna_min_percentile_counts",
-      "rna_max_percentile_counts",
-      "rna_min_genes_per_cell",
-      "rna_max_genes_per_cell",
-      "rna_min_cells_per_gene",
-      "rna_min_fraction_mito",
-      "rna_max_fraction_mito",
-      "rna_min_fraction_ribo",
-      "rna_max_fraction_ribo",
-      "skip_scrublet_doublet_detection",
-      "prot_min_counts",
-      "prot_max_counts",
-      "prot_min_percentile_counts",
-      "prot_max_percentile_counts",
-      "prot_min_proteins_per_cell",
-      "prot_max_proteins_per_cell",
-      "prot_min_cells_per_protein",
-      "gdo_min_counts",
-      "gdo_max_counts",
-      "gdo_min_guides_per_cell",
-      "gdo_max_guides_per_cell",
-      "gdo_min_cells_per_guide",
-      "var_gene_names",
-      "var_name_mitochondrial_genes",
-      "obs_name_mitochondrial_fraction",
-      "mitochondrial_gene_regex",
-      "var_name_ribosomal_genes",
-      "obs_name_ribosomal_fraction",
-      "ribosomal_gene_regex"
-    ]
-
     concat_ch = singlesample_ch
-      // Collect all samples before concatenation
-      | toList()
+      // Remove arguments for singlesample processing from state.
+      | map {id, state -> 
+        def allwayskeep = ["input", "gdo_layer", "rna_layer", "prot_layer", "workflow_output"]
+        def newState = state.findAll{(it.key !in singlesample_arguments.values() + ["id"]) || (it.key in allwayskeep)}
+        [id, newState]
+      }
 
-      // Concatenation: single, multi-modal MuData objects into a single multi-modal MuData object. 
-      | map { sample_list ->
-        def old_ids = sample_list.collect { id, state -> id }
-        def states = sample_list.collect { id, state -> state }
-        def new_id = "merged"
-
+      //
+      // Concatenation: join observations across samples together per modality. 
+      //
+      // Concatenate multiple single-sample unimodal MuData objects back into several multi-sample files.
+      // One multi-sample MuData file is created per modality.
+      //
+      | map { id, state -> // Put modality name in first element so that we can group on it
+        [state.modality, id, state]
+      }
+      | groupTuple(by: 0, sort: "hash")
+      | view {"After groupTuple: $it"}
+      | map { modality, old_ids, states ->
+        def new_id = "combined_$modality"
         // keys in the new state that should not have a unique value across samples
         def new_state_non_unique_values = [
           "input": states.collect{it.input},
@@ -155,8 +128,28 @@ workflow run_wf {
           newState + ["input": output.output]
         }, 
       )
-
       | view {"After concatenation: $it"}
+      | toSortedList()
+      | map {modalities_states -> 
+        def states = modalities_states.collect{it[1]}
+        def new_input = states.collect{it.input}
+        def join_id = states[0]._meta.join_id
+        def other_state_keys = states.inject([].toSet()){ current_keys, state ->
+            def new_keys = current_keys + state.keySet()
+            return new_keys
+          }.minus(["output", "input", "modality", "_meta"])
+        def new_state = other_state_keys.inject([:]){ old_state, argument_name ->
+            argument_values = states.collect{it.get(argument_name)}.unique()
+            assert argument_values.size() == 1, "Arguments should be the same across modalities. Please report this \
+                                                 as a bug. Argument name: $argument_name, \
+                                                 argument value: $argument_values"
+            def argument_value
+            argument_values.each { argument_value = it }
+            def current_state = old_state + [(argument_name): argument_value]
+            return current_state
+          }
+         ["merged", new_state + ["input": new_input, "_meta": ["join_id": join_id]]]
+      }
 
     multisample_ch = concat_ch
       | process_batches.run(

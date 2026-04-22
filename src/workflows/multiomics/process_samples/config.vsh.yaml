@@ -347,7 +347,7 @@ dependencies:
     alias: split_modalities_workflow
   - name: dataflow/merge
   - name: dataflow/concatenate_h5mu
-  - name: workflows/multiomics/process_singlesample
+  - name: workflows/multiomics/process_singlesample_base
   - name: workflows/multiomics/process_batches
 # test_dependencies:
 #    - name: filter/remove_modality
