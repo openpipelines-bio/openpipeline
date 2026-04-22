@@ -1,0 +1,133 @@
+name: calculate_marker_genes
+namespace: annotate
+scope: "public"
+authors:
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ author ]
+
+description: |
+  Calculate marker genes for clusters in a MuData object using scanpy's
+  `rank_genes_groups()` function.
+
+argument_groups:
+  - name: Inputs
+    description: Arguments that define the input
+    arguments:
+      - name: --input
+        type: file
+        required: true
+        example: input.h5mu
+        direction: input
+        description: Path to the input MuData H5MU file.
+      - name: --modality
+        type: string
+        default: rna
+        description: Name of the modality in the input MuData object.
+      - name: --input_layer
+        type: string
+        required: false
+        description: |
+          Name of the layer to use. This should contain log-normalized data.
+          If not set, the .X matrix will be used.
+      - name: --sel_clustering
+        type: string
+        required: true
+        example: leiden_0.5
+        description: |
+          Name of the `.obs` column that contains cluster assignments to
+          calculate marker genes for.
+
+  - name: Outputs
+    description: Arguments that define the output
+    arguments:
+      - name: --output
+        type: file
+        direction: output
+        default: output.h5mu
+        example: output.h5mu
+        description: Path to the output MuData H5MU file.
+      - name: --output_markers
+        type: file
+        direction: output
+        default: markers.csv
+        example: markers.csv
+        description: Path to the output CSV file where marker genes will be saved.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+  - name: Rank genes groups
+    description: Arguments for scanpy `rank_genes_groups()`
+    arguments:
+      - name: --method
+        type: string
+        default: t-test
+        choices: [logreg, t-test, wilcoxon, t-test_overestim_var]
+        description: Statistical test used to identify marker genes.
+      - name: --corr_method
+        type: string
+        default: benjamini-hochberg
+        choices: [benjamini-hochberg, bonferroni]
+        description: |
+          Method used to correct p-values for multiple testing. Not used when
+          `--method` is `logreg`.
+      - name: --tie_correct
+        type: boolean
+        default: false
+        description: |
+          Whether to apply tie correction to the Wilcoxon test statistic. Only
+          used when `--method` is `wilcoxon`.
+      - name: --key_added
+        type: string
+        default: rank_genes_groups
+        description: Key in `.uns` where the results will be stored.
+
+  - name: Filter rank genes groups
+    description: Arguments for scanpy `filter_rank_genes_groups()`
+    arguments:
+      - name: --filter_results
+        type: boolean
+        default: false
+        description: |
+          Whether to filter the results of `rank_genes_groups()` using
+          `filter_rank_genes_groups()`.
+      - name: --min_in_group_fraction
+        type: double
+        default: 0.25
+        description: Minimum in-group fraction required for a marker gene.
+      - name: --max_out_group_fraction
+        type: double
+        default: 0.5
+        description: Maximum out-group fraction allowed for a marker gene.
+      - name: --min_fold_change
+        type: double
+        default: 1
+        description: Minimum log fold change required for a marker gene.
+      - name: --compare_abs
+        type: boolean
+        default: false
+        description: |
+          Whether to compare against absolute fold changes when filtering.
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: python
+        __merge__: [ /src/base/requirements/scanpy.yaml, /src/base/requirements/anndata_mudata.yaml ]
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [singlecpu, lowmem]
