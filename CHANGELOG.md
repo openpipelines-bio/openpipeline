@@ -14,6 +14,8 @@
 
 * `workflows/multiomics/process_singlesample`: New workflow for processing RNA, protein and GDO modalities of individual samples (PR #1147).
 
+* `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
+
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
