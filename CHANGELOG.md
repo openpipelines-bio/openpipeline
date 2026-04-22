@@ -4,19 +4,41 @@
 
 * `qc/calculate_qc_metrics`: added support for MuData encoded in Zarr format (PR #1140).
 
+* `dataflow/split_modalities`: added support for MuData encoded in Zarr format (PR #1152)
+
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).
 
 * `annotate/consensus_vote`: new component computing a (weighted) majority vote across cell type labels from multiple annotation methods (PR #1151).
+* 
+* `filter/filter_with_quantile`: added a component to filter numerical .obs or .var columns based on quantile thresholds, with optional subsetting (PR #1146).
+
+* `dimred/pca`: added possibility to do chunked processing using arguments `chunks` and `chunk_size`. Also added a `seed` argument in order to better control the variability between executions (PR #1157).
+
+* `workflows/multiomics/process_singlesample`: New workflow for processing RNA, protein and GDO modalities of individual samples (PR #1147).
+
+* `transform/clear_slots`: New component that can be used to remove all items from slots of a MuData object (PR #1171).
 
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
 
+* `annotate/popv`: bump version to 0.6.1 (PR #1167).
+
 ## MINOR CHANGES
+
+* `dataflow/split_modalities`: improve memory consumption by only reading one modality at the same time (PR #1152).
 
 * `qc/calculate_qc_metrics`: bump python version to `3.13` (PR #1140).
 
 * `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137)
+
+* Bump viash to 0.9.7 (PR #1145)
+
+* `workflows/multiomics/process_samples`: refactored to use a shared `process_singlesample_base` subworkflow, which is also used by the new `process_singlesample` workflow to avoid code duplication (PR #1147).
+
+## BUG FIXES
+
+* `dataflow/split_h5mu`: pin scipy version to 1.16.3 to avoid regression that corrupts large sparse matrix indexing (PR #1153).
 
 # openpipelines 4.0.4
 
