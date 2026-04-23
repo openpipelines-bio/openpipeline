@@ -1,11 +1,12 @@
 nextflow.enable.dsl=2
-targetDir = params.rootDir + "/target/_test/nextflow"
+targetDir = params.rootDir + "/target/nextflow"
+targetTestDir = params.rootDir + "/target/_test/nextflow"
 
 include { remove_modality }  from targetDir + '/filter/remove_modality/main.nf'
 include { move_layer } from targetDir + '/transform/move_layer/main.nf' 
 include { process_samples } from targetDir + "/workflows/multiomics/process_samples/main.nf"
-include { assert_test_workflow_2_output } from targetDir + "/test_workflows/multiomics/process_samples/assert_test_workflow_2_output/main.nf"
-include { assert_test_workflow_9_output } from targetDir + "/test_workflows/multiomics/process_samples/assert_test_workflow_9_output/main.nf"
+include { assert_test_workflow_2_output } from targetTestDir + "/test_workflows/multiomics/process_samples/assert_test_workflow_2_output/main.nf"
+include { assert_test_workflow_9_output } from targetTestDir + "/test_workflows/multiomics/process_samples/assert_test_workflow_9_output/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 
