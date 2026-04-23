@@ -7,7 +7,7 @@ include { move_layer } from targetDir + '/transform/move_layer/main.nf'
 include { process_samples } from targetDir + "/workflows/multiomics/process_samples/main.nf"
 include { assert_test_workflow_2_output } from targetTestDir + "/test_workflows/multiomics/process_samples/assert_test_workflow_2_output/main.nf"
 include { assert_test_workflow_9_output } from targetTestDir + "/test_workflows/multiomics/process_samples/assert_test_workflow_9_output/main.nf"
-include { assert_test_workflow_10_output } from targetTestDir + "/test_workflows/multiomics/process_samples/assert_test_workflow_10_output/main.nf"
+include { assert_test_workflow_11_output } from targetTestDir + "/test_workflows/multiomics/process_samples/assert_test_workflow_11_output/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 
@@ -473,7 +473,7 @@ workflow test_wf9 {
     )
 }
 
-workflow test_wf10 {
+workflow test_wf11 {
 
   resources_test = file(params.resources_test)
 
@@ -518,7 +518,7 @@ workflow test_wf10 {
       def new_state = ["output": output_file, "input": events.collect{it.input}]
       [id, new_state]
     }
-    | assert_test_workflow_10_output.run(
+    | assert_test_workflow_11_output.run(
       fromState: [
         "input": "output",
         "orig_input": "input"

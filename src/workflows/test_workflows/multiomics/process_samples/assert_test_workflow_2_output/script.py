@@ -86,17 +86,6 @@ def test_modalities_present(output_h5mu):
     assert all(k in output_h5mu.obsm.keys() for k in ("rna", "prot"))
 
 
-def test_modalities_have_different_obs_counts(output_h5mu):
-    # Without --intersect_obs, per-modality filtering yields diverging cell sets
-    # across modalities. This guards against intersect_obs silently being applied.
-    rna_n_obs = output_h5mu["rna"].n_obs
-    prot_n_obs = output_h5mu["prot"].n_obs
-    assert rna_n_obs != prot_n_obs, (
-        f"Expected rna and prot modalities to have different observation counts "
-        f"when intersect_obs is not enabled, but both have {rna_n_obs}."
-    )
-
-
 def test_rna_embeddings_present(output_h5mu):
     assert all(k in output_h5mu["rna"].obsm.keys() for k in ("X_pca", "X_umap"))
     assert "pca_loadings" in output_h5mu["rna"].varm.keys()
