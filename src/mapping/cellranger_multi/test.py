@@ -814,7 +814,7 @@ def test_raise_with_missing_library_id(run_component, random_path):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
     assert re.search(
-        r"The following library IDs have no matching FASTQ files in any input directory: \['non_existing_library_id'\]. Check that --library_id values match the FASTQ file names.",
+        r"No FASTQ files found for the following library ids: non_existing_library_id. Check that --library_id values match the FASTQ file names.",
         err.value.stdout.decode("utf-8"),
     )
 
