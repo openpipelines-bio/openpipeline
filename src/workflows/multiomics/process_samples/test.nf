@@ -1,5 +1,5 @@
 nextflow.enable.dsl=2
-targetDir = params.rootDir + "/target/nextflow"
+targetDir = params.rootDir + "/target/_test/nextflow"
 
 include { remove_modality }  from targetDir + '/filter/remove_modality/main.nf'
 include { move_layer } from targetDir + '/transform/move_layer/main.nf' 
