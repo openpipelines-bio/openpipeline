@@ -27,16 +27,14 @@ reference_file = f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtere
 
 
 def log_normalize(adata):
-    adata_lognorm = adata.copy()
-    sc.pp.normalize_total(adata_lognorm, target_sum=1e4)
-    sc.pp.log1p(adata_lognorm)
+    adata_norm = sc.pp.normalize_total(adata, target_sum=1e4, copy=True)
+    adata_lognorm = sc.pp.log1p(adata_norm, copy=True)
     adata.layers["log_normalized"] = adata_lognorm.X
     return adata
 
 
 def calculate_hvg(adata, n_top_genes=1000):
-    adata_hvg = adata.copy()
-    sc.pp.highly_variable_genes(adata_hvg, n_top_genes=n_top_genes)
+    adata_hvg = sc.pp.highly_variable_genes(adata, n_top_genes=n_top_genes, copy=True)
     adata.var["filter_with_hvg"] = adata_hvg.var["highly_variable"]
     return adata
 
