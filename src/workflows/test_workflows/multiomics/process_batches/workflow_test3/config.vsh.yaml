@@ -1,27 +1,25 @@
-name: "assert_test_workflow_2_output"
-namespace: "test_workflows/multiomics/process_samples"
-scope: test
-description: "This component tests the output of the integration test of process_samples test_wf."
+name: "workflow_test3"
+namespace: "test_workflows/multiomics/process_batches"
+scope: "test"
+description: "This component tests the output of the integration test of process_batches test_wf3."
 authors:
-  - __merge__: /src/authors/dries_schaumont.yaml
+  - __merge__: /src/authors/dorien_roosen.yaml
 argument_groups:
   - name: Inputs
     arguments:
       - name: "--input"
         type: file
         required: true
+        description: Path to the modality summary csv.
         example: test.h5mu
       - name: "--orig_input"
         type: file
-        multiple: true
         required: true
         description: Path to the original input file.
         example: input.h5mu
 resources:
   - type: python_script
     path: script.py
-  - path: /src/utils/setup_logger.py
-  - path: conftest.py
 engines:
   - type: docker
     image: python:3.12-slim

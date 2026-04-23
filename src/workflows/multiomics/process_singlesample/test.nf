@@ -80,6 +80,7 @@ workflow test_wf2 {
       add_id_make_observation_keys_unique: true,
       do_subset: true,
       add_id_obs_output: "sample_id",
+      intersect_obs: true,
       output: "pbmc_test.h5mu"
     ]
   ])
