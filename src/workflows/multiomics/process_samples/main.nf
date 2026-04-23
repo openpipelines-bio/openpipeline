@@ -172,6 +172,7 @@ workflow run_wf {
             "rna_layer": state.rna_layer,
             "prot_layer": state.prot_layer,
             "clr_axis": state.clr_axis,
+            "intersect_obs": state.intersect_obs,
             "rna_enable_scaling": state.rna_enable_scaling,
             "rna_scaling_output_layer": state.rna_scaling_output_layer,
             "rna_scaling_pca_obsm_output": state.rna_scaling_pca_obsm_output,
