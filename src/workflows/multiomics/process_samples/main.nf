@@ -113,7 +113,7 @@ workflow run_wf {
         def new_state = all_state_keys.inject([:]){ old_state, argument_name ->
             argument_values = states.collect{it.get(argument_name)}.unique()
             assert argument_values.size() == 1, "Arguments should be the same across samples. Argument name: $argument_name, \
-            argument value: $argument_values"
+                                                 argument value: $argument_values"
             // take the unique value from the set (there is only one)
             def argument_value
             argument_values.each { argument_value = it }
