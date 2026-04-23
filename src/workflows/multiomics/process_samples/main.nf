@@ -14,6 +14,9 @@ workflow run_wf {
       "add_id_make_observation_keys_unique": "add_id_make_observation_keys_unique",
       "rna_min_counts": "rna_min_counts",
       "rna_max_counts": "rna_max_counts",
+      "rna_min_percentile_counts": "rna_min_percentile_counts",
+      "rna_max_percentile_counts": "rna_max_percentile_counts",
+      "rna_log_transform_total_counts": "rna_log_transform_total_counts",
       "rna_min_genes_per_cell": "rna_min_genes_per_cell",
       "rna_max_genes_per_cell": "rna_max_genes_per_cell",
       "rna_min_cells_per_gene": "rna_min_cells_per_gene",
@@ -24,6 +27,9 @@ workflow run_wf {
       "skip_scrublet_doublet_detection": "skip_scrublet_doublet_detection",
       "prot_min_counts": "prot_min_counts",
       "prot_max_counts": "prot_max_counts",
+      "prot_min_percentile_counts": "prot_min_percentile_counts",
+      "prot_max_percentile_counts": "prot_max_percentile_counts",
+      "prot_log_transform_total_counts": "prot_log_transform_total_counts",
       "prot_min_proteins_per_cell": "prot_min_proteins_per_cell",
       "prot_max_proteins_per_cell": "prot_max_proteins_per_cell",
       "prot_min_cells_per_protein": "prot_min_cells_per_protein",
@@ -102,12 +108,12 @@ workflow run_wf {
         def all_state_keys = states.inject([].toSet()){ current_keys, state ->
             def new_keys = current_keys + state.keySet()
             return new_keys
-        }.minus(["output", "input_id", "input", "_meta", "id"] + singlesample_arguments)
+        }.minus(["output", "input_id", "input", "_meta"])
         // Create the new state from the keys, values should be the same across samples
         def new_state = all_state_keys.inject([:]){ old_state, argument_name ->
             argument_values = states.collect{it.get(argument_name)}.unique()
-            assert argument_values.size() == 1,
-            "Arguments should be the same across samples. Argument name: $argument_name, argument value: $argument_values"
+            assert argument_values.size() == 1, "Arguments should be the same across samples. Argument name: $argument_name, \
+            argument value: $argument_values"
             // take the unique value from the set (there is only one)
             def argument_value
             argument_values.each { argument_value = it }
