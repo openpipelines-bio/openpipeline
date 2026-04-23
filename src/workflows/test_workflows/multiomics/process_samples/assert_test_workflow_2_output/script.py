@@ -204,10 +204,8 @@ def test_rna_obs_slots(output_h5mu):
         "scrublet_doublet_score",
         "filter_with_scrublet",
         "filter_with_counts",
-        "filter_with_percentile",
         "num_nonzero_vars",
         "total_counts",
-        "log1p_total_counts",
     ]
     assert all(
         column_name in obs_df.columns

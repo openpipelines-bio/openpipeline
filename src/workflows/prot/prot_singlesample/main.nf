@@ -84,7 +84,7 @@ workflow run_wf {
         // do_filter does not need a layer argument because it filters all layers
         // from a modality.
         def obs_filter = ["filter_with_counts"]
-        if (state.min_counts_percentile || state.max_counts_percentile) {
+        if (state.min_percentile_counts || state.max_percentile_counts) {
           obs_filter += ["filter_with_percentile"]
         }
         def newState = [

@@ -189,7 +189,7 @@ workflow run_wf {
         if (state.var_name_ribosomal_genes) {
           obs_filter += ["filter_ribosomal"]
         }
-        if (state.min_counts_percentile || state.max_counts_percentile) {
+        if (state.min_percentile_counts || state.max_percentile_counts) {
           obs_filter += ["filter_with_percentile"]
         }
         stateMapping += ["obs_filter": obs_filter]
