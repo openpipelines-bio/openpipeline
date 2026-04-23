@@ -38,6 +38,8 @@
 
 * `workflows/multiomics/process_samples`: refactored to use a shared `process_singlesample_base` subworkflow, which is also used by the new `process_singlesample` workflow to avoid code duplication (PR #1147).
 
+* Bump anndata to `0.12.11` (PR #1174).
+
 ## BUG FIXES
 
 * `dataflow/split_h5mu`: pin scipy version to 1.16.3 to avoid regression that corrupts large sparse matrix indexing (PR #1153).
