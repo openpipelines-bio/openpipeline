@@ -47,18 +47,17 @@ def validate_inputs(par, mdata_query, mdata_ref):
     query_adata = mdata_query.mod[modality]
     ref_adata = mdata_ref.mod[modality]
 
-    query_key = par["input_obsm_features"]
-    ref_key = par["reference_obsm_features"]
-    if query_key is not None and query_key not in query_adata.obsm:
-        raise ValueError(
-            f"Embedding '{query_key}' not found in query modality '{modality}' obsm. "
-            f"Available keys: {list(query_adata.obsm.keys())}"
-        )
-    if ref_key is not None and ref_key not in ref_adata.obsm:
-        raise ValueError(
-            f"Embedding '{ref_key}' not found in reference modality '{modality}' obsm. "
-            f"Available keys: {list(ref_adata.obsm.keys())}"
-        )
+    embeddings = {
+        "query": (query_adata, par["input_obsm_features"]),
+        "reference": (ref_adata, par["reference_obsm_features"]),
+    }
+
+    for name, (adata, key) in embeddings.items():
+        if key is not None and key not in adata.obsm:
+            raise ValueError(
+                f"Embedding '{key}' not found in {name} modality '{modality}' obsm. "
+                f"Available keys: {list(adata.obsm.keys())}"
+            )
 
     for target in par["reference_obs_targets"]:
         if target not in ref_adata.obs:
