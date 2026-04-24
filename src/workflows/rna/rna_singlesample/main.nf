@@ -143,13 +143,12 @@ workflow run_wf {
           "input": state.input,
           "obs_min_quantile": state.min_percentile_counts,
           "obs_max_quantile": state.max_percentile_counts,
-          "log_transform": state.log_transform_total_counts
+          "obs_log1p_transform": state.log_transform_total_counts
         ]
       },
       args: [
           "obs_column": "total_counts",
-          "obs_name_filter": "filter_with_percentile",
-          "var_name_filter": "filter_with_percentile"
+          "obs_name_filter": "filter_with_percentile"
       ],
       toState: ["input": "output"]
     )
