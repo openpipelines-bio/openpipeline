@@ -66,7 +66,7 @@ def _resolve_gene_set(gs, input_paths=None):
         return gs
 
     # Relative path: infer host CWD by walking up from automounted input paths
-    for inp in (input_paths or []):
+    for inp in input_paths or []:
         if not (inp and inp.startswith(mount_root)):
             continue
         d = os.path.dirname(inp)
@@ -98,15 +98,9 @@ def _load_de_table(csv_path, gene_column):
 def _run_prerank(de, gene_sets, output_dir, par, n_jobs):
     """Run pre-ranked GSEA for each gene set library."""
     results = {}
-    ranking = (
-        de[par["fc_column"]]
-        .dropna()
-        .sort_values(ascending=False)
-    )
+    ranking = de[par["fc_column"]].dropna().sort_values(ascending=False)
     if ranking.empty:
-        raise ValueError(
-            f"Ranking column '{par['fc_column']}' has no non-NA values."
-        )
+        raise ValueError(f"Ranking column '{par['fc_column']}' has no non-NA values.")
     for gs in gene_sets:
         logger.info("prerank GSEA with gene set: %s", gs)
         label = os.path.splitext(os.path.basename(gs))[0] if os.path.isfile(gs) else gs
@@ -172,18 +166,21 @@ def main():
 
     if par["fc_column"] not in de.columns:
         raise ValueError(
-            f"--fc_column '{par['fc_column']}' not found. "
-            f"Available: {list(de.columns)}"
+            f"--fc_column '{par['fc_column']}' not found. Available: {list(de.columns)}"
         )
 
     os.makedirs(par["output_csv_dir"], exist_ok=True)
 
     n_jobs = max(1, (meta.get("cpus") or 1))
     input_paths = [par.get("input"), par.get("input_degenes")]
-    gene_sets = [_resolve_gene_set(gs, input_paths=input_paths) for gs in par["gene_sets"]]
+    gene_sets = [
+        _resolve_gene_set(gs, input_paths=input_paths) for gs in par["gene_sets"]
+    ]
 
     if par["method"] == "prerank":
-        enrichment_results = _run_prerank(de, gene_sets, par["output_csv_dir"], par, n_jobs)
+        enrichment_results = _run_prerank(
+            de, gene_sets, par["output_csv_dir"], par, n_jobs
+        )
     elif par["method"] == "ora":
         if par["pval_column"] not in de.columns:
             raise ValueError(
@@ -192,7 +189,9 @@ def main():
             )
         enrichment_results = _run_ora(de, gene_sets, par["output_csv_dir"], par, n_jobs)
     else:
-        raise ValueError(f"Unknown method '{par['method']}'. Choose 'prerank' or 'ora'.")
+        raise ValueError(
+            f"Unknown method '{par['method']}'. Choose 'prerank' or 'ora'."
+        )
 
     logger.info("Reading input h5mu from %s", par["input"])
     mdata = mu.read_h5mu(par["input"])

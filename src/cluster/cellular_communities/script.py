@@ -75,7 +75,7 @@ def _dynamics_similarity(dynamics, subpops):
 def _cluster_hierarchical(dist_mat, n_communities, link_method):
     """Ward linkage hierarchical clustering; returns integer cluster labels."""
     condensed = squareform(dist_mat, checks=False)
-    condensed = np.clip(condensed, 0, None)   # numerical noise may give tiny negatives
+    condensed = np.clip(condensed, 0, None)  # numerical noise may give tiny negatives
     Z = linkage(condensed, method=link_method)
     labels = fcluster(Z, t=n_communities, criterion="maxclust")
     return labels.astype(str)
@@ -84,6 +84,7 @@ def _cluster_hierarchical(dist_mat, n_communities, link_method):
 def _cluster_spectral(sim_mat, n_communities):
     """Spectral clustering on a similarity matrix."""
     from sklearn.cluster import SpectralClustering
+
     sc = SpectralClustering(
         n_clusters=n_communities,
         affinity="precomputed",
@@ -110,8 +111,7 @@ def main():
     for key in (par["uns_proportions"], par["uns_dynamics"]):
         if key not in adata.uns:
             raise ValueError(
-                f"Key '{key}' not found in .uns. "
-                f"Available: {list(adata.uns.keys())}"
+                f"Key '{key}' not found in .uns. Available: {list(adata.uns.keys())}"
             )
 
     # ── load data ─────────────────────────────────────────────────────────────
@@ -144,9 +144,12 @@ def main():
     if method == "hierarchical":
         logger.info(
             "Hierarchical clustering (linkage=%s, n_communities=%d).",
-            par["linkage"], n_comm,
+            par["linkage"],
+            n_comm,
         )
-        community_labels = _cluster_hierarchical(dist_mat.values, n_comm, par["linkage"])
+        community_labels = _cluster_hierarchical(
+            dist_mat.values, n_comm, par["linkage"]
+        )
     else:
         logger.info("Spectral clustering (n_communities=%d).", n_comm)
         community_labels = _cluster_spectral(combined_df, n_comm)
@@ -156,7 +159,9 @@ def main():
 
     # ── assign to cells ───────────────────────────────────────────────────────
     comm_col = par["obs_community_id"]
-    adata.obs[comm_col] = adata.obs[subpop_col].map(subpop_to_community).fillna("unassigned")
+    adata.obs[comm_col] = (
+        adata.obs[subpop_col].map(subpop_to_community).fillna("unassigned")
+    )
     logger.info("Assigned community labels to .obs['%s'].", comm_col)
 
     # ── store metadata in uns ─────────────────────────────────────────────────

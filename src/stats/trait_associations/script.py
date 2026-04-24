@@ -1,5 +1,4 @@
 import sys
-import numpy as np
 import pandas as pd
 import mudata as mu
 
@@ -51,7 +50,9 @@ def _fit_model(sub_df, trait_col, covariate_cols, random_effect_col):
 
     try:
         if random_effect_col and random_effect_col in sub_df.columns:
-            data = sub_df[["proportion", trait_col, random_effect_col] + covariate_cols].dropna()
+            data = sub_df[
+                ["proportion", trait_col, random_effect_col] + covariate_cols
+            ].dropna()
             if len(data) < 2:
                 return None
             result = smf.mixedlm(formula, data, groups=data[random_effect_col]).fit(
@@ -152,20 +153,27 @@ def main():
             if n_complete < min_n:
                 logger.debug(
                     "Skipping %s × %s: only %d complete cases (min=%d).",
-                    subpop, trait, n_complete, min_n,
+                    subpop,
+                    trait,
+                    n_complete,
+                    min_n,
                 )
                 continue
 
             fit = _fit_model(merged, trait, covariate_cols, random_effect_col)
             if fit is None:
-                logger.warning("Model failed for subpopulation '%s' × trait '%s'.", subpop, trait)
+                logger.warning(
+                    "Model failed for subpopulation '%s' × trait '%s'.", subpop, trait
+                )
                 continue
 
-            records.append({
-                "subpopulation": subpop,
-                "trait": trait,
-                **fit,
-            })
+            records.append(
+                {
+                    "subpopulation": subpop,
+                    "trait": trait,
+                    **fit,
+                }
+            )
 
     if not records:
         raise RuntimeError(
@@ -182,6 +190,7 @@ def main():
         results_df["fdr_q"] = results_df["p_value"]
     else:
         from statsmodels.stats.multitest import multipletests
+
         method_map = {"bh": "fdr_bh", "bonferroni": "bonferroni"}
         _, fdr_q, _, _ = multipletests(
             results_df["p_value"].values, method=method_map[fdr_method]

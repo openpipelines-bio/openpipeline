@@ -5,18 +5,18 @@ description: |
   BEYOND trajectory analysis: takes a multi-donor atlas h5mu (output of
   beyond/atlas_building) and produces the full BEYOND outputs:
 
-    1. metadata/calculate_proportions  — participant × subpopulation proportion matrix
-    2. dimred/phate                    — PHATE cellular landscape from proportion matrix
-    3. trajectory/palantir             — pseudotime + fate probabilities
-    4. trajectory/via                  — alternative pseudotime (validation)
-    5. trajectory/pseudotime_dynamics  — GAM-fitted proportion dynamics along pseudotime
-    6. cluster/cellular_communities    — community detection (co-occurrence + dynamics)
-    7. stats/trait_associations        — linear mixed models per subpopulation × trait
-    8. interpret/pathway_enrichment    — GSEA/ORA on DE results (optional)
+    1. metadata/calculate_proportions   -  participant x subpopulation proportion matrix
+    2. dimred/phate                     -  PHATE cellular landscape from proportion matrix
+    3. trajectory/palantir              -  pseudotime + fate probabilities
+    4. trajectory/via                   -  alternative pseudotime (validation)
+    5. trajectory/pseudotime_dynamics   -  GAM-fitted proportion dynamics along pseudotime
+    6. cluster/cellular_communities     -  community detection (co-occurrence + dynamics)
+    7. stats/trait_associations         -  linear mixed models per subpopulation x trait
+    8. interpret/pathway_enrichment     -  GSEA/ORA on DE results (optional)
 
   Required obs columns in the input atlas:
-    obs["participant_id"]   — donor of origin
-    obs["subpopulation"]    — per-cell-type Leiden subcluster (from atlas_building)
+    obs["participant_id"]    -  donor of origin
+    obs["subpopulation"]     -  per-cell-type Leiden subcluster (from atlas_building)
 
 authors:
   - __merge__: /src/authors/marilyn_degraeve.yaml
@@ -46,7 +46,7 @@ argument_groups:
         type: file
         required: false
         direction: output
-        description: Optional CSV of the full (subpopulation × trait) association table.
+        description: Optional CSV of the full (subpopulation x trait) association table.
         example: trait_associations.csv
 
       - name: "--output_pathway_csv_dir"
@@ -83,11 +83,11 @@ argument_groups:
         default: "proportions"
         required: false
         description: |
-          .uns / .obsm key under which the participant × subpopulation proportion
+          .uns / .obsm key under which the participant x subpopulation proportion
           matrix is stored (written by calculate_proportions; read by phate,
           pseudotime_dynamics, cellular_communities, and trait_associations).
 
-  - name: Trajectory — Palantir
+  - name: Trajectory  -  Palantir
     arguments:
       - name: "--start_cell"
         type: string
@@ -131,7 +131,7 @@ argument_groups:
         required: false
         description: k-nearest neighbours for the Palantir diffusion map. Reduce for small datasets.
 
-  - name: Trajectory — VIA
+  - name: Trajectory  -  VIA
     arguments:
       - name: "--root_user"
         type: string

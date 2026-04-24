@@ -56,8 +56,7 @@ def main():
 
     # Count cells per (participant, subpopulation)
     counts = (
-        adata.obs
-        .groupby([participant_col, subpop_col], observed=True)
+        adata.obs.groupby([participant_col, subpop_col], observed=True)
         .size()
         .unstack(fill_value=0)
     )
@@ -83,7 +82,8 @@ def main():
     participant_ids = adata.obs[participant_col].values
     obsm_matrix = np.array(
         [
-            proportions.loc[pid].values if pid in proportions.index
+            proportions.loc[pid].values
+            if pid in proportions.index
             else np.zeros(n_subpops)
             for pid in participant_ids
         ],

@@ -164,7 +164,7 @@ argument_groups:
         type: string
         default: "palantir_fate_probabilities"
         required: false
-        description: "`.obsm` key for the cell × terminal-state fate-probability matrix."
+        description: "`.obsm` key for the cell x terminal-state fate-probability matrix."
 
       - name: "--uns_waypoints"
         type: string

@@ -42,7 +42,9 @@ def _participant_pseudotimes(adata, participant_col, pseudotime_col, min_cells):
     if len(excluded) > 0:
         logger.warning(
             "Excluding %d participant(s) with < %d cells: %s",
-            len(excluded), min_cells, list(excluded.index),
+            len(excluded),
+            min_cells,
+            list(excluded.index),
         )
     return grp.median().loc[keep]
 
@@ -106,8 +108,7 @@ def main():
     uns_key = par["uns_proportions"]
     if uns_key not in adata.uns:
         raise ValueError(
-            f"Key '{uns_key}' not found in .uns. "
-            f"Available: {list(adata.uns.keys())}"
+            f"Key '{uns_key}' not found in .uns. Available: {list(adata.uns.keys())}"
         )
 
     # ── participant-level pseudotime ─────────────────────────────────────────
@@ -120,7 +121,7 @@ def main():
     logger.info("Using %d participants for spline fitting.", len(pt))
 
     # ── proportion matrix ────────────────────────────────────────────────────
-    prop_df = pd.DataFrame(adata.uns[uns_key])   # column-first dict → DataFrame
+    prop_df = pd.DataFrame(adata.uns[uns_key])  # column-first dict → DataFrame
     common = prop_df.index.intersection(pt.index)
     prop_df = prop_df.loc[common]
     pt = pt.loc[common]
@@ -132,8 +133,10 @@ def main():
     for subpop in subpops:
         try:
             result = _fit_spline(
-                pt, prop_df[subpop],
-                par["lam"], par["n_pseudotime_bins"],
+                pt,
+                prop_df[subpop],
+                par["lam"],
+                par["n_pseudotime_bins"],
             )
             dynamics[subpop] = result
             logger.info(
@@ -149,7 +152,8 @@ def main():
     adata.uns[par["uns_output"]] = dynamics
     logger.info(
         "Stored dynamics for %d subpopulations in .uns['%s'].",
-        len(dynamics), par["uns_output"],
+        len(dynamics),
+        par["uns_output"],
     )
 
     logger.info("Writing output to %s", par["output"])

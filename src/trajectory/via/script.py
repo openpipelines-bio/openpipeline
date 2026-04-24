@@ -70,7 +70,9 @@ def main():
 
     logger.info(
         "Running VIA on %d cells, embedding %s, root=%s.",
-        len(cluster_labels), embedding.shape, root_user,
+        len(cluster_labels),
+        embedding.shape,
+        root_user,
     )
 
     # ── run VIA ───────────────────────────────────────────────────────────────
@@ -123,7 +125,7 @@ def main():
         random_seed=par["random_seed"],
         n_iter_leiden=par["n_iter_leiden"],
         num_threads=meta.get("cpus") or 1,
-        preserve_disconnected=True,   # keep isolated cluster-graph components intact
+        preserve_disconnected=True,  # keep isolated cluster-graph components intact
     )
     v.run_VIA()
     logger.info("VIA run complete.")
@@ -131,9 +133,7 @@ def main():
     # ── extract pseudotime ────────────────────────────────────────────────────
     pt = np.array(v.single_cell_pt_markov, dtype=float)
     adata.obs[par["obs_pseudotime"]] = pt
-    logger.info(
-        "Pseudotime range: [%.4f, %.4f].", float(pt.min()), float(pt.max())
-    )
+    logger.info("Pseudotime range: [%.4f, %.4f].", float(pt.min()), float(pt.max()))
 
     # ── extract graph ─────────────────────────────────────────────────────────
     # v.edgelist: list of (source_cluster, target_cluster, weight) tuples
@@ -143,7 +143,11 @@ def main():
         "target": [int(e[1]) for e in edge_list],
         "weight": [float(e[2]) if len(e) > 2 else 1.0 for e in edge_list],
     }
-    logger.info("Stored VIA graph with %d edges in .uns['%s'].", len(edge_list), par["uns_graph"])
+    logger.info(
+        "Stored VIA graph with %d edges in .uns['%s'].",
+        len(edge_list),
+        par["uns_graph"],
+    )
 
     # ── write output ──────────────────────────────────────────────────────────
     logger.info("Writing output to %s", par["output"])

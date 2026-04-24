@@ -10,11 +10,11 @@ description: |
   proportions as the response.
 
   Results are stored per subpopulation in `.uns[--uns_output]`:
-    - `pseudotime_grid`    — evenly-spaced pseudotime values used for prediction
-    - `proportion_fitted`  — GAM-smoothed proportion on that grid
-    - `peak_pseudotime`    — pseudotime at which the fitted proportion is maximal
-    - `r_squared`          — pseudo-R² of the GAM fit
-    - `p_value`            — significance of the spline smooth term
+    - `pseudotime_grid`     -  evenly-spaced pseudotime values used for prediction
+    - `proportion_fitted`   -  GAM-smoothed proportion on that grid
+    - `peak_pseudotime`     -  pseudotime at which the fitted proportion is maximal
+    - `r_squared`           -  pseudo-R^2 of the GAM fit
+    - `p_value`             -  significance of the spline smooth term
 
   This is step 5 of the BEYOND methodology (Habib et al. 2024).
 

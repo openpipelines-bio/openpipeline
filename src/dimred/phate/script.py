@@ -61,9 +61,7 @@ def main():
         try:
             t = int(t)
         except ValueError:
-            raise ValueError(
-                f"--t must be 'auto' or a positive integer, got '{t}'."
-            )
+            raise ValueError(f"--t must be 'auto' or a positive integer, got '{t}'.")
 
     n_jobs = meta["cpus"] if meta.get("cpus") else 1
 

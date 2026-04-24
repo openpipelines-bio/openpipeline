@@ -3,7 +3,7 @@ namespace: "stats"
 scope: "public"
 description: |
   Tests associations between subpopulation proportions (or community proportions)
-  and clinical / biological traits using linear mixed models — the final statistical
+  and clinical / biological traits using linear mixed models  -  the final statistical
   step of the BEYOND methodology.
 
   For each (subpopulation, trait) pair a mixed-effects model is fit:
@@ -17,7 +17,7 @@ description: |
   with the method chosen by `--fdr_method`.
 
   Outputs:
-    - `uns["trait_associations"]` — result dict with subpopulation, trait, beta, se,
+    - `uns["trait_associations"]`  -  result dict with subpopulation, trait, beta, se,
       t_stat, p_value, fdr_q columns
     - optional CSV file (see `--output_csv`)
 

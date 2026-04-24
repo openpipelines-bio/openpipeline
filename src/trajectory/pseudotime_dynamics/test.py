@@ -1,4 +1,3 @@
-import os
 import sys
 import pytest
 import numpy as np
@@ -23,9 +22,17 @@ def _make_input(tmp_path, n_participants=15, cells_per=12, seed=0):
     participant_pt = np.linspace(0.05, 0.95, n_participants)
 
     # Simple proportion trajectories
-    def sig(x, x0): return 1 / (1 + np.exp(-10 * (x - x0)))
-    props = np.column_stack([sig(participant_pt, 0.3), 1 - sig(participant_pt, 0.7),
-                              np.ones(n_participants)*0.4, np.ones(n_participants)*0.3])
+    def sig(x, x0):
+        return 1 / (1 + np.exp(-10 * (x - x0)))
+
+    props = np.column_stack(
+        [
+            sig(participant_pt, 0.3),
+            1 - sig(participant_pt, 0.7),
+            np.ones(n_participants) * 0.4,
+            np.ones(n_participants) * 0.3,
+        ]
+    )
     props = np.clip(props + rng.normal(0, 0.02, props.shape), 0.01, None)
     props = (props.T / props.sum(axis=1)).T
     prop_df = pd.DataFrame(props, index=participant_ids, columns=subpops)
@@ -33,12 +40,18 @@ def _make_input(tmp_path, n_participants=15, cells_per=12, seed=0):
     obs_rows = []
     for i, pid in enumerate(participant_ids):
         for _ in range(cells_per):
-            obs_rows.append({
-                "participant_id": pid,
-                "subpopulation": rng.choice(subpops),
-                "palantir_pseudotime": float(np.clip(participant_pt[i] + rng.normal(0, 0.02), 0, 1)),
-            })
-    obs = pd.DataFrame(obs_rows, index=[f"c{i}" for i in range(n_participants * cells_per)])
+            obs_rows.append(
+                {
+                    "participant_id": pid,
+                    "subpopulation": rng.choice(subpops),
+                    "palantir_pseudotime": float(
+                        np.clip(participant_pt[i] + rng.normal(0, 0.02), 0, 1)
+                    ),
+                }
+            )
+    obs = pd.DataFrame(
+        obs_rows, index=[f"c{i}" for i in range(n_participants * cells_per)]
+    )
     adata = ad.AnnData(
         X=rng.integers(0, 100, (len(obs), 5)).astype("float32"),
         obs=obs,
@@ -56,11 +69,16 @@ def test_basic(run_component, tmp_path):
     h5mu, subpops = _make_input(tmp_path)
     out = tmp_path / "out.h5mu"
 
-    run_component([
-        "--input", str(h5mu),
-        "--output", str(out),
-        "--n_splines", "5",
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu),
+            "--output",
+            str(out),
+            "--n_splines",
+            "5",
+        ]
+    )
 
     assert out.is_file()
     mdata = mu.read_h5mu(str(out))
@@ -73,7 +91,7 @@ def test_basic(run_component, tmp_path):
         assert "peak_pseudotime" in dyn[sp]
         assert "r_squared" in dyn[sp]
         assert "p_value" in dyn[sp]
-        assert len(dyn[sp]["pseudotime_grid"]) == 100   # default n_pseudotime_bins
+        assert len(dyn[sp]["pseudotime_grid"]) == 100  # default n_pseudotime_bins
         assert len(dyn[sp]["proportion_fitted"]) == 100
 
 
@@ -90,15 +108,24 @@ def test_custom_keys(run_component, tmp_path):
     mdata.write_h5mu(str(path2))
     out = tmp_path / "out2.h5mu"
 
-    run_component([
-        "--input", str(path2),
-        "--obs_pseudotime", "my_pt",
-        "--obs_participant_id", "my_pid",
-        "--uns_proportions", "my_props",
-        "--uns_output", "my_dynamics",
-        "--n_splines", "5",
-        "--output", str(out),
-    ])
+    run_component(
+        [
+            "--input",
+            str(path2),
+            "--obs_pseudotime",
+            "my_pt",
+            "--obs_participant_id",
+            "my_pid",
+            "--uns_proportions",
+            "my_props",
+            "--uns_output",
+            "my_dynamics",
+            "--n_splines",
+            "5",
+            "--output",
+            str(out),
+        ]
+    )
 
     mdata_out = mu.read_h5mu(str(out))
     assert "my_dynamics" in mdata_out.mod["rna"].uns
@@ -109,12 +136,18 @@ def test_n_pseudotime_bins(run_component, tmp_path):
     h5mu, subpops = _make_input(tmp_path, seed=2)
     out = tmp_path / "out3.h5mu"
 
-    run_component([
-        "--input", str(h5mu),
-        "--n_splines", "5",
-        "--n_pseudotime_bins", "50",
-        "--output", str(out),
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu),
+            "--n_splines",
+            "5",
+            "--n_pseudotime_bins",
+            "50",
+            "--output",
+            str(out),
+        ]
+    )
 
     dyn = mu.read_h5mu(str(out)).mod["rna"].uns["dynamics"]
     for sp in subpops:
@@ -126,16 +159,22 @@ def test_peak_pseudotime_range(run_component, tmp_path):
     h5mu, subpops = _make_input(tmp_path, seed=3)
     out = tmp_path / "out4.h5mu"
 
-    run_component([
-        "--input", str(h5mu),
-        "--n_splines", "5",
-        "--output", str(out),
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu),
+            "--n_splines",
+            "5",
+            "--output",
+            str(out),
+        ]
+    )
 
     dyn = mu.read_h5mu(str(out)).mod["rna"].uns["dynamics"]
     for sp in subpops:
-        assert 0.0 <= dyn[sp]["peak_pseudotime"] <= 1.0, \
+        assert 0.0 <= dyn[sp]["peak_pseudotime"] <= 1.0, (
             f"peak_pseudotime out of range for {sp}"
+        )
 
 
 if __name__ == "__main__":

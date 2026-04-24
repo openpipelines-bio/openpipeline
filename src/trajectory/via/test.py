@@ -1,4 +1,3 @@
-import os
 import sys
 import pytest
 import numpy as np
@@ -22,7 +21,8 @@ def _make_input(tmp_path, seed=0, n_cells=200, n_clusters=5):
     # Linear pseudotime embedded in 10-D (VIA needs >2 dims for graph construction)
     pt = np.linspace(0, 1, n_cells)
     embedding = np.column_stack(
-        [pt] + [pt * rng.uniform(0.1, 0.9) + rng.normal(0, 0.05, n_cells) for _ in range(9)]
+        [pt]
+        + [pt * rng.uniform(0.1, 0.9) + rng.normal(0, 0.05, n_cells) for _ in range(9)]
     )
 
     # Cluster labels (equal-size bins along pseudotime)
@@ -50,11 +50,16 @@ def test_basic_pseudotime(run_component, tmp_path):
     h5mu = _make_input(tmp_path)
     out = tmp_path / "out.h5mu"
 
-    run_component([
-        "--input", str(h5mu),
-        "--root_user", "0",
-        "--output", str(out),
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu),
+            "--root_user",
+            "0",
+            "--output",
+            str(out),
+        ]
+    )
 
     assert out.is_file()
     adata = mu.read_h5mu(str(out)).mod["rna"]
@@ -71,11 +76,16 @@ def test_pseudotime_range(run_component, tmp_path):
     h5mu = _make_input(tmp_path, seed=1)
     out = tmp_path / "out2.h5mu"
 
-    run_component([
-        "--input", str(h5mu),
-        "--root_user", "0",
-        "--output", str(out),
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu),
+            "--root_user",
+            "0",
+            "--output",
+            str(out),
+        ]
+    )
 
     pt = mu.read_h5mu(str(out)).mod["rna"].obs["via_pseudotime"].values
     assert pt.max() - pt.min() > 0.01, "Pseudotime has no spread"
@@ -86,13 +96,20 @@ def test_custom_output_keys(run_component, tmp_path):
     h5mu = _make_input(tmp_path, seed=2)
     out = tmp_path / "out3.h5mu"
 
-    run_component([
-        "--input", str(h5mu),
-        "--root_user", "0",
-        "--obs_pseudotime", "my_pseudotime",
-        "--uns_graph", "my_graph",
-        "--output", str(out),
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu),
+            "--root_user",
+            "0",
+            "--obs_pseudotime",
+            "my_pseudotime",
+            "--uns_graph",
+            "my_graph",
+            "--output",
+            str(out),
+        ]
+    )
 
     adata = mu.read_h5mu(str(out)).mod["rna"]
     assert "my_pseudotime" in adata.obs.columns
@@ -104,11 +121,16 @@ def test_root_cluster_label(run_component, tmp_path):
     h5mu = _make_input(tmp_path, seed=3)
     out = tmp_path / "out4.h5mu"
 
-    run_component([
-        "--input", str(h5mu),
-        "--root_user", "0",   # cluster label "0" exists
-        "--output", str(out),
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu),
+            "--root_user",
+            "0",  # cluster label "0" exists
+            "--output",
+            str(out),
+        ]
+    )
 
     assert "via_pseudotime" in mu.read_h5mu(str(out)).mod["rna"].obs.columns
 

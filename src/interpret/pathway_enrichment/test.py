@@ -67,14 +67,22 @@ def test_prerank(run_component, tmp_path, test_data):
 
     run_component(
         [
-            "--input", test_data["h5mu"],
-            "--input_degenes", test_data["csv"],
-            "--method", "prerank",
-            "--gene_sets", test_data["gmt"],
-            "--permutation_num", "10",
-            "--min_size", "5",
-            "--output", str(output_h5mu),
-            "--output_csv_dir", output_csv_dir,
+            "--input",
+            test_data["h5mu"],
+            "--input_degenes",
+            test_data["csv"],
+            "--method",
+            "prerank",
+            "--gene_sets",
+            test_data["gmt"],
+            "--permutation_num",
+            "10",
+            "--min_size",
+            "5",
+            "--output",
+            str(output_h5mu),
+            "--output_csv_dir",
+            output_csv_dir,
         ]
     )
 
@@ -83,8 +91,9 @@ def test_prerank(run_component, tmp_path, test_data):
     mdata = mu.read_h5mu(str(output_h5mu))
     uns = mdata.mod["rna"].uns
     assert "pathway_enrichment" in uns, "uns['pathway_enrichment'] not found"
-    assert "test_gene_sets" in uns["pathway_enrichment"], \
+    assert "test_gene_sets" in uns["pathway_enrichment"], (
         "Gene set key missing in uns['pathway_enrichment']"
+    )
 
     # at least one result term expected
     result_terms = uns["pathway_enrichment"]["test_gene_sets"]
@@ -101,15 +110,24 @@ def test_ora(run_component, tmp_path, test_data):
 
     run_component(
         [
-            "--input", test_data["h5mu"],
-            "--input_degenes", test_data["csv"],
-            "--method", "ora",
-            "--gene_sets", test_data["gmt"],
-            "--pval_threshold", "1.0",  # accept all genes so the list is never empty
-            "--fc_threshold", "0.0",
-            "--min_size", "5",
-            "--output", str(output_h5mu),
-            "--output_csv_dir", output_csv_dir,
+            "--input",
+            test_data["h5mu"],
+            "--input_degenes",
+            test_data["csv"],
+            "--method",
+            "ora",
+            "--gene_sets",
+            test_data["gmt"],
+            "--pval_threshold",
+            "1.0",  # accept all genes so the list is never empty
+            "--fc_threshold",
+            "0.0",
+            "--min_size",
+            "5",
+            "--output",
+            str(output_h5mu),
+            "--output_csv_dir",
+            output_csv_dir,
         ]
     )
 
@@ -127,21 +145,31 @@ def test_uns_key_custom(run_component, tmp_path, test_data):
 
     run_component(
         [
-            "--input", test_data["h5mu"],
-            "--input_degenes", test_data["csv"],
-            "--method", "prerank",
-            "--gene_sets", test_data["gmt"],
-            "--permutation_num", "10",
-            "--min_size", "5",
-            "--uns_key", "my_enrichment",
-            "--output", str(output_h5mu),
-            "--output_csv_dir", str(tmp_path / "results_custom"),
+            "--input",
+            test_data["h5mu"],
+            "--input_degenes",
+            test_data["csv"],
+            "--method",
+            "prerank",
+            "--gene_sets",
+            test_data["gmt"],
+            "--permutation_num",
+            "10",
+            "--min_size",
+            "5",
+            "--uns_key",
+            "my_enrichment",
+            "--output",
+            str(output_h5mu),
+            "--output_csv_dir",
+            str(tmp_path / "results_custom"),
         ]
     )
 
     mdata = mu.read_h5mu(str(output_h5mu))
-    assert "my_enrichment" in mdata.mod["rna"].uns, \
+    assert "my_enrichment" in mdata.mod["rna"].uns, (
         "Custom uns_key 'my_enrichment' not found"
+    )
 
 
 def test_input_preserved(run_component, tmp_path, test_data):
@@ -150,30 +178,36 @@ def test_input_preserved(run_component, tmp_path, test_data):
 
     run_component(
         [
-            "--input", test_data["h5mu"],
-            "--input_degenes", test_data["csv"],
-            "--method", "prerank",
-            "--gene_sets", test_data["gmt"],
-            "--permutation_num", "10",
-            "--min_size", "5",
-            "--output", str(output_h5mu),
-            "--output_csv_dir", str(tmp_path / "results_preserved"),
+            "--input",
+            test_data["h5mu"],
+            "--input_degenes",
+            test_data["csv"],
+            "--method",
+            "prerank",
+            "--gene_sets",
+            test_data["gmt"],
+            "--permutation_num",
+            "10",
+            "--min_size",
+            "5",
+            "--output",
+            str(output_h5mu),
+            "--output_csv_dir",
+            str(tmp_path / "results_preserved"),
         ]
     )
 
     orig = mu.read_h5mu(test_data["h5mu"])
     out = mu.read_h5mu(str(output_h5mu))
 
+    np.testing.assert_array_equal(orig.mod["rna"].var_names, out.mod["rna"].var_names)
+    np.testing.assert_array_equal(orig.mod["rna"].obs_names, out.mod["rna"].obs_names)
     np.testing.assert_array_equal(
-        orig.mod["rna"].var_names, out.mod["rna"].var_names
-    )
-    np.testing.assert_array_equal(
-        orig.mod["rna"].obs_names, out.mod["rna"].obs_names
-    )
-    np.testing.assert_array_equal(
-        orig.mod["rna"].X.toarray() if hasattr(orig.mod["rna"].X, "toarray")
+        orig.mod["rna"].X.toarray()
+        if hasattr(orig.mod["rna"].X, "toarray")
         else orig.mod["rna"].X,
-        out.mod["rna"].X.toarray() if hasattr(out.mod["rna"].X, "toarray")
+        out.mod["rna"].X.toarray()
+        if hasattr(out.mod["rna"].X, "toarray")
         else out.mod["rna"].X,
     )
 

@@ -24,8 +24,11 @@ def _make_mudata(tmp_path, n_cells=300, n_dims=10, seed=42):
 
     # Linear trajectory + noise across all dims
     embedding = np.column_stack(
-        [pt] + [pt * rng.uniform(0.5, 1.0) + rng.normal(0, 0.05, n_cells)
-                for _ in range(n_dims - 1)]
+        [pt]
+        + [
+            pt * rng.uniform(0.5, 1.0) + rng.normal(0, 0.05, n_cells)
+            for _ in range(n_dims - 1)
+        ]
     ).astype("float32")
 
     # Minimal gene matrix (Palantir doesn't use X, just the embedding)
@@ -54,15 +57,24 @@ def test_palantir_start_cell_barcode(run_component, tmp_path):
     input_path = _make_mudata(tmp_path)
     output = tmp_path / "output.h5mu"
 
-    run_component([
-        "--input",          str(input_path),
-        "--obsm_input",     "X_pca_integrated",
-        "--start_cell",     "cell_0000",
-        "--num_waypoints",  "50",
-        "--n_components",   "5",
-        "--knn",            "10",
-        "--output",         str(output),
-    ])
+    run_component(
+        [
+            "--input",
+            str(input_path),
+            "--obsm_input",
+            "X_pca_integrated",
+            "--start_cell",
+            "cell_0000",
+            "--num_waypoints",
+            "50",
+            "--n_components",
+            "5",
+            "--knn",
+            "10",
+            "--output",
+            str(output),
+        ]
+    )
 
     assert output.is_file(), "Output h5mu not created"
 
@@ -84,16 +96,26 @@ def test_palantir_start_cell_cluster(run_component, tmp_path):
     input_path = _make_mudata(tmp_path)
     output = tmp_path / "output_cluster.h5mu"
 
-    run_component([
-        "--input",               str(input_path),
-        "--obsm_input",          "X_pca_integrated",
-        "--start_cell_cluster",  "A",
-        "--start_cell_obs_key",  "cluster",
-        "--num_waypoints",       "50",
-        "--n_components",        "5",
-        "--knn",                 "10",
-        "--output",              str(output),
-    ])
+    run_component(
+        [
+            "--input",
+            str(input_path),
+            "--obsm_input",
+            "X_pca_integrated",
+            "--start_cell_cluster",
+            "A",
+            "--start_cell_obs_key",
+            "cluster",
+            "--num_waypoints",
+            "50",
+            "--n_components",
+            "5",
+            "--knn",
+            "10",
+            "--output",
+            str(output),
+        ]
+    )
 
     assert output.is_file()
     adata = mu.read_h5mu(str(output)).mod["rna"]
@@ -106,19 +128,32 @@ def test_palantir_custom_output_keys(run_component, tmp_path):
     input_path = _make_mudata(tmp_path)
     output = tmp_path / "output_custom.h5mu"
 
-    run_component([
-        "--input",                    str(input_path),
-        "--obsm_input",               "X_pca_integrated",
-        "--start_cell",               "cell_0000",
-        "--num_waypoints",            "50",
-        "--n_components",             "5",
-        "--knn",                      "10",
-        "--obs_pseudotime",           "my_pseudotime",
-        "--obs_entropy",              "my_entropy",
-        "--obsm_fate_probabilities",  "my_fate_probs",
-        "--uns_waypoints",            "my_waypoints",
-        "--output",                   str(output),
-    ])
+    run_component(
+        [
+            "--input",
+            str(input_path),
+            "--obsm_input",
+            "X_pca_integrated",
+            "--start_cell",
+            "cell_0000",
+            "--num_waypoints",
+            "50",
+            "--n_components",
+            "5",
+            "--knn",
+            "10",
+            "--obs_pseudotime",
+            "my_pseudotime",
+            "--obs_entropy",
+            "my_entropy",
+            "--obsm_fate_probabilities",
+            "my_fate_probs",
+            "--uns_waypoints",
+            "my_waypoints",
+            "--output",
+            str(output),
+        ]
+    )
 
     adata = mu.read_h5mu(str(output)).mod["rna"]
     assert "my_pseudotime" in adata.obs.columns
@@ -132,15 +167,24 @@ def test_palantir_input_preserved(run_component, tmp_path):
     input_path = _make_mudata(tmp_path)
     output = tmp_path / "output_preserved.h5mu"
 
-    run_component([
-        "--input",          str(input_path),
-        "--obsm_input",     "X_pca_integrated",
-        "--start_cell",     "cell_0000",
-        "--num_waypoints",  "50",
-        "--n_components",   "5",
-        "--knn",            "10",
-        "--output",         str(output),
-    ])
+    run_component(
+        [
+            "--input",
+            str(input_path),
+            "--obsm_input",
+            "X_pca_integrated",
+            "--start_cell",
+            "cell_0000",
+            "--num_waypoints",
+            "50",
+            "--n_components",
+            "5",
+            "--knn",
+            "10",
+            "--output",
+            str(output),
+        ]
+    )
 
     orig = mu.read_h5mu(str(input_path)).mod["rna"]
     out = mu.read_h5mu(str(output)).mod["rna"]

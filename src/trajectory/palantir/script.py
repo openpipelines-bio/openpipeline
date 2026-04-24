@@ -53,9 +53,7 @@ def _resolve_start_cell(adata, par):
                 f"No cells found for cluster '{cluster}' in obs['{obs_key}']."
             )
         # early_cell(ad, celltype, celltype_column) — requires DM_EigenVectors_multiscaled
-        start_cell = palantir.utils.early_cell(
-            adata, cluster, celltype_column=obs_key
-        )
+        start_cell = palantir.utils.early_cell(adata, cluster, celltype_column=obs_key)
         logger.info(
             "Auto-selected start cell '%s' from cluster '%s' (obs['%s'])",
             start_cell,
@@ -164,7 +162,9 @@ def main():
     # run_palantir stores results directly in adata.obs / adata.obsm / adata.uns
     # when given an AnnData input.
     n_jobs = max(1, (meta.get("cpus") or 1))
-    logger.info("Running Palantir (num_waypoints=%d, n_jobs=%d)", par["num_waypoints"], n_jobs)
+    logger.info(
+        "Running Palantir (num_waypoints=%d, n_jobs=%d)", par["num_waypoints"], n_jobs
+    )
     palantir.core.run_palantir(
         adata,
         early_cell=start_cell,

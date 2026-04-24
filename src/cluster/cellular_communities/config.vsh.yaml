@@ -3,9 +3,9 @@ namespace: "cluster"
 scope: "public"
 description: |
   Detects cellular communities by combining co-occurrence and dynamics similarity
-  of subpopulations — the core clustering step of the BEYOND methodology.
+  of subpopulations  -  the core clustering step of the BEYOND methodology.
 
-  Two subpopulation × subpopulation similarity matrices are computed:
+  Two subpopulation x subpopulation similarity matrices are computed:
 
   1. **Co-occurrence similarity**: Pearson correlation of participant proportion
      vectors across subpopulations. Subpopulations that tend to expand or contract
@@ -20,8 +20,8 @@ description: |
   subpopulations into `--n_communities` cellular communities.
 
   Outputs:
-    - `obs["community_id"]`    — community label for every cell
-    - `uns["cellular_communities"]` — subpopulation → community mapping + metadata
+    - `obs["community_id"]`     -  community label for every cell
+    - `uns["cellular_communities"]`  -  subpopulation -> community mapping + metadata
 
 keywords: [ cellular communities, clustering, co-occurrence, dynamics, BEYOND ]
 links:

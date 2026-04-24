@@ -6,12 +6,12 @@ description: |
 
   For each participant (identified by `--obs_participant_id`) and each subpopulation
   (identified by `--obs_subpopulation`), computes the fraction of that participant's
-  cells that belong to each subpopulation.  The resulting participant × subpopulation
+  cells that belong to each subpopulation.  The resulting participant x subpopulation
   proportion matrix is stored in:
 
-  * `.uns[<uns_output>]` — a serialised dict (rows = participants, columns = subpopulations)
-  * `.obsm[<obsm_output>]` — per-cell matrix: each cell carries the proportion vector
-    of its own participant (shape n_cells × n_subpopulations)
+  * `.uns[<uns_output>]`  -  a serialised dict (rows = participants, columns = subpopulations)
+  * `.obsm[<obsm_output>]`  -  per-cell matrix: each cell carries the proportion vector
+    of its own participant (shape n_cells x n_subpopulations)
 
   Missing combinations (a participant has zero cells in a given subpopulation) are
   filled with 0.  Rows are normalised to sum to 1.
@@ -80,7 +80,7 @@ argument_groups:
         type: string
         description: |
           Key under `.obsm` where each cell's participant proportion vector
-          will be stored (shape: n_cells × n_subpopulations).
+          will be stored (shape: n_cells x n_subpopulations).
         default: "proportions"
         required: false
         example: "proportions"

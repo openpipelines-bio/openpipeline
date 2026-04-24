@@ -8,7 +8,7 @@ description: |
 
   Unlike UMAP or tSNE, PHATE models the data manifold using a diffusion process,
   making it particularly suited for single-cell trajectories and for the BEYOND
-  methodology, where the input is a participant × subpopulation proportion matrix
+  methodology, where the input is a participant x subpopulation proportion matrix
   stored in `.obsm`.
 
   Reference: Moon et al., Visualizing structure and transitions in high-dimensional
@@ -47,7 +47,7 @@ argument_groups:
         description: |
           Key in `.obsm` to use as the input matrix for PHATE.
           Common choices: `X_pca` (cell-level embedding) or `proportions`
-          (participant × subpopulation proportion matrix from
+          (participant x subpopulation proportion matrix from
           `metadata/calculate_proportions`).
         default: "X_pca"
         required: false

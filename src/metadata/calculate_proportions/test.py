@@ -51,13 +51,19 @@ def synthetic_mudata(tmp_path):
 
 def test_basic(run_component, tmp_path):
     """Proportions are computed and stored in uns and obsm."""
-    mdata, h5mu_path = _make_mudata(tmp_path, n_donors=3, n_subpops=4, cells_per_group=10)
+    mdata, h5mu_path = _make_mudata(
+        tmp_path, n_donors=3, n_subpops=4, cells_per_group=10
+    )
     output_path = tmp_path / "output.h5mu"
 
-    run_component([
-        "--input", str(h5mu_path),
-        "--output", str(output_path),
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu_path),
+            "--output",
+            str(output_path),
+        ]
+    )
 
     assert output_path.is_file()
     result = read_h5mu(str(output_path))
@@ -86,13 +92,19 @@ def test_basic(run_component, tmp_path):
 def test_uniform_proportions(run_component, tmp_path):
     """With equal cell counts per group, all proportions should be 1/n_subpops."""
     n_subpops = 4
-    mdata, h5mu_path = _make_mudata(tmp_path, n_donors=2, n_subpops=n_subpops, cells_per_group=5)
+    mdata, h5mu_path = _make_mudata(
+        tmp_path, n_donors=2, n_subpops=n_subpops, cells_per_group=5
+    )
     output_path = tmp_path / "output_uniform.h5mu"
 
-    run_component([
-        "--input", str(h5mu_path),
-        "--output", str(output_path),
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu_path),
+            "--output",
+            str(output_path),
+        ]
+    )
 
     result = read_h5mu(str(output_path))
     prop_dict = result.mod["rna"].uns["proportions"]
@@ -104,10 +116,13 @@ def test_uniform_proportions(run_component, tmp_path):
 def test_custom_column_names(run_component, tmp_path):
     """Component works with non-default obs column names."""
     rng = np.random.default_rng(0)
-    obs = pd.DataFrame({
-        "sample": ["s1"] * 10 + ["s2"] * 10,
-        "cell_class": (["A"] * 5 + ["B"] * 5) * 2,
-    }, index=[f"c{i}" for i in range(20)])
+    obs = pd.DataFrame(
+        {
+            "sample": ["s1"] * 10 + ["s2"] * 10,
+            "cell_class": (["A"] * 5 + ["B"] * 5) * 2,
+        },
+        index=[f"c{i}" for i in range(20)],
+    )
     X = rng.integers(0, 50, size=(20, 5)).astype(float)
     var = pd.DataFrame(index=[f"g{g}" for g in range(5)])
     adata = AnnData(X=X, obs=obs, var=var)
@@ -116,14 +131,22 @@ def test_custom_column_names(run_component, tmp_path):
     mdata.write_h5mu(str(h5mu_path))
     output_path = tmp_path / "output_custom.h5mu"
 
-    run_component([
-        "--input", str(h5mu_path),
-        "--output", str(output_path),
-        "--obs_participant_id", "sample",
-        "--obs_subpopulation", "cell_class",
-        "--uns_output", "my_props",
-        "--obsm_output", "my_props",
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu_path),
+            "--output",
+            str(output_path),
+            "--obs_participant_id",
+            "sample",
+            "--obs_subpopulation",
+            "cell_class",
+            "--uns_output",
+            "my_props",
+            "--obsm_output",
+            "my_props",
+        ]
+    )
 
     result = read_h5mu(str(output_path))
     adata_out = result.mod["rna"]
@@ -139,11 +162,16 @@ def test_missing_column_raises(run_component, tmp_path):
     output_path = tmp_path / "output_err.h5mu"
 
     with pytest.raises(Exception):
-        run_component([
-            "--input", str(h5mu_path),
-            "--output", str(output_path),
-            "--obs_subpopulation", "nonexistent_column",
-        ])
+        run_component(
+            [
+                "--input",
+                str(h5mu_path),
+                "--output",
+                str(output_path),
+                "--obs_subpopulation",
+                "nonexistent_column",
+            ]
+        )
 
 
 def test_output_compression(run_component, tmp_path):
@@ -151,11 +179,16 @@ def test_output_compression(run_component, tmp_path):
     mdata, h5mu_path = _make_mudata(tmp_path)
     output_path = tmp_path / "output_compressed.h5mu"
 
-    run_component([
-        "--input", str(h5mu_path),
-        "--output", str(output_path),
-        "--output_compression", "gzip",
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu_path),
+            "--output",
+            str(output_path),
+            "--output_compression",
+            "gzip",
+        ]
+    )
 
     assert output_path.is_file()
     result = read_h5mu(str(output_path))

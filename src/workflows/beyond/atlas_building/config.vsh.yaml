@@ -6,23 +6,23 @@ description: |
 
   Input: one channel event per sample (id = sample/participant ID, input = h5mu).
   Steps (all using existing OpenPipeline components/workflows):
-    1. Per-sample: add_id (records participant ID in obs) → rna_singlesample (QC/filter/scrublet)
-    2. concatenate_h5mu (all samples → one multi-donor object)
-    3. rna_multisample (normalize → log1p → HVF selection)
+    1. Per-sample: add_id (records participant ID in obs) -> rna_singlesample (QC/filter/scrublet)
+    2. concatenate_h5mu (all samples -> one multi-donor object)
+    3. rna_multisample (normalize -> log1p -> HVF selection)
     4. dimred/pca
-    5. harmony_leiden (Harmony integration → neighbors → Leiden → UMAP)
+    5. harmony_leiden (Harmony integration -> neighbors -> Leiden -> UMAP)
     6. annotation/celltypist workflow (broad cell-type labels in obs["celltypist_pred"])
     7. split_h5mu by obs["celltypist_pred"]
-    8. Per-cell-type: dimred/pca → neighbors_leiden_umap
+    8. Per-cell-type: dimred/pca -> neighbors_leiden_umap
        (Leiden labels stored as obs["subpopulation"])
-    9. concatenate_h5mu (all cell types → atlas)
+    9. concatenate_h5mu (all cell types -> atlas)
 
   Output: atlas h5mu with
-    obs["participant_id"]   — donor of origin (set by --obs_participant_id)
-    obs["celltypist_pred"]  — broad cell type label
-    obs["subpopulation"]    — per-cell-type Leiden subcluster (BEYOND input)
-    obsm["X_pca_integrated"] — Harmony-corrected embedding
-    obsm["X_umap"]           — UMAP coordinates
+    obs["participant_id"]    -  donor of origin (set by --obs_participant_id)
+    obs["celltypist_pred"]   -  broad cell type label
+    obs["subpopulation"]     -  per-cell-type Leiden subcluster (BEYOND input)
+    obsm["X_pca_integrated"]  -  Harmony-corrected embedding
+    obsm["X_umap"]            -  UMAP coordinates
 
 authors:
   - __merge__: /src/authors/marilyn_degraeve.yaml

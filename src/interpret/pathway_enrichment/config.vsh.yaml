@@ -78,7 +78,7 @@ argument_groups:
         description: |
           One or more gene set libraries. Each value is either:
           - An Enrichr library name (e.g. `MSigDB_Hallmark_2020`, `GO_Biological_Process_2023`,
-            `KEGG_2021_Human`) — downloaded from Enrichr at runtime.
+            `KEGG_2021_Human`)  -  downloaded from Enrichr at runtime.
           - A path to a local GMT file.
         example: [ "MSigDB_Hallmark_2020", "GO_Biological_Process_2023" ]
 

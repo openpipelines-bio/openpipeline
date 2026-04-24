@@ -8,8 +8,8 @@ description: |
   PCA, UMAP). It requires per-cell cluster labels and a root cluster or root cell index.
 
   Outputs:
-    - `obs["via_pseudotime"]`   — Markov pseudotime per cell
-    - `uns["via_graph"]`        — edge list of the VIA cluster graph (source, target, weight)
+    - `obs["via_pseudotime"]`    -  Markov pseudotime per cell
+    - `uns["via_graph"]`         -  edge list of the VIA cluster graph (source, target, weight)
 
 keywords: [ via, trajectory, pseudotime, BEYOND ]
 links:

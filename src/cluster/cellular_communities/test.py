@@ -1,4 +1,3 @@
-import os
 import sys
 import pytest
 import numpy as np
@@ -22,14 +21,25 @@ def _make_input(tmp_path, seed=0, n_participants=16, cells_per=10):
     n_cells = n_participants * cells_per
     pt = np.linspace(0.05, 0.95, n_participants)
 
-    def sig(x, x0): return 1 / (1 + np.exp(-10 * (x - x0)))
+    def sig(x, x0):
+        return 1 / (1 + np.exp(-10 * (x - x0)))
+
     # 3 communities: (A,B), (C,D), (E,F)
-    props = np.column_stack([sig(pt, 0.3), sig(pt, 0.32),
-                              1 - sig(pt, 0.5), 1 - sig(pt, 0.48),
-                              sig(pt, 0.7), sig(pt, 0.72)])
+    props = np.column_stack(
+        [
+            sig(pt, 0.3),
+            sig(pt, 0.32),
+            1 - sig(pt, 0.5),
+            1 - sig(pt, 0.48),
+            sig(pt, 0.7),
+            sig(pt, 0.72),
+        ]
+    )
     props = np.clip(props + rng.normal(0, 0.01, props.shape), 0.01, None)
     props = (props.T / props.sum(axis=1)).T
-    prop_df = pd.DataFrame(props, index=[f"d{i}" for i in range(n_participants)], columns=subpops)
+    prop_df = pd.DataFrame(
+        props, index=[f"d{i}" for i in range(n_participants)], columns=subpops
+    )
 
     n_bins = 40
     grid = np.linspace(0, 1, n_bins)
@@ -44,14 +54,22 @@ def _make_input(tmp_path, seed=0, n_participants=16, cells_per=10):
             "p_value": 0.01,
         }
 
-    obs_rows = [{"participant_id": f"d{i // cells_per}",
-                 "subpopulation": rng.choice(subpops),
-                 "palantir_pseudotime": float(np.clip(pt[i // cells_per] + rng.normal(0, 0.02), 0, 1))}
-                for i in range(n_cells)]
+    obs_rows = [
+        {
+            "participant_id": f"d{i // cells_per}",
+            "subpopulation": rng.choice(subpops),
+            "palantir_pseudotime": float(
+                np.clip(pt[i // cells_per] + rng.normal(0, 0.02), 0, 1)
+            ),
+        }
+        for i in range(n_cells)
+    ]
     obs = pd.DataFrame(obs_rows, index=[f"c{i}" for i in range(n_cells)])
-    adata = ad.AnnData(X=rng.integers(0, 50, (n_cells, 3)).astype("float32"),
-                       obs=obs,
-                       var=pd.DataFrame(index=["g0", "g1", "g2"]))
+    adata = ad.AnnData(
+        X=rng.integers(0, 50, (n_cells, 3)).astype("float32"),
+        obs=obs,
+        var=pd.DataFrame(index=["g0", "g1", "g2"]),
+    )
     adata.uns["proportions"] = prop_df.to_dict()
     adata.uns["dynamics"] = dynamics
 
@@ -65,11 +83,16 @@ def test_basic_hierarchical(run_component, tmp_path):
     h5mu, subpops = _make_input(tmp_path)
     out = tmp_path / "out.h5mu"
 
-    run_component([
-        "--input", str(h5mu),
-        "--n_communities", "3",
-        "--output", str(out),
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu),
+            "--n_communities",
+            "3",
+            "--output",
+            str(out),
+        ]
+    )
 
     assert out.is_file()
     mdata = mu.read_h5mu(str(out))
@@ -91,11 +114,16 @@ def test_n_communities_respected(run_component, tmp_path):
     h5mu, _ = _make_input(tmp_path, seed=1)
     out = tmp_path / "out2.h5mu"
 
-    run_component([
-        "--input", str(h5mu),
-        "--n_communities", "2",
-        "--output", str(out),
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu),
+            "--n_communities",
+            "2",
+            "--output",
+            str(out),
+        ]
+    )
 
     comm = mu.read_h5mu(str(out)).mod["rna"].uns["cellular_communities"]
     assert len(set(comm["subpopulation_communities"].values())) == 2
@@ -106,12 +134,18 @@ def test_spectral_method(run_component, tmp_path):
     h5mu, _ = _make_input(tmp_path, seed=2)
     out = tmp_path / "out3.h5mu"
 
-    run_component([
-        "--input", str(h5mu),
-        "--n_communities", "3",
-        "--method", "spectral",
-        "--output", str(out),
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu),
+            "--n_communities",
+            "3",
+            "--method",
+            "spectral",
+            "--output",
+            str(out),
+        ]
+    )
 
     assert out.is_file()
     assert "cellular_communities" in mu.read_h5mu(str(out)).mod["rna"].uns
@@ -122,12 +156,18 @@ def test_alpha_extremes(run_component, tmp_path):
     h5mu, _ = _make_input(tmp_path, seed=3)
     for alpha, suffix in [("1.0", "a"), ("0.0", "b")]:
         out = tmp_path / f"out_{suffix}.h5mu"
-        run_component([
-            "--input", str(h5mu),
-            "--n_communities", "3",
-            "--alpha", alpha,
-            "--output", str(out),
-        ])
+        run_component(
+            [
+                "--input",
+                str(h5mu),
+                "--n_communities",
+                "3",
+                "--alpha",
+                alpha,
+                "--output",
+                str(out),
+            ]
+        )
         assert out.is_file()
 
 
@@ -136,13 +176,20 @@ def test_custom_output_keys(run_component, tmp_path):
     h5mu, _ = _make_input(tmp_path, seed=4)
     out = tmp_path / "out_custom.h5mu"
 
-    run_component([
-        "--input", str(h5mu),
-        "--n_communities", "3",
-        "--obs_community_id", "my_community",
-        "--uns_output", "my_communities",
-        "--output", str(out),
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu),
+            "--n_communities",
+            "3",
+            "--obs_community_id",
+            "my_community",
+            "--uns_output",
+            "my_communities",
+            "--output",
+            str(out),
+        ]
+    )
 
     adata = mu.read_h5mu(str(out)).mod["rna"]
     assert "my_community" in adata.obs.columns

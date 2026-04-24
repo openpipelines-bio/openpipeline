@@ -23,7 +23,10 @@ def _make_mudata(tmp_path, n_obs=80, n_pcs=10, seed=42):
     # Simulate a simple manifold: points on a curve + noise
     t = np.linspace(0, 2 * np.pi, n_obs)
     coords = np.column_stack([np.sin(t), np.cos(t)])
-    X_pca = coords @ rng.standard_normal((2, n_pcs)) + rng.standard_normal((n_obs, n_pcs)) * 0.1
+    X_pca = (
+        coords @ rng.standard_normal((2, n_pcs))
+        + rng.standard_normal((n_obs, n_pcs)) * 0.1
+    )
 
     obs = pd.DataFrame(index=[f"cell_{i}" for i in range(n_obs)])
     var = pd.DataFrame(index=[f"gene_{g}" for g in range(5)])
@@ -43,18 +46,23 @@ def test_basic(run_component, tmp_path):
     _, h5mu_path = _make_mudata(tmp_path)
     output_path = tmp_path / "output.h5mu"
 
-    run_component([
-        "--input", str(h5mu_path),
-        "--output", str(output_path),
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu_path),
+            "--output",
+            str(output_path),
+        ]
+    )
 
     assert output_path.is_file()
     result = read_h5mu(str(output_path))
     adata = result.mod["rna"]
 
     assert "X_phate" in adata.obsm, "X_phate not found in .obsm"
-    assert adata.obsm["X_phate"].shape == (80, 2), \
+    assert adata.obsm["X_phate"].shape == (80, 2), (
         f"Unexpected shape: {adata.obsm['X_phate'].shape}"
+    )
 
 
 def test_custom_obsm_output(run_component, tmp_path):
@@ -62,11 +70,16 @@ def test_custom_obsm_output(run_component, tmp_path):
     _, h5mu_path = _make_mudata(tmp_path)
     output_path = tmp_path / "output_custom.h5mu"
 
-    run_component([
-        "--input", str(h5mu_path),
-        "--output", str(output_path),
-        "--obsm_output", "X_phate_custom",
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu_path),
+            "--output",
+            str(output_path),
+            "--obsm_output",
+            "X_phate_custom",
+        ]
+    )
 
     result = read_h5mu(str(output_path))
     assert "X_phate_custom" in result.mod["rna"].obsm
@@ -77,11 +90,16 @@ def test_n_components(run_component, tmp_path):
     _, h5mu_path = _make_mudata(tmp_path)
     output_path = tmp_path / "output_3d.h5mu"
 
-    run_component([
-        "--input", str(h5mu_path),
-        "--output", str(output_path),
-        "--n_components", "3",
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu_path),
+            "--output",
+            str(output_path),
+            "--n_components",
+            "3",
+        ]
+    )
 
     result = read_h5mu(str(output_path))
     assert result.mod["rna"].obsm["X_phate"].shape == (80, 3)
@@ -104,11 +122,16 @@ def test_custom_obsm_input(run_component, tmp_path):
     mdata.write_h5mu(str(h5mu_path))
     output_path = tmp_path / "output_props.h5mu"
 
-    run_component([
-        "--input", str(h5mu_path),
-        "--output", str(output_path),
-        "--obsm_input", "proportions",
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu_path),
+            "--output",
+            str(output_path),
+            "--obsm_input",
+            "proportions",
+        ]
+    )
 
     result = read_h5mu(str(output_path))
     assert "X_phate" in result.mod["rna"].obsm
@@ -120,11 +143,16 @@ def test_fixed_t(run_component, tmp_path):
     _, h5mu_path = _make_mudata(tmp_path)
     output_path = tmp_path / "output_t.h5mu"
 
-    run_component([
-        "--input", str(h5mu_path),
-        "--output", str(output_path),
-        "--t", "10",
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu_path),
+            "--output",
+            str(output_path),
+            "--t",
+            "10",
+        ]
+    )
 
     assert output_path.is_file()
     result = read_h5mu(str(output_path))
@@ -136,11 +164,16 @@ def test_output_compression(run_component, tmp_path):
     _, h5mu_path = _make_mudata(tmp_path)
     output_path = tmp_path / "output_gz.h5mu"
 
-    run_component([
-        "--input", str(h5mu_path),
-        "--output", str(output_path),
-        "--output_compression", "gzip",
-    ])
+    run_component(
+        [
+            "--input",
+            str(h5mu_path),
+            "--output",
+            str(output_path),
+            "--output_compression",
+            "gzip",
+        ]
+    )
 
     assert output_path.is_file()
     result = read_h5mu(str(output_path))
@@ -153,11 +186,16 @@ def test_missing_obsm_key_raises(run_component, tmp_path):
     output_path = tmp_path / "output_err.h5mu"
 
     with pytest.raises(subprocess.CalledProcessError) as exc:
-        run_component([
-            "--input", str(h5mu_path),
-            "--output", str(output_path),
-            "--obsm_input", "does_not_exist",
-        ])
+        run_component(
+            [
+                "--input",
+                str(h5mu_path),
+                "--output",
+                str(output_path),
+                "--obsm_input",
+                "does_not_exist",
+            ]
+        )
 
     assert not output_path.is_file()
     assert "does_not_exist" in exc.value.stdout.decode("utf-8")
