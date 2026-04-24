@@ -31,21 +31,8 @@ from compress_h5mu import write_h5ad_to_h5mu_with_compression
 logger = setup_logger()
 
 
-def validate_inputs(par, mdata_query, mdata_ref):
+def validate_inputs(par, query_adata, ref_adata):
     modality = par["modality"]
-    if modality not in mdata_query.mod:
-        raise ValueError(
-            f"Modality '{modality}' not found in query MuData. "
-            f"Available modalities: {list(mdata_query.mod.keys())}"
-        )
-    if modality not in mdata_ref.mod:
-        raise ValueError(
-            f"Modality '{modality}' not found in reference MuData. "
-            f"Available modalities: {list(mdata_ref.mod.keys())}"
-        )
-
-    query_adata = mdata_query.mod[modality]
-    ref_adata = mdata_ref.mod[modality]
 
     embeddings = {
         "query": (query_adata, par["input_obsm_features"]),
@@ -66,18 +53,22 @@ def validate_inputs(par, mdata_query, mdata_ref):
                 f"Available keys: {list(ref_adata.obs.keys())}"
             )
 
-    return query_adata, ref_adata
-
 
 def main(par):
     par = check_arguments(par)
 
-    logger.info("Loading query MuData from '%s'", par["input"])
-    mdata_query = mu.read_h5mu(par["input"])
-    logger.info("Loading reference MuData from '%s'", par["reference"])
-    mdata_ref = mu.read_h5mu(par["reference"])
+    logger.info(
+        "Loading query AnnData from '%s' modality '%s'", par["input"], par["modality"]
+    )
+    query_adata = mu.read_anndata(par["input"], mod=par["modality"])
+    logger.info(
+        "Loading reference AnnData from '%s' modality '%s'",
+        par["reference"],
+        par["modality"],
+    )
+    ref_adata = mu.read_anndata(par["reference"], mod=par["modality"])
 
-    query_adata, ref_adata = validate_inputs(par, mdata_query, mdata_ref)
+    validate_inputs(par, query_adata, ref_adata)
 
     query_features = get_query_features(query_adata, par, logger)
     ref_features = get_reference_features(ref_adata, par, logger)
