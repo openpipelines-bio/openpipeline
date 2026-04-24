@@ -4,6 +4,9 @@ scope: "public"
 description: |
   Transfer labels from a reference to a query using CellMapper in a shared
   embedding space.
+authors:
+  - __merge__: /src/authors/luke_zappia.yaml
+    roles: [ author ]
 
 __merge__: ../api/common_arguments.yaml
 
