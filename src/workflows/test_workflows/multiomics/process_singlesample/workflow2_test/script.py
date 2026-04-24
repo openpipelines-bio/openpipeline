@@ -57,4 +57,12 @@ assert input.mod["prot"].shape == output.mod["prot"].shape, (
     "Protein modality shapes differ"
 )
 
+# Check that intersect_obs was applied: all modalities share the same observations
+rna_obs = set(output.mod["rna"].obs_names)
+prot_obs = set(output.mod["prot"].obs_names)
+assert rna_obs == prot_obs, (
+    f"After intersect_obs, RNA and prot modalities should share the same observations. "
+    f"RNA-only: {len(rna_obs - prot_obs)}, prot-only: {len(prot_obs - rna_obs)}."
+)
+
 print("Test successful!", flush=True)
