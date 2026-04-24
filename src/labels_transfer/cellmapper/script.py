@@ -46,6 +46,14 @@ def validate_inputs(par, query_adata, ref_adata):
                 f"Available keys: {list(adata.obsm.keys())}"
             )
 
+    assert (
+        len(par["reference_obs_targets"])
+        == len(par["output_obs_predictions"])
+        == len(par["output_obs_probability"])
+    ), (
+        "reference_obs_targets, output_obs_predictions and output_obs_probability must have the same length"
+    )
+
     for target in par["reference_obs_targets"]:
         if target not in ref_adata.obs:
             raise ValueError(
