@@ -3218,7 +3218,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--reference_obs_targets",
-          "description" : "The `.obs` key(s) of the target labels to tranfer.",
+          "description" : "The `.obs` key(s) of the target labels to transfer.",
           "default" : [
             "ann_level_1",
             "ann_level_2",
@@ -3240,7 +3240,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--output",
-          "description" : "The query data in .h5mu format with predicted labels transfered from the reference.",
+          "description" : "The query data in .h5mu format with predicted labels transferred from the reference.",
           "info" : {
             "label" : "Output data",
             "file_format" : {
@@ -3721,7 +3721,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.12.7",
+            "anndata~=0.12.11",
             "awkward",
             "scipy!=1.17.*",
             "mudata~=0.3.2"
@@ -3769,7 +3769,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/xgboost",
     "viash_version" : "0.9.7",
-    "git_commit" : "4e2d09013a3cfce871f5d315897bd2782db24c55",
+    "git_commit" : "89eedf1cb90954970c295e5337fe8712adf23ee6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

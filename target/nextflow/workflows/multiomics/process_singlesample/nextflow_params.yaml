@@ -38,6 +38,9 @@ skip_scrublet_doublet_detection: false
 # gdo_max_guides_per_cell: 100000000
 # gdo_min_cells_per_guide: 3
 
+# Cross-modality filtering
+intersect_obs: false
+
 # Mitochondrial & Ribosomal Gene Detection
 # var_gene_names: "gene_symbol"
 # var_name_mitochondrial_genes: "foo"

@@ -459,9 +459,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "lxml~=4.8.0" "mudata~=0.2.1" "cellbender~=0.3.0"
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-LABEL org.opencontainers.image.created="2026-04-21T03:45:14Z"
+LABEL org.opencontainers.image.created="2026-04-25T03:37:49Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4e2d09013a3cfce871f5d315897bd2782db24c55"
+LABEL org.opencontainers.image.revision="89eedf1cb90954970c295e5337fe8712adf23ee6"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

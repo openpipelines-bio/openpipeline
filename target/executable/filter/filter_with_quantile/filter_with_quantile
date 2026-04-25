@@ -453,14 +453,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.7" "awkward" "scipy!=1.17.*" "mudata~=0.3.2" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.11" "awkward" "scipy!=1.17.*" "mudata~=0.3.2" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_quantile"
-LABEL org.opencontainers.image.created="2026-04-21T03:45:20Z"
+LABEL org.opencontainers.image.created="2026-04-25T03:37:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4e2d09013a3cfce871f5d315897bd2782db24c55"
+LABEL org.opencontainers.image.revision="89eedf1cb90954970c295e5337fe8712adf23ee6"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
