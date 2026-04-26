@@ -354,7 +354,7 @@ build_info:
   output: "target/executable/velocity/scvelo"
   executable: "target/executable/velocity/scvelo/scvelo"
   viash_version: "0.9.7"
-  git_commit: "89eedf1cb90954970c295e5337fe8712adf23ee6"
+  git_commit: "9c9400c1b6e464504247ec5fb401bd37947ccbc1"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
