@@ -3440,7 +3440,7 @@ meta = [
             "scipy!=1.17.*",
             "mudata~=0.3.2",
             "scanpy~=1.11.4",
-            "scvelo~=0.3.3",
+            "scvelo~=0.3.3,!=0.3.4",
             "scipy~=1.14.1"
           ],
           "script" : [
@@ -3477,7 +3477,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/scvelo",
     "viash_version" : "0.9.7",
-    "git_commit" : "f55fd8d0f057d5be845ac040501ced9d403c8101",
+    "git_commit" : "34a0fdb8fed405b72b54d7215c67e08c5404de94",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
