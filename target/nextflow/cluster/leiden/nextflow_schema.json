@@ -55,6 +55,26 @@
           "help_text": "Type: `string`, multiple: `False`, default: `\"leiden\"`. ",
           "default": "leiden"
         },
+        "flavor": {
+          "type": "string",
+          "description": "Which package's implementation to use.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"leidenalg\"`, choices: ``leidenalg`, `igraph``. ",
+          "enum": [
+            "leidenalg",
+            "igraph"
+          ],
+          "default": "leidenalg"
+        },
+        "n_iterations": {
+          "type": "integer",
+          "description": "How many iterations of the Leiden clustering algorithm to perform.\nWhen defined, positive values above 2 define the total number of iterations to perform.\nWhen not set, the algorithm will run until it reaches its optimal clustering.\n",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "seed": {
+          "type": "integer",
+          "description": "Fix the initialization of the optimization",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
         "resolution": {
           "type": "array",
           "items": {

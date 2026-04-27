@@ -162,6 +162,14 @@ workflow run_wf {
         toState: ["input": "output"],
       )
       | view {"After merging processing: $it"}
+      | intersect_obs.run(
+        runIf: {id, state -> state.intersect_obs},
+        fromState: [
+          "input": "input",
+          "modalities": "modalities"
+        ],
+        toState: ["input": "output"]
+      )
 
       // Processing of multi-modal multisample MuData files.
       // Performs calculations on samples that have *not* been integrated,

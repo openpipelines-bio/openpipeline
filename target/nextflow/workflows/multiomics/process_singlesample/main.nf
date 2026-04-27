@@ -3430,6 +3430,17 @@ meta = [
       ]
     },
     {
+      "name" : "Cross-modality filtering",
+      "arguments" : [
+        {
+          "type" : "boolean_true",
+          "name" : "--intersect_obs",
+          "description" : "After per-modality filtering, remove observations that are not present\nin all processed modalities so that each modality shares the same set of cells.\n",
+          "direction" : "input"
+        }
+      ]
+    },
+    {
       "name" : "Mitochondrial & Ribosomal Gene Detection",
       "arguments" : [
         {
@@ -3572,6 +3583,12 @@ meta = [
       }
     },
     {
+      "name" : "filter/intersect_obs",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
       "name" : "workflows/multiomics/process_singlesample_base",
       "repository" : {
         "type" : "local"
@@ -3667,7 +3684,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_singlesample",
     "viash_version" : "0.9.7",
-    "git_commit" : "bcc0e1023eaaf028d50432dec22cfd2fac005ff1",
+    "git_commit" : "f55fd8d0f057d5be845ac040501ced9d403c8101",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3716,6 +3733,7 @@ meta = [
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
 include { merge } from "${meta.resources_dir}/../../../../nextflow/dataflow/merge/main.nf"
+include { intersect_obs } from "${meta.resources_dir}/../../../../nextflow/filter/intersect_obs/main.nf"
 include { process_singlesample_base } from "${meta.resources_dir}/../../../../_private/nextflow/workflows/multiomics/process_singlesample_base/main.nf"
 
 // inner workflow
@@ -3764,6 +3782,17 @@ workflow run_wf {
         fromState: [
           "input": "input",
           "output": "workflow_output"
+        ],
+        toState: {id, output, state -> 
+          ["output": output.output]
+        }
+      )
+      | view {"After smerging: $it"}
+      | intersect_obs.run(
+        runIf: {id, state -> state.intersect_obs},
+        fromState:[
+          "input": "output",
+          "modalities": "modalities"
         ],
         toState: {id, output, state -> 
           ["output": output.output]

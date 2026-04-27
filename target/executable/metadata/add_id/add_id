@@ -453,14 +453,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.7" "awkward" "scipy!=1.17.*" "mudata~=0.3.2" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.11" "awkward" "scipy!=1.17.*" "mudata~=0.3.2" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component metadata add_id"
-LABEL org.opencontainers.image.created="2026-04-20T09:59:39Z"
+LABEL org.opencontainers.image.created="2026-04-27T14:25:35Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bcc0e1023eaaf028d50432dec22cfd2fac005ff1"
+LABEL org.opencontainers.image.revision="f55fd8d0f057d5be845ac040501ced9d403c8101"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

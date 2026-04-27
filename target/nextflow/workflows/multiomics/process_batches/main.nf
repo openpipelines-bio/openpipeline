@@ -3144,6 +3144,17 @@ meta = [
       ]
     },
     {
+      "name" : "Cross-modality filtering",
+      "arguments" : [
+        {
+          "type" : "boolean_true",
+          "name" : "--intersect_obs",
+          "description" : "After per-modality multisample processing, remove observations that are\nnot present in all processed modalities so that each modality shares the\nsame set of cells.\n",
+          "direction" : "input"
+        }
+      ]
+    },
+    {
       "name" : "Highly variable features detection",
       "arguments" : [
         {
@@ -3375,6 +3386,12 @@ meta = [
       "entrypoint" : "test_wf2"
     },
     {
+      "type" : "nextflow_script",
+      "path" : "test.nf",
+      "is_executable" : true,
+      "entrypoint" : "test_wf3"
+    },
+    {
       "type" : "file",
       "path" : "/resources_test/concat_test_data"
     },
@@ -3392,6 +3409,10 @@ meta = [
       {
         "name" : "workflow_test2",
         "namespace" : "test_workflows/multiomics/process_batches"
+      },
+      {
+        "name" : "workflow_test3",
+        "namespace" : "test_workflows/multiomics/process_batches"
       }
     ]
   },
@@ -3403,6 +3424,12 @@ meta = [
   "dependencies" : [
     {
       "name" : "dataflow/merge",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
+      "name" : "filter/intersect_obs",
       "repository" : {
         "type" : "local"
       }
@@ -3537,7 +3564,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.9.7",
-    "git_commit" : "bcc0e1023eaaf028d50432dec22cfd2fac005ff1",
+    "git_commit" : "f55fd8d0f057d5be845ac040501ced9d403c8101",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3586,6 +3613,7 @@ meta = [
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
 include { merge } from "${meta.resources_dir}/../../../../nextflow/dataflow/merge/main.nf"
+include { intersect_obs } from "${meta.resources_dir}/../../../../nextflow/filter/intersect_obs/main.nf"
 include { split_modalities as split_modalities_workflow_viashalias } from "${meta.resources_dir}/../../../../_private/nextflow/workflows/multiomics/split_modalities/main.nf"
 split_modalities_workflow = split_modalities_workflow_viashalias.run(key: "split_modalities_workflow")
 include { prot_multisample } from "${meta.resources_dir}/../../../../nextflow/workflows/prot/prot_multisample/main.nf"
@@ -3763,6 +3791,14 @@ workflow run_wf {
         toState: ["input": "output"],
       )
       | view {"After merging processing: $it"}
+      | intersect_obs.run(
+        runIf: {id, state -> state.intersect_obs},
+        fromState: [
+          "input": "input",
+          "modalities": "modalities"
+        ],
+        toState: ["input": "output"]
+      )
 
       // Processing of multi-modal multisample MuData files.
       // Performs calculations on samples that have *not* been integrated,

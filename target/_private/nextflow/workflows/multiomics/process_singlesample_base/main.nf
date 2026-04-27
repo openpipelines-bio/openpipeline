@@ -3443,6 +3443,17 @@ meta = [
       ]
     },
     {
+      "name" : "Cross-modality filtering",
+      "arguments" : [
+        {
+          "type" : "boolean_true",
+          "name" : "--intersect_obs",
+          "description" : "After per-modality filtering, remove observations that are not present\nin all processed modalities so that each modality shares the same set of cells.\n",
+          "direction" : "input"
+        }
+      ]
+    },
+    {
       "name" : "Mitochondrial & Ribosomal Gene Detection",
       "arguments" : [
         {
@@ -3665,7 +3676,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/_private/nextflow/workflows/multiomics/process_singlesample_base",
     "viash_version" : "0.9.7",
-    "git_commit" : "bcc0e1023eaaf028d50432dec22cfd2fac005ff1",
+    "git_commit" : "f55fd8d0f057d5be845ac040501ced9d403c8101",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -208,6 +208,19 @@
         }
       }
     },
+    "cross-modality filtering": {
+      "title": "Cross-modality filtering",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "intersect_obs": {
+          "type": "boolean",
+          "description": "After per-modality filtering, remove observations that are not present\nin all processed modalities so that each modality shares the same set of cells.\n",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
+    },
     "mitochondrial & ribosomal gene detection": {
       "title": "Mitochondrial & Ribosomal Gene Detection",
       "type": "object",
@@ -283,6 +296,9 @@
     },
     {
       "$ref": "#/$defs/gdo filtering options"
+    },
+    {
+      "$ref": "#/$defs/cross-modality filtering"
     },
     {
       "$ref": "#/$defs/mitochondrial & ribosomal gene detection"

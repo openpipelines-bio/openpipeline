@@ -3444,6 +3444,17 @@ meta = [
       ]
     },
     {
+      "name" : "Cross-modality filtering",
+      "arguments" : [
+        {
+          "type" : "boolean_true",
+          "name" : "--intersect_obs",
+          "description" : "After per-modality filtering and multisample processing, remove observations\nthat are not present in all processed modalities so that each modality shares\nthe same set of cells.\n",
+          "direction" : "input"
+        }
+      ]
+    },
+    {
       "name" : "Highly variable features detection",
       "arguments" : [
         {
@@ -3753,6 +3764,12 @@ meta = [
       "entrypoint" : "test_wf5"
     },
     {
+      "type" : "nextflow_script",
+      "path" : "test.nf",
+      "is_executable" : true,
+      "entrypoint" : "test_wf9"
+    },
+    {
       "type" : "file",
       "path" : "/resources_test/concat_test_data"
     },
@@ -3777,6 +3794,10 @@ meta = [
       },
       {
         "name" : "assert_test_workflow_2_output",
+        "namespace" : "test_workflows/multiomics/process_samples"
+      },
+      {
+        "name" : "assert_test_workflow_9_output",
         "namespace" : "test_workflows/multiomics/process_samples"
       }
     ]
@@ -3914,7 +3935,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.9.7",
-    "git_commit" : "bcc0e1023eaaf028d50432dec22cfd2fac005ff1",
+    "git_commit" : "f55fd8d0f057d5be845ac040501ced9d403c8101",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -4140,6 +4161,7 @@ workflow run_wf {
             "rna_layer": state.rna_layer,
             "prot_layer": state.prot_layer,
             "clr_axis": state.clr_axis,
+            "intersect_obs": state.intersect_obs,
             "rna_enable_scaling": state.rna_enable_scaling,
             "rna_scaling_output_layer": state.rna_scaling_output_layer,
             "rna_scaling_pca_obsm_output": state.rna_scaling_pca_obsm_output,
