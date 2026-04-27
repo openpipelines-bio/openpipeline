@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Generate minimal test data for trajectory/palantir.
 # Re-uses resources_test/beyond_test_data/atlas.h5mu (created by
-# resources_test_scripts/beyond_trajectory_test_data.sh) — no new h5mu is needed.
+# resources_test_scripts/beyond_trajectory_test_data.sh) - no new h5mu is needed.
 #
 # Usage:
 #   cd /path/to/openpipeline

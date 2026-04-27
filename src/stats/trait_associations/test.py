@@ -117,7 +117,7 @@ def test_trait_a_detected(run_component, tmp_path):
     res = pd.DataFrame(mu.read_h5mu(str(out)).mod["rna"].uns["trait_associations"])
     sp0_row = res[res["subpopulation"] == "SP0"]
     assert len(sp0_row) == 1
-    # SP0 was generated to correlate with trait_A → beta should be positive and p small
+    # SP0 was generated to correlate with trait_A -> beta should be positive and p small
     assert float(sp0_row["beta"].iloc[0]) > 0
     assert float(sp0_row["p_value"].iloc[0]) < 0.05
 

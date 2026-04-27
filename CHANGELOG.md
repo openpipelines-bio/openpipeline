@@ -2,13 +2,13 @@
 
 ## NEW FUNCTIONALITY
 
-* BEYOND methodology — 8 new components and 2 new workflows implementing the
+* BEYOND methodology - 8 new components and 2 new workflows implementing the
   Habib-lab BEYOND pipeline for cellular community discovery in snRNA-seq data
   (reference: naomihabiblab/BEYOND_DLPFC):
 
   **Components:**
 
-  - `metadata/calculate_proportions`: computes a participant × subpopulation cell
+  - `metadata/calculate_proportions`: computes a participant x subpopulation cell
     proportion matrix from a single-cell atlas; stores results in `.uns["proportions"]`
     (column-first dict) and `.obsm["proportions"]` (per-cell proportion vectors).
 
@@ -27,7 +27,7 @@
 
   - `trajectory/pseudotime_dynamics`: fits a cubic spline (scipy.interpolate.UnivariateSpline)
     of participant proportion versus pseudotime per subpopulation; stores fitted curves,
-    peak pseudotime, R², and p-value in `.uns["dynamics"]`.
+    peak pseudotime, R^2, and p-value in `.uns["dynamics"]`.
 
   - `cluster/cellular_communities`: detects cellular communities by combining
     co-occurrence similarity (Pearson correlation of participant proportion vectors) and
@@ -48,13 +48,13 @@
   **Workflows:**
 
   - `workflows/beyond/atlas_building`: end-to-end atlas construction from per-donor
-    h5mu files — QC filtering, integration (Harmony), cell-type annotation (CellTypist),
+    h5mu files - QC filtering, integration (Harmony), cell-type annotation (CellTypist),
     and per-cell-type Leiden subclustering to produce the subpopulation labels required
     by the trajectory analysis workflow.
 
   - `workflows/beyond/trajectory_analysis`: full BEYOND trajectory inference from an
-    annotated atlas h5mu — runs all 8 steps (proportions → PHATE → Palantir → VIA →
-    pseudotime dynamics → cellular communities → trait associations → pathway enrichment)
+    annotated atlas h5mu - runs all 8 steps (proportions -> PHATE -> Palantir -> VIA ->
+    pseudotime dynamics -> cellular communities -> trait associations -> pathway enrichment)
     and emits a single enriched h5mu with all results.
 
 * `qc/calculate_qc_metrics`: added support for MuData encoded in Zarr format (PR #1140).

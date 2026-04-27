@@ -2,8 +2,8 @@
 # Test data for stats/trait_associations.
 # Delegates to resources_test_scripts/beyond_trajectory_test_data.sh.
 # Inputs:
-#   resources_test/beyond_test_data/proportions_output.h5mu — has uns["proportions"]
-#   resources_test/beyond_test_data/traits.csv              — 8 donors × 5 traits
+#   resources_test/beyond_test_data/proportions_output.h5mu - has uns["proportions"]
+#   resources_test/beyond_test_data/traits.csv              - 8 donors x 5 traits
 #
 # Run from the repo root:
 #   bash src/stats/trait_associations/test_data/test_data_script.sh

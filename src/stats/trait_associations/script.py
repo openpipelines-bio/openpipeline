@@ -88,21 +88,21 @@ def main():
     mdata = mu.read_h5mu(par["input"])
     adata = mdata.mod[par["modality"]]
 
-    # ── validate ──────────────────────────────────────────────────────────────
+    # -- validate --------------------------------------------------------------
     uns_key = par["uns_proportions"]
     if uns_key not in adata.uns:
         raise ValueError(
             f"Key '{uns_key}' not found in .uns. Available: {list(adata.uns.keys())}"
         )
 
-    # ── load proportion matrix ────────────────────────────────────────────────
-    prop_df = pd.DataFrame(adata.uns[uns_key])  # participants × subpopulations
+    # -- load proportion matrix ------------------------------------------------
+    prop_df = pd.DataFrame(adata.uns[uns_key])  # participants x subpopulations
     logger.info(
-        "Proportion matrix: %d participants × %d subpopulations.",
+        "Proportion matrix: %d participants x %d subpopulations.",
         *prop_df.shape,
     )
 
-    # ── load traits table ─────────────────────────────────────────────────────
+    # -- load traits table -----------------------------------------------------
     traits_df = pd.read_csv(par["traits_csv"])
     pid_col = par["participant_id_column"]
     if pid_col not in traits_df.columns:
@@ -123,7 +123,7 @@ def main():
     covariate_cols = par["covariate_columns"] or []
     random_effect_col = par["random_effect_column"]
 
-    # ── merge proportions with traits ─────────────────────────────────────────
+    # -- merge proportions with traits -----------------------------------------
     common_participants = prop_df.index.intersection(traits_df.index)
     if len(common_participants) == 0:
         raise ValueError(
@@ -138,7 +138,7 @@ def main():
     prop_sub = prop_df.loc[common_participants]
     traits_sub = traits_df.loc[common_participants]
 
-    # ── run association models ────────────────────────────────────────────────
+    # -- run association models ------------------------------------------------
     records = []
     subpops = prop_sub.columns.tolist()
     min_n = par["min_participants"]
@@ -152,7 +152,7 @@ def main():
             n_complete = merged[[trait]].dropna().__len__()
             if n_complete < min_n:
                 logger.debug(
-                    "Skipping %s × %s: only %d complete cases (min=%d).",
+                    "Skipping %s x %s: only %d complete cases (min=%d).",
                     subpop,
                     trait,
                     n_complete,
@@ -163,7 +163,7 @@ def main():
             fit = _fit_model(merged, trait, covariate_cols, random_effect_col)
             if fit is None:
                 logger.warning(
-                    "Model failed for subpopulation '%s' × trait '%s'.", subpop, trait
+                    "Model failed for subpopulation '%s' x trait '%s'.", subpop, trait
                 )
                 continue
 
@@ -184,7 +184,7 @@ def main():
     results_df = pd.DataFrame(records)
     logger.info("Fit %d association models.", len(results_df))
 
-    # ── FDR correction ────────────────────────────────────────────────────────
+    # -- FDR correction --------------------------------------------------------
     fdr_method = par["fdr_method"]
     if fdr_method == "none":
         results_df["fdr_q"] = results_df["p_value"]
@@ -200,7 +200,7 @@ def main():
 
     results_df = results_df.sort_values("p_value").reset_index(drop=True)
 
-    # ── store in uns ──────────────────────────────────────────────────────────
+    # -- store in uns ----------------------------------------------------------
     adata.uns[par["uns_output"]] = results_df.to_dict(orient="list")
     logger.info(
         "Stored %d association results in .uns['%s'].",
@@ -208,12 +208,12 @@ def main():
         par["uns_output"],
     )
 
-    # ── optional CSV output ───────────────────────────────────────────────────
+    # -- optional CSV output ---------------------------------------------------
     if par.get("output_csv"):
         results_df.to_csv(par["output_csv"], index=False)
         logger.info("Written CSV to %s", par["output_csv"])
 
-    # ── write output ──────────────────────────────────────────────────────────
+    # -- write output ----------------------------------------------------------
     logger.info("Writing output to %s", par["output"])
     write_h5ad_to_h5mu_with_compression(
         output_file=par["output"],

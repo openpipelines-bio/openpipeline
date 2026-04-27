@@ -51,7 +51,7 @@ def main():
     mdata = mu.read_h5mu(par["input"])
     adata = mdata.mod[par["modality"]]
 
-    # ── validate ──────────────────────────────────────────────────────────────
+    # -- validate --------------------------------------------------------------
     obsm_key = par["obsm_key"]
     if obsm_key not in adata.obsm:
         raise ValueError(
@@ -63,7 +63,7 @@ def main():
             f"obs column '{obs_cluster}' not found. Available: {list(adata.obs.columns)}"
         )
 
-    # ── prepare inputs ────────────────────────────────────────────────────────
+    # -- prepare inputs --------------------------------------------------------
     embedding = np.array(adata.obsm[obsm_key], dtype=float)
     cluster_labels = adata.obs[obs_cluster].astype(str).tolist()
     root_user = _parse_root(par["root_user"], cluster_labels)
@@ -75,7 +75,7 @@ def main():
         root_user,
     )
 
-    # ── run VIA ───────────────────────────────────────────────────────────────
+    # -- run VIA ---------------------------------------------------------------
     import pyVIA.core as via_core
     import pyVIA.utils_via as via_utils
     from scipy.sparse import csr_matrix as _csr
@@ -130,12 +130,12 @@ def main():
     v.run_VIA()
     logger.info("VIA run complete.")
 
-    # ── extract pseudotime ────────────────────────────────────────────────────
+    # -- extract pseudotime ----------------------------------------------------
     pt = np.array(v.single_cell_pt_markov, dtype=float)
     adata.obs[par["obs_pseudotime"]] = pt
     logger.info("Pseudotime range: [%.4f, %.4f].", float(pt.min()), float(pt.max()))
 
-    # ── extract graph ─────────────────────────────────────────────────────────
+    # -- extract graph ---------------------------------------------------------
     # v.edgelist: list of (source_cluster, target_cluster, weight) tuples
     edge_list = getattr(v, "edgelist", None) or []
     adata.uns[par["uns_graph"]] = {
@@ -149,7 +149,7 @@ def main():
         par["uns_graph"],
     )
 
-    # ── write output ──────────────────────────────────────────────────────────
+    # -- write output ----------------------------------------------------------
     logger.info("Writing output to %s", par["output"])
     write_h5ad_to_h5mu_with_compression(
         output_file=par["output"],

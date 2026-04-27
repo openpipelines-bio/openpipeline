@@ -1,4 +1,4 @@
-// beyond/trajectory_analysis — atlas h5mu → full BEYOND outputs
+// beyond/trajectory_analysis - atlas h5mu -> full BEYOND outputs
 //
 // Input:  single channel event [ id, state ] where state.input is the atlas h5mu
 //         produced by beyond/atlas_building (obs["participant_id"] + obs["subpopulation"]).
@@ -18,7 +18,7 @@ workflow run_wf {
         [ id, state + [ "workflow_output": state.output ] ]
       }
 
-  // ── 1. Participant × subpopulation proportion matrix ──────────────────────────
+  // -- 1. Participant x subpopulation proportion matrix --------------------------
   prop_ch = prep_ch
     | calculate_proportions.run(
         fromState: { id, state -> [
@@ -32,7 +32,7 @@ workflow run_wf {
         toState: [ "input": "output" ]
       )
 
-  // ── 2. PHATE cellular landscape (input: proportion matrix in obsm) ─────────────
+  // -- 2. PHATE cellular landscape (input: proportion matrix in obsm) -------------
   phate_ch = prop_ch
     | phate.run(
         fromState: { id, state -> [
@@ -43,7 +43,7 @@ workflow run_wf {
         toState: [ "input": "output" ]
       )
 
-  // ── 3. Palantir pseudotime + fate probabilities (input: X_phate) ───────────────
+  // -- 3. Palantir pseudotime + fate probabilities (input: X_phate) ---------------
   palantir_ch = phate_ch
     | palantir.run(
         fromState: { id, state -> [
@@ -61,7 +61,7 @@ workflow run_wf {
         toState: [ "input": "output" ]
       )
 
-  // ── 4. VIA pseudotime (alternative trajectory, runs on same X_phate) ──────────
+  // -- 4. VIA pseudotime (alternative trajectory, runs on same X_phate) ----------
   via_ch = palantir_ch
     | via.run(
         fromState: { id, state -> [
@@ -75,7 +75,7 @@ workflow run_wf {
         toState: [ "input": "output" ]
       )
 
-  // ── 5. GAM-fitted proportion dynamics along pseudotime ────────────────────────
+  // -- 5. GAM-fitted proportion dynamics along pseudotime ------------------------
   dynamics_ch = via_ch
     | pseudotime_dynamics.run(
         fromState: { id, state -> [
@@ -91,7 +91,7 @@ workflow run_wf {
         toState: [ "input": "output" ]
       )
 
-  // ── 6. Cellular community detection (co-occurrence + dynamics) ────────────────
+  // -- 6. Cellular community detection (co-occurrence + dynamics) ----------------
   communities_ch = dynamics_ch
     | cellular_communities.run(
         fromState: { id, state -> [
@@ -107,7 +107,7 @@ workflow run_wf {
         toState: [ "input": "output" ]
       )
 
-  // ── 7. Linear mixed-model trait associations ───────────────────────────────────
+  // -- 7. Linear mixed-model trait associations -----------------------------------
   traits_ch = communities_ch
     | trait_associations.run(
         fromState: { id, state -> [
@@ -129,7 +129,7 @@ workflow run_wf {
         }
       )
 
-  // ── 8. Pathway enrichment (optional — skipped when de_results_csv is null) ─────
+  // -- 8. Pathway enrichment (optional - skipped when de_results_csv is null) -----
   //
   // Branch into two sub-channels: events with DE results run pathway_enrichment;
   // events without skip directly to the final setState.

@@ -36,8 +36,8 @@ logger = setup_logger()
 
 
 def _cooccurrence_similarity(prop_df):
-    """Pearson correlation matrix of participant proportion vectors (subpop × subpop)."""
-    # prop_df: participants × subpopulations
+    """Pearson correlation matrix of participant proportion vectors (subpop x subpop)."""
+    # prop_df: participants x subpopulations
     corr = prop_df.corr(method="pearson")
     # clip to [-1, 1] and fill NaN (zero-variance subpops) with 0
     corr = corr.clip(-1, 1).fillna(0)
@@ -45,7 +45,7 @@ def _cooccurrence_similarity(prop_df):
 
 
 def _dynamics_similarity(dynamics, subpops):
-    """Pearson correlation of fitted proportion curves (subpop × subpop)."""
+    """Pearson correlation of fitted proportion curves (subpop x subpop)."""
     n = len(subpops)
     sim = np.eye(n)
     curves = {}
@@ -101,7 +101,7 @@ def main():
     mdata = mu.read_h5mu(par["input"])
     adata = mdata.mod[par["modality"]]
 
-    # ── validate ─────────────────────────────────────────────────────────────
+    # -- validate -------------------------------------------------------------
     subpop_col = par["obs_subpopulation"]
     if subpop_col not in adata.obs.columns:
         raise ValueError(
@@ -114,16 +114,16 @@ def main():
                 f"Key '{key}' not found in .uns. Available: {list(adata.uns.keys())}"
             )
 
-    # ── load data ─────────────────────────────────────────────────────────────
-    prop_df = pd.DataFrame(adata.uns[par["uns_proportions"]])  # participants × subpops
+    # -- load data -------------------------------------------------------------
+    prop_df = pd.DataFrame(adata.uns[par["uns_proportions"]])  # participants x subpops
     dynamics = adata.uns[par["uns_dynamics"]]
     subpops = prop_df.columns.tolist()
     logger.info(
-        "Proportion matrix: %d participants × %d subpopulations.",
+        "Proportion matrix: %d participants x %d subpopulations.",
         *prop_df.shape,
     )
 
-    # ── similarity matrices ───────────────────────────────────────────────────
+    # -- similarity matrices ---------------------------------------------------
     logger.info("Computing co-occurrence similarity (Pearson correlation).")
     co_sim = _cooccurrence_similarity(prop_df)
 
@@ -136,7 +136,7 @@ def main():
     combined_df = pd.DataFrame(combined, index=subpops, columns=subpops)
     logger.info("Combined similarity matrix (alpha=%.2f) computed.", alpha)
 
-    # ── clustering ───────────────────────────────────────────────────────────
+    # -- clustering -----------------------------------------------------------
     dist_mat = 1.0 - combined_df
     n_comm = par["n_communities"]
     method = par["method"]
@@ -157,14 +157,14 @@ def main():
     subpop_to_community = dict(zip(subpops, community_labels))
     logger.info("Community assignments: %s", subpop_to_community)
 
-    # ── assign to cells ───────────────────────────────────────────────────────
+    # -- assign to cells -------------------------------------------------------
     comm_col = par["obs_community_id"]
     adata.obs[comm_col] = (
         adata.obs[subpop_col].map(subpop_to_community).fillna("unassigned")
     )
     logger.info("Assigned community labels to .obs['%s'].", comm_col)
 
-    # ── store metadata in uns ─────────────────────────────────────────────────
+    # -- store metadata in uns -------------------------------------------------
     uns_key = par["uns_output"]
     adata.uns[uns_key] = {
         "subpopulation_communities": subpop_to_community,

@@ -52,7 +52,7 @@ def _resolve_start_cell(adata, par):
             raise ValueError(
                 f"No cells found for cluster '{cluster}' in obs['{obs_key}']."
             )
-        # early_cell(ad, celltype, celltype_column) — requires DM_EigenVectors_multiscaled
+        # early_cell(ad, celltype, celltype_column) - requires DM_EigenVectors_multiscaled
         start_cell = palantir.utils.early_cell(adata, cluster, celltype_column=obs_key)
         logger.info(
             "Auto-selected start cell '%s' from cluster '%s' (obs['%s'])",
@@ -128,7 +128,7 @@ def main():
         adata.obsm[obsm_key].shape[1],
     )
 
-    # ── 1. Diffusion maps ────────────────────────────────────────────────────
+    # -- 1. Diffusion maps ----------------------------------------------------
     logger.info(
         "Computing diffusion maps (pca_key=%s, n_components=%d, knn=%d)",
         obsm_key,
@@ -143,22 +143,22 @@ def main():
         seed=par["seed"],
     )
 
-    # ── 2. Multiscale diffusion space (required for early_cell + run_palantir) ──
+    # -- 2. Multiscale diffusion space (required for early_cell + run_palantir) --
     logger.info("Determining multiscale diffusion space")
     palantir.utils.determine_multiscale_space(adata)
 
-    # ── 3. Resolve start cell ────────────────────────────────────────────────
+    # -- 3. Resolve start cell ------------------------------------------------
     start_cell = _resolve_start_cell(adata, par)
     logger.info("Start cell: %s", start_cell)
 
-    # ── 4. Resolve terminal states ───────────────────────────────────────────
+    # -- 4. Resolve terminal states -------------------------------------------
     terminal_states = _resolve_terminal_states(adata, par)
     if terminal_states:
         logger.info("Terminal states (%d): %s", len(terminal_states), terminal_states)
     else:
         logger.info("Terminal states: auto-detected by Palantir")
 
-    # ── 5. Run Palantir ──────────────────────────────────────────────────────
+    # -- 5. Run Palantir ------------------------------------------------------
     # run_palantir stores results directly in adata.obs / adata.obsm / adata.uns
     # when given an AnnData input.
     n_jobs = max(1, (meta.get("cpus") or 1))
@@ -187,7 +187,7 @@ def main():
         par["uns_waypoints"],
     )
 
-    # ── 6. Write output ──────────────────────────────────────────────────────
+    # -- 6. Write output ------------------------------------------------------
     logger.info("Writing output to %s", par["output"])
     write_h5ad_to_h5mu_with_compression(
         output_file=par["output"],

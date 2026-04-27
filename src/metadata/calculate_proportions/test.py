@@ -75,7 +75,7 @@ def test_basic(run_component, tmp_path):
     assert isinstance(prop_dict, dict)
 
     # Reconstruct DataFrame from dict and check shape
-    # uns dict is column-first (subpop → donor → value); pd.DataFrame restores original shape
+    # uns dict is column-first (subpop -> donor -> value); pd.DataFrame restores original shape
     prop_df = pd.DataFrame(prop_dict)
     assert prop_df.shape == (3, 4)
 

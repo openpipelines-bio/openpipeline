@@ -1,4 +1,4 @@
-palantir — Pseudotime and fate probabilities via Palantir
+palantir - Pseudotime and fate probabilities via Palantir
 
 USAGE
   palantir --input INPUT --output OUTPUT --start_cell BARCODE [options]
@@ -7,8 +7,8 @@ USAGE
 
 DESCRIPTION
   Runs the full Palantir trajectory inference workflow:
-    1. palantir.utils.run_diffusion_maps  — diffusion map on a low-dimensional embedding
-    2. palantir.core.run_palantir         — Markov chain pseudotime + fate probabilities
+    1. palantir.utils.run_diffusion_maps  - diffusion map on a low-dimensional embedding
+    2. palantir.core.run_palantir         - Markov chain pseudotime + fate probabilities
 
   Palantir reference: Setty et al. Nature Biotechnology (2019) doi:10.1038/s41587-019-0068-4
 
@@ -27,10 +27,10 @@ KEY PARAMETERS
   --seed                Random seed (default: 42)
 
 OUTPUTS  (added to the chosen modality)
-  obs[--obs_pseudotime]           palantir_pseudotime   — cell pseudotime in [0, 1]
-  obs[--obs_entropy]              palantir_entropy      — differentiation entropy per cell
-  obsm[--obsm_fate_probabilities] palantir_fate_probabilities — n_cells × n_terminal matrix
-  uns[--uns_waypoints]            palantir_waypoints    — list of waypoint cell barcodes
+  obs[--obs_pseudotime]           palantir_pseudotime   - cell pseudotime in [0, 1]
+  obs[--obs_entropy]              palantir_entropy      - differentiation entropy per cell
+  obsm[--obsm_fate_probabilities] palantir_fate_probabilities - n_cells x n_terminal matrix
+  uns[--uns_waypoints]            palantir_waypoints    - list of waypoint cell barcodes
 
 PALANTIR API REFERENCE
   palantir.utils.run_diffusion_maps(data, embedding_basis, n_components, knn)
@@ -42,7 +42,7 @@ PALANTIR API REFERENCE
 
   palantir.core.run_palantir(data, early_cell, terminal_states, num_waypoints, scale_components)
     Returns a PalantirResults object with attributes:
-      .pseudotime       pd.Series  — pseudotime per cell
-      .entropy          pd.Series  — differentiation entropy per cell
-      .branch_probs     pd.DataFrame — fate probabilities (cells × terminal states)
-      .waypoints        pd.Index   — selected waypoint cell barcodes
+      .pseudotime       pd.Series  - pseudotime per cell
+      .entropy          pd.Series  - differentiation entropy per cell
+      .branch_probs     pd.DataFrame - fate probabilities (cells x terminal states)
+      .waypoints        pd.Index   - selected waypoint cell barcodes

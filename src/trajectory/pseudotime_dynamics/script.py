@@ -50,7 +50,7 @@ def _participant_pseudotimes(adata, participant_col, pseudotime_col, min_cells):
 
 
 def _fit_spline(pt_vals, prop_vals, lam, n_bins):
-    """Fit a smoothing spline; return fitted curve, peak, R², p-value."""
+    """Fit a smoothing spline; return fitted curve, peak, R^2, p-value."""
     x = pt_vals.values if hasattr(pt_vals, "values") else np.asarray(pt_vals)
     y = prop_vals.values if hasattr(prop_vals, "values") else np.asarray(prop_vals)
 
@@ -69,7 +69,7 @@ def _fit_spline(pt_vals, prop_vals, lam, n_bins):
 
     peak_idx = int(np.argmax(y_fit_grid))
 
-    # R²
+    # R^2
     ss_res = float(np.sum((y - y_fit_train) ** 2))
     ss_tot = float(np.sum((y - y.mean()) ** 2))
     r_sq = 1.0 - ss_res / ss_tot if ss_tot > 1e-12 else 0.0
@@ -111,7 +111,7 @@ def main():
             f"Key '{uns_key}' not found in .uns. Available: {list(adata.uns.keys())}"
         )
 
-    # ── participant-level pseudotime ─────────────────────────────────────────
+    # -- participant-level pseudotime -----------------------------------------
     pt = _participant_pseudotimes(
         adata,
         par["obs_participant_id"],
@@ -120,8 +120,8 @@ def main():
     )
     logger.info("Using %d participants for spline fitting.", len(pt))
 
-    # ── proportion matrix ────────────────────────────────────────────────────
-    prop_df = pd.DataFrame(adata.uns[uns_key])  # column-first dict → DataFrame
+    # -- proportion matrix ----------------------------------------------------
+    prop_df = pd.DataFrame(adata.uns[uns_key])  # column-first dict -> DataFrame
     common = prop_df.index.intersection(pt.index)
     prop_df = prop_df.loc[common]
     pt = pt.loc[common]
@@ -140,7 +140,7 @@ def main():
             )
             dynamics[subpop] = result
             logger.info(
-                "  %-10s peak_pt=%.3f  R²=%.3f  p=%.4f",
+                "  %-10s peak_pt=%.3f  R^2=%.3f  p=%.4f",
                 subpop,
                 result["peak_pseudotime"],
                 result["r_squared"],

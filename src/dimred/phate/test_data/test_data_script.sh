@@ -2,7 +2,7 @@
 # Test data for dimred/phate.
 # Delegates to resources_test_scripts/beyond_trajectory_test_data.sh.
 # Input: resources_test/beyond_test_data/proportions_output.h5mu
-#   (has obsm["proportions"] — participant-proportions broadcast per cell,
+#   (has obsm["proportions"] - participant-proportions broadcast per cell,
 #    as produced by metadata/calculate_proportions)
 #
 # Run from the repo root:

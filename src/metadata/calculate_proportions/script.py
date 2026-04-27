@@ -49,7 +49,7 @@ def main():
             )
 
     logger.info(
-        "Computing proportions: '%s' × '%s'.",
+        "Computing proportions: '%s' x '%s'.",
         participant_col,
         subpop_col,
     )
@@ -66,7 +66,7 @@ def main():
     n_participants = proportions.shape[0]
     n_subpops = proportions.shape[1]
     logger.info(
-        "Proportion matrix shape: %d participants × %d subpopulations.",
+        "Proportion matrix shape: %d participants x %d subpopulations.",
         n_participants,
         n_subpops,
     )

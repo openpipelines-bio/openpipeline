@@ -2,9 +2,9 @@
 # Test data for interpret/pathway_enrichment.
 # Delegates to resources_test_scripts/beyond_trajectory_test_data.sh.
 # Inputs:
-#   resources_test/beyond_test_data/atlas.h5mu      — h5mu with gene names GENE00000–GENE01999
-#   resources_test/beyond_test_data/de_ExN.csv      — DESeq2 results (same gene names)
-#   resources_test/beyond_test_data/gene_sets.gmt   — 6 gene sets (SIG_A/B/C/ExN/InN/Ast)
+#   resources_test/beyond_test_data/atlas.h5mu      - h5mu with gene names GENE00000-GENE01999
+#   resources_test/beyond_test_data/de_ExN.csv      - DESeq2 results (same gene names)
+#   resources_test/beyond_test_data/gene_sets.gmt   - 6 gene sets (SIG_A/B/C/ExN/InN/Ast)
 #
 # Run from the repo root:
 #   bash src/interpret/pathway_enrichment/test_data/test_data_script.sh

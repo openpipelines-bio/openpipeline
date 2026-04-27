@@ -1,4 +1,4 @@
-// beyond/atlas_building — per-sample h5mu → multi-donor atlas with obs["subpopulation"]
+// beyond/atlas_building - per-sample h5mu -> multi-donor atlas with obs["subpopulation"]
 //
 // Channel convention throughout: [ id, state_map ]
 
@@ -8,7 +8,7 @@ workflow run_wf {
 
   main:
 
-  // ── 1. Per-sample: add participant ID to obs, then QC/filter/scrublet ──────
+  // -- 1. Per-sample: add participant ID to obs, then QC/filter/scrublet ------
   persample_ch = input_ch
     | map { id, state ->
         [ id, state + ["workflow_output": state.output] ]
@@ -43,7 +43,7 @@ workflow run_wf {
         toState: [ "input": "output" ]
       )
 
-  // ── 2. Fan-in: concatenate all per-sample h5mu into one object ─────────────
+  // -- 2. Fan-in: concatenate all per-sample h5mu into one object -------------
   concat_ch = persample_ch
     | map { id, state -> [ "all_samples", id, state ] }
     | groupTuple(by: 0, sort: "hash")
@@ -86,7 +86,7 @@ workflow run_wf {
         }
       )
 
-  // ── 3. Multi-sample normalization + HVF ────────────────────────────────────
+  // -- 3. Multi-sample normalization + HVF ------------------------------------
   multisample_ch = concat_ch
     | rna_multisample.run(
         fromState: { id, state -> [
@@ -101,7 +101,7 @@ workflow run_wf {
         toState: [ "input": "output" ]
       )
 
-  // ── 4. PCA ─────────────────────────────────────────────────────────────────
+  // -- 4. PCA -----------------------------------------------------------------
   pca_ch = multisample_ch
     | pca.run(
         key: "pca_atlas",
@@ -114,7 +114,7 @@ workflow run_wf {
         toState: [ "input": "output" ]
       )
 
-  // ── 5. Harmony integration → neighbors → Leiden → UMAP ────────────────────
+  // -- 5. Harmony integration -> neighbors -> Leiden -> UMAP --------------------
   integrated_ch = pca_ch
     | harmony_leiden.run(
         fromState: { id, state -> [
@@ -128,7 +128,7 @@ workflow run_wf {
         toState: [ "input": "output" ]
       )
 
-  // ── 6. CellTypist annotation ───────────────────────────────────────────────
+  // -- 6. CellTypist annotation -----------------------------------------------
   annotated_ch = integrated_ch
     | celltypist_workflow.run(
         fromState: { id, state -> [
@@ -144,7 +144,7 @@ workflow run_wf {
         toState: [ "input": "output" ]
       )
 
-  // ── 7. Split atlas by broad cell type (obs["celltypist_pred"]) ─────────────
+  // -- 7. Split atlas by broad cell type (obs["celltypist_pred"]) -------------
   split_ch = annotated_ch
     | split_h5mu.run(
         args: [ "output": "split_by_celltype", "output_files": "split_files.csv", "output_compression": "gzip" ],
@@ -177,7 +177,7 @@ workflow run_wf {
         }
       }
 
-  // ── 8. Per-cell-type: PCA → neighbors → Leiden (subpopulations) ────────────
+  // -- 8. Per-cell-type: PCA -> neighbors -> Leiden (subpopulations) ------------
   pertype_ch = split_ch
     | pca.run(
         key: "pca_celltype",
@@ -204,7 +204,7 @@ workflow run_wf {
         toState: [ "input": "output" ]
       )
 
-  // ── 9. Fan-in: concatenate all cell-type objects → final atlas ─────────────
+  // -- 9. Fan-in: concatenate all cell-type objects -> final atlas -------------
   output_ch = pertype_ch
     | map { id, state -> [ state._meta.join_id, id, state ] }
     | groupTuple(by: 0, sort: "hash")
