@@ -44,6 +44,13 @@ argument_groups:
         type: string
         example: "raw_counts"
         required: false
+      - name: "--log1p_transform"
+        description: |
+          Compute log1p-transformed versions of the metrics added to `.var` and `.obs`.
+          For each emitted metric column `<col>`, an additional column `log1p_<col>` is added
+          containing `log1p(<col>)`. Mirrors scanpy's `log1p` flag.
+        type: boolean
+        default: false
   - name: Metrics added to .obs
     arguments:
       - name: "--var_qc_metrics"

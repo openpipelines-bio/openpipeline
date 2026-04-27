@@ -18,6 +18,7 @@ par = {
     "output": "foo.h5mu",
     "modality": "rna",
     "layer": None,
+    "log1p_transform": False,
     "top_n_vars": [10, 20, 50],
     "var_qc_metrics": None,
     "output_var_obs_mean": "obs_mean",
@@ -71,6 +72,12 @@ def calculate_var_statistics(layer):
         )
         obs_mean = np.ravel(mean_csr_array(layer, axis=0))
         var_columns_to_add[par["output_var_obs_mean"]] = obs_mean
+        if par["log1p_transform"]:
+            log1p_name = f"log1p_{par['output_var_obs_mean']}"
+            logger.info(
+                "(var) Also storing log1p of mean per observation at %s.", log1p_name
+            )
+            var_columns_to_add[log1p_name] = np.log1p(obs_mean)
     if par["output_var_total_counts_obs"]:
         logger.info(
             "(var) Calculating total counts for each observation, to be stored at %s.",
@@ -78,6 +85,10 @@ def calculate_var_statistics(layer):
         )
         total_counts_obs = np.ravel(layer.sum(axis=0))
         var_columns_to_add[par["output_var_total_counts_obs"]] = total_counts_obs
+        if par["log1p_transform"]:
+            log1p_name = f"log1p_{par['output_var_total_counts_obs']}"
+            logger.info("(var) Also storing log1p of total counts at %s.", log1p_name)
+            var_columns_to_add[log1p_name] = np.log1p(total_counts_obs)
 
     # This is the same as the old .nnz(axis=0), but this new implementation only works for csr_arrays!
     # See https://github.com/scipy/scipy/issues/19405#issuecomment-1773553180
@@ -108,12 +119,18 @@ def calculate_obs_statistics(layer, var):
     if par["output_obs_num_nonzero_vars"]:
         logger.info(
             "(obs) Retreiving the number of non-zero elements for each feature to be stored in column %s",
-            par["output_var_num_nonzero_obs"],
+            par["output_obs_num_nonzero_vars"],
         )
         # This is the same as the old .nnz(axis=1), but this new implementation only works for csr_arrays!
         # See https://github.com/scipy/scipy/issues/19405#issuecomment-1773553180
         num_nonzero_vars = np.diff(layer.indptr)
         obs_columns_to_add[par["output_obs_num_nonzero_vars"]] = num_nonzero_vars
+        if par["log1p_transform"]:
+            log1p_name = f"log1p_{par['output_obs_num_nonzero_vars']}"
+            logger.info(
+                "(obs) Also storing log1p of non-zero element count at %s.", log1p_name
+            )
+            obs_columns_to_add[log1p_name] = np.log1p(num_nonzero_vars)
 
     if par["output_obs_total_counts_vars"]:
         logger.info(
@@ -121,6 +138,10 @@ def calculate_obs_statistics(layer, var):
             par["output_obs_total_counts_vars"],
         )
         obs_columns_to_add[par["output_obs_total_counts_vars"]] = total_counts_var
+        if par["log1p_transform"]:
+            log1p_name = f"log1p_{par['output_obs_total_counts_vars']}"
+            logger.info("(obs) Also storing log1p of total counts at %s.", log1p_name)
+            obs_columns_to_add[log1p_name] = np.log1p(total_counts_var)
 
     top_metrics = {}
     if par["top_n_vars"]:
@@ -173,6 +194,10 @@ def calculate_obs_statistics(layer, var):
             f"total_counts_{qc_metric}": total_counts_qc_metric,
             f"pct_{qc_metric}": total_counts_qc_metric / total_counts_var * 100,
         }
+        if par["log1p_transform"]:
+            obs_columns_to_add[f"log1p_total_counts_{qc_metric}"] = np.log1p(
+                total_counts_qc_metric
+            )
     logger.info("Finised calculating obs statistics")
     return obs_columns_to_add
 
