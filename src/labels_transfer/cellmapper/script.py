@@ -2,7 +2,6 @@ import sys
 
 import cellmapper
 import mudata as mu
-import numpy as np
 
 ## VIASH START
 par = {
@@ -96,30 +95,21 @@ def main(par):
 
     logger.info("Running CellMapper")
     mapper = cellmapper.CellMapper(query_adata, ref_adata)
-    mapper.map(
-        obs_keys=par["reference_obs_targets"],
-        use_rep=use_rep,
-        n_neighbors=par["n_neighbors"],
-        prediction_postfix="_pred",
-        kernel_method=par["kernel_method"],
-    )
+    mapper.compute_neighbors(use_rep=use_rep, n_neighbors=par["n_neighbors"])
+    mapper.compute_mapping_matrix(kernel_method=par["kernel_method"])
 
-    # Map CellMapper's prediction column names to the user-specified output column names
     for target, output_pred, output_prob in zip(
         par["reference_obs_targets"],
         par["output_obs_predictions"],
         par["output_obs_probability"],
     ):
-        default_pred_col = f"{target}_pred"
-        if default_pred_col in query_adata.obs and output_pred != default_pred_col:
-            query_adata.obs[output_pred] = query_adata.obs.pop(default_pred_col)
-
-        if output_pred not in query_adata.obs and default_pred_col in query_adata.obs:
-            query_adata.obs[output_pred] = query_adata.obs[default_pred_col]
-
-        if output_prob not in query_adata.obs:
-            # CellMapper does not expose per-label probabilities in the returned obs.
-            query_adata.obs[output_prob] = np.nan
+        mapper.map_obs(
+            key=target, prediction_postfix="_pred", confidence_postfix="_conf"
+        )
+        query_adata.obs.rename(
+            columns={f"{target}_pred": output_pred, f"{target}_conf": output_prob},
+            inplace=True,
+        )
 
     # Remove the temporary embedding
     query_adata.obsm.pop(use_rep, None)
