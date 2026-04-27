@@ -20,6 +20,8 @@
 
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: add `--intersect_obs` option to remove observations that are not present in all processed modalities, so each modality shares the same set of cells (PR #1173).
 
+* `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169)
+
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
