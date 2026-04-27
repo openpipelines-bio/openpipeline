@@ -12,7 +12,7 @@ info:
       namespace: test_workflows/multiomics/process_samples
     - name: assert_test_workflow_9_output
       namespace: test_workflows/multiomics/process_samples
-    - name: assert_test_workflow_10_output
+    - name: assert_test_workflow_11_output
       namespace: test_workflows/multiomics/process_samples
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
@@ -392,7 +392,7 @@ test_resources:
     entrypoint: test_wf9
   - type: nextflow_script
     path: test.nf
-    entrypoint: test_wf10
+    entrypoint: test_wf11
   - path: /resources_test/concat_test_data
   - path: /resources_test/pbmc_1k_protein_v3
   - path: /resources_test/10x_5k_lung_crispr
