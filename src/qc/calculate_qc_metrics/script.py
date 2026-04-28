@@ -19,7 +19,7 @@ par = {
     "modality": "rna",
     "layer": None,
     "log1p_transform": True,
-    "top_n_vars": [10, 20, 90],
+    "top_n_vars": [10, 20, 50],
     "var_qc_metrics": None,
     "output_var_obs_mean": "obs_mean",
     "output_var_total_counts_obs": "total_counts",
