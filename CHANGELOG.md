@@ -9,7 +9,7 @@
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).
 
 * `annotate/consensus_vote`: new component computing a (weighted) majority vote across cell type labels from multiple annotation methods (PR #1151).
-* 
+
 * `filter/filter_with_quantile`: added a component to filter numerical .obs or .var columns based on quantile thresholds, with optional subsetting (PR #1146).
 
 * `dimred/pca`: added possibility to do chunked processing using arguments `chunks` and `chunk_size`. Also added a `seed` argument in order to better control the variability between executions (PR #1157).
@@ -21,6 +21,8 @@
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: add `--intersect_obs` option to remove observations that are not present in all processed modalities, so each modality shares the same set of cells (PR #1173).
 
 * `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169)
+
+* `workflows/rna/rna_singlesample`, `workflows/prot/prot_singlesample`, `workflows/multiomics_process_singlesample`, `workflows/multiomics/process_samples`: Enable filtering rna and protein modalities by percentile counts (PR #1148).
 
 ## MAJOR CHANGES
 
@@ -51,9 +53,6 @@
 ## BUG FIXES
 
 * `convert/from_cellranger_multi_to_h5mu`: fix converting VDJ data when one or more samples has no AIRR data (PR #1149).
-* `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137).
-
-* `workflows/multiomics/process_samples`: Refactored to use the new `process_singlesample` subworkflow (PR #1147).
 
 # openpipelines 4.0.3
 
