@@ -2,7 +2,7 @@ import sys
 import h5py
 import mudata
 from anndata.io import read_elem, write_elem
-from anndata import AnnData
+from anndata import AnnData, settings
 from scipy.sparse import csr_array
 import numpy as np
 from contextlib import contextmanager, closing, nullcontext
@@ -10,7 +10,7 @@ from shutil import copytree, copyfile
 from functools import partial
 import zarr
 
-# settings.zarr_write_format = 3
+settings.zarr_write_format = 3
 
 ## VIASH START
 par = {
@@ -21,12 +21,12 @@ par = {
     "log1p_transform": True,
     "top_n_vars": [10, 20, 90],
     "var_qc_metrics": None,
-    "output_var_obs_mean": "mean_counts",
+    "output_var_obs_mean": "obs_mean",
     "output_var_total_counts_obs": "total_counts",
-    "output_var_num_nonzero_obs": "n_cells_by_counts",
-    "output_var_pct_dropout": "pct_dropout_by_counts",
+    "output_var_num_nonzero_obs": "num_nonzero_obs",
+    "output_var_pct_dropout": "pct_dropout",
     "output_obs_total_counts_vars": "total_counts",
-    "output_obs_num_nonzero_vars": "n_genes_by_counts",
+    "output_obs_num_nonzero_vars": "num_nonzero_vars",
     "output_obs_top_n_vars": "pct_counts_in_top_{n}_genes",
     "output_compression": None,
 }
