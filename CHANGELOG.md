@@ -38,6 +38,10 @@
 
 * Bump viash to 0.9.7 (PR #1145)
 
+* `cluster/leiden`: added `flavor`, `n_iterations` and `seed` arguments (PR #1132)
+
+* `cluster/leiden`: avoid creating unnecessary copies of the output data (PR #1132).
+
 * `workflows/multiomics/process_samples`: refactored to use a shared `process_singlesample_base` subworkflow, which is also used by the new `process_singlesample` workflow to avoid code duplication (PR #1147).
 
 * Bump anndata to `0.12.11` (PR #1174).

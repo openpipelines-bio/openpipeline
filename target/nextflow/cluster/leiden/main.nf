@@ -3144,6 +3144,42 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "string",
+          "name" : "--flavor",
+          "description" : "Which package's implementation to use.\n",
+          "default" : [
+            "leidenalg"
+          ],
+          "required" : false,
+          "choices" : [
+            "leidenalg",
+            "igraph"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--n_iterations",
+          "description" : "How many iterations of the Leiden clustering algorithm to perform.\nWhen defined, positive values above 2 define the total number of iterations to perform.\nWhen not set, the algorithm will run until it reaches its optimal clustering.\n",
+          "required" : false,
+          "min" : 1,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--seed",
+          "description" : "Fix the initialization of the optimization. Can be used to increase reproducibility.\n",
+          "required" : false,
+          "min" : 0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "double",
           "name" : "--resolution",
           "description" : "A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.\nMultiple values will result in clustering being performed multiple times.\n",
@@ -3322,7 +3358,7 @@ meta = [
             "scipy!=1.17.*",
             "mudata~=0.3.2",
             "scanpy~=1.11.4",
-            "leidenalg~=0.10.0"
+            "leidenalg~=0.11.0"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3358,7 +3394,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.9.7",
-    "git_commit" : "96ce8f19d3932e87fdf7f2019930157500111f5d",
+    "git_commit" : "c2dfa3972e63a2639026d597b6414ca7308377d5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3420,7 +3456,6 @@ import os
 import time
 import logging
 import logging.handlers
-import warnings
 import h5py
 import mudata as mu
 import pandas as pd
@@ -3442,6 +3477,9 @@ par = {
   'obsp_connectivities': $( if [ ! -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then echo "r'${VIASH_PAR_OBSP_CONNECTIVITIES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_name': $( if [ ! -z ${VIASH_PAR_OBSM_NAME+x} ]; then echo "r'${VIASH_PAR_OBSM_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'flavor': $( if [ ! -z ${VIASH_PAR_FLAVOR+x} ]; then echo "r'${VIASH_PAR_FLAVOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'n_iterations': $( if [ ! -z ${VIASH_PAR_N_ITERATIONS+x} ]; then echo "int(r'${VIASH_PAR_N_ITERATIONS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int(r'${VIASH_PAR_SEED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'resolution': $( if [ ! -z ${VIASH_PAR_RESOLUTION+x} ]; then echo "list(map(float, r'${VIASH_PAR_RESOLUTION//\\'/\\'\\"\\'\\"r\\'}'.split(';')))"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
@@ -3476,6 +3514,9 @@ sys.path.append(meta["resources_dir"])
 from compress_h5mu import compress_h5mu
 
 _shared_logger_name = "leiden"
+
+if not par["n_iterations"]:
+    par["n_iterations"] = -1
 
 
 # Function to check available space in /dev/shm
@@ -3575,18 +3616,18 @@ def run_single_resolution(shared_csr_matrix, obs_names, resolution):
     try:
         connectivities = shared_csr_matrix.to_csr_matrix()
         adata = create_empty_anndata_with_connectivities(connectivities, obs_names)
-        with warnings.catch_warnings():
-            # In the future, the default backend for leiden will be igraph instead of leidenalg.
-            warnings.simplefilter(action="ignore", category=FutureWarning)
-            adata_out = sc.tl.leiden(
-                adata,
-                resolution=resolution,
-                key_added=str(resolution),
-                obsp="connectivities",
-                copy=True,
-            )
+        sc.tl.leiden(
+            adata,
+            resolution=resolution,
+            key_added=str(resolution),
+            obsp="connectivities",
+            flavor=par["flavor"],
+            n_iterations=par["n_iterations"],
+            random_state=par["seed"],
+            copy=False,  # A copy was already created above
+        )
         logger.info(f"Returning result for resolution {resolution}")
-        return adata_out.obs[str(resolution)]
+        return adata.obs[str(resolution)]
     finally:
         obs_names.shm.close()
         shared_csr_matrix.close()

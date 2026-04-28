@@ -453,14 +453,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.11" "awkward" "scipy!=1.17.*" "mudata~=0.3.2" "scanpy~=1.11.4" "scvelo~=0.3.3" "scipy~=1.14.1" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.11" "awkward" "scipy!=1.17.*" "mudata~=0.3.2" "scanpy~=1.11.4" "scvelo~=0.3.3,!=0.3.4" "scipy~=1.14.1" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component velocity scvelo"
-LABEL org.opencontainers.image.created="2026-04-27T03:49:14Z"
+LABEL org.opencontainers.image.created="2026-04-28T03:49:28Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="96ce8f19d3932e87fdf7f2019930157500111f5d"
+LABEL org.opencontainers.image.revision="c2dfa3972e63a2639026d597b6414ca7308377d5"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

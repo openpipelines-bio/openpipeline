@@ -453,14 +453,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.11" "awkward" "scipy!=1.17.*" "mudata~=0.3.2" "scanpy~=1.11.4" "leidenalg~=0.10.0" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.11" "awkward" "scipy!=1.17.*" "mudata~=0.3.2" "scanpy~=1.11.4" "leidenalg~=0.11.0" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component cluster leiden"
-LABEL org.opencontainers.image.created="2026-04-27T03:49:10Z"
+LABEL org.opencontainers.image.created="2026-04-28T03:49:24Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="96ce8f19d3932e87fdf7f2019930157500111f5d"
+LABEL org.opencontainers.image.revision="c2dfa3972e63a2639026d597b6414ca7308377d5"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -623,6 +623,27 @@ function ViashHelp {
   echo "        The name of the columns in the matrix will correspond to the"
   echo "        resolutions."
   echo ""
+  echo "    --flavor"
+  echo "        type: string"
+  echo "        default: leidenalg"
+  echo "        choices: [ leidenalg, igraph ]"
+  echo "        Which package's implementation to use."
+  echo ""
+  echo "    --n_iterations"
+  echo "        type: integer"
+  echo "        min: 1"
+  echo "        How many iterations of the Leiden clustering algorithm to perform."
+  echo "        When defined, positive values above 2 define the total number of"
+  echo "        iterations to perform."
+  echo "        When not set, the algorithm will run until it reaches its optimal"
+  echo "        clustering."
+  echo ""
+  echo "    --seed"
+  echo "        type: integer"
+  echo "        min: 0"
+  echo "        Fix the initialization of the optimization. Can be used to increase"
+  echo "        reproducibility."
+  echo ""
   echo "    --resolution"
   echo "        type: double, required parameter, multiple values allowed"
   echo "        default: 1.0"
@@ -753,6 +774,39 @@ while [[ $# -gt 0 ]]; do
         --obsm_name=*)
             [ -n "$VIASH_PAR_OBSM_NAME" ] && ViashError Bad arguments for option \'--obsm_name=*\': \'$VIASH_PAR_OBSM_NAME\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBSM_NAME=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --flavor)
+            [ -n "$VIASH_PAR_FLAVOR" ] && ViashError Bad arguments for option \'--flavor\': \'$VIASH_PAR_FLAVOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_FLAVOR="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --flavor. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --flavor=*)
+            [ -n "$VIASH_PAR_FLAVOR" ] && ViashError Bad arguments for option \'--flavor=*\': \'$VIASH_PAR_FLAVOR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_FLAVOR=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --n_iterations)
+            [ -n "$VIASH_PAR_N_ITERATIONS" ] && ViashError Bad arguments for option \'--n_iterations\': \'$VIASH_PAR_N_ITERATIONS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_ITERATIONS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --n_iterations. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --n_iterations=*)
+            [ -n "$VIASH_PAR_N_ITERATIONS" ] && ViashError Bad arguments for option \'--n_iterations=*\': \'$VIASH_PAR_N_ITERATIONS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_ITERATIONS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --seed)
+            [ -n "$VIASH_PAR_SEED" ] && ViashError Bad arguments for option \'--seed\': \'$VIASH_PAR_SEED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SEED="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --seed. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --seed=*)
+            [ -n "$VIASH_PAR_SEED" ] && ViashError Bad arguments for option \'--seed=*\': \'$VIASH_PAR_SEED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SEED=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --resolution)
@@ -1000,6 +1054,9 @@ fi
 if [ -z ${VIASH_PAR_OBSM_NAME+x} ]; then
   VIASH_PAR_OBSM_NAME="leiden"
 fi
+if [ -z ${VIASH_PAR_FLAVOR+x} ]; then
+  VIASH_PAR_FLAVOR="leidenalg"
+fi
 
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
@@ -1008,6 +1065,26 @@ if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
 fi
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_N_ITERATIONS" ]]; then
+  if ! [[ "$VIASH_PAR_N_ITERATIONS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--n_iterations' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if [[ $VIASH_PAR_N_ITERATIONS -lt 1 ]]; then
+    ViashError '--n_iterations' has be more than or equal to 1. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_SEED" ]]; then
+  if ! [[ "$VIASH_PAR_SEED" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--seed' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if [[ $VIASH_PAR_SEED -lt 0 ]]; then
+    ViashError '--seed' has be more than or equal to 0. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [ -n "$VIASH_PAR_RESOLUTION" ]; then
   IFS=';'
   set -f
@@ -1095,6 +1172,18 @@ if [[ -n "$VIASH_META_MEMORY_PIB" ]]; then
 fi
 
 # check whether value is belongs to a set of choices
+if [ ! -z "$VIASH_PAR_FLAVOR" ]; then
+  VIASH_PAR_FLAVOR_CHOICES=("leidenalg;igraph")
+  IFS=';'
+  set -f
+  if ! [[ ";${VIASH_PAR_FLAVOR_CHOICES[*]};" =~ ";$VIASH_PAR_FLAVOR;" ]]; then
+    ViashError '--flavor' specified value of \'$VIASH_PAR_FLAVOR\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
 if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
   VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip;lzf")
   IFS=';'
@@ -1197,7 +1286,6 @@ import os
 import time
 import logging
 import logging.handlers
-import warnings
 import h5py
 import mudata as mu
 import pandas as pd
@@ -1219,6 +1307,9 @@ par = {
   'obsp_connectivities': $( if [ ! -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then echo "r'${VIASH_PAR_OBSP_CONNECTIVITIES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_name': $( if [ ! -z ${VIASH_PAR_OBSM_NAME+x} ]; then echo "r'${VIASH_PAR_OBSM_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'flavor': $( if [ ! -z ${VIASH_PAR_FLAVOR+x} ]; then echo "r'${VIASH_PAR_FLAVOR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'n_iterations': $( if [ ! -z ${VIASH_PAR_N_ITERATIONS+x} ]; then echo "int(r'${VIASH_PAR_N_ITERATIONS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int(r'${VIASH_PAR_SEED//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'resolution': $( if [ ! -z ${VIASH_PAR_RESOLUTION+x} ]; then echo "list(map(float, r'${VIASH_PAR_RESOLUTION//\'/\'\"\'\"r\'}'.split(';')))"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
@@ -1253,6 +1344,9 @@ sys.path.append(meta["resources_dir"])
 from compress_h5mu import compress_h5mu
 
 _shared_logger_name = "leiden"
+
+if not par["n_iterations"]:
+    par["n_iterations"] = -1
 
 
 # Function to check available space in /dev/shm
@@ -1352,18 +1446,18 @@ def run_single_resolution(shared_csr_matrix, obs_names, resolution):
     try:
         connectivities = shared_csr_matrix.to_csr_matrix()
         adata = create_empty_anndata_with_connectivities(connectivities, obs_names)
-        with warnings.catch_warnings():
-            # In the future, the default backend for leiden will be igraph instead of leidenalg.
-            warnings.simplefilter(action="ignore", category=FutureWarning)
-            adata_out = sc.tl.leiden(
-                adata,
-                resolution=resolution,
-                key_added=str(resolution),
-                obsp="connectivities",
-                copy=True,
-            )
+        sc.tl.leiden(
+            adata,
+            resolution=resolution,
+            key_added=str(resolution),
+            obsp="connectivities",
+            flavor=par["flavor"],
+            n_iterations=par["n_iterations"],
+            random_state=par["seed"],
+            copy=False,  # A copy was already created above
+        )
         logger.info(f"Returning result for resolution {resolution}")
-        return adata_out.obs[str(resolution)]
+        return adata.obs[str(resolution)]
     finally:
         obs_names.shm.close()
         shared_csr_matrix.close()
