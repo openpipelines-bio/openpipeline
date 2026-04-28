@@ -46,6 +46,8 @@
 
 * Bump anndata to `0.12.11` (PR #1174).
 
+* Testing: bump `viashpy` to 0.10.0 (PR #1178).
+
 ## BUG FIXES
 
 * `dataflow/split_h5mu`: pin scipy version to 1.16.3 to avoid regression that corrupts large sparse matrix indexing (PR #1153).
