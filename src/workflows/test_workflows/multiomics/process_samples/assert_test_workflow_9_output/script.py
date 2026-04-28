@@ -1,7 +1,6 @@
 import sys
 import mudata as mu
 import pytest
-import os
 
 ##VIASH START
 par = {
@@ -57,13 +56,4 @@ def test_intersection_is_subset_of_input(output_h5mu, input_h5mu):
 
 
 if __name__ == "__main__":
-    sys.exit(
-        pytest.main(
-            [
-                "--import-mode=importlib",
-                "-o",
-                "python_files=script*.py .viash_script.py",
-                os.path.dirname(__file__),
-            ]
-        )
-    )
+    sys.exit(pytest.main([__file__, "--import-mode=importlib"]))
