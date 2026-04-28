@@ -42,6 +42,8 @@
 
 * Bump anndata to `0.12.11` (PR #1174).
 
+* `qc/calculate_qc_metrics`: write log1p transformed qc metrics to the output object using `log1p_transform` flag and parametrize top n vars .obs output fields with `--output_obs_top_n_vars` flag (PR #1182).
+
 ## BUG FIXES
 
 * `dataflow/split_h5mu`: pin scipy version to 1.16.3 to avoid regression that corrupts large sparse matrix indexing (PR #1153).
