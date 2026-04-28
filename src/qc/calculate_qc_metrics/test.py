@@ -382,8 +382,6 @@ def test_compare_scanpy(
             "custom",
             "--var_qc_metrics_fill_na_value",
             "False",
-            "--log1p_transform",
-            "True",
         ]
     )
     assert output_path.exists()
