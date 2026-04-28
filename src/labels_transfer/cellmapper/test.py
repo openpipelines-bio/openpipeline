@@ -73,6 +73,7 @@ def test_cellmapper_defaults(run_component, prepared_data, random_h5mu_path):
     assert "cell_type_pred" in out.mod["rna"].obs
     assert out.mod["rna"].obs["cell_type_pred"].notna().all()
     assert "cell_type_probability" in out.mod["rna"].obs
+    assert out.mod["rna"].obs["cell_type_probability"].notna().all()
 
 
 @pytest.mark.parametrize("kernel", ["jaccard", "gauss"])

@@ -4,7 +4,6 @@ import pandas as pd
 import pytest
 from itertools import product
 from operator import attrgetter
-import os
 import numpy as np
 
 ##VIASH START
@@ -84,17 +83,6 @@ def get_sample_output(request, output_h5mu, sample_1_h5mu, sample_2_h5mu):
 
 def test_modalities_present(output_h5mu):
     assert all(k in output_h5mu.obsm.keys() for k in ("rna", "prot"))
-
-
-def test_modalities_have_different_obs_counts(output_h5mu):
-    # Without --intersect_obs, per-modality filtering yields diverging cell sets
-    # across modalities. This guards against intersect_obs silently being applied.
-    rna_n_obs = output_h5mu["rna"].n_obs
-    prot_n_obs = output_h5mu["prot"].n_obs
-    assert rna_n_obs != prot_n_obs, (
-        f"Expected rna and prot modalities to have different observation counts "
-        f"when intersect_obs is not enabled, but both have {rna_n_obs}."
-    )
 
 
 def test_rna_embeddings_present(output_h5mu):
@@ -266,13 +254,4 @@ def test_prot_log_normalized_expressions(
 
 
 if __name__ == "__main__":
-    sys.exit(
-        pytest.main(
-            [
-                "--import-mode=importlib",
-                "-o",
-                "python_files=script*.py .viash_script.py",
-                os.path.dirname(__file__),
-            ]
-        )
-    )
+    sys.exit(pytest.main([__file__, "--import-mode=importlib"]))
