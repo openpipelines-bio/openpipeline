@@ -147,12 +147,19 @@ def test_add_qc(run_component, input_path, random_path, file_format):
 
     expected_obs_columns = [
         f"pct_of_counts_in_top_{top_n_var}_vars" for top_n_var in ("10", "20", "90")
-    ] + ["total_counts", "num_nonzero_vars"]
+    ] + [
+        "total_counts",
+        "log1p_total_counts",
+        "num_nonzero_vars",
+        "log1p_num_nonzero_vars",
+    ]
     expected_var_columns = [
         "pct_dropout",
         "num_nonzero_obs",
         "obs_mean",
+        "log1p_obs_mean",
         "total_counts",
+        "log1p_total_counts",
     ]
     data_with_qc.mod["rna"].var = data_with_qc.mod["rna"].var.drop(
         columns=expected_var_columns, errors="raise"
@@ -209,19 +216,27 @@ def test_qc_metrics_set_output_column(
 
     run_component(args)
     default_obs_columns = {
-        "output_obs_num_nonzero_vars": ["num_nonzero_vars"],
-        "output_obs_total_counts_vars": ["total_counts"],
+        "output_obs_num_nonzero_vars": ["num_nonzero_vars", "log1p_num_nonzero_vars"],
+        "output_obs_total_counts_vars": ["total_counts", "log1p_total_counts"],
         "output_obs_top_n_vars": [f"pct_of_counts_in_top_{n}_vars" for n in top_n_vars],
     }
     default_var_columns = {
         "output_var_num_nonzero_obs": ["num_nonzero_obs"],
-        "output_var_total_counts_obs": ["total_counts"],
-        "output_var_obs_mean": ["obs_mean"],
+        "output_var_total_counts_obs": ["total_counts", "log1p_total_counts"],
+        "output_var_obs_mean": ["obs_mean", "log1p_obs_mean"],
         "output_var_pct_dropout": ["pct_dropout"],
     }
     defaults = {"var": default_var_columns, "obs": default_obs_columns}
+    log1p_params = {
+        "--output_obs_num_nonzero_vars",
+        "--output_obs_total_counts_vars",
+        "--output_var_total_counts_obs",
+        "--output_var_obs_mean",
+    }
     if optional_parameter == "--output_obs_top_n_vars":
         custom_columns = [arg_value.format(n=n) for n in top_n_vars]
+    elif optional_parameter in log1p_params:
+        custom_columns = [arg_value, f"log1p_{arg_value}"]
     else:
         custom_columns = [arg_value]
     defaults[annotation_matrix].update({optional_parameter.strip("-"): custom_columns})
@@ -435,7 +450,7 @@ def test_compare_scanpy(
         )
 
 
-def test_log1p_off_by_default(
+def test_log1p_off_when_disabled(
     run_component, input_mudata_path, random_path, file_format
 ):
     output_path = random_path(input_mudata_path.suffix.lstrip("."))
@@ -449,6 +464,8 @@ def test_log1p_off_by_default(
             "rna",
             "--output_compression",
             "gzip",
+            "--log1p_transform",
+            "false",
         ]
     )
     if file_format == "zarr":
