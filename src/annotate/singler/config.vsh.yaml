@@ -121,7 +121,10 @@ argument_groups:
           If set to True, an additional output .obs field `--output_obs_pruned_predictions` will be added to the `--output`,
           containing labels where 'low-quality' labels are replaced with NA's.
           Labels are considered 'low-quality' when their delta score (stored in `--output_obs_delta_next`) fall more than 3 median absolute deviations below the median for that label type.
-  
+      - name: "--sanitize_ensembl_ids"
+        type: boolean
+        description: Whether to sanitize ensembl ids by removing version numbers.
+        default: true
   - name: Outputs
     description: Output arguments.
     arguments:
@@ -168,17 +171,19 @@ test_resources:
 
 engines:
   - type: docker
-    image: rocker/r2u:22.04
+    image: rocker/r2u:24.04
     setup:
       - type: docker
         env: 
           - RETICULATE_PYTHON=/usr/bin/python
+          - PIP_BREAK_SYSTEM_PACKAGES=1
       - type: apt
         packages: [ libhdf5-dev, python3, python3-pip, python3-dev, python-is-python3 ]
       - type: r
         cran: [ anndata, reticulate, SingleR ]
         bioc: [ scrapper, bit64 ]
       - type: python
+        user: true
         __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 

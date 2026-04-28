@@ -287,7 +287,7 @@ test_resources:
 
 engines:
 - type: docker
-  image: ubuntu:22.04
+  image: debian:latest
   setup:
     - type: apt
       packages: freebayes

@@ -43,7 +43,7 @@ outs <- map_df(workflows, function(wf) {
           "nextflow",
           args = args,
           error_on_status = FALSE,
-          env = c("current", NXF_VER = "24.04.4")
+          env = c("current", NXF_VER = "24.10.6")
         )
         stop_time <- Sys.time()
         duration <- ceiling(

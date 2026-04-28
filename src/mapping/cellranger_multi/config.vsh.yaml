@@ -50,12 +50,14 @@ test_resources:
   - path: /resources_test/reference_gencodev41_chr1
 engines:
   - type: docker
-    image: ghcr.io/data-intuitive/cellranger:9.0
+    image: quay.io/nf-core/cellranger:10.0.0
     setup:
+      - type: apt
+        packages:
+          - procps
       - type: docker
-        run: |
-          DEBIAN_FRONTEND=noninteractive apt update && \
-          apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
+        run: 
+          - cellranger telemetry disable
       - type: python
         packages: 
           - pandas

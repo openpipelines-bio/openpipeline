@@ -1,6 +1,96 @@
-# openpipelines 3.1.0
+# openpipelines (unreleased)
+
+## NEW FEATURES
+
+* `qc/calculate_qc_metrics`: added support for MuData encoded in Zarr format (PR #1140).
+
+* `dataflow/split_modalities`: added support for MuData encoded in Zarr format (PR #1152)
+
+* `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).
+
+* `annotate/consensus_vote`: new component computing a (weighted) majority vote across cell type labels from multiple annotation methods (PR #1151).
+* 
+* `filter/filter_with_quantile`: added a component to filter numerical .obs or .var columns based on quantile thresholds, with optional subsetting (PR #1146).
+
+* `dimred/pca`: added possibility to do chunked processing using arguments `chunks` and `chunk_size`. Also added a `seed` argument in order to better control the variability between executions (PR #1157).
+
+* `workflows/multiomics/process_singlesample`: New workflow for processing RNA, protein and GDO modalities of individual samples (PR #1147).
+
+* `transform/clear_slots`: New component that can be used to remove all items from slots of a MuData object (PR #1171).
+
+* `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: add `--intersect_obs` option to remove observations that are not present in all processed modalities, so each modality shares the same set of cells (PR #1173, 1175).
+
+* `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169)
+
+## MAJOR CHANGES
+
+* `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
+
+* `annotate/popv`: bump version to 0.6.1 (PR #1167).
+
+## MINOR CHANGES
+
+* `dataflow/split_modalities`: improve memory consumption by only reading one modality at the same time (PR #1152).
+
+* `qc/calculate_qc_metrics`: bump python version to `3.13` (PR #1140).
+
+* `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137)
+
+* Bump viash to 0.9.7 (PR #1145)
+
+* `cluster/leiden`: added `flavor`, `n_iterations` and `seed` arguments (PR #1132)
+
+* `cluster/leiden`: avoid creating unnecessary copies of the output data (PR #1132).
+
+* `workflows/multiomics/process_samples`: refactored to use a shared `process_singlesample_base` subworkflow, which is also used by the new `process_singlesample` workflow to avoid code duplication (PR #1147).
+
+* Bump anndata to `0.12.11` (PR #1174).
+
+* Add missing `example` fields to several component and workflow configurations (PR #1067).
+
+## BUG FIXES
+
+* `dataflow/split_h5mu`: pin scipy version to 1.16.3 to avoid regression that corrupts large sparse matrix indexing (PR #1153).
+
+# openpipelines 4.0.4
+
+## BUG FIXES
+
+* `convert/from_cellranger_multi_to_h5mu`: fix converting VDJ data when one or more samples has no AIRR data (PR #1149).
+
+# openpipelines 4.0.3
+
+* `dataflow/split_h5mu`: ensure subsetted modality is written as a .copy() (not a view) before writing file, to prevent `obsp` sparse indexing errors during serialization (PR #1138).
+
+# openpipelines 4.0.2
+
+## BUG FIXES
+
+* `convert/from_cellranger_multi_to_h5mu`: fix converting Cell Ranger output that contains no feature reference CSV file (PR #1136)
+
+# openpipelines 4.0.1
+
+## BUG FIXES
+
+* Fix parsing of CSV's failing when using remote paths (S3), causing an `InvocationTargetException` error (PR #1133).
+
+# openpipelines 4.0.0
+
+## BREAKING CHANGES
+
+* `mapping/cellranger_multi`: bump Cell Ranger to version 10 (PR #1103 and #1119).
+
+* Removed `cellbender_remove_background_v0_2` (PR #1111).
+
+* `convert/from_cellranger_multi_to_h5mu`: VDJ related output is now stored in AIRR Rearrangement standard.
+   Because one cell can have multiple receptor chains, this relationship is represented as an `awkward` array
+   stored in `.obsm["airr"]` slot of the VDJ modality (PR #1109 and PR #1130). 
+
+* `workflows/annotation/totalvi_scarches_leiden` and `annotate/totalvi_scarches`: Renamed previously implemented versions of `workflows/annotation/totalvi_leiden` and `annotate/totalvi` to reflect that scArches is used for reference mapping with TotalVI (PR #1092).
 
 ## NEW FUNCTIONALITY
+
+* `convert/from_cellranger_multi_to_h5mu`: add support for Cell Ranger 10 (PR #1109). 
 
 * `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).
 
@@ -10,9 +100,13 @@
 
 * `annotate/celltypist`: Enable CUDA acceleration for CellTypist annotation (PR #1091).
 
-* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083).
+* `workflows/annotation/celltypist`: Performs lognormalization (target count of 10000) followed by cell type annotation using CellTypist (PR #1083, #1114).
 
 * `workflows/integration/harmony_leiden`: add support for adding the output slots to a tileDB-SOMA database (PR #1095).
+
+* `dataflow/concatenate_h5mu`: optionally perform block-diagonal concatenation of specified `.obsp` keys using `--obsp_keys` across input MuData objects (PR #1115).
+
+* `workflows/annotation/totalvi_leiden` and `annotate/totalvi`: Added new workflows and components for cell type annotation using TotalVI integration followed by Leiden clustering, without scArches reference mapping (PR #1092).
 
 ## EXPERIMENTAL
 
@@ -34,6 +128,12 @@
 
 ## MINOR CHANGES
 
+* Bump `scanpy` to `1.11.4` (PR #1131)
+
+* `integrate/totalvi_scvarches`: bump version of `scvi-tools` in component from `1.3.2` to `1.4.1` (PR #1129)
+
+* `totalvi`, `celltypist`, `scanvi` and `scarches`: change container image to `pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime` (PR #1116 and PR #1129)
+
 * `transform/normalize_total`, `transform/clr`, `transform/log1p`: Add disk resource labels (PR #1073).
 
 * `integrate/totalvi`: Add `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` arguments to include additional covariates during model training (PR #1076).
@@ -42,11 +142,15 @@
   
 * `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
 
+* Various components and workflows in `integrate`, `annotate`, `workflows/integration` and `workflows/annotation`: Optionally disable ensembl id sanitation (by stripping the version number) using the `--sanitize_ensembl_ids` argument (PR #1084).
+
 * `genetic_demux/scsplit`: bump python to `3.13` and unpin pandas and numpy (were pinned to `<2.0` and `<2` respectively) (PR #1096).
 
-* Add missing `example` fields to several component and workflow configurations (PR #1067).
+* Bump `anndata` to `0.12.7` and mudata to `0.3.2` (PR #1111 and PR #1125).
 
 ## BUG FIXES
+
+* `workflows/cellranger_multi`: fix `ocm_barcode_ids`, `min_crispr_umi`, `emptydrops_minimum_umis` and `hashtag_ids` arguments not being applied (PR #).
 
 * `differential_expression/create_pseudobulks`: Fixed the check to verify that the raw counts layer was passed (PR #1072).
 

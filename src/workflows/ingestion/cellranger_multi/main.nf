@@ -38,6 +38,7 @@ workflow run_wf {
         "vdj_t_input": "vdj_t_input",
         "vdj_t_gd_input": "vdj_t_gd_input",
         "vdj_b_input": "vdj_b_input",
+        "vdj_denovo": "vdj_denovo",
         "agc_input": "agc_input",
         "library_id": "library_id",
         "library_type": "library_type",
@@ -68,6 +69,10 @@ workflow run_wf {
         "min_assignment_confidence": "min_assignment_confidence",
         "cmo_set": "cmo_set",
         "barcode_sample_assignment": "barcode_sample_assignment",
+        "ocm_barcode_ids": "ocm_barcode_ids",
+        "min_crispr_umi": "min_crispr_umi",
+        "emptydrops_minimum_umis": "emptydrops_minimum_umis",
+        "hashtag_ids": "hashtag_ids",
         "probe_set": "probe_set",
         "filter_probes": "filter_probes",
         "probe_barcode_ids": "probe_barcode_ids",
@@ -112,7 +117,11 @@ workflow run_wf {
   output_ch = h5mu_stub_ch.concat(h5mu_ch)
     | flatMap {id, state ->
       def h5mu_list = state.output_h5mu
-      def samples = readCsv(state.sample_csv.toUriString())
+      def csv = state.sample_csv.splitCsv(strip: true, sep: ",").findAll{!it[0].startsWith("#")}
+      def header = csv.head()
+      def samples = csv.tail().collect { row ->
+          [header, row].transpose().collectEntries()
+      }
       println "Samples: $samples" 
       def result = h5mu_list.collect{ h5mu_file ->
         println "H5mu: ${h5mu_file}, getName: ${h5mu_file.getName()}"

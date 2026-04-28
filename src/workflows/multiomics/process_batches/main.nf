@@ -43,7 +43,11 @@ workflow run_wf {
       // by reading the output csv (the csv contains 1 line per output file)
       | flatMap {id, state ->
         def outputDir = state.output
-        def types = readCsv(state.output_types.toUriString())
+        def csv = state.output_types.splitCsv(strip: true, sep: ",").findAll{!it[0].startsWith("#")}
+        def header = csv.head()
+        def types = csv.tail().collect { row ->
+            [header, row].transpose().collectEntries()
+        }
         
         types.collect{ dat ->
           def new_id = state.original_id + "_${dat.name}" // Make a unique ID by appending the modality name.
@@ -72,6 +76,7 @@ workflow run_wf {
       "rna": [
         "highly_variable_features_var_output": "highly_variable_features_var_output",
         "highly_variable_features_obs_batch_key": "highly_variable_features_obs_batch_key",
+        "highly_variable_features_features_to_exclude": "highly_variable_features_features_to_exclude",
         "var_qc_metrics": "var_qc_metrics",
         "top_n_vars": "top_n_vars",
         "layer": "rna_layer",
@@ -157,6 +162,14 @@ workflow run_wf {
         toState: ["input": "output"],
       )
       | view {"After merging processing: $it"}
+      | intersect_obs.run(
+        runIf: {id, state -> state.intersect_obs},
+        fromState: [
+          "input": "input",
+          "modalities": "modalities"
+        ],
+        toState: ["input": "output"]
+      )
 
       // Processing of multi-modal multisample MuData files.
       // Performs calculations on samples that have *not* been integrated,

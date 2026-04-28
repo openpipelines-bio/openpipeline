@@ -4,35 +4,70 @@ import pytest
 import subprocess
 import re
 import mudata as mu
+import scanpy as sc
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
-meta = {"resources_dir": "resources_test"}
+meta = {
+    "executable": "./target/docker/annotate/celltypist/celltypist",
+    "resources_dir": "resources_test/",
+    "cpus": 15,
+    "memory_gb": 20,
+    "config": "src/annotate/celltypist/config.vsh.yaml",
+}
 ## VIASH END
 
-input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
-reference_file = f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5mu"
+
 model_file = (
     f"{meta['resources_dir']}/annotation_test_data/celltypist_model_Immune_All_Low.pkl"
 )
 celltypist_input_file = (
     f"{meta['resources_dir']}/annotation_test_data/demo_2000_cells.h5mu"
 )
+# input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 
 
-def test_simple_execution(run_component, random_h5mu_path):
+def log_normalize(adata):
+    sc.pp.normalize_total(adata, target_sum=1e4)
+    sc.pp.log1p(adata)
+    return adata
+
+
+@pytest.fixture
+def reference_mdata():
+    mdata = mu.read_h5mu(
+        f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5mu"
+    )
+    adata = mdata.mod["rna"].copy()
+    adata_lognorm = log_normalize(adata)
+    mdata.mod["rna"] = adata_lognorm
+    return mdata
+
+
+@pytest.fixture
+def input_mdata():
+    mdata = mu.read_h5mu(
+        f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+    )
+    adata = mdata.mod["rna"].copy()
+    adata_lognorm = log_normalize(adata)
+    mdata.mod["rna"] = adata_lognorm
+    return mdata
+
+
+def test_simple_execution(
+    run_component, random_h5mu_path, reference_mdata, input_mdata, write_mudata_to_file
+):
     output_file = random_h5mu_path()
+    input_file = write_mudata_to_file(input_mdata)
+    reference_file = write_mudata_to_file(reference_mdata)
 
     run_component(
         [
             "--input",
             input_file,
-            "--input_layer",
-            "log_normalized",
             "--reference",
             reference_file,
-            "--reference_layer",
-            "log_normalized",
             "--reference_obs_target",
             "cell_ontology_class",
             "--reference_var_gene_names",
@@ -68,19 +103,19 @@ def test_simple_execution(run_component, random_h5mu_path):
     )
 
 
-def test_set_params(run_component, random_h5mu_path):
+def test_set_params(
+    run_component, random_h5mu_path, write_mudata_to_file, input_mdata, reference_mdata
+):
+    input_file = write_mudata_to_file(input_mdata)
+    reference_file = write_mudata_to_file(reference_mdata)
     output_file = random_h5mu_path()
 
     run_component(
         [
             "--input",
             input_file,
-            "--input_layer",
-            "log_normalized",
             "--reference",
             reference_file,
-            "--reference_layer",
-            "log_normalized",
             "--reference_obs_target",
             "cell_ontology_class",
             "--reference_var_gene_names",
@@ -159,38 +194,25 @@ def test_with_model(run_component, random_h5mu_path):
     )
 
 
-def test_fail_invalid_input_expression(run_component, random_h5mu_path):
+def test_fail_invalid_input_expression(
+    run_component, random_h5mu_path, write_mudata_to_file, input_mdata, reference_mdata
+):
     output_file = random_h5mu_path()
+    input_file = write_mudata_to_file(input_mdata)
+    reference_file = write_mudata_to_file(reference_mdata)
 
-    # fails because input data are not lognormalized
+    # fails because input data are not correctly lognormalized
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(
             [
                 "--input",
                 input_file,
-                "--reference",
-                reference_file,
-                "--reference_var_gene_names",
-                "ensemblid",
-                "--output",
-                output_file,
-            ]
-        )
-    assert re.search(
-        r"Invalid expression matrix, expect log1p normalized expression to 10000 counts per cell",
-        err.value.stdout.decode("utf-8"),
-    )
-
-    # fails because reference data are not lognormalized
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(
-            [
-                "--input",
-                input_file,
-                "--layer",
+                "--input_layer",
                 "log_normalized",
                 "--reference",
                 reference_file,
+                "--reference_layer",
+                "log_normalized",
                 "--reference_var_gene_names",
                 "ensemblid",
                 "--output",
@@ -198,9 +220,89 @@ def test_fail_invalid_input_expression(run_component, random_h5mu_path):
             ]
         )
     assert re.search(
-        r"Invalid expression matrix, expect log1p normalized expression to 10000 counts per cell",
+        r"Invalid expression matrix, expect input layer to contain log1p normalized expression to 10000 counts per cell",
         err.value.stdout.decode("utf-8"),
     )
+
+
+def test_with_hvg(
+    run_component, random_h5mu_path, write_mudata_to_file, input_mdata, reference_mdata
+):
+    output_file = random_h5mu_path()
+    input_file = write_mudata_to_file(input_mdata)
+    reference_file = write_mudata_to_file(reference_mdata)
+
+    run_component(
+        [
+            "--input",
+            input_file,
+            "--reference",
+            reference_file,
+            "--reference_obs_target",
+            "cell_ontology_class",
+            "--reference_var_gene_names",
+            "ensemblid",
+            "--reference_var_input",
+            "highly_variable",
+            "--output",
+            output_file,
+        ]
+    )
+
+    assert os.path.exists(output_file), "Output file does not exist"
+
+    input_mudata = mu.read_h5mu(input_file)
+    output_mudata = mu.read_h5mu(output_file)
+
+    assert_annotation_objects_equal(input_mudata.mod["prot"], output_mudata.mod["prot"])
+
+    assert {"celltypist_pred", "celltypist_probability"}.issubset(
+        output_mudata.mod["rna"].obs.keys()
+    ), "Required keys not found in .obs"
+
+    obs_values = output_mudata.mod["rna"].obs["celltypist_probability"]
+    assert all(0 <= value <= 1 for value in obs_values), (
+        ".obs at celltypist_probability has values outside the range [0, 1]"
+    )
+
+
+def test_duplicate_categorical_index_entry(
+    run_component, random_h5mu_path, reference_mdata, input_mdata, write_mudata_to_file
+):
+    """Test that the component handles duplicate index entries correctly."""
+    output_file = random_h5mu_path()
+
+    # Create a modified input with duplicate index entries
+    indices = input_mdata.mod["rna"].var["gene_symbol"].to_list()
+    indices[0] = indices[1]  # duplicate the first index entry
+    import pandas as pd
+
+    input_mdata.mod["rna"].var["dup_idx"] = pd.CategoricalIndex(indices)
+
+    input_file = write_mudata_to_file(input_mdata)
+    reference_file = write_mudata_to_file(reference_mdata)
+
+    # Component should not raise with duplicate categorical indices
+    run_component(
+        [
+            "--input",
+            input_file,
+            "--reference",
+            reference_file,
+            "--reference_obs_target",
+            "cell_ontology_class",
+            "--reference_var_gene_names",
+            "feature_name",
+            "--input_var_gene_names",
+            "dup_idx",
+            "--sanitize_ensembl_ids",
+            "False",
+            "--output",
+            output_file,
+        ]
+    )
+
+    assert os.path.exists(output_file), "Output file does not exist"
 
 
 if __name__ == "__main__":

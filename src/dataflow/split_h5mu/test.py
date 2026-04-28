@@ -1,5 +1,6 @@
 import sys
 from textwrap import dedent
+import scipy.sparse as sp
 import pytest
 import mudata as mu
 import anndata as ad
@@ -43,6 +44,23 @@ def input_modality_3():
 
 
 @pytest.fixture
+def input_modality_4():
+    # Create a modality with an .obsp sparse matrix (this is what used to break on write)
+    df = pd.DataFrame(
+        [[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"]
+    )
+    obs = pd.DataFrame({"Obs": ["A", "B"]}, index=df.index)
+    var = pd.DataFrame([["a"], ["b"], ["c"]], index=df.columns, columns=["Feat"])
+
+    ad4 = ad.AnnData(df, obs=obs, var=var)
+
+    # Add a sparse obsp matrix (e.g. connectivities)
+    conn = sp.csr_matrix(np.array([[1.0, 0.2], [0.2, 1.0]]))
+    ad4.obsp["connectivities"] = conn
+    return ad4
+
+
+@pytest.fixture
 def input_h5mu(input_modality_1, input_modality_2):
     tmp_mudata = mu.MuData({"mod1": input_modality_1, "mod2": input_modality_2})
     return tmp_mudata
@@ -64,6 +82,17 @@ def input_h5mu_path_non_unique_filenames(
     write_mudata_to_file, input_h5mu_non_unique_filenames
 ):
     return write_mudata_to_file(input_h5mu_non_unique_filenames)
+
+
+@pytest.fixture
+def input_h5mu_sparse_obsp(input_modality_2, input_modality_4):
+    tmp_mudata = mu.MuData({"mod2": input_modality_2, "mod4": input_modality_4})
+    return tmp_mudata
+
+
+@pytest.fixture
+def input_h5mu_path_sparse_obsp(write_mudata_to_file, input_h5mu_sparse_obsp):
+    return write_mudata_to_file(input_h5mu_sparse_obsp)
 
 
 def test_sample_split(run_component, random_path, input_h5mu, input_h5mu_path):
@@ -282,6 +311,62 @@ def test_sanitizing(run_component, random_path, input_h5mu_path_non_unique_filen
     assert set(dir_content) == set([s1_file, s2_file]), (
         "Output files do not match file names in csv"
     )
+
+
+def test_sample_split_sparse_obsp(
+    run_component, random_path, input_h5mu_path_sparse_obsp, input_h5mu_sparse_obsp
+):
+    output_dir = random_path()
+    output_files = random_path(extension="csv")
+    args = [
+        "--input",
+        input_h5mu_path_sparse_obsp,
+        "--output",
+        str(output_dir),
+        "--modality",
+        "mod4",
+        "--obs_feature",
+        "Obs",
+        "--output_files",
+        str(output_files),
+    ]
+
+    run_component(args)
+    assert output_files.is_file()
+    assert output_dir.is_dir()
+
+    # check output dir and file names
+    dir_content = [
+        h5mu_file
+        for h5mu_file in output_dir.iterdir()
+        if h5mu_file.suffix == ".h5mu" and h5mu_file != input_h5mu_path_sparse_obsp
+    ]
+
+    s1_file = output_dir / f"{input_h5mu_path_sparse_obsp.stem}_A.h5mu"
+    s2_file = output_dir / f"{input_h5mu_path_sparse_obsp.stem}_B.h5mu"
+
+    assert set(dir_content) == set([s1_file, s2_file])
+
+    s1 = mu.read_h5mu(s1_file)
+    s2 = mu.read_h5mu(s2_file)
+
+    # Still contains both modalities
+    assert s1.n_mod == 2
+    assert s2.n_mod == 2
+
+    # Target modality was subset
+    assert s1.mod["mod4"].n_obs == 1
+    assert s2.mod["mod4"].n_obs == 1
+
+    # Other modality unchanged
+    assert s1.mod["mod2"].n_obs == input_h5mu_sparse_obsp.mod["mod2"].n_obs
+    assert s2.mod["mod2"].n_obs == input_h5mu_sparse_obsp.mod["mod2"].n_obs
+
+    # .obsp should be correctly subset to (1, 1) and still present
+    assert "connectivities" in s1.mod["mod4"].obsp.keys()
+    assert "connectivities" in s2.mod["mod4"].obsp.keys()
+    assert s1.mod["mod4"].obsp["connectivities"].shape == (1, 1)
+    assert s2.mod["mod4"].obsp["connectivities"].shape == (1, 1)
 
 
 if __name__ == "__main__":
