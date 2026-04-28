@@ -50,7 +50,7 @@ argument_groups:
           For each emitted metric column `<col>`, an additional column `log1p_<col>` is added
           containing `log1p(<col>)`. Mirrors scanpy's `log1p` flag.
         type: boolean
-        default: false
+        default: true
   - name: Metrics added to .obs
     arguments:
       - name: "--var_qc_metrics"
