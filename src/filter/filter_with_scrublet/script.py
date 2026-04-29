@@ -88,7 +88,7 @@ elif predicted_doublets is None:
     else:
         raise RuntimeError(
             "Scrublet could not automatically detect the doublet score threshold. "
-            "either --allow_automatic_threshold_detection_fail can be used to ignore this failure "
+            "Either --allow_automatic_threshold_detection_fail can be used to ignore this failure "
             "and set the corresponding output columns to NA, or a manual --threshold can be provided."
         )
 else:
