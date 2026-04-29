@@ -213,8 +213,8 @@ def test_doublet_automatic_threshold_detection_fails(
         )
     assert re.search(
         r"RuntimeError: Scrublet could not automatically detect the doublet score threshold\. "
-        r"--allow_automatic_threshold_detection_fail can be used to ignore this failure and "
-        r"set the corresponding output columns to NA\.",
+        r"either --allow_automatic_threshold_detection_fail can be used to ignore this failure "
+        r"and set the corresponding output columns to NA, or a manual --threshold can be provided\.",
         e_info.value.stdout.decode("utf-8"),
     )
 

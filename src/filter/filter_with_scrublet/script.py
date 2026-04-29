@@ -77,12 +77,9 @@ doublet_scores, predicted_doublets = scrub.scrub_doublets(
 if par["threshold"] is not None:
     logger.info("\tApplying manual doublet score threshold of %s", par["threshold"])
     predicted_doublets = scrub.call_doublets(threshold=par["threshold"])
-
-try:
     keep_cells = np.invert(predicted_doublets)
-except TypeError:
+elif predicted_doublets is None:
     if par["allow_automatic_threshold_detection_fail"]:
-        # Scrublet might not throw an error and return None if it fails to detect doublets...
         logger.info(
             "\tScrublet could not automatically detect the doublet score threshold. Setting output columns to NA."
         )
@@ -91,9 +88,11 @@ except TypeError:
     else:
         raise RuntimeError(
             "Scrublet could not automatically detect the doublet score threshold. "
-            "--allow_automatic_threshold_detection_fail can be used to ignore this failure "
-            "and set the corresponding output columns to NA."
+            "either --allow_automatic_threshold_detection_fail can be used to ignore this failure "
+            "and set the corresponding output columns to NA, or a manual --threshold can be provided."
         )
+else:
+    keep_cells = np.invert(predicted_doublets)
 
 logger.info("\tStoring output into .obs")
 if par["obs_name_doublet_score"] is not None:
