@@ -123,6 +123,16 @@ arguments:
     default: "euclidean"
     description: The distance metric used for computing similarities.
 
+  - name: "--threshold"
+    type: double
+    required: false
+    min: 0
+    max: 1
+    description: |
+      Manual doublet score threshold. Cells with a doublet score above this value
+      are classified as doublets. If not provided, the threshold is determined
+      automatically by Scrublet.
+
   - name: "--allow_automatic_threshold_detection_fail"
     type: "boolean_true"
     description: |

@@ -25,6 +25,7 @@ par = {
     "stdev_doublet_rate": None,
     "sim_doublet_ratio": None,
     "n_neighbors": None,
+    "threshold": None,
 }
 meta = {
     "name": "scrublet",
@@ -72,6 +73,10 @@ doublet_scores, predicted_doublets = scrub.scrub_doublets(
     distance_metric=par["distance_metric"],
     use_approx_neighbors=False,
 )
+
+if par["threshold"] is not None:
+    logger.info("\tApplying manual doublet score threshold of %s", par["threshold"])
+    predicted_doublets = scrub.call_doublets(threshold=par["threshold"])
 
 try:
     keep_cells = np.invert(predicted_doublets)

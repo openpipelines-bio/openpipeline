@@ -309,6 +309,33 @@ def test_selecting_input_layer(
     ], "Feature types of prot modality should be Antibody Capture"
 
 
+def test_manual_threshold(
+    run_component, random_h5mu_path, input_mudata_path, input_mudata
+):
+    output_mu = random_h5mu_path()
+
+    run_component(
+        [
+            "--input",
+            input_mudata_path,
+            "--output",
+            output_mu,
+            "--modality",
+            "rna",
+            "--threshold",
+            "0.1",
+            "--do_subset",
+        ]
+    )
+    assert Path(output_mu).is_file(), "Output file not found"
+
+    mu_out = mu.read_h5mu(output_mu)
+    assert mu_out.mod["rna"].n_obs < input_mudata.mod["rna"].n_obs, (
+        "A low manual threshold should mark cells as doublets and filter them out"
+    )
+    assert "scrublet_doublet_score" in mu_out.mod["rna"].obs
+
+
 def test_customizing_detection_arguments(
     run_component, random_h5mu_path, input_mudata_path, input_mudata
 ):
