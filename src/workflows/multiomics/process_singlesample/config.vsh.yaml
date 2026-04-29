@@ -8,6 +8,8 @@ info:
       namespace: test_workflows/multiomics/process_singlesample
     - name: workflow2_test
       namespace: test_workflows/multiomics/process_singlesample
+    - name: workflow3_test
+      namespace: test_workflows/multiomics/process_singlesample
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author ]

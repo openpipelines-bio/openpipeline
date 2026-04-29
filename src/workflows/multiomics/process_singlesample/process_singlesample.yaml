@@ -66,13 +66,13 @@ argument_groups:
         example: 0.05
         type: double
         description: |
-          Minimum percentile of counts captured per cell.
+          Minimum percentile of total RNA counts captured per cell.
       - name: "--rna_max_percentile_counts"
         example: 0.95
         type: double
         description: |
-          Maximum percentile of counts captured per cell.
-      - name: "--rna_log_transform_total_counts"
+          Maximum percentile of total RNA counts captured per cell.
+      - name: "--rna_percentile_filter_log_transform_total_counts"
         type: boolean
         default: true
         description: |
@@ -130,13 +130,13 @@ argument_groups:
         example: 0.05
         type: double
         description: |
-          Minimum percentile of counts captured per cell.
+          Minimum percentile of total protein counts captured per cell.
       - name: "--prot_max_percentile_counts"
         example: 0.95
         type: double
         description: |
-          Maximum percentile of counts captured per cell.
-      - name: "--prot_log_transform_total_counts"
+          Maximum percentile of total protein counts captured per cell.
+      - name: "--prot_percentile_filter_log_transform_total_counts"
         type: boolean
         default: true
         description: |

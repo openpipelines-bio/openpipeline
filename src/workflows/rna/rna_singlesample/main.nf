@@ -107,7 +107,7 @@ workflow run_wf {
       toState: ["input": "output"]
     )
     | delimit_fraction.run(
-      key: "filter_mitochondrial",
+      key: "rna_filter_mitochondrial",
       runIf: {id, state -> state.var_name_mitochondrial_genes},
       fromState: {id, state -> 
       [
@@ -121,7 +121,7 @@ workflow run_wf {
       toState: ["input": "output"]
     )
     | delimit_fraction.run(
-      key: "filter_ribosomal",
+      key: "rna_filter_ribosomal",
       runIf: {id, state -> state.var_name_ribosomal_genes},
       fromState: {id, state -> 
       [
@@ -143,7 +143,7 @@ workflow run_wf {
           "input": state.input,
           "obs_min_quantile": state.min_percentile_counts,
           "obs_max_quantile": state.max_percentile_counts,
-          "obs_log1p_transform": state.log_transform_total_counts
+          "obs_log1p_transform": state.percentile_filter_log_transform_total_counts
         ]
       },
       args: [
