@@ -147,12 +147,19 @@ def test_add_qc(run_component, input_path, random_path, file_format):
 
     expected_obs_columns = [
         f"pct_of_counts_in_top_{top_n_var}_vars" for top_n_var in ("10", "20", "90")
-    ] + ["total_counts", "num_nonzero_vars"]
+    ] + [
+        "total_counts",
+        "log1p_total_counts",
+        "num_nonzero_vars",
+        "log1p_num_nonzero_vars",
+    ]
     expected_var_columns = [
         "pct_dropout",
         "num_nonzero_obs",
         "obs_mean",
+        "log1p_obs_mean",
         "total_counts",
+        "log1p_total_counts",
     ]
     data_with_qc.mod["rna"].var = data_with_qc.mod["rna"].var.drop(
         columns=expected_var_columns, errors="raise"
@@ -174,6 +181,7 @@ def test_add_qc(run_component, input_path, random_path, file_format):
     [
         ("--output_obs_num_nonzero_vars", "obs", "lorem"),
         ("--output_obs_total_counts_vars", "obs", "ipsum"),
+        ("--output_obs_top_n_vars", "obs", "pct_counts_in_top_{n}_genes"),
         ("--output_var_num_nonzero_obs", "var", "dolor"),
         ("--output_var_total_counts_obs", "var", "amet"),
         ("--output_var_obs_mean", "var", "sit"),
@@ -189,6 +197,7 @@ def test_qc_metrics_set_output_column(
     random_path,
     file_format,
 ):
+    top_n_vars = [10, 20, 90]
     output_path = random_path(input_mudata_path.suffix.lstrip("."))
     args = [
         "--input",
@@ -199,43 +208,59 @@ def test_qc_metrics_set_output_column(
         "rna",
         "--output_compression",
         "gzip",
+        "--top_n_vars",
+        ";".join(str(n) for n in top_n_vars),
         optional_parameter,
         arg_value,
     ]
 
     run_component(args)
     default_obs_columns = {
-        "output_obs_num_nonzero_vars": "num_nonzero_vars",
-        "output_obs_total_counts_vars": "total_counts",
+        "output_obs_num_nonzero_vars": ["num_nonzero_vars", "log1p_num_nonzero_vars"],
+        "output_obs_total_counts_vars": ["total_counts", "log1p_total_counts"],
+        "output_obs_top_n_vars": [f"pct_of_counts_in_top_{n}_vars" for n in top_n_vars],
     }
     default_var_columns = {
-        "output_var_num_nonzero_obs": "num_nonzero_obs",
-        "output_var_total_counts_obs": "total_counts",
-        "output_var_obs_mean": "obs_mean",
-        "output_var_pct_dropout": "pct_dropout",
+        "output_var_num_nonzero_obs": ["num_nonzero_obs"],
+        "output_var_total_counts_obs": ["total_counts", "log1p_total_counts"],
+        "output_var_obs_mean": ["obs_mean", "log1p_obs_mean"],
+        "output_var_pct_dropout": ["pct_dropout"],
     }
     defaults = {"var": default_var_columns, "obs": default_obs_columns}
-    defaults[annotation_matrix].update({optional_parameter.strip("-"): arg_value})
+    log1p_params = {
+        "--output_obs_num_nonzero_vars",
+        "--output_obs_total_counts_vars",
+        "--output_var_total_counts_obs",
+        "--output_var_obs_mean",
+    }
+    if optional_parameter == "--output_obs_top_n_vars":
+        custom_columns = [arg_value.format(n=n) for n in top_n_vars]
+    elif optional_parameter in log1p_params:
+        custom_columns = [arg_value, f"log1p_{arg_value}"]
+    else:
+        custom_columns = [arg_value]
+    defaults[annotation_matrix].update({optional_parameter.strip("-"): custom_columns})
     assert output_path.exists()
     if file_format == "zarr":
         data_with_qc = md.read_zarr(output_path)
     else:
         data_with_qc = md.read(output_path)
     for attribute_name in ("var", "obs"):
+        columns_to_drop = [
+            col for cols in defaults[attribute_name].values() for col in cols
+        ]
         setattr(
             data_with_qc.mod["rna"],
             attribute_name,
             getattr(data_with_qc.mod["rna"], attribute_name).drop(
-                columns=list(defaults[attribute_name].values()), errors="raise"
+                columns=columns_to_drop, errors="raise"
             ),
         )
         setattr(
             data_with_qc,
             attribute_name,
             getattr(data_with_qc, attribute_name).drop(
-                columns=list(
-                    map("rna:{}".format, list(defaults[attribute_name].values()))
-                ),
+                columns=list(map("rna:{}".format, columns_to_drop)),
                 errors="raise",
             ),
         )
@@ -380,7 +405,7 @@ def test_compare_scanpy(
         percent_top=[10, 20, 90],
         use_raw=False,
         inplace=True,
-        log1p=False,
+        log1p=True,
     )
     scanpy_var = input_mudata.mod["rna"].var
     component_var = rna_mod.var
@@ -390,6 +415,8 @@ def test_compare_scanpy(
         "num_nonzero_obs": "n_cells_by_counts",
         "obs_mean": "mean_counts",
         "total_counts": "total_counts",
+        "log1p_obs_mean": "log1p_mean_counts",
+        "log1p_total_counts": "log1p_total_counts",
     }
     for from_var, to_var in vars_to_compare.items():
         assert_series_equal(
@@ -406,6 +433,7 @@ def test_compare_scanpy(
         "pct_custom": "pct_counts_custom",
         "total_counts_custom": "total_counts_custom",
         "total_counts": "total_counts",
+        "log1p_total_counts": "log1p_total_counts",
     }
     obs_to_compare |= {
         f"pct_of_counts_in_top_{i}_vars": f"pct_counts_in_top_{i}_genes"
@@ -418,6 +446,32 @@ def test_compare_scanpy(
             check_names=False,
             check_dtype=False,
         )
+
+
+def test_log1p_off_when_disabled(
+    run_component, input_mudata_path, random_path, file_format
+):
+    output_path = random_path(input_mudata_path.suffix.lstrip("."))
+    run_component(
+        [
+            "--input",
+            input_mudata_path,
+            "--output",
+            output_path,
+            "--modality",
+            "rna",
+            "--output_compression",
+            "gzip",
+            "--log1p_transform",
+            "false",
+        ]
+    )
+    if file_format == "zarr":
+        data_with_qc = md.read_zarr(output_path)
+    else:
+        data_with_qc = md.read(output_path)
+    assert data_with_qc.mod["rna"].var.filter(regex="^log1p_", axis=1).empty
+    assert data_with_qc.mod["rna"].obs.filter(regex="^log1p_", axis=1).empty
 
 
 @pytest.mark.parametrize(
