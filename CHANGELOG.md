@@ -20,7 +20,7 @@
 
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: add `--intersect_obs` option to remove observations that are not present in all processed modalities, so each modality shares the same set of cells (PR #1173, 1175).
 
-* `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169)
+* `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169, PR #1177)
 
 ## MAJOR CHANGES
 
@@ -47,6 +47,8 @@
 * Bump anndata to `0.12.11` (PR #1174).
 
 * Add missing `example` fields to several component and workflow configurations (PR #1067).
+
+* Testing: bump `viashpy` to 0.10.0 (PR #1178).
 
 ## BUG FIXES
 
