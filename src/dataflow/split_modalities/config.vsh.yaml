@@ -15,6 +15,7 @@ arguments:
     description: Path to a single .h5mu file.
     required: true
     default: sample_path
+    example: input.h5mu
   - name: "--output"
     alternatives: ["-o"]
     type: file

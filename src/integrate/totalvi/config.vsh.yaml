@@ -181,6 +181,7 @@ argument_groups:
         description: Directory with the reference model. If not exists, trained model will be saved there
         required: false
         default: "totalvi_model_reference/"
+        example: path/to/reference_model/
         direction: output
       - name: "--obsm_output"
         type: string
