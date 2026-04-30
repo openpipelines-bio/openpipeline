@@ -72,9 +72,10 @@ argument_groups:
           The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.
       - name: "--reference_var_input"
         type: string
+        default: "filter_with_hvg"
         required: false
         description: |
-          .var column containing highly variable genes. By default, do not subset genes.
+          .var column containing highly variable genes. If not provided, genes will not be subset.
 
   - name: Model arguments
     description: Model arguments.
