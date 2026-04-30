@@ -46,6 +46,8 @@
 
 * Bump anndata to `0.12.11` (PR #1174).
 
+* Add missing `example` fields to several component and workflow configurations (PR #1067).
+
 * Testing: bump `viashpy` to 0.10.0 (PR #1178).
 
 ## BUG FIXES

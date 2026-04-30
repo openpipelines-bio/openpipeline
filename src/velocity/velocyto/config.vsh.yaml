@@ -12,15 +12,18 @@ arguments:
     direction: input
     description: "Path to BAM file"
     required: true
+    example: input.bam
   - name: "--transcriptome"
     alternatives: [-t]
     type: file
     direction: input
     description: "Path to GTF file"
     required: true
+    example: transcriptome.gtf
   - name: "--barcode"
     alternatives: [-b]
     type: file
+    example: barcodes.txt
     direction: input
     description: |
       Valid barcodes file, to filter the bam. If --bcfile is not specified all the cell barcodes will be included.
@@ -35,6 +38,7 @@ arguments:
     type: file
     direction: output
     description: "Velocyto loom file"
+    example: output.loom
   - name: "--logic"
     alternatives: ["-l"]
     type: string
