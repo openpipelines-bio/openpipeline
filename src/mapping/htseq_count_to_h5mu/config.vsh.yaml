@@ -27,7 +27,7 @@ argument_groups:
         name: --reference
         required: true
         description: The GTF file.
-        example: gencode_v41_star
+        example: gencode_v41_star.gtf
   - name: Outputs
     arguments:
       - name: "--output"

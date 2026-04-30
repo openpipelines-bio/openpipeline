@@ -39,6 +39,7 @@ argument_groups:
         max: 20000
       - type: file
         name: --peaks
+        example: peaks.bed
         description: "Override peak caller: specify peaks to use in downstream analyses from supplied 3-column BED file. The supplied peaks file must be sorted by position and not contain overlapping peaks; comment lines beginning with # are allowed"
       - type: string
         name: --dim_reduce

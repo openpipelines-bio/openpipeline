@@ -5,6 +5,7 @@
           type: file
           direction: input
           required: true
+          example: input.h5mu
           description: "The query data to transfer the labels to. Should be a .h5mu file."
           info:
             label: "Query"
