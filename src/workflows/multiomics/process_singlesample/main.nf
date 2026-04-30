@@ -43,18 +43,17 @@ workflow run_wf {
           "input": "input",
           "output": "workflow_output"
         ],
-        toState: {id, output, state -> 
-          ["output": output.output]
-        }
+        toState: ["output": "output"]
       )
       | view {"After smerging: $it"}
       | intersect_obs.run(
         runIf: {id, state -> state.intersect_obs},
         fromState:[
           "input": "output",
-          "modalities": "modalities"
+          "modalities": "modalities",
+          "output": "workflow_output"
         ],
-        toState: {id, output, state -> 
+        toState: {id, output, state ->
           ["output": output.output]
         }
       )

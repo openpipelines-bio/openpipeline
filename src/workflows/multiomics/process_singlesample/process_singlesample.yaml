@@ -61,7 +61,24 @@ argument_groups:
         example: 5000000
         type: integer
         description: Maximum number of counts captured per cell.
-  
+
+      - name: "--rna_min_percentile_counts"
+        example: 0.05
+        type: double
+        description: |
+          Minimum percentile of total RNA counts captured per cell.
+      - name: "--rna_max_percentile_counts"
+        example: 0.95
+        type: double
+        description: |
+          Maximum percentile of total RNA counts captured per cell.
+      - name: "--rna_percentile_filter_log_transform_total_counts"
+        type: boolean
+        default: true
+        description: |
+          Whether to log-transform the total counts before calculating percentile-based filtering thresholds.
+          This will only affect percentile-based filtering, not the count-based filtering.
+
       - name: "--rna_min_genes_per_cell"
         type: integer
         example: 200
@@ -108,6 +125,23 @@ argument_groups:
         description: Minimum number of counts per cell.
         type: integer
         example: 5000000
+
+      - name: "--prot_min_percentile_counts"
+        example: 0.05
+        type: double
+        description: |
+          Minimum percentile of total protein counts captured per cell.
+      - name: "--prot_max_percentile_counts"
+        example: 0.95
+        type: double
+        description: |
+          Maximum percentile of total protein counts captured per cell.
+      - name: "--prot_percentile_filter_log_transform_total_counts"
+        type: boolean
+        default: true
+        description: |
+          Whether to log-transform the total counts before calculating percentile-based filtering thresholds.
+          This will only affect percentile-based filtering, not the count-based filtering.
 
       - name: "--prot_min_proteins_per_cell"
         type: integer
