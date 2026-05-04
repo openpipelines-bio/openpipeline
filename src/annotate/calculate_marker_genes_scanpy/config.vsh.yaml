@@ -1,4 +1,4 @@
-name: calculate_marker_genes
+name: calculate_marker_genes_scanpy
 namespace: annotate
 scope: "public"
 
