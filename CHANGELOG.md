@@ -22,6 +22,8 @@
 
 * `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169, PR #1177)
 
+* `annotate/calculate_marker_genes`: New component that calculates cluster marker genes using `scanpy` (PR #1168)
+
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
