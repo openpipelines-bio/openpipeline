@@ -4,7 +4,6 @@ import pandas as pd
 import pytest
 from itertools import product
 from operator import attrgetter
-import os
 import numpy as np
 
 ##VIASH START
@@ -255,13 +254,4 @@ def test_prot_log_normalized_expressions(
 
 
 if __name__ == "__main__":
-    sys.exit(
-        pytest.main(
-            [
-                "--import-mode=importlib",
-                "-o",
-                "python_files=script*.py .viash_script.py",
-                os.path.dirname(__file__),
-            ]
-        )
-    )
+    sys.exit(pytest.main([__file__, "--import-mode=importlib"]))

@@ -28,6 +28,7 @@ argument_groups:
       - name: "--model_output"
         type: file
         default: "model"
+        example: path/to/model/
         description: Output directory for model
         direction: output
         required: false
