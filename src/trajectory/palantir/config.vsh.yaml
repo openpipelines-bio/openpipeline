@@ -1,0 +1,207 @@
+name: palantir
+namespace: "trajectory"
+scope: "public"
+description: |
+  Computes pseudotime and fate probabilities using Palantir.
+
+  Palantir models cell fate as a Markov chain on a k-nearest-neighbour graph built from
+  a low-dimensional embedding (typically PHATE or PCA). It produces:
+  - A pseudotime value for every cell.
+  - Branch fate probabilities for each terminal state.
+  - An optional set of waypoint cells summarising the trajectory.
+
+  The component runs the full Palantir workflow:
+    1. Diffusion maps on the chosen embedding.
+    2. `palantir.core.run_palantir` starting from `--start_cell`.
+
+  If `--start_cell_obs_key` and `--start_cell_cluster` are provided, the start cell is
+  chosen automatically as the cell with the highest early-pseudotime score in that cluster
+  (Palantir `utils.early_cell`). Otherwise `--start_cell` must be an exact cell barcode.
+keywords: [ trajectory, pseudotime, fate probabilities, palantir ]
+links:
+  homepage: https://www.krishnaswamylab.org/projects/palantir
+  documentation: https://palantir.readthedocs.io
+  repository: https://github.com/dpeerlab/Palantir
+references:
+  doi: 10.1038/s41587-019-0068-4
+license: GPL-2.0
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: Input h5mu file.
+        direction: input
+        required: true
+        example: input.h5mu
+
+      - name: "--modality"
+        type: string
+        default: "rna"
+        required: false
+        description: Modality to process.
+
+      - name: "--obsm_input"
+        type: string
+        default: "X_pca_integrated"
+        required: false
+        description: |
+          `.obsm` key of the low-dimensional embedding used to build the diffusion map.
+          Recommended: `X_phate` (output of `dimred/phate`) or `X_pca_integrated`
+          (output of `integrate/harmonypy`).
+        example: X_phate
+
+  - name: Start cell
+    arguments:
+      - name: "--start_cell"
+        type: string
+        required: false
+        description: |
+          Exact cell barcode (`.obs_names` value) to use as the trajectory root.
+          Required unless `--start_cell_cluster` is provided.
+        example: "ACGTACGT-1"
+
+      - name: "--start_cell_cluster"
+        type: string
+        required: false
+        description: |
+          Cluster label identifying the start-cell population. When provided, the cell
+          with the best early-trajectory score within this cluster is selected
+          automatically. Requires `--start_cell_obs_key`.
+        example: "ExN.1"
+
+      - name: "--start_cell_obs_key"
+        type: string
+        default: "subpopulation"
+        required: false
+        description: |
+          `.obs` column containing cluster labels used together with
+          `--start_cell_cluster` to identify the start cell.
+
+  - name: Arguments
+    arguments:
+      - name: "--num_waypoints"
+        type: integer
+        default: 500
+        min: 10
+        required: false
+        description: |
+          Number of waypoint cells used to represent the trajectory. Larger values give
+          smoother pseudotime but increase runtime. The Palantir paper uses 1200; 500 is
+          sufficient for datasets < 50k cells.
+
+      - name: "--n_components"
+        type: integer
+        default: 10
+        min: 2
+        required: false
+        description: Number of diffusion-map components to compute.
+
+      - name: "--knn"
+        type: integer
+        default: 30
+        min: 5
+        required: false
+        description: Number of k-nearest neighbours for the diffusion map.
+
+      - name: "--scale_components"
+        type: boolean
+        default: true
+        required: false
+        description: Scale diffusion-map components by their eigenvalues before running Palantir.
+
+      - name: "--terminal_states"
+        type: string
+        multiple: true
+        required: false
+        description: |
+          Explicit cell barcodes to use as terminal states (branch endpoints). If not
+          provided, Palantir selects terminal states automatically.
+        example: ["CELL_A-1", "CELL_B-1"]
+
+      - name: "--terminal_states_obs_key"
+        type: string
+        required: false
+        description: |
+          `.obs` column whose unique values identify terminal-state populations. One
+          representative cell (highest connectivity) is chosen per unique value.
+          Mutually exclusive with `--terminal_states`.
+
+      - name: "--seed"
+        type: integer
+        default: 42
+        required: false
+        description: Random seed for reproducibility.
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
+
+      - name: "--obs_pseudotime"
+        type: string
+        default: "palantir_pseudotime"
+        required: false
+        description: "`.obs` column in which pseudotime values are stored."
+
+      - name: "--obs_entropy"
+        type: string
+        default: "palantir_entropy"
+        required: false
+        description: "`.obs` column in which differentiation-entropy values are stored."
+
+      - name: "--obsm_fate_probabilities"
+        type: string
+        default: "palantir_fate_probabilities"
+        required: false
+        description: "`.obsm` key for the cell x terminal-state fate-probability matrix."
+
+      - name: "--uns_waypoints"
+        type: string
+        default: "palantir_waypoints"
+        required: false
+        description: "`.uns` key under which the waypoint cell indices are stored."
+
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        packages:
+          - palantir~=1.3.3
+          - joblib
+    test_setup:
+      - type: python
+        __merge__: [/src/base/requirements/viashpy.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [highcpu, highmem, highdisk]

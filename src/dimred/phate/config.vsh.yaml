@@ -1,0 +1,152 @@
+name: phate
+namespace: "dimred"
+scope: "public"
+description: |
+  PHATE (Potential of Heat-diffusion for Affinity-based Transition Embedding) is a
+  dimensionality reduction method designed for visualizing high-dimensional biological
+  data that contains progressions, trajectories, or tree-like structures.
+
+  Unlike UMAP or tSNE, PHATE models the data manifold using a diffusion process,
+  making it particularly suited for single-cell trajectories and for the BEYOND
+  methodology, where the input is a participant x subpopulation proportion matrix
+  stored in `.obsm`.
+
+  Reference: Moon et al., Visualizing structure and transitions in high-dimensional
+  biological data. Nature Biotechnology, 2019.
+keywords: [dimensionality reduction, PHATE, trajectory, visualization, BEYOND]
+links:
+  repository: https://github.com/KrishnaswamyLab/PHATE
+  documentation: https://phate.readthedocs.io
+references:
+  doi:
+    - 10.1038/s41587-019-0336-3
+license: MIT
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ maintainer ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: Input h5mu file.
+        direction: input
+        required: true
+        example: input.h5mu
+
+      - name: "--modality"
+        type: string
+        description: Which modality from the MuData file to process.
+        default: "rna"
+        required: false
+
+      - name: "--obsm_input"
+        type: string
+        description: |
+          Key in `.obsm` to use as the input matrix for PHATE.
+          Common choices: `X_pca` (cell-level embedding) or `proportions`
+          (participant x subpopulation proportion matrix from
+          `metadata/calculate_proportions`).
+        default: "X_pca"
+        required: false
+        example: "X_pca"
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
+
+      - name: "--obsm_output"
+        type: string
+        description: Key in `.obsm` where the PHATE embedding will be stored.
+        default: "X_phate"
+        required: false
+        example: "X_phate"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+  - name: Arguments
+    arguments:
+      - name: "--n_components"
+        type: integer
+        description: Number of dimensions in the PHATE embedding.
+        default: 2
+        example: 2
+
+      - name: "--knn"
+        type: integer
+        description: |
+          Number of nearest neighbours used to build the kernel.
+          Larger values produce a smoother embedding; smaller values
+          preserve finer local structure.
+        default: 5
+        example: 5
+
+      - name: "--decay"
+        type: integer
+        description: |
+          Rate of kernel decay (alpha-decay).  Higher values produce a
+          sharper kernel and preserve more local structure.
+        default: 40
+        example: 40
+
+      - name: "--t"
+        type: string
+        description: |
+          Number of diffusion steps.  Use `"auto"` (default) to let PHATE
+          select the optimal value via the Von Neumann entropy, or provide
+          a positive integer to fix the number of steps.
+        default: "auto"
+        example: "auto"
+
+      - name: "--gamma"
+        type: double
+        description: |
+          Informational distance constant.  `gamma=1` gives the PHATE
+          distance; `gamma=-1` gives a log-transformed potential distance.
+          Must be between -1 and 1.
+        default: 1.0
+        example: 1.0
+
+      - name: "--random_state"
+        type: integer
+        description: Random seed for reproducibility.
+        default: 0
+        example: 0
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+        packages:
+          - phate>=1.0.11
+    __merge__: [/src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [highcpu, midmem, middisk]

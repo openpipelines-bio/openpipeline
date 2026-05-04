@@ -1,0 +1,274 @@
+name: "trajectory_analysis"
+namespace: "workflows/beyond"
+scope: "public"
+description: |
+  BEYOND trajectory analysis: takes a multi-donor atlas h5mu (output of
+  beyond/atlas_building) and produces the full BEYOND outputs:
+
+    1. metadata/calculate_proportions   -  participant x subpopulation proportion matrix
+    2. dimred/phate                     -  PHATE cellular landscape from proportion matrix
+    3. trajectory/palantir              -  pseudotime + fate probabilities
+    4. trajectory/via                   -  alternative pseudotime (validation)
+    5. trajectory/pseudotime_dynamics   -  GAM-fitted proportion dynamics along pseudotime
+    6. cluster/cellular_communities     -  community detection (co-occurrence + dynamics)
+    7. stats/trait_associations         -  linear mixed models per subpopulation x trait
+    8. interpret/pathway_enrichment     -  GSEA/ORA on DE results (optional)
+
+  Required obs columns in the input atlas:
+    obs["participant_id"]    -  donor of origin
+    obs["subpopulation"]     -  per-cell-type Leiden subcluster (from atlas_building)
+
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        description: |
+          Atlas h5mu file with obs["participant_id"] and obs["subpopulation"].
+          Typically the output of beyond/atlas_building.
+        example: atlas.h5mu
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: Output h5mu with all BEYOND annotations added.
+        example: beyond_atlas.h5mu
+
+      - name: "--output_trait_associations_csv"
+        type: file
+        required: false
+        direction: output
+        description: Optional CSV of the full (subpopulation x trait) association table.
+        example: trait_associations.csv
+
+      - name: "--output_pathway_csv_dir"
+        type: file
+        required: false
+        direction: output
+        description: |
+          Output directory for per-gene-set enrichment CSV files (one per library).
+          Only written when --de_results_csv is provided.
+        example: pathway_enrichment_results/
+
+  - name: Atlas metadata
+    arguments:
+      - name: "--obs_participant_id"
+        type: string
+        default: "participant_id"
+        required: false
+        description: .obs column identifying each participant / donor.
+      - name: "--obs_subpopulation"
+        type: string
+        default: "subpopulation"
+        required: false
+        description: .obs column with per-cell-type subpopulation labels (from atlas_building).
+      - name: "--obs_cluster"
+        type: string
+        default: "leiden"
+        required: false
+        description: .obs column with initial Leiden cluster labels (used by VIA as graph nodes).
+
+  - name: Proportions
+    arguments:
+      - name: "--uns_proportions"
+        type: string
+        default: "proportions"
+        required: false
+        description: |
+          .uns / .obsm key under which the participant x subpopulation proportion
+          matrix is stored (written by calculate_proportions; read by phate,
+          pseudotime_dynamics, cellular_communities, and trait_associations).
+
+  - name: Trajectory  -  Palantir
+    arguments:
+      - name: "--start_cell"
+        type: string
+        required: false
+        description: |
+          Exact cell barcode to use as the Palantir trajectory root.
+          Required unless --start_cell_cluster is provided.
+        example: "ACGTACGT-1"
+      - name: "--start_cell_cluster"
+        type: string
+        required: false
+        description: |
+          Cluster label identifying the start-cell population. Palantir selects
+          the best representative cell in this cluster automatically.
+          Requires --start_cell_obs_key.
+        example: "ExN.0"
+      - name: "--start_cell_obs_key"
+        type: string
+        default: "subpopulation"
+        required: false
+        description: .obs column used with --start_cell_cluster to find the start cell.
+      - name: "--terminal_states_obs_key"
+        type: string
+        required: false
+        description: |
+          .obs column whose unique values identify terminal-state populations.
+          If not provided, Palantir selects terminal states automatically.
+      - name: "--num_waypoints"
+        type: integer
+        default: 500
+        required: false
+        description: Number of waypoint cells for Palantir (use 1200 for large datasets).
+      - name: "--palantir_n_components"
+        type: integer
+        default: 10
+        required: false
+        description: Number of diffusion-map components. Reduce for small datasets (< 1000 cells).
+      - name: "--palantir_knn"
+        type: integer
+        default: 30
+        required: false
+        description: k-nearest neighbours for the Palantir diffusion map. Reduce for small datasets.
+
+  - name: Trajectory  -  VIA
+    arguments:
+      - name: "--root_user"
+        type: string
+        required: true
+        description: |
+          Root of the VIA trajectory. A cluster label (matching a value in
+          --obs_cluster) or a cell index (integer as string, e.g. "0").
+        example: "0"
+      - name: "--via_knn"
+        type: integer
+        default: 15
+        required: false
+        description: Number of k-nearest neighbours for the VIA graph.
+
+  - name: Pseudotime dynamics
+    arguments:
+      - name: "--obs_pseudotime"
+        type: string
+        default: "palantir_pseudotime"
+        required: false
+        description: .obs column with pseudotime values (output of trajectory/palantir).
+      - name: "--n_splines"
+        type: integer
+        default: 8
+        required: false
+        description: Number of B-spline basis functions for the GAM smooth.
+      - name: "--dynamics_lam"
+        type: double
+        default: 0.6
+        required: false
+        description: Smoothing regularisation penalty for the GAM (higher = smoother).
+      - name: "--uns_dynamics"
+        type: string
+        default: "dynamics"
+        required: false
+        description: .uns key where per-subpopulation dynamics dicts are stored.
+
+  - name: Cellular communities
+    arguments:
+      - name: "--n_communities"
+        type: integer
+        required: true
+        min: 2
+        description: Number of cellular communities to detect.
+        example: 6
+      - name: "--communities_alpha"
+        type: double
+        default: 0.5
+        required: false
+        description: |
+          Weight for co-occurrence similarity (vs. dynamics similarity).
+          0.0 = dynamics only; 1.0 = co-occurrence only.
+      - name: "--communities_method"
+        type: string
+        default: "hierarchical"
+        choices: [hierarchical, spectral]
+        required: false
+        description: Clustering method for community detection.
+
+  - name: Trait associations
+    arguments:
+      - name: "--traits_csv"
+        type: file
+        required: true
+        description: |
+          CSV file with participant metadata. Must contain a participant ID column
+          (--obs_participant_id) and at least one trait column (--trait_columns).
+        example: traits.csv
+      - name: "--trait_columns"
+        type: string
+        multiple: true
+        required: true
+        description: Trait column(s) in the traits CSV to test for association.
+        example: ["diagnosis", "amyloid_score"]
+      - name: "--covariate_columns"
+        type: string
+        multiple: true
+        required: false
+        description: Covariate column(s) in the traits CSV to include as fixed effects.
+        example: ["age", "sex"]
+      - name: "--random_effect_column"
+        type: string
+        required: false
+        description: Column in the traits CSV to use as a random-effects grouping variable.
+        example: "cohort"
+
+  - name: Pathway enrichment (optional)
+    arguments:
+      - name: "--de_results_csv"
+        type: file
+        required: false
+        description: |
+          DE result CSV (e.g. from differential_expression/deseq2). When provided,
+          pathway enrichment is run and results stored in uns["pathway_enrichment"].
+          When omitted, the step is skipped.
+        example: de_results.csv
+      - name: "--gene_column"
+        type: string
+        required: false
+        description: Column in the DE CSV with gene symbols. If absent, the row index is used.
+        example: "gene"
+      - name: "--gene_sets"
+        type: string
+        multiple: true
+        default: ["MSigDB_Hallmark_2020"]
+        required: false
+        description: Enrichr library names or paths to local GMT files.
+        example: ["MSigDB_Hallmark_2020", "GO_Biological_Process_2023"]
+      - name: "--pathway_method"
+        type: string
+        default: "prerank"
+        choices: [prerank, ora]
+        required: false
+        description: Enrichment method (prerank GSEA or over-representation analysis).
+
+dependencies:
+  - name: metadata/calculate_proportions
+  - name: dimred/phate
+  - name: trajectory/palantir
+  - name: trajectory/via
+  - name: trajectory/pseudotime_dynamics
+  - name: cluster/cellular_communities
+  - name: stats/trait_associations
+  - name: interpret/pathway_enrichment
+
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+  - type: file
+    path: /src/workflows/utils/
+
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - path: /resources_test/beyond_test_data
+
+runners:
+  - type: nextflow

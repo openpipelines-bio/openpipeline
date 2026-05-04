@@ -1,0 +1,162 @@
+name: trait_associations
+namespace: "stats"
+scope: "public"
+description: |
+  Tests associations between subpopulation proportions (or community proportions)
+  and clinical / biological traits using linear mixed models  -  the final statistical
+  step of the BEYOND methodology.
+
+  For each (subpopulation, trait) pair a mixed-effects model is fit:
+
+    proportion ~ trait + covariates + (1 | random_effect)
+
+  using `statsmodels.formula.api.mixedlm`.  When no `--random_effect_column` is
+  provided a fixed-effects OLS model is used instead.
+
+  Multiple-testing correction is applied across all (subpopulation, trait) pairs
+  with the method chosen by `--fdr_method`.
+
+  Outputs:
+    - `uns["trait_associations"]`  -  result dict with subpopulation, trait, beta, se,
+      t_stat, p_value, fdr_q columns
+    - optional CSV file (see `--output_csv`)
+
+keywords: [ trait associations, linear mixed model, BEYOND, clinical traits ]
+links:
+  repository: https://github.com/naomihabiblab/BEYOND_DLPFC
+references:
+  doi: []
+license: MIT
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: Input h5mu file with proportion matrix in uns.
+        direction: input
+        required: true
+        example: input.h5mu
+
+      - name: "--modality"
+        type: string
+        default: "rna"
+        required: false
+        description: Modality from which uns is read.
+
+      - name: "--uns_proportions"
+        type: string
+        default: "proportions"
+        required: false
+        description: ".uns key with participant x subpopulation proportion dict (from metadata/calculate_proportions)."
+
+      - name: "--traits_csv"
+        type: file
+        description: CSV file with participant metadata. Must contain a participant ID column and at least one trait column.
+        direction: input
+        required: true
+        example: traits.csv
+
+      - name: "--participant_id_column"
+        type: string
+        default: "participant_id"
+        required: false
+        description: Column name in traits CSV that matches the row index of the proportion matrix.
+
+  - name: Arguments
+    arguments:
+      - name: "--trait_columns"
+        type: string
+        multiple: true
+        required: true
+        description: "Trait column name(s) in the traits CSV to test for association. Each trait is tested against every subpopulation."
+        example: ["amyloid_score", "age_at_death"]
+
+      - name: "--covariate_columns"
+        type: string
+        multiple: true
+        required: false
+        description: Covariate column name(s) in the traits CSV to include as fixed effects.
+        example: ["age_at_death", "sex"]
+
+      - name: "--random_effect_column"
+        type: string
+        required: false
+        description: Column in traits CSV to use as grouping variable for random intercepts (e.g. cohort or batch). If omitted, OLS is used.
+        example: "cohort"
+
+      - name: "--fdr_method"
+        type: string
+        default: "bh"
+        choices: [bh, bonferroni, none]
+        required: false
+        description: |
+          Multiple-testing correction method applied across all (subpopulation, trait) pairs.
+          'bh' = Benjamini-Hochberg FDR, 'bonferroni' = Bonferroni, 'none' = no correction.
+
+      - name: "--min_participants"
+        type: integer
+        default: 5
+        required: false
+        description: Minimum number of participants with non-missing trait values required to fit a model for a given (subpopulation, trait) pair.
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file with trait_associations stored in uns.
+        direction: output
+        required: true
+        example: output.h5mu
+
+      - name: "--output_csv"
+        type: file
+        description: Optional CSV file to write the full association result table.
+        direction: output
+        required: false
+        example: trait_associations.csv
+
+      - name: "--uns_output"
+        type: string
+        default: "trait_associations"
+        required: false
+        description: ".uns key where association results are stored."
+
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: test_data/
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+        packages:
+          - statsmodels~=0.14.4
+    test_setup:
+      - type: python
+        __merge__: [/src/base/requirements/viashpy.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [midcpu, midmem, middisk]

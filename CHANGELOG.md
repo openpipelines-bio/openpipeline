@@ -1,6 +1,61 @@
 # openpipelines (unreleased)
 
-## NEW FEATURES
+## NEW FUNCTIONALITY
+
+* BEYOND methodology - 8 new components and 2 new workflows implementing the
+  Habib-lab BEYOND pipeline for cellular community discovery in snRNA-seq data
+  (reference: naomihabiblab/BEYOND_DLPFC):
+
+  **Components:**
+
+  - `metadata/calculate_proportions`: computes a participant x subpopulation cell
+    proportion matrix from a single-cell atlas; stores results in `.uns["proportions"]`
+    (column-first dict) and `.obsm["proportions"]` (per-cell proportion vectors).
+
+  - `dimred/phate`: computes a PHATE embedding from any `.obsm` matrix (e.g. `X_pca`
+    or proportion vectors); stores result in `.obsm["X_phate"]`. Supports configurable
+    `knn`, `decay`, `t`, `gamma`, and `n_components`.
+
+  - `trajectory/palantir`: computes pseudotime and fate probabilities using Palantir
+    (1.3.3 API); stores results in `obs["palantir_pseudotime"]`, `obs["palantir_entropy"]`,
+    `obsm["palantir_fate_probabilities"]`, and `uns["palantir_waypoints"]`. Supports
+    automatic start-cell selection from a cluster label or an explicit barcode.
+
+  - `trajectory/via`: computes pseudotime using the VIA graph-based algorithm; stores
+    results in `obs["via_pseudotime"]` and `uns["via_graph"]`. Accepts any `.obsm` key
+    as input embedding and a cluster label or integer index as trajectory root.
+
+  - `trajectory/pseudotime_dynamics`: fits a cubic spline (scipy.interpolate.UnivariateSpline)
+    of participant proportion versus pseudotime per subpopulation; stores fitted curves,
+    peak pseudotime, R^2, and p-value in `.uns["dynamics"]`.
+
+  - `cluster/cellular_communities`: detects cellular communities by combining
+    co-occurrence similarity (Pearson correlation of participant proportion vectors) and
+    dynamics similarity (Pearson correlation of fitted proportion curves); applies
+    hierarchical (Ward) or spectral clustering; stores community labels in
+    `obs["community_id"]` and full metadata in `uns["cellular_communities"]`.
+
+  - `interpret/pathway_enrichment`: performs pre-ranked GSEA or ORA on DESeq2 results
+    using GSEApy; supports Enrichr library names or custom GMT files; stores results in
+    `.uns["pathway_enrichment"]` and writes per-library CSV files.
+
+  - `stats/trait_associations` *(new namespace)*: tests associations between
+    subpopulation proportions and clinical/biological traits using linear mixed models
+    (statsmodels MixedLM) or OLS when no random effect is specified; applies
+    BH/Bonferroni FDR correction across all (subpopulation, trait) pairs; stores results
+    in `.uns["trait_associations"]` and optionally writes a CSV.
+
+  **Workflows:**
+
+  - `workflows/beyond/atlas_building`: end-to-end atlas construction from per-donor
+    h5mu files - QC filtering, integration (Harmony), cell-type annotation (CellTypist),
+    and per-cell-type Leiden subclustering to produce the subpopulation labels required
+    by the trajectory analysis workflow.
+
+  - `workflows/beyond/trajectory_analysis`: full BEYOND trajectory inference from an
+    annotated atlas h5mu - runs all 8 steps (proportions -> PHATE -> Palantir -> VIA ->
+    pseudotime dynamics -> cellular communities -> trait associations -> pathway enrichment)
+    and emits a single enriched h5mu with all results.
 
 * `qc/calculate_qc_metrics`: added support for MuData encoded in Zarr format (PR #1140).
 
