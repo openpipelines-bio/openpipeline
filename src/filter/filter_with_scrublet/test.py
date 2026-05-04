@@ -213,8 +213,8 @@ def test_doublet_automatic_threshold_detection_fails(
         )
     assert re.search(
         r"RuntimeError: Scrublet could not automatically detect the doublet score threshold\. "
-        r"--allow_automatic_threshold_detection_fail can be used to ignore this failure and "
-        r"set the corresponding output columns to NA\.",
+        r"Either --allow_automatic_threshold_detection_fail can be used to ignore this failure "
+        r"and set the corresponding output columns to NA, or a manual --threshold can be provided\.",
         e_info.value.stdout.decode("utf-8"),
     )
 
@@ -307,6 +307,33 @@ def test_selecting_input_layer(
     assert list(mu_out.mod["prot"].var["feature_types"].cat.categories) == [
         "Antibody Capture"
     ], "Feature types of prot modality should be Antibody Capture"
+
+
+def test_manual_threshold(
+    run_component, random_h5mu_path, input_mudata_path, input_mudata
+):
+    output_mu = random_h5mu_path()
+
+    run_component(
+        [
+            "--input",
+            input_mudata_path,
+            "--output",
+            output_mu,
+            "--modality",
+            "rna",
+            "--threshold",
+            "0.1",
+            "--do_subset",
+        ]
+    )
+    assert Path(output_mu).is_file(), "Output file not found"
+
+    mu_out = mu.read_h5mu(output_mu)
+    assert mu_out.mod["rna"].n_obs < input_mudata.mod["rna"].n_obs, (
+        "A low manual threshold should mark cells as doublets and filter them out"
+    )
+    assert "scrublet_doublet_score" in mu_out.mod["rna"].obs
 
 
 def test_customizing_detection_arguments(

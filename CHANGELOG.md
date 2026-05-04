@@ -36,6 +36,8 @@
 
 * `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137)
 
+* `filter/filter_with_scrublet`: added `--threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
+
 * Bump viash to 0.9.7 (PR #1145)
 
 * `annotate/celltypist` and `workflows/annotation/celltypist`: set `--input_layer` default to `log_normalized` and `--reference_var_input` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
