@@ -26,7 +26,7 @@ argument_groups:
         description: |
           Name of the layer to use. This should contain log-normalized data.
           If not set, the .X matrix will be used.
-      - name: --sel_clustering
+      - name: --obs_clustering
         type: string
         required: true
         example: leiden_0.5

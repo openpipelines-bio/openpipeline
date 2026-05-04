@@ -8,7 +8,7 @@ par = {
     "input": "input.h5mu",
     "modality": "rna",
     "input_layer": None,
-    "sel_clustering": "leiden_0.5",
+    "obs_clustering": "leiden_0.5",
     "output": "output.h5mu",
     "output_markers": "markers.csv",
     "output_compression": "gzip",
@@ -46,7 +46,7 @@ def calculate_marker_genes(adata, par):
     logger.info("Using '%s' method", par["method"])
     sc.tl.rank_genes_groups(
         adata,
-        groupby=par["sel_clustering"],
+        groupby=par["obs_clustering"],
         use_raw=False,
         layer=input_layer,
         method=par["method"],
@@ -66,7 +66,7 @@ def filter_marker_genes(adata, par):
     filtered_key_added = f"{par['key_added']}_filtered"
     sc.tl.filter_rank_genes_groups(
         adata,
-        groupby=par["sel_clustering"],
+        groupby=par["obs_clustering"],
         use_raw=False,
         key_added=filtered_key_added,
         min_in_group_fraction=par["min_in_group_fraction"],
@@ -76,7 +76,7 @@ def filter_marker_genes(adata, par):
     )
 
     filtered_markers = {}
-    for group in adata.obs[par["sel_clustering"]].cat.categories:
+    for group in adata.obs[par["obs_clustering"]].cat.categories:
         filtered_results = sc.get.rank_genes_groups_df(
             adata, group=group, key=filtered_key_added
         )
@@ -101,7 +101,7 @@ def format_results(adata, par, filtered_key_added=None):
 
     if par["filter_results"]:
         results["is_marker"] = False
-        for group in adata.obs[par["sel_clustering"]].cat.categories:
+        for group in adata.obs[par["obs_clustering"]].cat.categories:
             group_markers = adata.uns[filtered_key_added]["markers"][group]
             is_group_marker = results["names"].isin(group_markers) & (
                 results["group"] == group
@@ -122,10 +122,10 @@ def main(par):
         )
     adata = mdata[par["modality"]]
 
-    logger.info("Selecting clustering column '%s'", par["sel_clustering"])
-    if par["sel_clustering"] not in adata.obs.columns:
+    logger.info("Selecting clustering column '%s'", par["obs_clustering"])
+    if par["obs_clustering"] not in adata.obs.columns:
         raise ValueError(
-            f"'{par['sel_clustering']}' is not a column in .obs of the input data"
+            f"'{par['obs_clustering']}' is not a column in .obs of the input data"
         )
 
     logger.info("Calculating marker genes")
