@@ -128,4 +128,4 @@ runners:
   - type: executable
   - type: nextflow
     directives:
-      label: [singlecpu, lowmem]
+      label: [midcpu, midmem]
