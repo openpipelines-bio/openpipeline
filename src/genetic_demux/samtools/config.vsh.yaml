@@ -10,6 +10,7 @@ arguments:
     type: file
     required: true
     description: "Input bam file for filtering."
+    example: input.bam
   - name: "--output"
     type: file
     direction: output

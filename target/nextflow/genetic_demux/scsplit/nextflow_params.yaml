@@ -1,14 +1,14 @@
 # Input
-# vcf: "path/to/file"
-# bam: "path/to/file"
-# bar: "path/to/file"
+# vcf: "input.vcf"
+# bam: "input.bam"
+# bar: "barcodes.txt"
 tag: "CB"
-# com: "path/to/file"
+# com: "common_snvs.txt"
 # num: 123
 sub: 10
 ems: 30
 # dbl: 123.0
-# vcf_known: "path/to/file"
+# vcf_known: "known_variants.vcf"
 geno: false
 
 # Output

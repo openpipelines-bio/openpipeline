@@ -33,7 +33,7 @@
         "input_h5mu": {
           "type": "string",
           "format": "path",
-          "description": "If a MuData file is provided,",
+          "description": "If a MuData file is provided, the velocity h5ad object will be added to this file.",
           "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "modality": {

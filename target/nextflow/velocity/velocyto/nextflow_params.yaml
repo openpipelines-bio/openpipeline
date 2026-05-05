@@ -1,9 +1,9 @@
 # Arguments
-input: # please fill in - example: "path/to/file"
-transcriptome: # please fill in - example: "path/to/file"
-# barcode: "path/to/file"
+input: # please fill in - example: "input.bam"
+transcriptome: # please fill in - example: "transcriptome.gtf"
+# barcode: "barcodes.txt"
 without_umi: false
-# output: "$id.$key.output"
+# output: "$id.$key.output.loom"
 logic: "Default"
 
 # Nextflow input-output arguments

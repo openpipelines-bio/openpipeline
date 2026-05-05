@@ -21,34 +21,47 @@ meta = {
 model_file = (
     f"{meta['resources_dir']}/annotation_test_data/celltypist_model_Immune_All_Low.pkl"
 )
-celltypist_input_file = (
-    f"{meta['resources_dir']}/annotation_test_data/demo_2000_cells.h5mu"
-)
-# input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+input_file_1 = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+input_file_2 = f"{meta['resources_dir']}/annotation_test_data/demo_2000_cells.h5mu"
+reference_file = f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5mu"
 
 
 def log_normalize(adata):
-    sc.pp.normalize_total(adata, target_sum=1e4)
-    sc.pp.log1p(adata)
+    adata_norm = sc.pp.normalize_total(adata, target_sum=1e4, copy=True)
+    adata_lognorm = sc.pp.log1p(adata_norm, copy=True)
+    adata.layers["log_normalized"] = adata_lognorm.X
+    return adata
+
+
+def calculate_hvg(adata, n_top_genes=1000):
+    adata_hvg = sc.pp.highly_variable_genes(adata, n_top_genes=n_top_genes, copy=True)
+    adata.var["filter_with_hvg"] = adata_hvg.var["highly_variable"]
     return adata
 
 
 @pytest.fixture
 def reference_mdata():
-    mdata = mu.read_h5mu(
-        f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5mu"
-    )
+    mdata = mu.read_h5mu(reference_file)
+    adata = mdata.mod["rna"]  # already has layer "log_normalized" with 10k target sum
+    adata.var["filter_with_hvg"] = adata.var[
+        "highly_variable"
+    ]  # already has highly variable genes calculated
+    return mdata
+
+
+@pytest.fixture
+def input_mdata():
+    mdata = mu.read_h5mu(input_file_1)
     adata = mdata.mod["rna"].copy()
+    adata.layers["counts"] = adata.X.copy()  # store raw counts in a layer
     adata_lognorm = log_normalize(adata)
     mdata.mod["rna"] = adata_lognorm
     return mdata
 
 
 @pytest.fixture
-def input_mdata():
-    mdata = mu.read_h5mu(
-        f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
-    )
+def model_input_mdata():
+    mdata = mu.read_h5mu(input_file_2)
     adata = mdata.mod["rna"].copy()
     adata_lognorm = log_normalize(adata)
     mdata.mod["rna"] = adata_lognorm
@@ -155,15 +168,20 @@ def test_set_params(
     )
 
 
-def test_with_model(run_component, random_h5mu_path):
+def test_with_model(
+    run_component, random_h5mu_path, write_mudata_to_file, model_input_mdata
+):
     output_file = random_h5mu_path()
+    input_file = write_mudata_to_file(model_input_mdata)
 
     run_component(
         [
             "--input",
-            celltypist_input_file,
+            input_file,
             "--model",
             model_file,
+            "--reference_layer",
+            "",
             "--reference_obs_targets",
             "cell_type",
             "--output",
@@ -208,7 +226,7 @@ def test_fail_invalid_input_expression(
                 "--input",
                 input_file,
                 "--input_layer",
-                "log_normalized",
+                "counts",
                 "--reference",
                 reference_file,
                 "--reference_layer",

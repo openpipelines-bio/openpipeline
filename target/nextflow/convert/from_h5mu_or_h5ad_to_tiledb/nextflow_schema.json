@@ -158,7 +158,7 @@
           "type": "string",
           "format": "path",
           "description": "Directory where the TileDB output will be written to.\n",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.tiledb_dir\"`, direction: `output`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.tiledb_dir\"`, direction: `output`, example: `\"path/to/tiledb_dir\"`. ",
           "default": "$id.$key.tiledb_dir"
         }
       }

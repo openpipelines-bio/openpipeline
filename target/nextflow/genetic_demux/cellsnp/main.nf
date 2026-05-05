@@ -3077,6 +3077,9 @@ meta = [
           "type" : "file",
           "name" : "--sam_file",
           "description" : "Indexed sam/bam file(s), comma separated multiple samples. Mode 1a & 2a: one sam/bam file with single cell. Mode 1b & 2b: one or multiple bulk sam/bam files, no barcodes needed, but sample ids and regionsVCF.",
+          "example" : [
+            "input.bam"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3088,6 +3091,9 @@ meta = [
           "type" : "file",
           "name" : "--sam_index_file",
           "description" : "Input SAM/BAM Index file, problem with samFileList.",
+          "example" : [
+            "input.bai"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3099,6 +3105,9 @@ meta = [
           "type" : "file",
           "name" : "--sam_fileList",
           "description" : "A list file containing bam files, each per line, for Mode 1b & 2b.",
+          "example" : [
+            "file_list.txt"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3110,6 +3119,9 @@ meta = [
           "type" : "file",
           "name" : "--regions_vcf",
           "description" : "A vcf file listing all candidate SNPs, for fetch each variants. If None, pileup the genome. Needed for bulk samples.",
+          "example" : [
+            "regions.vcf"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3121,6 +3133,9 @@ meta = [
           "type" : "file",
           "name" : "--targets_vcf",
           "description" : "Similar as --regions_vcf, but the next position is accessed by streaming rather than indexing/jumping (like -T in samtools/bcftools mpileup).",
+          "example" : [
+            "targets.vcf"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3132,6 +3147,9 @@ meta = [
           "type" : "file",
           "name" : "--barcode_file",
           "description" : "A plain file listing all effective cell barcode.",
+          "example" : [
+            "barcodes.tsv"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3143,6 +3161,9 @@ meta = [
           "type" : "file",
           "name" : "--sample_list",
           "description" : "A list file containing sample IDs, each per line.",
+          "example" : [
+            "samples.txt"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3478,7 +3499,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/cellsnp",
     "viash_version" : "0.9.7",
-    "git_commit" : "c2dfa3972e63a2639026d597b6414ca7308377d5",
+    "git_commit" : "07a1fdf925a279b8b2b56eb07f6d1335146c6767",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

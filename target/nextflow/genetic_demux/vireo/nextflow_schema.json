@@ -27,7 +27,7 @@
           "type": "string",
           "format": "path",
           "description": "The cell genotype file in VCF format or cellSNP folder with sparse matrices.",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"cell_data.vcf\"`. "
         },
         "n_donor": {
           "type": "integer",
@@ -39,7 +39,7 @@
           "type": "string",
           "format": "path",
           "description": "The cell genotype files in vartrix outputs.",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"path/to/vatrix_outputs\"`. "
         },
         "donor_file": {
           "type": "string",

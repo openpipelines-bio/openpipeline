@@ -8,14 +8,14 @@ reference: # please fill in - example: "/path/to/reference"
 
 # Genome Parameters
 # genomeLoad: "NoSharedMemory"
-# genomeFastaFiles: ["path/to/file"]
+# genomeFastaFiles: ["genome.fasta"]
 # genomeFileSizes: [0]
 # genomeTransformOutput: ["foo"]
 # genomeChrSetMitochondrial: ["chrM", "M", "MT"]
 
 # Splice Junctions Database
 # sjdbFileChrStartEnd: ["foo"]
-# sjdbGTFfile: "path/to/file"
+# sjdbGTFfile: "annotation.gtf"
 # sjdbGTFchrPrefix: "foo"
 # sjdbGTFfeatureExon: "exon"
 # sjdbGTFtagExonParentTranscript: "transcript_id"
@@ -32,7 +32,7 @@ reference: # please fill in - example: "/path/to/reference"
 # Read Parameters
 # readFilesType: "Fastx"
 # readFilesSAMattrKeep: ["All"]
-# readFilesManifest: "path/to/file"
+# readFilesManifest: "manifest.txt"
 # readFilesPrefix: "foo"
 # readFilesCommand: ["foo"]
 # readMapNumber: -1

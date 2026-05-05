@@ -469,9 +469,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_star_reference"
-LABEL org.opencontainers.image.created="2026-04-28T03:49:26Z"
+LABEL org.opencontainers.image.created="2026-05-05T03:46:34Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c2dfa3972e63a2639026d597b6414ca7308377d5"
+LABEL org.opencontainers.image.revision="07a1fdf925a279b8b2b56eb07f6d1335146c6767"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -602,6 +602,7 @@ function ViashHelp {
   echo ""
   echo "    --sjdbGTFfile, --transcriptome_gtf"
   echo "        type: file, file must exist"
+  echo "        example: transcriptome.gtf"
   echo "        Specifies the path to the file with annotated transcripts in the"
   echo "        standard GTF"
   echo "        format. STAR will extract splice junctions from this file and use them"

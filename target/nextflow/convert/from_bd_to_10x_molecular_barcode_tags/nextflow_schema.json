@@ -34,8 +34,8 @@
           "type": "string",
           "format": "path",
           "description": "Output alignment file.",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.sam\"`, direction: `output`, example: `\"output.sam\"`. ",
-          "default": "$id.$key.output.sam"
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.bam\"`, direction: `output`, example: `\"output.bam\"`. ",
+          "default": "$id.$key.output.bam"
         },
         "bam": {
           "type": "boolean",

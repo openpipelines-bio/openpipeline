@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_bdrhap_reference"
-LABEL org.opencontainers.image.created="2026-04-28T03:49:26Z"
+LABEL org.opencontainers.image.created="2026-05-05T03:46:33Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c2dfa3972e63a2639026d597b6414ca7308377d5"
+LABEL org.opencontainers.image.revision="07a1fdf925a279b8b2b56eb07f6d1335146c6767"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -609,6 +609,7 @@ function ViashHelp {
   echo ""
   echo "    --extra_sequences"
   echo "        type: file, multiple values allowed, file must exist"
+  echo "        example: extra_sequence_1.fa.gz;extra_sequence_2.fa.gz"
   echo "        File path to additional sequences in FASTA format to use when building"
   echo "        the STAR index. (e.g. transgenes or CRISPR guide barcodes)."
   echo "        GTF lines for these sequences will be automatically generated and"

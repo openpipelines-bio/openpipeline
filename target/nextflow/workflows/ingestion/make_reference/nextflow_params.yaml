@@ -14,7 +14,7 @@ bdrhap_wta_only_index: false
 # bdrhap_extra_star_params: "--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11"
 
 # Cellranger ARC options
-# motifs_file: "path/to/file"
+# motifs_file: "motifs.txt"
 # non_nuclear_contigs: ["foo"]
 
 # Outputs

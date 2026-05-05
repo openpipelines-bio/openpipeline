@@ -39,7 +39,8 @@
         "input_layer": {
           "type": "string",
           "description": "The layer in the input data containing log normalized counts to be used for cell type annotation if .X is not to be used.",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "Type: `string`, multiple: `False`, default: `\"log_normalized\"`. ",
+          "default": "log_normalized"
         },
         "input_var_gene_names": {
           "type": "string",
@@ -195,7 +196,8 @@
         "reference_var_input": {
           "type": "string",
           "description": ".var column containing a boolean mask corresponding to genes to be used for marker selection",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "Type: `string`, multiple: `False`, default: `\"filter_with_hvg\"`. ",
+          "default": "filter_with_hvg"
         }
       }
     },

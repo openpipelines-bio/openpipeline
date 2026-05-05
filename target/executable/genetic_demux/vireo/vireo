@@ -453,9 +453,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux vireo"
-LABEL org.opencontainers.image.created="2026-04-28T03:49:28Z"
+LABEL org.opencontainers.image.created="2026-05-05T03:46:36Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c2dfa3972e63a2639026d597b6414ca7308377d5"
+LABEL org.opencontainers.image.revision="07a1fdf925a279b8b2b56eb07f6d1335146c6767"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -581,6 +581,7 @@ function ViashHelp {
   echo "Input:"
   echo "    --cell_data"
   echo "        type: file, file must exist"
+  echo "        example: cell_data.vcf"
   echo "        The cell genotype file in VCF format or cellSNP folder with sparse"
   echo "        matrices."
   echo ""
@@ -592,6 +593,7 @@ function ViashHelp {
   echo ""
   echo "    --vartrix_data"
   echo "        type: file, file must exist"
+  echo "        example: path/to/vatrix_outputs"
   echo "        The cell genotype files in vartrix outputs."
   echo ""
   echo "    --donor_file"

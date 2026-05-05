@@ -3099,6 +3099,9 @@ meta = [
             "--sjdbGTFfile"
           ],
           "description" : "Specifies the path to the file with annotated transcripts in the standard GTF\nformat. STAR will extract splice junctions from this file and use them to greatly improve\naccuracy of the mapping. Corresponds to the --sjdbGTFfile argument in the STAR command.\n",
+          "example" : [
+            "transcriptome.gtf"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3295,7 +3298,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_star_reference",
     "viash_version" : "0.9.7",
-    "git_commit" : "c2dfa3972e63a2639026d597b6414ca7308377d5",
+    "git_commit" : "07a1fdf925a279b8b2b56eb07f6d1335146c6767",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -26,7 +26,7 @@
         "output": {
           "type": "string",
           "format": "path",
-          "description": "The query data in .h5mu format with predicted labels predicted from the classifier trained on the reference.",
+          "description": "The annotated output .h5mu file.",
           "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         },
@@ -97,7 +97,8 @@
         "input_obs_batch_label": {
           "type": "string",
           "description": "The .obs field in the input (query) dataset containing the batch labels.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"sample\"`. "
+          "help_text": "Type: `string`, multiple: `False`, required, default: `\"sample_id\"`, example: `\"sample\"`. ",
+          "default": "sample_id"
         },
         "input_obs_size_factor": {
           "type": "string",
@@ -153,7 +154,8 @@
         "reference_obs_batch_label": {
           "type": "string",
           "description": "The .obs field in the reference dataset containing the batch labels.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"sample\"`. "
+          "help_text": "Type: `string`, multiple: `False`, required, default: `\"sample_id\"`, example: `\"sample\"`. ",
+          "default": "sample_id"
         },
         "reference_obs_size_factor": {
           "type": "string",
@@ -185,7 +187,8 @@
         "reference_var_hvg": {
           "type": "string",
           "description": ".var column containing highly variable genes",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "Type: `string`, multiple: `False`, default: `\"filter_with_hvg\"`. ",
+          "default": "filter_with_hvg"
         },
         "reference_var_gene_names": {
           "type": "string",

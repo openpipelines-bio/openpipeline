@@ -1,11 +1,11 @@
 # Input
-# sam_file: "path/to/file"
-# sam_index_file: "path/to/file"
-# sam_fileList: "path/to/file"
-# regions_vcf: "path/to/file"
-# targets_vcf: "path/to/file"
-# barcode_file: "path/to/file"
-# sample_list: "path/to/file"
+# sam_file: "input.bam"
+# sam_index_file: "input.bai"
+# sam_fileList: "file_list.txt"
+# regions_vcf: "regions.vcf"
+# targets_vcf: "targets.vcf"
+# barcode_file: "barcodes.tsv"
+# sample_list: "samples.txt"
 # sample_ids: "foo"
 genotype: false
 gzip: false

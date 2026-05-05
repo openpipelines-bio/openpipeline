@@ -18,9 +18,9 @@
 
 * `transform/clear_slots`: New component that can be used to remove all items from slots of a MuData object (PR #1171).
 
-* `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: add `--intersect_obs` option to remove observations that are not present in all processed modalities, so each modality shares the same set of cells (PR #1173).
+* `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: add `--intersect_obs` option to remove observations that are not present in all processed modalities, so each modality shares the same set of cells (PR #1173, 1175).
 
-* `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169)
+* `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169, PR #1177)
 
 ## MAJOR CHANGES
 
@@ -38,6 +38,12 @@
 
 * Bump viash to 0.9.7 (PR #1145)
 
+* `annotate/celltypist` and `workflows/annotation/celltypist`: set `--input_layer` default to `log_normalized` and `--reference_var_input` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
+
+* `annotate/singler`: set `--input_layer` default to `log_normalized` and `--reference_var_input` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
+
+* `workflows/annotation/scanvi_scarches`: set `--input_obs_batch_label` and `--reference_obs_batch_label` defaults to `sample_id` and `--reference_var_hvg` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
+
 * `cluster/leiden`: added `flavor`, `n_iterations` and `seed` arguments (PR #1132)
 
 * `cluster/leiden`: avoid creating unnecessary copies of the output data (PR #1132).
@@ -45,6 +51,10 @@
 * `workflows/multiomics/process_samples`: refactored to use a shared `process_singlesample_base` subworkflow, which is also used by the new `process_singlesample` workflow to avoid code duplication (PR #1147).
 
 * Bump anndata to `0.12.11` (PR #1174).
+
+* Add missing `example` fields to several component and workflow configurations (PR #1067).
+
+* Testing: bump `viashpy` to 0.10.0 (PR #1178).
 
 ## BUG FIXES
 

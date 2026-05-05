@@ -460,9 +460,9 @@ RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TR
 
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux freemuxlet"
-LABEL org.opencontainers.image.created="2026-04-28T03:49:23Z"
+LABEL org.opencontainers.image.created="2026-05-05T03:46:31Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c2dfa3972e63a2639026d597b6414ca7308377d5"
+LABEL org.opencontainers.image.revision="07a1fdf925a279b8b2b56eb07f6d1335146c6767"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -596,6 +596,7 @@ function ViashHelp {
   echo ""
   echo "    --init_cluster"
   echo "        type: file, file must exist"
+  echo "        example: init_cluster.txt"
   echo "        Input file containing the initial cluster information."
   echo ""
   echo "    --nsample"

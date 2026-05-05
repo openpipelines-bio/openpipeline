@@ -28,7 +28,7 @@
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "modality": {
           "type": "string",

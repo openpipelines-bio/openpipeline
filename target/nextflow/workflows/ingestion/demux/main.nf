@@ -3189,7 +3189,7 @@ meta = [
           "alternatives" : [
             "-i"
           ],
-          "description" : "Input run directory",
+          "description" : "Directory containing BCL files",
           "example" : [
             "bcl_dir"
           ],
@@ -3208,7 +3208,7 @@ meta = [
           ],
           "description" : "Pointer to the sample sheet",
           "example" : [
-            "bcl_dir"
+            "SampleSheet.csv"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3448,7 +3448,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/demux",
     "viash_version" : "0.9.7",
-    "git_commit" : "c2dfa3972e63a2639026d597b6414ca7308377d5",
+    "git_commit" : "07a1fdf925a279b8b2b56eb07f6d1335146c6767",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

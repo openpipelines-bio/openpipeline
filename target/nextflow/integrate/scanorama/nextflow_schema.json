@@ -28,7 +28,7 @@
           "format": "path",
           "exists": true,
           "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "modality": {
           "type": "string",
@@ -40,8 +40,8 @@
           "type": "string",
           "format": "path",
           "description": "Output .h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"output.h5ad\"`, direction: `output`. ",
-          "default": "output.h5ad"
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
         },
         "obs_batch": {
           "type": "string",

@@ -3197,6 +3197,9 @@ meta = [
           "type" : "file",
           "name" : "--genomeFastaFiles",
           "description" : "path(s) to the fasta files with the genome sequences, separated by spaces. These files should be plain text FASTA files, they *cannot* be zipped.\n\nRequired for the genome generation (--runMode genomeGenerate). Can also be used in the mapping (--runMode alignReads) to add extra (new) sequences to the genome (e.g. spike-ins).",
+          "example" : [
+            "genome.fasta"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3257,6 +3260,9 @@ meta = [
           "type" : "file",
           "name" : "--sjdbGTFfile",
           "description" : "path to the GTF file with annotations",
+          "example" : [
+            "annotation.gtf"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3417,6 +3423,9 @@ meta = [
           "type" : "file",
           "name" : "--readFilesManifest",
           "description" : "path to the \\"manifest\\" file with the names of read files. The manifest file should contain 3 tab-separated columns:\n\npaired-end reads: read1_file_name $tab$ read2_file_name $tab$ read_group_line.\nsingle-end reads: read1_file_name $tab$ -               $tab$ read_group_line.\nSpaces, but not tabs are allowed in file names.\nIf read_group_line does not start with ID:, it can only contain one ID field, and ID: will be added to it.\nIf read_group_line starts with ID:, it can contain several fields separated by $tab$, and all fields will be be copied verbatim into SAM @RG header line.",
+          "example" : [
+            "manifest.txt"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -4755,13 +4764,13 @@ meta = [
         {
           "type" : "integer",
           "name" : "--winAnchorMultimapNmax",
-          "description" : "max number of loci anchors are allowed to map to",
+          "description" : "''' + '''max number of loci anchors are allowed to map to",
           "example" : [
             50
           ],
           "required" : false,
           "direction" : "input",
-          "multiple" : false''' + ''',
+          "multiple" : false,
           "multiple_sep" : ";"
         },
         {
@@ -5507,7 +5516,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_align_v273a",
     "viash_version" : "0.9.7",
-    "git_commit" : "c2dfa3972e63a2639026d597b6414ca7308377d5",
+    "git_commit" : "07a1fdf925a279b8b2b56eb07f6d1335146c6767",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

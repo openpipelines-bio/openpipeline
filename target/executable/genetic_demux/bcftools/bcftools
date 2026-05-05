@@ -455,9 +455,9 @@ RUN apt-get update && \
 RUN wget https://github.com/samtools/bcftools/releases/download/1.16/bcftools-1.16.tar.bz2 -O bcftools.tar.bz2 && tar -xjvf bcftools.tar.bz2 && cd bcftools-1.16 && make prefix=/usr/local install
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux bcftools"
-LABEL org.opencontainers.image.created="2026-04-28T03:49:27Z"
+LABEL org.opencontainers.image.created="2026-05-05T03:46:35Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c2dfa3972e63a2639026d597b6414ca7308377d5"
+LABEL org.opencontainers.image.revision="07a1fdf925a279b8b2b56eb07f6d1335146c6767"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -582,6 +582,7 @@ function ViashHelp {
   echo "Arguments:"
   echo "    --vcf"
   echo "        type: file, required parameter, multiple values allowed, file must exist"
+  echo "        example: input_1.vcf;input_2.vcf"
   echo "        VCF files, must have the same sample columns appearing in the same"
   echo "        order."
   echo ""

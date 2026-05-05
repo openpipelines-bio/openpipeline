@@ -37,7 +37,7 @@
           "type": "string",
           "format": "path",
           "description": "Specifies the path to the file with annotated transcripts in the standard GTF\nformat",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"transcriptome.gtf\"`. "
         },
         "output": {
           "type": "string",

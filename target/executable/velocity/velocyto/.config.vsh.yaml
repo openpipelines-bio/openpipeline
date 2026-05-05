@@ -28,6 +28,8 @@ argument_groups:
     - "-i"
     description: "Path to BAM file"
     info: null
+    example:
+    - "input.bam"
     must_exist: true
     create_parent: true
     required: true
@@ -40,6 +42,8 @@ argument_groups:
     - "-t"
     description: "Path to GTF file"
     info: null
+    example:
+    - "transcriptome.gtf"
     must_exist: true
     create_parent: true
     required: true
@@ -54,6 +58,8 @@ argument_groups:
       \ all the cell barcodes will be included.\nCell barcodes should be specified\
       \ in the bcfile as the 'CB' tag for each read\n"
     info: null
+    example:
+    - "barcodes.txt"
     must_exist: true
     create_parent: true
     required: false
@@ -71,6 +77,8 @@ argument_groups:
     - "-o"
     description: "Velocyto loom file"
     info: null
+    example:
+    - "output.loom"
     must_exist: true
     create_parent: true
     required: true
@@ -232,7 +240,7 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.8.0"
+    - "viashpy==0.10.0"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -243,7 +251,7 @@ build_info:
   output: "target/executable/velocity/velocyto"
   executable: "target/executable/velocity/velocyto/velocyto"
   viash_version: "0.9.7"
-  git_commit: "c2dfa3972e63a2639026d597b6414ca7308377d5"
+  git_commit: "07a1fdf925a279b8b2b56eb07f6d1335146c6767"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

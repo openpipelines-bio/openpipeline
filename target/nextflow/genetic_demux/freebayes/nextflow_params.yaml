@@ -1,17 +1,17 @@
 # Input
-# bam: "path/to/file"
-# bam_list: "path/to/file"
+# bam: "input.bam"
+# bam_list: "bam_list.txt"
 stdin: false
-# fasta_reference: "path/to/file"
-# fasta_reference_index: "path/to/file"
-# targets: "path/to/file"
+# fasta_reference: "reference.fasta"
+# fasta_reference_index: "file.fai"
+# targets: "targets.bed"
 # region: "foo"
-# samples: "path/to/file"
-# populations: "path/to/file"
+# samples: "samples.txt"
+# populations: "populations.txt"
 # cnv_map: "path/to/file"
 gvcf: false
 # gvcf_chunk: 123
-# variant_input: "path/to/file"
+# variant_input: "variant_input.vcf"
 only_use_input_alleles: false
 # haplotype_basis_alleles: "path/to/file"
 report_all_haplotype_alleles: false
@@ -55,11 +55,11 @@ no_population_priors: false
 hwe_priors_off: false
 binomial_obs_priors_off: false
 allele_balance_priors_off: false
-# observation_bias: "path/to/file"
+# observation_bias: "observation_bias.txt"
 # base_quality_cap: 123
 prob_contamination: 1.0E-8
 legacy_gls: false
-# contamination_estimates: "path/to/file"
+# contamination_estimates: "contamination_estimates.txt"
 report_genotype_likelihood_max: false
 genotyping_max_iterations: 1000
 genotyping_max_banddepth: 6

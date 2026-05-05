@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "conversion",
-  "description": "A pipeline to convert different file formats to .h5mu.",
+  "description": "A pipeline to convert .mtx, .h5 or .h5ad file formats to .h5mu.",
   "type": "object",
   "$defs": {
     "Dataset input": {
@@ -32,8 +32,8 @@
           "type": "string",
           "format": "path",
           "exists": true,
-          "description": "Path to the sample.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "description": "Path to the sample to be converted.\nPossible format options include:\n  - .h5ad\n  - .h5\n  - .mtx\n",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5ad\"`. "
         },
         "input_type": {
           "type": "string",

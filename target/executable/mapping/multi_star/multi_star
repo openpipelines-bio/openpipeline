@@ -473,9 +473,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping multi_star"
-LABEL org.opencontainers.image.created="2026-04-28T03:49:30Z"
+LABEL org.opencontainers.image.created="2026-05-05T03:46:37Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c2dfa3972e63a2639026d597b6414ca7308377d5"
+LABEL org.opencontainers.image.revision="07a1fdf925a279b8b2b56eb07f6d1335146c6767"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -660,6 +660,7 @@ function ViashHelp {
   echo "Genome Parameters:"
   echo "    --genomeFastaFiles"
   echo "        type: file, multiple values allowed, file must exist"
+  echo "        example: path/to/genome.fasta"
   echo "        path(s) to the fasta files with the genome sequences, separated by"
   echo "        spaces. These files should be plain text FASTA files, they *cannot* be"
   echo "        zipped."
@@ -676,6 +677,7 @@ function ViashHelp {
   echo ""
   echo "    --sjdbGTFfile"
   echo "        type: file, file must exist"
+  echo "        example: annotation.gtf"
   echo "        path to the GTF file with annotations"
   echo ""
   echo "    --sjdbGTFchrPrefix"
@@ -757,6 +759,7 @@ function ViashHelp {
   echo ""
   echo "    --readFilesManifest"
   echo "        type: file, file must exist"
+  echo "        example: manifest.txt"
   echo "        path to the \"manifest\" file with the names of read files. The manifest"
   echo "        file should contain 3 tab-separated columns:"
   echo "        paired-end reads: read1_file_name \$tab\$ read2_file_name \$tab\$"

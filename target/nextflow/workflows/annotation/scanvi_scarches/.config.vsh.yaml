@@ -77,6 +77,8 @@ argument_groups:
     info: null
     example:
     - "sample"
+    default:
+    - "sample_id"
     required: true
     direction: "input"
     multiple: false
@@ -167,6 +169,8 @@ argument_groups:
     info: null
     example:
     - "sample"
+    default:
+    - "sample_id"
     required: true
     direction: "input"
     multiple: false
@@ -223,6 +227,8 @@ argument_groups:
     description: ".var column containing highly variable genes. If not provided, genes\
       \ will not be subset."
     info: null
+    default:
+    - "filter_with_hvg"
     required: false
     direction: "input"
     multiple: false
@@ -375,8 +381,7 @@ argument_groups:
   arguments:
   - type: "file"
     name: "--output"
-    description: "The query data in .h5mu format with predicted labels predicted from\
-      \ the classifier trained on the reference."
+    description: "The annotated output .h5mu file."
     info: null
     example:
     - "output.h5mu"
@@ -555,7 +560,7 @@ build_info:
   output: "target/nextflow/workflows/annotation/scanvi_scarches"
   executable: "target/nextflow/workflows/annotation/scanvi_scarches/main.nf"
   viash_version: "0.9.7"
-  git_commit: "c2dfa3972e63a2639026d597b6414ca7308377d5"
+  git_commit: "07a1fdf925a279b8b2b56eb07f6d1335146c6767"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/integrate/scvi"

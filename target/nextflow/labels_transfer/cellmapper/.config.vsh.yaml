@@ -47,6 +47,8 @@ argument_groups:
                   \ the `.X` slot will be used instead.\nMake sure that embedding\
                   \ was obtained in the same way as the reference embedding (e.g.\
                   \ by the same model or preprocessing).\n"
+    example:
+    - "input.h5mu"
     must_exist: true
     create_parent: true
     required: true
@@ -391,7 +393,7 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.8.0"
+    - "viashpy==0.10.0"
     github:
     - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
     upgrade: true
@@ -404,7 +406,7 @@ build_info:
   output: "target/nextflow/labels_transfer/cellmapper"
   executable: "target/nextflow/labels_transfer/cellmapper/main.nf"
   viash_version: "0.9.7"
-  git_commit: "c2dfa3972e63a2639026d597b6414ca7308377d5"
+  git_commit: "07a1fdf925a279b8b2b56eb07f6d1335146c6767"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

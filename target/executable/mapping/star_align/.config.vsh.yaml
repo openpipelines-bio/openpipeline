@@ -124,6 +124,8 @@ argument_groups:
       \ Can also be used in the mapping (--runMode alignReads) to add extra (new)\
       \ sequences to the genome (e.g. spike-ins)."
     info: null
+    example:
+    - "genome.fasta"
     must_exist: true
     create_parent: true
     required: false
@@ -180,6 +182,8 @@ argument_groups:
     name: "--sjdbGTFfile"
     description: "path to the GTF file with annotations"
     info: null
+    example:
+    - "annotation.gtf"
     must_exist: true
     create_parent: true
     required: false
@@ -331,6 +335,8 @@ argument_groups:
       \ starts with ID:, it can contain several fields separated by $tab$, and all\
       \ fields will be be copied verbatim into SAM @RG header line."
     info: null
+    example:
+    - "manifest.txt"
     must_exist: true
     create_parent: true
     required: false
@@ -2368,7 +2374,7 @@ build_info:
   output: "target/executable/mapping/star_align"
   executable: "target/executable/mapping/star_align/star_align"
   viash_version: "0.9.7"
-  git_commit: "c2dfa3972e63a2639026d597b6414ca7308377d5"
+  git_commit: "07a1fdf925a279b8b2b56eb07f6d1335146c6767"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

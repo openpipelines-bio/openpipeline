@@ -3115,9 +3115,9 @@ meta = [
           "alternatives" : [
             "-i"
           ],
-          "description" : "Path to the sample.",
+          "description" : "Path to the sample to be converted.\nPossible format options include:\n  - .h5ad\n  - .h5\n  - .mtx\n",
           "example" : [
-            "input.h5mu"
+            "input.h5ad"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3196,7 +3196,7 @@ meta = [
       "dest" : "nextflow_labels.config"
     }
   ],
-  "description" : "A pipeline to convert different file formats to .h5mu.",
+  "description" : "A pipeline to convert .mtx, .h5 or .h5ad file formats to .h5mu.",
   "test_resources" : [
     {
       "type" : "nextflow_script",
@@ -3332,7 +3332,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/conversion",
     "viash_version" : "0.9.7",
-    "git_commit" : "c2dfa3972e63a2639026d597b6414ca7308377d5",
+    "git_commit" : "07a1fdf925a279b8b2b56eb07f6d1335146c6767",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

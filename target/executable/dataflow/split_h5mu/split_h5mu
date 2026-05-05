@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow split_h5mu"
-LABEL org.opencontainers.image.created="2026-04-28T03:49:23Z"
+LABEL org.opencontainers.image.created="2026-05-05T03:46:30Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c2dfa3972e63a2639026d597b6414ca7308377d5"
+LABEL org.opencontainers.image.revision="07a1fdf925a279b8b2b56eb07f6d1335146c6767"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -586,6 +586,7 @@ function ViashHelp {
   echo "Input & specifications:"
   echo "    --input"
   echo "        type: file, required parameter, file must exist"
+  echo "        example: input.h5mu"
   echo "        Path to a single .h5mu file."
   echo ""
   echo "    --modality"

@@ -3077,6 +3077,9 @@ meta = [
           "type" : "file",
           "name" : "--vcf",
           "description" : "VCF from mixed BAM",
+          "example" : [
+            "input.vcf"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3088,6 +3091,9 @@ meta = [
           "type" : "file",
           "name" : "--bam",
           "description" : "mixed sample BAM",
+          "example" : [
+            "input.bam"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3099,6 +3105,9 @@ meta = [
           "type" : "file",
           "name" : "--bar",
           "description" : "barcodes whitelist",
+          "example" : [
+            "barcodes.txt"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3122,6 +3131,9 @@ meta = [
           "type" : "file",
           "name" : "--com",
           "description" : "common SNVs",
+          "example" : [
+            "common_snvs.txt"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3175,6 +3187,9 @@ meta = [
           "type" : "file",
           "name" : "--vcf_known",
           "description" : "known individual genotypes to limit distinguishing variants to available variants, so that users do not need to redo genotyping on selected variants, otherwise any variants could be selected as distinguishing variants.",
+          "example" : [
+            "known_variants.vcf"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3409,7 +3424,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/scsplit",
     "viash_version" : "0.9.7",
-    "git_commit" : "c2dfa3972e63a2639026d597b6414ca7308377d5",
+    "git_commit" : "07a1fdf925a279b8b2b56eb07f6d1335146c6767",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

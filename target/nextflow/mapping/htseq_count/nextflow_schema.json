@@ -174,8 +174,8 @@
           },
           "format": "path",
           "description": "Write out all SAM alignment records into SAM/BAM files (one per input file needed), \nannotating each line with its feature assignment (as an optional field with tag 'XF')",
-          "help_text": "Type: `file`, multiple: `True`, default: `\"$id.$key.output_sam_*.BAM\"`, direction: `output`, example: `[\"mysample1_out.BAM\";\"mysample2_out.BAM\"]`. ",
-          "default": "$id.$key.output_sam_*.BAM"
+          "help_text": "Type: `file`, multiple: `True`, default: `\"$id.$key.output_sam_*.SAM\"`, direction: `output`, example: `[\"mysample1_out.SAM\";\"mysample2_out.SAM\"]`. ",
+          "default": "$id.$key.output_sam_*.SAM"
         },
         "output_sam_format": {
           "type": "string",

@@ -3216,7 +3216,10 @@ meta = [
         {
           "type" : "string",
           "name" : "--reference_var_input",
-          "description" : ".var column containing highly variable genes. By default, do not subset genes.\n",
+          "description" : ".var column containing highly variable genes. If not provided, genes will not be subset.\n",
+          "default" : [
+            "filter_with_hvg"
+          ],
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3527,7 +3530,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/celltypist",
     "viash_version" : "0.9.7",
-    "git_commit" : "c2dfa3972e63a2639026d597b6414ca7308377d5",
+    "git_commit" : "07a1fdf925a279b8b2b56eb07f6d1335146c6767",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

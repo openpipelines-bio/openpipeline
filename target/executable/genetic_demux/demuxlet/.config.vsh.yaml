@@ -22,6 +22,8 @@ argument_groups:
     name: "--sam"
     description: "Input SAM/BAM/CRAM file. Must be sorted by coordinates and indexed."
     info: null
+    example:
+    - "input.bam"
     must_exist: true
     create_parent: true
     required: false
@@ -64,6 +66,8 @@ argument_groups:
     description: "Input VCF/BCF file, containing the individual genotypes (GT), posterior\
       \ probability (GP), or genotype likelihood (PL)."
     info: null
+    example:
+    - "input.vcf"
     must_exist: true
     create_parent: true
     required: false
@@ -452,7 +456,7 @@ build_info:
   output: "target/executable/genetic_demux/demuxlet"
   executable: "target/executable/genetic_demux/demuxlet/demuxlet"
   viash_version: "0.9.7"
-  git_commit: "c2dfa3972e63a2639026d597b6414ca7308377d5"
+  git_commit: "07a1fdf925a279b8b2b56eb07f6d1335146c6767"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

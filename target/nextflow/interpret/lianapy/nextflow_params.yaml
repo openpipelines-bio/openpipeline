@@ -1,6 +1,6 @@
 # Arguments
-input: # please fill in - example: "path/to/file"
-# output: "$id.$key.output"
+input: # please fill in - example: "input.h5mu"
+# output: "$id.$key.output.h5mu"
 modality: "rna"
 # layer: "foo"
 de_method: "t-test"

@@ -3153,6 +3153,9 @@ meta = [
           "type" : "file",
           "name" : "--peaks",
           "description" : "Override peak caller: specify peaks to use in downstream analyses from supplied 3-column BED file. The supplied peaks file must be sorted by position and not contain overlapping peaks; comment lines beginning with # are allowed",
+          "example" : [
+            "peaks.bed"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3351,7 +3354,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_atac_count",
     "viash_version" : "0.9.7",
-    "git_commit" : "c2dfa3972e63a2639026d597b6414ca7308377d5",
+    "git_commit" : "07a1fdf925a279b8b2b56eb07f6d1335146c6767",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

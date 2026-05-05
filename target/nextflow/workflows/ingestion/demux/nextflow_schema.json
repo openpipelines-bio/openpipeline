@@ -32,7 +32,7 @@
           "type": "string",
           "format": "path",
           "exists": true,
-          "description": "Input run directory",
+          "description": "Directory containing BCL files",
           "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"bcl_dir\"`. "
         },
         "sample_sheet": {
@@ -40,7 +40,7 @@
           "format": "path",
           "exists": true,
           "description": "Pointer to the sample sheet",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"bcl_dir\"`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"SampleSheet.csv\"`. "
         },
         "demultiplexer": {
           "type": "string",

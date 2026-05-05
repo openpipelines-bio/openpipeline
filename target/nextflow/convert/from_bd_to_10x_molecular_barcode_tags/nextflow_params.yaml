@@ -1,6 +1,6 @@
 # Arguments
 input: # please fill in - example: "input.bam"
-# output: "$id.$key.output.sam"
+# output: "$id.$key.output.bam"
 bam: false
 # threads: 123
 

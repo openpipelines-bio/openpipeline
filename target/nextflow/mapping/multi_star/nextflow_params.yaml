@@ -15,11 +15,11 @@ min_success_rate: 0.5
 # runRNGseed: 777
 
 # Genome Parameters
-# genomeFastaFiles: ["path/to/file"]
+# genomeFastaFiles: ["path/to/genome.fasta"]
 
 # Splice Junctions Database
 # sjdbFileChrStartEnd: ["foo"]
-# sjdbGTFfile: "path/to/file"
+# sjdbGTFfile: "annotation.gtf"
 # sjdbGTFchrPrefix: "foo"
 # sjdbGTFfeatureExon: "exon"
 # sjdbGTFtagExonParentTranscript: "transcript_id"
@@ -36,7 +36,7 @@ min_success_rate: 0.5
 # Read Parameters
 # readFilesType: "Fastx"
 # readFilesSAMattrKeep: ["All"]
-# readFilesManifest: "path/to/file"
+# readFilesManifest: "manifest.txt"
 # readFilesPrefix: "foo"
 # readFilesCommand: ["foo"]
 # readMapNumber: -1

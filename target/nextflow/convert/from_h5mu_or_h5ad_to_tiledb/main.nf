@@ -3317,6 +3317,9 @@ meta = [
           "type" : "file",
           "name" : "--tiledb_dir",
           "description" : "Directory where the TileDB output will be written to.\n",
+          "example" : [
+            "path/to/tiledb_dir"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3485,7 +3488,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "viashpy==0.8.0"
+            "viashpy==0.10.0"
           ],
           "github" : [
             "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
@@ -3496,7 +3499,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "viashpy==0.8.0"
+            "viashpy==0.10.0"
           ],
           "upgrade" : true
         }
@@ -3509,7 +3512,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_or_h5ad_to_tiledb",
     "viash_version" : "0.9.7",
-    "git_commit" : "c2dfa3972e63a2639026d597b6414ca7308377d5",
+    "git_commit" : "07a1fdf925a279b8b2b56eb07f6d1335146c6767",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

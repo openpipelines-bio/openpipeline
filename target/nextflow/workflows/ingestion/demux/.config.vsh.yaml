@@ -90,7 +90,7 @@ argument_groups:
     name: "--input"
     alternatives:
     - "-i"
-    description: "Input run directory"
+    description: "Directory containing BCL files"
     info: null
     example:
     - "bcl_dir"
@@ -107,7 +107,7 @@ argument_groups:
     description: "Pointer to the sample sheet"
     info: null
     example:
-    - "bcl_dir"
+    - "SampleSheet.csv"
     must_exist: true
     create_parent: true
     required: true
@@ -290,7 +290,7 @@ build_info:
   output: "target/nextflow/workflows/ingestion/demux"
   executable: "target/nextflow/workflows/ingestion/demux/main.nf"
   viash_version: "0.9.7"
-  git_commit: "c2dfa3972e63a2639026d597b6414ca7308377d5"
+  git_commit: "07a1fdf925a279b8b2b56eb07f6d1335146c6767"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/demux/cellranger_mkfastq"

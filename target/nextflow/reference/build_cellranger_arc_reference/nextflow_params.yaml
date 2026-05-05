@@ -1,7 +1,7 @@
 # Arguments
 genome_fasta: # please fill in - example: "genome_sequence.fa.gz"
 annotation_gtf: # please fill in - example: "annotation.gtf.gz"
-# motifs_file: "JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified"
+# motifs_file: "motifs.txt"
 non_nuclear_contigs: ["chrM"]
 # output: "$id.$key.output"
 genome: # please fill in - example: "output"

@@ -28,7 +28,7 @@
           "format": "path",
           "exists": true,
           "description": "Path to a single .h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"sample_path\"`, direction: `input`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"sample_path\"`, direction: `input`, example: `\"input.h5mu\"`. ",
           "default": "sample_path"
         },
         "output": {

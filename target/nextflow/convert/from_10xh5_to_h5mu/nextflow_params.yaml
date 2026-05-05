@@ -1,6 +1,6 @@
 # Inputs
 input: # please fill in - example: "raw_feature_bc_matrix.h5"
-# input_metrics_summary: "metrics_cellranger.h5"
+# input_metrics_summary: "metrics_cellranger.csv"
 
 # Outputs
 # output: "$id.$key.output.h5mu"

@@ -22,6 +22,8 @@ argument_groups:
     name: "--vcf"
     description: "VCF from mixed BAM"
     info: null
+    example:
+    - "input.vcf"
     must_exist: true
     create_parent: true
     required: false
@@ -32,6 +34,8 @@ argument_groups:
     name: "--bam"
     description: "mixed sample BAM"
     info: null
+    example:
+    - "input.bam"
     must_exist: true
     create_parent: true
     required: false
@@ -42,6 +46,8 @@ argument_groups:
     name: "--bar"
     description: "barcodes whitelist"
     info: null
+    example:
+    - "barcodes.txt"
     must_exist: true
     create_parent: true
     required: false
@@ -62,6 +68,8 @@ argument_groups:
     name: "--com"
     description: "common SNVs"
     info: null
+    example:
+    - "common_snvs.txt"
     must_exist: true
     create_parent: true
     required: false
@@ -112,6 +120,8 @@ argument_groups:
       \ variants, so that users do not need to redo genotyping on selected variants,\
       \ otherwise any variants could be selected as distinguishing variants."
     info: null
+    example:
+    - "known_variants.vcf"
     must_exist: true
     create_parent: true
     required: false
@@ -298,7 +308,7 @@ build_info:
   output: "target/nextflow/genetic_demux/scsplit"
   executable: "target/nextflow/genetic_demux/scsplit/main.nf"
   viash_version: "0.9.7"
-  git_commit: "c2dfa3972e63a2639026d597b6414ca7308377d5"
+  git_commit: "07a1fdf925a279b8b2b56eb07f6d1335146c6767"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

@@ -1,7 +1,7 @@
 # Inputs
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-# input_layer: "foo"
+input_layer: "log_normalized"
 # input_var_gene_names: "foo"
 input_reference_gene_overlap: 100
 sanitize_ensembl_ids: true
@@ -10,7 +10,7 @@ sanitize_ensembl_ids: true
 # reference: "reference.h5mu"
 # reference_layer: "foo"
 reference_obs_target: "cell_ontology_class"
-# reference_var_input: "foo"
+reference_var_input: "filter_with_hvg"
 # reference_var_gene_names: "foo"
 
 # Model arguments

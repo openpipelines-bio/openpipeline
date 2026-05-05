@@ -1,5 +1,5 @@
 # Inputs
-input: # please fill in - example: "path/to/file"
+input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # input_layer: "foo"
 obs_batch: "sample_id"
@@ -12,7 +12,7 @@ obs_batch: "sample_id"
 sanitize_ensembl_ids: true
 
 # Outputs
-# output: "$id.$key.output"
+# output: "$id.$key.output.h5mu"
 # output_model: "$id.$key.output_model"
 obsm_output: "X_scvi_integrated"
 # output_compression: "gzip"

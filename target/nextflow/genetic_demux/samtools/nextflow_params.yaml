@@ -1,5 +1,5 @@
 # Arguments
-bam: # please fill in - example: "path/to/file"
+bam: # please fill in - example: "input.bam"
 # output: "$id.$key.output"
 
 # Nextflow input-output arguments

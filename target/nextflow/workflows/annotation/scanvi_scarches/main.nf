@@ -3144,6 +3144,9 @@ meta = [
           "example" : [
             "sample"
           ],
+          "default" : [
+            "sample_id"
+          ],
           "required" : true,
           "direction" : "input",
           "multiple" : false,
@@ -3235,6 +3238,9 @@ meta = [
           "example" : [
             "sample"
           ],
+          "default" : [
+            "sample_id"
+          ],
           "required" : true,
           "direction" : "input",
           "multiple" : false,
@@ -3283,6 +3289,9 @@ meta = [
           "type" : "string",
           "name" : "--reference_var_hvg",
           "description" : ".var column containing highly variable genes. If not provided, genes will not be subset.",
+          "default" : [
+            "filter_with_hvg"
+          ],
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3461,7 +3470,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--output",
-          "description" : "The query data in .h5mu format with predicted labels predicted from the classifier trained on the reference.",
+          "description" : "The annotated output .h5mu file.",
           "example" : [
             "output.h5mu"
           ],
@@ -3697,7 +3706,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scanvi_scarches",
     "viash_version" : "0.9.7",
-    "git_commit" : "c2dfa3972e63a2639026d597b6414ca7308377d5",
+    "git_commit" : "07a1fdf925a279b8b2b56eb07f6d1335146c6767",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

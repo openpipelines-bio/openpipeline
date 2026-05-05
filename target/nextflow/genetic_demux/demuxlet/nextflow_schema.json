@@ -27,7 +27,7 @@
           "type": "string",
           "format": "path",
           "description": "Input SAM/BAM/CRAM file",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"input.bam\"`. "
         },
         "tag_group": {
           "type": "string",
@@ -50,7 +50,7 @@
           "type": "string",
           "format": "path",
           "description": "Input VCF/BCF file, containing the individual genotypes (GT), posterior probability (GP), or genotype likelihood (PL).",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"input.vcf\"`. "
         },
         "field": {
           "type": "string",

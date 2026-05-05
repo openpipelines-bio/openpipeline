@@ -3147,7 +3147,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--input_h5mu",
-          "description" : "If a MuData file is provided,",
+          "description" : "If a MuData file is provided, the velocity h5ad object will be added to this file.",
           "example" : [
             "input.h5mu"
           ],
@@ -3399,7 +3399,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/velocyto_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "c2dfa3972e63a2639026d597b6414ca7308377d5",
+    "git_commit" : "07a1fdf925a279b8b2b56eb07f6d1335146c6767",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

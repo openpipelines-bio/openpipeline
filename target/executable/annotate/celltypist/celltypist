@@ -450,9 +450,6 @@ function ViashDockerfile {
 FROM nvcr.io/nvidia/pytorch:25.11-py3
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.11.4"
-
-RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "celltypist==1.7.1"
 
 RUN pip install --upgrade pip && \
@@ -461,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate celltypist"
-LABEL org.opencontainers.image.created="2026-04-28T03:49:25Z"
+LABEL org.opencontainers.image.created="2026-05-05T03:46:33Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c2dfa3972e63a2639026d597b6414ca7308377d5"
+LABEL org.opencontainers.image.revision="07a1fdf925a279b8b2b56eb07f6d1335146c6767"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -602,6 +599,7 @@ function ViashHelp {
   echo ""
   echo "    --input_layer"
   echo "        type: string"
+  echo "        default: log_normalized"
   echo "        The layer in the input data containing counts that are lognormalized to"
   echo "        10000, .X is not to be used."
   echo ""
@@ -644,8 +642,9 @@ function ViashHelp {
   echo ""
   echo "    --reference_var_input"
   echo "        type: string"
-  echo "        .var column containing highly variable genes. By default, do not subset"
-  echo "        genes."
+  echo "        default: filter_with_hvg"
+  echo "        .var column containing highly variable genes. If not provided, genes"
+  echo "        will not be subset."
   echo ""
   echo "    --reference_var_gene_names"
   echo "        type: string"
@@ -1217,6 +1216,9 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
+if [ -z ${VIASH_PAR_INPUT_LAYER+x} ]; then
+  VIASH_PAR_INPUT_LAYER="log_normalized"
+fi
 if [ -z ${VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP+x} ]; then
   VIASH_PAR_INPUT_REFERENCE_GENE_OVERLAP="100"
 fi
@@ -1225,6 +1227,9 @@ if [ -z ${VIASH_PAR_SANITIZE_ENSEMBL_IDS+x} ]; then
 fi
 if [ -z ${VIASH_PAR_REFERENCE_OBS_TARGET+x} ]; then
   VIASH_PAR_REFERENCE_OBS_TARGET="cell_ontology_class"
+fi
+if [ -z ${VIASH_PAR_REFERENCE_VAR_INPUT+x} ]; then
+  VIASH_PAR_REFERENCE_VAR_INPUT="filter_with_hvg"
 fi
 if [ -z ${VIASH_PAR_FEATURE_SELECTION+x} ]; then
   VIASH_PAR_FEATURE_SELECTION="false"

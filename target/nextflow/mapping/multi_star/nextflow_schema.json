@@ -122,7 +122,7 @@
           },
           "format": "path",
           "description": "path(s) to the fasta files with the genome sequences, separated by spaces",
-          "help_text": "Type: `file`, multiple: `True`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `[\"path/to/genome.fasta\"]`. "
         }
       }
     },
@@ -143,7 +143,7 @@
           "type": "string",
           "format": "path",
           "description": "path to the GTF file with annotations",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"annotation.gtf\"`. "
         },
         "sjdbGTFchrPrefix": {
           "type": "string",
@@ -232,7 +232,7 @@
           "type": "string",
           "format": "path",
           "description": "path to the \"manifest\" file with the names of read files",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"manifest.txt\"`. "
         },
         "readFilesPrefix": {
           "type": "string",

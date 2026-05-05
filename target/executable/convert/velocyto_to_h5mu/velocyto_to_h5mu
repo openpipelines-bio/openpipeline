@@ -460,9 +460,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Robrecht Cannoodt, Angela Oliveira Pisco"
 LABEL org.opencontainers.image.description="Companion container for running component convert velocyto_to_h5mu"
-LABEL org.opencontainers.image.created="2026-04-28T03:49:28Z"
+LABEL org.opencontainers.image.created="2026-05-05T03:46:35Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c2dfa3972e63a2639026d597b6414ca7308377d5"
+LABEL org.opencontainers.image.revision="07a1fdf925a279b8b2b56eb07f6d1335146c6767"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -596,7 +596,8 @@ function ViashHelp {
   echo "    --input_h5mu"
   echo "        type: file, file must exist"
   echo "        example: input.h5mu"
-  echo "        If a MuData file is provided,"
+  echo "        If a MuData file is provided, the velocity h5ad object will be added to"
+  echo "        this file."
   echo ""
   echo "    --modality"
   echo "        type: string"

@@ -1,5 +1,5 @@
 # Inputs
-input: # please fill in - example: "path/to/file"
+input: # please fill in - example: "input.h5mu"
 # layer: "foo"
 modality: "rna"
 # input_obs_batch: "foo"
@@ -11,11 +11,11 @@ modality: "rna"
 sanitize_ensembl_ids: true
 
 # Reference
-reference: # please fill in - example: "path/to/file"
+reference: # please fill in - example: "path/to/reference"
 # reference_class: "SCANVI"
 
 # Outputs
-# output: "$id.$key.output"
+# output: "$id.$key.output.h5mu"
 # model_output: "model"
 obsm_output: "X_integrated_scanvi"
 obs_output_predictions: "scanvi_pred"

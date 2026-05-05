@@ -39,7 +39,8 @@
         "input_layer": {
           "type": "string",
           "description": "The layer in the input data containing counts that are lognormalized to 10000, .X is not to be used.",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "Type: `string`, multiple: `False`, default: `\"log_normalized\"`. ",
+          "default": "log_normalized"
         },
         "input_var_gene_names": {
           "type": "string",
@@ -120,7 +121,8 @@
         "reference_var_input": {
           "type": "string",
           "description": ".var column containing highly variable genes",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "Type: `string`, multiple: `False`, default: `\"filter_with_hvg\"`. ",
+          "default": "filter_with_hvg"
         },
         "reference_var_gene_names": {
           "type": "string",

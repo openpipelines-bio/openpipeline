@@ -3123,6 +3123,9 @@ meta = [
           "type" : "string",
           "name" : "--input_layer",
           "description" : "The layer in the input data containing counts that are lognormalized to 10000, .X is not to be used.",
+          "default" : [
+            "log_normalized"
+          ],
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3206,7 +3209,10 @@ meta = [
         {
           "type" : "string",
           "name" : "--reference_var_input",
-          "description" : ".var column containing highly variable genes. By default, do not subset genes.\n",
+          "description" : ".var column containing highly variable genes. If not provided, genes will not be subset.\n",
+          "default" : [
+            "filter_with_hvg"
+          ],
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3523,14 +3529,6 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scanpy~=1.11.4"
-          ],
-          "upgrade" : true
-        },
-        {
-          "type" : "python",
-          "user" : false,
-          "packages" : [
             "celltypist==1.7.1"
           ],
           "upgrade" : true
@@ -3562,10 +3560,18 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "viashpy==0.8.0"
+            "viashpy==0.10.0"
           ],
           "github" : [
             "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+          ],
+          "upgrade" : true
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "scanpy~=1.11.4"
           ],
           "upgrade" : true
         }
@@ -3578,7 +3584,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.7",
-    "git_commit" : "c2dfa3972e63a2639026d597b6414ca7308377d5",
+    "git_commit" : "07a1fdf925a279b8b2b56eb07f6d1335146c6767",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

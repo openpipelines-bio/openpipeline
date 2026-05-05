@@ -7,9 +7,9 @@ input_reference_gene_overlap: 100
 sanitize_ensembl_ids: true
 
 # Ontology
-cl_nlp_emb_file: # please fill in - example: "path/to/file"
-cl_ontology_file: # please fill in - example: "path/to/file"
-cl_obo_file: # please fill in - example: "path/to/file"
+cl_nlp_emb_file: # please fill in - example: "cl.ontology.nlp.emb"
+cl_ontology_file: # please fill in - example: "cl.ontology"
+cl_obo_file: # please fill in - example: "cl.obo"
 
 # Reference
 # reference: "reference.h5mu"
