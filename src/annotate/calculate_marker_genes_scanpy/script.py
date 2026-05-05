@@ -27,7 +27,7 @@ meta = {"resources_dir": "src/utils"}
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
-
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
@@ -112,15 +112,10 @@ def format_results(adata, par, filtered_key_added=None):
 
 
 def main(par):
-    logger.info("Loading MuData from '%s'", par["input"])
-    mdata = mu.read_h5mu(par["input"])
-
-    logger.info("Selecting modality '%s'", par["modality"])
-    if par["modality"] not in mdata.mod:
-        raise ValueError(
-            f"'{par['modality']}' is not a modality in the input data. Available modalities: {list(mdata.mod.keys())}."
-        )
-    adata = mdata[par["modality"]]
+    logger.info(
+        "Loading AnnData from '%s' modality '%s'", par["input"], par["modality"]
+    )
+    adata = mu.read_anndata(par["input"], mod=par["modality"])
 
     logger.info("Selecting clustering column '%s'", par["obs_clustering"])
     if par["obs_clustering"] not in adata.obs.columns:
@@ -142,7 +137,13 @@ def main(par):
     results = format_results(adata, par, filtered_key_added)
 
     logger.info("Writing MuData output to '%s'", par["output"])
-    mdata.write_h5mu(par["output"], compression=par["output_compression"])
+    write_h5ad_to_h5mu_with_compression(
+        par["output"],
+        par["input"],
+        par["modality"],
+        adata,
+        par["output_compression"],
+    )
 
     logger.info("Writing marker results to '%s'", par["output_markers"])
     results.to_csv(par["output_markers"], index=False)
