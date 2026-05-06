@@ -76,7 +76,7 @@
           "type": "string",
           "format": "path",
           "description": "Override peak caller: specify peaks to use in downstream analyses from supplied 3-column BED file",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"peaks.bed\"`. "
         },
         "dim_reduce": {
           "type": "string",

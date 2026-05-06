@@ -1,5 +1,5 @@
 # Input & specifications
-input: # please fill in - example: "path/to/file"
+input: # please fill in - example: "input.h5mu"
 modality: "rna"
 obs_feature: # please fill in - example: "celltype"
 drop_obs_nan: false

@@ -1,7 +1,7 @@
 # Input
-# cell_data: "path/to/file"
+# cell_data: "cell_data.vcf"
 n_donor: 2
-# vartrix_data: "path/to/file"
+# vartrix_data: "path/to/vatrix_outputs"
 # donor_file: "path/to/file"
 geno_tag: "PL"
 no_doublet: false

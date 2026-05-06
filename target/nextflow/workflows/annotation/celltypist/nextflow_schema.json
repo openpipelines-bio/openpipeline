@@ -125,7 +125,8 @@
         "reference_var_input": {
           "type": "string",
           "description": ".var column containing highly variable genes",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "Type: `string`, multiple: `False`, default: `\"filter_with_hvg\"`. ",
+          "default": "filter_with_hvg"
         }
       }
     },

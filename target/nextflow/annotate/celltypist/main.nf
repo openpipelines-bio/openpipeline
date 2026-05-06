@@ -3123,6 +3123,9 @@ meta = [
           "type" : "string",
           "name" : "--input_layer",
           "description" : "The layer in the input data containing counts that are lognormalized to 10000, .X is not to be used.",
+          "default" : [
+            "log_normalized"
+          ],
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3206,7 +3209,10 @@ meta = [
         {
           "type" : "string",
           "name" : "--reference_var_input",
-          "description" : ".var column containing highly variable genes. By default, do not subset genes.\n",
+          "description" : ".var column containing highly variable genes. If not provided, genes will not be subset.\n",
+          "default" : [
+            "filter_with_hvg"
+          ],
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3523,14 +3529,6 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scanpy~=1.11.4"
-          ],
-          "upgrade" : true
-        },
-        {
-          "type" : "python",
-          "user" : false,
-          "packages" : [
             "celltypist==1.7.1"
           ],
           "upgrade" : true
@@ -3568,6 +3566,14 @@ meta = [
             "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "scanpy~=1.11.4"
+          ],
+          "upgrade" : true
         }
       ]
     }
@@ -3578,7 +3584,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.7",
-    "git_commit" : "96c2c992a33503f81e9d991856decb9c467e7158",
+    "git_commit" : "fdd54b2545ec34398b7839ffac29e8c03615cd65",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

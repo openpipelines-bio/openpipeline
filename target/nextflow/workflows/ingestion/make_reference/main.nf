@@ -3247,6 +3247,9 @@ meta = [
           "type" : "file",
           "name" : "--motifs_file",
           "description" : "Path to file containing transcription factor motifs in JASPAR format.",
+          "example" : [
+            "motifs.txt"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3547,7 +3550,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/make_reference",
     "viash_version" : "0.9.7",
-    "git_commit" : "96c2c992a33503f81e9d991856decb9c467e7158",
+    "git_commit" : "fdd54b2545ec34398b7839ffac29e8c03615cd65",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

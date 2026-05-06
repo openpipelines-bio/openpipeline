@@ -3086,6 +3086,9 @@ meta = [
             "-i"
           ],
           "description" : "Path to BAM file",
+          "example" : [
+            "input.bam"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
@@ -3100,6 +3103,9 @@ meta = [
             "-t"
           ],
           "description" : "Path to GTF file",
+          "example" : [
+            "transcriptome.gtf"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
@@ -3114,6 +3120,9 @@ meta = [
             "-b"
           ],
           "description" : "Valid barcodes file, to filter the bam. If --bcfile is not specified all the cell barcodes will be included.\nCell barcodes should be specified in the bcfile as the 'CB' tag for each read\n",
+          "example" : [
+            "barcodes.txt"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3134,6 +3143,9 @@ meta = [
             "-o"
           ],
           "description" : "Velocyto loom file",
+          "example" : [
+            "output.loom"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
@@ -3360,7 +3372,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/velocyto",
     "viash_version" : "0.9.7",
-    "git_commit" : "96c2c992a33503f81e9d991856decb9c467e7158",
+    "git_commit" : "fdd54b2545ec34398b7839ffac29e8c03615cd65",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

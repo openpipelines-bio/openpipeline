@@ -112,7 +112,7 @@
           "type": "string",
           "format": "path",
           "description": "Directory with the reference model",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"totalvi_model_reference\"`, direction: `output`. ",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"totalvi_model_reference\"`, direction: `output`, example: `\"path/to/reference_model\"`. ",
           "default": "totalvi_model_reference"
         },
         "obsm_output": {

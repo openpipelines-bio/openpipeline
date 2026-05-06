@@ -3273,6 +3273,9 @@ meta = [
             "step" : "star",
             "orig_arg" : "--genomeFastaFiles"
           },
+          "example" : [
+            "path/to/genome.fasta"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3306,6 +3309,9 @@ meta = [
             "step" : "star",
             "orig_arg" : "--sjdbGTFfile"
           },
+          "example" : [
+            "annotation.gtf"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3518,6 +3524,9 @@ meta = [
             "step" : "star",
             "orig_arg" : "--readFilesManifest"
           },
+          "example" : [
+            "manifest.txt"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -4849,7 +4858,7 @@ meta = [
           "description" : "defines the search start point through the read - the read is split into pieces no longer than this value",
           "info" : {
             "step" : "star",
-            "orig_arg" : "--seedSearchStartLmax"
+            "orig_arg" : "--seedS''' + '''earchStartLmax"
           },
           "example" : [
             50
@@ -4857,7 +4866,7 @@ meta = [
           "required" : false,
           "direction" : "input",
           "multiple" : false,
-          "multiple_sep" : "''' + ''';"
+          "multiple_sep" : ";"
         },
         {
           "type" : "double",
@@ -6448,7 +6457,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star",
     "viash_version" : "0.9.7",
-    "git_commit" : "96c2c992a33503f81e9d991856decb9c467e7158",
+    "git_commit" : "fdd54b2545ec34398b7839ffac29e8c03615cd65",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

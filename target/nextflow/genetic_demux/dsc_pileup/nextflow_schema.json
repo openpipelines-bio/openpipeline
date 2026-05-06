@@ -27,7 +27,7 @@
           "type": "string",
           "format": "path",
           "description": "Input SAM/BAM/CRAM file",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"input.sam\"`. "
         },
         "tag_group": {
           "type": "string",
@@ -51,7 +51,7 @@
           "type": "string",
           "format": "path",
           "description": "Input VCF/BCF file for dsc-pileup, containing the AC and AN field.",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"input.vcf\"`. "
         },
         "sm": {
           "type": "string",

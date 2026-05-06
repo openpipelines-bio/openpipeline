@@ -41,7 +41,7 @@
           "type": "string",
           "format": "path",
           "description": "Transcription factor motifs in JASPAR format",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified\"`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"motifs.txt\"`. "
         },
         "non_nuclear_contigs": {
           "type": "array",

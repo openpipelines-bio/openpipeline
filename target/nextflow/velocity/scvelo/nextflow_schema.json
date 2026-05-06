@@ -28,7 +28,7 @@
           "format": "path",
           "exists": true,
           "description": "Input MuData file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "counts_layer": {
           "type": "string",
@@ -69,15 +69,15 @@
           "type": "string",
           "format": "path",
           "description": "Output directory",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`, example: `\"path/to/output\"`. ",
           "default": "$id.$key.output"
         },
         "output_h5mu": {
           "type": "string",
           "format": "path",
           "description": "Output mudata file.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output_h5mu\"`, direction: `output`. ",
-          "default": "$id.$key.output_h5mu"
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output_h5mu.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output_h5mu.h5mu"
         },
         "output_compression": {
           "type": "string",

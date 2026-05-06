@@ -3083,9 +3083,6 @@ meta = [
           "type" : "string",
           "name" : "--input",
           "description" : "URL to a file to download.",
-          "example" : [
-            "https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
-          ],
           "required" : true,
           "direction" : "input",
           "multiple" : false,
@@ -3095,9 +3092,6 @@ meta = [
           "type" : "file",
           "name" : "--output",
           "description" : "Path where to store output.",
-          "example" : [
-            "pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
-          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
@@ -3240,7 +3234,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/download/download_file",
     "viash_version" : "0.9.7",
-    "git_commit" : "96c2c992a33503f81e9d991856decb9c467e7158",
+    "git_commit" : "fdd54b2545ec34398b7839ffac29e8c03615cd65",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

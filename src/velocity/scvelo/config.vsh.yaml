@@ -12,6 +12,7 @@ argument_groups:
         type: file
         direction: input
         required: true
+        example: input.h5mu
       - name: "--counts_layer"
         type: string
         description: "Name of the counts layer, if not specified, X is used."
@@ -47,11 +48,13 @@ argument_groups:
         required: true
         type: file
         direction: output
+        example: path/to/output/
         description: "Output directory. If it does not exist, will be created."
       - name: "--output_h5mu"
         required: true
         type: file
         direction: output
+        example: output.h5mu
         description: "Output mudata file."
     __merge__: [., /src/base/h5_compression_argument.yaml]
 
