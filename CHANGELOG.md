@@ -62,6 +62,8 @@
 
 * `dataflow/split_h5mu`: pin scipy version to 1.16.3 to avoid regression that corrupts large sparse matrix indexing (PR #1153).
 
+* `convert/from_h5ad_h5mu`: store and reset var index names to avoid issues with a change in mudata (PR #1184).
+
 # openpipelines 4.0.4
 
 ## BUG FIXES
