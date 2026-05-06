@@ -221,6 +221,7 @@ def test_filter_with_hvg_batch_with_batch(
     output_data.var = output_data.var.drop(
         columns=["rna:filter_with_hvg"], errors="raise"
     )
+    del output_data["rna"].varm["hvg"]
     assert_annotation_objects_equal(lognormed_batch_test_data_path, output_data)
 
 
