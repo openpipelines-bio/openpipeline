@@ -3543,7 +3543,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/totalvi_leiden",
     "viash_version" : "0.9.7",
-    "git_commit" : "5af37b92ac221bfb8b36a08fa26042f2e1bce785",
+    "git_commit" : "897585872828db0efb6001922e859faf8181c93b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

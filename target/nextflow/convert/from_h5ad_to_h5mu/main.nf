@@ -3315,7 +3315,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "5af37b92ac221bfb8b36a08fa26042f2e1bce785",
+    "git_commit" : "897585872828db0efb6001922e859faf8181c93b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3424,12 +3424,17 @@ data = {
 }
 
 logger.info("Converting to mudata")
+var_index_names = {key: adata.var.index.name for key, adata in data.items()}
 mudata = mu.MuData(data)
 
 try:
     mudata.var_names_make_unique()
 except (TypeError, ValueError):
     pass
+
+# Set var index names to avoid https://github.com/scverse/mudata/issues/146
+for key, name in var_index_names.items():
+    mudata.mod[key].var.index.name = name
 
 logger.info("Writing to %s.", par["output"])
 mudata.write_h5mu(par["output"], compression=par["output_compression"])
