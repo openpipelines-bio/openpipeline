@@ -179,14 +179,14 @@ def test_strict_copy_all_slot_kinds(
         out.var["highly_variable"].to_numpy(), src.var["highly_variable"].to_numpy()
     )
 
-    # .layers — dense and sparse
+    # .layers - dense and sparse
     np.testing.assert_allclose(out.layers["logcounts"], src.layers["logcounts"])
     assert sp.issparse(out.layers["sparse_layer"])
     np.testing.assert_allclose(
         out.layers["sparse_layer"].toarray(), src.layers["sparse_layer"].toarray()
     )
 
-    # .obsm — dense, sparse, DataFrame
+    # .obsm - dense, sparse, DataFrame
     np.testing.assert_allclose(out.obsm["X_pca"], src.obsm["X_pca"])
     assert sp.issparse(out.obsm["sparse_obsm"])
     np.testing.assert_allclose(
@@ -213,7 +213,7 @@ def test_strict_copy_all_slot_kinds(
 def test_strict_reorder_source(
     run_component, target_mdata, source_mdata_equal, write_mdata, tmp_path, rng
 ):
-    # Same index sets, but source rows shuffled — values must end up correctly
+    # Same index sets, but source rows shuffled - values must end up correctly
     # aligned to target order in the output.
     src = source_mdata_equal["rna"]
     shuffled = src[rng.permutation(src.n_obs), rng.permutation(src.n_vars)].copy()
@@ -270,7 +270,7 @@ def test_strict_errors_when_source_smaller(
 def test_errors_when_source_has_extra_cells(
     run_component, target_mdata, source_mdata_equal, write_mdata, tmp_path, rng
 ):
-    # Add a cell to source that's not in target — should error in both strict
+    # Add a cell to source that's not in target - should error in both strict
     # and partial modes (source must be a subset of target).
     src = source_mdata_equal["rna"]
     extra = src[:1].copy()
@@ -419,13 +419,13 @@ def test_auto_token_only_copies_new_keys(
     )
 
     out = mudata.read_h5mu(output)["rna"]
-    # 'label' was already in target → not copied; pre_existing values remain.
+    # 'label' was already in target -> not copied; pre_existing values remain.
     assert (out.obs["label"] == "pre_existing").all()
-    # 'score' was not in target → copied.
+    # 'score' was not in target -> copied.
     assert "score" in out.obs.columns
-    # X_pca was already in target → not copied; remains zeros.
+    # X_pca was already in target -> not copied; remains zeros.
     np.testing.assert_array_equal(out.obsm["X_pca"], np.zeros((tgt.n_obs, 5)))
-    # 'pca' and 'params' uns keys were absent → copied.
+    # 'pca' and 'params' uns keys were absent -> copied.
     assert "pca" in out.uns and "params" in out.uns
 
 

@@ -166,7 +166,7 @@ def reindex_obsm_value(value, src_to_tgt_obs, target_axis_index):
 
 
 def validate_axis_containment(source_idx, target_idx, axis, allow_partial):
-    """Return source→target position mapping; raise if the source has names not
+    """Return source-to-target position mapping; raise if the source has names not
     in the target, or (unless ``allow_partial``) the sets differ."""
     src_to_tgt = target_idx.get_indexer(source_idx)
     missing_in_target = src_to_tgt < 0
