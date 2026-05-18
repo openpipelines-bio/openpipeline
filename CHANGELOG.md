@@ -12,7 +12,7 @@
 
 * `dimred/pca`: added possibility to do chunked processing using arguments `chunks` and `chunk_size`. Also added a `seed` argument in order to better control the variability between executions (PR #1157).
 
-* `dataflow/insert_partial_items`: added a component to insert items from one MuData object into another (PR #1166).
+* `metadata/copy_modality_slots`: added a component to copy slots (`.obs`, `.var`, `.layers`, `.obsm`, `.varm`, `.obsp`, `.varp`, `.uns`) from a modality in one MuData file into a modality in another. Source and target index sets must match by default; `--allow_partial` permits source to be a strict subset (with NaN-fill). Supports `__auto__` to copy items missing from target, `--allow_overwrite`, `--var_match_column`, and cross-modality transfers (PR #1166).
 
 ## MAJOR CHANGES
 
