@@ -10,6 +10,8 @@ info:
       namespace: filter
     - name: assert_test_workflow_2_output
       namespace: test_workflows/multiomics/process_samples
+    - name: assert_test_workflow_9_output
+      namespace: test_workflows/multiomics/process_samples
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author, maintainer ]
@@ -163,6 +165,15 @@ argument_groups:
         type: integer
         description: Minimum of non-zero values per guide. 
     
+  - name: "Cross-modality filtering"
+    arguments:
+      - name: "--intersect_obs"
+        type: boolean_true
+        description: |
+          After per-modality filtering and multisample processing, remove observations
+          that are not present in all processed modalities so that each modality shares
+          the same set of cells.
+
   - name: "Highly variable features detection"
     arguments:
       - name: "--highly_variable_features_var_output"
@@ -313,9 +324,7 @@ dependencies:
     alias: split_modalities_workflow
   - name: dataflow/merge
   - name: dataflow/concatenate_h5mu
-  - name: workflows/rna/rna_singlesample
-  - name: workflows/prot/prot_singlesample
-  - name: workflows/gdo/gdo_singlesample
+  - name: workflows/multiomics/process_singlesample_base
   - name: workflows/multiomics/process_batches
 # test_dependencies:
 #    - name: filter/remove_modality
@@ -342,6 +351,9 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf5
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf9
   - path: /resources_test/concat_test_data
   - path: /resources_test/pbmc_1k_protein_v3
   - path: /resources_test/10x_5k_lung_crispr

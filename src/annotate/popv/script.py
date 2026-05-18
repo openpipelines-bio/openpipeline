@@ -27,7 +27,7 @@ par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     # "input": "resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu",
     "modality": "rna",
-    "reference": "resources_test/annotation_test_data/tmp_TS_Blood_filtered.h5ad",
+    "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5ad",
     "input_obs_batch": None,
     "input_layer": None,
     "input_obs_label": None,
@@ -43,12 +43,12 @@ par = {
         # "knn_on_bbknn",
         # "knn_on_scanorama",
         # "knn_on_scvi",
-        "rf",
+        "Random_Forest",
         # "scanvi",
         "svm",
     ],
 }
-meta = {}
+meta = {"resources_dir": "src/utils", "temp_dir": "/tmp"}
 # for debugging the obo folder can be somewhere local
 cl_obo_folder = "popv_cl_ontology/"
 ## VIASH END
@@ -60,6 +60,7 @@ logger = setup_logger()
 
 use_gpu = cuda_is_available()
 logger.info("GPU enabled? %s", use_gpu)
+popv.settings.accelerator = "cuda" if use_gpu else "cpu"
 
 
 # Helper functions
@@ -158,11 +159,11 @@ def main(par, meta):
         pq = popv.preprocessing.Process_Query(
             # input
             query_adata=input_modality,
-            query_labels_key=par["input_obs_label"],
             query_batch_key=par["input_obs_batch"],
-            query_layers_key=None,  # this is taken care of by subset
+            query_layer_key=None,  # this is taken care of by subset
             # reference
             ref_adata=reference,
+            ref_layer_key=None,  # this is taken care of by subset
             ref_labels_key=par["reference_obs_label"],
             ref_batch_key=par["reference_obs_batch"],
             # options
@@ -177,7 +178,6 @@ def main(par, meta):
             save_path_trained_models=temp_dir,
             # hardcoded values
             cl_obo_folder=cl_obo_folder,
-            accelerator="cuda" if use_gpu else "cpu",
         )
         method_kwargs = {}
         if "scanorama" in par["methods"]:

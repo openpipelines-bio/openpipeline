@@ -4,7 +4,9 @@ info:
   links:
     email: luke@data-intuitive.com
     github: lazappi
+    orcid: 0000-0001-7744-8565
+    linkedin: lazappi
   organizations:
     - name: Data Intuitive
       href: https://www.data-intuitive.com
-      role: Bioinformatics Engineer
+      role: Data Science Engineer

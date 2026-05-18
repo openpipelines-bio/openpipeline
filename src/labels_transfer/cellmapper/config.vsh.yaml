@@ -1,0 +1,59 @@
+name: cellmapper
+namespace: "labels_transfer"
+scope: "public"
+description: |
+  Transfer labels from a reference to a query using CellMapper in a shared
+  embedding space.
+authors:
+  - __merge__: /src/authors/luke_zappia.yaml
+    roles: [ author ]
+
+__merge__: ../api/common_arguments.yaml
+
+argument_groups:
+  - name: CellMapper arguments
+    arguments:
+      - name: "--n_neighbors"
+        type: integer
+        default: 15
+        min: 1
+        description: |
+          Number of neighbors used by CellMapper.
+      - name: "--kernel_method"
+        type: string
+        required: false
+        choices: [jaccard, gauss, scarches, inverse_distance, random, hnoca, equal, umap]
+        description: |
+          Method to use for computing the CellMapper mapping matrix.
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/labels_transfer/utils/helper.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/annotation_test_data/
+  - path: /resources_test/pbmc_1k_protein_v3/
+
+engines:
+  - type: docker
+    image: python:3.12
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+        packages:
+          - cellmapper
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [highmem, highcpu]
