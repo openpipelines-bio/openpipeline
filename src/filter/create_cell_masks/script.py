@@ -1,12 +1,8 @@
 import sys
 from operator import eq, ge, gt, le, lt, ne
 
-import mudata as md
 import pandas as pd
-
-################################################################################
-# VIASH
-################################################################################
+from mudata import read_h5ad
 
 ## VIASH START
 par = {
@@ -18,12 +14,25 @@ par = {
         "n_genes:gt:500:rna",
     ],
     "prefix": "cell",
+    "output_compression": None,
 }
+meta = {"resources_dir": "src/utils/"}
 ## VIASH END
 
-################################################################################
-# FUNCTIONS
-################################################################################
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger  # noqa: E402
+from compress_h5mu import write_h5ad_to_h5mu_with_compression  # noqa: E402
+
+logger = setup_logger()
+
+OPERATORS = {
+    "lt": {"function": lt, "string": "lt", "symbol": "<"},
+    "gt": {"function": gt, "string": "gt", "symbol": ">"},
+    "le": {"function": le, "string": "le", "symbol": "<="},
+    "ge": {"function": ge, "string": "ge", "symbol": ">="},
+    "eq": {"function": eq, "string": "eq", "symbol": "=="},
+    "ne": {"function": ne, "string": "ne", "symbol": "!="},
+}
 
 
 def parse_value(raw_value):
@@ -40,47 +49,34 @@ def parse_value(raw_value):
     return raw_value
 
 
-def parse_operator(operator_string):
-    operators = {
-        "lt": {"function": lt, "string": "lt", "symbol": "<"},
-        "gt": {"function": gt, "string": "gt", "symbol": ">"},
-        "le": {"function": le, "string": "le", "symbol": "<="},
-        "ge": {"function": ge, "string": "ge", "symbol": ">="},
-        "eq": {"function": eq, "string": "eq", "symbol": "=="},
-        "ne": {"function": ne, "string": "ne", "symbol": "!="},
-    }
-    if operator_string not in operators:
+def parse_operator(operator_string, filter_string):
+    if operator_string not in OPERATORS:
         raise ValueError(
-            "Operator must be one of 'lt', 'gt', 'le', 'ge', 'eq', or 'ne'. "
-            f"Got: {operator_string}."
+            f"Unknown operator '{operator_string}' in filter '{filter_string}'. "
+            f"Must be one of: {', '.join(OPERATORS)}."
         )
-    return operators[operator_string]
+    return OPERATORS[operator_string]
 
 
 def parse_filters(raw_filters):
-    if isinstance(raw_filters, str):
-        raw_filters = [f for f in raw_filters.split(",") if f]
-
     filters = []
     for filter_string in raw_filters:
         parts = filter_string.split(":")
         if len(parts) not in {3, 4}:
             raise ValueError(
-                "Each filter must be formatted as"
-                "'<column>:<operator>:<value>:<group>' (<group> is optional)."
+                f"Each filter must be formatted as "
+                f"'<column>:<operator>:<value>:<group>' (<group> is optional). "
                 f"Got: '{filter_string}'."
             )
 
-        column, operator, value = parts[0], parts[1], parts[2]
+        column, operator_str, value = parts[0], parts[1], parts[2]
         group = parts[3] if len(parts) == 4 else None
+        operator = parse_operator(operator_str, filter_string)
 
-        operator = parse_operator(operator)
-
+        name_parts = [p for p in (group, column, operator["string"], value) if p]
         filters.append(
             {
-                "name": f"{group}_{column}_{operator['string']}_{value}"
-                if group
-                else f"{column}_{operator['string']}_{value}",
+                "name": "_".join(name_parts),
                 "description": f"{column} {operator['symbol']} {value}"
                 + (f" ({group})" if group else ""),
                 "column": column,
@@ -94,25 +90,22 @@ def parse_filters(raw_filters):
 
 
 def create_masks(adata, filters):
+    missing = sorted({f["column"] for f in filters} - set(adata.obs.columns))
+    if missing:
+        raise KeyError(
+            f"The following columns referenced by filters are not in .obs: {missing}"
+        )
+
     masks = {}
     group_masks = {}
     overall_mask = pd.Series(True, index=adata.obs.index)
 
-    for filter in filters:
-        column = filter["column"]
-
-        if column not in adata.obs.columns:
-            raise KeyError(f"Column '{column}' not found in adata.obs.")
-
-        name = filter["name"]
-        operator = filter["operator"]
-        value = filter["value"]
-        group = filter["group"]
-
-        mask = operator(adata.obs[column], value)
-        masks[name] = mask
+    for filt in filters:
+        mask = filt["operator"](adata.obs[filt["column"]], filt["value"])
+        masks[filt["name"]] = mask
         overall_mask &= mask
 
+        group = filt["group"]
         if group:
             if group not in group_masks:
                 group_masks[group] = pd.Series(True, index=adata.obs.index)
@@ -122,85 +115,76 @@ def create_masks(adata, filters):
     group_masks = pd.DataFrame(group_masks, index=adata.obs.index)
     group_masks["overall"] = overall_mask
 
-    return (masks, group_masks)
-
-
-################################################################################
-# MAIN
-################################################################################
+    return masks, group_masks
 
 
 def main(par):
-    print(f"====== Create cell masks (mudata v{md.__version__}) ======", flush=True)
+    prefix = par["prefix"] or ""
+    prefix_part = f"{prefix}_" if prefix else ""
 
-    print(f"\n>>> Reading MuData from '{par['input']}'...", flush=True)
-    mdata = md.read_h5mu(par["input"])
-    print(mdata, flush=True)
+    logger.info("Reading modality '%s' from '%s'", par["modality"], par["input"])
+    try:
+        adata = read_h5ad(par["input"], mod=par["modality"])
+    except KeyError:
+        raise ValueError(f"Modality '{par['modality']}' not found in '{par['input']}'.")
 
-    print(f"\n>>> Extracting modality '{par['modality']}'...", flush=True)
-    if par["modality"] not in mdata.mod:
-        raise KeyError(
-            f"Modality '{par['modality']}' not found in MuData. "
-            f"Available modalities: {list(mdata.mod.keys())}"
-        )
-    adata = mdata[par["modality"]]
-    print(adata, flush=True)
-
-    print("\n>>> Parsing filters...", flush=True)
+    logger.info("Parsing %d filter(s)", len(par["filters"]))
     filters = parse_filters(par["filters"])
-    print(f"Parsed {len(filters)} filters:", flush=True)
-    for filter in filters:
-        print(f"  - {filter['name']}: {filter['description']}", flush=True)
+    for filt in filters:
+        logger.info("  - %s: %s", filt["name"], filt["description"])
 
-    print("\n>>> Creating masks...", flush=True)
+    logger.info("Creating masks")
     masks, group_masks = create_masks(adata, filters)
-    print(f"Created {len(masks.columns)} individual masks", flush=True)
-    print(masks, flush=True)
-    print(f"\nCreated {len(group_masks.columns)} group masks", flush=True)
-    print(group_masks, flush=True)
+    logger.info(
+        "Created %d individual mask(s) and %d group mask(s)",
+        len(masks.columns),
+        len(group_masks.columns),
+    )
 
-    print("\n>>> Adding masks to AnnData...", flush=True)
-    obsm_name = f"{par['prefix']}_masks"
+    obsm_name = f"{prefix_part}masks"
     adata.obsm[obsm_name] = masks
-    print(f"Individual masks stored in obsm['{obsm_name}']", flush=True)
-    print(adata.obsm[obsm_name], flush=True)
+    logger.info("Stored individual masks in .obsm['%s']", obsm_name)
 
     group_mask_names = []
     for group in group_masks.columns:
-        if group == "overall":
-            mask_name = f"{par['prefix']}_mask"
-        else:
-            mask_name = f"{par['prefix']}_mask_{group}"
-
+        mask_suffix = "" if group == "overall" else f"_{group}"
+        mask_name = f"{prefix_part}mask{mask_suffix}"
         adata.obs[mask_name] = group_masks[group]
         adata.obsm[obsm_name][group] = group_masks[group]
         group_mask_names.append(mask_name)
+    logger.info("Stored group masks in .obs: %s", group_mask_names)
 
-    print(f"\nGroup masks stored in obs with prefix '{par['prefix']}_mask'", flush=True)
-    print(adata.obs[group_mask_names], flush=True)
-
-    print("\n>>> Adding filters to AnnData...", flush=True)
-    filters_name = f"{par['prefix']}_filters"
+    filters_name = f"{prefix_part}filters"
     filters_records = [
         {
-            "name": filter["name"],
-            "description": filter["description"],
-            "column": filter["column"],
-            "operator": filter["operator"].__name__,
-            "value": filter["value"],
-            "group": filter["group"],
+            "name": filt["name"],
+            "description": filt["description"],
+            "column": filt["column"],
+            "operator": filt["operator"].__name__,
+            "value": filt["value"],
+            "group": filt["group"],
         }
-        for filter in filters
+        for filt in filters
     ]
-    adata.uns[filters_name] = pd.DataFrame(filters_records)
-    print(f"Filters stored in uns['{filters_name}']", flush=True)
-    print(adata.uns[filters_name], flush=True)
+    filters_df = pd.DataFrame(filters_records)
+    # Empty string for ungrouped filters: h5 cannot write Python None as a
+    # string and anndata does not opt into nullable string writing by default.
+    filters_df["group"] = filters_df["group"].fillna("").astype(str)
+    adata.uns[filters_name] = filters_df
+    logger.info("Stored filter definitions in .uns['%s']", filters_name)
 
-    print(f"\n>>> Writing output to '{par['output']}'...", flush=True)
-    print(mdata, flush=True)
-    mdata.write_h5mu(par["output"])
-
-    print("\n>>> Done!\n")
+    logger.info(
+        "Writing output to '%s' with compression '%s'",
+        par["output"],
+        par["output_compression"],
+    )
+    write_h5ad_to_h5mu_with_compression(
+        output_file=par["output"],
+        h5mu=par["input"],
+        modality_name=par["modality"],
+        modality_data=adata,
+        output_compression=par["output_compression"],
+    )
 
 
 if __name__ == "__main__":

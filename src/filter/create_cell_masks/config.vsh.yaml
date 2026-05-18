@@ -34,6 +34,7 @@ argument_groups:
           Individual cell masks are stored as a `DataFrame` in `.obsm` and
           summary masks for each filter group are stored as boolean columns in
           `.obs`.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Parameters
     arguments:
@@ -51,10 +52,10 @@ argument_groups:
         type: string
         required: true
         multiple: true
-        multiple_sep: ","
-        example: "total_counts:gt:100:rna,cell_volume:lt:10"
+        multiple_sep: ";"
+        example: "total_counts:gt:100:rna;cell_volume:lt:10"
         summary: |
-          A comma-separated set of filters to create cell masks in format
+          A set of filters to create cell masks in format
           `<column>:<operator>:<value>:<group>`
         description: |
           A set of filters to create cell masks. Each filter should be specified
@@ -72,23 +73,28 @@ argument_groups:
           selecting cells with `total_counts` greater than 100. The created mask
           will be named `rna_total_counts`.
 
-          Individual filters are separated by commas.
+          Individual filters are separated by semicolons.
       - name: --prefix
         type: string
-        default: "cell"
+        required: false
+        example: "cell"
         summary: |
-          A prefix to use for naming the cell masks `DataFrame` and `.obs`
-          columns
+          An optional prefix to use for naming the cell masks `DataFrame` and
+          `.obs` columns
         description: |
-          A prefix to use for naming the cell masks `DataFrame` and `.obs`
-          columns.The `DataFrame` containing individual cell masks in `.obsm`
-          will be named `<prefix>_masks` (e.g., `cell_masks`) and the summary
-          columns in `.obs` will be named `<prefix>_mask_<group>` (e.g.,
-          `cell_mask_rna`).
+          An optional prefix to use for naming the cell masks `DataFrame` and
+          `.obs` columns. When set, the `DataFrame` containing individual cell
+          masks in `.obsm` will be named `<prefix>_masks` (e.g., `cell_masks`)
+          and the summary columns in `.obs` will be named
+          `<prefix>_mask_<group>` (e.g., `cell_mask_rna`). When omitted, the
+          names are `masks` and `mask_<group>` (the overall summary column is
+          simply `mask`).
 
 resources:
   - type: python_script
     path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
 
 test_resources:
   - type: python_script
@@ -96,7 +102,7 @@ test_resources:
 
 engines:
   - type: docker
-    image: python:3.12-slim
+    image: python:3.13-slim
     setup:
       - type: apt
         packages:
