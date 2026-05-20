@@ -32,11 +32,6 @@ assert input_mu.n_mod == num_mod, (
     f"Expected {num_mod} modalities in {par['orig_input']} got {input_mu.n_mod} modalities."
 )
 
-output_mods = {
-    csv_entry["name"]: mu.read_h5mu(os.path.join(par["mod_dir"], csv_entry["filename"]))
-    for csv_entry in data
-}
-
 # Check if the files exist and if the modality name is in the file name
 for csv_item in data:
     mod_name, mudata_file_name = csv_item["name"], csv_item["filename"]
