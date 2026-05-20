@@ -54,6 +54,8 @@
 
 * Bump mudata to `0.3.8` (PR #1188).
 
+* Bump lianapy to `1.7.1` (PR #1188).
+
 * Add missing `example` fields to several component and workflow configurations (PR #1067).
 
 * Testing: bump `viashpy` to 0.10.0 (PR #1178).
