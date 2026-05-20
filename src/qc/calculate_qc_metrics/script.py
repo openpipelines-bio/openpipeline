@@ -296,6 +296,9 @@ def main():
             logger.info(".obs shape for %s is %s", mod, obs.shape)
             modality_anndatas[mod] = AnnData(var=var, obs=obs)
 
+        original_global_obs = read_elem(open_mudata["/obs"])
+        original_global_var = read_elem(open_mudata["/var"])
+
         logger.info("Reading layer %s", "X" if not par["layer"] else par["layer"])
         layer = read_elem(open_mudata[layer_element_name])
         logger.info("Found layer with shape %s and dtype %s", layer.shape, layer.dtype)
@@ -325,6 +328,15 @@ def main():
         mudata_skeleton.var.shape,
         mudata_skeleton.obs.shape,
     )
+
+    for col in original_global_obs.columns.difference(mudata_skeleton.obs.columns):
+        mudata_skeleton.obs[col] = original_global_obs.loc[
+            mudata_skeleton.obs.index, col
+        ]
+    for col in original_global_var.columns.difference(mudata_skeleton.var.columns):
+        mudata_skeleton.var[col] = original_global_var.loc[
+            mudata_skeleton.var.index, col
+        ]
 
     logger.info("Writing to %s", par["output"])
     try:
