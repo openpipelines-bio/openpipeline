@@ -454,9 +454,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component annotate onclass"
-LABEL org.opencontainers.image.created="2026-05-19T08:05:27Z"
+LABEL org.opencontainers.image.created="2026-05-20T13:16:48Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e57a9e822461b8bf2c072ae26519e5de6a0ead2a"
+LABEL org.opencontainers.image.revision="14dc9e0cfdde302fcb46629745b39c52976ff890"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
