@@ -18,12 +18,12 @@ meta = {"resources_dir": "resources_test/pbmc_1k_protein_v3"}
 
 print("Loading data", flush=True)
 with open(par["input"], "r", encoding="utf-8") as f:
-    reader = csv.reader(f)
+    reader = csv.DictReader(f)
     data = list(reader)
 
 input_mu = mu.read_h5mu(par["orig_input"])
 
-num_mod = len(data) - 1
+num_mod = len(data)
 num_files = len(os.listdir(par["mod_dir"]))
 
 # Check if the number of files is equal to the number of lines in the csv
@@ -32,27 +32,30 @@ assert input_mu.n_mod == num_mod, (
     f"Expected {num_mod} modalities in {par['orig_input']} got {input_mu.n_mod} modalities."
 )
 
-rna_mod = mu.read_h5mu(os.path.join(par["mod_dir"], data[1][1]))
-prot_mod = mu.read_h5mu(os.path.join(par["mod_dir"], data[2][1]))
+output_mods = {
+    csv_entry["name"]: mu.read_h5mu(os.path.join(par["mod_dir"], csv_entry["filename"]))
+    for csv_entry in data
+}
 
 # Check if the files exist and if the modality name is in the file name
-for i, row in enumerate(data):
-    if i == 0:
-        continue
+for csv_item in data:
+    mod_name, mudata_file_name = csv_item["name"], csv_item["filename"]
     # Check if the files exist and if the modality name is in the file name
-    assert row[0] in row[1], f"Expected {row[0]} to be in {row[1]}."
-    mod_fp = os.path.join(par["mod_dir"], row[1])
-    assert os.path.exists(mod_fp), f"Expected {row[1]} to exist."
-    # Check modality is correct in the h5mu file
-    mod_mu = mu.read_h5mu(mod_fp)
-    assert mod_mu.n_mod == 1, f"Expected 1 modality in {row[1]}."
-    assert row[0] in mod_mu.mod.keys(), f"Expected {row[0]} to be the mod in {row[1]}."
-    assert row[0] in input_mu.mod.keys(), (
-        f"Expected {row[0]} to be a mod in {par['orig_input']}."
+    assert mod_name in mudata_file_name, (
+        f"Expected {mod_name} to be in {mudata_file_name}."
     )
-
-# Check if extracted modalities are equal to the original modalities
-assert_annotation_objects_equal(rna_mod.mod["rna"], input_mu.mod["rna"])
-assert_annotation_objects_equal(prot_mod.mod["prot"], input_mu.mod["prot"])
+    mudata_path = os.path.join(par["mod_dir"], mudata_file_name)
+    assert os.path.exists(mudata_path), f"Expected {mudata_file_name} to exist."
+    # Check modality is correct in the h5mu file
+    mudata_object = mu.read_h5mu(mudata_path)
+    assert mudata_object.n_mod == 1, f"Expected 1 modality in {mudata_file_name}."
+    assert mod_name in mudata_object.mod.keys(), (
+        f"Expected {mod_name} to be the mod in {mudata_file_name}."
+    )
+    assert mod_name in input_mu.mod.keys(), (
+        f"Expected {mod_name} to be a mod in {par['orig_input']}."
+    )
+    # Check if extracted modalities are equal to the original modalities
+    assert_annotation_objects_equal(mudata_object[mod_name], input_mu.mod[mod_name])
 
 print("Test successful!", flush=True)
