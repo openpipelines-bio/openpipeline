@@ -24,7 +24,7 @@
 
 ## MAJOR CHANGES
 
-* `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
+* `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140 and PR #).
 
 * `annotate/popv`: bump version to 0.6.1 (PR #1167).
 

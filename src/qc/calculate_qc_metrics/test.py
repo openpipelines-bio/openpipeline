@@ -454,5 +454,31 @@ def test_total_counts_less_precision_dtype(
     np.testing.assert_allclose(total_sums_manual, total_counts.to_numpy())
 
 
+def test_global_slot_items(run_component, input_mudata_random, random_h5mu_path):
+    """
+    When the input data contains a global slot item (e.g. a gloval obs or var column),
+    these need to be kept in the output object.
+    """
+    input_path = random_h5mu_path()
+    input_mudata_random.obs["foo"] = "a"
+    input_mudata_random.var["bar"] = "b"
+    input_mudata_random.write(input_path)
+    output_path = random_h5mu_path()
+    run_component(
+        [
+            "--input",
+            input_path,
+            "--output",
+            output_path,
+            "--modality",
+            "mod1",
+        ]
+    )
+    output_data = md.read_h5mu(output_path)
+    assert "foo" in output_data.obs.columns
+    assert output_data.obs["foo"].unique().to_list() == ["a"]
+    assert output_data.var["bar"].unique().to_list() == ["b"]
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-v", "-x"]))
