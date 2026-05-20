@@ -456,7 +456,7 @@ def test_total_counts_less_precision_dtype(
 
 def test_global_slot_items(run_component, input_mudata_random, random_h5mu_path):
     """
-    When the input data contains a global slot item (e.g. a gloval obs or var column),
+    When the input data contains a global slot item (e.g. a global obs or var column),
     these need to be kept in the output object.
     """
     input_path = random_h5mu_path()
