@@ -123,7 +123,7 @@ arguments:
     default: "euclidean"
     description: The distance metric used for computing similarities.
 
-  - name: "--threshold"
+  - name: "--scrublet_score_threshold"
     type: double
     required: false
     min: 0

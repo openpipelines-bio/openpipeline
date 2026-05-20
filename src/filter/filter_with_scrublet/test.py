@@ -214,7 +214,7 @@ def test_doublet_automatic_threshold_detection_fails(
     assert re.search(
         r"RuntimeError: Scrublet could not automatically detect the doublet score threshold\. "
         r"Either --allow_automatic_threshold_detection_fail can be used to ignore this failure "
-        r"and set the corresponding output columns to NA, or a manual --threshold can be provided\.",
+        r"and set the corresponding output columns to NA, or a manual --scrublet_score_threshold can be provided\.",
         e_info.value.stdout.decode("utf-8"),
     )
 
@@ -312,6 +312,7 @@ def test_selecting_input_layer(
 def test_manual_threshold(
     run_component, random_h5mu_path, input_mudata_path, input_mudata
 ):
+    threshold = 0.1
     output_mu = random_h5mu_path()
 
     run_component(
@@ -322,7 +323,52 @@ def test_manual_threshold(
             output_mu,
             "--modality",
             "rna",
-            "--threshold",
+            "--scrublet_score_threshold",
+            str(threshold),
+        ]
+    )
+    assert Path(output_mu).is_file(), "Output file not found"
+
+    mu_out = mu.read_h5mu(output_mu)
+    rna_obs = mu_out.mod["rna"].obs
+    assert "scrublet_doublet_score" in rna_obs.columns, (
+        "scrublet_doublet_score column missing from rna .obs"
+    )
+    assert "filter_with_scrublet" in rna_obs.columns, (
+        "filter_with_scrublet column missing from rna .obs"
+    )
+
+    # The manual threshold means: cells with doublet score > threshold are
+    # classified as doublets (filter_with_scrublet == False), the rest are
+    # kept (filter_with_scrublet == True).
+    doublet_scores = rna_obs["scrublet_doublet_score"].to_numpy(dtype=float)
+    keep_cells = rna_obs["filter_with_scrublet"].to_numpy(dtype=bool)
+    expected_keep = doublet_scores <= threshold
+    assert np.array_equal(keep_cells, expected_keep), (
+        f"filter_with_scrublet should match (scrublet_doublet_score <= {threshold}). "
+        f"Mismatches: {(keep_cells != expected_keep).sum()} out of {len(keep_cells)} cells."
+    )
+
+    assert (doublet_scores > threshold).any(), (
+        f"Expected at least one cell with doublet score above the manual threshold "
+        f"of {threshold} to confirm the threshold was applied."
+    )
+
+
+def test_manual_threshold_with_subset(
+    run_component, random_h5mu_path, input_mudata_path, input_mudata
+):
+    output_mu = random_h5mu_path()
+
+    run_component(
+        [
+            "--input",
+            input_mudata_path,
+            "--output",
+            output_mu,
+            "--modality",
+            "rna",
+            "--scrublet_score_threshold",
             "0.1",
             "--do_subset",
         ]
@@ -331,7 +377,7 @@ def test_manual_threshold(
 
     mu_out = mu.read_h5mu(output_mu)
     assert mu_out.mod["rna"].n_obs < input_mudata.mod["rna"].n_obs, (
-        "A low manual threshold should mark cells as doublets and filter them out"
+        "A low manual threshold combined with --do_subset should remove cells"
     )
     assert "scrublet_doublet_score" in mu_out.mod["rna"].obs
 

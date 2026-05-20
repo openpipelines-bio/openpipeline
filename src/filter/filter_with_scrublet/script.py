@@ -25,7 +25,7 @@ par = {
     "stdev_doublet_rate": None,
     "sim_doublet_ratio": None,
     "n_neighbors": None,
-    "threshold": None,
+    "scrublet_score_threshold": None,
 }
 meta = {
     "name": "scrublet",
@@ -72,15 +72,18 @@ doublet_scores, predicted_doublets = scrub.scrub_doublets(
     n_prin_comps=par["num_pca_components"],
     distance_metric=par["distance_metric"],
 )
-if par["threshold"] is not None:
-    logger.info("\tApplying manual doublet score threshold of %s", par["threshold"])
-    predicted_doublets = scrub.call_doublets(threshold=par["threshold"])
+if par["scrublet_score_threshold"] is not None:
+    logger.info(
+        "\tApplying manual doublet score threshold of %s",
+        par["scrublet_score_threshold"],
+    )
+    predicted_doublets = scrub.call_doublets(threshold=par["scrublet_score_threshold"])
 
 try:
     keep_cells = np.invert(predicted_doublets)
 except TypeError:
     # Scrublet might not throw an error and return None if it fails to detect doublets...
-    if par["threshold"]:
+    if par["scrublet_score_threshold"]:
         raise RuntimeError(
             "Scrublet could not detect doublets even with a manual threshold set."
         )
@@ -88,7 +91,7 @@ except TypeError:
         raise RuntimeError(
             "Scrublet could not automatically detect the doublet score threshold. "
             "Either --allow_automatic_threshold_detection_fail can be used to ignore this failure "
-            "and set the corresponding output columns to NA, or a manual --threshold can be provided."
+            "and set the corresponding output columns to NA, or a manual --scrublet_score_threshold can be provided."
         )
     logger.info(
         "\tScrublet could not automatically detect the doublet score threshold. Setting output columns to NA."
