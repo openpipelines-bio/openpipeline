@@ -24,7 +24,7 @@
 
 ## MAJOR CHANGES
 
-* `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
+* `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140 and PR #1191).
 
 * `annotate/popv`: bump version to 0.6.1 (PR #1167).
 
@@ -42,7 +42,7 @@
 
 * `annotate/singler`: set `--input_layer` default to `log_normalized` and `--reference_var_input` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
 
-* `workflows/annotation/scanvi_scarches`: set `--input_obs_batch_label` and `--reference_obs_batch_label` defaults to `sample_id` and `--reference_var_hvg` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
+* `workflows/annotation/scanvi_scarches`: set `--input_obs_batch_label` and `--reference_obs_batch_label` defaults to `sample_id` and `--reference_var_hvg` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155, #1189).
 
 * `cluster/leiden`: added `flavor`, `n_iterations` and `seed` arguments (PR #1132)
 
