@@ -16,7 +16,7 @@ argument_groups:
         type: file
         description: Path to the input .h5mu.
         required: true
-        example: sample_path
+        example: input.h5mu
       - name: "--input_column"
         type: string
         required: false

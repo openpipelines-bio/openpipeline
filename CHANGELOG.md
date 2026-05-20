@@ -38,6 +38,12 @@
 
 * Bump viash to 0.9.7 (PR #1145)
 
+* `annotate/celltypist` and `workflows/annotation/celltypist`: set `--input_layer` default to `log_normalized` and `--reference_var_input` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
+
+* `annotate/singler`: set `--input_layer` default to `log_normalized` and `--reference_var_input` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
+
+* `workflows/annotation/scanvi_scarches`: set `--input_obs_batch_label` and `--reference_obs_batch_label` defaults to `sample_id` and `--reference_var_hvg` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
+
 * `cluster/leiden`: added `flavor`, `n_iterations` and `seed` arguments (PR #1132)
 
 * `cluster/leiden`: avoid creating unnecessary copies of the output data (PR #1132).
@@ -46,6 +52,8 @@
 
 * Bump anndata to `0.12.11` (PR #1174).
 
+* Add missing `example` fields to several component and workflow configurations (PR #1067).
+
 * Testing: bump `viashpy` to 0.10.0 (PR #1178).
 
 * `qc/calculate_qc_metrics`: write log1p transformed qc metrics to the output object using `log1p_transform` flag and parametrize top n vars .obs output fields with `--output_obs_top_n_vars` flag (PR #1182).
@@ -53,6 +61,8 @@
 ## BUG FIXES
 
 * `dataflow/split_h5mu`: pin scipy version to 1.16.3 to avoid regression that corrupts large sparse matrix indexing (PR #1153).
+
+* `convert/from_h5ad_h5mu`: store and reset var index names to avoid issues with a change in mudata (PR #1184).
 
 # openpipelines 4.0.4
 

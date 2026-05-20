@@ -15,6 +15,7 @@ arguments:
     description: Input h5mu file
     direction: input
     required: true
+    example: input.h5mu
   - name: "--modality"
     description: |
       Which modality from the input MuData file to process.
@@ -27,7 +28,7 @@ arguments:
     description: Output .h5mu file
     direction: output
     required: true
-    default: "output.h5ad"
+    example: output.h5mu
   - name: "--obs_batch"
     type: string
     description: Column name discriminating between your batches.
