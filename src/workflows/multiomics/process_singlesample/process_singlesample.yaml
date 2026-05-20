@@ -147,6 +147,14 @@ argument_groups:
         description: Minimum of non-zero values per guide. 
     
   
+  - name: "Cross-modality filtering"
+    arguments:
+      - name: "--intersect_obs"
+        type: boolean_true
+        description: |
+          After per-modality filtering, remove observations that are not present
+          in all processed modalities so that each modality shares the same set of cells.
+
   - name: "Mitochondrial & Ribosomal Gene Detection"
     arguments:
       - name: "--var_gene_names"

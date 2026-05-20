@@ -47,6 +47,17 @@ workflow run_wf {
           ["output": output.output]
         }
       )
+      | view {"After smerging: $it"}
+      | intersect_obs.run(
+        runIf: {id, state -> state.intersect_obs},
+        fromState:[
+          "input": "output",
+          "modalities": "modalities"
+        ],
+        toState: {id, output, state -> 
+          ["output": output.output]
+        }
+      )
       | view {"After singlesample processing: $it"}
       | setState(["output"])
     // output_ch = modalities_ch

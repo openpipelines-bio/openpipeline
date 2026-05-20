@@ -15,6 +15,7 @@ __merge__: process_singlesample.yaml
 
 dependencies:
   - name: dataflow/merge
+  - name: filter/intersect_obs
   - name: workflows/multiomics/process_singlesample_base
 
 resources:

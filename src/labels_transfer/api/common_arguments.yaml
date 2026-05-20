@@ -5,6 +5,7 @@
           type: file
           direction: input
           required: true
+          example: input.h5mu
           description: "The query data to transfer the labels to. Should be a .h5mu file."
           info:
             label: "Query"
@@ -91,7 +92,7 @@
           default: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
           required: false
           multiple: true
-          description: The `.obs` key(s) of the target labels to tranfer.
+          description: The `.obs` key(s) of the target labels to transfer.
 
     - name: Outputs
       arguments:
@@ -99,7 +100,7 @@
           type: "file"
           direction: output
           required: true
-          description: "The query data in .h5mu format with predicted labels transfered from the reference."
+          description: "The query data in .h5mu format with predicted labels transferred from the reference."
           info:
             label: "Output data"
             file_format:

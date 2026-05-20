@@ -18,7 +18,7 @@ arguments:
     direction: output
     required: true
     description: Create report in the specified output directory.
-    example: report
+    example: path/to/report/
 resources:
   - type: python_script
     path: script.py
