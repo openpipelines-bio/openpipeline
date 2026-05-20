@@ -71,28 +71,28 @@ doublet_scores, predicted_doublets = scrub.scrub_doublets(
     min_gene_variability_pctl=par["min_gene_variablity_percent"],
     n_prin_comps=par["num_pca_components"],
     distance_metric=par["distance_metric"],
-    use_approx_neighbors=False,
-)
-
 if par["threshold"] is not None:
     logger.info("\tApplying manual doublet score threshold of %s", par["threshold"])
     predicted_doublets = scrub.call_doublets(threshold=par["threshold"])
+
+try:
     keep_cells = np.invert(predicted_doublets)
-elif predicted_doublets is None:
-    if par["allow_automatic_threshold_detection_fail"]:
-        logger.info(
-            "\tScrublet could not automatically detect the doublet score threshold. Setting output columns to NA."
-        )
-        keep_cells = np.nan
-        doublet_scores = np.nan
-    else:
+except TypeError:
+    # Scrublet might not throw an error and return None if it fails to detect doublets...
+    if par["threshold"]:
+        raise RuntimeError("Scrublet could not detect doublets even with a manual threshold set.")
+    if not par["allow_automatic_threshold_detection_fail"]:
         raise RuntimeError(
             "Scrublet could not automatically detect the doublet score threshold. "
             "Either --allow_automatic_threshold_detection_fail can be used to ignore this failure "
             "and set the corresponding output columns to NA, or a manual --threshold can be provided."
         )
-else:
-    keep_cells = np.invert(predicted_doublets)
+    logger.info(
+        "\tScrublet could not automatically detect the doublet score threshold. Setting output columns to NA."
+    )
+    keep_cells = np.nan
+    doublet_scores = np.nan
+
 
 logger.info("\tStoring output into .obs")
 if par["obs_name_doublet_score"] is not None:
