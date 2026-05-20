@@ -8,6 +8,7 @@ import numpy as np
 from contextlib import contextmanager, closing, nullcontext
 from shutil import copytree, copyfile
 from functools import partial
+from string import Formatter
 import zarr
 
 settings.zarr_write_format = 3
@@ -114,6 +115,22 @@ def calculate_var_statistics(layer):
 
 def calculate_obs_statistics(layer, var):
     logger.info("Calculating statistics to store in .obs")
+    top_n_format = par["output_obs_top_n_vars"]
+    try:
+        field_names = {
+            field_name
+            for _, field_name, _, _ in Formatter().parse(top_n_format)
+            if field_name is not None
+        }
+    except ValueError as e:
+        raise ValueError(
+            f"--output_obs_top_n_vars is not a valid format string: {top_n_format!r}"
+        ) from e
+    if field_names != {"n"}:
+        raise ValueError(
+            f"--output_obs_top_n_vars must contain a '{{n}}' placeholder "
+            f"and no other fields, got: {top_n_format!r}"
+        )
     obs_columns_to_add = {}
     total_counts_var = np.ravel(layer.sum(axis=1))
 
@@ -158,7 +175,6 @@ def calculate_obs_statistics(layer, var):
                 par["top_n_vars"], distributions.T
             )
         }
-        top_n_format = par["output_obs_top_n_vars"]
         obs_columns_to_add |= {
             top_n_format.format(n=n_top): col for n_top, col in top_metrics.items()
         }
