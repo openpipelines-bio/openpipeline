@@ -82,87 +82,130 @@ def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
-def gather_input_data(dir: Path):
-    # /
-    # +-- multi
-    # |    +-- count (raw output)
-    # |    |    +-- feature_reference.csv
-    # |    |    +-- raw_feature_bc_matrix.h5
-    # |    +-- vdj_t
-    # |    |    +-- all_contig_annotations.json
-    # |    +-- vdj_b
-    # |    |    +-- all_contig_annotations.json
-    # |    +-- vdj_t_gd
-    # |    |    +-- all_contig_annotations.json
-    # |    +--  multiplexing_analysis
-    # |         +-- cells_per_tag.json
-    # +-- per_sample_outs (filtered outputs)
-    #      +-- example_1
-    #           +-- antigen_analysis
-    #           |   +-- per_barcode.csv
-    #           |   +-- antigen_specificity_scores.csv
-    #           +-- count
-    #           |   +-- sample_filtered_feature_bc_matrix.h5
-    #           |   +-- antibody_analysis
-    #           |   +-- crispr_analysis
-    #           |       +-- perturbation_efficiencies_by_feature.csv
-    #           |       +-- perturbation_efficiencies_by_target.csv
-    #           +-- vdj_t (unused)
-    #           +-- vdj_b (unused)
-    #           +-- vdj_t_gd (unused)
-    #           +-- metrics_summary.csv
+# Expected cellranger multi output layout:
+# /
+# +-- multi
+# |    +-- count (raw output)
+# |    |    +-- feature_reference.csv
+# |    |    +-- raw_feature_bc_matrix.h5
+# |    +-- vdj_t
+# |    |    +-- all_contig_annotations.json
+# |    +-- vdj_b
+# |    |    +-- all_contig_annotations.json
+# |    +-- vdj_t_gd
+# |    |    +-- all_contig_annotations.json
+# |    +--  multiplexing_analysis
+# |         +-- cells_per_tag.json
+# +-- per_sample_outs (filtered outputs)
+#      +-- example_1
+#           +-- antigen_analysis
+#           |   +-- per_barcode.csv
+#           |   +-- antigen_specificity_scores.csv
+#           +-- count
+#           |   +-- sample_filtered_feature_bc_matrix.h5
+#           |   +-- antibody_analysis
+#           |   +-- crispr_analysis
+#           |       +-- perturbation_efficiencies_by_feature.csv
+#           |       +-- perturbation_efficiencies_by_target.csv
+#           +-- vdj_t (unused)
+#           +-- vdj_b (unused)
+#           +-- vdj_t_gd (unused)
+#           +-- metrics_summary.csv
 
+
+def validate_input_directory(dir: Path):
     if not dir.is_dir():
         raise ValueError("Specified input is not a directory.")
-    folder_contents = list(dir.iterdir())
-    config = dir / "config.csv"
-    if config not in folder_contents:
+    if not (dir / "config.csv").is_file():
         logger.warning(
             "Config.csv not found in input directory, this folder might not be a valid cellranger multi output."
         )
+    per_sample_outs = dir / "per_sample_outs"
+    if not per_sample_outs.is_dir():
+        raise ValueError(
+            f"Input folder must contain the subfolder {per_sample_outs} please make "
+            "sure that the specified input folder is a valid cellranger multi output."
+        )
 
-    required_subfolders = [
-        dir / subfolder_name for subfolder_name in ("per_sample_outs",)
-    ]
-    found_input = {key_: {} for key_ in POSSIBLE_LIBRARY_TYPES}
-    for required_subfolder in required_subfolders:
-        if required_subfolder not in folder_contents:
-            raise ValueError(
-                f"Input folder must contain the subfolder {required_subfolder} please make "
-                "sure that the specified input folder is a valid cellranger multi output."
-            )
 
-    library_type_dir = multi_dir if (multi_dir := (dir / "multi")).is_dir() else dir
+def _list_library_types(dir: Path) -> dict[str, Path]:
+    """List the library-type subfolders under multi/ (or the dir itself if there
+    is no multi/ layout). Validates that only known names are present.
+    """
+    multi_dir = dir / "multi"
+    library_type_dir = multi_dir if multi_dir.is_dir() else dir
+    found = {}
     for library_type in library_type_dir.iterdir():
         if library_type.name in POSSIBLE_LIBRARY_TYPES:
-            if multi_dir.is_dir():
-                if not library_type.is_dir():
-                    logger.warning(
-                        "%s is not a directory. Contents of the multi folder "
-                        "must be directories to be recognized as valid input data",
-                        library_type,
-                    )
-                    continue
-            found_input[library_type.name] = library_type
+            if multi_dir.is_dir() and not library_type.is_dir():
+                logger.warning(
+                    "%s is not a directory. Contents of the multi folder "
+                    "must be directories to be recognized as valid input data",
+                    library_type,
+                )
+                continue
+            found[library_type.name] = library_type
             continue
         if multi_dir.is_dir():
             raise ValueError(
                 f"Contents of the 'multi' folder must be found one of the following: {','.join(POSSIBLE_LIBRARY_TYPES)}."
             )
-    if not found_input["count"]:
-        found_input["count"] = dir
+    return found
 
-    feature_reference = found_input["count"] / "feature_reference.csv"
+
+def _iter_sample_dirs(dir: Path):
+    return [s for s in (dir / "per_sample_outs").iterdir() if s.is_dir()]
+
+
+def detect_count_matrices(dir: Path) -> dict:
+    """Detect count-matrix input: the raw count folder and (optionally) the
+    multiplexing-analysis folder used to split it, or per-sample
+    already-filtered count matrices when --output_filtered_data is set.
+    """
+    library_types = _list_library_types(dir)
+    found = {}
+    for name in ("count", "multiplexing_analysis"):
+        if name in library_types:
+            found[name] = library_types[name]
+    found.setdefault("count", dir)
+
+    if par["output_filtered_data"]:
+        found["filtered_counts"] = {}
+        for samples_dir in _iter_sample_dirs(dir):
+            for file_part in (
+                "count/sample_filtered_feature_bc_matrix.h5",
+                "sample_filtered_feature_bc_matrix.h5",  # Cell Ranger v10
+            ):
+                found_file = samples_dir / file_part
+                if found_file.exists():
+                    found["filtered_counts"][samples_dir.name] = found_file
+                    break
+            else:
+                raise ValueError(
+                    f"Expected a filtered count matrix under {samples_dir}, "
+                    "but none was found. Make sure the input directory is a "
+                    "valid cellranger multi output that contains per-sample "
+                    "filtered feature-barcode matrices."
+                )
+    return found
+
+
+def detect_modality_input(dir: Path, count_dir: Path) -> dict:
+    """Detect auxiliary modality inputs that enrich the per-sample mudatas:
+    vdj_*, antigen_analysis, feature_reference, metrics_summary, and the
+    perturbation_efficiencies_* files.
+    """
+    library_types = _list_library_types(dir)
+    found = {}
+    for name in ("vdj_t", "vdj_b", "vdj_t_gd", "antigen_analysis"):
+        if name in library_types:
+            found[name] = library_types[name]
+
+    feature_reference = count_dir / "feature_reference.csv"
     if feature_reference.is_file():
-        found_input["feature_reference"] = feature_reference
+        found["feature_reference"] = feature_reference
 
-    per_sample_outs_dir = dir / "per_sample_outs"
-    samples_dirs = [
-        samplepath
-        for samplepath in per_sample_outs_dir.iterdir()
-        if samplepath.is_dir()
-    ]
-    for samples_dir in samples_dirs:
+    for samples_dir in _iter_sample_dirs(dir):
         for file_part in (
             "metrics_summary.csv",
             "count/crispr_analysis/perturbation_efficiencies_by_feature.csv",
@@ -174,29 +217,8 @@ def gather_input_data(dir: Path):
             found_file = samples_dir / file_part
             if found_file.exists():
                 file_name = found_file.name.removesuffix(".csv")
-                found_input.setdefault(file_name, {})[samples_dir.name] = found_file
-
-    if par["output_filtered_data"]:
-        for samples_dir in samples_dirs:
-            for file_part in (
-                "count/sample_filtered_feature_bc_matrix.h5",
-                "sample_filtered_feature_bc_matrix.h5",  # Cell Ranger v10
-            ):
-                found_file = samples_dir / file_part
-                if found_file.exists():
-                    found_input.setdefault("filtered_counts", {})[samples_dir.name] = (
-                        found_file
-                    )
-                    break
-            else:
-                raise ValueError(
-                    f"Expected a filtered count matrix under {samples_dir}, "
-                    "but none was found. Make sure the input directory is a "
-                    "valid cellranger multi output that contains per-sample "
-                    "filtered feature-barcode matrices."
-                )
-
-    return found_input
+                found.setdefault(file_name, {})[samples_dir.name] = found_file
+    return found
 
 
 def proces_perturbation(
@@ -433,9 +455,29 @@ def process_vdj(mudatas: dict[str, mudata.MuData], vdj_folder_path: str):
     return mudatas
 
 
-def get_modalities(input_data):
+def build_per_sample_mudatas(
+    count_input: dict, modality_input: dict
+) -> dict[str, mudata.MuData]:
+    """Construct the initial per-sample mudatas from the detected count input.
+
+    When per-sample filtered matrices are available, each maps 1:1 to an output
+    mudata. Otherwise the raw aggregated matrix is split using the
+    multiplexing_analysis folder, which requires the metrics_summary files to
+    resolve the barcode → sample mapping.
+    """
+    if count_input.get("filtered_counts"):
+        return process_counts_filtered(count_input["filtered_counts"])
+    return process_counts(
+        count_input["count"],
+        count_input.get("multiplexing_analysis"),
+        modality_input.get("metrics_summary"),
+    )
+
+
+def get_modalities(
+    mudatas: dict[str, mudata.MuData], modality_input: dict
+) -> dict[str, mudata.MuData]:
     dispatcher = {
-        "multiplexing_analysis": split_samples,
         "vdj_t": process_vdj,
         "vdj_b": process_vdj,
         "vdj_t_gd": process_vdj,
@@ -449,21 +491,8 @@ def get_modalities(input_data):
         ),
         "antigen_analysis": process_antigen_analysis,
     }
-    if input_data.get("filtered_counts"):
-        mudata_per_sample = process_counts_filtered(
-            input_data["filtered_counts"],
-        )
-    else:
-        mudata_per_sample = process_counts(
-            input_data["count"],
-            input_data["multiplexing_analysis"],
-            input_data["metrics_summary"],
-        )
-    for modality_name, modality_data_path in input_data.items():
-        if (
-            modality_name in ("count", "multiplexing_analysis", "filtered_counts")
-            or not modality_data_path
-        ):
+    for modality_name, modality_data_path in modality_input.items():
+        if not modality_data_path:
             continue
         try:
             parser_function = dispatcher[modality_name]
@@ -472,8 +501,8 @@ def get_modalities(input_data):
                 "This component does not support the "
                 f"parsing of the '{modality_name}' yet."
             ) from e
-        mudata_per_sample = parser_function(mudata_per_sample, modality_data_path)
-    return mudata_per_sample
+        mudatas = parser_function(mudatas, modality_data_path)
+    return mudatas
 
 
 def main():
@@ -488,8 +517,13 @@ def main():
         f"Expected exactly one wildcard character (*) in output "
         f"files template ({par['output']}). Found {par['output'].count('*')}"
     )
-    input_data = gather_input_data(cellranger_multi_dir)
-    result = get_modalities(input_data)
+    validate_input_directory(cellranger_multi_dir)
+    count_input = detect_count_matrices(cellranger_multi_dir)
+    modality_input = detect_modality_input(
+        cellranger_multi_dir, count_dir=count_input["count"]
+    )
+    mudatas = build_per_sample_mudatas(count_input, modality_input)
+    result = get_modalities(mudatas, modality_input)
     output_files = {
         par["output"].replace("*", sample_name) for sample_name in result.keys()
     }
