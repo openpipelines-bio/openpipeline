@@ -50,9 +50,9 @@
 
 * `workflows/multiomics/process_samples`: refactored to use a shared `process_singlesample_base` subworkflow, which is also used by the new `process_singlesample` workflow to avoid code duplication (PR #1147).
 
-* Bump anndata to `0.12.16` (PR #1174 and PR #).
+* Bump anndata to `0.12.16` (PR #1174 and PR #1188).
 
-* Bump mudata to `0.3.8` (PR #).
+* Bump mudata to `0.3.8` (PR #1188).
 
 * Add missing `example` fields to several component and workflow configurations (PR #1067).
 
