@@ -3452,7 +3452,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.9.7",
-    "git_commit" : "cf511aef5fc42196e4d2f795e771d68add8b7495",
+    "git_commit" : "0ad75308919011d0156b35f282fb7df16b8f2ceb",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3510,7 +3510,6 @@ tempscript=".viash_script.py"
 cat > "$tempscript" << VIASHMAIN
 import sys
 import h5py
-import mudata
 from anndata.io import read_elem, write_elem
 from anndata import AnnData, settings
 from scipy.sparse import csr_array
@@ -3812,25 +3811,18 @@ def main():
         else f"{mod_element_loc}/layers/{par['layer']}"
     )
     # In order to match the format (zarr or h5) of the input to the output
-    modality_anndatas = {}
     with mudata_opener(par["input"], mode="r") as (open_mudata, input_is_zarr):
         logger.info(
             "Openened %s in %s format.", par["input"], "zarr" if input_is_zarr else "h5"
         )
         mods = list(open_mudata["mod"].keys())
         logger.info("Found modalities: %s", ", ".join(mods))
-        # Create AnnData object for only the metadata (var and obs)
-        # We need all of the modalities for this in order to be able to adjust
-        # the 'global' (across all modalities) dataframes in the MuData object
-        # when writing back the output.
-        for mod in mods:
-            logger.info("Reading metadata frames for modality %s", mod)
-            var = read_elem(open_mudata[f"/mod/{mod}/var"])
-            logger.info(".var shape for %s is %s", mod, var.shape)
-            obs = read_elem(open_mudata[f"/mod/{mod}/obs"])
-            logger.info(".obs shape for %s is %s", mod, obs.shape)
-            modality_anndatas[mod] = AnnData(var=var, obs=obs)
-
+        logger.info("Reading metadata frames for modality %s", par["modality"])
+        var = read_elem(open_mudata[f"{mod_element_loc}/var"])
+        logger.info(".var shape for %s is %s", par["modality"], var.shape)
+        obs = read_elem(open_mudata[f"{mod_element_loc}/obs"])
+        logger.info(".obs shape for %s is %s", par["modality"], obs.shape)
+        minimal_anndata = AnnData(var=var, obs=obs)
         logger.info("Reading layer %s", "X" if not par["layer"] else par["layer"])
         layer = read_elem(open_mudata[layer_element_name])
         logger.info("Found layer with shape %s and dtype %s", layer.shape, layer.dtype)
@@ -3840,26 +3832,11 @@ def main():
     layer.eliminate_zeros()
 
     var_columns_to_add = calculate_var_statistics(layer)
-    modality_anndatas[par["modality"]].var = modality_anndatas[
-        par["modality"]
-    ].var.assign(**var_columns_to_add)
+    minimal_anndata.var = minimal_anndata.var.assign(**var_columns_to_add)
 
     # obs statistics
-    obs_columns_to_add = calculate_obs_statistics(
-        layer, modality_anndatas[par["modality"]].var
-    )
-    modality_anndatas[par["modality"]].obs = modality_anndatas[
-        par["modality"]
-    ].obs.assign(**obs_columns_to_add)
-
-    # Use MuData internals to construct global metadata dataframes
-    logger.info("Constructing global (across all modalities) obs and var dataframes")
-    mudata_skeleton = mudata.MuData(modality_anndatas)
-    logger.info(
-        "Global var and obs dataframes had shape %s and %s respectively",
-        mudata_skeleton.var.shape,
-        mudata_skeleton.obs.shape,
-    )
+    obs_columns_to_add = calculate_obs_statistics(layer, minimal_anndata.var)
+    minimal_anndata.obs = minimal_anndata.obs.assign(**obs_columns_to_add)
 
     logger.info("Writing to %s", par["output"])
     try:
@@ -3880,14 +3857,8 @@ def main():
     )  # zarr format does not need to be closed
     logger.info("Overwriting slots.")
     with context(write_opener(par["output"], mode="a")) as open_output:
-        write_elem(
-            open_output[mod_element_loc], "obs", modality_anndatas[par["modality"]].obs
-        )
-        write_elem(
-            open_output[mod_element_loc], "var", modality_anndatas[par["modality"]].var
-        )
-        write_elem(open_output, "var", mudata_skeleton.var)
-        write_elem(open_output, "obs", mudata_skeleton.obs)
+        write_elem(open_output[mod_element_loc], "obs", minimal_anndata.obs)
+        write_elem(open_output[mod_element_loc], "var", minimal_anndata.var)
     if input_is_zarr:
         zarr.consolidate_metadata(open_output.store)
     logger.info("Finished!")
