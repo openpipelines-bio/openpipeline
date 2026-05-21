@@ -62,6 +62,8 @@
 
 * `convert/from_h5ad_h5mu`: store and reset var index names to avoid issues with a change in mudata (PR #1184).
 
+* `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the features used (PR #1186)
+
 # openpipelines 4.0.4
 
 ## BUG FIXES

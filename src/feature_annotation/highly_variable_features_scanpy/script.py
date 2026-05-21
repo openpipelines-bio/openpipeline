@@ -215,9 +215,11 @@ logger.info("\tStoring output into .var")
 if par.get("var_name_filter", None) is not None:
     data.var[par["var_name_filter"]] = out["highly_variable"]
 
-if par.get("varm_name", None) is not None and "mean_bin" in out:
-    # drop mean_bin as mudata/anndata doesn't support tuples
-    data.varm[par["varm_name"]] = out.drop("mean_bin", axis=1)
+if par.get("varm_name", None) is not None:
+    # drop mean_bin if present as mudata/anndata doesn't support tuples
+    if "mean_bin" in out.columns:
+        out = out.drop(columns=["mean_bin"])
+    data.varm[par["varm_name"]] = out
 
 logger.info("Writing h5mu to file")
 write_h5ad_to_h5mu_with_compression(
