@@ -120,7 +120,6 @@ engines:
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
           - scvelo~=0.3.3,!=0.3.4
-          - scipy~=1.14.1
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
   - type: executable

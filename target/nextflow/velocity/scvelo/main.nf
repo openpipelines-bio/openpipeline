@@ -3444,13 +3444,12 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.12.11",
+            "anndata~=0.12.16",
             "awkward",
-            "scipy!=1.17.*",
-            "mudata~=0.3.2",
+            "scipy~=1.17.1",
+            "mudata~=0.3.8",
             "scanpy~=1.11.4",
-            "scvelo~=0.3.3,!=0.3.4",
-            "scipy~=1.14.1"
+            "scvelo~=0.3.3,!=0.3.4"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3486,7 +3485,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/scvelo",
     "viash_version" : "0.9.7",
-    "git_commit" : "526816547071e1c3495e84d6f02e4e67b975ef06",
+    "git_commit" : "691dc84b1cd07f32ade08940ea344803c8127e30",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
