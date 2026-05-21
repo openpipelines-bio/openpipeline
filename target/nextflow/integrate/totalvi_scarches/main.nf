@@ -3473,10 +3473,10 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.12.11",
+            "anndata~=0.12.16",
             "awkward",
-            "scipy!=1.17.*",
-            "mudata~=0.3.2",
+            "scipy~=1.17.1",
+            "mudata~=0.3.8",
             "scvi-tools[cuda]~=1.4.1"
           ],
           "script" : [
@@ -3503,7 +3503,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi_scarches",
     "viash_version" : "0.9.7",
-    "git_commit" : "0ad75308919011d0156b35f282fb7df16b8f2ceb",
+    "git_commit" : "3601d717406d61e03b5ea306343662c81b6976a4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
