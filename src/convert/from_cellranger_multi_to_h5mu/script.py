@@ -463,7 +463,7 @@ def build_per_sample_mudatas(
     When per-sample filtered matrices are available, each maps 1:1 to an output
     mudata. Otherwise the raw aggregated matrix is split using the
     multiplexing_analysis folder, which requires the metrics_summary files to
-    resolve the barcode → sample mapping.
+    resolve the barcode -> sample mapping.
     """
     if count_input.get("filtered_counts"):
         return process_counts_filtered(count_input["filtered_counts"])
