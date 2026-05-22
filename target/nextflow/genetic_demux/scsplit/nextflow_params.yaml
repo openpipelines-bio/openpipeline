@@ -1,0 +1,24 @@
+# Input
+# vcf: "input.vcf"
+# bam: "input.bam"
+# bar: "barcodes.txt"
+tag: "CB"
+# com: "common_snvs.txt"
+# num: 123
+sub: 10
+ems: 30
+# dbl: 123.0
+# vcf_known: "known_variants.vcf"
+geno: false
+
+# Output
+# output: "$id.$key.output"
+# ref: "foo"
+# alt: "foo"
+# psc: "foo"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments

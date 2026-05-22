@@ -1,0 +1,29 @@
+# Inputs
+input: # please fill in - example: "input_file.h5mu"
+modality: "rna"
+# input_layer: "log_normalized"
+# var_gene_names: "gene_names"
+
+# Gene list inputs
+# s_genes: ["gene1", "gene2", "gene3"]
+# s_genes_file: "s_gene_list.txt"
+# g2m_genes: ["gene1", "gene2", "gene3"]
+# g2m_genes_file: "g2m_gene_list.txt"
+# gene_pool: ["gene1", "gene2", "gene3"]
+# gene_pool_file: "gene_pool.txt"
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+obs_phase: "phase"
+obs_s_score: "S_score"
+obs_g2m_score: "G2M_score"
+# output_compression: "gzip"
+
+# Arguments
+n_bins: 25
+random_state: 0
+allow_missing_genes: false
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

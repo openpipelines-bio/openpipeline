@@ -1,0 +1,17 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# var_gene_names: "gene_symbol"
+pattern: # please fill in - example: ["MIR\d+", "AL\d+", "LINC\d+", "AC\d+", "AP\d+"]
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+do_subset: false
+var_name_filter: "filter_with_pattern"
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments
