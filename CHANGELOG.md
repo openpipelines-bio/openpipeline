@@ -62,6 +62,8 @@
 
 * `convert/from_h5ad_h5mu`: store and reset var index names to avoid issues with a change in mudata (PR #1184).
 
+* `convert/from_cellranger_multi_to_h5mu`: fix `KeyError` when sample IDs are purely numeric strings (e.g. `"660418809813"`); pandas was coercing them to floats while reading the metrics summary, causing a mismatch with the per-sample directory names (PR #XXXX).
+
 # openpipelines 4.0.4
 
 ## BUG FIXES

@@ -239,7 +239,11 @@ def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
     if multiplexing_info:
         # Get the mapping between the barcode and the sample ID from one of the metrics files
         metrics_file = pd.read_csv(
-            list(metrics_files.values())[0], decimal=".", quotechar='"', thousands=","
+            list(metrics_files.values())[0],
+            decimal=".",
+            quotechar='"',
+            thousands=",",
+            dtype={"Group Name": str, "Metric Value": str},
         )
         sample_ids = metrics_file[metrics_file["Metric Name"] == "Sample ID"]
         barcode_sample_mapping = (
