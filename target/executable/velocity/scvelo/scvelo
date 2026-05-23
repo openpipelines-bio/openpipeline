@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component velocity scvelo"
-LABEL org.opencontainers.image.created="2026-05-22T03:50:25Z"
+LABEL org.opencontainers.image.created="2026-05-23T03:49:43Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="99c0b6ed053240ac105e7169e4a85dd7e5b6d281"
+LABEL org.opencontainers.image.revision="d98dbca99b27cb4e22b55c459b3c68c1ca30d4c1"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
