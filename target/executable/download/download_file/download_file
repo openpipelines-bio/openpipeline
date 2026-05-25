@@ -450,9 +450,9 @@ FROM bash:5.1.16
 ENTRYPOINT []
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component download download_file"
-LABEL org.opencontainers.image.created="2026-05-24T03:50:21Z"
+LABEL org.opencontainers.image.created="2026-05-25T03:50:49Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a864504d410aa1fa8039c746bd94e5af175fff02"
+LABEL org.opencontainers.image.revision="e275c11ed2896b381d91da2a823965cc4fef0891"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
