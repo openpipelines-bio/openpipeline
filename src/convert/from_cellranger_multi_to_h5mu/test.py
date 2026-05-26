@@ -437,4 +437,4 @@ def test_numerical_sample_names(run_component, tmp_path, input_fixed_rna):
 
 
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__, "-k", "test_numerical_sample_names"]))
+    sys.exit(pytest.main([__file__]))
