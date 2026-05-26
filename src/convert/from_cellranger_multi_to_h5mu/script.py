@@ -243,7 +243,8 @@ def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
             decimal=".",
             quotechar='"',
             thousands=",",
-            dtype={"Group Name": str, "Metric Value": str},
+            usecols=("Group Name", "Metric Value", "Metric Name"),
+            dtype=pd.StringDtype,
         )
         sample_ids = metrics_file[metrics_file["Metric Name"] == "Sample ID"]
         barcode_sample_mapping = (
