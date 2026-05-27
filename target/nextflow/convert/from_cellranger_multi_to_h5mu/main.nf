@@ -3358,7 +3358,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "691dc84b1cd07f32ade08940ea344803c8127e30",
+    "git_commit" : "f78d237d0a4c0ae3edcabbcc12b1efc86033265e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3679,7 +3679,12 @@ def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
     if multiplexing_info:
         # Get the mapping between the barcode and the sample ID from one of the metrics files
         metrics_file = pd.read_csv(
-            list(metrics_files.values())[0], decimal=".", quotechar='"', thousands=","
+            list(metrics_files.values())[0],
+            decimal=".",
+            quotechar='"',
+            thousands=",",
+            usecols=("Group Name", "Metric Value", "Metric Name"),
+            dtype=pd.StringDtype(),
         )
         sample_ids = metrics_file[metrics_file["Metric Name"] == "Sample ID"]
         barcode_sample_mapping = (

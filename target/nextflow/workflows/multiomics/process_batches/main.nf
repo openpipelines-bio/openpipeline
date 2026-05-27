@@ -3564,7 +3564,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.9.7",
-    "git_commit" : "691dc84b1cd07f32ade08940ea344803c8127e30",
+    "git_commit" : "f78d237d0a4c0ae3edcabbcc12b1efc86033265e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

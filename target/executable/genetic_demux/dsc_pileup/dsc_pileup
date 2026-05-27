@@ -456,9 +456,9 @@ RUN git clone https://github.com/samtools/htslib.git /tmp/htslib && cd /tmp/htsl
 RUN git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux dsc_pileup"
-LABEL org.opencontainers.image.created="2026-05-21T07:11:45Z"
+LABEL org.opencontainers.image.created="2026-05-27T07:31:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="691dc84b1cd07f32ade08940ea344803c8127e30"
+LABEL org.opencontainers.image.revision="f78d237d0a4c0ae3edcabbcc12b1efc86033265e"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
