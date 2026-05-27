@@ -1,4 +1,4 @@
-# openpipelines (unreleased)
+# openpipelines 4.1.0
 
 ## NEW FEATURES
 
