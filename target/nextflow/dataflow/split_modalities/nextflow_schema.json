@@ -28,7 +28,7 @@
           "format": "path",
           "exists": true,
           "description": "Path to a single .h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"sample_path\"`, direction: `input`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"sample_path\"`, direction: `input`, example: `\"input.h5mu\"`. ",
           "default": "sample_path"
         },
         "output": {
@@ -47,7 +47,7 @@
         },
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
           "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",

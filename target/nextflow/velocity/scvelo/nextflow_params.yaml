@@ -1,5 +1,5 @@
 # Inputs
-input: # please fill in - example: "path/to/file"
+input: # please fill in - example: "input.h5mu"
 # counts_layer: "foo"
 modality: # please fill in - example: "foo"
 layer_spliced: "spliced"
@@ -8,7 +8,7 @@ layer_ambiguous: "ambiguous"
 
 # Outputs
 # output: "$id.$key.output"
-# output_h5mu: "$id.$key.output_h5mu"
+# output_h5mu: "$id.$key.output_h5mu.h5mu"
 # output_compression: "gzip"
 
 # Filtering and normalization

@@ -1,9 +1,9 @@
 # Input
-# sam: "path/to/file"
+# sam: "input.bam"
 tag_group: "CB"
 tag_umi: "UB"
 # plp: "foo"
-# vcf: "path/to/file"
+# vcf: "input.vcf"
 field: "GT"
 geno_error_offset: 0.1
 geno_error_coeff: 0.0

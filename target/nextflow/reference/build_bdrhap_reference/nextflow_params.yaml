@@ -1,7 +1,7 @@
 # Inputs
 genome_fasta: # please fill in - example: ["genome_sequence.fa.gz"]
 gtf: # please fill in - example: ["transcriptome_annotation.gtf.gz"]
-# extra_sequences: ["path/to/file"]
+# extra_sequences: ["extra_sequence_1.fa.gz", "extra_sequence_2.fa.gz"]
 
 # Outputs
 # reference_archive: "$id.$key.reference_archive.gz"

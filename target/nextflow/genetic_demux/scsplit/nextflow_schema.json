@@ -27,19 +27,19 @@
           "type": "string",
           "format": "path",
           "description": "VCF from mixed BAM",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"input.vcf\"`. "
         },
         "bam": {
           "type": "string",
           "format": "path",
           "description": "mixed sample BAM",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"input.bam\"`. "
         },
         "bar": {
           "type": "string",
           "format": "path",
           "description": "barcodes whitelist",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"barcodes.txt\"`. "
         },
         "tag": {
           "type": "string",
@@ -51,7 +51,7 @@
           "type": "string",
           "format": "path",
           "description": "common SNVs",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"common_snvs.txt\"`. "
         },
         "num": {
           "type": "integer",
@@ -79,7 +79,7 @@
           "type": "string",
           "format": "path",
           "description": "known individual genotypes to limit distinguishing variants to available variants, so that users do not need to redo genotyping on selected variants, otherwise any variants could be selected as distinguishing variants.",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"known_variants.vcf\"`. "
         },
         "geno": {
           "type": "boolean",

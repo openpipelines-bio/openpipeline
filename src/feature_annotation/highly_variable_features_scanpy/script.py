@@ -22,6 +22,7 @@ par = {
     "varm_name": "hvg",
     "obs_batch_key": "batch",
     "layer": "log_transformed",
+    "features_to_exclude": None,
 }
 
 meta = {"resources_dir": "."}
@@ -102,6 +103,38 @@ if par["var_input"]:
     input_anndata.var[par["var_input"]] = data.var[par["var_input"]]
     input_anndata = subset_vars(input_anndata, par["var_input"])
 
+# Exclude user-specified features from HVG calculation
+excluded_features_mask = None
+if par.get("features_to_exclude"):
+    features_to_exclude = set(par["features_to_exclude"])
+    logger.info(
+        "\tExcluding %d specified features from HVG calculation",
+        len(features_to_exclude),
+    )
+    excluded_features_mask = input_anndata.var_names.isin(features_to_exclude)
+    n_excluded = excluded_features_mask.sum()
+    n_not_found = len(features_to_exclude) - n_excluded
+    if n_not_found > 0:
+        not_found = features_to_exclude - set(
+            input_anndata.var_names[excluded_features_mask]
+        )
+        logger.warning(
+            "\t%d features to exclude were not found in the data: %s",
+            n_not_found,
+            list(not_found)[:10],
+        )
+    logger.info("\tExcluding %d features from HVG calculation", n_excluded)
+    if n_excluded == input_anndata.n_vars:
+        raise ValueError(
+            f"All features ({n_excluded}) are in the exclusion list. "
+            "Please check your --features_to_exclude list."
+        )
+    # Store original var_names for later reindexing
+    original_var_names = input_anndata.var_names.copy()
+    # Subset to non-excluded features for HVG calculation using subset_vars
+    input_anndata = subset_vars(input_anndata, ~excluded_features_mask)
+    logger.info("\t%d features remaining for HVG calculation", input_anndata.n_vars)
+
 logger.info("\tUnfiltered data: %s", data)
 
 logger.info("\tComputing hvg")
@@ -141,6 +174,17 @@ try:
     out = sc.pp.highly_variable_genes(**hvg_args)
     if par["var_input"] is not None:
         out.index = input_anndata.var.index
+        out = out.reindex(index=data.var.index, method=None)
+        out.highly_variable = out.highly_variable.fillna(False)
+        assert (out.index == data.var.index).all(), (
+            "Expected output index values to be equivalent to the input index"
+        )
+    elif par.get("features_to_exclude") is not None:
+        # Reindex to include excluded features, marking them as non-HVG
+        out.index = input_anndata.var.index
+        out = out.reindex(index=original_var_names, method=None)
+        out.highly_variable = out.highly_variable.fillna(False)
+        # Further reindex to match data.var.index (for consistency with var_input path)
         out = out.reindex(index=data.var.index, method=None)
         out.highly_variable = out.highly_variable.fillna(False)
         assert (out.index == data.var.index).all(), (

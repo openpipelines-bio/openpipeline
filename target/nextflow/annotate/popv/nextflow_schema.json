@@ -78,7 +78,7 @@
         },
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
           "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
@@ -98,7 +98,7 @@
             "type": "string"
           },
           "description": "Methods to call cell types",
-          "help_text": "Type: `string`, multiple: `True`, required, example: `[\"knn_on_scvi\";\"scanvi\"]`, choices: ``celltypist`, `knn_on_bbknn`, `knn_on_scanorama`, `knn_on_scvi`, `onclass`, `rf`, `scanvi`, `svm``. "
+          "help_text": "Type: `string`, multiple: `True`, required, example: `[\"KNN_SCVI\";\"SCANVI_POPV\"]`, choices: ``CELLTYPIST`, `KNN_BBKNN`, `KNN_HARMONY`, `KNN_SCANORAMA`, `KNN_SCVI`, `ONCLASS`, `Random_Forest`, `SCANVI_POPV`, `Support_Vector``. "
         }
       }
     },

@@ -23,6 +23,10 @@ def main():
     input_data = read_h5ad(par["input"], mod=par["modality"])
     if par["input_layer"]:
         input_data = AnnData(X=input_data.layers[par["input_layer"]])
+    number_of_observations = input_data.n_obs
+    assert number_of_observations > 1, (
+        f"Need at least two observations to perform CLR normalization. Found: {number_of_observations}"
+    )
     # CLR always normalizes the .X layer, so we have to create an AnnData file with
     # the input layer at .X
     normalized_counts = pt.pp.clr(input_data, axis=par["axis"], inplace=False)

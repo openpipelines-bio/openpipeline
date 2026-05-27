@@ -1,6 +1,6 @@
 name: "pca"
 namespace: "dimred"
-version: "v4.0.0"
+version: "v4.1.0"
 authors:
 - name: "Dries De Maeyer"
   roles:
@@ -17,6 +17,22 @@ authors:
       role: "Principal Scientist"
 argument_groups:
 - name: "Arguments"
+  arguments:
+  - type: "string"
+    name: "--output_compression"
+    description: "Compression format to use for the output AnnData and/or Mudata H5\
+      \ files.\nBy default no compression is applied.\n"
+    info: null
+    example:
+    - "gzip"
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "inputs"
   arguments:
   - type: "file"
     name: "--input"
@@ -62,6 +78,47 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+- name: "Options"
+  arguments:
+  - type: "integer"
+    name: "--num_components"
+    description: "Number of principal components to compute. Defaults to 50, or 1\
+      \ - minimum dimension size of selected representation."
+    info: null
+    example:
+    - 25
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--chunked"
+    description: "If True, perform an incremental PCA on segments of a predefined\
+      \ size. Setting this flag automatically implies zero centering.\nMust be specified\
+      \ together with --chunk_size.\n"
+    info: null
+    direction: "input"
+  - type: "integer"
+    name: "--chunk_size"
+    description: "Number of observations to include in each chunk. Required if chunked=True\
+      \ was passed.\n"
+    info: null
+    required: false
+    min: 2
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--seed"
+    description: "Used to set the initial states for the optimization. \n"
+    info: null
+    required: false
+    min: 0
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Outputs"
+  arguments:
   - type: "file"
     name: "--output"
     alternatives:
@@ -106,36 +163,11 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "integer"
-    name: "--num_components"
-    description: "Number of principal components to compute. Defaults to 50, or 1\
-      \ - minimum dimension size of selected representation."
-    info: null
-    example:
-    - 25
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
   - type: "boolean_true"
     name: "--overwrite"
     description: "Allow overwriting .obsm, .varm and .uns slots."
     info: null
     direction: "input"
-  - type: "string"
-    name: "--output_compression"
-    description: "Compression format to use for the output AnnData and/or Mudata objects.\n\
-      By default no compression is applied.\n"
-    info: null
-    example:
-    - "gzip"
-    required: false
-    choices:
-    - "gzip"
-    - "lzf"
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
 resources:
 - type: "python_script"
   path: "script.py"
@@ -147,8 +179,7 @@ resources:
 - type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
-description: "Computes PCA coordinates, loadings and variance decomposition. Uses\
-  \ the implementation of scikit-learn [Pedregosa11].\n"
+description: "Computes PCA coordinates, loadings and variance decomposition.\n"
 test_resources:
 - type: "python_script"
   path: "test.py"
@@ -238,8 +269,8 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "python:3.12-slim"
-  target_tag: "v4.0.0"
+  image: "python:3.13-slim"
+  target_tag: "v4.1.0"
   namespace_separator: "/"
   setup:
   - type: "apt"
@@ -249,9 +280,10 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "anndata~=0.12.7"
+    - "anndata~=0.12.16"
     - "awkward"
-    - "mudata~=0.3.2"
+    - "scipy~=1.17.1"
+    - "mudata~=0.3.8"
     - "scanpy~=1.11.4"
     script:
     - "exec(\"try:\\n  import zarr; from importlib.metadata import version\\nexcept\
@@ -259,10 +291,16 @@ engines:
       ).partition(\\\".\\\")[0]) > 2\")"
     upgrade: true
   test_setup:
+  - type: "apt"
+    packages:
+    - "git"
+    interactive: false
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.8.0"
+    - "viashpy==0.10.0"
+    github:
+    - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -272,12 +310,13 @@ build_info:
   engine: "docker"
   output: "target/executable/dimred/pca"
   executable: "target/executable/dimred/pca/pca"
-  viash_version: "0.9.4"
-  git_commit: "f90d0a51c5ff8b48cdb2fad45fac652817e0c855"
+  viash_version: "0.9.7"
+  git_commit: "868456c6b787f96223f11da00aa5f14e9ff86f7c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.1.0-3-gf90d0a51c5f"
+  git_tag: "v4.0.0"
 package_config:
   name: "openpipeline"
+  version: "v4.1.0"
   summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
   description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
     \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
@@ -298,15 +337,15 @@ package_config:
     - path: "src/workflows/utils/labels_ci.config"
       description: "Adds the correct memory and CPU labels when running on the Viash\
         \ Hub CI."
-  viash_version: "0.9.4"
+  viash_version: "0.9.7"
   source: "src"
   target: "target"
   config_mods:
   - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
     )'"
-  - ".version := \"v4.0.0\""
-  - ".engines[.type == 'docker'].target_tag := 'v4.0.0'"
+  - ".version := \"v4.1.0\""
+  - ".engines[.type == 'docker'].target_tag := 'v4.1.0'"
   keywords:
   - "single-cell"
   - "multimodal"

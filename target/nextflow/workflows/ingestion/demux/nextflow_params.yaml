@@ -1,7 +1,7 @@
 # Arguments
 id: # please fill in - example: "foo"
 input: # please fill in - example: "bcl_dir"
-sample_sheet: # please fill in - example: "bcl_dir"
+sample_sheet: # please fill in - example: "SampleSheet.csv"
 demultiplexer: "bcl2fastq"
 # ignore_missing: true
 # output_fastq: "$id.$key.output_fastq"

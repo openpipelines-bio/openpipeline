@@ -1,7 +1,7 @@
 arguments:
   - name: "--output_compression"
     description: |
-      Compression format to use for the output AnnData and/or Mudata objects.
+      Compression format to use for the output AnnData and/or Mudata H5 files.
       By default no compression is applied.
     type: string
     choices: ["gzip", "lzf"]

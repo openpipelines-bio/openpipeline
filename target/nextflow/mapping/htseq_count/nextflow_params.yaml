@@ -5,7 +5,7 @@ reference: # please fill in - example: "reference.gtf"
 # Output
 # output: "$id.$key.output.tsv"
 # output_delimiter: "	"
-# output_sam: ["$id.$key.output_sam_*.BAM"]
+# output_sam: ["$id.$key.output_sam_*.SAM"]
 # output_sam_format: "foo"
 
 # Arguments

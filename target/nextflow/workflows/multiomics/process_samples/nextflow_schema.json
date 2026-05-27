@@ -213,6 +213,19 @@
         }
       }
     },
+    "cross-modality filtering": {
+      "title": "Cross-modality filtering",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "intersect_obs": {
+          "type": "boolean",
+          "description": "After per-modality filtering and multisample processing, remove observations\nthat are not present in all processed modalities so that each modality shares\nthe same set of cells.\n",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
+    },
     "highly variable features detection": {
       "title": "Highly variable features detection",
       "type": "object",
@@ -416,6 +429,9 @@
     },
     {
       "$ref": "#/$defs/gdo filtering options"
+    },
+    {
+      "$ref": "#/$defs/cross-modality filtering"
     },
     {
       "$ref": "#/$defs/highly variable features detection"

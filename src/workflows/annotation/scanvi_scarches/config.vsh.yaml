@@ -39,6 +39,7 @@ argument_groups:
         type: string
         description: "The .obs field in the input (query) dataset containing the batch labels."
         example: "sample"
+        default: "sample_id"
         required: true
       - name: "--input_obs_size_factor"
         type: string
@@ -90,6 +91,7 @@ argument_groups:
         description: The `.obs` key containing the target labels.
       - name: "--reference_obs_batch_label"
         type: string
+        default: "sample_id"
         description:  "The .obs field in the reference dataset containing the batch labels."
         example: "sample"
         required: true
@@ -127,6 +129,7 @@ argument_groups:
           Value in the --reference_obs_batch_label field that indicates unlabeled observations
       - name: "--reference_var_hvg"
         type: string
+        default: "filter_with_hvg"
         required: false
         description: ".var column containing highly variable genes. If not provided, genes will not be subset."
       - name: "--reference_var_gene_names"
@@ -208,7 +211,7 @@ argument_groups:
         type: file
         required: true
         direction: output
-        description: The query data in .h5mu format with predicted labels predicted from the classifier trained on the reference.
+        description: The annotated output .h5mu file.
         example: output.h5mu
       - name: "--output_obs_predictions"
         type: string

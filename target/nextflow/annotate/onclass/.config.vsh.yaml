@@ -1,6 +1,6 @@
 name: "onclass"
 namespace: "annotate"
-version: "v4.0.0"
+version: "v4.1.0"
 authors:
 - name: "Jakub Majercik"
   roles:
@@ -90,6 +90,8 @@ argument_groups:
     name: "--cl_nlp_emb_file"
     description: "The .nlp.emb file with the cell type embeddings."
     info: null
+    example:
+    - "cl.ontology.nlp.emb"
     must_exist: true
     create_parent: true
     required: true
@@ -100,6 +102,8 @@ argument_groups:
     name: "--cl_ontology_file"
     description: "The .ontology file with the cell type ontology."
     info: null
+    example:
+    - "cl.ontology"
     must_exist: true
     create_parent: true
     required: true
@@ -110,6 +114,8 @@ argument_groups:
     name: "--cl_obo_file"
     description: "The .obo file with the cell type ontology."
     info: null
+    example:
+    - "cl.obo"
     must_exist: true
     create_parent: true
     required: true
@@ -217,8 +223,8 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--output_compression"
-    description: "Compression format to use for the output AnnData and/or Mudata objects.\n\
-      By default no compression is applied.\n"
+    description: "Compression format to use for the output AnnData and/or Mudata H5\
+      \ files.\nBy default no compression is applied.\n"
     info: null
     example:
     - "gzip"
@@ -364,15 +370,16 @@ engines:
 - type: "docker"
   id: "docker"
   image: "python:3.11"
-  target_tag: "v4.0.0"
+  target_tag: "v4.1.0"
   namespace_separator: "/"
   setup:
   - type: "python"
     user: false
     packages:
-    - "anndata~=0.12.7"
+    - "anndata~=0.12.16"
     - "awkward"
-    - "mudata~=0.3.2"
+    - "scipy~=1.17.1"
+    - "mudata~=0.3.8"
     - "OnClass~=1.3"
     - "tensorflow"
     - "obonet"
@@ -389,7 +396,7 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.8.0"
+    - "viashpy==0.10.0"
     github:
     - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
     upgrade: true
@@ -401,12 +408,13 @@ build_info:
   engine: "docker"
   output: "target/nextflow/annotate/onclass"
   executable: "target/nextflow/annotate/onclass/main.nf"
-  viash_version: "0.9.4"
-  git_commit: "f90d0a51c5ff8b48cdb2fad45fac652817e0c855"
+  viash_version: "0.9.7"
+  git_commit: "868456c6b787f96223f11da00aa5f14e9ff86f7c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "2.1.0-3-gf90d0a51c5f"
+  git_tag: "v4.0.0"
 package_config:
   name: "openpipeline"
+  version: "v4.1.0"
   summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
   description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
     \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
@@ -427,15 +435,15 @@ package_config:
     - path: "src/workflows/utils/labels_ci.config"
       description: "Adds the correct memory and CPU labels when running on the Viash\
         \ Hub CI."
-  viash_version: "0.9.4"
+  viash_version: "0.9.7"
   source: "src"
   target: "target"
   config_mods:
   - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
     .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
     )'"
-  - ".version := \"v4.0.0\""
-  - ".engines[.type == 'docker'].target_tag := 'v4.0.0'"
+  - ".version := \"v4.1.0\""
+  - ".engines[.type == 'docker'].target_tag := 'v4.1.0'"
   keywords:
   - "single-cell"
   - "multimodal"

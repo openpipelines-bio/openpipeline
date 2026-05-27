@@ -1,3 +1,95 @@
+# openpipelines 4.1.0
+
+## NEW FEATURES
+
+* `qc/calculate_qc_metrics`: added support for MuData encoded in Zarr format (PR #1140).
+
+* `dataflow/split_modalities`: added support for MuData encoded in Zarr format (PR #1152)
+
+* `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).
+
+* `annotate/consensus_vote`: new component computing a (weighted) majority vote across cell type labels from multiple annotation methods (PR #1151).
+* 
+* `filter/filter_with_quantile`: added a component to filter numerical .obs or .var columns based on quantile thresholds, with optional subsetting (PR #1146).
+
+* `dimred/pca`: added possibility to do chunked processing using arguments `chunks` and `chunk_size`. Also added a `seed` argument in order to better control the variability between executions (PR #1157).
+
+* `workflows/multiomics/process_singlesample`: New workflow for processing RNA, protein and GDO modalities of individual samples (PR #1147).
+
+* `transform/clear_slots`: New component that can be used to remove all items from slots of a MuData object (PR #1171).
+
+* `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: add `--intersect_obs` option to remove observations that are not present in all processed modalities, so each modality shares the same set of cells (PR #1173, 1175).
+
+* `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169, PR #1177)
+
+## MAJOR CHANGES
+
+* `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140 and PR #1191).
+
+* `annotate/popv`: bump version to 0.6.1 (PR #1167).
+
+## MINOR CHANGES
+
+* `dataflow/split_modalities`: improve memory consumption by only reading one modality at the same time (PR #1152).
+
+* `qc/calculate_qc_metrics`: bump python version to `3.13` (PR #1140).
+
+* `transform/clr`: provide descriptive error message when there are too few observations to perform normalization (PR #1137)
+
+* Bump viash to 0.9.7 (PR #1145)
+
+* `annotate/celltypist` and `workflows/annotation/celltypist`: set `--input_layer` default to `log_normalized` and `--reference_var_input` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
+
+* `annotate/singler`: set `--input_layer` default to `log_normalized` and `--reference_var_input` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
+
+* `workflows/annotation/scanvi_scarches`: set `--input_obs_batch_label` and `--reference_obs_batch_label` defaults to `sample_id` and `--reference_var_hvg` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155, #1189).
+
+* `cluster/leiden`: added `flavor`, `n_iterations` and `seed` arguments (PR #1132)
+
+* `cluster/leiden`: avoid creating unnecessary copies of the output data (PR #1132).
+
+* `workflows/multiomics/process_samples`: refactored to use a shared `process_singlesample_base` subworkflow, which is also used by the new `process_singlesample` workflow to avoid code duplication (PR #1147).
+
+* Bump anndata to `0.12.16` (PR #1174 and PR #1188).
+
+* Bump mudata to `0.3.8` (PR #1188).
+
+* Bump lianapy to `1.7.1` (PR #1188).
+
+* Add missing `example` fields to several component and workflow configurations (PR #1067).
+
+* Testing: bump `viashpy` to 0.10.0 (PR #1178).
+
+## BUG FIXES
+
+* `dataflow/split_h5mu`: pin scipy version to 1.16.3 to avoid regression that corrupts large sparse matrix indexing (PR #1153).
+
+* `convert/from_h5ad_h5mu`: store and reset var index names to avoid issues with a change in mudata (PR #1184).
+
+* `convert/from_cellranger_multi_to_h5mu`: fix `KeyError` in multiplexed experiments when sample IDs look like floating-point numbers (e.g. `"156573596.0"`); the metrics summary is now parsed with string dtype so sample IDs continue to match the per-sample directory names (PR #1192).
+
+# openpipelines 4.0.4
+
+## BUG FIXES
+
+* `convert/from_cellranger_multi_to_h5mu`: fix converting VDJ data when one or more samples has no AIRR data (PR #1149).
+
+# openpipelines 4.0.3
+
+* `dataflow/split_h5mu`: ensure subsetted modality is written as a .copy() (not a view) before writing file, to prevent `obsp` sparse indexing errors during serialization (PR #1138).
+
+# openpipelines 4.0.2
+
+## BUG FIXES
+
+* `convert/from_cellranger_multi_to_h5mu`: fix converting Cell Ranger output that contains no feature reference CSV file (PR #1136)
+
+# openpipelines 4.0.1
+
+## BUG FIXES
+
+* Fix parsing of CSV's failing when using remote paths (S3), causing an `InvocationTargetException` error (PR #1133).
+
 # openpipelines 4.0.0
 
 ## BREAKING CHANGES

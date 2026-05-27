@@ -19,6 +19,7 @@ argument_groups:
         alternatives: --sjdbGTFfile
         type: file
         direction: input
+        example: transcriptome.gtf
         description: | 
           Specifies the path to the file with annotated transcripts in the standard GTF
           format. STAR will extract splice junctions from this file and use them to greatly improve

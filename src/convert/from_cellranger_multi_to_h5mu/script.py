@@ -3,6 +3,7 @@ import sys
 import scanpy
 import pandas as pd
 import mudata
+import anndata
 import numpy as np
 from scirpy.io import read_10x_vdj
 from collections import defaultdict
@@ -150,7 +151,7 @@ def gather_input_data(dir: Path):
         found_input["count"] = dir
 
     feature_reference = found_input["count"] / "feature_reference.csv"
-    if feature_reference:
+    if feature_reference.is_file():
         found_input["feature_reference"] = feature_reference
 
     per_sample_outs_dir = dir / "per_sample_outs"
@@ -238,7 +239,12 @@ def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
     if multiplexing_info:
         # Get the mapping between the barcode and the sample ID from one of the metrics files
         metrics_file = pd.read_csv(
-            list(metrics_files.values())[0], decimal=".", quotechar='"', thousands=","
+            list(metrics_files.values())[0],
+            decimal=".",
+            quotechar='"',
+            thousands=",",
+            usecols=("Group Name", "Metric Value", "Metric Name"),
+            dtype=pd.StringDtype(),
         )
         sample_ids = metrics_file[metrics_file["Metric Name"] == "Sample ID"]
         barcode_sample_mapping = (
@@ -375,13 +381,15 @@ def process_vdj(mudatas: dict[str, mudata.MuData], vdj_folder_path: str):
     with all_config_json_file.open("r") as open_json:
         json_obj = json.load(open_json)
     for _, mudata_obj in mudatas.items():
+        vdj_anndata = anndata.AnnData()
         json_for_sample = [
             entry for entry in json_obj if entry["barcode"] in mudata_obj.obs_names
         ]
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".json") as tfile:
-            json.dump(json_for_sample, tfile, indent=4)
-            tfile.flush()
-            vdj_anndata = read_10x_vdj(tfile.name)
+        if json_for_sample:
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".json") as tfile:
+                json.dump(json_for_sample, tfile, indent=4)
+                tfile.flush()
+                vdj_anndata = read_10x_vdj(tfile.name)
         mudata_obj.mod[vdj_type] = vdj_anndata
     return mudatas
 

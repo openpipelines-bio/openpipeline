@@ -16,6 +16,8 @@ info:
       namespace: test_workflows/multiomics/process_batches
     - name: workflow_test2
       namespace: test_workflows/multiomics/process_batches
+    - name: workflow_test3
+      namespace: test_workflows/multiomics/process_batches
 argument_groups:
   - name: Inputs
     arguments:
@@ -47,6 +49,15 @@ argument_groups:
         direction: output
         description: Destination path to the output.
         example: output.h5mu
+  - name: "Cross-modality filtering"
+    arguments:
+      - name: "--intersect_obs"
+        type: boolean_true
+        description: |
+          After per-modality multisample processing, remove observations that are
+          not present in all processed modalities so that each modality shares the
+          same set of cells.
+
   - name: "Highly variable features detection"
     arguments:
       - name: "--highly_variable_features_var_output"
@@ -63,6 +74,13 @@ argument_groups:
         description: |
           If specified, highly-variable genes are selected within each batch separately and merged. This simple 
           process avoids the selection of batch-specific genes and acts as a lightweight batch correction method.
+      - name: "--highly_variable_features_features_to_exclude"
+        required: false
+        type: string
+        multiple: true
+        description: |
+          User-defined list of feature names to exclude from HVG calculation. These features will be excluded from HVG selection but will remain in the output data.
+        example: ["MT-CO1", "MT-CO2", "MT-ND1"]
   - name: "QC metrics calculation options"
     arguments:
       - name: "--var_qc_metrics"
@@ -145,6 +163,7 @@ argument_groups:
          
 dependencies:
   - name: dataflow/merge
+  - name: filter/intersect_obs
   - name: workflows/multiomics/split_modalities
     alias: split_modalities_workflow
   - name: workflows/prot/prot_multisample
@@ -168,6 +187,9 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf2
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf3
   - path: /resources_test/concat_test_data
   - path: /resources_test/10x_5k_anticmv
 runners:

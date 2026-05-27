@@ -94,6 +94,22 @@
           "type": "integer",
           "description": "Number of highly-variable features to keep",
           "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "highly_variable_features_var_name_filter_to_exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of feature names to exclude from HVG calculation.\nCommon use cases include excluding mitochondrial genes, ribosomal genes,\nor cell cycle genes that may dominate variance but are not biologically\ninformative for clustering",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"MT-CO1\";\"MT-CO2\";\"MT-ND1\"]`. "
+        },
+        "highly_variable_features_features_to_exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "User-defined list of feature names to exclude from HVG calculation",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"MT-CO1\";\"MT-CO2\";\"MT-ND1\"]`. "
         }
       }
     },

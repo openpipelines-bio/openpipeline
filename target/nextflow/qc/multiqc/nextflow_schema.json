@@ -37,7 +37,7 @@
           "type": "string",
           "format": "path",
           "description": "Create report in the specified output directory.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`, example: `\"report\"`. ",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`, example: `\"path/to/report\"`. ",
           "default": "$id.$key.output"
         }
       }

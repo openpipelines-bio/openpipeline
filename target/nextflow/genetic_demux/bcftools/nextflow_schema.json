@@ -31,7 +31,7 @@
           "format": "path",
           "exists": true,
           "description": "VCF files, must have the same sample columns appearing in the same order.",
-          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `[\"input_1.vcf\";\"input_2.vcf\"]`. "
         },
         "concat": {
           "type": "boolean",

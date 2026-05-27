@@ -4,6 +4,7 @@ import mudata as md
 import anndata as ad
 import pandas as pd
 import re
+from io import StringIO
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 from textwrap import dedent
 
@@ -15,6 +16,11 @@ meta = {
     "executable": "./target/docker/dataflow/split_modalities/split_modalities",
 }
 ## VIASH END
+
+
+@pytest.fixture(params=["h5", "zarr"])
+def file_format(request):
+    return request.param
 
 
 @pytest.fixture
@@ -46,8 +52,11 @@ def input_h5mu(input_modality_1, input_modality_2):
 
 
 @pytest.fixture
-def input_h5mu_path(write_mudata_to_file, input_h5mu):
-    return write_mudata_to_file(input_h5mu)
+def input_h5mu_path(input_h5mu, random_path, file_format):
+    output_path = random_path("h5mu" if file_format != "zarr" else "zarr")
+    write_func = input_h5mu.write_zarr if file_format == "zarr" else input_h5mu.write
+    write_func(output_path)
+    return output_path
 
 
 @pytest.mark.parametrize("compression", ["gzip", None])
@@ -59,6 +68,7 @@ def test_split(
     input_modality_1,
     input_modality_2,
     compression,
+    file_format,
 ):
     output_dir = random_path()
     output_types = random_path(extension="csv")
@@ -75,18 +85,19 @@ def test_split(
     run_component(args)
     assert output_types.is_file()
     assert output_dir.is_dir()
-
+    output_extension = "h5mu" if file_format != "zarr" else "zarr"
     # check output dir
     dir_content = [
         h5mu_file
         for h5mu_file in output_dir.iterdir()
-        if h5mu_file.suffix == ".h5mu" and h5mu_file != input_h5mu_path
+        if h5mu_file.suffix == f".{output_extension}" and h5mu_file != input_h5mu_path
     ]
-    mod1_file = output_dir / f"{input_h5mu_path.stem}_mod1.h5mu"
-    mod2_file = output_dir / f"{input_h5mu_path.stem}_mod2.h5mu"
+    mod1_file = output_dir / f"{input_h5mu_path.stem}_mod1.{output_extension}"
+    mod2_file = output_dir / f"{input_h5mu_path.stem}_mod2.{output_extension}"
     assert set(dir_content) == set([mod1_file, mod2_file])
-    mod1 = md.read_h5mu(mod1_file)
-    mod2 = md.read_h5mu(mod2_file)
+    reader = md.read_zarr if file_format == "zarr" else md.read_h5mu
+    mod1 = reader(mod1_file)
+    mod2 = reader(mod2_file)
     assert mod1.n_mod == 1
     assert mod2.n_mod == 1
 
@@ -118,9 +129,11 @@ def test_split(
         mod2,{mod2_file.name}
         """
     )
-    with open(output_types, "r") as open_csv_file:
-        result = open_csv_file.read()
-        assert result == expected_csv_output
+    expected_csv = pd.read_csv(
+        StringIO(expected_csv_output), sep=",", header=0, index_col=0
+    )
+    found_csv = pd.read_csv(output_types, sep=",", header=0, index_col=0)
+    pd.testing.assert_frame_equal(expected_csv, found_csv, check_like=True)
 
 
 if __name__ == "__main__":

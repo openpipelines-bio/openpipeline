@@ -1,6 +1,6 @@
 # Input
 # plp: "foo"
-# init_cluster: "path/to/file"
+# init_cluster: "init_cluster.txt"
 nsample: 2
 aux_files: false
 verbose: 100
