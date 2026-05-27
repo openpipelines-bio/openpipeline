@@ -1,8 +1,10 @@
 import sys
 import pytest
 import math
+import fileinput
 from mudata import read_h5mu
-from shutil import copytree
+from shutil import copytree, ignore_patterns
+from pathlib import Path
 import json
 
 ## VIASH START
@@ -370,6 +372,68 @@ def test_vdj_no_cells(run_component, tmp_path, input_no_vdj_cells):
     output_path = samples[0]
     converted_data = read_h5mu(output_path)
     assert converted_data["vdj_t"].n_obs == 0
+
+
+def test_numerical_sample_names(run_component, tmp_path, input_fixed_rna):
+    """
+    Test purely numerical sample names. This tests the matching
+    between the metrics summary file and the name of the
+    per-sample directories when all sample names are numerical.
+    """
+    rename_samples = {
+        "Colorectal_BC3": "156573596.0",
+        "Liver_BC1": "576221069.1",
+        "Ovarian_BC2": "358367694.2",
+        "Pancreas_BC4": "550142661.3",
+    }
+    input_with_numerical_names = tmp_path / "input_numerical_sample_names"
+    copytree(
+        input_fixed_rna,
+        input_with_numerical_names,
+        ignore=ignore_patterns(*rename_samples.keys()),
+    )
+    for dir_source, dir_target in rename_samples.items():
+        copytree(
+            Path(input_fixed_rna) / "per_sample_outs" / dir_source,
+            input_with_numerical_names / "per_sample_outs" / dir_target,
+        )
+
+    summary_files = [
+        sample_dir / "metrics_summary.csv"
+        for sample_dir in (input_with_numerical_names / "per_sample_outs").iterdir()
+    ]
+    for line in fileinput.input(summary_files, inplace=True):
+        for old_name, new_name in rename_samples.items():
+            line = line.replace(old_name, new_name)
+        sys.stdout.write(line)
+
+    output_dir = tmp_path / "converted"
+    output_path_template = output_dir / "*.h5mu"
+    samples_csv = tmp_path / "samples.csv"
+
+    # run component
+    run_component(
+        [
+            "--input",
+            input_with_numerical_names,
+            "--output",
+            str(output_path_template),
+            "--output_compression",
+            "gzip",
+            "--sample_csv",
+            samples_csv,
+        ]
+    )
+    assert output_dir.is_dir()
+    # check output
+    samples = [item for item in output_dir.iterdir() if item.is_file()]
+    sample_names = {item.name.removesuffix(".h5mu") for item in samples}
+    assert sample_names == {
+        "156573596.0",
+        "576221069.1",
+        "358367694.2",
+        "550142661.3",
+    }
 
 
 if __name__ == "__main__":

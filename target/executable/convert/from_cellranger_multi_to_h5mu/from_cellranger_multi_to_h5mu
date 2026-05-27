@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_cellranger_multi_to_h5mu"
-LABEL org.opencontainers.image.created="2026-05-26T03:50:10Z"
+LABEL org.opencontainers.image.created="2026-05-27T03:50:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d46d28b6ca5874115984e19b9b3d08794a4c0edb"
+LABEL org.opencontainers.image.revision="5a57e8142b0d9984718a54a2fa12d2d4ef2ab5ed"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1408,7 +1408,12 @@ def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
     if multiplexing_info:
         # Get the mapping between the barcode and the sample ID from one of the metrics files
         metrics_file = pd.read_csv(
-            list(metrics_files.values())[0], decimal=".", quotechar='"', thousands=","
+            list(metrics_files.values())[0],
+            decimal=".",
+            quotechar='"',
+            thousands=",",
+            usecols=("Group Name", "Metric Value", "Metric Name"),
+            dtype=pd.StringDtype(),
         )
         sample_ids = metrics_file[metrics_file["Metric Name"] == "Sample ID"]
         barcode_sample_mapping = (

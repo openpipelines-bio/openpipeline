@@ -66,6 +66,8 @@
 
 * `convert/from_h5ad_h5mu`: store and reset var index names to avoid issues with a change in mudata (PR #1184).
 
+* `convert/from_cellranger_multi_to_h5mu`: fix `KeyError` in multiplexed experiments when sample IDs look like floating-point numbers (e.g. `"156573596.0"`); the metrics summary is now parsed with string dtype so sample IDs continue to match the per-sample directory names (PR #1192).
+
 # openpipelines 4.0.4
 
 ## BUG FIXES
