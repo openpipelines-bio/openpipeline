@@ -3330,7 +3330,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "5a57e8142b0d9984718a54a2fa12d2d4ef2ab5ed",
+    "git_commit" : "84566e4d3838544e6862c6eeb4c97254cd78a22b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
