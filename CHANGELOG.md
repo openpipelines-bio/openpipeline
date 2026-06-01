@@ -1,3 +1,9 @@
+# openpipelines x.x.x
+
+## MINOR CHANGES
+
+* `dataflow/concatenate_h5mu`: Remove the unused parameter `--obs_sample_name` from the configuration (PR #1195).
+
 # openpipelines 4.1.0
 
 ## NEW FEATURES
