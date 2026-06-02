@@ -1,4 +1,4 @@
-# openpipelines (unreleased)
+# openpipelines 4.1.0
 
 ## NEW FEATURES
 
@@ -24,7 +24,7 @@
 
 ## MAJOR CHANGES
 
-* `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
+* `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140 and PR #1191).
 
 * `annotate/popv`: bump version to 0.6.1 (PR #1167).
 
@@ -42,7 +42,7 @@
 
 * `annotate/singler`: set `--input_layer` default to `log_normalized` and `--reference_var_input` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
 
-* `workflows/annotation/scanvi_scarches`: set `--input_obs_batch_label` and `--reference_obs_batch_label` defaults to `sample_id` and `--reference_var_hvg` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
+* `workflows/annotation/scanvi_scarches`: set `--input_obs_batch_label` and `--reference_obs_batch_label` defaults to `sample_id` and `--reference_var_hvg` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155, #1189).
 
 * `cluster/leiden`: added `flavor`, `n_iterations` and `seed` arguments (PR #1132)
 
@@ -50,7 +50,11 @@
 
 * `workflows/multiomics/process_samples`: refactored to use a shared `process_singlesample_base` subworkflow, which is also used by the new `process_singlesample` workflow to avoid code duplication (PR #1147).
 
-* Bump anndata to `0.12.11` (PR #1174).
+* Bump anndata to `0.12.16` (PR #1174 and PR #1188).
+
+* Bump mudata to `0.3.8` (PR #1188).
+
+* Bump lianapy to `1.7.1` (PR #1188).
 
 * Add missing `example` fields to several component and workflow configurations (PR #1067).
 
@@ -63,6 +67,8 @@
 * `dataflow/split_h5mu`: pin scipy version to 1.16.3 to avoid regression that corrupts large sparse matrix indexing (PR #1153).
 
 * `convert/from_h5ad_h5mu`: store and reset var index names to avoid issues with a change in mudata (PR #1184).
+
+* `convert/from_cellranger_multi_to_h5mu`: fix `KeyError` in multiplexed experiments when sample IDs look like floating-point numbers (e.g. `"156573596.0"`); the metrics summary is now parsed with string dtype so sample IDs continue to match the per-sample directory names (PR #1192).
 
 # openpipelines 4.0.4
 
