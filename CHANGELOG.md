@@ -1,3 +1,15 @@
+# openpipelines x.x.x
+
+## NEW FEATURES
+
+* `qc/calculate_qc_metrics`: log1p-transformed qc metrics (`log1p_<col>`) are now added to `.var` and `.obs` by default via the new `--log1p_transform` flag (default `true`, mirroring scanpy behavior) (PR #1182).
+
+* `workflows/qc/qc`, `workflows/rna/rna_multisample`, `workflows/prot/prot_multisample`, `workflows/multiomics/process_samples` and `workflows/multiomics/process_batches`: expose the `--log1p_transform` flag (PR #1182).
+
+## MINOR CHANGES
+
+* `qc/calculate_qc_metrics`: parametrize the names of the top-n-vars `.obs` output columns with the `--output_obs_top_n_vars` flag (PR #1182).
+
 # openpipelines 4.1.0
 
 ## NEW FEATURES
@@ -59,8 +71,6 @@
 * Add missing `example` fields to several component and workflow configurations (PR #1067).
 
 * Testing: bump `viashpy` to 0.10.0 (PR #1178).
-
-* `qc/calculate_qc_metrics`: write log1p transformed qc metrics to the output object using `log1p_transform` flag and parametrize top n vars .obs output fields with `--output_obs_top_n_vars` flag (PR #1182).
 
 ## BUG FIXES
 
