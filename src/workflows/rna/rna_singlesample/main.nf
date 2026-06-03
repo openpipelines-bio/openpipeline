@@ -65,9 +65,13 @@ workflow run_wf {
         ]
         
         if (state.min_percentile_counts || state.max_percentile_counts) {
-        // If percentile-based filtering is enabled, total counts per cell must be calculated.
+        // If percentile-based filtering is enabled, total counts per cell must be calculated,
+        // together with their log1p transform. The quantile filter operates on the
+        // "log1p_total_counts" column, so both must be requested explicitly here rather than
+        // relying on the qc component defaults.
           args += [
-            "output_obs_total_counts_vars": "total_counts"
+            "output_obs_total_counts_vars": "total_counts",
+            "log1p_transform": true
           ]
         }
         if (state.var_name_mitochondrial_genes) {
@@ -147,7 +151,8 @@ workflow run_wf {
       },
       args: [
           // Quantile filtering is always performed on the log-transformed total counts,
-          // which are calculated by default by the qc component.
+          // which are requested explicitly from the qc component above
+          // (output_obs_total_counts_vars + log1p_transform).
           "obs_column": "log1p_total_counts",
           "obs_log1p_transform": false,
           "obs_name_filter": "filter_with_percentile"
