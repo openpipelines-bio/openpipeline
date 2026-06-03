@@ -3241,7 +3241,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/multiqc",
     "viash_version" : "0.9.7",
-    "git_commit" : "f78d237d0a4c0ae3edcabbcc12b1efc86033265e",
+    "git_commit" : "8e853b9ba61f20501d64767ba726836b9156fabc",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

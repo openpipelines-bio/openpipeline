@@ -3322,6 +3322,18 @@ meta = [
           "multiple_sep" : ","
         },
         {
+          "type" : "boolean",
+          "name" : "--log1p_transform",
+          "description" : "Compute log1p-transformed versions of the calculated QC metrics. For each emitted\nmetric column `<col>`, an additional column `log1p_<col>` is added containing\n`log1p(<col>)`. Mirrors scanpy's `log1p` flag.\n",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "string",
           "name" : "--output_obs_num_nonzero_vars",
           "description" : "Name of column in .obs describing, for each observation, the number of stored values\n(including explicit zeroes). In other words, the name of the column that counts\nfor each row the number of columns that contain data.\n",
@@ -3595,7 +3607,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample",
     "viash_version" : "0.9.7",
-    "git_commit" : "f78d237d0a4c0ae3edcabbcc12b1efc86033265e",
+    "git_commit" : "8e853b9ba61f20501d64767ba726836b9156fabc",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3715,6 +3727,7 @@ workflow run_wf {
           "modality": state.modality,
           "var_qc_metrics": state.var_qc_metrics,
           "top_n_vars": state.top_n_vars,
+          "log1p_transform": state.log1p_transform,
           "output_obs_num_nonzero_vars": state.output_obs_num_nonzero_vars,
           "output_obs_total_counts_vars": state.output_obs_total_counts_vars,
           "output_var_num_nonzero_obs": state.output_var_num_nonzero_obs,
