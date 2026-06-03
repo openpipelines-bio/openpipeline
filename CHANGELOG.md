@@ -1,6 +1,6 @@
 # openpipelines x.x.x
 
-## NEW FEATURES
+## BREAKING CHANGES
 
 * `qc/calculate_qc_metrics`: log1p-transformed qc metrics (`log1p_<col>`) are now added to `.var` and `.obs` by default via the new `--log1p_transform` flag (default `true`, mirroring scanpy behavior) (PR #1182).
 
