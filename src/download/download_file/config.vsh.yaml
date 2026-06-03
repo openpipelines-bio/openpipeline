@@ -16,10 +16,8 @@ arguments:
     type: string
     description: "URL to a file to download."
     required: true
-    example: "https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
   - name: "--output"
     type: file
-    example: pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
     required: true
     direction: output
     description: "Path where to store output."
