@@ -38,6 +38,7 @@ except (TypeError, ValueError):
     pass
 
 # Set var index names to avoid https://github.com/scverse/mudata/issues/146
+# TODO: Will be fixed in mudata 0.3.9
 for key, name in var_index_names.items():
     mudata.mod[key].var.index.name = name
 

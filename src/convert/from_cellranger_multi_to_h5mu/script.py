@@ -282,7 +282,12 @@ def _aggregated_counts_to_per_sample_mudatas(
     if multiplexing_info:
         # Get the mapping between the barcode and the sample ID from one of the metrics files
         metrics_file = pd.read_csv(
-            list(metrics_files.values())[0], decimal=".", quotechar='"', thousands=","
+            list(metrics_files.values())[0],
+            decimal=".",
+            quotechar='"',
+            thousands=",",
+            usecols=("Group Name", "Metric Value", "Metric Name"),
+            dtype=pd.StringDtype(),
         )
         sample_ids = metrics_file[metrics_file["Metric Name"] == "Sample ID"]
         barcode_sample_mapping = (
