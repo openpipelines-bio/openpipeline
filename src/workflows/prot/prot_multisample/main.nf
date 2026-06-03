@@ -30,6 +30,7 @@ workflow run_wf {
           "output": state.workflow_output,
           "input": state.input,
           "top_n_vars": state.top_n_vars,
+          "log1p_transform": state.log1p_transform,
           "var_qc_metrics": null,
           "input_layer": state.layer, // Use the non-transformed layer
           "modality": "prot",
