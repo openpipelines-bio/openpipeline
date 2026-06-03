@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "filter_10xh5",
+  "description": "Filter a 10x h5 dataset.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "An h5 file from the 10x genomics website.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"pbmc_1k_protein_v3_raw_feature_bc_matrix.h5\"`. "
+        },
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5 file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5\"`, direction: `output`, example: `\"pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5\"`. ",
+          "default": "$id.$key.output.h5"
+        },
+        "min_library_size": {
+          "type": "integer",
+          "description": "Minimum library size.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
+          "default": 0
+        },
+        "min_cells_per_gene": {
+          "type": "integer",
+          "description": "Minimum number of cells per gene.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
+          "default": 0
+        },
+        "keep_feature_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Specify which feature types will never be filtered out",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"Antibody Capture\"]`. "
+        },
+        "verbose": {
+          "type": "boolean",
+          "description": "Increase verbosity",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

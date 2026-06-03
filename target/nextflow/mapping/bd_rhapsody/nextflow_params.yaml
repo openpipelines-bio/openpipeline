@@ -1,0 +1,102 @@
+# Inputs
+# reads: ["WTALibrary_S1_L001_R1_001.fastq.gz", "WTALibrary_S1_L001_R2_001.fastq.gz"]
+# reads_atac: ["ATACLibrary_S2_L001_R1_001.fastq.gz", "ATACLibrary_S2_L001_R2_001.fastq.gz", "ATACLibrary_S2_L001_I2_001.fastq.gz"]
+
+# References
+# reference_archive: "RhapRef_Human_WTA_2023-02.tar.gz"
+# targeted_reference: ["BD_Rhapsody_Immune_Response_Panel_Hs.fasta"]
+# abseq_reference: ["AbSeq_reference.fasta"]
+# supplemental_reference: ["supplemental_reference.fasta"]
+
+# Outputs
+# output_dir: "$id.$key.output_dir"
+# output_seurat: "$id.$key.output_seurat.rds"
+# output_mudata: "$id.$key.output_mudata.h5mu"
+# metrics_summary: "$id.$key.metrics_summary.csv"
+# pipeline_report: "$id.$key.pipeline_report.html"
+# rsec_mols_per_cell: "$id.$key.rsec_mols_per_cell.zip"
+# dbec_mols_per_cell: "$id.$key.dbec_mols_per_cell.zip"
+# rsec_mols_per_cell_unfiltered: "$id.$key.rsec_mols_per_cell_unfiltered.zip"
+# bam: "$id.$key.bam.bam"
+# bam_index: "$id.$key.bam_index.bai"
+# bioproduct_stats: "$id.$key.bioproduct_stats.csv"
+# dimred_tsne: "$id.$key.dimred_tsne.csv"
+# dimred_umap: "$id.$key.dimred_umap.csv"
+# immune_cell_classification: "$id.$key.immune_cell_classification.csv"
+
+# Multiplex outputs
+# sample_tag_metrics: "$id.$key.sample_tag_metrics.csv"
+# sample_tag_calls: "$id.$key.sample_tag_calls.csv"
+# sample_tag_counts: ["$id.$key.sample_tag_counts_*.zip"]
+# sample_tag_counts_unassigned: "$id.$key.sample_tag_counts_unassigned.zip"
+
+# VDJ Outputs
+# vdj_metrics: "$id.$key.vdj_metrics.csv"
+# vdj_per_cell: "$id.$key.vdj_per_cell.csv"
+# vdj_per_cell_uncorrected: "$id.$key.vdj_per_cell_uncorrected.csv"
+# vdj_dominant_contigs: "$id.$key.vdj_dominant_contigs.csv"
+# vdj_unfiltered_contigs: "$id.$key.vdj_unfiltered_contigs.csv"
+
+# ATAC-Seq outputs
+# atac_metrics: "$id.$key.atac_metrics.csv"
+# atac_metrics_json: "$id.$key.atac_metrics_json.json"
+# atac_fragments: "$id.$key.atac_fragments.gz"
+# atac_fragments_index: "$id.$key.atac_fragments_index.tbi"
+# atac_transposase_sites: "$id.$key.atac_transposase_sites.gz"
+# atac_transposase_sites_index: "$id.$key.atac_transposase_sites_index.tbi"
+# atac_peaks: "$id.$key.atac_peaks.gz"
+# atac_peaks_index: "$id.$key.atac_peaks_index.tbi"
+# atac_peak_annotation: "$id.$key.atac_peak_annotation.gz"
+# atac_cell_by_peak: "$id.$key.atac_cell_by_peak.zip"
+# atac_cell_by_peak_unfiltered: "$id.$key.atac_cell_by_peak_unfiltered.zip"
+# atac_bam: "$id.$key.atac_bam.bam"
+# atac_bam_index: "$id.$key.atac_bam_index.bai"
+
+# AbSeq Cell Calling outputs
+# protein_aggregates_experimental: "$id.$key.protein_aggregates_experimental.csv"
+
+# Putative Cell Calling Settings
+# cell_calling_data: "mRNA"
+# cell_calling_bioproduct_algorithm: "Basic"
+# cell_calling_atac_algorithm: "Basic"
+# exact_cell_count: 10000
+# expected_cell_count: 20000
+
+# Intronic Reads Settings
+# exclude_intronic_reads: false
+
+# Multiplex Settings
+# sample_tags_version: "human"
+# tag_names: ["4-mySample", "9-myOtherSample", "6-alsoThisSample"]
+
+# VDJ arguments
+# vdj_version: "human"
+
+# ATAC options
+# predefined_atac_peaks: "predefined_peaks.bed"
+
+# Additional options
+run_name: "sample"
+generate_bam: false
+# long_reads: true
+
+# Advanced options
+# custom_star_params: "--alignIntronMax 6000 --outFilterScoreMinOverLread 0.1 --limitOutSJcollapsed 2000000"
+# custom_bwa_mem2_params: "-k 16 -w 200 -r"
+
+# CWL-runner arguments
+parallel: true
+timestamps: false
+
+# Undocumented arguments
+# abseq_umi: 123
+# target_analysis: true
+# vdj_jgene_evalue: 123.0
+# vdj_vgene_evalue: 123.0
+# write_filtered_reads: true
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments

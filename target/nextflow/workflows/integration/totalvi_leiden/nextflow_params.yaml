@@ -1,0 +1,45 @@
+# Inputs
+id: # please fill in - example: "foo"
+input: # please fill in - example: "input.h5mu"
+rna_modality: "rna"
+prot_modality: "prot"
+# input_layer_rna: "foo"
+# input_layer_protein: "foo"
+obs_batch: "sample_id"
+# obs_size_factor: "foo"
+# obs_categorical_covariate: ["foo"]
+# obs_continuous_covariate: ["foo"]
+# var_gene_names: "foo"
+# var_protein_names: "foo"
+# var_input: "foo"
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_model: "totalvi_model_reference"
+
+# TotalVI Training Options
+# max_epochs: 123
+early_stopping: true
+
+# TotalVI Integration Options
+obsm_integrated: "X_integrated_totalvi"
+obsm_normalized_rna_output: "X_totalvi_normalized_rna"
+obsm_normalized_protein_output: "X_totalvi_normalized_protein"
+
+# Neighbour calculation
+uns_neighbors: "totalvi_integration_neighbors"
+obsp_neighbor_distances: "totalvi_integration_distances"
+obsp_neighbor_connectivities: "totalvi_integration_connectivities"
+
+# Clustering options
+obs_cluster: "totalvi_integration_leiden"
+leiden_resolution: [1.0]
+
+# Umap options
+obsm_umap: "X_totalvi_umap"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments
