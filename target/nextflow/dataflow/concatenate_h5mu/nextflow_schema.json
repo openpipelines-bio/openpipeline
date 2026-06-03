@@ -56,12 +56,6 @@
           "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         },
-        "obs_sample_name": {
-          "type": "string",
-          "description": "Name of the .obs key under which to add the sample names.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"sample_id\"`. ",
-          "default": "sample_id"
-        },
         "other_axis_mode": {
           "type": "string",
           "description": "How to handle the merging of other axis (var, obs, ...).\n\n  - None: keep no data\n  - same: only keep elements of the matrices which are the same in each of the samples\n  - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)\n  - first: keep the annotation from the first sample\n  - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)\n  - move: identical to 'same', but moving the conflicting values to .varm or .obsm\n",

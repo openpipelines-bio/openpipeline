@@ -1,3 +1,25 @@
+# openpipelines x.x.x
+
+## BREAKING CHANGES
+
+* `qc/calculate_qc_metrics`: log1p-transformed qc metrics (`log1p_<col>`) are now added to `.var` and `.obs` by default via the new `--log1p_transform` flag (default `true`, mirroring scanpy behavior) (PR #1182).
+
+* `workflows/qc/qc`, `workflows/rna/rna_multisample`, `workflows/prot/prot_multisample`, `workflows/multiomics/process_samples` and `workflows/multiomics/process_batches`: expose the `--log1p_transform` flag (PR #1182).
+
+## NEW FEATURES
+
+* `filter/filter_with_scrublet`: added `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
+
+* `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples` and `workflows/rna/rna_singlesample`: surfaced `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
+
+* `workflows/rna/rna_singlesample`, `workflows/prot/prot_singlesample`, `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`: Enable filtering rna and protein modalities by percentile of log-transformed counts (PR #1148).
+
+## MINOR CHANGES
+
+* `qc/calculate_qc_metrics`: parametrize the names of the top-n-vars `.obs` output columns with the `--output_obs_top_n_vars` flag (PR #1182).
+
+* `dataflow/concatenate_h5mu`: Remove the unused parameter `--obs_sample_name` from the configuration (PR #1195).
+
 # openpipelines 4.1.0
 
 ## NEW FEATURES
@@ -9,7 +31,7 @@
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).
 
 * `annotate/consensus_vote`: new component computing a (weighted) majority vote across cell type labels from multiple annotation methods (PR #1151).
-* 
+
 * `filter/filter_with_quantile`: added a component to filter numerical .obs or .var columns based on quantile thresholds, with optional subsetting (PR #1146).
 
 * `dimred/pca`: added possibility to do chunked processing using arguments `chunks` and `chunk_size`. Also added a `seed` argument in order to better control the variability between executions (PR #1157).

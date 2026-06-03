@@ -3235,6 +3235,18 @@ meta = [
           "direction" : "input",
           "multiple" : true,
           "multiple_sep" : ","
+        },
+        {
+          "type" : "boolean",
+          "name" : "--log1p_transform",
+          "description" : "Compute log1p-transformed versions of the calculated QC metrics. For each emitted\nmetric column `<col>`, an additional column `log1p_<col>` is added containing\n`log1p(<col>)`. Mirrors scanpy's `log1p` flag.\n",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3564,7 +3576,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.9.7",
-    "git_commit" : "8eb061eb089be33ddbeb49c27244281838e47db8",
+    "git_commit" : "191f7e2e9fd8f2877e71900711fecafcff590c74",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3708,6 +3720,7 @@ workflow run_wf {
         "highly_variable_features_features_to_exclude": "highly_variable_features_features_to_exclude",
         "var_qc_metrics": "var_qc_metrics",
         "top_n_vars": "top_n_vars",
+        "log1p_transform": "log1p_transform",
         "layer": "rna_layer",
         "enable_scaling": "rna_enable_scaling",
         "scaling_output_layer": "rna_scaling_output_layer",

@@ -116,6 +116,28 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+  - type: "double"
+    name: "--min_percentile_counts"
+    description: "Minimum percentile of total protein counts captured per cell. Quantile-based\
+      \ filtering is always\nperformed on the log-transformed total counts.\n"
+    info: null
+    example:
+    - 0.05
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--max_percentile_counts"
+    description: "Maximum percentile of total protein counts captured per cell. Quantile-based\
+      \ filtering is always\nperformed on the log-transformed total counts.\n"
+    info: null
+    example:
+    - 0.95
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
   - type: "integer"
     name: "--min_proteins_per_cell"
     description: "Minimum of non-zero values per cell."
@@ -162,6 +184,10 @@ test_resources:
   path: "test.nf"
   is_executable: true
   entrypoint: "test_wf"
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf2"
 - type: "file"
   path: "pbmc_1k_protein_v3"
 info:
@@ -174,7 +200,13 @@ dependencies:
 - name: "filter/filter_with_counts"
   repository:
     type: "local"
+- name: "filter/filter_with_quantile"
+  repository:
+    type: "local"
 - name: "filter/do_filter"
+  repository:
+    type: "local"
+- name: "workflows/qc/qc"
   repository:
     type: "local"
 license: "MIT"
@@ -252,11 +284,13 @@ build_info:
   output: "target/nextflow/workflows/prot/prot_singlesample"
   executable: "target/nextflow/workflows/prot/prot_singlesample/main.nf"
   viash_version: "0.9.7"
-  git_commit: "8eb061eb089be33ddbeb49c27244281838e47db8"
+  git_commit: "191f7e2e9fd8f2877e71900711fecafcff590c74"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/filter/filter_with_counts"
+  - "target/nextflow/filter/filter_with_quantile"
   - "target/nextflow/filter/do_filter"
+  - "target/nextflow/workflows/qc/qc"
 package_config:
   name: "openpipeline"
   summary: "Best-practice workflows for single-cell multi-omics analyses.\n"

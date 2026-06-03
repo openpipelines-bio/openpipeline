@@ -3222,6 +3222,30 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "double",
+          "name" : "--rna_min_percentile_counts",
+          "description" : "Minimum percentile of total RNA counts captured per cell. Quantile-based filtering is always\nperformed on the log-transformed total counts.\n",
+          "example" : [
+            0.05
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "double",
+          "name" : "--rna_max_percentile_counts",
+          "description" : "Maximum percentile of total RNA counts captured per cell. Quantile-based filtering is always\nperformed on the log-transformed total counts.\n",
+          "example" : [
+            0.95
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "integer",
           "name" : "--rna_min_genes_per_cell",
           "description" : "Minimum of non-zero values per cell.",
@@ -3310,6 +3334,17 @@ meta = [
           "name" : "--skip_scrublet_doublet_detection",
           "description" : "Skip the scrublet doublet detection step.",
           "direction" : "input"
+        },
+        {
+          "type" : "double",
+          "name" : "--scrublet_score_threshold",
+          "description" : "Manual doublet score threshold passed to filter_with_scrublet. Cells with a\ndoublet score above this value are classified as doublets. If not provided,\nthe threshold is determined automatically by Scrublet.\n",
+          "required" : false,
+          "min" : 0.0,
+          "max" : 1.0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3334,6 +3369,30 @@ meta = [
           "description" : "Minimum number of counts per cell.",
           "example" : [
             5000000
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "double",
+          "name" : "--prot_min_percentile_counts",
+          "description" : "Minimum percentile of total protein counts captured per cell. Quantile-based filtering is always\nperformed on the log-transformed total counts.\n",
+          "example" : [
+            0.05
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "double",
+          "name" : "--prot_max_percentile_counts",
+          "description" : "Maximum percentile of total protein counts captured per cell. Quantile-based filtering is always\nperformed on the log-transformed total counts.\n",
+          "example" : [
+            0.95
           ],
           "required" : false,
           "direction" : "input",
@@ -3595,6 +3654,18 @@ meta = [
           "direction" : "input",
           "multiple" : true,
           "multiple_sep" : ","
+        },
+        {
+          "type" : "boolean",
+          "name" : "--log1p_transform",
+          "description" : "Compute log1p-transformed versions of the calculated QC metrics. For each emitted\nmetric column `<col>`, an additional column `log1p_<col>` is added containing\n`log1p(<col>)`. Mirrors scanpy's `log1p` flag.\n",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3770,6 +3841,18 @@ meta = [
       "entrypoint" : "test_wf9"
     },
     {
+      "type" : "nextflow_script",
+      "path" : "test.nf",
+      "is_executable" : true,
+      "entrypoint" : "test_wf10"
+    },
+    {
+      "type" : "nextflow_script",
+      "path" : "test.nf",
+      "is_executable" : true,
+      "entrypoint" : "test_wf11"
+    },
+    {
       "type" : "file",
       "path" : "/resources_test/concat_test_data"
     },
@@ -3802,6 +3885,10 @@ meta = [
       },
       {
         "name" : "assert_test_workflow_10_output",
+        "namespace" : "test_workflows/multiomics/process_samples"
+      },
+      {
+        "name" : "assert_test_workflow_11_output",
         "namespace" : "test_workflows/multiomics/process_samples"
       }
     ]
@@ -3939,7 +4026,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.9.7",
-    "git_commit" : "8eb061eb089be33ddbeb49c27244281838e47db8",
+    "git_commit" : "191f7e2e9fd8f2877e71900711fecafcff590c74",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -4013,6 +4100,8 @@ workflow run_wf {
       "add_id_make_observation_keys_unique": "add_id_make_observation_keys_unique",
       "rna_min_counts": "rna_min_counts",
       "rna_max_counts": "rna_max_counts",
+      "rna_min_percentile_counts": "rna_min_percentile_counts",
+      "rna_max_percentile_counts": "rna_max_percentile_counts",
       "rna_min_genes_per_cell": "rna_min_genes_per_cell",
       "rna_max_genes_per_cell": "rna_max_genes_per_cell",
       "rna_min_cells_per_gene": "rna_min_cells_per_gene",
@@ -4021,8 +4110,11 @@ workflow run_wf {
       "rna_min_fraction_ribo": "rna_min_fraction_ribo",
       "rna_max_fraction_ribo": "rna_max_fraction_ribo",
       "skip_scrublet_doublet_detection": "skip_scrublet_doublet_detection",
+      "scrublet_score_threshold": "scrublet_score_threshold",
       "prot_min_counts": "prot_min_counts",
       "prot_max_counts": "prot_max_counts",
+      "prot_min_percentile_counts": "prot_min_percentile_counts",
+      "prot_max_percentile_counts": "prot_max_percentile_counts",
       "prot_min_proteins_per_cell": "prot_min_proteins_per_cell",
       "prot_max_proteins_per_cell": "prot_max_proteins_per_cell",
       "prot_min_cells_per_protein": "prot_min_cells_per_protein",
@@ -4160,7 +4252,8 @@ workflow run_wf {
             "highly_variable_features_var_output": state.highly_variable_features_var_output,
             "highly_variable_features_obs_batch_key": state.highly_variable_features_obs_batch_key,
             "var_qc_metrics": state.var_qc_metrics,
-            "top_n_vars": state.top_n_vars, 
+            "top_n_vars": state.top_n_vars,
+            "log1p_transform": state.log1p_transform,
             "pca_overwrite": state.pca_overwrite,
             "rna_layer": state.rna_layer,
             "prot_layer": state.prot_layer,

@@ -71,6 +71,16 @@
           "description": "Maximum number of counts captured per cell.",
           "help_text": "Type: `integer`, multiple: `False`, example: `5000000`. "
         },
+        "min_percentile_counts": {
+          "type": "number",
+          "description": "Minimum percentile of total RNA counts captured per cell",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.05`. "
+        },
+        "max_percentile_counts": {
+          "type": "number",
+          "description": "Maximum percentile of total RNA counts captured per cell",
+          "help_text": "Type: `double`, multiple: `False`, example: `0.95`. "
+        },
         "min_genes_per_cell": {
           "type": "integer",
           "description": "Minimum of non-zero values per cell.",
@@ -111,6 +121,11 @@
           "description": "Skip the scrublet doublet detection step.",
           "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
           "default": false
+        },
+        "scrublet_score_threshold": {
+          "type": "number",
+          "description": "Manual doublet score threshold passed to filter_with_scrublet",
+          "help_text": "Type: `double`, multiple: `False`. "
         }
       }
     },
