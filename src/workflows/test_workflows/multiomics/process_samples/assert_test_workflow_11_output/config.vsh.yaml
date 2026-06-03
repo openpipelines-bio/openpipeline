@@ -1,7 +1,7 @@
 name: "assert_test_workflow_11_output"
 namespace: "test_workflows/multiomics/process_samples"
 scope: test
-description: "This component tests the output of the integration test of process_samples test_wf10."
+description: "This component tests the output of the integration test of process_samples test_wf11."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
 argument_groups:
