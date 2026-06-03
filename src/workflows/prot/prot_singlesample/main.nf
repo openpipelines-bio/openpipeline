@@ -10,37 +10,29 @@ workflow run_wf {
     }
   | qc.run(
     key: "qc_prot",
+    // The qc component is only needed to compute the total counts per cell (and their log1p
+    // transform) that the quantile filter operates on. When percentile-based filtering is
+    // disabled there is nothing for it to do, so skip the step entirely.
+    runIf: { id, state -> state.min_percentile_counts || state.max_percentile_counts },
     fromState: { id, state ->
-      // The prot singlesample processing allows for optional filtering based on the percentile distribution of counts
-      // The behavior of the QC component must be tuned to the presence of the percentile-based filtering arguments as well
-      def args = [
+      [
         "id": id,
         "input": state.input,
-        // disable all qc metrics by default
+        // Only the total counts metric is needed; disable all other qc metrics.
+        // log1p_transform is requested explicitly so the "log1p_total_counts" column
+        // is always produced regardless of the qc component defaults.
         "top_n_vars": [],
         "output_obs_num_nonzero_vars": null,
-        "output_obs_total_counts_vars": null,
+        "output_obs_total_counts_vars": "total_counts",
         "output_var_num_nonzero_obs": null,
         "output_var_total_counts_obs": null,
         "output_var_obs_mean": null,
         "output_var_pct_dropout": null,
+        "log1p_transform": true,
         "output": state.output,
         "modality": "prot",
         "layer": state.layer,
       ]
-        
-      if (state.min_percentile_counts || state.max_percentile_counts) {
-      // If percentile-based filtering is enabled, total counts per cell must be calculated,
-      // together with their log1p transform. The quantile filter operates on the
-      // "log1p_total_counts" column, so both must be requested explicitly here rather than
-      // relying on the qc component defaults.
-        args += [
-          "output_obs_total_counts_vars": "total_counts",
-          "log1p_transform": true
-        ]
-      }
-
-      return args
       },
       toState: ["input": "output"]
     )
