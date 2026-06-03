@@ -36,18 +36,24 @@ def test_run():
     obs_cols_to_remove.extend(
         [
             "total_counts",
+            "log1p_total_counts",
             "num_nonzero_vars",
+            "log1p_num_nonzero_vars",
             "fraction_mitochondrial",
             "fraction_ribosomal",
             "total_counts_mitochondrial",
+            "log1p_total_counts_mitochondrial",
             "total_counts_ribosomal",
+            "log1p_total_counts_ribosomal",
             "pct_mitochondrial",
             "pct_ribosomal",
         ]
     )
     var_cols_to_remove = [
         "obs_mean",
+        "log1p_obs_mean",
         "total_counts",
+        "log1p_total_counts",
         "num_nonzero_obs",
         "pct_dropout",
         "mitochondrial",
