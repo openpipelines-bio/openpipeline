@@ -9,32 +9,33 @@ workflow test_wf {
 
   resources_test = file(params.resources_test)
 
-  output_ch = Channel.fromList([
-      [
-        id: "foo",
-        input:[
-          resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz"),
-          resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz"),
-          resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz"),
-          resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz"),
-          resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz"),
-          resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz")
-        ],
-        gex_reference: resources_test.resolve("reference_gencodev41_chr1/reference_cellranger.tar.gz"),
-        vdj_reference: resources_test.resolve("10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz"),
-        feature_reference: resources_test.resolve("10x_5k_anticmv/raw/feature_reference.csv"),
-        library_id: [
-          "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset",
-          "5k_human_antiCMV_T_TBNK_connect_AB_subset",
-          "5k_human_antiCMV_T_TBNK_connect_VDJ_subset"
-        ],
-        library_type: [
-          "Gene Expression",
-          "Antibody Capture",
-          "VDJ"
-        ]
-      ]
-    ])
+  base_state = [
+    id: "foo",
+    input:[
+      resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz"),
+      resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz"),
+      resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz"),
+      resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz"),
+      resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz"),
+      resources_test.resolve("10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz")
+    ],
+    gex_reference: resources_test.resolve("reference_gencodev41_chr1/reference_cellranger.tar.gz"),
+    vdj_reference: resources_test.resolve("10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz"),
+    feature_reference: resources_test.resolve("10x_5k_anticmv/raw/feature_reference.csv"),
+    library_id: [
+      "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset",
+      "5k_human_antiCMV_T_TBNK_connect_AB_subset",
+      "5k_human_antiCMV_T_TBNK_connect_VDJ_subset"
+    ],
+    library_type: [
+      "Gene Expression",
+      "Antibody Capture",
+      "VDJ"
+    ]
+  ]
+
+  // Convert the aggregated raw count matrix (default behaviour).
+  raw_ch = Channel.fromList([base_state])
     | map{ state -> [state.id, state] }
     | cellranger_multi
     | view { output ->
@@ -44,8 +45,24 @@ workflow test_wf {
       "Output: $output"
     }
 
+  // Convert the per-sample filtered count matrices instead.
+  filtered_ch = Channel.fromList([base_state + [output_filtered_data: true]])
+    | map{ state -> [state.id, state] }
+    | cellranger_multi
+    | view { output ->
+      assert output.size() == 2 : "outputs should contain two elements; [id, out]"
+      assert output[1] instanceof Map : "Output should be a Map."
+      // todo: check whether output dir contains fastq files
+      "Output: $output"
+    }
+
+  raw_ch
+    | join(filtered_ch)
+    | map { id, raw_state, filtered_state ->
+      [id, ["input": raw_state.output_h5mu, "input_filtered": filtered_state.output_h5mu]]
+    }
     | cellranger_multi_test.run(
-      fromState: ["input": "output_h5mu"]
+      fromState: ["input": "input", "input_filtered": "input_filtered"]
     )
 
     | toSortedList()

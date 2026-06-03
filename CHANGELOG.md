@@ -4,6 +4,8 @@
 
 * `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
 
+* `workflows/ingestion/cellranger_multi`: surface the `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
+
 # openpipelines 4.1.0
 
 ## NEW FEATURES
