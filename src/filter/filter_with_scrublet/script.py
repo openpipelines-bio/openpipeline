@@ -71,6 +71,7 @@ doublet_scores, predicted_doublets = scrub.scrub_doublets(
     min_gene_variability_pctl=par["min_gene_variablity_percent"],
     n_prin_comps=par["num_pca_components"],
     distance_metric=par["distance_metric"],
+    use_approx_neighbors=False,
 )
 if par["scrublet_score_threshold"] is not None:
     logger.info(
