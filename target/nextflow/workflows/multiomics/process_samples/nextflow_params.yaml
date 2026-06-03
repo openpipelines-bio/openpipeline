@@ -24,6 +24,7 @@ add_id_make_observation_keys_unique: true
 # rna_min_fraction_ribo: 0.0
 # rna_max_fraction_ribo: 0.2
 skip_scrublet_doublet_detection: false
+# scrublet_score_threshold: 123.0
 
 # CITE-seq filtering options
 # prot_min_counts: 3

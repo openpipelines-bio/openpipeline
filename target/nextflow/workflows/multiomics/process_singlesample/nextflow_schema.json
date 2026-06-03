@@ -141,6 +141,11 @@
           "description": "Skip the scrublet doublet detection step.",
           "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
           "default": false
+        },
+        "scrublet_score_threshold": {
+          "type": "number",
+          "description": "Manual doublet score threshold passed to filter_with_scrublet",
+          "help_text": "Type: `double`, multiple: `False`. "
         }
       }
     },

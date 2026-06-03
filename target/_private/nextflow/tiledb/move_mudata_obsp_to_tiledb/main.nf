@@ -3373,7 +3373,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/_private/nextflow/tiledb/move_mudata_obsp_to_tiledb",
     "viash_version" : "0.9.7",
-    "git_commit" : "a3dd1306607ce81e036bb391524c5f00bf3cf760",
+    "git_commit" : "85f8a7264d11acc3e86701c3d4eba2bead651694",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

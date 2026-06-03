@@ -3309,6 +3309,17 @@ meta = [
           "name" : "--skip_scrublet_doublet_detection",
           "description" : "Skip the scrublet doublet detection step.",
           "direction" : "input"
+        },
+        {
+          "type" : "double",
+          "name" : "--scrublet_score_threshold",
+          "description" : "Manual doublet score threshold passed to filter_with_scrublet. Cells with a\ndoublet score above this value are classified as doublets. If not provided,\nthe threshold is determined automatically by Scrublet.\n",
+          "required" : false,
+          "min" : 0.0,
+          "max" : 1.0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     },
@@ -3676,7 +3687,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/_private/nextflow/workflows/multiomics/process_singlesample_base",
     "viash_version" : "0.9.7",
-    "git_commit" : "a3dd1306607ce81e036bb391524c5f00bf3cf760",
+    "git_commit" : "85f8a7264d11acc3e86701c3d4eba2bead651694",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3831,7 +3842,8 @@ workflow run_wf {
         "obs_name_ribosomal_fraction": "obs_name_ribosomal_fraction",
         "ribosomal_gene_regex": "ribosomal_gene_regex",
         "layer": "rna_layer",
-        "skip_scrublet_doublet_detection": "skip_scrublet_doublet_detection"
+        "skip_scrublet_doublet_detection": "skip_scrublet_doublet_detection",
+        "scrublet_score_threshold": "scrublet_score_threshold"
       ],
       "prot": [
         "min_counts": "prot_min_counts",

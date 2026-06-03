@@ -3283,6 +3283,17 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "double",
+          "name" : "--scrublet_score_threshold",
+          "description" : "Manual doublet score threshold. Cells with a doublet score above this value\nare classified as doublets. If not provided, the threshold is determined\nautomatically by Scrublet.\n",
+          "required" : false,
+          "min" : 0.0,
+          "max" : 1.0,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "boolean_true",
           "name" : "--allow_automatic_threshold_detection_fail",
           "description" : "When scrublet fails to automatically determine the double score threshold, \nallow the component to continue and set the output columns to NA.\n",
@@ -3495,7 +3506,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.9.7",
-    "git_commit" : "a3dd1306607ce81e036bb391524c5f00bf3cf760",
+    "git_commit" : "85f8a7264d11acc3e86701c3d4eba2bead651694",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3576,6 +3587,7 @@ par = {
   'min_gene_variablity_percent': $( if [ ! -z ${VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT+x} ]; then echo "float(r'${VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'num_pca_components': $( if [ ! -z ${VIASH_PAR_NUM_PCA_COMPONENTS+x} ]; then echo "int(r'${VIASH_PAR_NUM_PCA_COMPONENTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'distance_metric': $( if [ ! -z ${VIASH_PAR_DISTANCE_METRIC+x} ]; then echo "r'${VIASH_PAR_DISTANCE_METRIC//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'scrublet_score_threshold': $( if [ ! -z ${VIASH_PAR_SCRUBLET_SCORE_THRESHOLD+x} ]; then echo "float(r'${VIASH_PAR_SCRUBLET_SCORE_THRESHOLD//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'allow_automatic_threshold_detection_fail': $( if [ ! -z ${VIASH_PAR_ALLOW_AUTOMATIC_THRESHOLD_DETECTION_FAIL+x} ]; then echo "r'${VIASH_PAR_ALLOW_AUTOMATIC_THRESHOLD_DETECTION_FAIL//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
@@ -3645,23 +3657,33 @@ doublet_scores, predicted_doublets = scrub.scrub_doublets(
     distance_metric=par["distance_metric"],
     use_approx_neighbors=False,
 )
+if par["scrublet_score_threshold"] is not None:
+    logger.info(
+        "\\\\tApplying manual doublet score threshold of %s",
+        par["scrublet_score_threshold"],
+    )
+    predicted_doublets = scrub.call_doublets(threshold=par["scrublet_score_threshold"])
 
 try:
     keep_cells = np.invert(predicted_doublets)
 except TypeError:
-    if par["allow_automatic_threshold_detection_fail"]:
-        # Scrublet might not throw an error and return None if it fails to detect doublets...
-        logger.info(
-            "\\\\tScrublet could not automatically detect the doublet score threshold. Setting output columns to NA."
+    # Scrublet might not throw an error and return None if it fails to detect doublets...
+    if par["scrublet_score_threshold"]:
+        raise RuntimeError(
+            "Scrublet could not detect doublets even with a manual threshold set."
         )
-        keep_cells = np.nan
-        doublet_scores = np.nan
-    else:
+    if not par["allow_automatic_threshold_detection_fail"]:
         raise RuntimeError(
             "Scrublet could not automatically detect the doublet score threshold. "
-            "--allow_automatic_threshold_detection_fail can be used to ignore this failure "
-            "and set the corresponding output columns to NA."
+            "Either --allow_automatic_threshold_detection_fail can be used to ignore this failure "
+            "and set the corresponding output columns to NA, or a manual --scrublet_score_threshold can be provided."
         )
+    logger.info(
+        "\\\\tScrublet could not automatically detect the doublet score threshold. Setting output columns to NA."
+    )
+    keep_cells = np.nan
+    doublet_scores = np.nan
+
 
 logger.info("\\\\tStoring output into .obs")
 if par["obs_name_doublet_score"] is not None:
