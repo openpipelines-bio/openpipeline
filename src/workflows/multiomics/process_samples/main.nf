@@ -24,6 +24,7 @@ workflow run_wf {
       "rna_min_fraction_ribo": "rna_min_fraction_ribo",
       "rna_max_fraction_ribo": "rna_max_fraction_ribo",
       "skip_scrublet_doublet_detection": "skip_scrublet_doublet_detection",
+      "scrublet_score_threshold": "scrublet_score_threshold",
       "prot_min_counts": "prot_min_counts",
       "prot_max_counts": "prot_max_counts",
       "prot_min_percentile_counts": "prot_min_percentile_counts",

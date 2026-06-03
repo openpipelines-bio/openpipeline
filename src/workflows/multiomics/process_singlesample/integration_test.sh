@@ -31,3 +31,11 @@ nextflow \
   -profile docker,no_publish \
   -c src/workflows/utils/labels_ci.config \
   -c src/workflows/utils/integration_tests.config
+
+nextflow \
+  run . \
+  -main-script src/workflows/multiomics/process_singlesample/test.nf \
+  -entry test_wf4 \
+  -profile docker,no_publish \
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config

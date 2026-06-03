@@ -1,7 +1,7 @@
-name: "workflow3_test"
+name: "workflow4_test"
 namespace: "test_workflows/multiomics/process_singlesample"
 scope: "test"
-description: "This component tests the output of the integration test of process_singlesample test_wf3, which exercises the --scrublet_score_threshold parameter."
+description: "This component tests the output of the integration test of process_singlesample test_wf4, which exercises the percentile-based count filtering."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
 argument_groups:
@@ -17,11 +17,6 @@ argument_groups:
         required: true
         description: Path to the original input file.
         example: input.h5mu
-      - name: "--scrublet_score_threshold"
-        type: double
-        required: true
-        description: The manual scrublet score threshold that was applied.
-        example: 0.1
 resources:
   - type: python_script
     path: script.py

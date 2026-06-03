@@ -111,6 +111,16 @@ argument_groups:
         type: boolean_true
         description: Skip the scrublet doublet detection step.
 
+      - name: "--scrublet_score_threshold"
+        type: double
+        required: false
+        min: 0
+        max: 1
+        description: |
+          Manual doublet score threshold passed to filter_with_scrublet. Cells with a
+          doublet score above this value are classified as doublets. If not provided,
+          the threshold is determined automatically by Scrublet.
+
   - name: "CITE-seq filtering options"
     arguments:
       - name: "--prot_min_counts"
