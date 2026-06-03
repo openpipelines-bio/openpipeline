@@ -12,7 +12,7 @@
 
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples` and `workflows/rna/rna_singlesample`: surfaced `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
 
-* `workflows/rna/rna_singlesample`, `workflows/prot/prot_singlesample`, `workflows/multiomics_process_singlesample`, `workflows/multiomics/process_samples`: Enable filtering rna and protein modalities by percentile of log-transformed counts (PR #1148).
+* `workflows/rna/rna_singlesample`, `workflows/prot/prot_singlesample`, `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`: Enable filtering rna and protein modalities by percentile of log-transformed counts (PR #1148).
 
 ## MINOR CHANGES
 
