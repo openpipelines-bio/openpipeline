@@ -51,8 +51,8 @@ workflow test_wf {
       ],
       [
         id: "percentile_test",
-        min_counts_percentile: 0.05,
-        max_counts_percentile: 0.95,
+        min_percentile_counts: 0.05,
+        max_percentile_counts: 0.95,
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
         output: "percentile_test.final.h5mu"
       ],
@@ -101,8 +101,8 @@ workflow test_wf2 {
         var_gene_names: "gene_symbol",
         min_fraction_mito: 0.05,
         max_fraction_mito: 0.2,
-        min_counts_percentile: 0.05,
-        max_counts_percentile: 0.95,
+        min_percentile_counts: 0.05,
+        max_percentile_counts: 0.95,
         var_name_mitochondrial_genes: "mitochondrial",
         obs_name_mitochondrial_fraction: "foobar_mito",
         min_fraction_ribo: 0.05,
