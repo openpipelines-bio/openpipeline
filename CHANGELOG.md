@@ -6,6 +6,10 @@
 
 * `workflows/qc/qc`, `workflows/rna/rna_multisample`, `workflows/prot/prot_multisample`, `workflows/multiomics/process_samples` and `workflows/multiomics/process_batches`: expose the `--log1p_transform` flag (PR #1182).
 
+## NEW FEATURES
+
+* `workflows/rna/rna_singlesample`, `workflows/prot/prot_singlesample`, `workflows/multiomics_process_singlesample`, `workflows/multiomics/process_samples`: Enable filtering rna and protein modalities by percentile of log-transformed counts (PR #1148).
+
 ## MINOR CHANGES
 
 * `qc/calculate_qc_metrics`: parametrize the names of the top-n-vars `.obs` output columns with the `--output_obs_top_n_vars` flag (PR #1182).
@@ -33,8 +37,6 @@
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: add `--intersect_obs` option to remove observations that are not present in all processed modalities, so each modality shares the same set of cells (PR #1173, 1175).
 
 * `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169, PR #1177)
-
-* `workflows/rna/rna_singlesample`, `workflows/prot/prot_singlesample`, `workflows/multiomics_process_singlesample`, `workflows/multiomics/process_samples`: Enable filtering rna and protein modalities by percentile counts (PR #1148).
 
 ## MAJOR CHANGES
 

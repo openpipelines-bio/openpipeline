@@ -89,18 +89,14 @@ argument_groups:
         example: 0.05
         type: double
         description: |
-          Minimum percentile of total RNA counts captured per cell.
+          Minimum percentile of total RNA counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
       - name: "--rna_max_percentile_counts"
         example: 0.95
         type: double
         description: |
-          Maximum percentile of total RNA counts captured per cell.
-      - name: "--rna_percentile_filter_log_transform_total_counts"
-        type: boolean
-        default: true
-        description: |
-          Whether to log-transform the total counts before calculating percentile-based filtering thresholds.
-          This will only affect percentile-based filtering, not the count-based filtering.
+          Maximum percentile of total RNA counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
 
       - name: "--rna_min_genes_per_cell"
         type: integer
@@ -153,19 +149,15 @@ argument_groups:
         example: 0.05
         type: double
         description: |
-          Minimum percentile of total protein counts captured per cell.
+          Minimum percentile of total protein counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
       - name: "--prot_max_percentile_counts"
         example: 0.95
         type: double
         description: |
-          Maximum percentile of total protein counts captured per cell.
-      - name: "--prot_percentile_filter_log_transform_total_counts"
-        type: boolean
-        default: true
-        description: |
-          Whether to log-transform the total counts before calculating percentile-based filtering thresholds.
-          This will only affect percentile-based filtering, not the count-based filtering.
-  
+          Maximum percentile of total protein counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
+
       - name: "--prot_min_proteins_per_cell"
         type: integer
         example: 200

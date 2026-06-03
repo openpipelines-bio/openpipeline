@@ -48,13 +48,15 @@ workflow run_wf {
         [
           "input": state.input,
           "obs_min_quantile": state.min_percentile_counts,
-          "obs_max_quantile": state.max_percentile_counts,
-          "obs_log1p_transform": state.percentile_filter_log_transform_total_counts
+          "obs_max_quantile": state.max_percentile_counts
         ]
       },
       args: [
           "modality": "prot",
-          "obs_column": "total_counts",
+          // Quantile filtering is always performed on the log-transformed total counts,
+          // which are calculated by default by the qc component.
+          "obs_column": "log1p_total_counts",
+          "obs_log1p_transform": false,
           "obs_name_filter": "filter_with_percentile"
       ],
       toState: ["input": "output"]

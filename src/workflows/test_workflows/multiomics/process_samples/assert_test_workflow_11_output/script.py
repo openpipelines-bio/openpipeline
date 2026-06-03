@@ -66,8 +66,8 @@ def test_retention_matches_percentile_bounds(output_h5mu, input_h5mu, modality):
 
 @pytest.mark.parametrize("modality", ["rna", "prot"])
 def test_retained_cells_within_percentile_bounds(output_h5mu, input_h5mu, modality):
-    # The filter is applied on log1p(total_counts) by default
-    # (rna_log_transform_total_counts / prot_log_transform_total_counts default to true).
+    # The filter is always applied on log1p(total_counts), using the
+    # log1p_total_counts column computed by default by qc/calculate_qc_metrics.
     input_total_counts = np.asarray(input_h5mu[modality].X.sum(axis=1)).flatten()
     log_input = np.log1p(input_total_counts)
     low, high = np.quantile(log_input, [MIN_PERCENTILE, MAX_PERCENTILE])
