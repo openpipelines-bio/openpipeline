@@ -3128,18 +3128,6 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--obs_sample_name",
-          "description" : "Name of the .obs key under which to add the sample names.",
-          "default" : [
-            "sample_id"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
           "name" : "--other_axis_mode",
           "description" : "How to handle the merging of other axis (var, obs, ...).\n\n  - None: keep no data\n  - same: only keep elements of the matrices which are the same in each of the samples\n  - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)\n  - first: keep the annotation from the first sample\n  - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)\n  - move: identical to 'same', but moving the conflicting values to .varm or .obsm\n",
           "default" : [
@@ -3399,7 +3387,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "8e853b9ba61f20501d64767ba726836b9156fabc",
+    "git_commit" : "a3dd1306607ce81e036bb391524c5f00bf3cf760",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3475,7 +3463,6 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'input_id': $( if [ ! -z ${VIASH_PAR_INPUT_ID+x} ]; then echo "r'${VIASH_PAR_INPUT_ID//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obs_sample_name': $( if [ ! -z ${VIASH_PAR_OBS_SAMPLE_NAME+x} ]; then echo "r'${VIASH_PAR_OBS_SAMPLE_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'other_axis_mode': $( if [ ! -z ${VIASH_PAR_OTHER_AXIS_MODE+x} ]; then echo "r'${VIASH_PAR_OTHER_AXIS_MODE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_merge_mode': $( if [ ! -z ${VIASH_PAR_UNS_MERGE_MODE+x} ]; then echo "r'${VIASH_PAR_UNS_MERGE_MODE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsp_keys': $( if [ ! -z ${VIASH_PAR_OBSP_KEYS+x} ]; then echo "r'${VIASH_PAR_OBSP_KEYS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),

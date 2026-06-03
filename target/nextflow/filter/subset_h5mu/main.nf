@@ -3312,7 +3312,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/subset_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "8e853b9ba61f20501d64767ba726836b9156fabc",
+    "git_commit" : "a3dd1306607ce81e036bb391524c5f00bf3cf760",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

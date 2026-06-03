@@ -10,6 +10,8 @@
 
 * `qc/calculate_qc_metrics`: parametrize the names of the top-n-vars `.obs` output columns with the `--output_obs_top_n_vars` flag (PR #1182).
 
+* `dataflow/concatenate_h5mu`: Remove the unused parameter `--obs_sample_name` from the configuration (PR #1195).
+
 # openpipelines 4.1.0
 
 ## NEW FEATURES
