@@ -3406,7 +3406,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_multisample",
     "viash_version" : "0.9.7",
-    "git_commit" : "85f8a7264d11acc3e86701c3d4eba2bead651694",
+    "git_commit" : "ff018c742be9c7a8ea6710819d684068831d8ccb",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3499,10 +3499,10 @@ workflow run_wf {
           "var_name_mitochondrial_genes": null,
           "output_obs_num_nonzero_vars": state.output_obs_num_nonzero_vars,
           "output_obs_total_counts_vars": state.output_obs_total_counts_vars,
-          "num_nonzeoutput_var_num_nonzero_obsro_obs": state.output_var_num_nonzero_obs,
+          "output_var_num_nonzero_obs": state.output_var_num_nonzero_obs,
           "output_var_total_counts_obs": state.output_var_total_counts_obs,
           "output_var_obs_mean": state.output_var_obs_mean,
-          "output_var_pct_dropout": state.pct_dropout
+          "output_var_pct_dropout": state.output_var_pct_dropout
         ]
         newState
       }
