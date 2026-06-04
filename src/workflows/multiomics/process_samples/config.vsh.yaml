@@ -14,8 +14,6 @@ info:
       namespace: test_workflows/multiomics/process_samples
     - name: assert_test_workflow_10_output
       namespace: test_workflows/multiomics/process_samples
-    - name: assert_test_workflow_11_output
-      namespace: test_workflows/multiomics/process_samples
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author, maintainer ]
@@ -85,19 +83,6 @@ argument_groups:
         type: integer
         description: Maximum number of counts captured per cell.
   
-      - name: "--rna_min_percentile_counts"
-        example: 0.05
-        type: double
-        description: |
-          Minimum percentile of total RNA counts captured per cell. Quantile-based filtering is always
-          performed on the log-transformed total counts.
-      - name: "--rna_max_percentile_counts"
-        example: 0.95
-        type: double
-        description: |
-          Maximum percentile of total RNA counts captured per cell. Quantile-based filtering is always
-          performed on the log-transformed total counts.
-
       - name: "--rna_min_genes_per_cell"
         type: integer
         example: 200
@@ -154,19 +139,6 @@ argument_groups:
         description: Minimum number of counts per cell.
         type: integer
         example: 5000000
-
-      - name: "--prot_min_percentile_counts"
-        example: 0.05
-        type: double
-        description: |
-          Minimum percentile of total protein counts captured per cell. Quantile-based filtering is always
-          performed on the log-transformed total counts.
-      - name: "--prot_max_percentile_counts"
-        example: 0.95
-        type: double
-        description: |
-          Maximum percentile of total protein counts captured per cell. Quantile-based filtering is always
-          performed on the log-transformed total counts.
 
       - name: "--prot_min_proteins_per_cell"
         type: integer
@@ -402,12 +374,6 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf9
-  - type: nextflow_script
-    path: test.nf
-    entrypoint: test_wf10
-  - type: nextflow_script
-    path: test.nf
-    entrypoint: test_wf11
   - path: /resources_test/concat_test_data
   - path: /resources_test/pbmc_1k_protein_v3
   - path: /resources_test/10x_5k_lung_crispr

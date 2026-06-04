@@ -52,8 +52,7 @@ workflow run_wf {
         runIf: {id, state -> state.intersect_obs},
         fromState:[
           "input": "output",
-          "modalities": "modalities",
-          "output": "workflow_output"
+          "modalities": "modalities"
         ],
         toState: {id, output, state -> 
           ["output": output.output]

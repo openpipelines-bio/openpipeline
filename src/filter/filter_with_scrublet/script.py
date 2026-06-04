@@ -84,7 +84,7 @@ try:
     keep_cells = np.invert(predicted_doublets)
 except TypeError:
     # Scrublet might not throw an error and return None if it fails to detect doublets...
-    if par["scrublet_score_threshold"] is not None:
+    if par["scrublet_score_threshold"]:
         raise RuntimeError(
             "Scrublet could not detect doublets even with a manual threshold set."
         )

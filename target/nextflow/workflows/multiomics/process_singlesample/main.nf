@@ -3208,30 +3208,6 @@ meta = [
           "multiple_sep" : ";"
         },
         {
-          "type" : "double",
-          "name" : "--rna_min_percentile_counts",
-          "description" : "Minimum percentile of total RNA counts captured per cell. Quantile-based filtering is always\nperformed on the log-transformed total counts.\n",
-          "example" : [
-            0.05
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "double",
-          "name" : "--rna_max_percentile_counts",
-          "description" : "Maximum percentile of total RNA counts captured per cell. Quantile-based filtering is always\nperformed on the log-transformed total counts.\n",
-          "example" : [
-            0.95
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
           "type" : "integer",
           "name" : "--rna_min_genes_per_cell",
           "description" : "Minimum of non-zero values per cell.",
@@ -3355,30 +3331,6 @@ meta = [
           "description" : "Minimum number of counts per cell.",
           "example" : [
             5000000
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "double",
-          "name" : "--prot_min_percentile_counts",
-          "description" : "Minimum percentile of total protein counts captured per cell. Quantile-based filtering is always\nperformed on the log-transformed total counts.\n",
-          "example" : [
-            0.05
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "double",
-          "name" : "--prot_max_percentile_counts",
-          "description" : "Maximum percentile of total protein counts captured per cell. Quantile-based filtering is always\nperformed on the log-transformed total counts.\n",
-          "example" : [
-            0.95
           ],
           "required" : false,
           "direction" : "input",
@@ -3615,12 +3567,6 @@ meta = [
       "entrypoint" : "test_wf3"
     },
     {
-      "type" : "nextflow_script",
-      "path" : "test.nf",
-      "is_executable" : true,
-      "entrypoint" : "test_wf4"
-    },
-    {
       "type" : "file",
       "path" : "/resources_test/concat_test_data"
     },
@@ -3641,10 +3587,6 @@ meta = [
       },
       {
         "name" : "workflow3_test",
-        "namespace" : "test_workflows/multiomics/process_singlesample"
-      },
-      {
-        "name" : "workflow4_test",
         "namespace" : "test_workflows/multiomics/process_singlesample"
       }
     ]
@@ -3763,7 +3705,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_singlesample",
     "viash_version" : "0.9.7",
-    "git_commit" : "191f7e2e9fd8f2877e71900711fecafcff590c74",
+    "git_commit" : "41587a4a7b5a2ee7fcae90a1e0f1224af040a66e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3871,8 +3813,7 @@ workflow run_wf {
         runIf: {id, state -> state.intersect_obs},
         fromState:[
           "input": "output",
-          "modalities": "modalities",
-          "output": "workflow_output"
+          "modalities": "modalities"
         ],
         toState: {id, output, state -> 
           ["output": output.output]
