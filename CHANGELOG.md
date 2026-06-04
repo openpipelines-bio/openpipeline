@@ -20,7 +20,7 @@
 
 ## BUG FIXES
 
-* `workflows/prot/prot_multisample`: fix two malformed state keys in the `prot_qc` call so the `--output_var_num_nonzero_obs` and `--output_var_pct_dropout` arguments are passed through correctly (PR #XXXX).
+* `workflows/prot/prot_multisample`: fix two malformed state keys in the `prot_qc` call so the `--output_var_num_nonzero_obs` and `--output_var_pct_dropout` arguments are passed through correctly (PR #1196).
 
 # openpipelines 4.1.0
 
