@@ -3209,6 +3209,30 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "double",
+          "name" : "--min_percentile_counts",
+          "description" : "Minimum percentile of total RNA counts captured per cell. Quantile-based filtering is always\nperformed on the log-transformed total counts.\n",
+          "example" : [
+            0.05
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "double",
+          "name" : "--max_percentile_counts",
+          "description" : "Maximum percentile of total RNA counts captured per cell. Quantile-based filtering is always\nperformed on the log-transformed total counts.\n",
+          "example" : [
+            0.95
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "integer",
           "name" : "--min_genes_per_cell",
           "description" : "Minimum of non-zero values per cell.",
@@ -3449,6 +3473,12 @@ meta = [
       }
     },
     {
+      "name" : "filter/filter_with_quantile",
+      "repository" : {
+        "type" : "local"
+      }
+    },
+    {
       "name" : "filter/filter_with_scrublet",
       "repository" : {
         "type" : "local"
@@ -3562,7 +3592,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample",
     "viash_version" : "0.9.7",
-    "git_commit" : "41587a4a7b5a2ee7fcae90a1e0f1224af040a66e",
+    "git_commit" : "5904a3fc5a688050d7ecfece74013d2ef37f3949",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3611,6 +3641,7 @@ meta = [
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
 include { filter_with_counts } from "${meta.resources_dir}/../../../../nextflow/filter/filter_with_counts/main.nf"
+include { filter_with_quantile } from "${meta.resources_dir}/../../../../nextflow/filter/filter_with_quantile/main.nf"
 include { filter_with_scrublet } from "${meta.resources_dir}/../../../../nextflow/filter/filter_with_scrublet/main.nf"
 include { do_filter } from "${meta.resources_dir}/../../../../nextflow/filter/do_filter/main.nf"
 include { delimit_fraction } from "${meta.resources_dir}/../../../../nextflow/filter/delimit_fraction/main.nf"
@@ -3661,16 +3692,17 @@ workflow run_wf {
       [id, state + new_state]
     }
     | qc.run(
+      key: "qc_rna",
       fromState: { id, state ->
-        // The rna singlesample processing allows detecting mitochondrial genes and filtering based
-        // on the fraction of mitochondrial genes per cell
-        // This behaviour is optional based on the presence of var_name_mitochondrial_genes
-        // The behavior of other components must be tuned to this argument as well
+        // The rna singlesample processing allows for the optional filtering based on:
+        // 1) fraction of mitochondrial genes per cell
+        // 2) fraction of ribosomal genes per cell
+        // 3) percentile of counts per cell
+        // The behavior of the QC component must be tuned to the presence of these arguments.
         def args = [
           "id": id,
           "input": state.input,
-          // disable other qc metric calculations
-          // only mitochondrial gene detection is required at this point
+          // disable all qc metrics by default
           "top_n_vars": [],
           "output_obs_num_nonzero_vars": null,
           "output_obs_total_counts_vars": null,
@@ -3683,6 +3715,16 @@ workflow run_wf {
           "layer": state.layer,
         ]
         
+        if (state.min_percentile_counts || state.max_percentile_counts) {
+        // If percentile-based filtering is enabled, total counts per cell must be calculated,
+        // together with their log1p transform. The quantile filter operates on the
+        // "log1p_total_counts" column, so both must be requested explicitly here rather than
+        // relying on the qc component defaults.
+          args += [
+            "output_obs_total_counts_vars": "total_counts",
+            "log1p_transform": true
+          ]
+        }
         if (state.var_name_mitochondrial_genes) {
           // Check if user has defined var columns to calculate metrics
           def new_var_qc_metrics = state.var_qc_metrics != null ? state.var_qc_metrics : []
@@ -3720,6 +3762,7 @@ workflow run_wf {
       toState: ["input": "output"]
     )
     | delimit_fraction.run(
+      key: "rna_filter_mitochondrial",
       runIf: {id, state -> state.var_name_mitochondrial_genes},
       fromState: {id, state -> 
       [
@@ -3733,6 +3776,7 @@ workflow run_wf {
       toState: ["input": "output"]
     )
     | delimit_fraction.run(
+      key: "rna_filter_ribosomal",
       runIf: {id, state -> state.var_name_ribosomal_genes},
       fromState: {id, state -> 
       [
@@ -3745,7 +3789,28 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
-    // cell filtering
+    // cell filtering based on quantiles
+    | filter_with_quantile.run(
+      key: "rna_filter_by_percentile",
+      runIf: { id, state -> state.min_percentile_counts || state.max_percentile_counts },
+      fromState: { id, state ->
+        [
+          "input": state.input,
+          "obs_min_quantile": state.min_percentile_counts,
+          "obs_max_quantile": state.max_percentile_counts
+        ]
+      },
+      args: [
+          // Quantile filtering is always performed on the log-transformed total counts,
+          // which are requested explicitly from the qc component above
+          // (output_obs_total_counts_vars + log1p_transform).
+          "obs_column": "log1p_total_counts",
+          "obs_log1p_transform": false,
+          "obs_name_filter": "filter_with_percentile"
+      ],
+      toState: ["input": "output"]
+    )
+    // cell filtering based on counts
     | filter_with_counts.run(
       key: "rna_filter_with_counts",
       fromState: { id, state ->
@@ -3780,6 +3845,9 @@ workflow run_wf {
         }
         if (state.var_name_ribosomal_genes) {
           obs_filter += ["filter_ribosomal"]
+        }
+        if (state.min_percentile_counts || state.max_percentile_counts) {
+          obs_filter += ["filter_with_percentile"]
         }
         stateMapping += ["obs_filter": obs_filter]
         return stateMapping

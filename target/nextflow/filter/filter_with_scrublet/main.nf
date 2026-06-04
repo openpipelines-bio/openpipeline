@@ -3506,7 +3506,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.9.7",
-    "git_commit" : "41587a4a7b5a2ee7fcae90a1e0f1224af040a66e",
+    "git_commit" : "5904a3fc5a688050d7ecfece74013d2ef37f3949",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3668,7 +3668,7 @@ try:
     keep_cells = np.invert(predicted_doublets)
 except TypeError:
     # Scrublet might not throw an error and return None if it fails to detect doublets...
-    if par["scrublet_score_threshold"]:
+    if par["scrublet_score_threshold"] is not None:
         raise RuntimeError(
             "Scrublet could not detect doublets even with a manual threshold set."
         )

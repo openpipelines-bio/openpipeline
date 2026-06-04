@@ -50,6 +50,13 @@ workflow test_wf {
         output: "skip_scrublet_test.final.h5mu"
       ],
       [
+        id: "percentile_test",
+        min_percentile_counts: 0.05,
+        max_percentile_counts: 0.95,
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
+        output: "percentile_test.final.h5mu"
+      ],
+      [
         id: "scrublet_threshold_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
         min_counts: 3,
@@ -70,10 +77,10 @@ workflow test_wf {
     }
     | toSortedList{a, b -> a[0] <=> b[0]}
     | map { output_list ->
-      assert output_list.size() == 4 : "output channel should contain four events"
+      assert output_list.size() == 5 : "output channel should contain five events"
       println "output_list: $output_list"
-      assert output_list.collect{it[0]} == ["mitochondrial_ribosomal_test", "scrublet_threshold_test", "simple_execution_test", "skip_scrublet_test"] : "Output ID should be same as input ID"
-      assert (output_list.collect({it[1].output.getFileName().toString()}) as Set).equals(["mitochondrial_ribosomal_test.final.h5mu", "simple_execution_test.final.h5mu", "skip_scrublet_test.final.h5mu", "scrublet_threshold_test.final.h5mu"] as Set)
+      assert output_list.collect{it[0]} == ["mitochondrial_ribosomal_test", "percentile_test", "scrublet_threshold_test", "simple_execution_test", "skip_scrublet_test"] : "Output ID should be same as input ID"
+      assert (output_list.collect({it[1].output.getFileName().toString()}) as Set).equals(["mitochondrial_ribosomal_test.final.h5mu", "percentile_test.final.h5mu", "scrublet_threshold_test.final.h5mu", "simple_execution_test.final.h5mu", "skip_scrublet_test.final.h5mu"] as Set)
 
     }
 }
@@ -94,6 +101,8 @@ workflow test_wf2 {
         var_gene_names: "gene_symbol",
         min_fraction_mito: 0.05,
         max_fraction_mito: 0.2,
+        min_percentile_counts: 0.05,
+        max_percentile_counts: 0.95,
         var_name_mitochondrial_genes: "mitochondrial",
         obs_name_mitochondrial_fraction: "foobar_mito",
         min_fraction_ribo: 0.05,

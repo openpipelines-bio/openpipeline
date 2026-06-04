@@ -61,7 +61,20 @@ argument_groups:
         example: 5000000
         type: integer
         description: Maximum number of counts captured per cell.
-  
+
+      - name: "--rna_min_percentile_counts"
+        example: 0.05
+        type: double
+        description: |
+          Minimum percentile of total RNA counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
+      - name: "--rna_max_percentile_counts"
+        example: 0.95
+        type: double
+        description: |
+          Maximum percentile of total RNA counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
+
       - name: "--rna_min_genes_per_cell"
         type: integer
         example: 200
@@ -118,6 +131,19 @@ argument_groups:
         description: Minimum number of counts per cell.
         type: integer
         example: 5000000
+
+      - name: "--prot_min_percentile_counts"
+        example: 0.05
+        type: double
+        description: |
+          Minimum percentile of total protein counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
+      - name: "--prot_max_percentile_counts"
+        example: 0.95
+        type: double
+        description: |
+          Maximum percentile of total protein counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
 
       - name: "--prot_min_proteins_per_cell"
         type: integer

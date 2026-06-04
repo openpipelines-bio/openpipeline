@@ -116,6 +116,28 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+  - type: "double"
+    name: "--min_percentile_counts"
+    description: "Minimum percentile of total RNA counts captured per cell. Quantile-based\
+      \ filtering is always\nperformed on the log-transformed total counts.\n"
+    info: null
+    example:
+    - 0.05
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--max_percentile_counts"
+    description: "Maximum percentile of total RNA counts captured per cell. Quantile-based\
+      \ filtering is always\nperformed on the log-transformed total counts.\n"
+    info: null
+    example:
+    - 0.95
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
   - type: "integer"
     name: "--min_genes_per_cell"
     description: "Minimum of non-zero values per cell."
@@ -318,6 +340,9 @@ dependencies:
 - name: "filter/filter_with_counts"
   repository:
     type: "local"
+- name: "filter/filter_with_quantile"
+  repository:
+    type: "local"
 - name: "filter/filter_with_scrublet"
   repository:
     type: "local"
@@ -405,10 +430,11 @@ build_info:
   output: "target/nextflow/workflows/rna/rna_singlesample"
   executable: "target/nextflow/workflows/rna/rna_singlesample/main.nf"
   viash_version: "0.9.7"
-  git_commit: "41587a4a7b5a2ee7fcae90a1e0f1224af040a66e"
+  git_commit: "5904a3fc5a688050d7ecfece74013d2ef37f3949"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/filter/filter_with_counts"
+  - "target/nextflow/filter/filter_with_quantile"
   - "target/nextflow/filter/filter_with_scrublet"
   - "target/nextflow/filter/do_filter"
   - "target/nextflow/filter/delimit_fraction"
