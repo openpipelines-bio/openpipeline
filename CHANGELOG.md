@@ -20,6 +20,10 @@
 
 * `dataflow/concatenate_h5mu`: Remove the unused parameter `--obs_sample_name` from the configuration (PR #1195).
 
+## BUG FIXES
+
+* `workflows/prot/prot_multisample`: fix two malformed state keys in the `prot_qc` call so the `--output_var_num_nonzero_obs` and `--output_var_pct_dropout` arguments are passed through correctly (PR #1196).
+
 # openpipelines 4.1.0
 
 ## NEW FEATURES
