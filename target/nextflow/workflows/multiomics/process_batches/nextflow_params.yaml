@@ -7,6 +7,9 @@ input: # please fill in - example: ["input.h5mu"]
 # Outputs
 # output: "$id.$key.output.h5mu"
 
+# Cross-modality filtering
+intersect_obs: false
+
 # Highly variable features detection
 highly_variable_features_var_output: "filter_with_hvg"
 highly_variable_features_obs_batch_key: "sample_id"
@@ -15,6 +18,7 @@ highly_variable_features_obs_batch_key: "sample_id"
 # QC metrics calculation options
 var_qc_metrics: ["filter_with_hvg"]
 top_n_vars: [50, 100, 200, 500]
+log1p_transform: true
 
 # PCA options
 pca_overwrite: false

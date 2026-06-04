@@ -27,25 +27,25 @@
           "type": "string",
           "format": "path",
           "description": "reference fasta file",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"reference.fasta\"`. "
         },
         "bam": {
           "type": "string",
           "format": "path",
           "description": "cellranger bam",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"input.bam\"`. "
         },
         "bam_index": {
           "type": "string",
           "format": "path",
           "description": "cellranger bam index",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"input.bam.bai\"`. "
         },
         "barcodes": {
           "type": "string",
           "format": "path",
           "description": "barcodes.tsv from cellranger",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"barcodes.tsv\"`. "
         },
         "clusters": {
           "type": "integer",
@@ -85,13 +85,13 @@
           "type": "string",
           "format": "path",
           "description": "common variant loci or known variant loci vcf, must be vs same reference fasta",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"common_variants.vcf\"`. "
         },
         "known_genotypes": {
           "type": "string",
           "format": "path",
-          "description": "known variants per clone in population vcf mode, must be .vcf right now we dont accept gzip or bcf sorry",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "description": "known variants per clone in population vcf mode",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"known_variants.vcf\"`. "
         },
         "known_genotypes_sample_names": {
           "type": "string",

@@ -34,10 +34,6 @@ arguments:
     type: file
     direction: output
     example: "output.h5mu"
-  - name: "--obs_sample_name"
-    type: string
-    description: Name of the .obs key under which to add the sample names.
-    default: "sample_id"
   - name: "--other_axis_mode"
     type: string
     choices: [same, unique, first, only, concat, move]

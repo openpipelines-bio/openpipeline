@@ -116,6 +116,11 @@
           "help_text": "Type: `string`, multiple: `False`, default: `\"euclidean\"`. ",
           "default": "euclidean"
         },
+        "scrublet_score_threshold": {
+          "type": "number",
+          "description": "Manual doublet score threshold",
+          "help_text": "Type: `double`, multiple: `False`. "
+        },
         "allow_automatic_threshold_detection_fail": {
           "type": "boolean",
           "description": "When scrublet fails to automatically determine the double score threshold, \nallow the component to continue and set the output columns to NA.\n",
@@ -124,7 +129,7 @@
         },
         "output_compression": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata objects.\nBy default no compression is applied.\n",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
           "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",

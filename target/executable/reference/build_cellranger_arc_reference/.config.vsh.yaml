@@ -48,7 +48,7 @@ argument_groups:
     description: "Transcription factor motifs in JASPAR format. See https://support.10xgenomics.com/single-cell-multiome-atac-gex/software/pipelines/latest/advanced/references"
     info: null
     example:
-    - "JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified"
+    - "motifs.txt"
     must_exist: true
     create_parent: true
     required: false
@@ -242,10 +242,10 @@ build_info:
   engine: "docker"
   output: "target/executable/reference/build_cellranger_arc_reference"
   executable: "target/executable/reference/build_cellranger_arc_reference/build_cellranger_arc_reference"
-  viash_version: "0.9.4"
-  git_commit: "2b0e8fc5f581fe0745698246b966660b36e9f46f"
+  viash_version: "0.9.7"
+  git_commit: "5161a678e4f55090178994f7318540e3a17e1508"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-2143-g2b0e8fc5f58"
+  git_tag: "0.2.0-2144-g5161a678e4f"
 package_config:
   name: "openpipeline"
   summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
@@ -268,7 +268,7 @@ package_config:
     - path: "src/workflows/utils/labels_ci.config"
       description: "Adds the correct memory and CPU labels when running on the Viash\
         \ Hub CI."
-  viash_version: "0.9.4"
+  viash_version: "0.9.7"
   source: "src"
   target: "target"
   config_mods:

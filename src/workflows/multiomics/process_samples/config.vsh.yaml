@@ -10,6 +10,12 @@ info:
       namespace: filter
     - name: assert_test_workflow_2_output
       namespace: test_workflows/multiomics/process_samples
+    - name: assert_test_workflow_9_output
+      namespace: test_workflows/multiomics/process_samples
+    - name: assert_test_workflow_10_output
+      namespace: test_workflows/multiomics/process_samples
+    - name: assert_test_workflow_11_output
+      namespace: test_workflows/multiomics/process_samples
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
     roles: [ author, maintainer ]
@@ -83,18 +89,14 @@ argument_groups:
         example: 0.05
         type: double
         description: |
-          Minimum percentile of counts captured per cell.
+          Minimum percentile of total RNA counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
       - name: "--rna_max_percentile_counts"
         example: 0.95
         type: double
         description: |
-          Maximum percentile of counts captured per cell.
-      - name: "--rna_log_transform_total_counts"
-        type: boolean
-        default: true
-        description: |
-          Whether to log-transform the total counts before calculating percentile-based filtering thresholds.
-          This will only affect percentile-based filtering, not the count-based filtering.
+          Maximum percentile of total RNA counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
 
       - name: "--rna_min_genes_per_cell"
         type: integer
@@ -132,6 +134,16 @@ argument_groups:
         type: boolean_true
         description: Skip the scrublet doublet detection step.
 
+      - name: "--scrublet_score_threshold"
+        type: double
+        required: false
+        min: 0
+        max: 1
+        description: |
+          Manual doublet score threshold passed to filter_with_scrublet. Cells with a
+          doublet score above this value are classified as doublets. If not provided,
+          the threshold is determined automatically by Scrublet.
+
   - name: "CITE-seq filtering options"
     arguments:
       - name: "--prot_min_counts"
@@ -147,19 +159,15 @@ argument_groups:
         example: 0.05
         type: double
         description: |
-          Minimum percentile of counts captured per cell.
+          Minimum percentile of total protein counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
       - name: "--prot_max_percentile_counts"
         example: 0.95
         type: double
         description: |
-          Maximum percentile of counts captured per cell.
-      - name: "--prot_log_transform_total_counts"
-        type: boolean
-        default: true
-        description: |
-          Whether to log-transform the total counts before calculating percentile-based filtering thresholds.
-          This will only affect percentile-based filtering, not the count-based filtering.
-  
+          Maximum percentile of total protein counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
+
       - name: "--prot_min_proteins_per_cell"
         type: integer
         example: 200
@@ -197,6 +205,15 @@ argument_groups:
         type: integer
         description: Minimum of non-zero values per guide. 
     
+  - name: "Cross-modality filtering"
+    arguments:
+      - name: "--intersect_obs"
+        type: boolean_true
+        description: |
+          After per-modality filtering and multisample processing, remove observations
+          that are not present in all processed modalities so that each modality shares
+          the same set of cells.
+
   - name: "Highly variable features detection"
     arguments:
       - name: "--highly_variable_features_var_output"
@@ -284,6 +301,14 @@ argument_groups:
         multiple_sep: ','
         required: false
         default: [50, 100, 200, 500]
+      - name: "--log1p_transform"
+        description: |
+          Compute log1p-transformed versions of the calculated QC metrics. For each emitted
+          metric column `<col>`, an additional column `log1p_<col>` is added containing
+          `log1p(<col>)`. Mirrors scanpy's `log1p` flag.
+        type: boolean
+        default: true
+        required: false
   - name: "PCA options"
     arguments:
       - name: "--pca_overwrite"
@@ -347,7 +372,7 @@ dependencies:
     alias: split_modalities_workflow
   - name: dataflow/merge
   - name: dataflow/concatenate_h5mu
-  - name: workflows/multiomics/process_singlesample
+  - name: workflows/multiomics/process_singlesample_base
   - name: workflows/multiomics/process_batches
 # test_dependencies:
 #    - name: filter/remove_modality
@@ -374,6 +399,15 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf5
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf9
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf10
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf11
   - path: /resources_test/concat_test_data
   - path: /resources_test/pbmc_1k_protein_v3
   - path: /resources_test/10x_5k_lung_crispr

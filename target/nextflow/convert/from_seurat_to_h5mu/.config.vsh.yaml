@@ -202,8 +202,8 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--output_compression"
-    description: "Compression format to use for the output AnnData and/or Mudata objects.\n\
-      By default no compression is applied.\n"
+    description: "Compression format to use for the output AnnData and/or Mudata H5\
+      \ files.\nBy default no compression is applied.\n"
     info: null
     example:
     - "gzip"
@@ -330,9 +330,10 @@ engines:
   - type: "python"
     user: true
     packages:
-    - "anndata~=0.12.7"
+    - "anndata~=0.12.16"
     - "awkward"
-    - "mudata~=0.3.2"
+    - "scipy~=1.17.1"
+    - "mudata~=0.3.8"
     script:
     - "exec(\"try:\\n  import zarr; from importlib.metadata import version\\nexcept\
       \ ModuleNotFoundError:\\n  exit(0)\\nelse:  assert int(version(\\\"zarr\\\"\
@@ -356,9 +357,10 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "anndata~=0.12.7"
+    - "anndata~=0.12.16"
     - "awkward"
-    - "mudata~=0.3.2"
+    - "scipy~=1.17.1"
+    - "mudata~=0.3.8"
     script:
     - "exec(\"try:\\n  import zarr; from importlib.metadata import version\\nexcept\
       \ ModuleNotFoundError:\\n  exit(0)\\nelse:  assert int(version(\\\"zarr\\\"\
@@ -372,7 +374,7 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.8.0"
+    - "viashpy==0.10.0"
     github:
     - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
     upgrade: true
@@ -384,10 +386,10 @@ build_info:
   engine: "docker"
   output: "target/nextflow/convert/from_seurat_to_h5mu"
   executable: "target/nextflow/convert/from_seurat_to_h5mu/main.nf"
-  viash_version: "0.9.4"
-  git_commit: "2b0e8fc5f581fe0745698246b966660b36e9f46f"
+  viash_version: "0.9.7"
+  git_commit: "5161a678e4f55090178994f7318540e3a17e1508"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-2143-g2b0e8fc5f58"
+  git_tag: "0.2.0-2144-g5161a678e4f"
 package_config:
   name: "openpipeline"
   summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
@@ -410,7 +412,7 @@ package_config:
     - path: "src/workflows/utils/labels_ci.config"
       description: "Adds the correct memory and CPU labels when running on the Viash\
         \ Hub CI."
-  viash_version: "0.9.4"
+  viash_version: "0.9.7"
   source: "src"
   target: "target"
   config_mods:

@@ -170,8 +170,8 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--output_compression"
-    description: "Compression format to use for the output AnnData and/or Mudata objects.\n\
-      By default no compression is applied.\n"
+    description: "Compression format to use for the output AnnData and/or Mudata H5\
+      \ files.\nBy default no compression is applied.\n"
     info: null
     example:
     - "gzip"
@@ -187,22 +187,22 @@ argument_groups:
   arguments:
   - type: "string"
     name: "--methods"
-    description: "Methods to call cell types. By default, runs to knn_on_scvi and\
-      \ scanvi."
+    description: "Methods to call cell types. By default, runs KNN_SCVI and SCANVI_POPV."
     info: null
     example:
-    - "knn_on_scvi"
-    - "scanvi"
+    - "KNN_SCVI"
+    - "SCANVI_POPV"
     required: true
     choices:
-    - "celltypist"
-    - "knn_on_bbknn"
-    - "knn_on_scanorama"
-    - "knn_on_scvi"
-    - "onclass"
-    - "rf"
-    - "scanvi"
-    - "svm"
+    - "CELLTYPIST"
+    - "KNN_BBKNN"
+    - "KNN_HARMONY"
+    - "KNN_SCANORAMA"
+    - "KNN_SCVI"
+    - "ONCLASS"
+    - "Random_Forest"
+    - "SCANVI_POPV"
+    - "Support_Vector"
     direction: "input"
     multiple: true
     multiple_sep: ";"
@@ -308,7 +308,7 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "python:3.11-slim"
+  image: "pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime"
   target_tag: "qc-workflow-with-quantile-filtering_build"
   namespace_separator: "/"
   setup:
@@ -325,16 +325,15 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "popv~=0.4.2"
-    - "numpy<2"
-    - "setuptools"
+    - "popv~=0.6.1"
     upgrade: true
   - type: "python"
     user: false
     packages:
-    - "anndata~=0.12.7"
+    - "anndata~=0.12.16"
     - "awkward"
-    - "mudata~=0.3.2"
+    - "scipy~=1.17.1"
+    - "mudata~=0.3.8"
     script:
     - "exec(\"try:\\n  import zarr; from importlib.metadata import version\\nexcept\
       \ ModuleNotFoundError:\\n  exit(0)\\nelse:  assert int(version(\\\"zarr\\\"\
@@ -347,7 +346,7 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.8.0"
+    - "viashpy==0.10.0"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -357,10 +356,10 @@ build_info:
   engine: "docker"
   output: "target/executable/annotate/popv"
   executable: "target/executable/annotate/popv/popv"
-  viash_version: "0.9.4"
-  git_commit: "2b0e8fc5f581fe0745698246b966660b36e9f46f"
+  viash_version: "0.9.7"
+  git_commit: "5161a678e4f55090178994f7318540e3a17e1508"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-2143-g2b0e8fc5f58"
+  git_tag: "0.2.0-2144-g5161a678e4f"
 package_config:
   name: "openpipeline"
   summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
@@ -383,7 +382,7 @@ package_config:
     - path: "src/workflows/utils/labels_ci.config"
       description: "Adds the correct memory and CPU labels when running on the Viash\
         \ Hub CI."
-  viash_version: "0.9.4"
+  viash_version: "0.9.7"
   source: "src"
   target: "target"
   config_mods:

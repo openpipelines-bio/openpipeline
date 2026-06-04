@@ -4,6 +4,9 @@ modality: "rna"
 obsp_connectivities: "connectivities"
 # output: "$id.$key.output.h5mu"
 obsm_name: "leiden"
+flavor: "leidenalg"
+# n_iterations: 123
+# seed: 123
 resolution: # please fill in - example: [1.0]
 # output_compression: "gzip"
 

@@ -18,7 +18,7 @@ reference_obs_batch: "donor_assay"
 # output_compression: "gzip"
 
 # Arguments
-methods: # please fill in - example: ["knn_on_scvi", "scanvi"]
+methods: # please fill in - example: ["KNN_SCVI", "SCANVI_POPV"]
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

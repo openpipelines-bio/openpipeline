@@ -32,7 +32,7 @@
           "type": "string",
           "format": "path",
           "description": "Input file containing the initial cluster information.",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"init_cluster.txt\"`. "
         },
         "nsample": {
           "type": "integer",

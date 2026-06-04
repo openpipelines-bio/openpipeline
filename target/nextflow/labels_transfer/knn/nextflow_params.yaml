@@ -1,5 +1,5 @@
 # Input dataset (query) arguments
-input: # please fill in - example: "path/to/file"
+input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # input_obsm_features: "X_scvi"
 

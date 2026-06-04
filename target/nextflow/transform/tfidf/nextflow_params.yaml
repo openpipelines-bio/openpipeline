@@ -2,7 +2,7 @@
 input: # please fill in - example: "input.h5mu"
 modality: "atac"
 # input_layer: "foo"
-# output: "$id.$key.output"
+# output: "$id.$key.output.h5mu"
 output_layer: "tfidf"
 scale_factor: 10000
 log_idf: true

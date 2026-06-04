@@ -1,7 +1,7 @@
 # Input
 input_id: # please fill in - example: ["foo"]
 input_counts: # please fill in - example: ["counts.tsv"]
-reference: # please fill in - example: "gencode_v41_star"
+reference: # please fill in - example: "gencode_v41_star.gtf"
 
 # Outputs
 # output: "$id.$key.output.h5mu"

@@ -28,7 +28,7 @@
           "format": "path",
           "exists": true,
           "description": "Input bam file for filtering.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.bam\"`. "
         },
         "output": {
           "type": "string",

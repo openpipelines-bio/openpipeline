@@ -52,6 +52,19 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+  - type: "boolean"
+    name: "--log1p_transform"
+    description: "Compute log1p-transformed versions of the metrics added to `.var`\
+      \ and `.obs`.\nFor each emitted metric column `<col>`, an additional column\
+      \ `log1p_<col>` is added\ncontaining `log1p(<col>)`. Mirrors scanpy's `log1p`\
+      \ flag.\n"
+    info: null
+    default:
+    - true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
 - name: "Metrics added to .obs"
   arguments:
   - type: "string"
@@ -85,6 +98,19 @@ argument_groups:
     required: false
     direction: "input"
     multiple: true
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_obs_top_n_vars"
+    description: "Format string for the names of the .obs columns that contain the\
+      \ cumulative\nproportion of counts in the top N vars (one column per value in\
+      \ `--top_n_vars`).\nUse `{n}` as a placeholder for the top-N value provided\
+      \ in `--top_n_vars`.\n"
+    info: null
+    default:
+    - "pct_of_counts_in_top_{n}_vars"
+    required: false
+    direction: "input"
+    multiple: false
     multiple_sep: ";"
   - type: "string"
     name: "--output_obs_num_nonzero_vars"
@@ -174,8 +200,8 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--output_compression"
-    description: "Compression format to use for the output AnnData and/or Mudata objects.\n\
-      By default no compression is applied.\n"
+    description: "Compression format to use for the output AnnData and/or Mudata H5\
+      \ files.\nBy default no compression is applied.\n"
     info: null
     example:
     - "gzip"
@@ -305,9 +331,10 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "anndata~=0.12.7"
+    - "anndata~=0.12.16"
     - "awkward"
-    - "mudata~=0.3.2"
+    - "scipy~=1.17.1"
+    - "mudata~=0.3.8"
     - "scipy"
     script:
     - "exec(\"try:\\n  import zarr; from importlib.metadata import version\\nexcept\
@@ -322,14 +349,14 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.8.0"
+    - "viashpy==0.10.0"
     github:
     - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
     upgrade: true
   - type: "python"
     user: false
     packages:
-    - "scanpy"
+    - "scanpy~=1.11.4"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -339,10 +366,10 @@ build_info:
   engine: "docker"
   output: "target/executable/qc/calculate_qc_metrics"
   executable: "target/executable/qc/calculate_qc_metrics/calculate_qc_metrics"
-  viash_version: "0.9.4"
-  git_commit: "2b0e8fc5f581fe0745698246b966660b36e9f46f"
+  viash_version: "0.9.7"
+  git_commit: "5161a678e4f55090178994f7318540e3a17e1508"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-2143-g2b0e8fc5f58"
+  git_tag: "0.2.0-2144-g5161a678e4f"
 package_config:
   name: "openpipeline"
   summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
@@ -365,7 +392,7 @@ package_config:
     - path: "src/workflows/utils/labels_ci.config"
       description: "Adds the correct memory and CPU labels when running on the Viash\
         \ Hub CI."
-  viash_version: "0.9.4"
+  viash_version: "0.9.7"
   source: "src"
   target: "target"
   config_mods:

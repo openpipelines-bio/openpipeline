@@ -52,18 +52,15 @@ argument_groups:
         example: 0.05
         type: double
         description: |
-          Minimum percentile of counts captured per cell.
+          Minimum percentile of total protein counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
       - name: "--max_percentile_counts"
         example: 0.95
         type: double
         description: |
-          Maximum percentile of counts captured per cell.
-      - name: "--log_transform_total_counts"
-        type: boolean
-        default: true
-        description: |
-          Whether to log-transform the total counts before calculating percentile-based filtering thresholds.
-  
+          Maximum percentile of total protein counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
+
       - name: "--min_proteins_per_cell"
         type: integer
         example: 200

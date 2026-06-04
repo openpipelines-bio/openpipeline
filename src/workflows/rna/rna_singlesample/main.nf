@@ -65,9 +65,13 @@ workflow run_wf {
         ]
         
         if (state.min_percentile_counts || state.max_percentile_counts) {
-        // If percentile-based filtering is enabled, total counts per cell must be calculated.
+        // If percentile-based filtering is enabled, total counts per cell must be calculated,
+        // together with their log1p transform. The quantile filter operates on the
+        // "log1p_total_counts" column, so both must be requested explicitly here rather than
+        // relying on the qc component defaults.
           args += [
-            "output_obs_total_counts_vars": "total_counts"
+            "output_obs_total_counts_vars": "total_counts",
+            "log1p_transform": true
           ]
         }
         if (state.var_name_mitochondrial_genes) {
@@ -107,7 +111,7 @@ workflow run_wf {
       toState: ["input": "output"]
     )
     | delimit_fraction.run(
-      key: "filter_mitochondrial",
+      key: "rna_filter_mitochondrial",
       runIf: {id, state -> state.var_name_mitochondrial_genes},
       fromState: {id, state -> 
       [
@@ -121,7 +125,7 @@ workflow run_wf {
       toState: ["input": "output"]
     )
     | delimit_fraction.run(
-      key: "filter_ribosomal",
+      key: "rna_filter_ribosomal",
       runIf: {id, state -> state.var_name_ribosomal_genes},
       fromState: {id, state -> 
       [
@@ -142,14 +146,16 @@ workflow run_wf {
         [
           "input": state.input,
           "obs_min_quantile": state.min_percentile_counts,
-          "obs_max_quantile": state.max_percentile_counts,
-          "log_transform": state.log_transform_total_counts
+          "obs_max_quantile": state.max_percentile_counts
         ]
       },
       args: [
-          "obs_column": "total_counts",
-          "obs_name_filter": "filter_with_percentile",
-          "var_name_filter": "filter_with_percentile"
+          // Quantile filtering is always performed on the log-transformed total counts,
+          // which are requested explicitly from the qc component above
+          // (output_obs_total_counts_vars + log1p_transform).
+          "obs_column": "log1p_total_counts",
+          "obs_log1p_transform": false,
+          "obs_name_filter": "filter_with_percentile"
       ],
       toState: ["input": "output"]
     )
@@ -189,7 +195,7 @@ workflow run_wf {
         if (state.var_name_ribosomal_genes) {
           obs_filter += ["filter_ribosomal"]
         }
-        if (state.min_counts_percentile || state.max_counts_percentile) {
+        if (state.min_percentile_counts || state.max_percentile_counts) {
           obs_filter += ["filter_with_percentile"]
         }
         stateMapping += ["obs_filter": obs_filter]
@@ -205,6 +211,7 @@ workflow run_wf {
       fromState: [
         "input": "input",
         "layer": "layer",
+        "scrublet_score_threshold": "scrublet_score_threshold",
         "output": "workflow_output"
       ],
       args: [output_compression: "gzip"],

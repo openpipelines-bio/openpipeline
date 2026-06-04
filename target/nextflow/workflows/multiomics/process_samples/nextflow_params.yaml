@@ -18,7 +18,6 @@ add_id_make_observation_keys_unique: true
 # rna_max_counts: 5000000
 # rna_min_percentile_counts: 0.05
 # rna_max_percentile_counts: 0.95
-rna_log_transform_total_counts: true
 # rna_min_genes_per_cell: 200
 # rna_max_genes_per_cell: 1500000
 # rna_min_cells_per_gene: 3
@@ -27,13 +26,13 @@ rna_log_transform_total_counts: true
 # rna_min_fraction_ribo: 0.0
 # rna_max_fraction_ribo: 0.2
 skip_scrublet_doublet_detection: false
+# scrublet_score_threshold: 123.0
 
 # CITE-seq filtering options
 # prot_min_counts: 3
 # prot_max_counts: 5000000
 # prot_min_percentile_counts: 0.05
 # prot_max_percentile_counts: 0.95
-prot_log_transform_total_counts: true
 # prot_min_proteins_per_cell: 200
 # prot_max_proteins_per_cell: 100000000
 # prot_min_cells_per_protein: 3
@@ -44,6 +43,9 @@ prot_log_transform_total_counts: true
 # gdo_min_guides_per_cell: 200
 # gdo_max_guides_per_cell: 100000000
 # gdo_min_cells_per_guide: 3
+
+# Cross-modality filtering
+intersect_obs: false
 
 # Highly variable features detection
 highly_variable_features_var_output: "filter_with_hvg"
@@ -61,6 +63,7 @@ ribosomal_gene_regex: "^[Mm]?[Rr][Pp][LlSs]"
 # QC metrics calculation options
 # var_qc_metrics: ["ercc,highly_variable"]
 top_n_vars: [50, 100, 200, 500]
+log1p_transform: true
 
 # PCA options
 pca_overwrite: false

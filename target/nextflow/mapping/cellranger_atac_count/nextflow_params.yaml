@@ -8,7 +8,7 @@ reference: # please fill in - example: "reference.tar.gz"
 # Arguments
 description: ""
 # force_cells: 123
-# peaks: "path/to/file"
+# peaks: "peaks.bed"
 dim_reduce: "lsa"
 # subsample_rate: 0.1
 # lanes: ["1,3"]

@@ -1,9 +1,9 @@
 # Input
-# sam: "path/to/file"
+# sam: "input.sam"
 tag_group: "CB"
 tag_umi: "UB"
 exclude_flag: 1796
-# vcf: "path/to/file"
+# vcf: "input.vcf"
 # sm: "foo"
 # sm_list: "foo"
 sam_verbose: 1000000

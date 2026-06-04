@@ -279,18 +279,8 @@ def test_no_quantiles(
     mu_out = mu.read_h5mu(output_path)
     rna_mod = mu_out.mod["rna"]
 
-    assert "filter_with_quantile" in rna_mod.obs
-    assert "filter_with_quantile" in rna_mod.var
-
-    obs_filter = rna_mod.obs["filter_with_quantile"].sum()
-    var_filter = rna_mod.var["filter_with_quantile"].sum()
-
-    assert obs_filter == input_n_rna_obs, (
-        "Expected all obs to be kept when no quantiles are set."
-    )
-    assert var_filter == input_n_rna_vars, (
-        "Expected all vars to be kept when no quantiles are set."
-    )
+    assert "filter_with_quantile" not in rna_mod.obs
+    assert "filter_with_quantile" not in rna_mod.var
 
 
 def test_no_filter_columns(

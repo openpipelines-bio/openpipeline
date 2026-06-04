@@ -1,0 +1,19 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+input_obs_predictions: # please fill in - example: ["scanvi_pred", "celltypist_pred"]
+# input_obs_probabilities: ["scanvi_prob", "celltypist_prob", "singler_prob"]
+# tie_label: "Unknown"
+# weights: [1.0, 2.0]
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+output_obs_predictions: "consensus_pred"
+output_obs_score: "consensus_score"
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments

@@ -73,19 +73,13 @@
         },
         "min_percentile_counts": {
           "type": "number",
-          "description": "Minimum percentile of counts captured per cell.\n",
+          "description": "Minimum percentile of total protein counts captured per cell",
           "help_text": "Type: `double`, multiple: `False`, example: `0.05`. "
         },
         "max_percentile_counts": {
           "type": "number",
-          "description": "Maximum percentile of counts captured per cell.\n",
+          "description": "Maximum percentile of total protein counts captured per cell",
           "help_text": "Type: `double`, multiple: `False`, example: `0.95`. "
-        },
-        "log_transform_total_counts": {
-          "type": "boolean",
-          "description": "Whether to log-transform the total counts before calculating percentile-based filtering thresholds.\n",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
         },
         "min_proteins_per_cell": {
           "type": "integer",

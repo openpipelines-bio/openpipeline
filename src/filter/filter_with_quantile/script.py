@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import sys
 import numpy as np
 import pandas as pd
@@ -127,62 +125,65 @@ def main():
 
     filter_results = {}
     for filter_type, config in filter_config.items():
-        if config["column"] is not None:
-            logger.info(
-                f"Applying {config['filter']} filtering on column: {config['column']}"
+        if not config["column"]:
+            continue  # Skip if no column specified for this filter type
+
+        logger.info(
+            f"Applying {config['filter']} filtering on column: {config['column']}"
+        )
+
+        data_frame = getattr(adata, filter_type)
+        if config["column"] not in data_frame.columns:
+            raise ValueError(
+                f"Column '{config['column']}' not found in .{filter_type}. Available columns: {list(data_frame.columns)}"
             )
 
-            data_frame = getattr(adata, filter_type)
-            if config["column"] not in data_frame.columns:
-                raise ValueError(
-                    f"Column '{config['column']}' not found in .{filter_type}. Available columns: {list(data_frame.columns)}"
-                )
-
-            if config["min_quantile"] is None and config["max_quantile"] is None:
-                logger.warning(
-                    f"No `--{filter_type}_min_quantile` or `--{filter_type}_max_quantile` provided, no {config['filter']} filtering will be applied."
-                )
-                filtered_values = np.ones(data_frame.shape[0], dtype=bool)  # Keep all
-            else:
-                values = data_frame[config["column"]].values
-
-                # Check if column contains numeric data
-                if not pd.api.types.is_numeric_dtype(values):
-                    raise ValueError(
-                        f"Column '{config['column']}' must contain numeric data for quantile filtering"
-                    )
-
-                # Apply log1p transformation if requested
-                if config["log1p_transform"]:
-                    logger.info(f"Applying log1p transformation to {config['column']}")
-                    # Use custom column name if provided, otherwise default to log1p_{column}
-                    log1p_column_name = (
-                        config.get("log1p_column") or f"log1p_{config['column']}"
-                    )
-                    log1p_values = np.log1p(values)
-                    data_frame[log1p_column_name] = log1p_values
-                    logger.info(
-                        f"Stored log1p transformed values in .{filter_type}['{log1p_column_name}']"
-                    )
-                    # Use transformed values for quantile filtering
-                    filter_values = log1p_values
-                else:
-                    # Use original values for quantile filtering
-                    filter_values = values
-
-                filtered_values = filter_by_quantile(
-                    filter_values,
-                    min_quantile=config["min_quantile"],
-                    max_quantile=config["max_quantile"],
-                    min_values_for_quantile=par["min_values_for_quantile"],
-                )
-
-            # Store filter masks
-            logger.info(
-                f"Storing {config['filter']} filter in .{filter_type}['{config['name_filter']}']"
+        if not config["min_quantile"] and not config["max_quantile"]:
+            logger.warning(
+                f"No `--{filter_type}_min_quantile` or `--{filter_type}_max_quantile` provided, no {config['filter']} filtering will be applied."
             )
-            data_frame[config["name_filter"]] = filtered_values
-            filter_results[f"{filter_type}_filter"] = filtered_values
+            filtered_values = np.ones(data_frame.shape[0], dtype=bool)  # Keep all
+            continue
+
+        values = data_frame[config["column"]].values
+
+        # Check if column contains numeric data
+        if not pd.api.types.is_numeric_dtype(values):
+            raise ValueError(
+                f"Column '{config['column']}' must contain numeric data for quantile filtering"
+            )
+
+        # Apply log1p transformation if requested
+        if config["log1p_transform"]:
+            logger.info(f"Applying log1p transformation to {config['column']}")
+            # Use custom column name if provided, otherwise default to log1p_{column}
+            log1p_column_name = (
+                config.get("log1p_column") or f"log1p_{config['column']}"
+            )
+            log1p_values = np.log1p(values)
+            data_frame[log1p_column_name] = log1p_values
+            logger.info(
+                f"Stored log1p transformed values in .{filter_type}['{log1p_column_name}']"
+            )
+            # Use transformed values for quantile filtering
+            filter_values = log1p_values
+        else:
+            # Use original values for quantile filtering
+            filter_values = values
+
+        filtered_values = filter_by_quantile(
+            filter_values,
+            min_quantile=config["min_quantile"],
+            max_quantile=config["max_quantile"],
+            min_values_for_quantile=par["min_values_for_quantile"],
+        )
+
+        # Store filter masks
+        logger.info(
+            f"Storing {config['filter']} filter in .{filter_type}['{config['name_filter']}']"
+        )
+        data_frame[config["name_filter"]] = filtered_values
+        filter_results[f"{filter_type}_filter"] = filtered_values
 
     # Apply subsetting if requested
     if par["do_subset"]:

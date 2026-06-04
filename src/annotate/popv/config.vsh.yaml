@@ -94,9 +94,9 @@ argument_groups:
     arguments:
       - name: "--methods"
         type: string
-        description: "Methods to call cell types. By default, runs to knn_on_scvi and scanvi."
-        example: ["knn_on_scvi", "scanvi"]
-        choices: [celltypist, knn_on_bbknn, knn_on_scanorama, knn_on_scvi, onclass, rf, scanvi, svm]
+        description: "Methods to call cell types. By default, runs KNN_SCVI and SCANVI_POPV."
+        example: ["KNN_SCVI", "SCANVI_POPV"]
+        choices: [CELLTYPIST, KNN_BBKNN, KNN_HARMONY, KNN_SCANORAMA, KNN_SCVI, ONCLASS, Random_Forest, SCANVI_POPV, Support_Vector]
         required: true
         multiple: true
       # - name: "--prediction_mode"
@@ -125,7 +125,7 @@ test_resources:
 engines:
   - type: docker
     #image: nvcr.io/nvidia/pytorch:22.12-py3
-    image: python:3.11-slim
+    image: pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime
 
     setup:
       - type: docker
@@ -140,11 +140,7 @@ engines:
           - build-essential
       - type: python
         packages:
-          - popv~=0.4.2
-          # Previously, scvi-tools < 1.2.2 pinned numpy to <2. We want to keep it pinned here
-          - numpy<2
-          - setuptools
-      # These need to be updated AFTER popv is installed.
+          - popv~=0.6.1
       # See https://github.com/YosefLab/PopV/issues/30
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
@@ -158,6 +154,7 @@ engines:
 
 runners:
   - type: executable
+    # docker_run_args: ["--gpus all"]
   - type: nextflow
     directives:
       # TODO: should add new label highmem-single-gpu and lowmem-single-gpu

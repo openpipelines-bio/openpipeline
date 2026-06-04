@@ -102,6 +102,14 @@ argument_groups:
         multiple_sep: ','
         required: false
         default: [50, 100, 200, 500]
+      - name: "--log1p_transform"
+        description: |
+          Compute log1p-transformed versions of the calculated QC metrics. For each emitted
+          metric column `<col>`, an additional column `log1p_<col>` is added containing
+          `log1p(<col>)`. Mirrors scanpy's `log1p` flag.
+        type: boolean
+        default: true
+        required: false
       - name: "--output_obs_num_nonzero_vars"
         description: |
           Name of column in .obs describing, for each observation, the number of stored values

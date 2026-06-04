@@ -1,5 +1,5 @@
 # Inputs
-input: # please fill in - example: "path/to/file"
+input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # input_layer: "foo"
 obs_label: # please fill in - example: "foo"
@@ -11,7 +11,7 @@ random_state: 0
 obs_cell_count: "n_cells"
 
 # Outputs
-# output: "$id.$key.output"
+# output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
 
 # Nextflow input-output arguments

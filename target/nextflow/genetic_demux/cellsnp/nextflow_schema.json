@@ -27,43 +27,43 @@
           "type": "string",
           "format": "path",
           "description": "Indexed sam/bam file(s), comma separated multiple samples",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"input.bam\"`. "
         },
         "sam_index_file": {
           "type": "string",
           "format": "path",
           "description": "Input SAM/BAM Index file, problem with samFileList.",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"input.bai\"`. "
         },
         "sam_fileList": {
           "type": "string",
           "format": "path",
           "description": "A list file containing bam files, each per line, for Mode 1b & 2b.",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"file_list.txt\"`. "
         },
         "regions_vcf": {
           "type": "string",
           "format": "path",
           "description": "A vcf file listing all candidate SNPs, for fetch each variants",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"regions.vcf\"`. "
         },
         "targets_vcf": {
           "type": "string",
           "format": "path",
           "description": "Similar as --regions_vcf, but the next position is accessed by streaming rather than indexing/jumping (like -T in samtools/bcftools mpileup).",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"targets.vcf\"`. "
         },
         "barcode_file": {
           "type": "string",
           "format": "path",
           "description": "A plain file listing all effective cell barcode.",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"barcodes.tsv\"`. "
         },
         "sample_list": {
           "type": "string",
           "format": "path",
           "description": "A list file containing sample IDs, each per line.",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"samples.txt\"`. "
         },
         "sample_ids": {
           "type": "string",

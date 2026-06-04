@@ -52,18 +52,15 @@ argument_groups:
         example: 0.05
         type: double
         description: |
-          Minimum percentile of counts captured per cell.
+          Minimum percentile of total RNA counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
       - name: "--max_percentile_counts"
         example: 0.95
         type: double
         description: |
-          Maximum percentile of counts captured per cell.
-      - name: "--log_transform_total_counts"
-        type: boolean
-        default: true
-        description: |
-          Whether to log-transform the total counts before calculating percentile-based filtering thresholds.
-  
+          Maximum percentile of total RNA counts captured per cell. Quantile-based filtering is always
+          performed on the log-transformed total counts.
+
       - name: "--min_genes_per_cell"
         type: integer
         example: 200
@@ -113,6 +110,16 @@ argument_groups:
       - name: "--skip_scrublet_doublet_detection"
         type: boolean_true
         description: Skip the scrublet doublet detection step.
+
+      - name: "--scrublet_score_threshold"
+        type: double
+        required: false
+        min: 0
+        max: 1
+        description: |
+          Manual doublet score threshold passed to filter_with_scrublet. Cells with a
+          doublet score above this value are classified as doublets. If not provided,
+          the threshold is determined automatically by Scrublet.
   
   - name: "Mitochondrial & Ribosomal Gene Detection"
     arguments:

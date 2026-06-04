@@ -18,16 +18,6 @@ authors:
 argument_groups:
 - name: "Inputs"
   arguments:
-  - type: "string"
-    name: "--id"
-    description: "ID of the sample."
-    info: null
-    example:
-    - "foo"
-    required: true
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
   - type: "file"
     name: "--input"
     alternatives:
@@ -143,7 +133,8 @@ argument_groups:
     multiple_sep: ";"
   - type: "double"
     name: "--rna_min_percentile_counts"
-    description: "Minimum percentile of counts captured per cell.\n"
+    description: "Minimum percentile of total RNA counts captured per cell. Quantile-based\
+      \ filtering is always\nperformed on the log-transformed total counts.\n"
     info: null
     example:
     - 0.05
@@ -153,22 +144,11 @@ argument_groups:
     multiple_sep: ";"
   - type: "double"
     name: "--rna_max_percentile_counts"
-    description: "Maximum percentile of counts captured per cell.\n"
+    description: "Maximum percentile of total RNA counts captured per cell. Quantile-based\
+      \ filtering is always\nperformed on the log-transformed total counts.\n"
     info: null
     example:
     - 0.95
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "boolean"
-    name: "--rna_log_transform_total_counts"
-    description: "Whether to log-transform the total counts before calculating percentile-based\
-      \ filtering thresholds.\nThis will only affect percentile-based filtering, not\
-      \ the count-based filtering.\n"
-    info: null
-    default:
-    - true
     required: false
     direction: "input"
     multiple: false
@@ -248,6 +228,18 @@ argument_groups:
     description: "Skip the scrublet doublet detection step."
     info: null
     direction: "input"
+  - type: "double"
+    name: "--scrublet_score_threshold"
+    description: "Manual doublet score threshold passed to filter_with_scrublet. Cells\
+      \ with a\ndoublet score above this value are classified as doublets. If not\
+      \ provided,\nthe threshold is determined automatically by Scrublet.\n"
+    info: null
+    required: false
+    min: 0.0
+    max: 1.0
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
 - name: "CITE-seq filtering options"
   arguments:
   - type: "integer"
@@ -262,7 +254,7 @@ argument_groups:
     multiple_sep: ";"
   - type: "integer"
     name: "--prot_max_counts"
-    description: "Maximum number of counts per cell."
+    description: "Minimum number of counts per cell."
     info: null
     example:
     - 5000000
@@ -272,7 +264,8 @@ argument_groups:
     multiple_sep: ";"
   - type: "double"
     name: "--prot_min_percentile_counts"
-    description: "Minimum percentile of counts captured per cell.\n"
+    description: "Minimum percentile of total protein counts captured per cell. Quantile-based\
+      \ filtering is always\nperformed on the log-transformed total counts.\n"
     info: null
     example:
     - 0.05
@@ -282,22 +275,11 @@ argument_groups:
     multiple_sep: ";"
   - type: "double"
     name: "--prot_max_percentile_counts"
-    description: "Maximum percentile of counts captured per cell.\n"
+    description: "Maximum percentile of total protein counts captured per cell. Quantile-based\
+      \ filtering is always\nperformed on the log-transformed total counts.\n"
     info: null
     example:
     - 0.95
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "boolean"
-    name: "--prot_log_transform_total_counts"
-    description: "Whether to log-transform the total counts before calculating percentile-based\
-      \ filtering thresholds.\nThis will only affect percentile-based filtering, not\
-      \ the count-based filtering.\n"
-    info: null
-    default:
-    - true
     required: false
     direction: "input"
     multiple: false
@@ -384,6 +366,14 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+- name: "Cross-modality filtering"
+  arguments:
+  - type: "boolean_true"
+    name: "--intersect_obs"
+    description: "After per-modality filtering, remove observations that are not present\n\
+      in all processed modalities so that each modality shares the same set of cells.\n"
+    info: null
+    direction: "input"
 - name: "Mitochondrial & Ribosomal Gene Detection"
   arguments:
   - type: "string"
@@ -479,6 +469,14 @@ test_resources:
   path: "test.nf"
   is_executable: true
   entrypoint: "test_wf2"
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf3"
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf4"
 - type: "file"
   path: "concat_test_data"
 - type: "file"
@@ -489,28 +487,22 @@ info:
     namespace: "test_workflows/multiomics/process_singlesample"
   - name: "workflow2_test"
     namespace: "test_workflows/multiomics/process_singlesample"
+  - name: "workflow3_test"
+    namespace: "test_workflows/multiomics/process_singlesample"
+  - name: "workflow4_test"
+    namespace: "test_workflows/multiomics/process_singlesample"
 status: "enabled"
 scope:
   image: "public"
   target: "public"
 dependencies:
-- name: "metadata/add_id"
-  repository:
-    type: "local"
-- name: "workflows/multiomics/split_modalities"
-  alias: "split_modalities_workflow"
-  repository:
-    type: "local"
 - name: "dataflow/merge"
   repository:
     type: "local"
-- name: "workflows/rna/rna_singlesample"
+- name: "filter/intersect_obs"
   repository:
     type: "local"
-- name: "workflows/prot/prot_singlesample"
-  repository:
-    type: "local"
-- name: "workflows/gdo/gdo_singlesample"
+- name: "workflows/multiomics/process_singlesample_base"
   repository:
     type: "local"
 license: "MIT"
@@ -587,17 +579,14 @@ build_info:
   engine: "native"
   output: "target/nextflow/workflows/multiomics/process_singlesample"
   executable: "target/nextflow/workflows/multiomics/process_singlesample/main.nf"
-  viash_version: "0.9.4"
-  git_commit: "2b0e8fc5f581fe0745698246b966660b36e9f46f"
+  viash_version: "0.9.7"
+  git_commit: "5161a678e4f55090178994f7318540e3a17e1508"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-2143-g2b0e8fc5f58"
+  git_tag: "0.2.0-2144-g5161a678e4f"
   dependencies:
-  - "target/nextflow/metadata/add_id"
-  - "target/_private/nextflow/workflows/multiomics/split_modalities"
   - "target/nextflow/dataflow/merge"
-  - "target/nextflow/workflows/rna/rna_singlesample"
-  - "target/nextflow/workflows/prot/prot_singlesample"
-  - "target/nextflow/workflows/gdo/gdo_singlesample"
+  - "target/nextflow/filter/intersect_obs"
+  - "target/_private/nextflow/workflows/multiomics/process_singlesample_base"
 package_config:
   name: "openpipeline"
   summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
@@ -620,7 +609,7 @@ package_config:
     - path: "src/workflows/utils/labels_ci.config"
       description: "Adds the correct memory and CPU labels when running on the Viash\
         \ Hub CI."
-  viash_version: "0.9.4"
+  viash_version: "0.9.7"
   source: "src"
   target: "target"
   config_mods:

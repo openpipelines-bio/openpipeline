@@ -34,8 +34,8 @@
           "type": "string",
           "format": "path",
           "description": "Generated network as output.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`. ",
-          "default": "$id.$key.output"
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.png\"`, direction: `output`, example: `\"output.png\"`. ",
+          "default": "$id.$key.output.png"
         },
         "output_format": {
           "type": "string",

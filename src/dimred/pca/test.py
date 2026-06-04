@@ -3,6 +3,7 @@ import pytest
 import subprocess
 import mudata as mu
 import numpy as np
+import re
 
 ## VIASH START
 meta = {
@@ -16,23 +17,27 @@ meta = {
 input_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 
 
-def test_pca(run_component, tmp_path):
-    output_path = tmp_path / "output.h5mu"
+@pytest.mark.parametrize("chunked,chunk_size", ([True, 26], [None, None], [None, 26]))
+def test_pca(run_component, random_h5mu_path, chunked, chunk_size):
+    output_path = random_h5mu_path()
+    args = [
+        "--input",
+        input_path,
+        "--output",
+        output_path,
+        "--obsm_output",
+        "X_foo",
+        "--num_components",
+        "26",
+        "--overwrite",
+    ]
+    if chunked:
+        args.append("--chunked")
+    if chunk_size:
+        args.extend(["--chunk_size", str(chunk_size)])
 
     # run component
-    run_component(
-        [
-            "--input",
-            input_path,
-            "--output",
-            str(output_path),
-            "--obsm_output",
-            "X_foo",
-            "--num_components",
-            "26",
-            "--overwrite",
-        ]
-    )
+    run_component(args)
     assert output_path.is_file()
     data = mu.read_h5mu(output_path)
 
@@ -50,24 +55,70 @@ def test_pca(run_component, tmp_path):
     )
 
 
-def test_no_overwrite_but_field_also_not_present(run_component, tmp_path):
-    output_path = tmp_path / "output.h5mu"
+def test_chunk_size_smaller_than_n_components_raises(run_component, random_h5mu_path):
+    output_path = random_h5mu_path()
+    args = [
+        "--input",
+        input_path,
+        "--output",
+        output_path,
+        "--obsm_output",
+        "X_foo",
+        "--num_components",
+        "26",
+        "--chunked",
+        "--chunk_size",
+        "25",
+        "--overwrite",
+    ]
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args)
+    assert re.search(
+        r"The requested chunk size \(25\) must not be smaller than the number of components \(26\)",
+        err.value.stdout.decode("utf-8"),
+    )
+
+
+def test_chunk_size_not_set_raises(run_component, random_h5mu_path):
+    output_path = random_h5mu_path()
+    args = [
+        "--input",
+        input_path,
+        "--output",
+        output_path,
+        "--obsm_output",
+        "X_foo",
+        "--num_components",
+        "26",
+        "--chunked",
+        "--overwrite",
+    ]
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args)
+    assert re.search(
+        r"Requested to perform an incremental PCA \('chunked'\), but the chunk size is not set.",
+        err.value.stdout.decode("utf-8"),
+    )
+
+
+def test_no_overwrite_but_field_also_not_present(run_component, random_h5mu_path):
+    output_path = random_h5mu_path()
 
     # create input data
     input_data = mu.read_h5mu(input_path)
     input_data.mod["rna"].uns.pop("pca_variance")
     input_data.mod["rna"].varm.pop("pca_loadings")
     input_data.mod["rna"].obsm.pop("X_pca")
-    tmp_file = tmp_path / "input_data_adjusted.h5mu"
+    tmp_file = random_h5mu_path()
     input_data.write(tmp_file)
 
     # run component
     run_component(
         [
             "--input",
-            str(tmp_file),
+            tmp_file,
             "--output",
-            str(output_path),
+            output_path,
             "--obsm_output",
             "X_foo",
             "--num_components",
@@ -88,22 +139,22 @@ def test_no_overwrite_but_field_also_not_present(run_component, tmp_path):
     assert "X_foo" in data.mod["rna"].obsm
 
 
-def test_selecting_input_layer(run_component, tmp_path):
-    output_path = tmp_path / "output.h5mu"
+def test_selecting_input_layer(run_component, random_h5mu_path):
+    output_path = random_h5mu_path()
 
     # generate input data
     input_data = mu.read_h5mu(input_path)
     input_data.mod["rna"].layers["test"] = input_data.mod["rna"].X
-    tmp_file = tmp_path / "input_data_adjusted.h5mu"
+    tmp_file = random_h5mu_path()
     input_data.write_h5mu(tmp_file)
 
     # run component
     run_component(
         [
             "--input",
-            str(tmp_file),
+            tmp_file,
             "--output",
-            str(output_path),
+            output_path,
             "--obsm_output",
             "test_foo",
             "--num_components",
@@ -149,22 +200,22 @@ def test_highly_variable_column_does_not_exist_raises(run_component):
     )
 
 
-def test_select_highly_variable_column(run_component, tmp_path):
-    output_path = tmp_path / "output.h5mu"
+def test_select_highly_variable_column(run_component, random_h5mu_path):
+    output_path = random_h5mu_path()
 
     # create input data
     input_data = mu.read_h5mu(input_path)
     input_data.mod["rna"].var["filter_with_hvg"] = True
-    tmp_file = tmp_path / "input_data_adjusted.h5mu"
+    tmp_file = random_h5mu_path()
     input_data.write_h5mu(tmp_file)
 
     # run component
     run_component(
         [
             "--input",
-            str(tmp_file),
+            tmp_file,
             "--output",
-            str(output_path),
+            output_path,
             "--obsm_output",
             "X_foo",
             "--num_components",

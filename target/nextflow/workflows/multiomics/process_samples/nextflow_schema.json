@@ -108,19 +108,13 @@
         },
         "rna_min_percentile_counts": {
           "type": "number",
-          "description": "Minimum percentile of counts captured per cell.\n",
+          "description": "Minimum percentile of total RNA counts captured per cell",
           "help_text": "Type: `double`, multiple: `False`, example: `0.05`. "
         },
         "rna_max_percentile_counts": {
           "type": "number",
-          "description": "Maximum percentile of counts captured per cell.\n",
+          "description": "Maximum percentile of total RNA counts captured per cell",
           "help_text": "Type: `double`, multiple: `False`, example: `0.95`. "
-        },
-        "rna_log_transform_total_counts": {
-          "type": "boolean",
-          "description": "Whether to log-transform the total counts before calculating percentile-based filtering thresholds.\nThis will only affect percentile-based filtering, not the count-based filtering.\n",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
         },
         "rna_min_genes_per_cell": {
           "type": "integer",
@@ -162,6 +156,11 @@
           "description": "Skip the scrublet doublet detection step.",
           "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
           "default": false
+        },
+        "scrublet_score_threshold": {
+          "type": "number",
+          "description": "Manual doublet score threshold passed to filter_with_scrublet",
+          "help_text": "Type: `double`, multiple: `False`. "
         }
       }
     },
@@ -182,19 +181,13 @@
         },
         "prot_min_percentile_counts": {
           "type": "number",
-          "description": "Minimum percentile of counts captured per cell.\n",
+          "description": "Minimum percentile of total protein counts captured per cell",
           "help_text": "Type: `double`, multiple: `False`, example: `0.05`. "
         },
         "prot_max_percentile_counts": {
           "type": "number",
-          "description": "Maximum percentile of counts captured per cell.\n",
+          "description": "Maximum percentile of total protein counts captured per cell",
           "help_text": "Type: `double`, multiple: `False`, example: `0.95`. "
-        },
-        "prot_log_transform_total_counts": {
-          "type": "boolean",
-          "description": "Whether to log-transform the total counts before calculating percentile-based filtering thresholds.\nThis will only affect percentile-based filtering, not the count-based filtering.\n",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
         },
         "prot_min_proteins_per_cell": {
           "type": "integer",
@@ -242,6 +235,19 @@
           "type": "integer",
           "description": "Minimum of non-zero values per guide.",
           "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+        }
+      }
+    },
+    "cross-modality filtering": {
+      "title": "Cross-modality filtering",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "intersect_obs": {
+          "type": "boolean",
+          "description": "After per-modality filtering and multisample processing, remove observations\nthat are not present in all processed modalities so that each modality shares\nthe same set of cells.\n",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
         }
       }
     },
@@ -334,6 +340,12 @@
             200,
             500
           ]
+        },
+        "log1p_transform": {
+          "type": "boolean",
+          "description": "Compute log1p-transformed versions of the calculated QC metrics",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
         }
       }
     },
@@ -448,6 +460,9 @@
     },
     {
       "$ref": "#/$defs/gdo filtering options"
+    },
+    {
+      "$ref": "#/$defs/cross-modality filtering"
     },
     {
       "$ref": "#/$defs/highly variable features detection"

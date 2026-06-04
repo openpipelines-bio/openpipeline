@@ -12,6 +12,7 @@ argument_groups:
   arguments:
   - name: --genomeFastaFiles
     type: file
+    example: path/to/genome.fasta
     description: |-
       path(s) to the fasta files with the genome sequences, separated by spaces. These files should be plain text FASTA files, they *cannot* be zipped.
 
@@ -33,6 +34,7 @@ argument_groups:
     multiple: yes
   - name: --sjdbGTFfile
     type: file
+    example: annotation.gtf
     description: path to the GTF file with annotations
     info:
       step: star
@@ -148,6 +150,7 @@ argument_groups:
     multiple: yes
   - name: --readFilesManifest
     type: file
+    example: manifest.txt
     description: |-
       path to the "manifest" file with the names of read files. The manifest file should contain 3 tab-separated columns:
 
