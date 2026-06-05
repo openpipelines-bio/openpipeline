@@ -93,6 +93,7 @@ workflow run_wf {
         [
           "input": state.input,
           "uns_metrics": state.uns_metrics,
+          "output_filtered_data": state.output_filtered_data,
           "output_compression": "gzip"
         ]
       },
