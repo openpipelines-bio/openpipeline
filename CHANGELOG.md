@@ -6,6 +6,8 @@
 
 * `workflows/qc/qc`, `workflows/rna/rna_multisample`, `workflows/prot/prot_multisample`, `workflows/multiomics/process_samples` and `workflows/multiomics/process_batches`: expose the `--log1p_transform` flag (PR #1182).
 
+* `workflows/multiomics/process_singlesample`: now calculates basic QC metrics for the RNA and protein modalities by default, adding metric columns to `.obs` and `.var` of the output. This can be disabled with the new `--skip_qc_metrics` flag (PR #1148).
+
 ## NEW FEATURES
 
 * `filter/filter_with_scrublet`: added `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
