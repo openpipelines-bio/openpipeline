@@ -459,9 +459,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component neighbors find_neighbors"
-LABEL org.opencontainers.image.created="2026-06-04T12:00:16Z"
+LABEL org.opencontainers.image.created="2026-06-05T03:50:47Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="415ae1163b48ce4bfa32bc4567f930778995c2f2"
+LABEL org.opencontainers.image.revision="837be88520754af46263dcd2e45d32943c864efc"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

@@ -101,16 +101,6 @@
           "description": "Maximum number of counts captured per cell.",
           "help_text": "Type: `integer`, multiple: `False`, example: `5000000`. "
         },
-        "rna_min_percentile_counts": {
-          "type": "number",
-          "description": "Minimum percentile of total RNA counts captured per cell",
-          "help_text": "Type: `double`, multiple: `False`, example: `0.05`. "
-        },
-        "rna_max_percentile_counts": {
-          "type": "number",
-          "description": "Maximum percentile of total RNA counts captured per cell",
-          "help_text": "Type: `double`, multiple: `False`, example: `0.95`. "
-        },
         "rna_min_genes_per_cell": {
           "type": "integer",
           "description": "Minimum of non-zero values per cell.",
@@ -173,16 +163,6 @@
           "type": "integer",
           "description": "Minimum number of counts per cell.",
           "help_text": "Type: `integer`, multiple: `False`, example: `5000000`. "
-        },
-        "prot_min_percentile_counts": {
-          "type": "number",
-          "description": "Minimum percentile of total protein counts captured per cell",
-          "help_text": "Type: `double`, multiple: `False`, example: `0.05`. "
-        },
-        "prot_max_percentile_counts": {
-          "type": "number",
-          "description": "Maximum percentile of total protein counts captured per cell",
-          "help_text": "Type: `double`, multiple: `False`, example: `0.95`. "
         },
         "prot_min_proteins_per_cell": {
           "type": "integer",
