@@ -2,7 +2,7 @@ name: delimit_counts
 namespace: "filter"
 scope: "private"
 description: |
-  Turns an .obs column containing count values into a boolean column based on thresholds.
+  Turns .obs and/or .var columns containing count values into boolean columns based on thresholds.
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author, maintainer]
@@ -24,11 +24,22 @@ argument_groups:
         required: false
       - name: "--obs_count_column"
         type: string
-        required: true
+        multiple: true
+        required: false
         example: "n_counts"
         description:  |
-          Name of column from .obs dataframe selecting
-          a column that contains integer or float values.
+          Name(s) of column(s) from the .obs dataframe containing integer or float
+          count values to threshold. The provided --min_count/--max_count thresholds
+          are applied to each of these columns.
+      - name: "--var_count_column"
+        type: string
+        multiple: true
+        required: false
+        example: "n_cells"
+        description:  |
+          Name(s) of column(s) from the .var dataframe containing integer or float
+          count values to threshold. The provided --min_count/--max_count thresholds
+          are applied to each of these columns.
 
   - name: Outputs
     arguments:
@@ -39,8 +50,18 @@ argument_groups:
         example: output.h5mu
       - name: "--obs_name_filter"
         type: string
-        required: true
-        description: In which .obs slot to store a boolean array corresponding to which observations should be removed.
+        multiple: true
+        required: false
+        description: |
+          .obs slot(s) to store the boolean array(s) corresponding to which observations should be retained.
+          Paired by position with --obs_count_column.
+      - name: "--var_name_filter"
+        type: string
+        multiple: true
+        required: false
+        description: |
+          .var slot(s) to store the boolean array(s) corresponding to which variables should be retained.
+          Paired by position with --var_count_column.
     __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Arguments
@@ -48,11 +69,11 @@ argument_groups:
       - name: "--min_count"
         type: integer
         min: 0
-        description: Min count for an observation to be retained (True in output).
+        description: Min count for an entry to be retained (True in output).
       - name: "--max_count"
         type: integer
         min: 0
-        description: Max count for an observation to be retained (True in output).
+        description: Max count for an entry to be retained (True in output).
       - name: "--do_subset"
         type: boolean_true
         description: Whether to subset before storing the output.

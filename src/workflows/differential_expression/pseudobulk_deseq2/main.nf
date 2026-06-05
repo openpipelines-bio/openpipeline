@@ -25,7 +25,7 @@ workflow run_wf {
           fromState: [
             input: "input",
             modality: "modality",
-            min_counts: "min_obs_per_sample",
+            min_count: "min_obs_per_sample",
 
           ],
           args: [

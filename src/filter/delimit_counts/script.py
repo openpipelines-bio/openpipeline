@@ -10,8 +10,10 @@ par = {
     "input": "resources_test/annotation_test_data/TS_Blood_filtered_pseudobulk.h5mu",
     "modality": "rna",
     "output": "output.h5mu",
-    "obs_name_filter": "filter_with_counts",
-    "obs_count_column": "n_cells",
+    "obs_count_column": ["n_cells"],
+    "obs_name_filter": ["filter_with_counts"],
+    "var_count_column": None,
+    "var_name_filter": None,
     "min_count": 15,
     "max_count": 20,
     "output_compression": "gzip",
@@ -40,69 +42,84 @@ def apply_filter_to_mask(mask, base, filter, comparator):
     return num_removed, mask
 
 
-try:
-    counts = data.obs[par["obs_count_column"]]
-except KeyError:
-    raise ValueError(f"Could not find column '{par['obs_count_column']}'")
+def delimit_axis(dataframe, axis_name, count_columns, name_filters):
+    """Threshold one or more columns of a dataframe (.obs or .var) and store the
+    resulting boolean masks. Returns the combined (AND) mask across all columns."""
+    count_columns = count_columns or []
+    name_filters = name_filters or []
+    if len(count_columns) != len(name_filters):
+        raise ValueError(
+            f"The number of --{axis_name}_count_column values ({len(count_columns)}) "
+            f"must match the number of --{axis_name}_name_filter values ({len(name_filters)})."
+        )
 
-if not is_numeric_dtype(counts):
+    combined_mask = np.repeat(True, dataframe.shape[0])
+    for count_column, name_filter in zip(count_columns, name_filters):
+        try:
+            counts = dataframe[count_column]
+        except KeyError:
+            raise ValueError(f"Could not find column '{count_column}' in .{axis_name}")
+
+        if not is_numeric_dtype(counts):
+            raise ValueError(
+                f"Column '{count_column}' does not contain numeric datatype."
+            )
+        if counts.min() < 0:
+            raise ValueError(f"Column '{count_column}' contains values < 0.")
+
+        filters = []
+        if par["min_count"] is not None:
+            filters.append(
+                (
+                    par["min_count"],
+                    ge,
+                    f"\tRemoving %s entries in {count_column} with <%s counts.",
+                )
+            )
+        if par["max_count"] is not None:
+            filters.append(
+                (
+                    par["max_count"],
+                    le,
+                    f"\tRemoving %s entries in {count_column} with >%s counts.",
+                )
+            )
+        if not filters:
+            logger.info(
+                "No filter applied to column '%s'. Please provide `--min_count` "
+                "and/or `--max_count` for filtering.",
+                count_column,
+            )
+
+        keep = np.repeat(True, dataframe.shape[0])
+        for threshold, comparator, message in filters:
+            num_removed, keep = apply_filter_to_mask(
+                keep, counts, threshold, comparator
+            )
+            logger.info(message, num_removed, threshold)
+
+        dataframe[name_filter] = keep
+        combined_mask &= keep
+
+    return combined_mask
+
+
+if not par["obs_count_column"] and not par["var_count_column"]:
     raise ValueError(
-        f"Column '{par['obs_count_column']}' does not contain numeric datatype."
+        "At least one of --obs_count_column or --var_count_column must be provided."
     )
 
-if counts.min() < 0:
-    raise ValueError(f"Column '{par['obs_count_column']}' contains values < 0.")
-
-
-# Filter cells
-filters = []
-if par["min_count"]:
-    filters.append(
-        (
-            "min_count",
-            counts,
-            ge,
-            f"\tRemoving %s observations in {par['obs_count_column']} with <%s counts.",
-        )
-    )
-else:
-    logger.info(
-        "No minimum count filter applied. Please provide `--min_count` for filtering."
-    )
-
-if par["max_count"]:
-    filters.append(
-        (
-            "max_count",
-            counts,
-            le,
-            f"\tRemoving %s observations in {par['obs_count_column']} with >%s counts.",
-        )
-    )
-else:
-    logger.info(
-        "No maximum count filter applied. Please provide `--max_count` for filtering."
-    )
-
-keep_cells = np.repeat(True, data.n_obs)
-for filter_name_or_value, base, comparator, message in filters:
-    try:
-        filter = par[filter_name_or_value]
-    except KeyError:
-        filter = filter_name_or_value
-    if filter is not None:
-        num_removed, keep_cells = apply_filter_to_mask(
-            keep_cells, base, filter, comparator
-        )
-        logger.info(message, num_removed, filter)
-
-data.obs[par["obs_name_filter"]] = keep_cells
+keep_obs = delimit_axis(
+    data.obs, "obs", par["obs_count_column"], par["obs_name_filter"]
+)
+keep_var = delimit_axis(
+    data.var, "var", par["var_count_column"], par["var_name_filter"]
+)
 
 if par["do_subset"]:
-    modality_data = data[keep_cells, :]
-    logger.info("\tFiltered data: %s", modality_data)
+    data = data[keep_obs, keep_var]
+    logger.info("\tFiltered data: %s", data)
 
-logger.info("\tFiltered data: %s", data)
 logger.info("Writing output data to %s", par["output"])
 write_h5ad_to_h5mu_with_compression(
     par["output"], par["input"], par["modality"], data, par["output_compression"]

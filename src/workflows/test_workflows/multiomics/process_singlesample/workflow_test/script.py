@@ -21,8 +21,9 @@ assert input.shape == output.shape, (
     f"Expected shape {input.shape} but got {output.shape}."
 )
 
+# No count-based filtering thresholds are set for this test, so no count filter
+# columns (e.g. filter_total_counts) are created. Only scrublet runs.
 expected_rna_obs_keys = [
-    "filter_with_counts",
     "scrublet_doublet_score",
     "filter_with_scrublet",
 ]

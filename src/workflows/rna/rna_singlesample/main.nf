@@ -46,15 +46,22 @@ workflow run_wf {
         // on the fraction of mitochondrial genes per cell
         // This behaviour is optional based on the presence of var_name_mitochondrial_genes
         // The behavior of other components must be tuned to this argument as well
+        // Only calculate the qc metrics that are required for the requested filtering.
+        // These are computed once, per-sample, on the raw counts:
+        //   - total_counts (.obs)      -> used to filter cells on --min_counts/--max_counts
+        //   - num_nonzero_vars (.obs)  -> used to filter cells on --min_genes_per_cell/--max_genes_per_cell
+        //   - num_nonzero_obs (.var)   -> used to filter genes on --min_cells_per_gene
+        // Mitochondrial gene detection is handled by the blocks below.
+        def filter_on_counts = state.min_counts != null || state.max_counts != null
+        def filter_on_genes_per_cell = state.min_genes_per_cell != null || state.max_genes_per_cell != null
+        def filter_on_cells_per_gene = state.min_cells_per_gene != null
         def args = [
           "id": id,
           "input": state.input,
-          // disable other qc metric calculations
-          // only mitochondrial gene detection is required at this point
           "top_n_vars": [],
-          "output_obs_num_nonzero_vars": null,
-          "output_obs_total_counts_vars": null,
-          "output_var_num_nonzero_obs": null,
+          "output_obs_num_nonzero_vars": filter_on_genes_per_cell ? "num_nonzero_vars" : null,
+          "output_obs_total_counts_vars": filter_on_counts ? "total_counts" : null,
+          "output_var_num_nonzero_obs": filter_on_cells_per_gene ? "num_nonzero_obs" : null,
           "output_var_total_counts_obs": null,
           "output_var_obs_mean": null,
           "output_var_pct_dropout": null,
@@ -125,20 +132,49 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
-    // cell filtering
-    | filter_with_counts.run(
-      key: "rna_filter_with_counts",
+    // cell filtering on total counts per cell (.obs total_counts, computed by qc above)
+    | delimit_counts.run(
+      key: "rna_filter_total_counts",
+      runIf: { id, state -> state.min_counts != null || state.max_counts != null },
       fromState: { id, state ->
         [
           "input": state.input,
-          "layer": state.layer,
-          "obs_name_filter": "filter_with_counts",
-          "var_name_filter": "filter_with_counts",
-          "min_counts": state.min_counts,
-          "max_counts": state.max_counts,
-          "min_genes_per_cell": state.min_genes_per_cell,
-          "max_genes_per_cell": state.max_genes_per_cell,
-          "min_cells_per_gene": state.min_cells_per_gene,
+          "modality": "rna",
+          "obs_count_column": ["total_counts"],
+          "obs_name_filter": ["filter_total_counts"],
+          "min_count": state.min_counts,
+          "max_count": state.max_counts,
+        ]
+      },
+      toState: ["input": "output"]
+    )
+    // cell filtering on the number of genes per cell (.obs num_nonzero_vars)
+    | delimit_counts.run(
+      key: "rna_filter_genes_per_cell",
+      runIf: { id, state -> state.min_genes_per_cell != null || state.max_genes_per_cell != null },
+      fromState: { id, state ->
+        [
+          "input": state.input,
+          "modality": "rna",
+          "obs_count_column": ["num_nonzero_vars"],
+          "obs_name_filter": ["filter_genes_per_cell"],
+          "min_count": state.min_genes_per_cell,
+          "max_count": state.max_genes_per_cell,
+        ]
+      },
+      toState: ["input": "output"]
+    )
+    // gene filtering on the number of cells per gene (.var num_nonzero_obs)
+    | delimit_counts.run(
+      key: "rna_filter_cells_per_gene",
+      runIf: { id, state -> state.min_cells_per_gene != null },
+      fromState: { id, state ->
+        [
+          "input": state.input,
+          "modality": "rna",
+          "var_count_column": ["num_nonzero_obs"],
+          "var_name_filter": ["filter_cells_per_gene"],
+          "min_count": state.min_cells_per_gene,
         ]
       },
       toState: ["input": "output"]
@@ -147,21 +183,38 @@ workflow run_wf {
       key: "rna_do_filter",
       fromState: {id, state ->
         // do_filter does not need a layer argument because it filters all layers
-        // from a modality.
-        def stateMapping = [
-          input: state.input,
-          var_filter: ["filter_with_counts"],
-          // If scrublet is skipped, the output should be set to the workflow output
-          output: state.workflow_output
-        ]
-        def obs_filter = ["filter_with_counts"]
+        // from a modality. Only the filter columns that were actually created
+        // (i.e. for which a threshold was requested) are referenced here.
+        def obs_filter = []
+        if (state.min_counts != null || state.max_counts != null) {
+          obs_filter += ["filter_total_counts"]
+        }
+        if (state.min_genes_per_cell != null || state.max_genes_per_cell != null) {
+          obs_filter += ["filter_genes_per_cell"]
+        }
         if (state.var_name_mitochondrial_genes) {
           obs_filter += ["filter_mitochondrial"]
         }
         if (state.var_name_ribosomal_genes) {
           obs_filter += ["filter_ribosomal"]
         }
-        stateMapping += ["obs_filter": obs_filter]
+        def var_filter = []
+        if (state.min_cells_per_gene != null) {
+          var_filter += ["filter_cells_per_gene"]
+        }
+        def stateMapping = [
+          input: state.input,
+          // If scrublet is skipped, the output should be set to the workflow output
+          output: state.workflow_output
+        ]
+        // Only pass the filter arguments when columns were actually created;
+        // an empty list would be passed as a single empty string to do_filter.
+        if (obs_filter) {
+          stateMapping["obs_filter"] = obs_filter
+        }
+        if (var_filter) {
+          stateMapping["var_filter"] = var_filter
+        }
         return stateMapping
       },
       toState: ["input": "output"]

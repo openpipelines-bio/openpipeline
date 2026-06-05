@@ -27,10 +27,11 @@ expected_rna_obs_keys = [
     "fraction_ribosomal",
     "filter_mitochondrial",
     "filter_ribosomal",
-    "filter_with_counts",
+    "filter_total_counts",
+    "filter_genes_per_cell",
     "filter_with_scrublet",
 ]
-expected_rna_var_keys = ["mitochondrial", "ribosomal", "filter_with_counts"]
+expected_rna_var_keys = ["mitochondrial", "ribosomal", "filter_cells_per_gene"]
 assert all(key in list(output.mod["rna"].obs) for key in expected_rna_obs_keys), (
     f"Query obs columns should be: {expected_rna_obs_keys}, found: {output.mod['rna'].obs.keys()}."
 )
@@ -45,8 +46,12 @@ assert output.mod["rna"].shape[1] < input.mod["rna"].shape[1], (
 )
 
 # Check prot modality
-expected_prot_obs_keys = ["sample_id", "filter_with_counts"]
-expected_prot_var_keys = ["filter_with_counts"]
+expected_prot_obs_keys = [
+    "sample_id",
+    "filter_total_counts",
+    "filter_proteins_per_cell",
+]
+expected_prot_var_keys = ["filter_cells_per_protein"]
 assert all(key in list(output.mod["prot"].obs) for key in expected_prot_obs_keys), (
     f"Query obs columns should be: {expected_prot_obs_keys}, found: {output.mod['prot'].obs.keys()}."
 )

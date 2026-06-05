@@ -62,8 +62,9 @@ argument_groups:
         type: integer
         description: Minimum of non-zero values per gene.
 dependencies:
-  - name: filter/filter_with_counts
+  - name: filter/delimit_counts
   - name: filter/do_filter
+  - name: qc/calculate_qc_metrics
 resources:
   - type: nextflow_script
     path: main.nf
