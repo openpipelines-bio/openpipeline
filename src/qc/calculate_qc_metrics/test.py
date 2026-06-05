@@ -9,6 +9,8 @@ import pandas as pd
 import scipy
 import uuid
 from pandas.testing import assert_series_equal
+import re
+import subprocess
 from itertools import product
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
@@ -147,12 +149,19 @@ def test_add_qc(run_component, input_path, random_path, file_format):
 
     expected_obs_columns = [
         f"pct_of_counts_in_top_{top_n_var}_vars" for top_n_var in ("10", "20", "90")
-    ] + ["total_counts", "num_nonzero_vars"]
+    ] + [
+        "total_counts",
+        "log1p_total_counts",
+        "num_nonzero_vars",
+        "log1p_num_nonzero_vars",
+    ]
     expected_var_columns = [
         "pct_dropout",
         "num_nonzero_obs",
         "obs_mean",
+        "log1p_obs_mean",
         "total_counts",
+        "log1p_total_counts",
     ]
     data_with_qc.mod["rna"].var = data_with_qc.mod["rna"].var.drop(
         columns=expected_var_columns, errors="raise"
@@ -189,6 +198,7 @@ def test_qc_metrics_set_output_column(
     random_path,
     file_format,
 ):
+    top_n_vars = [10, 20, 90]
     output_path = random_path(input_mudata_path.suffix.lstrip("."))
     args = [
         "--input",
@@ -199,43 +209,49 @@ def test_qc_metrics_set_output_column(
         "rna",
         "--output_compression",
         "gzip",
+        "--log1p_transform",
+        "false",
+        "--top_n_vars",
+        ";".join(str(n) for n in top_n_vars),
         optional_parameter,
         arg_value,
     ]
 
     run_component(args)
     default_obs_columns = {
-        "output_obs_num_nonzero_vars": "num_nonzero_vars",
-        "output_obs_total_counts_vars": "total_counts",
+        "output_obs_num_nonzero_vars": ["num_nonzero_vars"],
+        "output_obs_total_counts_vars": ["total_counts"],
+        "output_obs_top_n_vars": [f"pct_of_counts_in_top_{n}_vars" for n in top_n_vars],
     }
     default_var_columns = {
-        "output_var_num_nonzero_obs": "num_nonzero_obs",
-        "output_var_total_counts_obs": "total_counts",
-        "output_var_obs_mean": "obs_mean",
-        "output_var_pct_dropout": "pct_dropout",
+        "output_var_num_nonzero_obs": ["num_nonzero_obs"],
+        "output_var_total_counts_obs": ["total_counts"],
+        "output_var_obs_mean": ["obs_mean"],
+        "output_var_pct_dropout": ["pct_dropout"],
     }
     defaults = {"var": default_var_columns, "obs": default_obs_columns}
-    defaults[annotation_matrix].update({optional_parameter.strip("-"): arg_value})
+    defaults[annotation_matrix].update({optional_parameter.strip("-"): [arg_value]})
     assert output_path.exists()
     if file_format == "zarr":
         data_with_qc = md.read_zarr(output_path)
     else:
         data_with_qc = md.read(output_path)
     for attribute_name in ("var", "obs"):
+        columns_to_drop = [
+            col for cols in defaults[attribute_name].values() for col in cols
+        ]
         setattr(
             data_with_qc.mod["rna"],
             attribute_name,
             getattr(data_with_qc.mod["rna"], attribute_name).drop(
-                columns=list(defaults[attribute_name].values()), errors="raise"
+                columns=columns_to_drop, errors="raise"
             ),
         )
         setattr(
             data_with_qc,
             attribute_name,
             getattr(data_with_qc, attribute_name).drop(
-                columns=list(
-                    map("rna:{}".format, list(defaults[attribute_name].values()))
-                ),
+                columns=list(map("rna:{}".format, columns_to_drop)),
                 errors="raise",
             ),
         )
@@ -380,7 +396,7 @@ def test_compare_scanpy(
         percent_top=[10, 20, 90],
         use_raw=False,
         inplace=True,
-        log1p=False,
+        log1p=True,
     )
     scanpy_var = input_mudata.mod["rna"].var
     component_var = rna_mod.var
@@ -390,6 +406,8 @@ def test_compare_scanpy(
         "num_nonzero_obs": "n_cells_by_counts",
         "obs_mean": "mean_counts",
         "total_counts": "total_counts",
+        "log1p_obs_mean": "log1p_mean_counts",
+        "log1p_total_counts": "log1p_total_counts",
     }
     for from_var, to_var in vars_to_compare.items():
         assert_series_equal(
@@ -406,6 +424,7 @@ def test_compare_scanpy(
         "pct_custom": "pct_counts_custom",
         "total_counts_custom": "total_counts_custom",
         "total_counts": "total_counts",
+        "log1p_total_counts": "log1p_total_counts",
     }
     obs_to_compare |= {
         f"pct_of_counts_in_top_{i}_vars": f"pct_counts_in_top_{i}_genes"
@@ -478,6 +497,96 @@ def test_global_slot_items(run_component, input_mudata_random, random_h5mu_path)
     assert "foo" in output_data.obs.columns
     assert output_data.obs["foo"].unique().to_list() == ["a"]
     assert output_data.var["bar"].unique().to_list() == ["b"]
+
+
+@pytest.mark.parametrize(
+    "bad_format",
+    [
+        "no_placeholder",
+        "wrong_field_{x}",
+        "extra_field_{n}_{x}",
+        "implicit_{}",
+        "malformed_{n",
+    ],
+)
+def test_output_obs_top_n_vars_invalid_format_string(
+    run_component, input_path, random_path, bad_format
+):
+    output_path = random_path(input_path.suffix.lstrip("."))
+    args = [
+        "--input",
+        input_path,
+        "--output",
+        output_path,
+        "--modality",
+        "rna",
+        "--output_obs_top_n_vars",
+        bad_format,
+    ]
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args)
+    assert re.search(
+        r"ValueError: --output_obs_top_n_vars",
+        err.value.stdout.decode("utf-8"),
+    )
+
+
+def test_output_obs_top_n_vars_valid_format_string(
+    run_component, input_path, random_path, file_format
+):
+    output_path = random_path(input_path.suffix.lstrip("."))
+    top_n_vars = [10, 20, 90]
+    custom_format = "pct_counts_in_top_{n}_genes"
+    run_component(
+        [
+            "--input",
+            input_path,
+            "--output",
+            output_path,
+            "--modality",
+            "rna",
+            "--top_n_vars",
+            ";".join(str(n) for n in top_n_vars),
+            "--output_obs_top_n_vars",
+            custom_format,
+        ]
+    )
+    assert output_path.exists()
+    if file_format == "zarr":
+        data_with_qc = md.read_zarr(output_path)
+    else:
+        data_with_qc = md.read(output_path)
+    expected_columns = [custom_format.format(n=n) for n in top_n_vars]
+    for col in expected_columns:
+        assert col in data_with_qc.mod["rna"].obs.columns, (
+            f"Expected column '{col}' in .obs"
+        )
+
+
+def test_log1p_off_when_disabled(
+    run_component, input_mudata_path, random_path, file_format
+):
+    output_path = random_path(input_mudata_path.suffix.lstrip("."))
+    run_component(
+        [
+            "--input",
+            input_mudata_path,
+            "--output",
+            output_path,
+            "--modality",
+            "rna",
+            "--output_compression",
+            "gzip",
+            "--log1p_transform",
+            "false",
+        ]
+    )
+    if file_format == "zarr":
+        data_with_qc = md.read_zarr(output_path)
+    else:
+        data_with_qc = md.read(output_path)
+    assert data_with_qc.mod["rna"].var.filter(regex="^log1p_", axis=1).empty
+    assert data_with_qc.mod["rna"].obs.filter(regex="^log1p_", axis=1).empty
 
 
 if __name__ == "__main__":

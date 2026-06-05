@@ -96,7 +96,8 @@ workflow run_wf {
         "obs_name_ribosomal_fraction": "obs_name_ribosomal_fraction",
         "ribosomal_gene_regex": "ribosomal_gene_regex",
         "layer": "rna_layer",
-        "skip_scrublet_doublet_detection": "skip_scrublet_doublet_detection"
+        "skip_scrublet_doublet_detection": "skip_scrublet_doublet_detection",
+        "scrublet_score_threshold": "scrublet_score_threshold"
       ],
       "prot": [
         "min_counts": "prot_min_counts",
