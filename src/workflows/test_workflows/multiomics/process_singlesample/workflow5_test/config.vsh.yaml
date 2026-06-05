@@ -1,0 +1,69 @@
+name: "workflow5_test"
+namespace: "test_workflows/multiomics/process_singlesample"
+scope: "test"
+description: "This component tests the output of the integration test of process_singlesample test_wf5, which verifies that QC metrics are calculated correctly with both default and non-default output slot names."
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        description: Path to the processed h5mu file.
+        example: test.h5mu
+      - name: "--orig_input"
+        type: file
+        required: true
+        description: Path to the original input file.
+        example: input.h5mu
+  - name: QC metric slots
+    description: |
+      Names of the QC metric output columns to verify. Defaults match the
+      process_singlesample defaults so the same component can verify both the
+      default-slot and non-default-slot runs. When a slot is renamed, the script
+      additionally asserts that the corresponding default-named column is absent.
+    arguments:
+      - name: "--output_obs_num_nonzero_vars"
+        type: string
+        default: "num_nonzero_vars"
+      - name: "--output_obs_total_counts_vars"
+        type: string
+        default: "total_counts"
+      - name: "--output_var_num_nonzero_obs"
+        type: string
+        default: "num_nonzero_obs"
+      - name: "--output_var_total_counts_obs"
+        type: string
+        default: "total_counts"
+      - name: "--output_var_obs_mean"
+        type: string
+        default: "obs_mean"
+      - name: "--output_var_pct_dropout"
+        type: string
+        default: "pct_dropout"
+      - name: "--top_n_vars"
+        type: integer
+        multiple: true
+        default: [50, 100, 200, 500]
+      - name: "--log1p_transform"
+        type: boolean
+        default: true
+      - name: "--var_name_mitochondrial_genes"
+        type: string
+        default: "mitochondrial"
+      - name: "--var_name_ribosomal_genes"
+        type: string
+        default: "ribosomal"
+resources:
+  - type: python_script
+    path: script.py
+engines:
+  - type: docker
+    image: python:3.13-slim
+    __merge__: /src/base/requirements/testworkflows_setup.yaml
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: ["midmem"]
