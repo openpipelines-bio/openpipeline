@@ -209,7 +209,7 @@ build_info:
   output: "target/_private/nextflow/workflows/multiomics/split_h5mu"
   executable: "target/_private/nextflow/workflows/multiomics/split_h5mu/main.nf"
   viash_version: "0.9.7"
-  git_commit: "f18049cdce49f85aecf943930d676fb1a1ebf2e1"
+  git_commit: "5a19ae188d04cb648bd60d879292c302da83d04e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/dataflow/split_h5mu"

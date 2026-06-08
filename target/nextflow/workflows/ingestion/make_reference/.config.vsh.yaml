@@ -394,7 +394,7 @@ build_info:
   output: "target/nextflow/workflows/ingestion/make_reference"
   executable: "target/nextflow/workflows/ingestion/make_reference/main.nf"
   viash_version: "0.9.7"
-  git_commit: "f18049cdce49f85aecf943930d676fb1a1ebf2e1"
+  git_commit: "5a19ae188d04cb648bd60d879292c302da83d04e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/reference/make_reference"

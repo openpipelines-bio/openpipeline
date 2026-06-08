@@ -3458,7 +3458,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors",
     "viash_version" : "0.9.7",
-    "git_commit" : "f18049cdce49f85aecf943930d676fb1a1ebf2e1",
+    "git_commit" : "5a19ae188d04cb648bd60d879292c302da83d04e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
