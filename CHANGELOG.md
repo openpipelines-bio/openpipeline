@@ -14,6 +14,10 @@
 
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples` and `workflows/rna/rna_singlesample`: surfaced `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
 
+* `workflows/rna/rna_singlesample`, `workflows/multiomics/process_singlesample`: surfaced additional scrublet pass-through arguments (`--scrublet_expected_doublet_rate`, `--scrublet_stdev_doublet_rate`, `--scrublet_n_neighbors`, `--scrublet_sim_doublet_ratio`, `--scrublet_min_counts`, `--scrublet_min_cells`, `--scrublet_min_gene_variability_percent`, `--scrublet_num_pca_components`, `--scrublet_distance_metric`, `--scrublet_allow_automatic_threshold_detection_fail`) to allow tuning doublet detection (PR #1183).
+
+* `workflows/rna/rna_singlesample`, `workflows/multiomics/process_singlesample`: added the `--scrublet_do_subset` flag to optionally remove cells classified as doublets from the output. By default doublets are only annotated (in `.obs`), preserving the existing behavior (PR #1183).
+
 ## MINOR CHANGES
 
 * `qc/calculate_qc_metrics`: parametrize the names of the top-n-vars `.obs` output columns with the `--output_obs_top_n_vars` flag (PR #1182).

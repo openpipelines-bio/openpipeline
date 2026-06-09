@@ -174,7 +174,18 @@ workflow run_wf {
       fromState: [
         "input": "input",
         "layer": "layer",
+        "do_subset": "scrublet_do_subset",
         "scrublet_score_threshold": "scrublet_score_threshold",
+        "expected_doublet_rate": "scrublet_expected_doublet_rate",
+        "stdev_doublet_rate": "scrublet_stdev_doublet_rate",
+        "n_neighbors": "scrublet_n_neighbors",
+        "sim_doublet_ratio": "scrublet_sim_doublet_ratio",
+        "min_counts": "scrublet_min_counts",
+        "min_cells": "scrublet_min_cells",
+        "min_gene_variablity_percent": "scrublet_min_gene_variability_percent",
+        "num_pca_components": "scrublet_num_pca_components",
+        "distance_metric": "scrublet_distance_metric",
+        "allow_automatic_threshold_detection_fail": "scrublet_allow_automatic_threshold_detection_fail",
         "output": "workflow_output"
       ],
       args: [output_compression: "gzip"],
