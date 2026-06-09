@@ -32,8 +32,9 @@ assert "filter_with_scrublet" in rna_obs.columns, (
 )
 
 # The manual threshold means: cells with doublet score > threshold are
-# classified as doublets (filter_with_scrublet == False), the rest are kept
-# (filter_with_scrublet == True).
+# classified as doublets and are removed by the do_filter step that follows
+# scrublet. Every cell remaining in the output must therefore be a non-doublet
+# (scrublet_doublet_score <= threshold, filter_with_scrublet == True).
 threshold = par["scrublet_score_threshold"]
 doublet_scores = rna_obs["scrublet_doublet_score"].to_numpy(dtype=float)
 keep_cells = rna_obs["filter_with_scrublet"].to_numpy(dtype=bool)
@@ -43,16 +44,21 @@ assert not np.isnan(doublet_scores).all(), (
 )
 
 valid = ~np.isnan(doublet_scores)
-expected_keep = doublet_scores[valid] <= threshold
-actual_keep = keep_cells[valid]
-assert np.array_equal(actual_keep, expected_keep), (
-    f"filter_with_scrublet should match (scrublet_doublet_score <= {threshold}). "
-    f"Mismatches: {(actual_keep != expected_keep).sum()} out of {valid.sum()} cells."
+assert (doublet_scores[valid] <= threshold).all(), (
+    f"Cells with a doublet score above the manual threshold of {threshold} should "
+    f"have been removed, but {(doublet_scores[valid] > threshold).sum()} remain in "
+    f"the output."
+)
+assert keep_cells[valid].all(), (
+    "All cells remaining after filtering should be tagged as kept "
+    "(filter_with_scrublet == True)."
 )
 
-assert (doublet_scores[valid] > threshold).any(), (
-    f"Expected at least one cell with doublet score above the manual threshold "
-    f"of {threshold} to confirm the threshold was applied."
+# Confirm that doublet removal actually reduced the number of RNA observations
+# relative to the unfiltered input.
+assert output.mod["rna"].n_obs < input.mod["rna"].n_obs, (
+    f"Expected doublet removal to reduce the number of RNA observations below the "
+    f"input ({input.mod['rna'].n_obs}), but got {output.mod['rna'].n_obs}."
 )
 
 print("Test successful!", flush=True)

@@ -66,6 +66,21 @@ workflow test_wf {
         min_cells_per_gene: 2,
         scrublet_score_threshold: 0.1,
         output: "scrublet_threshold_test.final.h5mu"
+      ],
+      [
+        id: "scrublet_parameters_test",
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
+        min_counts: 3,
+        max_counts: 10000000,
+        min_genes_per_cell: 2,
+        max_genes_per_cell: 10000000,
+        min_cells_per_gene: 2,
+        scrublet_expected_doublet_rate: 0.12,
+        scrublet_min_counts: 2,
+        scrublet_min_cells: 3,
+        scrublet_min_gene_variability_percent: 85,
+        scrublet_num_pca_components: 30,
+        output: "scrublet_parameters_test.final.h5mu"
       ]
     ])
     | map{ state -> [state.id, state] }
@@ -77,10 +92,10 @@ workflow test_wf {
     }
     | toSortedList{a, b -> a[0] <=> b[0]}
     | map { output_list ->
-      assert output_list.size() == 5 : "output channel should contain five events"
+      assert output_list.size() == 6 : "output channel should contain six events"
       println "output_list: $output_list"
-      assert output_list.collect{it[0]} == ["mitochondrial_ribosomal_test", "percentile_test", "scrublet_threshold_test", "simple_execution_test", "skip_scrublet_test"] : "Output ID should be same as input ID"
-      assert (output_list.collect({it[1].output.getFileName().toString()}) as Set).equals(["mitochondrial_ribosomal_test.final.h5mu", "percentile_test.final.h5mu", "scrublet_threshold_test.final.h5mu", "simple_execution_test.final.h5mu", "skip_scrublet_test.final.h5mu"] as Set)
+      assert output_list.collect{it[0]} == ["mitochondrial_ribosomal_test", "percentile_test", "scrublet_parameters_test", "scrublet_threshold_test", "simple_execution_test", "skip_scrublet_test"] : "Output ID should be same as input ID"
+      assert (output_list.collect({it[1].output.getFileName().toString()}) as Set).equals(["mitochondrial_ribosomal_test.final.h5mu", "percentile_test.final.h5mu", "scrublet_parameters_test.final.h5mu", "scrublet_threshold_test.final.h5mu", "simple_execution_test.final.h5mu", "skip_scrublet_test.final.h5mu"] as Set)
 
     }
 }

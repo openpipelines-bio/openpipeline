@@ -23,8 +23,6 @@ assert input.shape == output.shape, (
 
 expected_rna_obs_keys = [
     "filter_with_counts",
-    "scrublet_doublet_score",
-    "filter_with_scrublet",
 ]
 
 # Check rna modality

@@ -62,6 +62,9 @@ workflow test_wf2 {
         prot_min_counts: 3,
         add_id_to_obs: true,
         add_id_make_observation_keys_unique: true,
+        // Skip scrublet so the raw-expression equality checks hold (doublet
+        // removal would otherwise drop RNA cells from the output).
+        skip_scrublet_doublet_detection: true,
         add_id_obs_output: "sample_id"
     ],
     [
@@ -85,6 +88,7 @@ workflow test_wf2 {
       obs_name_ribosomal_fraction: 'fraction_ribosomal',
       add_id_to_obs: true,
       add_id_make_observation_keys_unique: true,
+      skip_scrublet_doublet_detection: true,
       add_id_obs_output: "sample_id"
     ],
   ])

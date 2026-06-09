@@ -19,12 +19,16 @@ workflow test_wf {
       id: "mouse",
       input: resources_test.resolve("concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"),
       publish_dir: "foo/",
+      // Skip scrublet so this passthrough test keeps verifying that nothing is
+      // removed (doublet removal is covered by test_wf3).
+      skip_scrublet_doublet_detection: true,
       output: "test.h5mu",
     ],
     [
       id: "human",
       input: resources_test.resolve("concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"),
       publish_dir: "foo/",
+      skip_scrublet_doublet_detection: true,
       output: "test.h5mu",
 
     ]
@@ -85,6 +89,9 @@ workflow test_wf2 {
       add_id_obs_output: "sample_id",
       intersect_obs: true,
       skip_qc_metrics: true,
+      // Skip scrublet so the shape-preservation and intersect_obs assertions
+      // hold (doublet removal is covered by test_wf3).
+      skip_scrublet_doublet_detection: true,
       output: "pbmc_test.h5mu"
     ]
   ])

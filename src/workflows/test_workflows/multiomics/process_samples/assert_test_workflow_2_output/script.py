@@ -189,8 +189,6 @@ def test_rna_obs_slots(output_h5mu):
 
     other_columns = [
         "sample_id",
-        "scrublet_doublet_score",
-        "filter_with_scrublet",
         "filter_with_counts",
         "num_nonzero_vars",
         "total_counts",

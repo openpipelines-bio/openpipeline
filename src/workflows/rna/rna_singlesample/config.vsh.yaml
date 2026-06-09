@@ -120,7 +120,67 @@ argument_groups:
           Manual doublet score threshold passed to filter_with_scrublet. Cells with a
           doublet score above this value are classified as doublets. If not provided,
           the threshold is determined automatically by Scrublet.
-  
+      - name: "--scrublet_expected_doublet_rate"
+        type: double
+        required: false
+        min: 0
+        max: 1
+        description: |
+          The estimated fraction of doublets as from the experimental setup, passed to
+          filter_with_scrublet. If not provided, the component default is used.
+      - name: "--scrublet_stdev_doublet_rate"
+        type: double
+        required: false
+        min: 0
+        description: Uncertainty in the expected doublet rate, passed to filter_with_scrublet.
+      - name: "--scrublet_n_neighbors"
+        type: integer
+        required: false
+        min: 0
+        description: |
+          Number of neighbors used to construct the KNN classifier of observed transcriptomes
+          and simulated doublets, passed to filter_with_scrublet.
+      - name: "--scrublet_sim_doublet_ratio"
+        type: double
+        required: false
+        min: 0
+        description: |
+          Number of doublets to simulate relative to the number of observed transcriptomes,
+          passed to filter_with_scrublet.
+      - name: "--scrublet_min_counts"
+        type: integer
+        required: false
+        description: |
+          The number of minimal UMI counts per cell that have to be present for initial cell
+          detection during scrublet doublet detection.
+      - name: "--scrublet_min_cells"
+        type: integer
+        required: false
+        description: |
+          The number of cells in which UMIs for a gene were detected, used during scrublet
+          doublet detection.
+      - name: "--scrublet_min_gene_variability_percent"
+        type: double
+        required: false
+        description: |
+          Keep the most highly variable genes (in the top percentile) as measured by the
+          v-statistic, used for gene filtering prior to PCA during scrublet doublet detection.
+      - name: "--scrublet_num_pca_components"
+        type: integer
+        required: false
+        description: |
+          Number of principal components used during PCA dimensionality reduction in scrublet
+          doublet detection.
+      - name: "--scrublet_distance_metric"
+        type: string
+        required: false
+        description: The distance metric used for computing similarities during scrublet doublet detection.
+      - name: "--scrublet_allow_automatic_threshold_detection_fail"
+        type: boolean_true
+        description: |
+          When scrublet fails to automatically determine the doublet score threshold, allow the
+          pipeline to continue and set the output columns to NA.
+
   - name: "Mitochondrial & Ribosomal Gene Detection"
     arguments:
       - name: "--var_gene_names"

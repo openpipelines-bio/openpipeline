@@ -177,6 +177,45 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
+    // doublet calling
+    // Scrublet runs before do_filter so that doublets are detected on the full
+    // count matrix. It only tags cells (do_subset stays disabled); the actual
+    // removal happens in the single do_filter step below.
+    | filter_with_scrublet.run(
+      key: "rna_filter_with_scrublet",
+      runIf: { id, state ->
+        !state.skip_scrublet_doublet_detection
+      },
+      fromState: { id, state ->
+        def newState = [
+          "input": state.input,
+          "layer": state.layer,
+          "obs_name_filter": "filter_with_scrublet",
+        ]
+        // Scrublet parameters are optional pass-throughs; only forward the ones that
+        // were set so the filter_with_scrublet component defaults apply otherwise.
+        def scrublet_args = [
+          "scrublet_score_threshold": "scrublet_score_threshold",
+          "expected_doublet_rate": "scrublet_expected_doublet_rate",
+          "stdev_doublet_rate": "scrublet_stdev_doublet_rate",
+          "n_neighbors": "scrublet_n_neighbors",
+          "sim_doublet_ratio": "scrublet_sim_doublet_ratio",
+          "min_counts": "scrublet_min_counts",
+          "min_cells": "scrublet_min_cells",
+          "min_gene_variablity_percent": "scrublet_min_gene_variability_percent",
+          "num_pca_components": "scrublet_num_pca_components",
+          "distance_metric": "scrublet_distance_metric",
+          "allow_automatic_threshold_detection_fail": "scrublet_allow_automatic_threshold_detection_fail",
+        ]
+        scrublet_args.each { component_arg, state_key ->
+          if (state[state_key] != null) {
+            newState[component_arg] = state[state_key]
+          }
+        }
+        return newState
+      },
+      toState: ["input": "output"]
+    )
     | do_filter.run(
       key: "rna_do_filter",
       fromState: {id, state ->
@@ -185,8 +224,8 @@ workflow run_wf {
         def stateMapping = [
           input: state.input,
           var_filter: ["filter_with_counts"],
-          // If scrublet is skipped, the output should be set to the workflow output
-          output: state.workflow_output
+          output: state.workflow_output,
+          output_compression: "gzip"
         ]
         def obs_filter = ["filter_with_counts"]
         if (state.var_name_mitochondrial_genes) {
@@ -198,26 +237,15 @@ workflow run_wf {
         if (state.min_percentile_counts || state.max_percentile_counts) {
           obs_filter += ["filter_with_percentile"]
         }
+        if (!state.skip_scrublet_doublet_detection) {
+          obs_filter += ["filter_with_scrublet"]
+        }
         stateMapping += ["obs_filter": obs_filter]
         return stateMapping
       },
-      toState: ["input": "output"]
+      toState: ["output": "output"]
     )
-    // doublet calling
-    | filter_with_scrublet.run(
-      runIf: { id, state ->
-        !state.skip_scrublet_doublet_detection
-      },
-      fromState: [
-        "input": "input",
-        "layer": "layer",
-        "scrublet_score_threshold": "scrublet_score_threshold",
-        "output": "workflow_output"
-      ],
-      args: [output_compression: "gzip"],
-      toState: ["input": "output"]
-    )
-    | setState(["output": "input"])
+    | setState(["output"])
 
   emit:
   output_ch

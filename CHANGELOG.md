@@ -8,11 +8,15 @@
 
 * `workflows/multiomics/process_singlesample`: now calculates basic QC metrics for the RNA and protein modalities by default, adding metric columns to `.obs` and `.var` of the output. This can be disabled with the new `--skip_qc_metrics` flag (PR #1148).
 
+* `workflows/rna/rna_singlesample`, `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`: cells classified as doublets by scrublet are now removed from the output. Scrublet detection runs on the full count matrix and tags cells, and the existing `do_filter` step now also applies the `filter_with_scrublet` tag (alongside the count, mitochondrial, ribosomal and percentile filters) in a single filtering pass. Previously doublets were only annotated, not removed (PR #1183).
+
 ## NEW FEATURES
 
 * `filter/filter_with_scrublet`: added `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
 
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples` and `workflows/rna/rna_singlesample`: surfaced `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
+
+* `workflows/rna/rna_singlesample`, `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`: surfaced additional scrublet pass-through arguments (`--scrublet_expected_doublet_rate`, `--scrublet_stdev_doublet_rate`, `--scrublet_n_neighbors`, `--scrublet_sim_doublet_ratio`, `--scrublet_min_counts`, `--scrublet_min_cells`, `--scrublet_min_gene_variability_percent`, `--scrublet_num_pca_components`, `--scrublet_distance_metric`, `--scrublet_allow_automatic_threshold_detection_fail`) to allow tuning doublet detection (PR #1183).
 
 * `workflows/rna/rna_singlesample`, `workflows/prot/prot_singlesample`, `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`: Enable filtering rna and protein modalities by percentile of log-transformed counts (PR #1148).
 
