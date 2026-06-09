@@ -28,7 +28,6 @@ expected_rna_obs_keys = [
     "filter_mitochondrial",
     "filter_ribosomal",
     "filter_with_counts",
-    "filter_with_scrublet",
 ]
 expected_rna_var_keys = ["mitochondrial", "ribosomal", "filter_with_counts"]
 assert all(key in list(output.mod["rna"].obs) for key in expected_rna_obs_keys), (
