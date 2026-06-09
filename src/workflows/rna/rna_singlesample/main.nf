@@ -185,8 +185,8 @@ workflow run_wf {
         def stateMapping = [
           input: state.input,
           var_filter: ["filter_with_counts"],
-          // If scrublet is skipped, the output should be set to the workflow output
-          output: state.workflow_output
+          output: state.workflow_output,
+          output_compression: "gzip"
         ]
         def obs_filter = ["filter_with_counts"]
         if (state.var_name_mitochondrial_genes) {
