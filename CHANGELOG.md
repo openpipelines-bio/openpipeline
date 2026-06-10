@@ -18,6 +18,8 @@
 
 * `workflows/rna/rna_singlesample`, `workflows/multiomics/process_singlesample`: added the `--scrublet_do_subset` flag to optionally remove cells classified as doublets from the output. By default doublets are only annotated (in `.obs`), preserving the existing behavior (PR #1198).
 
+* `workflows/rna/rna_singlesample`, `workflows/prot/prot_singlesample`, `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`: Enable filtering rna and protein modalities by percentile of log-transformed counts (PR #1200).
+
 ## MINOR CHANGES
 
 * `qc/calculate_qc_metrics`: parametrize the names of the top-n-vars `.obs` output columns with the `--output_obs_top_n_vars` flag (PR #1182).

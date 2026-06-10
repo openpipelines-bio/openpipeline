@@ -16,6 +16,8 @@ workflow test_wf {
         max_counts: 100000,
         min_genes_per_cell: 2,
         max_genes_per_cell: 10000,
+        min_percentile_counts: 0.1,
+        max_percentile_counts: 0.9,
         min_cells_per_gene: 10,
         min_fraction_mito: 0.2,
         max_fraction_mito: 0.8,
@@ -34,5 +36,44 @@ workflow test_wf {
       assert output_list.size() == 1 : "output channel should contain one event"
       assert output_list[0][0] == "foo" : "Output ID should be same as input ID"
       assert (output_list.collect({it[1].output.getFileName().toString()}) as Set).equals(["foo.final.h5mu"] as Set)
+    }
+}
+
+workflow test_wf2 {
+
+  resources_test = file(params.resources_test)
+
+  output_ch = Channel.fromList([
+      [
+        id: "filter_with_counts",
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
+        min_counts: 3,
+        max_counts: 100000,
+        min_genes_per_cell: 2,
+        max_genes_per_cell: 10000,
+        output: "filter_with_counts.final.h5mu",
+      ],
+      [
+        id: "filter_with_percentile",
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
+        min_percentile_counts: 0.1,
+        max_percentile_counts: 0.9,
+        output: "filter_with_percentile.final.h5mu",
+      ]
+    ])
+    | map{ state -> [state.id, state] }
+    | prot_singlesample
+    | view { output ->
+      assert output.size() == 2 : "outputs should contain two elements; [id, file]"
+      assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1].output}"
+      "Output: $output"
+    }
+    | toSortedList{a, b -> a[0] <=> b[0]}
+    | map { output_list ->
+      assert output_list.size() == 2 : "output channel should contain two events"
+      println "output_list: $output_list"
+      assert output_list.collect{it[0]} == ["filter_with_counts", "filter_with_percentile"] : "Output ID should be same as input ID"
+      assert (output_list.collect({it[1].output.getFileName().toString()}) as Set).equals(["filter_with_counts.final.h5mu", "filter_with_percentile.final.h5mu"] as Set)
+
     }
 }
