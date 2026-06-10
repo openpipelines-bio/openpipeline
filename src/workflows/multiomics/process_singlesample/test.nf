@@ -135,6 +135,7 @@ workflow test_wf3 {
       add_id_make_observation_keys_unique: true,
       add_id_obs_output: "sample_id",
       scrublet_score_threshold: 0.1,
+      scrublet_do_subset: true,
       skip_qc_metrics: true,
       output: "pbmc_scrublet_threshold_test.h5mu"
     ]

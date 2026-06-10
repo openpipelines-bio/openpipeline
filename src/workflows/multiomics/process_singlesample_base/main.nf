@@ -97,7 +97,18 @@ workflow run_wf {
         "ribosomal_gene_regex": "ribosomal_gene_regex",
         "layer": "rna_layer",
         "skip_scrublet_doublet_detection": "skip_scrublet_doublet_detection",
-        "scrublet_score_threshold": "scrublet_score_threshold"
+        "scrublet_do_subset": "scrublet_do_subset",
+        "scrublet_score_threshold": "scrublet_score_threshold",
+        "scrublet_expected_doublet_rate": "scrublet_expected_doublet_rate",
+        "scrublet_stdev_doublet_rate": "scrublet_stdev_doublet_rate",
+        "scrublet_n_neighbors": "scrublet_n_neighbors",
+        "scrublet_sim_doublet_ratio": "scrublet_sim_doublet_ratio",
+        "scrublet_min_counts": "scrublet_min_counts",
+        "scrublet_min_cells": "scrublet_min_cells",
+        "scrublet_min_gene_variability_percent": "scrublet_min_gene_variability_percent",
+        "scrublet_num_pca_components": "scrublet_num_pca_components",
+        "scrublet_distance_metric": "scrublet_distance_metric",
+        "scrublet_allow_automatic_threshold_detection_fail": "scrublet_allow_automatic_threshold_detection_fail"
       ],
       "prot": [
         "min_counts": "prot_min_counts",
