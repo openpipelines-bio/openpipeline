@@ -2,7 +2,7 @@
 
 ## BREAKING CHANGES
 
-* `workflows/rna/rna_singlesample`, `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`: scrublet doublet detection now runs before the cells are filtered (`do_filter`) instead of after. Scrublet therefore scores cells on the full population, which changes the doublet scores, the predicted doublets and (when `--scrublet_do_subset` is set) the retained cells for all inputs (PR #XXXX).
+* `workflows/rna/rna_singlesample`, `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`: scrublet doublet detection now runs before the cells are filtered (`do_filter`) instead of after. Scrublet therefore scores cells on the full population, which changes the doublet scores, the predicted doublets and (when `--scrublet_do_subset` is set) the retained cells for all inputs (PR #1202).
 
 * `qc/calculate_qc_metrics`: log1p-transformed qc metrics (`log1p_<col>`) are now added to `.var` and `.obs` by default via the new `--log1p_transform` flag (default `true`, mirroring scanpy behavior) (PR #1182, #1197).
 
