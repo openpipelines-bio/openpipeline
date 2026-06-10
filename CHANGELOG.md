@@ -18,6 +18,10 @@
 
 * `dataflow/concatenate_h5mu`: Remove the unused parameter `--obs_sample_name` from the configuration (PR #1195).
 
+* `convert/from_h5ad_to_seurat`, `convert/from_h5mu_or_h5ad_to_seurat`, `convert/from_seurat_to_h5mu`, `differential_expression/deseq2`: Unpin anndataR (PR #). 
+
+* `convert/from_h5ad_to_seurat`, `convert/from_h5mu_or_h5ad_to_seurat`: Added a `--x_mapping` argument to control the Seurat layer the AnnData `.X` matrix is stored in (default `counts`) (PR #).
+
 ## BUG FIXES
 
 * `workflows/prot/prot_multisample`: fix two malformed state keys in the `prot_qc` call so the `--output_var_num_nonzero_obs` and `--output_var_pct_dropout` arguments are passed through correctly (PR #1196).

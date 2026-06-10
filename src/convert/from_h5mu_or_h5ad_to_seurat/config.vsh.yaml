@@ -23,6 +23,11 @@ arguments:
     type: string
     default: "RNA"
     description: Name of the assay to be created.
+  - name: "--x_mapping"
+    type: string
+    default: "counts"
+    description: |
+      Name of the Seurat layer in which the AnnData .X matrix is stored.
   - name: "--output"
     alternatives: ["-o"]
     type: file
@@ -45,13 +50,7 @@ engines:
         packages: [ libhdf5-dev, libgeos-dev, hdf5-tools ]
       - type: r
         cran: [ anndata, hdf5r, Seurat, SeuratObject ]
-        # Until viash r requirements supports passing secrets
-        # --mount only applies to ONE single docker RUN instruction  
-        # github: scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a
-      - type: docker
-        run:
-          - --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
-          - Rscript -e 'options(warn = 2); remotes::install_github(c("scverse/anndataR@36f3caad9a7f360165c1510bbe0c62657580415a"), repos = "https://cran.rstudio.com")'
+        bioc: [ anndataR, rhdf5 ]
     test_setup:
       - type: r
         cran: [ testthat ]

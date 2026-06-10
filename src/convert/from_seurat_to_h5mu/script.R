@@ -2,6 +2,8 @@ library(anndataR)
 requireNamespace("reticulate", quietly = TRUE)
 md <- reticulate::import("mudata")
 
+rhdf5::h5disableFileLocking()
+
 ### VIASH START
 par <- list(
   input = "./pbmc_1k_protein_v3_mms.rds",
