@@ -177,6 +177,33 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
+    // Doublet calling. Scrublet is run before do_filter so that it scores cells
+    // on the full population. Removing low-quality cells first biases scrublet's
+    // expected doublet rate (estimated from the number of cells given) and the
+    // simulated-doublet neighborhood, lowering the doublet scores.
+    | filter_with_scrublet.run(
+      runIf: { id, state ->
+        !state.skip_scrublet_doublet_detection
+      },
+      fromState: [
+        "input": "input",
+        "layer": "layer",
+        "do_subset": "scrublet_do_subset",
+        "scrublet_score_threshold": "scrublet_score_threshold",
+        "expected_doublet_rate": "scrublet_expected_doublet_rate",
+        "stdev_doublet_rate": "scrublet_stdev_doublet_rate",
+        "n_neighbors": "scrublet_n_neighbors",
+        "sim_doublet_ratio": "scrublet_sim_doublet_ratio",
+        "min_counts": "scrublet_min_counts",
+        "min_cells": "scrublet_min_cells",
+        "min_gene_variablity_percent": "scrublet_min_gene_variability_percent",
+        "num_pca_components": "scrublet_num_pca_components",
+        "distance_metric": "scrublet_distance_metric",
+        "allow_automatic_threshold_detection_fail": "scrublet_allow_automatic_threshold_detection_fail"
+      ],
+      args: [output_compression: "gzip"],
+      toState: ["input": "output"]
+    )
     | do_filter.run(
       key: "rna_do_filter",
       fromState: {id, state ->
@@ -201,31 +228,6 @@ workflow run_wf {
         stateMapping += ["obs_filter": obs_filter]
         return stateMapping
       },
-      toState: ["input": "output"]
-    )
-    // doublet calling
-    | filter_with_scrublet.run(
-      runIf: { id, state ->
-        !state.skip_scrublet_doublet_detection
-      },
-      fromState: [
-        "input": "input",
-        "layer": "layer",
-        "do_subset": "scrublet_do_subset",
-        "scrublet_score_threshold": "scrublet_score_threshold",
-        "expected_doublet_rate": "scrublet_expected_doublet_rate",
-        "stdev_doublet_rate": "scrublet_stdev_doublet_rate",
-        "n_neighbors": "scrublet_n_neighbors",
-        "sim_doublet_ratio": "scrublet_sim_doublet_ratio",
-        "min_counts": "scrublet_min_counts",
-        "min_cells": "scrublet_min_cells",
-        "min_gene_variablity_percent": "scrublet_min_gene_variability_percent",
-        "num_pca_components": "scrublet_num_pca_components",
-        "distance_metric": "scrublet_distance_metric",
-        "allow_automatic_threshold_detection_fail": "scrublet_allow_automatic_threshold_detection_fail",
-        "output": "workflow_output"
-      ],
-      args: [output_compression: "gzip"],
       toState: ["input": "output"]
     )
     | setState(["output": "input"])
