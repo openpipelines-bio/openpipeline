@@ -132,8 +132,7 @@ engines:
         __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
       - type: r
         cran: [ anndata, Seurat, SeuratObject ]
-        bioc: [ scrapper, bit64 ]
-        bioc: [ anndataR, rhdf5 ]
+        bioc: [ scrapper, bit64, anndataR, rhdf5 ]
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
