@@ -3250,7 +3250,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/query/tiledb_healthcheck",
     "viash_version" : "0.9.7",
-    "git_commit" : "83fc4f47251768ff024bdd5166b45343954ccecd",
+    "git_commit" : "3d81056338d5c51c9114065da71caa11d239ac39",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
