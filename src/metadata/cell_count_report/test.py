@@ -118,9 +118,10 @@ def test_cell_count_report(run_component, h5mu, write_temp_h5mu, tmp_path):
             "cell_count_after_scrublet_filter",
             "cell_count_after_protein_filter",
         ):
-            assert report.loc[sample, "cell_count_after_all_filter"] <= report.loc[
-                sample, col
-            ]
+            assert (
+                report.loc[sample, "cell_count_after_all_filter"]
+                <= report.loc[sample, col]
+            )
 
 
 def test_cell_count_report_skip_scrublet_and_prot(
