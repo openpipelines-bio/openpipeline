@@ -1,0 +1,110 @@
+name: cell_count_report
+namespace: "metadata"
+scope: "public"
+description: |
+  Report the number of cells (observations) that pass each QC filter stage, per sample.
+  Reads boolean keep-columns (True = keep) that were written to .obs by upstream filter
+  components (run in flag-only mode, without subsetting) and writes a TSV with one row per
+  sample. For each sample the number of cells passing the RNA filters, the scrublet filter,
+  the protein filters, and the combined (intersection of all) filters is reported.
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author ]
+argument_groups:
+  - name: "Inputs"
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: |
+          Input h5mu file carrying the per-modality boolean keep-columns in .obs.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        type: string
+        description: The RNA modality to read the RNA and scrublet keep-columns from.
+        default: "rna"
+        required: false
+      - name: "--prot_modality"
+        type: string
+        description: |
+          The protein modality to read the protein keep-columns from. If not provided, no
+          protein counts are reported.
+        required: false
+      - name: "--sample_id_column"
+        type: string
+        description: |
+          The .obs column to group the counts by. If the column is not present in .obs, all
+          observations are treated as a single sample.
+        default: "sample_id"
+        required: false
+      - name: "--rna_filter_columns"
+        type: string
+        multiple: true
+        description: |
+          Boolean .obs columns (in the RNA modality) that together (logical AND) define the
+          cells passing the RNA QC filters.
+        required: false
+      - name: "--scrublet_filter_column"
+        type: string
+        description: |
+          Boolean .obs column (in the RNA modality) with the scrublet keep-mask. If not
+          provided, the scrublet count column is omitted from the report.
+        required: false
+      - name: "--prot_filter_columns"
+        type: string
+        multiple: true
+        description: |
+          Boolean .obs columns (in the protein modality) that together (logical AND) define
+          the cells passing the protein QC filters.
+        required: false
+  - name: "Outputs"
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output TSV file with the per-sample cell counts.
+        direction: output
+        required: true
+        example: cell_counts.tsv
+      - name: "--output_column_rna"
+        type: string
+        default: "cell_count_after_rna_filter"
+        required: false
+      - name: "--output_column_scrublet"
+        type: string
+        default: "cell_count_after_scrublet_filter"
+        required: false
+      - name: "--output_column_prot"
+        type: string
+        default: "cell_count_after_protein_filter"
+        required: false
+      - name: "--output_column_all"
+        type: string
+        default: "cell_count_after_all_filter"
+        required: false
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+
+engines:
+- type: docker
+  image: python:3.12-slim
+  setup:
+    - type: apt
+      packages:
+        - procps
+    - type: python
+      __merge__: /src/base/requirements/anndata_mudata.yaml
+  __merge__: [/src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [ singlecpu, lowmem ]

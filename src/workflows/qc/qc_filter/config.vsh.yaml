@@ -1,0 +1,174 @@
+name: "qc_filter"
+namespace: "workflows/qc"
+scope: "public"
+description: |
+  Quantile-based QC and doublet filtering for single-sample multimodal (RNA + protein) data,
+  reproducing the "quant" mode of the reference QC script.
+
+  The input is split per modality and each modality is processed independently to compute
+  QC (and, for RNA, scrublet doublet) keep-flags without subsetting. The modalities are then
+  merged back together, a per-sample cell-count report is written, the keep-flags are applied,
+  RNA genes expressed in too few cells are removed, and the modalities are intersected so that
+  only cells passing every filter in every modality are retained.
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+  - name: "Input"
+    arguments:
+      - name: "--id"
+        required: true
+        type: string
+        description: ID of the sample.
+        example: foo
+      - name: "--input"
+        type: file
+        required: true
+        description: Path to the single-sample, multimodal input.
+        example: dataset.h5mu
+      - name: "--rna_layer"
+        type: string
+        required: false
+        description: "Input layer for the RNA modality. By default, .X is used."
+      - name: "--prot_layer"
+        type: string
+        required: false
+        description: "Input layer for the protein modality. By default, .X is used."
+      - name: "--sample_id_column"
+        type: string
+        default: "sample_id"
+        required: false
+        description: ".obs column used to group the cell-count report by."
+  - name: "Output"
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: The filtered output h5mu.
+        example: output.h5mu
+      - name: "--cell_count_report"
+        type: file
+        required: true
+        direction: output
+        description: TSV with the number of cells passing each filter stage, per sample.
+        example: cell_counts.tsv
+  - name: "RNA filtering"
+    arguments:
+      - name: "--rna_min_count"
+        type: integer
+        default: 2500
+        description: Minimum number of total counts per cell for the RNA modality.
+      - name: "--rna_max_quantile"
+        type: double
+        min: 0
+        max: 1
+        default: 0.95
+        description: Maximum quantile of (log1p) total counts for the RNA modality.
+      - name: "--max_pct_counts_mt"
+        type: double
+        min: 0
+        max: 100
+        default: 10
+        description: Maximum percentage of mitochondrial counts per cell.
+      - name: --mitochondrial_gene_regex
+        type: string
+        default: "^[mM][tT]-"
+        required: false
+        description: Regex that identifies mitochondrial genes.
+      - name: "--var_gene_names"
+        type: string
+        required: false
+        description: |
+          .var column with gene names used to detect mitochondrial genes instead of .var_names.
+  - name: "Protein filtering"
+    arguments:
+      - name: "--prot_min_count"
+        type: integer
+        default: 500
+        description: Minimum number of total counts per cell for the protein modality.
+      - name: "--prot_max_quantile"
+        type: double
+        min: 0
+        max: 1
+        default: 0.95
+        description: Maximum quantile of (log1p) total counts for the protein modality.
+  - name: "Gene filtering"
+    arguments:
+      - name: "--filter_genes_min_cells"
+        type: integer
+        default: 20
+        description: |
+          Remove RNA genes expressed in fewer than this number of cells, evaluated after
+          cell filtering.
+  - name: "Doublet detection"
+    arguments:
+      - name: "--skip_scrublet"
+        type: boolean_true
+        description: Skip the scrublet doublet detection step.
+      - name: "--scrublet_score_threshold"
+        type: double
+        required: false
+        min: 0
+        max: 1
+        description: Manual doublet score threshold.
+      - name: "--scrublet_expected_doublet_rate"
+        type: double
+        required: false
+        min: 0
+        max: 1
+        default: 0.12
+        description: The estimated fraction of doublets from the experimental setup.
+      - name: "--scrublet_min_counts"
+        type: integer
+        required: false
+        default: 2
+        description: "Scrublet gene filter: minimum number of counts per gene."
+      - name: "--scrublet_min_cells"
+        type: integer
+        required: false
+        default: 3
+        description: "Scrublet gene filter: minimum number of cells expressing a gene."
+      - name: "--scrublet_min_gene_variability_percent"
+        type: double
+        required: false
+        default: 85
+        description: Scrublet highly-variable gene percentile.
+      - name: "--scrublet_num_pca_components"
+        type: integer
+        required: false
+        default: 30
+        description: Number of principal components used by scrublet.
+  - name: "Behavior"
+    arguments:
+      - name: "--intersect_obs"
+        type: boolean
+        default: true
+        description: |
+          Intersect the observations across modalities so that only cells passing every
+          filter in every modality are retained.
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+  - type: file
+    path: /src/workflows/utils/
+dependencies:
+  - name: workflows/qc/qc_filter_rna
+  - name: workflows/qc/qc_filter_prot
+  - name: dataflow/split_modalities
+  - name: dataflow/merge
+  - name: filter/filter_with_counts
+  - name: filter/do_filter
+  - name: filter/intersect_obs
+  - name: metadata/cell_count_report
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf_skip_scrublet
+  - path: /resources_test/pbmc_1k_protein_v3
+runners:
+  - type: nextflow

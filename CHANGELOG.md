@@ -8,6 +8,10 @@
 
 ## NEW FEATURES
 
+* `workflows/qc/qc_filter`: new single-sample, multimodal (RNA + protein) workflow that reproduces the quantile-based QC and scrublet doublet filtering of the reference QC script. Each modality is processed independently to compute QC (and, for RNA, doublet) keep-flags, after which a per-sample cell-count report is written, the flags are applied, low-prevalence RNA genes are removed, and the modalities are intersected. Includes the per-modality sub-workflows `workflows/qc/qc_filter_rna` and `workflows/qc/qc_filter_prot` (PR #XXXX).
+
+* `metadata/cell_count_report`: new component that reports, per sample, the number of cells passing each QC filter stage from boolean keep-columns in `.obs`, writing the result to a TSV (PR #XXXX).
+
 * `filter/filter_with_scrublet`: added `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
 
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples` and `workflows/rna/rna_singlesample`: surfaced `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).

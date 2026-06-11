@@ -1,0 +1,123 @@
+name: "qc_filter_rna"
+namespace: "workflows/qc"
+scope: "public"
+description: |
+  Compute QC and doublet keep-flags for a single-sample, unimodal RNA h5mu, reproducing the
+  quantile-based ("quant") RNA filtering of the reference QC script. All filters run in
+  flag-only mode (no subsetting): boolean keep-columns (True = keep) are written to .obs so
+  that a downstream component can report per-stage cell counts and subset once.
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author ]
+argument_groups:
+  - name: "Input"
+    arguments:
+      - name: "--id"
+        required: true
+        type: string
+        description: ID of the sample.
+        example: foo
+      - name: "--input"
+        type: file
+        required: true
+        description: Path to the unimodal RNA sample.
+        example: dataset.h5mu
+      - name: "--layer"
+        type: string
+        required: false
+        description: "Input layer to start from. By default, .X will be used."
+  - name: "Output"
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: The input data with QC and doublet keep-flags added to .obs.
+        example: output.h5mu
+  - name: "Filtering options"
+    arguments:
+      - name: "--min_count"
+        type: integer
+        example: 2500
+        description: |
+          Minimum number of total counts per cell. Cells below this are flagged for removal.
+      - name: "--max_quantile"
+        type: double
+        min: 0
+        max: 1
+        example: 0.95
+        description: |
+          Maximum quantile of the log1p-transformed total counts. Cells above this quantile
+          are flagged for removal.
+      - name: "--max_fraction_mito"
+        type: double
+        min: 0
+        max: 1
+        example: 0.1
+        description: |
+          Maximum fraction of mitochondrial counts per cell. Cells above this are flagged for
+          removal.
+  - name: "Mitochondrial Gene Detection"
+    arguments:
+      - name: "--var_gene_names"
+        type: string
+        required: false
+        description: |
+          .var column with gene names used to detect mitochondrial genes instead of .var_names.
+      - name: --mitochondrial_gene_regex
+        type: string
+        description: Regex that identifies mitochondrial genes.
+        required: false
+        default: "^[mM][tT]-"
+  - name: "Doublet detection"
+    arguments:
+      - name: "--skip_scrublet"
+        type: boolean_true
+        description: Skip the scrublet doublet detection step.
+      - name: "--scrublet_score_threshold"
+        type: double
+        required: false
+        min: 0
+        max: 1
+        description: Manual doublet score threshold.
+      - name: "--scrublet_expected_doublet_rate"
+        type: double
+        required: false
+        min: 0
+        max: 1
+        description: The estimated fraction of doublets from the experimental setup.
+      - name: "--scrublet_min_counts"
+        type: integer
+        required: false
+        default: 2
+        description: "Scrublet gene filter: minimum number of counts per gene."
+      - name: "--scrublet_min_cells"
+        type: integer
+        required: false
+        default: 3
+        description: "Scrublet gene filter: minimum number of cells expressing a gene."
+      - name: "--scrublet_min_gene_variability_percent"
+        type: double
+        required: false
+        default: 85
+        description: Scrublet highly-variable gene percentile.
+      - name: "--scrublet_num_pca_components"
+        type: integer
+        required: false
+        default: 30
+        description: Number of principal components used by scrublet.
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+  - type: file
+    path: /src/workflows/utils/
+dependencies:
+  - name: metadata/grep_annotation_column
+  - name: qc/calculate_qc_metrics
+  - name: filter/filter_with_counts
+  - name: filter/filter_with_quantile
+  - name: filter/delimit_fraction
+  - name: filter/filter_with_scrublet
+runners:
+  - type: nextflow
