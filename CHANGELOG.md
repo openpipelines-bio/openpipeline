@@ -50,6 +50,8 @@
 
 * `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169, PR #1177)
 
+* `metadata/copy_modality_slots`: added a component to copy slots (`.obs`, `.var`, `.layers`, `.obsm`, `.varm`, `.obsp`, `.varp`, `.uns`) from a modality in one MuData file into a modality in another. Source and target index sets must match by default; `--allow_partial` permits source to be a strict subset (with NaN-fill). Supports `__auto__` to copy items missing from target, `--allow_overwrite`, `--var_match_column`, and cross-modality transfers (PR #1166).
+
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140 and PR #1191).
