@@ -460,21 +460,20 @@ RUN pip install --user --upgrade pip && \
 
 RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
   Rscript -e 'options(warn = 2); if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")' && \
-  Rscript -e 'options(warn = 2); if (!requireNamespace("scrapper", quietly = TRUE)) BiocManager::install("scrapper")' && \
   Rscript -e 'options(warn = 2); if (!requireNamespace("bit64", quietly = TRUE)) BiocManager::install("bit64")' && \
+  Rscript -e 'options(warn = 2); if (!requireNamespace("anndataR", quietly = TRUE)) BiocManager::install("anndataR")' && \
+  Rscript -e 'options(warn = 2); if (!requireNamespace("rhdf5", quietly = TRUE)) BiocManager::install("rhdf5")' && \
   Rscript -e 'options(warn = 2); remotes::install_cran(c("anndata", "Seurat", "SeuratObject"), repos = "https://cran.rstudio.com")'
 
-RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
-RUN Rscript -e 'options(warn = 2); remotes::install_github(c("scverse/anndataR"), repos = "https://cran.rstudio.com")'
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.12.16" "awkward" "scipy~=1.17.1" "mudata~=0.3.8" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_seurat_to_h5mu"
-LABEL org.opencontainers.image.created="2026-06-12T03:50:53Z"
+LABEL org.opencontainers.image.created="2026-06-13T03:50:35Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="9062e762e0425f2af189f893db3a1f1e75e9af55"
+LABEL org.opencontainers.image.revision="d4c54c917b0931fb51fbf071462ddc46eba78be8"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

@@ -3456,18 +3456,12 @@ meta = [
             "SeuratObject"
           ],
           "bioc" : [
-            "scrapper",
-            "bit64"
+            "bit64",
+            "anndataR",
+            "rhdf5"
           ],
           "bioc_force_install" : false,
           "warnings_as_errors" : true
-        },
-        {
-          "type" : "docker",
-          "run" : [
-            "--mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN",
-            "Rscript -e 'options(warn = 2); remotes::install_github(c(\\"scverse/anndataR\\"), repos = \\"https://cran.rstudio.com\\")'"
-          ]
         },
         {
           "type" : "python",
@@ -3512,7 +3506,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_seurat_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "9062e762e0425f2af189f893db3a1f1e75e9af55",
+    "git_commit" : "d4c54c917b0931fb51fbf071462ddc46eba78be8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

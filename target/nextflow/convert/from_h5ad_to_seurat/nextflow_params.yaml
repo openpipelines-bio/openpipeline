@@ -1,6 +1,7 @@
 # Arguments
 input: # please fill in - example: "input.h5ad"
 assay: "RNA"
+x_mapping: "counts"
 # output: "$id.$key.output.rds"
 
 # Nextflow input-output arguments
