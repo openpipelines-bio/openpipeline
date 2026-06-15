@@ -3340,7 +3340,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/files/make_params",
     "viash_version" : "0.9.7",
-    "git_commit" : "8544c0f58e56ac0b6e926c4c37727f884759dc21",
+    "git_commit" : "70240db7cd0e4e0a03848c9f840c0fb52e779965",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
