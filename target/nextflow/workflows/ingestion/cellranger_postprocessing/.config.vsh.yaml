@@ -231,7 +231,7 @@ build_info:
   output: "target/nextflow/workflows/ingestion/cellranger_postprocessing"
   executable: "target/nextflow/workflows/ingestion/cellranger_postprocessing/main.nf"
   viash_version: "0.9.7"
-  git_commit: "3f523f8cd69b3474908b2b96fd84313554a2857e"
+  git_commit: "c56f03403d8e647674a62452fdfeac0a6111a214"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/correction/cellbender_remove_background"

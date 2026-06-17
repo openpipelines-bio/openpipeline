@@ -3465,7 +3465,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_mapping",
     "viash_version" : "0.9.7",
-    "git_commit" : "3f523f8cd69b3474908b2b96fd84313554a2857e",
+    "git_commit" : "c56f03403d8e647674a62452fdfeac0a6111a214",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
