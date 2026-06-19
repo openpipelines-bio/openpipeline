@@ -3644,7 +3644,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/totalvi_scarches_leiden",
     "viash_version" : "0.9.7",
-    "git_commit" : "6d719d19b92598cd7bb4cdecf38297018b3088a3",
+    "git_commit" : "7d85774a5f5772a7aa567cef9fc1ee01e010e865",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
