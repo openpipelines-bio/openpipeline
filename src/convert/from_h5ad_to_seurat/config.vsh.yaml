@@ -39,14 +39,14 @@ test_resources:
   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5ad
 engines:
   - type: docker
-    image: rocker/r2u:24.04
+    image: rocker/r2u:26.04
     setup:
       - type: apt
         packages: 
           - libhdf5-dev
           - libgeos-dev
       - type: r
-        cran: [ hdf5r, Seurat, SeuratObject ]
+        cran: [ hdf5r, Seurat, SeuratObject, httpuv ]
         bioc: [ anndataR, rhdf5 ]
     test_setup:
       - type: r

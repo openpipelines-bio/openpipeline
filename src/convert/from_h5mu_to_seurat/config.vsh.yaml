@@ -45,7 +45,7 @@ engines:
           - libhdf5-dev
           - libgeos-dev
       - type: r
-        cran: [ anndata, hdf5r, testthat, SeuratObject, Seurat ]
+        cran: [ anndata, hdf5r, testthat, SeuratObject, Seurat, httpuv ]
       # Until viash r requirements supports passing secrets
       # --mount only applies to ONE single docker RUN instruction  
       # - type: r

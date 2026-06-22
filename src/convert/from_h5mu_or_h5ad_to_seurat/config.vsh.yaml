@@ -49,7 +49,7 @@ engines:
       - type: apt
         packages: [ libhdf5-dev, libgeos-dev, hdf5-tools ]
       - type: r
-        cran: [ anndata, hdf5r, Seurat, SeuratObject ]
+        cran: [ anndata, hdf5r, Seurat, SeuratObject, httpuv ]
         bioc: [ anndataR, rhdf5 ]
     test_setup:
       - type: r
