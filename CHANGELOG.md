@@ -24,6 +24,8 @@
 
 ## BUG FIXES
 
+* `annotate/scanvi`: no longer predicts cell type labels that are absent from the reference. Reference label columns often declare more categories than are actually used (e.g. when the reference is a subset of a larger atlas), which previously caused scANVI to occasionally assign query cells to those empty labels. Unused labels are now dropped before training (PR #1207).
+
 * `workflows/prot/prot_multisample`: fix two malformed state keys in the `prot_qc` call so the `--output_var_num_nonzero_obs` and `--output_var_pct_dropout` arguments are passed through correctly (PR #1196).
 
 # openpipelines 4.1.0
