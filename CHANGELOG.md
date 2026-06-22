@@ -1,3 +1,7 @@
+# openpipelines 4.1.1
+
+* `workflows/prot/prot_multisample`: Fix passing arguments `--output_var_num_nonzero_obs` and `--output_var_pct_dropout` arguments to qc workflow (PR #1196).
+
 # openpipelines 4.1.0
 
 ## NEW FEATURES
