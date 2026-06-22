@@ -101,9 +101,7 @@ def test_scanvi_does_not_predict_unused_categories(
     # When the labels column is a Categorical that declares categories with zero
     # observations (e.g. when a reference is subset from a larger atlas, since
     # subsetting rows does not prune the categorical dtype), scANVI must not
-    # predict those absent labels. Unused categories otherwise add untrained
-    # output units to the classifier head that can win the inference argmax and
-    # emit predictions for labels no reference cell carries.
+    # predict those absent labels.
     import scvi
 
     input_mdata = mudata.read_h5mu(input_file)
