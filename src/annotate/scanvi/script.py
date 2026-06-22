@@ -1,6 +1,7 @@
 import mudata
 import scvi
 import numpy as np
+import pandas as pd
 
 ### VIASH START
 par = {
@@ -61,6 +62,16 @@ def main():
         accelerator="auto",
         device="auto",
     )
+
+    # Prune unused categories on the labels column so scvi-tools registers a label
+    # space limited to labels that actually have training examples. Otherwise the
+    # classifier head gets one output unit per *declared* category (common when a
+    # reference is a subset of a larger atlas, since subsetting rows does not prune
+    # the categorical dtype), and untrained phantom logits can win the inference
+    # argmax — emitting predictions for labels no reference cell carries.
+    labels_col = adata_subset.obs[par["obs_labels"]]
+    if isinstance(labels_col.dtype, pd.CategoricalDtype):
+        adata_subset.obs[par["obs_labels"]] = labels_col.cat.remove_unused_categories()
 
     logger.info("Instantiating scANVI model from scVI model...")
     vae_uns = scvi.model.SCANVI.from_scvi_model(
