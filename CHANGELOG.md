@@ -22,6 +22,8 @@
 
 * `convert/from_h5ad_to_seurat`, `convert/from_h5mu_or_h5ad_to_seurat`: Added a `--x_mapping` argument to control the Seurat layer the AnnData `.X` matrix is stored in (default `counts`) (PR #1201).
 
+* `labels_transfer/knn`: bump `pynndescent` to 0.5.13 (PR #1205)
+
 ## BUG FIXES
 
 * `workflows/prot/prot_multisample`: fix two malformed state keys in the `prot_qc` call so the `--output_var_num_nonzero_obs` and `--output_var_pct_dropout` arguments are passed through correctly (PR #1196).

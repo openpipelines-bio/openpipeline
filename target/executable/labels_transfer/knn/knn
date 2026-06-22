@@ -458,13 +458,13 @@ RUN pip install --upgrade pip && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "pynndescent~=0.5.10" "numpy<2"
+  pip install --upgrade --no-cache-dir "pynndescent~=0.5.13"
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component labels_transfer knn"
-LABEL org.opencontainers.image.created="2026-06-22T07:12:03Z"
+LABEL org.opencontainers.image.created="2026-06-22T09:50:22Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="54bcc5d64b343c20374d755ba8c9a5d53f9306c3"
+LABEL org.opencontainers.image.revision="52a9f9d80fa905389583ec3b37eb2be09b858c20"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
