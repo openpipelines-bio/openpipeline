@@ -43,9 +43,7 @@ del output_prot.obs["log1p_num_nonzero_vars"]
 del output_prot.obs["log1p_total_counts"]
 del output_prot.var["log1p_obs_mean"]
 del output_prot.var["log1p_total_counts"]
-# The prot QC metric pct_dropout is now computed by prot_multisample. The reference
-# input predates this, as it was generated when prot_multisample failed to forward
-# the pct_dropout argument to the qc workflow, so it lacks this column.
+# Added after #1196
 del output_prot.var["pct_dropout"]
 assert_annotation_objects_equal(input_prot, output_prot, promote_precision=True)
 
