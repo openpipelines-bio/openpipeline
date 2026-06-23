@@ -30,6 +30,8 @@
 
 * `workflows/prot/prot_multisample`: fix two malformed state keys in the `prot_qc` call so the `--output_var_num_nonzero_obs` and `--output_var_pct_dropout` arguments are passed through correctly (PR #1196).
 
+* `workflows/test_workflows/multiomics/process_batches`: drop the recomputed `pct_dropout` column from the prot output in `workflow_test2` before comparing against the reference data, which predates PR #1196 and lacks the column (PR #1209).
+
 # openpipelines 4.1.0
 
 ## NEW FEATURES

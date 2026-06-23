@@ -43,6 +43,8 @@ del output_prot.obs["log1p_num_nonzero_vars"]
 del output_prot.obs["log1p_total_counts"]
 del output_prot.var["log1p_obs_mean"]
 del output_prot.var["log1p_total_counts"]
+# Added after #1196
+del output_prot.var["pct_dropout"]
 assert_annotation_objects_equal(input_prot, output_prot, promote_precision=True)
 
 
