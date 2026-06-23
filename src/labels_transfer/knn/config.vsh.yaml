@@ -78,8 +78,7 @@ engines:
         __merge__: /src/base/requirements/anndata_mudata.yaml
       - type: python
         packages:
-          - pynndescent~=0.5.10
-          - numpy<2
+          - pynndescent~=0.5.13
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 
 runners:

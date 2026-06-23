@@ -3576,8 +3576,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "pynndescent~=0.5.10",
-            "numpy<2"
+            "pynndescent~=0.5.13"
           ],
           "upgrade" : true
         }
@@ -3610,7 +3609,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/knn",
     "viash_version" : "0.9.7",
-    "git_commit" : "b9900e260f225b02b58afe06b274cd339cbd19e3",
+    "git_commit" : "3afb2913735ae4c52f33a9d3cab786da114d3254",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
