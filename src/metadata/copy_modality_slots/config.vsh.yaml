@@ -1,0 +1,186 @@
+name: copy_modality_slots
+namespace: "metadata"
+scope: "public"
+label: Copy modality slots
+description: |
+  Copy items (.obs, .var, .layers, .obsm, .varm, .obsp, .varp, .uns) from a
+  modality in a source MuData file into a modality in a target MuData file.
+
+  By default the source and target modalities must have identical .obs and
+  .var index sets (ordering may differ; source is reindexed to match the
+  target). With --allow_partial, the source's .obs/.var indices may be a
+  strict subset of the target's; rows or columns of the target that are not
+  represented in the source are filled with NaN for numeric slots and with
+  the appropriate missing-value sentinel for DataFrame columns.
+
+  Existing keys in the target are not overwritten by default. Use
+  --allow_overwrite to allow overwriting (a warning is emitted for each
+  overwritten key).
+
+  Each slot argument accepts explicit names or the special token '__auto__'
+  to include every item that is present in the source modality but not yet
+  in the target modality.
+authors:
+  - __merge__: /src/authors/luke_zappia.yaml
+    roles: [ author, maintainer ]
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: "Source"
+    arguments:
+      - name: "--input_source"
+        type: file
+        description: Source h5mu file to read slots from.
+        direction: input
+        required: true
+        example: source.h5mu
+      - name: "--source_modality"
+        type: string
+        description: Modality in the source h5mu file to read slots from.
+        default: "rna"
+        required: false
+      - name: "--var_match_column"
+        type: string
+        required: false
+        description: |
+          Name of a column in the source .var to use as var names when
+          matching source variables against the target. Useful when an
+          upstream step has rewritten the source .var index (e.g. by
+          sanitising gene names) and the original, target-compatible names
+          are preserved in a column. If not set, the existing source .var
+          index is used as-is.
+
+  - name: "Target"
+    arguments:
+      - name: "--input_target"
+        type: file
+        description: Target h5mu file to copy slots into.
+        direction: input
+        required: true
+        example: target.h5mu
+      - name: "--target_modality"
+        type: string
+        description: |
+          Modality in the target h5mu file to copy slots into. Defaults to
+          the value of --source_modality.
+        required: false
+
+  - name: "Slots to copy"
+    description: |
+      Items to copy from the source modality into the target modality. Each
+      argument accepts explicit names or the special token '__auto__' to
+      include all items present in the source modality but missing from the
+      target modality. If not provided, that slot is skipped.
+    arguments:
+      - name: "--obs"
+        type: string
+        multiple: true
+        multiple_sep: ","
+        required: false
+        example: "obs1,obs2"
+        description: .obs columns to copy.
+      - name: "--var"
+        type: string
+        multiple: true
+        multiple_sep: ","
+        required: false
+        example: "var1,var2"
+        description: .var columns to copy.
+      - name: "--layers"
+        type: string
+        multiple: true
+        multiple_sep: ","
+        required: false
+        example: "layer1,layer2"
+        description: .layers keys to copy.
+      - name: "--obsm"
+        type: string
+        multiple: true
+        multiple_sep: ","
+        required: false
+        example: "obsm1,obsm2"
+        description: .obsm keys to copy.
+      - name: "--varm"
+        type: string
+        multiple: true
+        multiple_sep: ","
+        required: false
+        example: "varm1,varm2"
+        description: .varm keys to copy.
+      - name: "--obsp"
+        type: string
+        multiple: true
+        multiple_sep: ","
+        required: false
+        example: "obsp1,obsp2"
+        description: .obsp keys to copy.
+      - name: "--varp"
+        type: string
+        multiple: true
+        multiple_sep: ","
+        required: false
+        example: "varp1,varp2"
+        description: .varp keys to copy.
+      - name: "--uns"
+        type: string
+        multiple: true
+        multiple_sep: ","
+        required: false
+        example: "uns1,uns2"
+        description: .uns keys to copy.
+
+  - name: "Options"
+    arguments:
+      - name: "--allow_overwrite"
+        type: boolean_true
+        description: |
+          Allow overwriting keys that already exist in the target modality.
+          By default the component raises an error if a key already exists;
+          when enabled, existing keys are overwritten with a warning.
+      - name: "--allow_partial"
+        type: boolean_true
+        description: |
+          Allow the source's .obs/.var indices to be a strict subset of the
+          target's. Rows or columns of the target that are not represented
+          in the source are filled with missing values (NaN for numeric
+          data; appropriate sentinel for DataFrame columns). By default the
+          two index sets must be equal.
+
+  - name: "Output"
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file (the target with slots copied from the source).
+        direction: output
+        required: true
+        example: output.h5mu
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+
+engines:
+  - type: docker
+    image: python:3.13-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+    __merge__: [/src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [ singlecpu, lowmem ]
