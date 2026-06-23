@@ -37,6 +37,8 @@ output_prot = output.mod["prot"]
 del output_prot.varm["pca_loadings"]
 del output_prot.obsm["X_pca"]
 del output_prot.obsm["X_umap"]
+# Added after #1196
+del output_prot.var["pct_dropout"]
 assert_annotation_objects_equal(input_prot, output_prot, promote_precision=True)
 
 
