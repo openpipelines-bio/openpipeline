@@ -1,0 +1,10 @@
+# Arguments
+vcf: # please fill in - example: ["input_1.vcf", "input_2.vcf"]
+concat: false
+filter: false
+filter_qual: 30
+# output: "$id.$key.output"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
