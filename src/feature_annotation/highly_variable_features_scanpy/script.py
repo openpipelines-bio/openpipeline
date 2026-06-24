@@ -219,6 +219,8 @@ if par.get("varm_name", None) is not None and "mean_bin" in out:
     # drop mean_bin as mudata/anndata doesn't support tuples
     data.varm[par["varm_name"]] = out.drop("mean_bin", axis=1)
 
+data.uns["hvg"] = {"flavor": par["flavor"]}
+
 logger.info("Writing h5mu to file")
 write_h5ad_to_h5mu_with_compression(
     par["output"], par["input"], modality_name, data, par["output_compression"]
