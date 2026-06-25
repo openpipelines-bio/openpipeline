@@ -46,14 +46,14 @@ logger = setup_logger()
 
 
 def gpu_is_available():
-    """CellTypist runs logistic regression on GPU through cuml, so a CUDA device
-    alone is not enough: without cuml the GPU training path fails silently and
-    CellTypist falls back to a downloaded default model. Only enable GPU when
-    both a CUDA device and a working cuml install are present."""
+    """CellTypist runs logistic regression on GPU through cuml: without cuml
+    the GPU training path fails silently and CellTypist falls back to a downloaded
+    default model. Only enable GPU when both a CUDA device and a working cuml
+    install are present."""
     if not cuda_is_available():
         return False
     try:
-        import cuml  # noqa: F401
+        import cuml  # noqa: F401 # pyright: ignore[reportMissingImports]
     except ImportError:
         logger.warning(
             "CUDA device detected but cuml is not installed; running CellTypist "
@@ -166,12 +166,10 @@ def main(par):
 
         # Guard against silent failure: if training does not return a usable model,
         # celltypist.annotate() falls back to downloading and predicting with its
-        # default model (Immune_All_Low.pkl), producing plausible-but-wrong labels.
+        # default model (Immune_All_Low.pkl).
         if not isinstance(model, celltypist.models.Model):
             raise RuntimeError(
                 "CellTypist training on the reference did not return a usable model. "
-                "Refusing to predict to avoid silently falling back to a default "
-                "downloaded model."
             )
 
     logger.info("Predicting CellTypist annotations")
