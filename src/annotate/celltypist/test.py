@@ -107,6 +107,19 @@ def test_simple_execution(
     )
     assert not all(predictions.isna()), "Not all predictions should be NA"
 
+    # When training on a reference, predictions must come from the reference's
+    # target vocabulary. A regression here means the reference-trained model was
+    # discarded and CellTypist silently fell back to its default downloaded model.
+    reference_labels = set(
+        reference_mdata.mod["rna"].obs["cell_ontology_class"].unique()
+    )
+    predicted_labels = set(predictions.dropna().unique())
+    assert predicted_labels.issubset(reference_labels), (
+        "Predicted labels are not a subset of the reference labels, indicating a "
+        "silent fallback to the default CellTypist model: "
+        f"{predicted_labels - reference_labels}"
+    )
+
     probabilities = output_mudata.mod["rna"].obs["celltypist_probability"]
     assert probabilities.dtype == "float", (
         "Calculated probabilities should be float dtype"
