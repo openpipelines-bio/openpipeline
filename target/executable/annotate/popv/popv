@@ -466,9 +466,9 @@ RUN cd /opt && git clone --depth 1 https://github.com/YosefLab/PopV.git
 
 LABEL org.opencontainers.image.authors="Matthias Beyens, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component annotate popv"
-LABEL org.opencontainers.image.created="2026-07-05T06:25:06Z"
+LABEL org.opencontainers.image.created="2026-07-06T06:52:07Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d3e8fa5f808f7243a4ab7ce8d3759200b4ab20cc"
+LABEL org.opencontainers.image.revision="9802f040624e022dafec7c3369c3b3e6456c475a"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

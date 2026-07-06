@@ -459,9 +459,9 @@ RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
 RUN Rscript -e 'options(warn = 2); remotes::install_github(c("pmbio/MuDataSeurat@empty-tables-and-nullable"), repos = "https://cran.rstudio.com")'
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5mu_to_seurat"
-LABEL org.opencontainers.image.created="2026-07-05T06:25:03Z"
+LABEL org.opencontainers.image.created="2026-07-06T06:52:05Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d3e8fa5f808f7243a4ab7ce8d3759200b4ab20cc"
+LABEL org.opencontainers.image.revision="9802f040624e022dafec7c3369c3b3e6456c475a"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
