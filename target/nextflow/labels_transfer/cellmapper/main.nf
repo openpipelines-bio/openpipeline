@@ -3549,7 +3549,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/cellmapper",
     "viash_version" : "0.9.7",
-    "git_commit" : "9802f040624e022dafec7c3369c3b3e6456c475a",
+    "git_commit" : "0dd548266998933f9c40481c94acc4b6c51431dd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
