@@ -33,7 +33,7 @@ argument_groups:
         direction: output
         required: true
         example: output.h5mu
-      - name: "--output_bundle"
+      - name: "--output_raw"
         type: file
         direction: output
         required: true
