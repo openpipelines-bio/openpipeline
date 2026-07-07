@@ -108,8 +108,8 @@ def test_simple_execution(
     assert not all(predictions.isna()), "Not all predictions should be NA"
 
     # When training on a reference, predictions must come from the reference's
-    # target vocabulary. A regression here means the reference-trained model was
-    # discarded and CellTypist silently fell back to its default downloaded model.
+    # target vocabulary. A deviation from target vocabulary means the reference-trained
+    # model was discarded and CellTypist silently fell back to its default downloaded model.
     reference_labels = set(
         reference_mdata.mod["rna"].obs["cell_ontology_class"].unique()
     )
