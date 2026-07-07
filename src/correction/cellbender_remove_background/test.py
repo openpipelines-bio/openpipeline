@@ -1,4 +1,4 @@
-from os import path
+from os import path, listdir
 from mudata import read_h5mu
 import subprocess
 
@@ -13,6 +13,7 @@ file_input = (
     meta["resources_dir"] + "/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 )
 file_output = "output.h5mu"
+dir_output_bundle = "cellbender_output"
 
 print("> Check whether cellbender works when it should be working")
 
@@ -23,6 +24,8 @@ cmd_pars = [
     file_input,
     "--output",
     file_output,
+    "--output_bundle",
+    dir_output_bundle,
     "--epochs",
     "5",
     "--output_compression",
@@ -33,6 +36,23 @@ out = subprocess.check_output(cmd_pars).decode("utf-8")
 
 # check if file exists
 assert path.exists(file_output), "No output was created."
+
+# check whether the full cellbender output bundle was published
+assert path.isdir(dir_output_bundle), "No output bundle was created."
+assert listdir(dir_output_bundle), "Output bundle is empty."
+expected_bundle_files = [
+    "output_cell_barcodes.csv",
+    "output_filtered.h5",
+    "output_metrics.csv",
+    "output_posterior.h5",
+    "output_report.html",
+    "output.h5",
+    "output.pdf",
+]
+for bundle_file in expected_bundle_files:
+    assert path.exists(path.join(dir_output_bundle, bundle_file)), (
+        f"Output bundle should contain '{bundle_file}'."
+    )
 
 data = read_h5mu(file_output)
 

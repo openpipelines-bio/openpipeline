@@ -2,6 +2,7 @@ import mudata as mu
 import tempfile
 import subprocess
 import os
+import shutil
 import sys
 import numpy as np
 from scipy.sparse import csr_matrix
@@ -16,6 +17,7 @@ par = {
     "modality": "rna",
     # outputs
     "output": "output.h5mu",
+    "output_bundle": None,
     "layer_output": "corrected",
     "obs_background_fraction": "background_fraction",
     "obs_cell_probability": "cell_probability",
@@ -245,6 +247,23 @@ with tempfile.TemporaryDirectory(
                     "Requested to save latent gene encoding, but the data is either missing "
                     "from cellbender output or in an incorrect format."
                 )
+
+    if par["output_bundle"]:
+        logger.info(
+            "Copying full CellBender output bundle to '%s'", par["output_bundle"]
+        )
+        os.makedirs(par["output_bundle"], exist_ok=True)
+        # the tempdir also holds the AnnData input file we created, which is not
+        # part of the CellBender output and should not be published
+        for entry in os.listdir(temp_dir):
+            if entry == os.path.basename(input_file):
+                continue
+            src = os.path.join(temp_dir, entry)
+            dest = os.path.join(par["output_bundle"], entry)
+            if os.path.isdir(src):
+                shutil.copytree(src, dest, dirs_exist_ok=True)
+            else:
+                shutil.copy2(src, dest)
 
 
 logger.info("Writing to file %s", par["output"])

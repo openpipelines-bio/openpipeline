@@ -33,6 +33,13 @@ argument_groups:
         direction: output
         required: true
         example: output.h5mu
+      - name: "--output_bundle"
+        type: file
+        direction: output
+        required: true
+        description: |
+          Output directory to store the raw CellBender output bundle alongside the .h5mu output.
+        example: cellbender_output/
       - name: "--layer_output"
         description: Output layer
         type: string

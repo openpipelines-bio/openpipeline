@@ -12,6 +12,8 @@
 
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples` and `workflows/rna/rna_singlesample`: surfaced `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
 
+* `correction/cellbender_remove_background`: added `--output_bundle` argument to publish the complete CellBender output bundle (raw and filtered `.h5` count matrices, PDF report, metrics, logs, etc.) alongside the `.h5mu` output (PR #1212).
+
 ## MINOR CHANGES
 
 * `qc/calculate_qc_metrics`: parametrize the names of the top-n-vars `.obs` output columns with the `--output_obs_top_n_vars` flag (PR #1182).
