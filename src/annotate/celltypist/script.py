@@ -52,14 +52,8 @@ def gpu_is_available():
     install are present."""
     if not cuda_is_available():
         return False
-    try:
-        import cuml  # noqa: F401 # pyright: ignore[reportMissingImports]
-    except ImportError:
-        logger.warning(
-            "CUDA device detected but cuml is not installed; running CellTypist "
-            "on CPU. Install cuml to enable GPU acceleration."
-        )
-        return False
+    import cuml  # noqa: F401 # pyright: ignore[reportMissingImports]
+
     return True
 
 
