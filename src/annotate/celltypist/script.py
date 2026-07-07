@@ -51,7 +51,7 @@ def gpu_is_available():
     default model. Require `cuml` to be imported when using CUDA."""
     if not cuda_is_available():
         return False
-    import cuml  # noqa: F401 # pyright: ignore[reportMissingImports]
+    import cuml  # noqa: F401 # ignore[reportMissingImports]
 
     return True
 
