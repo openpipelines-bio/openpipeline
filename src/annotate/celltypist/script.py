@@ -48,8 +48,7 @@ logger = setup_logger()
 def gpu_is_available():
     """CellTypist runs logistic regression on GPU through cuml: without cuml
     the GPU training path fails silently and CellTypist falls back to a downloaded
-    default model. Only enable GPU when both a CUDA device and a working cuml
-    install are present."""
+    default model. Require `cuml` to be imported when using CUDA."""
     if not cuda_is_available():
         return False
     import cuml  # noqa: F401 # pyright: ignore[reportMissingImports]
