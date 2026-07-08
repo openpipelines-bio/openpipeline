@@ -32,6 +32,8 @@
 
 * `workflows/test_workflows/multiomics/process_batches`: drop the recomputed `pct_dropout` column from the prot output in `workflow_test2` before comparing against the reference data, which predates PR #1196 and lacks the column (PR #1209).
 
+* `annotate/celltypist`: only enable GPU training when both a CUDA device and a working `cuml` install are present, and raise an error if training on the reference does not return a usable model. Previously, a missing `cuml` install caused the GPU training path to fail silently and fall back to downloading and predicting with the default `Immune_All_Low.pkl` model (PR #1211).
+
 # openpipelines 4.1.0
 
 ## NEW FEATURES
