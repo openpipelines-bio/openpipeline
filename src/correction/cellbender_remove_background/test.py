@@ -48,11 +48,17 @@ expected_bundle_files = [
     "output_report.html",
     "output.h5",
     "output.pdf",
+    "output.log",
 ]
 for bundle_file in expected_bundle_files:
     assert path.exists(path.join(dir_output_raw, bundle_file)), (
         f"Output bundle should contain '{bundle_file}'."
     )
+# guard against accidentally publishing extra files (e.g. the checkpoint tarball)
+assert set(listdir(dir_output_raw)) == set(expected_bundle_files), (
+    f"Output bundle should contain exactly {sorted(expected_bundle_files)}, "
+    f"got {sorted(listdir(dir_output_raw))}."
+)
 
 data = read_h5mu(file_output)
 

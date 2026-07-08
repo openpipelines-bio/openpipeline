@@ -301,7 +301,10 @@ engines:
         && apt-get clean
     - type: python
       packages:
-        - mudata
+        # 0.2.4 is the last mudata release supporting Python 3.9 (0.3.x requires 3.10).
+        - mudata~=0.2.4
+        # anndata 0.10.9 removed AlignedViewMixin, which mudata 0.2.4 still imports; cap below it.
+        - anndata<0.10.9
         - cellbender~=0.3.0
 
 runners:
