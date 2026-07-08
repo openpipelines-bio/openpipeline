@@ -301,13 +301,7 @@ engines:
         && apt-get clean
     - type: python
       packages:
-        # Pin torch 1.13.1 to keep pyro-ppl on 1.8.x; pyro >=1.9 (pulled by torch >=2) holds a
-        # weakref that breaks CellBender's checkpoint saving.
-        - torch==1.13.1
-        # anndata 0.10 removed AlignedViewMixin that mudata 0.2.x imports; hold both for Python 3.9.
-        - anndata~=0.9.2
-        - mudata==0.2.3
-        - numpy<2
+        - mudata
         - cellbender~=0.3.0
 
 runners:

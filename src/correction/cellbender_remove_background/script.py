@@ -173,13 +173,9 @@ with tempfile.TemporaryDirectory(
         ]
 
     logger.info("Running CellBender: '%s'", " ".join(cmd_pars))
-    # Run inside temp_dir: CellBender writes its HTML report as a relative path in
-    # the working directory and then os.replace()s it onto the (absolute) --output
-    # path. os.replace cannot move across filesystems, so if the working directory
-    # and the output directory live on different mounts the report generation fails
-    # with EXDEV and the report is silently dropped. Running with the working
-    # directory set to temp_dir keeps both on the same device. This also keeps the
-    # checkpoint tarball CellBender writes to the working directory contained here.
+    # Run inside temp_dir so CellBender's report and checkpoint tarball stay on the
+    # same filesystem as the output; otherwise its os.replace() of the report fails
+    # with EXDEV and the report is silently dropped.
     out = subprocess.check_output(cmd_pars, cwd=temp_dir).decode("utf-8")
 
     logger.info("Reading CellBender 10xh5 output file: '%s'", output_file)
