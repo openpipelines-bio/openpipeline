@@ -301,6 +301,8 @@ engines:
         && apt-get clean
     - type: python
       packages:
+        # pyro 1.9 breaks CellBender checkpoints; torch<2 holds pyro at 1.8.x.
+        - torch<2
         # 0.2.4 is the last mudata release supporting Python 3.9 (0.3.x requires 3.10).
         - mudata~=0.2.4
         # anndata 0.10.9 removed AlignedViewMixin, which mudata 0.2.4 still imports; cap below it.
