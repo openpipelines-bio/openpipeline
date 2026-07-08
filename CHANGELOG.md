@@ -26,6 +26,8 @@
 
 * `labels_transfer/knn`: bump `pynndescent` to 0.5.13 (PR #1205)
 
+* `correction/cellbender_remove_background`: bump the Docker environment to Python 3.9 and mudata to 0.2.4 (PR #1212).
+
 ## BUG FIXES
 
 * `annotate/scanvi`: no longer predicts cell type labels that are absent from the reference. Reference label columns often declare more categories than are actually used (e.g. when the reference is a subset of a larger atlas), which previously caused scANVI to occasionally assign query cells to those empty labels. Unused labels are now dropped before training (PR #1207).
