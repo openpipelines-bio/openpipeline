@@ -28,12 +28,12 @@ par = {
     "obsm_gene_expression_encoding": "gene_expression_encoding",
     # args
     "expected_cells_from_qc": False,
-    "expected_cells": 1000,
-    "total_droplets_included": 25000,
+    "expected_cells": 400,
+    "total_droplets_included": 600,
     "force_cell_umi_prior": None,
     "force_empty_umi_prior": None,
     "model": "full",
-    "epochs": 150,
+    "epochs": 1,
     "low_count_threshold": 5,
     "z_dim": 64,
     "z_layers": [512],
@@ -57,10 +57,11 @@ par = {
     "constant_learning_rate": True,
     "debug": False,
     "cuda": False,
+    "output_compression": "gzip",
 }
 meta = {
     "temp_dir": os.getenv("VIASH_TEMP"),
-    "resources_dir": "src/correction/cellbender_remove_background",
+    "resources_dir": "src/utils",
 }
 ## VIASH END
 
@@ -172,7 +173,14 @@ with tempfile.TemporaryDirectory(
         ]
 
     logger.info("Running CellBender: '%s'", " ".join(cmd_pars))
-    out = subprocess.check_output(cmd_pars).decode("utf-8")
+    # Run inside temp_dir: CellBender writes its HTML report as a relative path in
+    # the working directory and then os.replace()s it onto the (absolute) --output
+    # path. os.replace cannot move across filesystems, so if the working directory
+    # and the output directory live on different mounts the report generation fails
+    # with EXDEV and the report is silently dropped. Running with the working
+    # directory set to temp_dir keeps both on the same device. This also keeps the
+    # checkpoint tarball CellBender writes to the working directory contained here.
+    out = subprocess.check_output(cmd_pars, cwd=temp_dir).decode("utf-8")
 
     logger.info("Reading CellBender 10xh5 output file: '%s'", output_file)
     adata_out = anndata_from_h5(output_file, analyzed_barcodes_only=False)
@@ -250,10 +258,12 @@ with tempfile.TemporaryDirectory(
 
     logger.info("Copying full CellBender output bundle to '%s'", par["output_raw"])
     os.makedirs(par["output_raw"], exist_ok=True)
-    # the tempdir also holds the AnnData input file we created, which is not
-    # part of the CellBender output and should not be published
+    # the tempdir also holds the AnnData input file we created and the checkpoint
+    # tarball CellBender writes to its working directory, neither of which is part
+    # of the CellBender output bundle and should not be published
+    exclude_from_bundle = {os.path.basename(input_file), "ckpt.tar.gz"}
     for entry in os.listdir(temp_dir):
-        if entry == os.path.basename(input_file):
+        if entry in exclude_from_bundle:
             continue
         src = os.path.join(temp_dir, entry)
         dest = os.path.join(par["output_raw"], entry)
