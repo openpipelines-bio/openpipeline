@@ -26,7 +26,7 @@
 
 * `labels_transfer/knn`: bump `pynndescent` to 0.5.13 (PR #1205)
 
-* `correction/cellbender_remove_background`: bump the Docker environment to Python 3.9 and mudata to 0.2.4 (PR #1212).
+* `correction/cellbender_remove_background`: Update the base image to `pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime` (Python 3.12) and pin CellBender to a commit that is compatible with Python 3.12 (PR #1212).
 
 ## BUG FIXES
 
