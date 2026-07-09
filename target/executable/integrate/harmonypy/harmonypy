@@ -459,9 +459,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component integrate harmonypy"
-LABEL org.opencontainers.image.created="2026-07-08T05:37:23Z"
+LABEL org.opencontainers.image.created="2026-07-09T06:27:54Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1123d158bf545a9499be200d243890541ffc50f7"
+LABEL org.opencontainers.image.revision="251f1210a2414980e4bac2f41dec5babecf9ebb7"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
