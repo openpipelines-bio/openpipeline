@@ -284,32 +284,22 @@ test_resources:
 
 engines:
 - type: docker
-  image: nvcr.io/nvidia/cuda:11.8.0-runtime-ubuntu22.04
-  # run_args: ["--gpus all"]
+  # This base image uses python 3.12, compatible with the version of CellBender below
+  image: pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime
   setup:
     - type: docker
-      env:
-        - PYENV_ROOT="/root/.pyenv"
-        - PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"
-        - PYTHON_VERSION=3.9.25
-      run: |
-        apt update && DEBIAN_FRONTEND=noninteractive apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget ca-certificates curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev mecab-ipadic-utf8 git \
-        && curl https://pyenv.run | bash \
-        && pyenv update \
-        && pyenv install $PYTHON_VERSION \
-        && pyenv global $PYTHON_VERSION \
-        && apt-get clean
-    - type: python
+      env: 
+        - PIP_BREAK_SYSTEM_PACKAGES=1
+        - PATH="/root/.local/bin:${PATH}"
+    - type: apt
       packages:
-        # pyro 1.9 breaks CellBender checkpoints; torch<2 holds pyro at 1.8.x.
-        - torch<2
-        # 0.2.4 is the last mudata release supporting Python 3.9 (0.3.x requires 3.10).
-        - mudata~=0.2.4
-        # anndata 0.10.9 removed AlignedViewMixin, which mudata 0.2.4 still imports; cap below it.
-        - anndata<0.10.9
-        # tables 3.9.x (newest for Python 3.9) has no numpy 2 ABI; keep numpy on the 1.x line.
-        - numpy<2
-        - cellbender~=0.3.0
+        - git
+    - type: python
+      user: true
+      upgrade: false
+      packages:
+        - git+https://github.com/broadinstitute/CellBender.git@c5f5d9f41a2926a0b46515ccc4a3383d52a9ffa9
+      __merge__: /src/base/requirements/anndata_mudata.yaml
 
 runners:
 - type: executable
