@@ -152,6 +152,9 @@ engines:
       - type: python
         packages:
           - celltypist==1.7.1
+      - type: docker
+        run:
+          - pip install --extra-index-url=https://pypi.nvidia.com "cuml-cu13==26.6.0"
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
     test_setup:
