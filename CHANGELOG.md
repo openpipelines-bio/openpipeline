@@ -1,4 +1,4 @@
-# openpipelines x.x.x
+# openpipelines 4.2.0
 
 ## BREAKING CHANGES
 
