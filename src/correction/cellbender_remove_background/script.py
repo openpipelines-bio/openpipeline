@@ -253,20 +253,18 @@ with tempfile.TemporaryDirectory(
                 )
 
     logger.info("Copying full CellBender output bundle to '%s'", par["output_raw"])
-    os.makedirs(par["output_raw"], exist_ok=True)
     # the tempdir also holds the AnnData input file we created and the checkpoint
     # tarball CellBender writes to its working directory, neither of which is part
     # of the CellBender output bundle and should not be published
     exclude_from_bundle = {os.path.basename(input_file), "ckpt.tar.gz"}
-    for entry in os.listdir(temp_dir):
-        if entry in exclude_from_bundle:
-            continue
-        src = os.path.join(temp_dir, entry)
-        dest = os.path.join(par["output_raw"], entry)
-        if os.path.isdir(src):
-            shutil.copytree(src, dest, dirs_exist_ok=True)
-        else:
-            shutil.copy2(src, dest)
+    shutil.copytree(
+        temp_dir,
+        par["output_raw"],
+        ignore=lambda directory, names: exclude_from_bundle
+        if directory == temp_dir
+        else set(),
+        dirs_exist_ok=True,
+    )
 
 
 logger.info("Writing to file %s", par["output"])
