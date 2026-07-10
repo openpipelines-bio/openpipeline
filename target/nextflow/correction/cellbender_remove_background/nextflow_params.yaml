@@ -4,6 +4,7 @@ modality: "rna"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
+# output_raw: "$id.$key.output_raw"
 layer_output: "cellbender_corrected"
 obs_background_fraction: "cellbender_background_fraction"
 obs_cell_probability: "cellbender_cell_probability"

@@ -12,6 +12,8 @@
 
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples` and `workflows/rna/rna_singlesample`: surfaced `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
 
+* `correction/cellbender_remove_background`: added `--output_raw` argument to enable publishing the complete CellBender output bundle (PR #1212).
+
 ## MINOR CHANGES
 
 * `qc/calculate_qc_metrics`: parametrize the names of the top-n-vars `.obs` output columns with the `--output_obs_top_n_vars` flag (PR #1182).
@@ -24,6 +26,8 @@
 
 * `labels_transfer/knn`: bump `pynndescent` to 0.5.13 (PR #1205)
 
+* `correction/cellbender_remove_background`: Update the base image to `pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime` (Python 3.12) and pin CellBender to a commit that is compatible with Python 3.12 (PR #1212).
+
 ## BUG FIXES
 
 * `annotate/scanvi`: no longer predicts cell type labels that are absent from the reference. Reference label columns often declare more categories than are actually used (e.g. when the reference is a subset of a larger atlas), which previously caused scANVI to occasionally assign query cells to those empty labels. Unused labels are now dropped before training (PR #1207).
@@ -32,7 +36,7 @@
 
 * `workflows/test_workflows/multiomics/process_batches`: drop the recomputed `pct_dropout` column from the prot output in `workflow_test2` before comparing against the reference data, which predates PR #1196 and lacks the column (PR #1209).
 
-* `annotate/celltypist`: only enable GPU training when both a CUDA device and a working `cuml` install are present, and raise an error if training on the reference does not return a usable model. Previously, a missing `cuml` install caused the GPU training path to fail silently and fall back to downloading and predicting with the default `Immune_All_Low.pkl` model (PR #1211).
+* `annotate/celltypist`: only enable GPU training when both a CUDA device and a working `cuml` install are present, and raise an error if training on the reference does not return a usable model. Previously, a missing `cuml` install caused the GPU training path to fail silently and fall back to downloading and predicting with the default `Immune_All_Low.pkl` model (PR #1211, # 1213).
 
 # openpipelines 4.1.0
 

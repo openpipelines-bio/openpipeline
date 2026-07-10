@@ -46,6 +46,19 @@ argument_groups:
     direction: "output"
     multiple: false
     multiple_sep: ";"
+  - type: "file"
+    name: "--output_raw"
+    description: "Output directory to store the raw CellBender output bundle alongside\
+      \ the .h5mu output.\n"
+    info: null
+    example:
+    - "cellbender_output"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
   - type: "string"
     name: "--layer_output"
     description: "Output layer"
@@ -576,29 +589,31 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "nvcr.io/nvidia/cuda:11.8.0-devel-ubuntu22.04"
+  image: "pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime"
   target_tag: "integration_build"
   namespace_separator: "/"
   setup:
   - type: "docker"
-    run:
-    - "apt update && DEBIAN_FRONTEND=noninteractive apt install -y make build-essential\
-      \ libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget ca-certificates\
-      \ curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev\
-      \ liblzma-dev mecab-ipadic-utf8 git \\\n&& curl https://pyenv.run | bash \\\n\
-      && pyenv update \\\n&& pyenv install $PYTHON_VERSION \\\n&& pyenv global $PYTHON_VERSION\
-      \ \\\n&& apt-get clean\n"
     env:
-    - "PYENV_ROOT=\"/root/.pyenv\""
-    - "PATH=\"$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH\""
-    - "PYTHON_VERSION=3.7.16"
-  - type: "python"
-    user: false
+    - "PIP_BREAK_SYSTEM_PACKAGES=1"
+    - "PATH=\"/root/.local/bin:${PATH}\""
+  - type: "apt"
     packages:
-    - "lxml~=4.8.0"
-    - "mudata~=0.2.1"
-    - "cellbender~=0.3.0"
-    upgrade: true
+    - "git"
+    interactive: false
+  - type: "python"
+    user: true
+    packages:
+    - "anndata~=0.12.16"
+    - "awkward"
+    - "scipy~=1.17.1"
+    - "mudata~=0.3.8"
+    - "git+https://github.com/broadinstitute/CellBender.git@c5f5d9f41a2926a0b46515ccc4a3383d52a9ffa9"
+    script:
+    - "exec(\"try:\\n  import zarr; from importlib.metadata import version\\nexcept\
+      \ ModuleNotFoundError:\\n  exit(0)\\nelse:  assert int(version(\\\"zarr\\\"\
+      ).partition(\\\".\\\")[0]) > 2\")"
+    upgrade: false
   entrypoint: []
   cmd: null
 build_info:
@@ -608,7 +623,7 @@ build_info:
   output: "target/nextflow/correction/cellbender_remove_background"
   executable: "target/nextflow/correction/cellbender_remove_background/main.nf"
   viash_version: "0.9.7"
-  git_commit: "4a4207dd4c14c61fb05028b30e3c3656df016335"
+  git_commit: "d6ba9d85efcf732b1b75c36b6bbb1f8e33242190"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

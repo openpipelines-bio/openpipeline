@@ -50,6 +50,13 @@
           "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         },
+        "output_raw": {
+          "type": "string",
+          "format": "path",
+          "description": "Output directory to store the raw CellBender output bundle alongside the .h5mu output.\n",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output_raw\"`, direction: `output`, example: `\"cellbender_output\"`. ",
+          "default": "$id.$key.output_raw"
+        },
         "layer_output": {
           "type": "string",
           "description": "Output layer",

@@ -152,6 +152,7 @@ engines:
       - type: python
         packages:
           - celltypist==1.7.1
+          - cuml-cu13
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
     test_setup:
