@@ -3314,7 +3314,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clear_slots",
     "viash_version" : "0.9.7",
-    "git_commit" : "e6bbf7e687beb5e70f8e49bc820c317bbcabc875",
+    "git_commit" : "144f0c76e019805de50f6a534527c064affd65c2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
