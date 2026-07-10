@@ -12,6 +12,8 @@
 
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples` and `workflows/rna/rna_singlesample`: surfaced `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
 
+* `correction/cellbender_remove_background`: added `--output_raw` argument to enable publishing the complete CellBender output bundle (PR #1212).
+
 ## MINOR CHANGES
 
 * `qc/calculate_qc_metrics`: parametrize the names of the top-n-vars `.obs` output columns with the `--output_obs_top_n_vars` flag (PR #1182).
@@ -23,6 +25,8 @@
 * `convert/from_h5ad_to_seurat`, `convert/from_h5mu_or_h5ad_to_seurat`: Added a `--x_mapping` argument to control the Seurat layer the AnnData `.X` matrix is stored in (default `counts`) (PR #1201).
 
 * `labels_transfer/knn`: bump `pynndescent` to 0.5.13 (PR #1205)
+
+* `correction/cellbender_remove_background`: Update the base image to `pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime` (Python 3.12) and pin CellBender to a commit that is compatible with Python 3.12 (PR #1212).
 
 ## BUG FIXES
 

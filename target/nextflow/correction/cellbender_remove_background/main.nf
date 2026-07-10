@@ -3099,6 +3099,20 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "file",
+          "name" : "--output_raw",
+          "description" : "Output directory to store the raw CellBender output bundle alongside the .h5mu output.\n",
+          "example" : [
+            "cellbender_output"
+          ],
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : true,
+          "direction" : "output",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "string",
           "name" : "--layer_output",
           "description" : "Output layer",
@@ -3667,30 +3681,38 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "nvcr.io/nvidia/cuda:11.8.0-devel-ubuntu22.04",
+      "image" : "pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
         {
           "type" : "docker",
-          "run" : [
-            "apt update && DEBIAN_FRONTEND=noninteractive apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget ca-certificates curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev mecab-ipadic-utf8 git \\\\\n&& curl https://pyenv.run | bash \\\\\n&& pyenv update \\\\\n&& pyenv install $PYTHON_VERSION \\\\\n&& pyenv global $PYTHON_VERSION \\\\\n&& apt-get clean\n"
-          ],
           "env" : [
-            "PYENV_ROOT=\\"/root/.pyenv\\"",
-            "PATH=\\"$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH\\"",
-            "PYTHON_VERSION=3.7.16"
+            "PIP_BREAK_SYSTEM_PACKAGES=1",
+            "PATH=\\"/root/.local/bin:${PATH}\\""
           ]
         },
         {
-          "type" : "python",
-          "user" : false,
+          "type" : "apt",
           "packages" : [
-            "lxml~=4.8.0",
-            "mudata~=0.2.1",
-            "cellbender~=0.3.0"
+            "git"
           ],
-          "upgrade" : true
+          "interactive" : false
+        },
+        {
+          "type" : "python",
+          "user" : true,
+          "packages" : [
+            "anndata~=0.12.16",
+            "awkward",
+            "scipy~=1.17.1",
+            "mudata~=0.3.8",
+            "git+https://github.com/broadinstitute/CellBender.git@c5f5d9f41a2926a0b46515ccc4a3383d52a9ffa9"
+          ],
+          "script" : [
+            "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
+          ],
+          "upgrade" : false
         }
       ]
     }
@@ -3701,7 +3723,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background",
     "viash_version" : "0.9.7",
-    "git_commit" : "144f0c76e019805de50f6a534527c064affd65c2",
+    "git_commit" : "07469224c8c363f54c5d73579c430648fe5eeb47",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3761,6 +3783,7 @@ import mudata as mu
 import tempfile
 import subprocess
 import os
+import shutil
 import sys
 import numpy as np
 from scipy.sparse import csr_matrix
@@ -3772,6 +3795,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_raw': $( if [ ! -z ${VIASH_PAR_OUTPUT_RAW+x} ]; then echo "r'${VIASH_PAR_OUTPUT_RAW//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer_output': $( if [ ! -z ${VIASH_PAR_LAYER_OUTPUT+x} ]; then echo "r'${VIASH_PAR_LAYER_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_background_fraction': $( if [ ! -z ${VIASH_PAR_OBS_BACKGROUND_FRACTION+x} ]; then echo "r'${VIASH_PAR_OBS_BACKGROUND_FRACTION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_cell_probability': $( if [ ! -z ${VIASH_PAR_OBS_CELL_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OBS_CELL_PROBABILITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3946,7 +3970,10 @@ with tempfile.TemporaryDirectory(
         ]
 
     logger.info("Running CellBender: '%s'", " ".join(cmd_pars))
-    out = subprocess.check_output(cmd_pars).decode("utf-8")
+    # Run inside temp_dir so CellBender's report and checkpoint tarball stay on the
+    # same filesystem as the output; otherwise its os.replace() of the report fails
+    # with EXDEV and the report is silently dropped.
+    out = subprocess.check_output(cmd_pars, cwd=temp_dir).decode("utf-8")
 
     logger.info("Reading CellBender 10xh5 output file: '%s'", output_file)
     adata_out = anndata_from_h5(output_file, analyzed_barcodes_only=False)
@@ -4021,6 +4048,20 @@ with tempfile.TemporaryDirectory(
                     "Requested to save latent gene encoding, but the data is either missing "
                     "from cellbender output or in an incorrect format."
                 )
+
+    logger.info("Copying full CellBender output bundle to '%s'", par["output_raw"])
+    # the tempdir also holds the AnnData input file we created and the checkpoint
+    # tarball CellBender writes to its working directory, neither of which is part
+    # of the CellBender output bundle and should not be published
+    exclude_from_bundle = {os.path.basename(input_file), "ckpt.tar.gz"}
+    shutil.copytree(
+        temp_dir,
+        par["output_raw"],
+        ignore=lambda directory, names: exclude_from_bundle
+        if directory == temp_dir
+        else set(),
+        dirs_exist_ok=True,
+    )
 
 
 logger.info("Writing to file %s", par["output"])
