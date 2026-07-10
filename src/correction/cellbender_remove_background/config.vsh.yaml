@@ -33,6 +33,13 @@ argument_groups:
         direction: output
         required: true
         example: output.h5mu
+      - name: "--output_raw"
+        type: file
+        direction: output
+        required: true
+        description: |
+          Output directory to store the raw CellBender output bundle alongside the .h5mu output.
+        example: cellbender_output/
       - name: "--layer_output"
         description: Output layer
         type: string
@@ -277,27 +284,22 @@ test_resources:
 
 engines:
 - type: docker
-  image: nvcr.io/nvidia/cuda:11.8.0-devel-ubuntu22.04
-  # run_args: ["--gpus all"]
+  # This base image uses python 3.12, compatible with the version of CellBender below
+  image: pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime
   setup:
     - type: docker
-      env:
-        - PYENV_ROOT="/root/.pyenv"
-        - PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"
-        - PYTHON_VERSION=3.7.16
-      run: |
-        apt update && DEBIAN_FRONTEND=noninteractive apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget ca-certificates curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev mecab-ipadic-utf8 git \
-        && curl https://pyenv.run | bash \
-        && pyenv update \
-        && pyenv install $PYTHON_VERSION \
-        && pyenv global $PYTHON_VERSION \
-        && apt-get clean
-    - type: python
+      env: 
+        - PIP_BREAK_SYSTEM_PACKAGES=1
+        - PATH="/root/.local/bin:${PATH}"
+    - type: apt
       packages:
-        # Use this version of mudata because it is the last one that supports python 3.7
-        - lxml~=4.8.0
-        - mudata~=0.2.1
-        - cellbender~=0.3.0
+        - git
+    - type: python
+      user: true
+      upgrade: false
+      packages:
+        - git+https://github.com/broadinstitute/CellBender.git@c5f5d9f41a2926a0b46515ccc4a3383d52a9ffa9
+      __merge__: /src/base/requirements/anndata_mudata.yaml
 
 runners:
 - type: executable

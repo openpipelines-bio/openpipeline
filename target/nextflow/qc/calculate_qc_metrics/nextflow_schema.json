@@ -40,6 +40,12 @@
           "type": "string",
           "description": "Layer from modality to use as input data",
           "help_text": "Type: `string`, multiple: `False`, example: `\"raw_counts\"`. "
+        },
+        "log1p_transform": {
+          "type": "boolean",
+          "description": "Compute log1p-transformed versions of the metrics added to `.var` and `.obs`.\nFor each emitted metric column `<col>`, an additional column `log1p_<col>` is added\ncontaining `log1p(<col>)`",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
         }
       }
     },
@@ -91,6 +97,12 @@
           },
           "description": "Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated",
           "help_text": "Type: `integer`, multiple: `True`. "
+        },
+        "output_obs_top_n_vars": {
+          "type": "string",
+          "description": "Format string for the names of the .obs columns that contain the cumulative\nproportion of counts in the top N vars (one column per value in `--top_n_vars`).\nUse `{n}` as a placeholder for the top-N value provided in `--top_n_vars`.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"pct_of_counts_in_top_{n}_vars\"`. ",
+          "default": "pct_of_counts_in_top_{n}_vars"
         },
         "output_obs_num_nonzero_vars": {
           "type": "string",

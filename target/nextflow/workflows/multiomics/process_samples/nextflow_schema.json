@@ -146,6 +146,11 @@
           "description": "Skip the scrublet doublet detection step.",
           "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
           "default": false
+        },
+        "scrublet_score_threshold": {
+          "type": "number",
+          "description": "Manual doublet score threshold passed to filter_with_scrublet",
+          "help_text": "Type: `double`, multiple: `False`. "
         }
       }
     },
@@ -315,6 +320,12 @@
             200,
             500
           ]
+        },
+        "log1p_transform": {
+          "type": "boolean",
+          "description": "Compute log1p-transformed versions of the calculated QC metrics",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
         }
       }
     },

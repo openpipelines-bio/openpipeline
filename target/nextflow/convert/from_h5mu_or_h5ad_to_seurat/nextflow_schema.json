@@ -42,6 +42,12 @@
           "help_text": "Type: `string`, multiple: `False`, default: `\"RNA\"`. ",
           "default": "RNA"
         },
+        "x_mapping": {
+          "type": "string",
+          "description": "Name of the Seurat layer in which the AnnData .X matrix is stored.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"counts\"`. ",
+          "default": "counts"
+        },
         "output": {
           "type": "string",
           "format": "path",

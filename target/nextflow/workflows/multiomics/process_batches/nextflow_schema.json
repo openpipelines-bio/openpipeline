@@ -133,6 +133,12 @@
             200,
             500
           ]
+        },
+        "log1p_transform": {
+          "type": "boolean",
+          "description": "Compute log1p-transformed versions of the calculated QC metrics",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
+          "default": true
         }
       }
     },

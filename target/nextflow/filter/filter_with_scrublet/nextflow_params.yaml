@@ -15,6 +15,7 @@ min_cells: 3
 min_gene_variablity_percent: 85.0
 num_pca_components: 30
 distance_metric: "euclidean"
+# scrublet_score_threshold: 123.0
 allow_automatic_threshold_detection_fail: false
 # output_compression: "gzip"
 
