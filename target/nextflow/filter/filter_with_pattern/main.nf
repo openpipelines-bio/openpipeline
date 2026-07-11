@@ -3354,7 +3354,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_pattern",
     "viash_version" : "0.9.7",
-    "git_commit" : "d6ba9d85efcf732b1b75c36b6bbb1f8e33242190",
+    "git_commit" : "319f2bb793a00aae7409eb441a5be051489953c9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
