@@ -460,9 +460,9 @@ RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TR
 
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux demuxlet"
-LABEL org.opencontainers.image.created="2026-07-13T05:53:36Z"
+LABEL org.opencontainers.image.created="2026-07-14T05:14:54Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="085c03999534ce102f357e237a400bbf1802e189"
+LABEL org.opencontainers.image.revision="77adbc75171549648cd48573e25570c00aec255b"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
