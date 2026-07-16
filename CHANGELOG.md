@@ -70,6 +70,8 @@
 
 * `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169, PR #1177)
 
+* `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
+
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140 and PR #1191).
