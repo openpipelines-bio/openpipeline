@@ -2,9 +2,9 @@
 
 ## BREAKING CHANGES
 
-* `transform/scale`: `--zero_center` is now a regular `boolean` (default `true`) instead of a `boolean_false` flag. Pass `--zero_center false` to omit centering (PR #1216).
+* `transform/scale`: `--zero_center` is now a regular `boolean` (default behaviour remains unaltered and is set explicitly to `true`) instead of a `boolean_false` flag. Pass `--zero_center false` to omit centering (PR #1216).
 
-* `workflows/rna/rna_multisample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: the RNA scaling zero-center argument is now a regular `boolean` (default `true`) instead of `boolean_false` (PR #1216).
+* `workflows/rna/rna_multisample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: the RNA scaling zero-center argument is now a regular `boolean` (default behaviour remains unaltered and is set explicitly to `true`) instead of `boolean_false` (PR #1216).
 
 # openpipelines 4.2.0
 
