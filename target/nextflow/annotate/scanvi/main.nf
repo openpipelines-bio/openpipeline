@@ -3615,7 +3615,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/scanvi",
     "viash_version" : "0.9.7",
-    "git_commit" : "9f7321a19ef4e96cb4c0787cbb90e218eae6121c",
+    "git_commit" : "b780de472f77166a23b9a02a8f8346d1f7a83fa8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
