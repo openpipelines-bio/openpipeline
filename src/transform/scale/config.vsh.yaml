@@ -32,8 +32,9 @@ arguments:
     type: double
     description: Clip (truncate) to this value after scaling. Does not clip by default.
   - name: "--zero_center"
-    type: boolean_false
-    description: If set, omit zero-centering variables, which allows to handle sparse input efficiently.
+    type: boolean
+    default: true
+    description: If true, center the data to zero mean before scaling. Set to false to omit zero-centering, which allows sparse input to be handled efficiently.
   # output
   - name: "--output"
     alternatives: ["-o"]
