@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform scale"
-LABEL org.opencontainers.image.created="2026-07-10T11:24:52Z"
+LABEL org.opencontainers.image.created="2026-07-16T13:25:45Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c3bed0feae16b2da6bd2ee8d97b8cba045936ad6"
+LABEL org.opencontainers.image.revision="36a677cfbdc0fec79eb399cbff7b114c6eb9f394"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -607,9 +607,11 @@ function ViashHelp {
   echo "        Clip (truncate) to this value after scaling. Does not clip by default."
   echo ""
   echo "    --zero_center"
-  echo "        type: boolean_false"
-  echo "        If set, omit zero-centering variables, which allows to handle sparse"
-  echo "        input efficiently."
+  echo "        type: boolean"
+  echo "        default: true"
+  echo "        If true, center the data to zero mean before scaling. Set to false to"
+  echo "        omit zero-centering, which allows sparse input to be handled"
+  echo "        efficiently."
   echo ""
   echo "    -o, --output"
   echo "        type: file, required parameter, output, file must exist"
@@ -736,7 +738,13 @@ while [[ $# -gt 0 ]]; do
             ;;
         --zero_center)
             [ -n "$VIASH_PAR_ZERO_CENTER" ] && ViashError Bad arguments for option \'--zero_center\': \'$VIASH_PAR_ZERO_CENTER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_ZERO_CENTER=false
+            VIASH_PAR_ZERO_CENTER="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --zero_center. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --zero_center=*)
+            [ -n "$VIASH_PAR_ZERO_CENTER" ] && ViashError Bad arguments for option \'--zero_center=*\': \'$VIASH_PAR_ZERO_CENTER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_ZERO_CENTER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -993,7 +1001,7 @@ if [[ -n "$VIASH_PAR_MAX_VALUE" ]]; then
 fi
 if [[ -n "$VIASH_PAR_ZERO_CENTER" ]]; then
   if ! [[ "$VIASH_PAR_ZERO_CENTER" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--zero_center' has to be a boolean_false. Use "--help" to get more information on the parameters.
+    ViashError '--zero_center' has to be a boolean. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi

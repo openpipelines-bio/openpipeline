@@ -3439,10 +3439,16 @@ meta = [
           "multiple_sep" : ";"
         },
         {
-          "type" : "boolean_false",
+          "type" : "boolean",
           "name" : "--scaling_zero_center",
-          "description" : "If set, omit zero-centering variables, which allows to handle sparse input efficiently.\\"",
-          "direction" : "input"
+          "description" : "If true, center the data to zero mean before scaling. Set to false to omit zero-centering, which allows sparse input to be handled efficiently.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     }
@@ -3607,7 +3613,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample",
     "viash_version" : "0.9.7",
-    "git_commit" : "c3bed0feae16b2da6bd2ee8d97b8cba045936ad6",
+    "git_commit" : "36a677cfbdc0fec79eb399cbff7b114c6eb9f394",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -183,8 +183,9 @@ argument_groups:
         required: false
         type: double
       - name: "--scaling_zero_center"
-        type: boolean_false
-        description: If set, omit zero-centering variables, which allows to handle sparse input efficiently."
+        type: boolean
+        default: true
+        description: If true, center the data to zero mean before scaling. Set to false to omit zero-centering, which allows sparse input to be handled efficiently.
          
 dependencies:
   - name: feature_annotation/highly_variable_features_scanpy
