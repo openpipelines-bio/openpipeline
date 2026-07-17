@@ -97,6 +97,7 @@ def test_filter_with_hvg(run_component, lognormed_test_data_path):
     assert os.path.exists("output.h5mu")
     data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in data.mod["rna"].var.columns
+    assert data.mod["rna"].uns["hvg"] == {"flavor": "seurat"}
     # Put the output data back into its original shape
     # so that we can compare it to the input
     data.mod["rna"].var = data.mod["rna"].var.drop(
@@ -104,6 +105,7 @@ def test_filter_with_hvg(run_component, lognormed_test_data_path):
     )
     data.var = data.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
     del data["rna"].varm["hvg"]
+    del data["rna"].uns["hvg"]
     assert_annotation_objects_equal(lognormed_test_data_path, data)
 
 
@@ -161,6 +163,7 @@ def test_filter_with_hvg_var_input(run_component, common_vars_data_path):
     )
     mdata.var = mdata.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
     del mdata["rna"].varm["hvg"]
+    del mdata["rna"].uns["hvg"]
 
     common_vars.mod["rna"].var = common_vars.mod["rna"].var.drop(
         columns=["filter_with_hvg"], errors="raise"
@@ -169,6 +172,7 @@ def test_filter_with_hvg_var_input(run_component, common_vars_data_path):
         columns=["rna:filter_with_hvg"], errors="raise"
     )
     del common_vars["rna"].varm["hvg"]
+    del common_vars["rna"].uns["hvg"]
 
     assert_annotation_objects_equal(mdata, common_vars)
 
@@ -197,6 +201,7 @@ def test_filter_with_hvg_batch_with_batch(
     assert os.path.exists("output.h5mu")
     output_data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in output_data.mod["rna"].var.columns
+    assert output_data.mod["rna"].uns["hvg"] == {"flavor": "seurat"}
 
     # Check the contents of the output to check if the correct layer was selected
     input_mudata = mu.read_h5mu(lognormed_batch_test_data_path)
@@ -221,6 +226,7 @@ def test_filter_with_hvg_batch_with_batch(
     output_data.var = output_data.var.drop(
         columns=["rna:filter_with_hvg"], errors="raise"
     )
+    del output_data["rna"].uns["hvg"]
     assert_annotation_objects_equal(lognormed_batch_test_data_path, output_data)
 
 
@@ -258,12 +264,14 @@ def test_filter_with_hvg_seurat_v3(run_component, input_path):
     assert os.path.exists("output.h5mu")
     data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in data.mod["rna"].var.columns
+    assert data.mod["rna"].uns["hvg"] == {"flavor": "seurat_v3"}
     # Put the output data back into its original shape
     # so that we can compare it to the input
     data.mod["rna"].var = data.mod["rna"].var.drop(
         columns=["filter_with_hvg"], errors="raise"
     )
     data.var = data.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
+    del data["rna"].uns["hvg"]
     assert_annotation_objects_equal(input_path, data)
 
 
@@ -281,6 +289,7 @@ def test_filter_with_hvg_cell_ranger(run_component, filter_data_path):
     assert os.path.exists("output.h5mu")
     data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in data.mod["rna"].var.columns
+    assert data.mod["rna"].uns["hvg"] == {"flavor": "cell_ranger"}
     # Put the output data back into its original shape
     # so that we can compare it to the input
     data.mod["rna"].var = data.mod["rna"].var.drop(
@@ -288,6 +297,7 @@ def test_filter_with_hvg_cell_ranger(run_component, filter_data_path):
     )
     data.var = data.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
     del data["rna"].varm["hvg"]
+    del data["rna"].uns["hvg"]
     assert_annotation_objects_equal(filter_data_path, data)
 
 
