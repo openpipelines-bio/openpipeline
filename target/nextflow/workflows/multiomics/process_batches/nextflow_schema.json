@@ -216,8 +216,8 @@
         },
         "rna_scaling_zero_center": {
           "type": "boolean",
-          "description": "If set, omit zero-centering variables, which allows to handle sparse input efficiently.\"",
-          "help_text": "Type: `boolean_false`, multiple: `False`, default: `true`. ",
+          "description": "If true, center the data to zero mean before scaling",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
           "default": true
         }
       }

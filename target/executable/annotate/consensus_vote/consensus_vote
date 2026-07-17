@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component annotate consensus_vote"
-LABEL org.opencontainers.image.created="2026-07-16T05:26:04Z"
+LABEL org.opencontainers.image.created="2026-07-17T05:27:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b780de472f77166a23b9a02a8f8346d1f7a83fa8"
+LABEL org.opencontainers.image.revision="5f916ee5a5d7c2545d4ff2044953a0557454b8f4"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

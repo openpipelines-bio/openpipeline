@@ -584,12 +584,17 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "boolean_false"
+  - type: "boolean"
     name: "--rna_scaling_zero_center"
-    description: "If set, omit zero-centering variables, which allows to handle sparse\
-      \ input efficiently.\""
+    description: "If true, center the data to zero mean before scaling. Set to false\
+      \ to omit zero-centering, which allows sparse input to be handled efficiently."
     info: null
+    default:
+    - true
+    required: false
     direction: "input"
+    multiple: false
+    multiple_sep: ";"
 resources:
 - type: "nextflow_script"
   path: "main.nf"
@@ -743,7 +748,7 @@ build_info:
   output: "target/nextflow/workflows/multiomics/process_samples"
   executable: "target/nextflow/workflows/multiomics/process_samples/main.nf"
   viash_version: "0.9.7"
-  git_commit: "b780de472f77166a23b9a02a8f8346d1f7a83fa8"
+  git_commit: "5f916ee5a5d7c2545d4ff2044953a0557454b8f4"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/metadata/add_id"
