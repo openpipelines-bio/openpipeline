@@ -9,7 +9,7 @@ description: |
   assumes that samples from multiple pipelines are already concatenated. 
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
 info:
   test_dependencies:
     - name: workflow_test

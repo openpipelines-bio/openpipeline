@@ -16,7 +16,7 @@ info:
       namespace: test_workflows/multiomics/process_samples
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
 argument_groups:
   - name: Inputs
     arguments:

@@ -1,11 +1,6 @@
 name: Dorien Roosen
 info:
-  role: Core Team Member
   links:
-    email: dorien@data-intuitive.com
     github: dorien-er
+    orcid: 0000-0002-6261-8151
     linkedin: dorien-roosen
-  organizations:
-    - name: Data Intuitive
-      href: https://www.data-intuitive.com
-      role: Data Scientist

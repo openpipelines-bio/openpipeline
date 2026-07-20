@@ -9,7 +9,7 @@ description: |
   See http://htseq.readthedocs.io/en/master/count.html for details.
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/angela_pisco.yaml
     roles: [ author ]
 argument_groups:

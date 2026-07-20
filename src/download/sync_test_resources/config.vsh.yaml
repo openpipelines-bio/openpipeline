@@ -7,7 +7,7 @@ usage: |
   sync_test_resources --input _viash.yaml --output .
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 argument_groups:
   - name: Inputs
     arguments:

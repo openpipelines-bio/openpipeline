@@ -9,10 +9,6 @@ authors:
     roles: [ author ]
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author ]
-  - __merge__: /src/authors/dries_de_maeyer.yaml
-    roles: [ contributor ]
-  - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ contributor ]
 
 argument_groups:
   - name: Inputs

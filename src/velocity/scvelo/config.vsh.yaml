@@ -3,7 +3,7 @@ namespace: "velocity"
 scope: "public"
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 argument_groups:
   - name: Inputs
     arguments:

@@ -6,7 +6,7 @@ description: |
   The annotation matrix can originate from either a modality, or all modalities (global .var or .obs).
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 argument_groups:
   - name: Inputs
     description: Arguments related to the input dataset.

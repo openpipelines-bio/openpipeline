@@ -18,7 +18,7 @@ description: |
   
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author ]
 

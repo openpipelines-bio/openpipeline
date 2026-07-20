@@ -5,7 +5,7 @@ description: |
   Perform CLR normalization on CITE-seq data (Stoeckius et al., 2017).
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   - name: "--input"
     alternatives: ["-i"]

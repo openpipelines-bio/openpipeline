@@ -5,7 +5,7 @@ description: |
   Computes PCA coordinates, loadings and variance decomposition.
 authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 argument_groups:
   - name: inputs
     arguments:

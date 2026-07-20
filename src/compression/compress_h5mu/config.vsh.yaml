@@ -5,7 +5,7 @@ description: |
   Compress a MuData file. 
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   - name: "--input"
     alternatives: ["-i"]
