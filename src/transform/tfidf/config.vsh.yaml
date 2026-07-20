@@ -10,7 +10,7 @@ description: |
   across different cells while down-weighting regions that are commonly accessible across many cells. 
 authors:
   - __merge__: /src/authors/vladimir_shitov.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   # input
   - name: "--input"

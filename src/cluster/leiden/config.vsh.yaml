@@ -13,7 +13,7 @@ description: |
   [Wolf18]: Wolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology.  
 authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   # input
   - name: "--input"

@@ -5,7 +5,7 @@ description: |
   Convert the output of a BD Rhapsody pipeline v2.x to a MuData h5 file.
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
     roles: [ author ]
 argument_groups:

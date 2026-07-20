@@ -26,7 +26,7 @@ authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
     roles: [ contributor ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer, contributor ]
+    roles: [ contributor ]
 arguments:
   # input
   - name: "--input"

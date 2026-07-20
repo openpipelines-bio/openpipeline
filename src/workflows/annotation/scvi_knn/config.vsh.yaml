@@ -8,9 +8,7 @@ description: |
   The workflow does not currently output the trained SCVI reference model."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
-    roles: [ author, maintainer ]
-  - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ contributor ]
+    roles: [ author ]
 info:
   name: "scVI Annotation"
   test_dependencies:

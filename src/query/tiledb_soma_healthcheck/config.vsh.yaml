@@ -5,7 +5,7 @@ description: |
   Checks if a provided location can be queried as a TileDB-SOMA database.
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
 argument_groups:
   - name: Input database
     description: "Open a TileDB SOMA database by URI."
