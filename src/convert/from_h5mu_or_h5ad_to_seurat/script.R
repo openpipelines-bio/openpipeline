@@ -1,6 +1,7 @@
 library(anndataR)
 library(hdf5r)
 
+rhdf5::h5disableFileLocking()
 
 ### VIASH START
 par <- list(
@@ -75,7 +76,8 @@ seurat_obj <- read_h5ad(
   h5ad_path,
   mode = "r",
   as = "Seurat",
-  assay_name = par$assay
+  assay_name = par$assay,
+  x_mapping = par$x_mapping
 )
 
 saveRDS(seurat_obj, file = par$output)

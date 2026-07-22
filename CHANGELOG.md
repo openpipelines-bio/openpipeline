@@ -2,6 +2,20 @@
 
 ## BREAKING CHANGES
 
+* `transform/scale`: `--zero_center` is now a regular `boolean` (default behaviour remains unaltered and is set explicitly to `true`) instead of a `boolean_false` flag. Pass `--zero_center false` to omit centering (PR #1216).
+
+* `workflows/rna/rna_multisample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: the RNA scaling zero-center argument is now a regular `boolean` (default behaviour remains unaltered and is set explicitly to `true`) instead of `boolean_false` (PR #1216).
+
+## NEW FEATURES
+
+* `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
+
+* `workflows/ingestion/cellranger_multi`: surface the `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
+
+# openpipelines 4.2.0
+
+## NEW FEATURES
+
 * `qc/calculate_qc_metrics`: log1p-transformed qc metrics (`log1p_<col>`) are now added to `.var` and `.obs` by default via the new `--log1p_transform` flag (default `true`, mirroring scanpy behavior) (PR #1182, #1197).
 
 * `workflows/qc/qc`, `workflows/rna/rna_multisample`, `workflows/prot/prot_multisample`, `workflows/multiomics/process_samples` and `workflows/multiomics/process_batches`: expose the `--log1p_transform` flag (PR #1182).
@@ -12,9 +26,7 @@
 
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples` and `workflows/rna/rna_singlesample`: surfaced `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
 
-* `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
-
-* `workflows/ingestion/cellranger_multi`: surface the `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
+* `correction/cellbender_remove_background`: added `--output_raw` argument to enable publishing the complete CellBender output bundle (PR #1212).
 
 ## MINOR CHANGES
 
@@ -22,9 +34,23 @@
 
 * `dataflow/concatenate_h5mu`: Remove the unused parameter `--obs_sample_name` from the configuration (PR #1195).
 
+* `convert/from_h5ad_to_seurat`, `convert/from_h5mu_or_h5ad_to_seurat`, `convert/from_seurat_to_h5mu`, `differential_expression/deseq2`: Unpin anndataR (PR #1201). 
+
+* `convert/from_h5ad_to_seurat`, `convert/from_h5mu_or_h5ad_to_seurat`: Added a `--x_mapping` argument to control the Seurat layer the AnnData `.X` matrix is stored in (default `counts`) (PR #1201).
+
+* `labels_transfer/knn`: bump `pynndescent` to 0.5.13 (PR #1205)
+
+* `correction/cellbender_remove_background`: Update the base image to `pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime` (Python 3.12) and pin CellBender to a commit that is compatible with Python 3.12 (PR #1212).
+
 ## BUG FIXES
 
+* `annotate/scanvi`: no longer predicts cell type labels that are absent from the reference. Reference label columns often declare more categories than are actually used (e.g. when the reference is a subset of a larger atlas), which previously caused scANVI to occasionally assign query cells to those empty labels. Unused labels are now dropped before training (PR #1207).
+
 * `workflows/prot/prot_multisample`: fix two malformed state keys in the `prot_qc` call so the `--output_var_num_nonzero_obs` and `--output_var_pct_dropout` arguments are passed through correctly (PR #1196).
+
+* `workflows/test_workflows/multiomics/process_batches`: drop the recomputed `pct_dropout` column from the prot output in `workflow_test2` before comparing against the reference data, which predates PR #1196 and lacks the column (PR #1209).
+
+* `annotate/celltypist`: only enable GPU training when both a CUDA device and a working `cuml` install are present, and raise an error if training on the reference does not return a usable model. Previously, a missing `cuml` install caused the GPU training path to fail silently and fall back to downloading and predicting with the default `Immune_All_Low.pkl` model (PR #1211, # 1213).
 
 # openpipelines 4.1.0
 

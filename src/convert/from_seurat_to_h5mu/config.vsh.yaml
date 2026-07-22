@@ -132,14 +132,7 @@ engines:
         __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
       - type: r
         cran: [ anndata, Seurat, SeuratObject ]
-        bioc: [ scrapper, bit64 ]
-        # Until viash r requirements supports passing secrets
-        # --mount only applies to ONE single docker RUN instruction  
-        # github: scverse/anndataR
-      - type: docker
-        run:
-          - --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN
-          - Rscript -e 'options(warn = 2); remotes::install_github(c("scverse/anndataR"), repos = "https://cran.rstudio.com")'
+        bioc: [ bit64, anndataR, rhdf5 ]
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
