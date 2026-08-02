@@ -3315,7 +3315,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "784fb088d7f2992a3c303ed45f3f9252df2c03fc",
+    "git_commit" : "4a325adfef77a75e6d52bf77676a6045047a2a10",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
