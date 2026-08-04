@@ -3512,7 +3512,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/densmap",
     "viash_version" : "0.9.7",
-    "git_commit" : "f9021d9d0e683300ae2c00c7723abcfa4635f1ef",
+    "git_commit" : "98e13b627feeb6065b21064e187fe497e61aba06",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
