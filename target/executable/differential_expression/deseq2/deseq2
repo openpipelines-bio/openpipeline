@@ -464,9 +464,9 @@ RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TR
 
 LABEL org.opencontainers.image.authors="Jakub Majercik, Dorien Roosen, Dries De Maeyer, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component differential_expression deseq2"
-LABEL org.opencontainers.image.created="2026-08-06T05:33:48Z"
+LABEL org.opencontainers.image.created="2026-08-06T18:06:59Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a04b2ea691ae9ebe9061a99273fd92c96cbd6d62"
+LABEL org.opencontainers.image.revision="fd444a48245a81be56117e8b6dc53bade8666774"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
