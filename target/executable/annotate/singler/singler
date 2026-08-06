@@ -467,9 +467,9 @@ RUN pip install --user --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component annotate singler"
-LABEL org.opencontainers.image.created="2026-08-05T05:31:15Z"
+LABEL org.opencontainers.image.created="2026-08-06T05:33:49Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6e6163744f2b961d349ee3b1a479e09381e041a5"
+LABEL org.opencontainers.image.revision="a04b2ea691ae9ebe9061a99273fd92c96cbd6d62"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
