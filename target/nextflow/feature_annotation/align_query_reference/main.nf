@@ -3645,7 +3645,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/align_query_reference",
     "viash_version" : "0.9.7",
-    "git_commit" : "109e79f9f20e6e293940f88026872ec9f6078ce5",
+    "git_commit" : "fd57758d38534e966f1c5afeecde2806e052a296",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
