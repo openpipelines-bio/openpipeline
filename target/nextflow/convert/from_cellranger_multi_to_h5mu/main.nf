@@ -3135,12 +3135,6 @@ meta = [
           "multiple_sep" : ";"
         },
         {
-          "type" : "boolean_true",
-          "name" : "--output_filtered_data",
-          "description" : "If enabled, read the per-sample filtered count matrices\n(per_sample_outs/{sample}/count/sample_filtered_feature_bc_matrix.h5)\ninstead of the aggregated raw count matrix\n(multi/count/raw_feature_bc_matrix.h5).\n",
-          "direction" : "input"
-        },
-        {
           "type" : "string",
           "name" : "--output_compression",
           "description" : "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
@@ -3364,7 +3358,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "fd444a48245a81be56117e8b6dc53bade8666774",
+    "git_commit" : "46c61dfc8709fb4950b78119b1041431c97502d0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3442,7 +3436,6 @@ par = {
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'sample_csv': $( if [ ! -z ${VIASH_PAR_SAMPLE_CSV+x} ]; then echo "r'${VIASH_PAR_SAMPLE_CSV//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_metrics': $( if [ ! -z ${VIASH_PAR_UNS_METRICS+x} ]; then echo "r'${VIASH_PAR_UNS_METRICS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_filtered_data': $( if [ ! -z ${VIASH_PAR_OUTPUT_FILTERED_DATA+x} ]; then echo "r'${VIASH_PAR_OUTPUT_FILTERED_DATA//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
@@ -3548,7 +3541,6 @@ def gather_input_data(dir: Path):
     #           |   +-- per_barcode.csv
     #           |   +-- antigen_specificity_scores.csv
     #           +-- count
-    #           |   +-- sample_filtered_feature_bc_matrix.h5
     #           |   +-- antibody_analysis
     #           |   +-- crispr_analysis
     #           |       +-- perturbation_efficiencies_by_feature.csv
@@ -3622,26 +3614,6 @@ def gather_input_data(dir: Path):
                 file_name = found_file.name.removesuffix(".csv")
                 found_input.setdefault(file_name, {})[samples_dir.name] = found_file
 
-    if par["output_filtered_data"]:
-        for samples_dir in samples_dirs:
-            for file_part in (
-                "count/sample_filtered_feature_bc_matrix.h5",
-                "sample_filtered_feature_bc_matrix.h5",  # Cell Ranger v10
-            ):
-                found_file = samples_dir / file_part
-                if found_file.exists():
-                    found_input.setdefault("filtered_counts", {})[samples_dir.name] = (
-                        found_file
-                    )
-                    break
-            else:
-                raise ValueError(
-                    f"Expected a filtered count matrix under {samples_dir}, "
-                    "but none was found. Make sure the input directory is a "
-                    "valid cellranger multi output that contains per-sample "
-                    "filtered feature-barcode matrices."
-                )
-
     return found_input
 
 
@@ -3687,21 +3659,22 @@ def process_feature_reference(
     return mudatas
 
 
-def _modality_name_factory(library_type):
-    return ("".join(library_type.replace("-", "_").split())).lower()
+def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
+    counts_matrix_file = counts_folder / "raw_feature_bc_matrix.h5"
+    logger.info("Reading %s.", counts_matrix_file)
+    adata = scanpy.read_10x_h5(counts_matrix_file, gex_only=False)
 
-
-def _rename_var_to_gene_ids(adata: anndata.AnnData):
-    # set the gene ids as var_names (unique Ensembl IDs); gene symbols, which
-    # scanpy.read_10x_h5 uses as var_names by default, are not unique
+    # set the gene ids as var_names
+    logger.info("Renaming var columns")
     adata.var = adata.var.rename_axis("gene_symbol").reset_index().set_index("gene_ids")
 
-
-def _aggregated_counts_to_per_sample_mudatas(
-    adata: anndata.AnnData, multiplexing_info, metrics_files
-):
+    # generate output
     logger.info("Convert to mudata")
-    feature_types = defaultdict(_modality_name_factory, FEATURE_TYPES_NAMES)
+
+    def modality_name_factory(library_type):
+        return ("".join(library_type.replace("-", "_").split())).lower()
+
+    feature_types = defaultdict(modality_name_factory, FEATURE_TYPES_NAMES)
     mudata_all_samples = mudata.MuData(adata, feature_types_names=feature_types)
     if multiplexing_info:
         # Get the mapping between the barcode and the sample ID from one of the metrics files
@@ -3732,29 +3705,6 @@ def _aggregated_counts_to_per_sample_mudatas(
             mudata_all_samples, multiplexing_info, barcode_sample_mapping
         )
     return {"run": mudata_all_samples}
-
-
-def process_counts_filtered(filtered_counts: dict[str, Path]):
-    # Unlike the raw matrix, per-sample filtered matrices are already
-    # demultiplexed by cellranger, so each h5 maps 1:1 to an output mudata.
-    feature_types = defaultdict(_modality_name_factory, FEATURE_TYPES_NAMES)
-    mudatas = {}
-    for sample_name, filtered_h5 in filtered_counts.items():
-        logger.info("Reading %s.", filtered_h5)
-        adata = scanpy.read_10x_h5(filtered_h5, gex_only=False)
-        _rename_var_to_gene_ids(adata)
-        mudatas[sample_name] = mudata.MuData(adata, feature_types_names=feature_types)
-    return mudatas
-
-
-def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
-    counts_matrix_file = counts_folder / "raw_feature_bc_matrix.h5"
-    logger.info("Reading %s.", counts_matrix_file)
-    adata = scanpy.read_10x_h5(counts_matrix_file, gex_only=False)
-    _rename_var_to_gene_ids(adata)
-    return _aggregated_counts_to_per_sample_mudatas(
-        adata, multiplexing_info, metrics_files
-    )
 
 
 def split_samples(mudata_obj, multiplexing_analysis_folder, barcode_sample_mapping):
@@ -3900,19 +3850,14 @@ def get_modalities(input_data):
         ),
         "antigen_analysis": process_antigen_analysis,
     }
-    if input_data.get("filtered_counts"):
-        mudata_per_sample = process_counts_filtered(
-            input_data["filtered_counts"],
-        )
-    else:
-        mudata_per_sample = process_counts(
-            input_data["count"],
-            input_data["multiplexing_analysis"],
-            input_data["metrics_summary"],
-        )
+    mudata_per_sample = process_counts(
+        input_data["count"],
+        input_data["multiplexing_analysis"],
+        input_data["metrics_summary"],
+    )
     for modality_name, modality_data_path in input_data.items():
         if (
-            modality_name in ("count", "multiplexing_analysis", "filtered_counts")
+            modality_name in ("count", "multiplexing_analysis")
             or not modality_data_path
         ):
             continue

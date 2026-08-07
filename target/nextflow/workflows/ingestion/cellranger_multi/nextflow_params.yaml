@@ -80,7 +80,6 @@ check_library_compatibility: true
 # output_raw: "$id.$key.output_raw"
 # output_h5mu: "$id.$key.output_h5mu.h5mu"
 uns_metrics: "metrics_cellranger"
-output_filtered_data: false
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
