@@ -1,0 +1,202 @@
+name: decontx_remove_background
+namespace: "correction"
+scope: "public"
+description: |
+   DecontX is a Bayesian method to estimate and remove contamination in individual cells.
+   DecontX assumes the observed expression of a cell is a mixture of counts from two multinomial distributions:
+   (1) a distribution of native transcript counts from the cell's actual population and
+   (2) a distribution of contaminating transcript counts from all other cell populations captured in the assay.
+
+   Campbell et al. 2020, Genome Biology
+
+argument_groups:
+  - name: Inputs
+    description: Input dataset arguments
+    arguments:
+      - name: "--input"
+        alternatives: [-i]
+        type: file
+        description: |
+          A .h5mu file containing a matrix of counts. Cells in each batch will be subsetted and
+          converted to a sparse matrix before analysis. This object should only contain filtered
+          cells after cell calling. Empty cell barcodes (low expression droplets before cell
+          calling) are not needed to run DecontX.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--input_layer"
+        type: string
+        required: false
+        description: |
+          The layer in the input data to use as the counts matrix (assayName). If not provided, .X is used.
+      - name: "--input_obs_clusters"
+        type: string
+        required: false
+        description: |
+          The name of the .obs column containing cell cluster labels (z). If not provided, PCA
+          will be used to reduce the dimensionality of the dataset initially, UMAP will be used to
+          further reduce the dataset to 2 dimensions, and dbscan will be used to identify clusters
+          of broad cell types.
+      - name: "--input_obs_batch"
+        type: string
+        required: false
+        description: |
+          The name of the .obs column containing batch labels for cells. If batch labels are
+          supplied, DecontX is run on cells from each batch separately. Cells run in different
+          channels or assays should be considered different batches.
+
+  - name: Background
+    description: Arguments related to the (optional) empty droplet background dataset.
+    arguments:
+      - name: "--background"
+        type: file
+        required: false
+        description: |
+          A .h5mu file containing a matrix of counts from empty droplets, with the same data
+          format as --input. When supplied, the empirical distribution of transcripts from these
+          empty droplets will be used as the contamination distribution.
+        example: background.h5mu
+      - name: "--background_layer"
+        type: string
+        required: false
+        description: |
+          The layer in the background data to use as the counts matrix (bgAssayName). If not
+          provided, the value of --input_layer is used.
+      - name: "--background_obs_batch"
+        type: string
+        required: false
+        description: |
+          The name of the .obs column in the background data containing batch labels (bgBatch).
+          Its unique values should be the same as those in --input_obs_batch, such that each batch
+          of cells has its corresponding batch of empty droplets as background.
+
+  - name: Arguments
+    description: Arguments related to the DecontX algorithm.
+    arguments:
+      - name: "--max_iter"
+        type: integer
+        default: 500
+        description: Maximum iterations of the EM algorithm.
+      - name: "--delta"
+        type: double
+        multiple: true
+        default: [10, 10]
+        description: |
+          Vector of length 2. Concentration parameters for the Dirichlet prior for the
+          contamination in each cell. The first element is the prior for the native counts while
+          the second element is the prior for the contamination counts. These essentially act as
+          pseudocounts for the native and contamination in each cell. If --estimate_delta is set,
+          this is only used to produce a random sample of proportions for an initial value of
+          contamination in each cell; delta is then updated in each iteration. If
+          --estimate_delta is not set, delta is fixed with these values for the entire inference
+          procedure. Fixing delta and setting a high number in the second element will force
+          DecontX to be more aggressive and estimate higher levels of contamination at the expense
+          of potentially removing native expression.
+      - name: "--estimate_delta"
+        type: boolean_false
+        description: |
+          Whether to update delta at each iteration. Use this flag to disable that and keep delta
+          fixed at the --delta values for the entire inference procedure.
+      - name: "--convergence"
+        type: double
+        default: 0.001
+        description: |
+          The EM algorithm will be stopped if the maximum difference in the contamination
+          estimates between the previous and current iterations is less than this.
+      - name: "--iter_log_lik"
+        type: integer
+        default: 10
+        description: Calculate log likelihood every --iter_log_lik iterations.
+      - name: "--var_genes"
+        type: integer
+        default: 5000
+        description: |
+          The number of variable genes to use in dimensionality reduction before clustering.
+          Variability is calculated using the modelGeneVar function from the 'scran' package.
+          Used only when --input_obs_clusters is not provided.
+      - name: "--dbscan_eps"
+        type: double
+        default: 1
+        description: |
+          The clustering resolution parameter used in 'dbscan' to estimate broad cell clusters.
+          Used only when --input_obs_clusters is not provided.
+      - name: "--seed"
+        type: integer
+        default: 12345
+        description: Seed for reproducibility.
+      - name: "--logfile"
+        type: file
+        direction: output
+        required: false
+        description: |
+          If provided, log messages will be redirected to this file instead of stdout.
+      - name: "--verbose"
+        type: boolean_false
+        description: Whether to print log messages. Use this flag to disable log messages.
+
+  - name: Outputs
+    description: Output arguments.
+    arguments:
+      - name: "--output"
+        alternatives: [-o]
+        type: file
+        description: Output h5mu file, with contamination estimated and removed.
+        direction: output
+        required: true
+        example: output.h5mu
+      - name: "--output_layer"
+        type: string
+        default: "decontx_counts"
+        description: Name of the layer to store the decontaminated counts matrix in.
+      - name: "--output_obs_contamination"
+        type: string
+        default: "decontx_contamination"
+        description: Name of the .obs column to store the estimated contamination proportion per cell in.
+      - name: "--output_obs_clusters"
+        type: string
+        default: "decontx_clusters"
+        description: |
+          Name of the .obs column to store the cell cluster labels used by DecontX in (either
+          passed through from --input_obs_clusters or estimated internally).
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: r_script
+    path: script.R
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5mu
+
+engines:
+  - type: docker
+    image: rocker/r2u:24.04
+    setup:
+      - type: docker
+        env:
+          - RETICULATE_PYTHON=/usr/bin/python
+          - PIP_BREAK_SYSTEM_PACKAGES=1
+      - type: apt
+        packages: [ libhdf5-dev, python3, python3-pip, python3-dev, python-is-python3 ]
+      - type: r
+        cran: [ anndata, reticulate ]
+        bioc: [ decontX ]
+      - type: python
+        user: true
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/scanpy.yaml, . ]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, . ]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [midmem, midcpu]

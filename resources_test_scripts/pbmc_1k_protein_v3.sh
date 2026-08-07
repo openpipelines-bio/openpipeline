@@ -46,6 +46,13 @@ target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
   --input_metrics_summary "${OUT}_metrics_summary.csv" \
   --output "${OUT}_filtered_feature_bc_matrix.h5mu"
 
+# also convert the raw (unfiltered, includes empty droplets) 10x h5 to h5mu,
+# so it can be used as a background/empty-droplet input for ambient RNA removal tools
+target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
+  --input "${OUT}_raw_feature_bc_matrix.h5" \
+  --input_metrics_summary "${OUT}_metrics_summary.csv" \
+  --output "${OUT}_raw_feature_bc_matrix.h5mu"
+
 # run single sample
 nextflow \
   run . \
