@@ -74,10 +74,11 @@ read_counts <- function(path, modality, layer) {
   list(
     mudata = mdata,
     adata = adata,
-    # AnnData layers are backed by row-major (CSR) scipy sparse matrices, which
-    # reticulate/anndata convert to R's dgRMatrix. decontX's internal coercion to
-    # dgCMatrix does not support that class on recent Matrix versions, so convert
-    # explicitly here via the generic sparse virtual class.
+    # AnnData layers are backed by row-major (CSR) scipy sparse matrices,
+    # which reticulate/anndata convert to R's dgRMatrix. decontX's internal
+    # coercion to dgCMatrix does not support that class on recent Matrix
+    # versions, so convert explicitly here via the generic sparse virtual
+    # class.
     matrix = methods::as(Matrix::t(get_layer(adata, layer)), "CsparseMatrix")
   )
 }
@@ -91,7 +92,11 @@ background_matrix <- NULL
 background_batch <- NULL
 if (!is.null(par$background)) {
   cat("Reading background file\n")
-  background_layer <- if (is.null(par$background_layer)) par$input_layer else par$background_layer
+  background_layer <- if (is.null(par$background_layer)) {
+    par$input_layer
+  } else {
+    par$background_layer
+  }
   background <- read_counts(par$background, par$modality, background_layer)
   background_matrix <- background$matrix
   if (!is.null(par$background_obs_batch)) {
@@ -100,8 +105,16 @@ if (!is.null(par$background)) {
 }
 
 # Get optional cluster / batch labels from .obs
-input_clusters <- if (is.null(par$input_obs_clusters)) NULL else input$adata$obs[[par$input_obs_clusters]]
-input_batch <- if (is.null(par$input_obs_batch)) NULL else input$adata$obs[[par$input_obs_batch]]
+input_clusters <- if (is.null(par$input_obs_clusters)) {
+  NULL
+} else {
+  input$adata$obs[[par$input_obs_clusters]]
+}
+input_batch <- if (is.null(par$input_obs_batch)) {
+  NULL
+} else {
+  input$adata$obs[[par$input_obs_batch]]
+}
 
 cat("Estimating and removing contamination with DecontX\n")
 result <- decontX(
