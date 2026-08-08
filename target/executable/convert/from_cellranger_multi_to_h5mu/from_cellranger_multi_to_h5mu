@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_cellranger_multi_to_h5mu"
-LABEL org.opencontainers.image.created="2026-08-07T04:37:37Z"
+LABEL org.opencontainers.image.created="2026-08-08T03:51:23Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="46c61dfc8709fb4950b78119b1041431c97502d0"
+LABEL org.opencontainers.image.revision="5071590a48a686a94464521a51049d86f3b42a15"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -617,6 +617,13 @@ function ViashHelp {
   echo "        default: metrics_cellranger"
   echo "        Name of the .uns slot under which to QC metrics (if any)."
   echo ""
+  echo "    --output_filtered_data"
+  echo "        type: boolean_true"
+  echo "        If enabled, read the per-sample filtered count matrices"
+  echo "        (per_sample_outs/{sample}/count/sample_filtered_feature_bc_matrix.h5)"
+  echo "        instead of the aggregated raw count matrix"
+  echo "        (multi/count/raw_feature_bc_matrix.h5)."
+  echo ""
   echo "    --output_compression"
   echo "        type: string"
   echo "        example: gzip"
@@ -728,6 +735,11 @@ while [[ $# -gt 0 ]]; do
         --uns_metrics=*)
             [ -n "$VIASH_PAR_UNS_METRICS" ] && ViashError Bad arguments for option \'--uns_metrics=*\': \'$VIASH_PAR_UNS_METRICS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_UNS_METRICS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_filtered_data)
+            [ -n "$VIASH_PAR_OUTPUT_FILTERED_DATA" ] && ViashError Bad arguments for option \'--output_filtered_data\': \'$VIASH_PAR_OUTPUT_FILTERED_DATA\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_FILTERED_DATA=true
             shift 1
             ;;
         --output_compression)
@@ -944,6 +956,9 @@ fi
 if [ -z ${VIASH_PAR_UNS_METRICS+x} ]; then
   VIASH_PAR_UNS_METRICS="metrics_cellranger"
 fi
+if [ -z ${VIASH_PAR_OUTPUT_FILTERED_DATA+x} ]; then
+  VIASH_PAR_OUTPUT_FILTERED_DATA="false"
+fi
 
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
@@ -955,6 +970,12 @@ fi
 if [[ -n "$VIASH_PAR_OUTPUT" ]]; then
   if ! [[ "$VIASH_PAR_OUTPUT" =~ \* ]]; then
     ViashError '--output' has to be a path containing a wildcard, e.g. 'output_*.txt'. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_OUTPUT_FILTERED_DATA" ]]; then
+  if ! [[ "$VIASH_PAR_OUTPUT_FILTERED_DATA" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--output_filtered_data' has to be a boolean_true. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -1165,6 +1186,7 @@ par = {
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'sample_csv': $( if [ ! -z ${VIASH_PAR_SAMPLE_CSV+x} ]; then echo "r'${VIASH_PAR_SAMPLE_CSV//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'uns_metrics': $( if [ ! -z ${VIASH_PAR_UNS_METRICS+x} ]; then echo "r'${VIASH_PAR_UNS_METRICS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_filtered_data': $( if [ ! -z ${VIASH_PAR_OUTPUT_FILTERED_DATA+x} ]; then echo "r'${VIASH_PAR_OUTPUT_FILTERED_DATA//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
@@ -1270,6 +1292,7 @@ def gather_input_data(dir: Path):
     #           |   +-- per_barcode.csv
     #           |   +-- antigen_specificity_scores.csv
     #           +-- count
+    #           |   +-- sample_filtered_feature_bc_matrix.h5
     #           |   +-- antibody_analysis
     #           |   +-- crispr_analysis
     #           |       +-- perturbation_efficiencies_by_feature.csv
@@ -1343,6 +1366,26 @@ def gather_input_data(dir: Path):
                 file_name = found_file.name.removesuffix(".csv")
                 found_input.setdefault(file_name, {})[samples_dir.name] = found_file
 
+    if par["output_filtered_data"]:
+        for samples_dir in samples_dirs:
+            for file_part in (
+                "count/sample_filtered_feature_bc_matrix.h5",
+                "sample_filtered_feature_bc_matrix.h5",  # Cell Ranger v10
+            ):
+                found_file = samples_dir / file_part
+                if found_file.exists():
+                    found_input.setdefault("filtered_counts", {})[samples_dir.name] = (
+                        found_file
+                    )
+                    break
+            else:
+                raise ValueError(
+                    f"Expected a filtered count matrix under {samples_dir}, "
+                    "but none was found. Make sure the input directory is a "
+                    "valid cellranger multi output that contains per-sample "
+                    "filtered feature-barcode matrices."
+                )
+
     return found_input
 
 
@@ -1388,22 +1431,21 @@ def process_feature_reference(
     return mudatas
 
 
-def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
-    counts_matrix_file = counts_folder / "raw_feature_bc_matrix.h5"
-    logger.info("Reading %s.", counts_matrix_file)
-    adata = scanpy.read_10x_h5(counts_matrix_file, gex_only=False)
+def _modality_name_factory(library_type):
+    return ("".join(library_type.replace("-", "_").split())).lower()
 
-    # set the gene ids as var_names
-    logger.info("Renaming var columns")
+
+def _rename_var_to_gene_ids(adata: anndata.AnnData):
+    # set the gene ids as var_names (unique Ensembl IDs); gene symbols, which
+    # scanpy.read_10x_h5 uses as var_names by default, are not unique
     adata.var = adata.var.rename_axis("gene_symbol").reset_index().set_index("gene_ids")
 
-    # generate output
+
+def _aggregated_counts_to_per_sample_mudatas(
+    adata: anndata.AnnData, multiplexing_info, metrics_files
+):
     logger.info("Convert to mudata")
-
-    def modality_name_factory(library_type):
-        return ("".join(library_type.replace("-", "_").split())).lower()
-
-    feature_types = defaultdict(modality_name_factory, FEATURE_TYPES_NAMES)
+    feature_types = defaultdict(_modality_name_factory, FEATURE_TYPES_NAMES)
     mudata_all_samples = mudata.MuData(adata, feature_types_names=feature_types)
     if multiplexing_info:
         # Get the mapping between the barcode and the sample ID from one of the metrics files
@@ -1434,6 +1476,29 @@ def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
             mudata_all_samples, multiplexing_info, barcode_sample_mapping
         )
     return {"run": mudata_all_samples}
+
+
+def process_counts_filtered(filtered_counts: dict[str, Path]):
+    # Unlike the raw matrix, per-sample filtered matrices are already
+    # demultiplexed by cellranger, so each h5 maps 1:1 to an output mudata.
+    feature_types = defaultdict(_modality_name_factory, FEATURE_TYPES_NAMES)
+    mudatas = {}
+    for sample_name, filtered_h5 in filtered_counts.items():
+        logger.info("Reading %s.", filtered_h5)
+        adata = scanpy.read_10x_h5(filtered_h5, gex_only=False)
+        _rename_var_to_gene_ids(adata)
+        mudatas[sample_name] = mudata.MuData(adata, feature_types_names=feature_types)
+    return mudatas
+
+
+def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
+    counts_matrix_file = counts_folder / "raw_feature_bc_matrix.h5"
+    logger.info("Reading %s.", counts_matrix_file)
+    adata = scanpy.read_10x_h5(counts_matrix_file, gex_only=False)
+    _rename_var_to_gene_ids(adata)
+    return _aggregated_counts_to_per_sample_mudatas(
+        adata, multiplexing_info, metrics_files
+    )
 
 
 def split_samples(mudata_obj, multiplexing_analysis_folder, barcode_sample_mapping):
@@ -1579,14 +1644,19 @@ def get_modalities(input_data):
         ),
         "antigen_analysis": process_antigen_analysis,
     }
-    mudata_per_sample = process_counts(
-        input_data["count"],
-        input_data["multiplexing_analysis"],
-        input_data["metrics_summary"],
-    )
+    if input_data.get("filtered_counts"):
+        mudata_per_sample = process_counts_filtered(
+            input_data["filtered_counts"],
+        )
+    else:
+        mudata_per_sample = process_counts(
+            input_data["count"],
+            input_data["multiplexing_analysis"],
+            input_data["metrics_summary"],
+        )
     for modality_name, modality_data_path in input_data.items():
         if (
-            modality_name in ("count", "multiplexing_analysis")
+            modality_name in ("count", "multiplexing_analysis", "filtered_counts")
             or not modality_data_path
         ):
             continue

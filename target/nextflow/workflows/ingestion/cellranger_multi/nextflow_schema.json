@@ -42,6 +42,12 @@
           "description": "Name of the .uns slot under which to QC metrics (if any).",
           "help_text": "Type: `string`, multiple: `False`, default: `\"metrics_cellranger\"`. ",
           "default": "metrics_cellranger"
+        },
+        "output_filtered_data": {
+          "type": "boolean",
+          "description": "If enabled, read the per-sample filtered count matrices\n(per_sample_outs/{sample}/count/sample_filtered_feature_bc_matrix.h5)\ninstead of the aggregated raw count matrix\n(multi/count/raw_feature_bc_matrix.h5).\n",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
         }
       }
     },

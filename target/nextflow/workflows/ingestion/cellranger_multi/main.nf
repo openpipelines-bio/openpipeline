@@ -3835,6 +3835,12 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--output_filtered_data",
+          "description" : "If enabled, read the per-sample filtered count matrices\n(per_sample_outs/{sample}/count/sample_filtered_feature_bc_matrix.h5)\ninstead of the aggregated raw count matrix\n(multi/count/raw_feature_bc_matrix.h5).\n",
+          "direction" : "input"
         }
       ]
     }
@@ -4003,7 +4009,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi",
     "viash_version" : "0.9.7",
-    "git_commit" : "46c61dfc8709fb4950b78119b1041431c97502d0",
+    "git_commit" : "5071590a48a686a94464521a51049d86f3b42a15",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -4152,6 +4158,7 @@ workflow run_wf {
         [
           "input": state.input,
           "uns_metrics": state.uns_metrics,
+          "output_filtered_data": state.output_filtered_data,
           "output_compression": "gzip"
         ]
       },
