@@ -186,7 +186,7 @@ engines:
         packages: [ libhdf5-dev, python3, python3-pip, python3-dev, python-is-python3 ]
       - type: r
         cran: [ anndata, reticulate ]
-        bioc: [ decontX ]
+        bioc: [ decontX, anndataR, rhdf5 ]
       - type: python
         user: true
         __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
