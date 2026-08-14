@@ -7,11 +7,9 @@ description: |
 
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/jakub_majercik.yaml
     roles: [ author ]
-  - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ contributor ]
 argument_groups:
   - name: Inputs
     arguments:

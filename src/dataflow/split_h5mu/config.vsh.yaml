@@ -5,7 +5,7 @@ description: |
   Split the samples of a single modality from a .h5mu (multimodal) sample into seperate .h5mu files based on the values of an .obs column of this modality. 
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
 argument_groups:
 - name: Input & specifications
   arguments:
