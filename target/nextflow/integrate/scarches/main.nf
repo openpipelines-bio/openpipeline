@@ -11,7 +11,7 @@
 // 
 // Component authors:
 //  * Vladimir Shitov (author)
-//  * Dorien Roosen (maintainer)
+//  * Dorien Roosen (author)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -3054,41 +3054,24 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
-          "email" : "vladimir.shitov@helmholtz-muenchen.de",
           "github" : "vladimirshitov",
           "orcid" : "0000-0002-1960-8812",
           "linkedin" : "vladimir-shitov-9a659513b"
-        },
-        "organizations" : [
-          {
-            "name" : "Helmholtz Munich",
-            "href" : "https://www.helmholtz-munich.de",
-            "role" : "PhD Candidate"
-          }
-        ]
+        }
       }
     },
     {
       "name" : "Dorien Roosen",
       "roles" : [
-        "maintainer"
+        "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "dorien@data-intuitive.com",
           "github" : "dorien-er",
+          "orcid" : "0000-0002-6261-8151",
           "linkedin" : "dorien-roosen"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Scientist"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3625,7 +3608,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scarches",
     "viash_version" : "0.9.7",
-    "git_commit" : "fd0759f12761d9b9a08bc2f32b36afe8180eb724",
+    "git_commit" : "ccff22eb92a0eb097566e476768b87701bcdde47",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

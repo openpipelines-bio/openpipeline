@@ -10,7 +10,7 @@ usage: |
     --min_library_size 1000 --min_cells_per_gene 300
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   - name: "--input"
     type: file

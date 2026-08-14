@@ -3053,19 +3053,11 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
           "github" : "wxicu",
           "linkedin" : "xichen-wu",
           "orcid" : "0009-0008-2168-4508"
-        },
-        "organizations" : [
-          {
-            "name" : "Helmholtz Munich",
-            "href" : "https://www.helmholtz-munich.de",
-            "role" : "Student Assistant"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3287,7 +3279,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/bcftools",
     "viash_version" : "0.9.7",
-    "git_commit" : "fd0759f12761d9b9a08bc2f32b36afe8180eb724",
+    "git_commit" : "ccff22eb92a0eb097566e476768b87701bcdde47",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

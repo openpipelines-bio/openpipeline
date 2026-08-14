@@ -3053,20 +3053,11 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
-          "email" : "luke@data-intuitive.com",
           "github" : "lazappi",
           "orcid" : "0000-0001-7744-8565",
           "linkedin" : "lazappi"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Science Engineer"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3549,7 +3540,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/cellmapper",
     "viash_version" : "0.9.7",
-    "git_commit" : "fd0759f12761d9b9a08bc2f32b36afe8180eb724",
+    "git_commit" : "ccff22eb92a0eb097566e476768b87701bcdde47",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

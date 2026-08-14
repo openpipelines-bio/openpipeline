@@ -4,7 +4,7 @@ scope: "private"
 description: "A pipeline to split a multimodal mudata files into several unimodal mudata files."
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
 info:
   test_dependencies:
     - name: split_modalities_test

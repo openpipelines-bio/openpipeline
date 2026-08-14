@@ -3054,19 +3054,10 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
-          "email" : "maurosaporita@gmail.com",
           "github" : "mauro-saporita",
           "linkedin" : "mauro-saporita-930b06a5"
-        },
-        "organizations" : [
-          {
-            "name" : "Ardigen",
-            "href" : "https://ardigen.com",
-            "role" : "Lead Nextflow Developer"
-          }
-        ]
+        }
       }
     },
     {
@@ -3075,19 +3066,10 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
-          "email" : "povilasgibas@gmail.com",
           "github" : "PoGibas",
           "linkedin" : "povilas-gibas"
-        },
-        "organizations" : [
-          {
-            "name" : "Ardigen",
-            "href" : "https://ardigen.com",
-            "role" : "Bioinformatician"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3499,7 +3481,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scanorama_leiden",
     "viash_version" : "0.9.7",
-    "git_commit" : "fd0759f12761d9b9a08bc2f32b36afe8180eb724",
+    "git_commit" : "ccff22eb92a0eb097566e476768b87701bcdde47",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

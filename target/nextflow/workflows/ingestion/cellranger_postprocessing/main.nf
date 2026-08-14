@@ -11,7 +11,7 @@
 // 
 // Component authors:
 //  * Angela Oliveira Pisco (author)
-//  * Robrecht Cannoodt (author, maintainer)
+//  * Robrecht Cannoodt (author)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -3054,52 +3054,24 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
           "github" : "aopisco",
           "orcid" : "0000-0003-0142-2355",
           "linkedin" : "aopisco"
-        },
-        "organizations" : [
-          {
-            "name" : "Insitro",
-            "href" : "https://insitro.com",
-            "role" : "Director of Computational Biology"
-          },
-          {
-            "name" : "Open Problems",
-            "href" : "https://openproblems.bio",
-            "role" : "Core Member"
-          }
-        ]
+        }
       }
     },
     {
       "name" : "Robrecht Cannoodt",
       "roles" : [
-        "author",
-        "maintainer"
+        "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "robrecht@data-intuitive.com",
           "github" : "rcannood",
           "orcid" : "0000-0003-3641-729X",
           "linkedin" : "robrechtcannoodt"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Science Engineer"
-          },
-          {
-            "name" : "Open Problems",
-            "href" : "https://openproblems.bio",
-            "role" : "Core Member"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3367,7 +3339,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_postprocessing",
     "viash_version" : "0.9.7",
-    "git_commit" : "fd0759f12761d9b9a08bc2f32b36afe8180eb724",
+    "git_commit" : "ccff22eb92a0eb097566e476768b87701bcdde47",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -10,7 +10,7 @@
 // files.
 // 
 // Component authors:
-//  * Toni Verbeiren (author, maintainer)
+//  * Toni Verbeiren (author)
 //  * Marijke Van Moerbeke (author)
 //  * Angela Oliveira Pisco (author)
 //  * Samuel D'Souza (author)
@@ -3054,22 +3054,13 @@ meta = [
     {
       "name" : "Toni Verbeiren",
       "roles" : [
-        "author",
-        "maintainer"
+        "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
           "github" : "tverbeiren",
           "linkedin" : "verbeiren"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Scientist and CEO"
-          }
-        ]
+        }
       }
     },
     {
@@ -3078,19 +3069,11 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
           "github" : "mvanmoerbeke",
           "orcid" : "0000-0002-3097-5621",
           "linkedin" : "marijke-van-moerbeke-84303a34"
-        },
-        "organizations" : [
-          {
-            "name" : "OpenAnalytics",
-            "href" : "https://www.openanalytics.eu",
-            "role" : "Statistical Consultant"
-          }
-        ]
+        }
       }
     },
     {
@@ -3099,24 +3082,11 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
           "github" : "aopisco",
           "orcid" : "0000-0003-0142-2355",
           "linkedin" : "aopisco"
-        },
-        "organizations" : [
-          {
-            "name" : "Insitro",
-            "href" : "https://insitro.com",
-            "role" : "Director of Computational Biology"
-          },
-          {
-            "name" : "Open Problems",
-            "href" : "https://openproblems.bio",
-            "role" : "Core Member"
-          }
-        ]
+        }
       }
     },
     {
@@ -3125,18 +3095,10 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
           "github" : "srdsam",
           "linkedin" : "samuel-d-souza-887023150/"
-        },
-        "organizations" : [
-          {
-            "name" : "Chan Zuckerberg Biohub",
-            "href" : "https://www.czbiohub.org",
-            "role" : "Data Engineer"
-          }
-        ]
+        }
       }
     },
     {
@@ -3145,25 +3107,11 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "robrecht@data-intuitive.com",
           "github" : "rcannood",
           "orcid" : "0000-0003-3641-729X",
           "linkedin" : "robrechtcannoodt"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Science Engineer"
-          },
-          {
-            "name" : "Open Problems",
-            "href" : "https://openproblems.bio",
-            "role" : "Core Member"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3448,7 +3396,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/demux",
     "viash_version" : "0.9.7",
-    "git_commit" : "fd0759f12761d9b9a08bc2f32b36afe8180eb724",
+    "git_commit" : "ccff22eb92a0eb097566e476768b87701bcdde47",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

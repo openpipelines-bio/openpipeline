@@ -5,7 +5,7 @@ description: "Performs Harmony integration based as described in https://github.
               Based on an implementation in python from https://github.com/slowkow/harmonypy"
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
     roles: [ contributor ]
 arguments:

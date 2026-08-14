@@ -10,8 +10,7 @@
 // files.
 // 
 // Component authors:
-//  * Robrecht Cannoodt (author, maintainer)
-//  * Weiwei Schultz (contributor)
+//  * Robrecht Cannoodt (author)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -3051,44 +3050,14 @@ meta = [
     {
       "name" : "Robrecht Cannoodt",
       "roles" : [
-        "author",
-        "maintainer"
+        "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "robrecht@data-intuitive.com",
           "github" : "rcannood",
           "orcid" : "0000-0003-3641-729X",
           "linkedin" : "robrechtcannoodt"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Science Engineer"
-          },
-          {
-            "name" : "Open Problems",
-            "href" : "https://openproblems.bio",
-            "role" : "Core Member"
-          }
-        ]
-      }
-    },
-    {
-      "name" : "Weiwei Schultz",
-      "roles" : [
-        "contributor"
-      ],
-      "info" : {
-        "role" : "Contributor",
-        "organizations" : [
-          {
-            "name" : "Janssen R&D US",
-            "role" : "Associate Director Data Sciences"
-          }
-        ]
+        }
       }
     }
   ],
@@ -4439,7 +4408,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody",
     "viash_version" : "0.9.7",
-    "git_commit" : "fd0759f12761d9b9a08bc2f32b36afe8180eb724",
+    "git_commit" : "ccff22eb92a0eb097566e476768b87701bcdde47",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -3054,18 +3054,10 @@ meta = [
         "contributor"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
           "github" : "SarahOuologuem",
           "orcid" : "0009-0005-3398-1700"
-        },
-        "organizations" : [
-          {
-            "name" : "Helmholtz Munich",
-            "href" : "https://www.helmholtz-munich.de",
-            "role" : "Student Assistant"
-          }
-        ]
+        }
       }
     },
     {
@@ -3074,20 +3066,11 @@ meta = [
         "contributor"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
-          "email" : "vladimir.shitov@helmholtz-muenchen.de",
           "github" : "vladimirshitov",
           "orcid" : "0000-0002-1960-8812",
           "linkedin" : "vladimir-shitov-9a659513b"
-        },
-        "organizations" : [
-          {
-            "name" : "Helmholtz Munich",
-            "href" : "https://www.helmholtz-munich.de",
-            "role" : "PhD Candidate"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3449,7 +3432,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/lsi",
     "viash_version" : "0.9.7",
-    "git_commit" : "fd0759f12761d9b9a08bc2f32b36afe8180eb724",
+    "git_commit" : "ccff22eb92a0eb097566e476768b87701bcdde47",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

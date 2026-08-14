@@ -10,7 +10,7 @@
 // files.
 // 
 // Component authors:
-//  * Dries Schaumont (maintainer)
+//  * Dries Schaumont (author)
 //  * Isabelle Bergiers (contributor)
 
 ////////////////////////////
@@ -3051,23 +3051,13 @@ meta = [
     {
       "name" : "Dries Schaumont",
       "roles" : [
-        "maintainer"
+        "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "dries@data-intuitive.com",
           "github" : "DriesSchaumont",
-          "orcid" : "0000-0002-4389-0440",
-          "linkedin" : "dries-schaumont"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Scientist"
-          }
-        ]
+          "orcid" : "0000-0002-4389-0440"
+        }
       }
     },
     {
@@ -3076,18 +3066,10 @@ meta = [
         "contributor"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
           "github" : "Isabelle-b",
           "orcid" : "0000-0001-9622-7960"
-        },
-        "organizations" : [
-          {
-            "name" : "Janssen Pharmaceuticals",
-            "href" : "https://www.janssen.com",
-            "role" : "Scientist OMICS Technology"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3326,7 +3308,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/intersect_obs",
     "viash_version" : "0.9.7",
-    "git_commit" : "fd0759f12761d9b9a08bc2f32b36afe8180eb724",
+    "git_commit" : "ccff22eb92a0eb097566e476768b87701bcdde47",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -11,7 +11,7 @@
 // 
 // Component authors:
 //  * Malte D. Luecken (author)
-//  * Dries Schaumont (maintainer)
+//  * Dries Schaumont (author)
 //  * Matthias Beyens (contributor)
 
 ////////////////////////////
@@ -3055,48 +3055,23 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "malte.luecken@helmholtz-muenchen.de",
           "github" : "LuckyMD",
           "orcid" : "0000-0001-7464-7921",
-          "linkedin" : "malte-l%C3%BCcken-b8b21049",
-          "twitter" : "MDLuecken"
-        },
-        "organizations" : [
-          {
-            "name" : "Helmholtz Munich",
-            "href" : "https://www.helmholtz-munich.de",
-            "role" : "Group Leader"
-          },
-          {
-            "name" : "Open Problems",
-            "href" : "https://openproblems.bio",
-            "role" : "Core Member"
-          }
-        ]
+          "linkedin" : "malte-l%C3%BCcken-b8b21049"
+        }
       }
     },
     {
       "name" : "Dries Schaumont",
       "roles" : [
-        "maintainer"
+        "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "dries@data-intuitive.com",
           "github" : "DriesSchaumont",
-          "orcid" : "0000-0002-4389-0440",
-          "linkedin" : "dries-schaumont"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Scientist"
-          }
-        ]
+          "orcid" : "0000-0002-4389-0440"
+        }
       }
     },
     {
@@ -3105,20 +3080,11 @@ meta = [
         "contributor"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
           "github" : "MatthiasBeyens",
           "orcid" : "0000-0003-3304-0706",
-          "email" : "matthias.beyens@gmail.com",
           "linkedin" : "mbeyens"
-        },
-        "organizations" : [
-          {
-            "name" : "Janssen Pharmaceuticals",
-            "href" : "https://www.janssen.com",
-            "role" : "Principal Scientist"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3774,7 +3740,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.9.7",
-    "git_commit" : "fd0759f12761d9b9a08bc2f32b36afe8180eb724",
+    "git_commit" : "ccff22eb92a0eb097566e476768b87701bcdde47",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
