@@ -10,7 +10,7 @@
 // files.
 // 
 // Component authors:
-//  * Toni Verbeiren (author, maintainer)
+//  * Toni Verbeiren (author)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -3050,22 +3050,13 @@ meta = [
     {
       "name" : "Toni Verbeiren",
       "roles" : [
-        "author",
-        "maintainer"
+        "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
           "github" : "tverbeiren",
           "linkedin" : "verbeiren"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Scientist and CEO"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3287,7 +3278,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl2fastq",
     "viash_version" : "0.9.7",
-    "git_commit" : "31124dd6a5bc1095711aacf9f3f625edeee025d9",
+    "git_commit" : "010e3354df5a14abe818dd297fde1c92039b1115",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

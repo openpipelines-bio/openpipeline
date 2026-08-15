@@ -10,7 +10,7 @@
 // files.
 // 
 // Component authors:
-//  * Matthias Beyens (maintainer, author)
+//  * Matthias Beyens (author)
 //  * Dries De Maeyer (author)
 //  * Robrecht Cannoodt (author)
 //  * Kai Waldrant (contributor)
@@ -3053,24 +3053,14 @@ meta = [
     {
       "name" : "Matthias Beyens",
       "roles" : [
-        "maintainer",
         "author"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
           "github" : "MatthiasBeyens",
           "orcid" : "0000-0003-3304-0706",
-          "email" : "matthias.beyens@gmail.com",
           "linkedin" : "mbeyens"
-        },
-        "organizations" : [
-          {
-            "name" : "Janssen Pharmaceuticals",
-            "href" : "https://www.janssen.com",
-            "role" : "Principal Scientist"
-          }
-        ]
+        }
       }
     },
     {
@@ -3079,19 +3069,10 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "ddemaeyer@gmail.com",
           "github" : "ddemaeyer",
           "linkedin" : "dries-de-maeyer-b46a814"
-        },
-        "organizations" : [
-          {
-            "name" : "Janssen Pharmaceuticals",
-            "href" : "https://www.janssen.com",
-            "role" : "Principal Scientist"
-          }
-        ]
+        }
       }
     },
     {
@@ -3100,25 +3081,11 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "robrecht@data-intuitive.com",
           "github" : "rcannood",
           "orcid" : "0000-0003-3641-729X",
           "linkedin" : "robrechtcannoodt"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Science Engineer"
-          },
-          {
-            "name" : "Open Problems",
-            "href" : "https://openproblems.bio",
-            "role" : "Core Member"
-          }
-        ]
+        }
       }
     },
     {
@@ -3127,25 +3094,11 @@ meta = [
         "contributor"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
-          "email" : "kai@data-intuitive.com",
           "github" : "KaiWaldrant",
           "orcid" : "0009-0003-8555-1361",
           "linkedin" : "kaiwaldrant"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Bioinformatician"
-          },
-          {
-            "name" : "Open Problems",
-            "href" : "https://openproblems.bio",
-            "role" : "Contributor"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3700,7 +3653,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/query/cellxgene_census",
     "viash_version" : "0.9.7",
-    "git_commit" : "31124dd6a5bc1095711aacf9f3f625edeee025d9",
+    "git_commit" : "010e3354df5a14abe818dd297fde1c92039b1115",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

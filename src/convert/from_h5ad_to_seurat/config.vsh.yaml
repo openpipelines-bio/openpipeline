@@ -5,7 +5,7 @@ description: |
   Converts an h5ad file into a Seurat file.
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
 arguments:
   - name: "--input"
     alternatives: ["-i"]

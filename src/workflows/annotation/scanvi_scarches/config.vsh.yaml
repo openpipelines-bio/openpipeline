@@ -4,9 +4,7 @@ scope: "public"
 description: "Cell type annotation workflow using ScanVI with scArches for reference mapping."
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
-    roles: [ author, maintainer ]
-  - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ contributor ]
+    roles: [ author ]
 
 info:
   name: "scANVI - scArches workflow"

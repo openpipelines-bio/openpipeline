@@ -10,7 +10,7 @@
 // files.
 // 
 // Component authors:
-//  * Dorien Roosen (maintainer, author)
+//  * Dorien Roosen (author)
 //  * Vladimir Shitov (author)
 
 ////////////////////////////
@@ -3051,23 +3051,14 @@ meta = [
     {
       "name" : "Dorien Roosen",
       "roles" : [
-        "maintainer",
         "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "dorien@data-intuitive.com",
           "github" : "dorien-er",
+          "orcid" : "0000-0002-6261-8151",
           "linkedin" : "dorien-roosen"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Scientist"
-          }
-        ]
+        }
       }
     },
     {
@@ -3076,20 +3067,11 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
-          "email" : "vladimir.shitov@helmholtz-muenchen.de",
           "github" : "vladimirshitov",
           "orcid" : "0000-0002-1960-8812",
           "linkedin" : "vladimir-shitov-9a659513b"
-        },
-        "organizations" : [
-          {
-            "name" : "Helmholtz Munich",
-            "href" : "https://www.helmholtz-munich.de",
-            "role" : "PhD Candidate"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3609,7 +3591,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/knn",
     "viash_version" : "0.9.7",
-    "git_commit" : "31124dd6a5bc1095711aacf9f3f625edeee025d9",
+    "git_commit" : "010e3354df5a14abe818dd297fde1c92039b1115",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

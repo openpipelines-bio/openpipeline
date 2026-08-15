@@ -10,7 +10,7 @@
 // files.
 // 
 // Component authors:
-//  * Dries De Maeyer (maintainer)
+//  * Dries De Maeyer (author)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -3050,22 +3050,13 @@ meta = [
     {
       "name" : "Dries De Maeyer",
       "roles" : [
-        "maintainer"
+        "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "ddemaeyer@gmail.com",
           "github" : "ddemaeyer",
           "linkedin" : "dries-de-maeyer-b46a814"
-        },
-        "organizations" : [
-          {
-            "name" : "Janssen Pharmaceuticals",
-            "href" : "https://www.janssen.com",
-            "role" : "Principal Scientist"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3437,7 +3428,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/pca",
     "viash_version" : "0.9.7",
-    "git_commit" : "31124dd6a5bc1095711aacf9f3f625edeee025d9",
+    "git_commit" : "010e3354df5a14abe818dd297fde1c92039b1115",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

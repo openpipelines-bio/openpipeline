@@ -11,7 +11,7 @@
 // 
 // Component authors:
 //  * Dries De Maeyer (author)
-//  * Dries Schaumont (maintainer)
+//  * Dries Schaumont (author)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -3054,41 +3054,22 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "ddemaeyer@gmail.com",
           "github" : "ddemaeyer",
           "linkedin" : "dries-de-maeyer-b46a814"
-        },
-        "organizations" : [
-          {
-            "name" : "Janssen Pharmaceuticals",
-            "href" : "https://www.janssen.com",
-            "role" : "Principal Scientist"
-          }
-        ]
+        }
       }
     },
     {
       "name" : "Dries Schaumont",
       "roles" : [
-        "maintainer"
+        "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "dries@data-intuitive.com",
           "github" : "DriesSchaumont",
-          "orcid" : "0000-0002-4389-0440",
-          "linkedin" : "dries-schaumont"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Scientist"
-          }
-        ]
+          "orcid" : "0000-0002-4389-0440"
+        }
       }
     }
   ],
@@ -3425,7 +3406,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/bbknn",
     "viash_version" : "0.9.7",
-    "git_commit" : "31124dd6a5bc1095711aacf9f3f625edeee025d9",
+    "git_commit" : "010e3354df5a14abe818dd297fde1c92039b1115",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -10,9 +10,8 @@
 // files.
 // 
 // Component authors:
-//  * Toni Verbeiren (author, maintainer)
+//  * Toni Verbeiren (author)
 //  * Marijke Van Moerbeke (author)
-//  * Weiwei Schultz (contributor)
 //  * Dorien Roosen (author)
 
 ////////////////////////////
@@ -3053,22 +3052,13 @@ meta = [
     {
       "name" : "Toni Verbeiren",
       "roles" : [
-        "author",
-        "maintainer"
+        "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
           "github" : "tverbeiren",
           "linkedin" : "verbeiren"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Scientist and CEO"
-          }
-        ]
+        }
       }
     },
     {
@@ -3077,34 +3067,11 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
           "github" : "mvanmoerbeke",
           "orcid" : "0000-0002-3097-5621",
           "linkedin" : "marijke-van-moerbeke-84303a34"
-        },
-        "organizations" : [
-          {
-            "name" : "OpenAnalytics",
-            "href" : "https://www.openanalytics.eu",
-            "role" : "Statistical Consultant"
-          }
-        ]
-      }
-    },
-    {
-      "name" : "Weiwei Schultz",
-      "roles" : [
-        "contributor"
-      ],
-      "info" : {
-        "role" : "Contributor",
-        "organizations" : [
-          {
-            "name" : "Janssen R&D US",
-            "role" : "Associate Director Data Sciences"
-          }
-        ]
+        }
       }
     },
     {
@@ -3113,19 +3080,11 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "dorien@data-intuitive.com",
           "github" : "dorien-er",
+          "orcid" : "0000-0002-6261-8151",
           "linkedin" : "dorien-roosen"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Scientist"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3391,7 +3350,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl_convert",
     "viash_version" : "0.9.7",
-    "git_commit" : "31124dd6a5bc1095711aacf9f3f625edeee025d9",
+    "git_commit" : "010e3354df5a14abe818dd297fde1c92039b1115",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

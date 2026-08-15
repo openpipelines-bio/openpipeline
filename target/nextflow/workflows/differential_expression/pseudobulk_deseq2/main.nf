@@ -11,7 +11,6 @@
 // 
 // Component authors:
 //  * Jakub Majercik (author)
-//  * Weiwei Schultz (contributor)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -3054,34 +3053,10 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
-          "email" : "jakub@data-intuitive.com",
           "github" : "jakubmajercik",
           "linkedin" : "jakubmajercik"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Bioinformatics Engineer"
-          }
-        ]
-      }
-    },
-    {
-      "name" : "Weiwei Schultz",
-      "roles" : [
-        "contributor"
-      ],
-      "info" : {
-        "role" : "Contributor",
-        "organizations" : [
-          {
-            "name" : "Janssen R&D US",
-            "role" : "Associate Director Data Sciences"
-          }
-        ]
+        }
       }
     }
   ],
@@ -3505,7 +3480,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/differential_expression/pseudobulk_deseq2",
     "viash_version" : "0.9.7",
-    "git_commit" : "31124dd6a5bc1095711aacf9f3f625edeee025d9",
+    "git_commit" : "010e3354df5a14abe818dd297fde1c92039b1115",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -7,7 +7,7 @@ description: |
   their order should match with what is already present the tiledb database.
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
 argument_groups:
   - name: Input database
     description: "Open a tileDB-SOMA database by URI."

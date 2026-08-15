@@ -11,7 +11,7 @@
 // 
 // Component authors:
 //  * Angela Oliveira Pisco (author)
-//  * Robrecht Cannoodt (author, maintainer)
+//  * Robrecht Cannoodt (author)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -3054,52 +3054,24 @@ meta = [
         "author"
       ],
       "info" : {
-        "role" : "Contributor",
         "links" : {
           "github" : "aopisco",
           "orcid" : "0000-0003-0142-2355",
           "linkedin" : "aopisco"
-        },
-        "organizations" : [
-          {
-            "name" : "Insitro",
-            "href" : "https://insitro.com",
-            "role" : "Director of Computational Biology"
-          },
-          {
-            "name" : "Open Problems",
-            "href" : "https://openproblems.bio",
-            "role" : "Core Member"
-          }
-        ]
+        }
       }
     },
     {
       "name" : "Robrecht Cannoodt",
       "roles" : [
-        "author",
-        "maintainer"
+        "author"
       ],
       "info" : {
-        "role" : "Core Team Member",
         "links" : {
-          "email" : "robrecht@data-intuitive.com",
           "github" : "rcannood",
           "orcid" : "0000-0003-3641-729X",
           "linkedin" : "robrechtcannoodt"
-        },
-        "organizations" : [
-          {
-            "name" : "Data Intuitive",
-            "href" : "https://www.data-intuitive.com",
-            "role" : "Data Science Engineer"
-          },
-          {
-            "name" : "Open Problems",
-            "href" : "https://openproblems.bio",
-            "role" : "Core Member"
-          }
-        ]
+        }
       }
     }
   ],
@@ -4764,7 +4736,7 @@ meta = [
         {
           "type" : "integer",
           "name" : "--winAnchorMultimapNmax",
-          "description" : "''' + '''max number of loci anchors are allowed to map to",
+          "description" : "max number of loci anchors are allowed to map to",
           "example" : [
             50
           ],
@@ -4788,7 +4760,7 @@ meta = [
         {
           "type" : "integer",
           "name" : "--winAnchorDistNbins",
-          "description" : "max number of bins between two anchors that allows aggregation of anchors into one window",
+          "description" : "max number of bins between two anchors that allows aggregation o''' + '''f anchors into one window",
           "example" : [
             9
           ],
@@ -5516,7 +5488,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_align_v273a",
     "viash_version" : "0.9.7",
-    "git_commit" : "31124dd6a5bc1095711aacf9f3f625edeee025d9",
+    "git_commit" : "010e3354df5a14abe818dd297fde1c92039b1115",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
