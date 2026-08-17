@@ -3333,7 +3333,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr",
     "viash_version" : "0.9.7",
-    "git_commit" : "9d15a55439d469fbc5fe0158dff870e9b5e8fcad",
+    "git_commit" : "826ce125237ff8b1c4441810cfbef58ba7ae0613",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
