@@ -107,7 +107,9 @@ if (!is.null(par$background)) {
     par$background_layer
   }
   background_mdata <- mudata$read_h5mu(par$background)
-  background <- read_counts(background_mdata$mod[[par$modality]], background_layer)
+  background <- read_counts(
+    background_mdata$mod[[par$modality]], background_layer
+  )
   background_matrix <- background$matrix
   if (!is.null(par$background_obs_batch)) {
     background_batch <- background$adata$obs[[par$background_obs_batch]]
