@@ -3388,7 +3388,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/consensus_vote",
     "viash_version" : "0.9.7",
-    "git_commit" : "75179f3a2ddfcb4b6a8307c15a471955928d15f0",
+    "git_commit" : "ccfe5b91fa22854d6e590411ad00b575614d4d60",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
