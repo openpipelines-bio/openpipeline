@@ -1,11 +1,10 @@
-import os
 import sys
-
-import mudata as mu
+import os
 import numpy as np
-import pandas as pd
-import pytest
 import scipy.sparse as sp
+import pytest
+import mudata as mu
+import pandas as pd
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 
