@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "assert_test_workflow_9_output",
+  "description": "This component tests the output of the integration test of process_samples test_wf9.",
+  "type": "object",
+  "$defs": {
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `test.h5mu`. "
+        },
+        "orig_input": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "path",
+          "exists": true,
+          "description": "Path to the original input file.",
+          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `input.h5mu`. "
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

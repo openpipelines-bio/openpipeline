@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "process_singlesample_base",
+  "description": "A pipeline to analyse a single multiomics sample.",
+  "type": "object",
+  "$defs": {
+    "output state": {
+      "title": "Output State",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output_modality": {
+          "type": "string",
+          "description": "",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/output state"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

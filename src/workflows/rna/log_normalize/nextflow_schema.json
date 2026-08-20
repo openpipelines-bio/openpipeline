@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "log_normalize",
+  "description": "Performs normalization and subsequent log-transformation of raw count data.",
+  "type": "object",
+  "$defs": {
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "MuData file to transform.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `dataset.h5mu`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Modality to process.",
+          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
+          "default": "rna"
+        },
+        "layer": {
+          "type": "string",
+          "description": "Input layer containing raw counts",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "transormation options": {
+      "title": "Transormation options",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "target_sum": {
+          "type": "integer",
+          "description": "Normalize total counts to the specified amount",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        }
+      }
+    },
+    "output slots": {
+      "title": "Output slots",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output_layer": {
+          "type": "string",
+          "description": "Layer to write the log-transformed counts to.\n",
+          "help_text": "Type: `string`, multiple: `False`, required. "
+        }
+      }
+    },
+    "output": {
+      "title": "Output",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Destination path to the output.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
+          "default": "$id.$key.output.h5mu"
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/transormation options"
+    },
+    {
+      "$ref": "#/$defs/output slots"
+    },
+    {
+      "$ref": "#/$defs/output"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

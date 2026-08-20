@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "celltypist_test",
+  "description": "This component tests the output of the annotation of the celltypist workflow.",
+  "type": "object",
+  "$defs": {
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Path to h5mu output.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `foo.final.h5mu`. "
+        },
+        "expected_modalities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of expected modalities in the output h5mu.",
+          "help_text": "Type: `string`, multiple: `True`, required, example: `rna:prot`. "
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

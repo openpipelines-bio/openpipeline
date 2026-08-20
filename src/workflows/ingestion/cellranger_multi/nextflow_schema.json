@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cellranger_multi",
+  "description": "A pipeline for running Cell Ranger multi.",
+  "type": "object",
+  "$defs": {
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output_raw": {
+          "type": "string",
+          "format": "path",
+          "description": "The raw output folder.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_raw`, direction: `output`, example: `output_dir/`. ",
+          "default": "$id.$key.output_raw"
+        },
+        "output_h5mu": {
+          "type": "string",
+          "format": "path",
+          "description": "Locations for the output files",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output_h5mu.h5mu`, direction: `output`, example: `*.h5mu`. ",
+          "default": "$id.$key.output_h5mu.h5mu"
+        },
+        "uns_metrics": {
+          "type": "string",
+          "description": "Name of the .uns slot under which to QC metrics (if any).",
+          "help_text": "Type: `string`, multiple: `False`, default: `metrics_cellranger`. ",
+          "default": "metrics_cellranger"
+        },
+        "output_filtered_data": {
+          "type": "boolean",
+          "description": "If enabled, read the per-sample filtered count matrices\n(per_sample_outs/{sample}/count/sample_filtered_feature_bc_matrix.h5)\ninstead of the aggregated raw count matrix\n(multi/count/raw_feature_bc_matrix.h5).\n",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}
