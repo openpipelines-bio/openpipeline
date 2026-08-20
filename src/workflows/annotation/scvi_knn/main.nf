@@ -97,10 +97,11 @@ workflow run_wf {
         fromState: [
           "input": "input",
           "modality": "modality",
-          "n_top_features": "n_hvg"
+          "n_top_features": "n_hvg",
+          "device_type": "device_type"
         ],
         args: [
-          "layer": "_log_normalized",
+          "input_layer": "_log_normalized",
           "var_input": "_common_vars",
           "var_name_filter": "_common_hvg",
           "obs_batch_key": "_sample_id"
@@ -139,7 +140,8 @@ workflow run_wf {
           "reduce_lr_on_plateau": state.scvi_reduce_lr_on_plateau,
           "lr_factor": state.scvi_lr_factor,
           "lr_patience": state.scvi_lr_patience,
-          "sanitize_ensembl_ids": state.sanitize_ensembl_ids
+          "sanitize_ensembl_ids": state.sanitize_ensembl_ids,
+          "device_type": state.device_type
         ]},
         args: [
           "var_input": "_common_hvg",

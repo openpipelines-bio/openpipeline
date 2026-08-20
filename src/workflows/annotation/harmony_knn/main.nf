@@ -94,10 +94,11 @@ workflow run_wf {
             fromState: [
                 "input": "input",
                 "modality": "modality",
-                "n_top_features": "n_hvg"
+                "n_top_features": "n_hvg",
+                "device_type": "device_type"
             ],
             args: [
-                "layer": "_counts",
+                "input_layer": "_counts",
                 "var_input": "_common_vars",
                 "var_name_filter": "_common_hvg",
                 "obs_batch_key": "_sample_id"
@@ -106,12 +107,30 @@ workflow run_wf {
                 "input": "output"
             ]
         )
+        // The GPU (rapids-singlecell) PCA errors out on genes with zero expression,
+        // which concatenating query and reference can leave behind. The CPU PCA
+        // tolerates them, so only the GPU path needs this.
+        | filter_genes.run(
+            runIf: {id, state -> state.device_type == "gpu"},
+            fromState: {id, state ->
+                [
+                    "input": state.input,
+                    "modality": state.modality,
+                ]
+            },
+            args: [
+                "layer": "_counts",
+                "min_counts": 1,
+            ],
+            toState: ["input": "output"]
+        )
         | pca.run(
             fromState: [
                 "input": "input",
                 "modality": "modality",
                 "overwrite": "overwrite_existing_key",
-                "num_compontents": "pca_num_components"
+                "num_compontents": "pca_num_components",
+                "device_type": "device_type"
             ],
             args: [
                 "layer": "_counts",
@@ -147,6 +166,7 @@ workflow run_wf {
                 "obsm_integrated": state.output_obsm_integrated,
                 "theta": state.harmony_theta,
                 "leiden_resolution": state.leiden_resolution,
+                "device_type": state.device_type,
             ]},
             args: [
                 "embedding": "X_pca_query_reference",

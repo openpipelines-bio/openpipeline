@@ -15,6 +15,14 @@ workflow test_wf {
         id: "simple_execution_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
         output_layer: "log_normalized"
+      ],
+      // Request the CPU implementation explicitly rather than relying on the
+      // default, so that the CPU/GPU dispatch in the wrapper workflows is covered.
+      [
+        id: "explicit_cpu_test",
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
+        output_layer: "log_normalized",
+        device_type: "cpu"
       ]
     ])
     | map{ state -> [state.id, state] }
@@ -24,7 +32,7 @@ workflow test_wf {
 
       // check id
       def id = output[0]
-      assert id == "simple_execution_test"
+      assert id in ["simple_execution_test", "explicit_cpu_test"] : "Unexpected id: ${id}"
 
       // check output
       def state = output[1]
@@ -37,7 +45,7 @@ workflow test_wf {
     }
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
-      assert output_list.size() == 1 : "output channel should contain 1 event"
-      assert output_list.collect{it[0]} == ["simple_execution_test"]
+      assert output_list.size() == 2 : "output channel should contain 2 events"
+      assert output_list.collect{it[0]} == ["explicit_cpu_test", "simple_execution_test"]
     }
 }

@@ -237,6 +237,8 @@ argument_groups:
         direction: output
         description: Path to the resulting scANVI model that was updated with query data.
       
+  - __merge__: /src/base/device_type_argument.yaml
+
 dependencies:
   - name: integrate/scvi
   - name: annotate/scanvi

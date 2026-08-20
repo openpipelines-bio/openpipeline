@@ -203,6 +203,7 @@ argument_groups:
         default: "X_integrated_scvi"
         required: false
         description: "In which .obsm slot to store the integrated embedding."
+  - __merge__: /src/base/device_type_argument.yaml
 
 dependencies:
   - name: workflows/integration/scvi_leiden
@@ -211,7 +212,9 @@ dependencies:
   - name: workflows/multiomics/split_h5mu
   - name: dataflow/concatenate_h5mu
   - name: feature_annotation/align_query_reference
-  - name: feature_annotation/highly_variable_features_scanpy
+  - name: wrappers/preprocessing/highly_variable_genes
+    repository: openpipeline_rapids
+    alias: highly_variable_features_scanpy
   - name: transform/delete_layer
   - name: workflows/multiomics/split_modalities
   - name: dataflow/merge
