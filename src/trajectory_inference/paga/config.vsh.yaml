@@ -1,4 +1,4 @@
-name: trajectory_inference
+name: paga
 namespace: "trajectory_inference"
 scope: "public"
 description: |
