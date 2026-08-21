@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 import scipy as sp
 import mudata as mu
-import h5py  
+import h5py
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
@@ -40,15 +40,11 @@ def assert_paga_result(output_data, groups_key, input_data=None):
     non-RNA-velocity code path, and return the `paga` dict for further checks."""
     if input_data is not None:
         # other modalities should be untouched
-        assert_annotation_objects_equal(
-            input_data.mod["prot"], output_data.mod["prot"]
-        )
+        assert_annotation_objects_equal(input_data.mod["prot"], output_data.mod["prot"])
         # PAGA should only add to .uns -- .obs/.var/.obsm/.X on "rna" itself
         # should otherwise be unaffected (assert_annotation_objects_equal
         # does not compare .uns, so the new "paga" entry doesn't interfere)
-        assert_annotation_objects_equal(
-            input_data.mod["rna"], output_data.mod["rna"]
-        )
+        assert_annotation_objects_equal(input_data.mod["rna"], output_data.mod["rna"])
 
     paga = output_data.mod["rna"].uns["paga"]
     assert "connectivities" in paga
@@ -263,6 +259,7 @@ def test_paga_auto_detect_cluster_label(run_component, random_h5mu_path):
     output_data = mu.read_h5mu(output_path)
     assert_paga_result(output_data, "leiden", input_data=input_data)
 
+
 def test_paga_modality(run_component, random_h5mu_path):
     input_data = mu.read_h5mu(input_path)
     input_data.mod["rna2"] = input_data.mod["rna"].copy()
@@ -295,7 +292,7 @@ def test_paga_modality(run_component, random_h5mu_path):
     assert paga["groups"] == OBS_GROUPS
     n_groups = output_data.mod["rna2"].obs[OBS_GROUPS].nunique()
     assert paga["connectivities"].shape == (n_groups, n_groups)
-    
+
 
 @pytest.mark.parametrize("compression", ["gzip", "lzf"])
 def test_paga_output_compression(run_component, random_h5mu_path, compression):
@@ -319,6 +316,7 @@ def test_paga_output_compression(run_component, random_h5mu_path, compression):
     # mod/prot) may already have their own compression, which compress_h5mu
     # intentionally leaves untouched, so those are out of scope here.
     with h5py.File(output_path, "r") as f:
+
         def check_compression(name, obj):
             if not name.startswith("mod/rna/uns/paga"):
                 return
@@ -326,7 +324,9 @@ def test_paga_output_compression(run_component, random_h5mu_path, compression):
                 assert obj.compression == compression, (
                     f"{name} is not {compression}-compressed"
                 )
+
         f.visititems(check_compression)
+
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
