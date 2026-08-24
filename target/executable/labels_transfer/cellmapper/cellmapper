@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Luke Zappia"
 LABEL org.opencontainers.image.description="Companion container for running component labels_transfer cellmapper"
-LABEL org.opencontainers.image.created="2026-08-23T03:30:24Z"
+LABEL org.opencontainers.image.created="2026-08-24T03:32:29Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b55b398bb129ae04914bad6725b96e5bf21e17d9"
+LABEL org.opencontainers.image.revision="48a2e7d205602f82a2eed010fc6d43a5223f2b65"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
