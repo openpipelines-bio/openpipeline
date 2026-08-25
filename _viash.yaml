@@ -35,7 +35,7 @@ repositories:
   - name: openpipeline_rapids
     repo: openpipeline_rapids
     type: vsh
-    tag: v0.1.1
+    tag: v0.1.2
 
 info:
   test_resources:
