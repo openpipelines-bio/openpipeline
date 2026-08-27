@@ -1,0 +1,159 @@
+name: cellphonedb_search
+namespace: "interpret"
+scope: "public"
+description: |
+  Searches the results of a previous `interpret/cellphonedb` run
+  (`statistical_analysis` or `degs_analysis`) for interactions matching a
+  gene, interaction name, pathway classification, cell type pair, and/or
+  minimum interaction score.
+
+  Operates purely on the already-computed result tables stored in `.uns` -
+  it does not touch the CellphoneDB interaction database, so it carries none
+  of the database-licensing considerations of `interpret/cellphonedb`.
+authors:
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: |
+          Input h5mu file, as produced by `interpret/cellphonedb`
+          (`--method statistical_analysis` or `degs_analysis`).
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        type: string
+        description: Which modality from the input MuData file to process.
+        default: "rna"
+        required: false
+      - name: "--uns_significant_means"
+        type: string
+        default: "cellphonedb_significant_means"
+        required: false
+        description: ".uns key holding the CellphoneDB significant means table."
+      - name: "--uns_deconvoluted"
+        type: string
+        default: "cellphonedb_deconvoluted"
+        required: false
+        description: ".uns key holding the CellphoneDB deconvoluted table."
+      - name: "--uns_interaction_scores"
+        type: string
+        default: "cellphonedb_interaction_scores"
+        required: false
+        description: |
+          .uns key holding the CellphoneDB interaction scores table. Only
+          required when `--query_minimum_score` is set.
+
+  - name: Query
+    arguments:
+      - name: "--query_cell_types_1"
+        type: string
+        multiple: true
+        required: false
+        description: |
+          Cell types to match against one side of a cell type pair. If
+          unset, all cell types are considered. Combined with
+          `--query_cell_types_2`. Only narrows interactions already matched
+          by `--query_genes`, `--query_interactions`,
+          `--query_classifications`, or `--query_minimum_score` - it does
+          not select interactions on its own, so it has no effect unless
+          combined with at least one of those.
+      - name: "--query_cell_types_2"
+        type: string
+        multiple: true
+        required: false
+        description: |
+          Cell types to match against the other side of a cell type pair.
+          If unset, all cell types are considered. Combined with
+          `--query_cell_types_1`. Only narrows interactions already matched
+          by `--query_genes`, `--query_interactions`,
+          `--query_classifications`, or `--query_minimum_score` - it does
+          not select interactions on its own, so it has no effect unless
+          combined with at least one of those.
+      - name: "--query_genes"
+        type: string
+        multiple: true
+        required: false
+        description: Gene names to search for, matched against interaction subunits.
+      - name: "--query_interactions"
+        type: string
+        multiple: true
+        required: false
+        description: Interaction names to search for (e.g. `TNF_TNFRSF1A`).
+      - name: "--query_classifications"
+        type: string
+        multiple: true
+        required: false
+        description: Pathway classifications to search for.
+      - name: "--query_minimum_score"
+        type: integer
+        required: false
+        description: |
+          Minimum interaction score required across the selected cell type
+          pairs. Requires `--uns_interaction_scores` to be present in the
+          input (i.e. `interpret/cellphonedb` was run with
+          `--score_interactions`).
+      - name: "--separator"
+        type: string
+        default: "|"
+        required: false
+        description: Separator used between cell type names in cell type pair column names.
+      - name: "--long_format"
+        type: boolean_true
+        description: |
+          Return the search result in long format (one row per
+          interaction/cell-type-pair combination) instead of the default
+          wide format.
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
+      - name: "--output_uns_search_results"
+        type: string
+        default: "cellphonedb_search_results"
+        required: false
+        description: ".uns key to store the search result table under."
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/compress_h5mu.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+
+engines:
+  - type: docker
+    image: python:3.11-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+          - build-essential
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+        packages:
+          - cellphonedb==5.0.1
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [lowmem, lowcpu]

@@ -14,7 +14,7 @@
 
 * `interpret/cellphonedb`: added a new component to predict cell-cell communication (ligand-receptor interactions) using the CellphoneDB v5 package, supporting the `statistical_analysis`, `analysis`, and `degs_analysis` methods (PR #1226).
 
-* `workflows/interpret/cellphonedb`: added a new workflow wrapping the `interpret/cellphonedb` component (PR #1226).
+* `interpret/cellphonedb_search`: added a new component to search the results of an `interpret/cellphonedb` run by gene, interaction, pathway classification, cell type pair, and/or minimum interaction score (PR #1226).
 
 # openpipelines 4.2.0
 
