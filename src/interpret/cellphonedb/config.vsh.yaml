@@ -1,0 +1,262 @@
+name: cellphonedb
+namespace: "interpret"
+scope: "public"
+description: |
+  Predicts cell-cell communication (ligand-receptor interactions) using the
+  actual CellphoneDB v5 package (https://github.com/ventolab/CellphoneDB),
+  based on a curated database of ligand-receptor pairs, including
+  multi-subunit complexes.
+
+  Supports all three CellphoneDB analysis methods via `--method`:
+    - `statistical_analysis`: permutation-based significance testing of mean
+      ligand-receptor expression across cell type pairs (the flagship method).
+    - `analysis`: the same mean/percent calculation without permutation
+      testing (fast, no p-values).
+    - `degs_analysis`: significance is derived from a user-supplied
+      differentially expressed genes (DEGs) table instead of permutation
+      testing (requires `--degs_file`).
+authors:
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: Input h5mu file.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        type: string
+        description: Which modality from the input MuData file to process.
+        default: "rna"
+        required: false
+      - name: "--layer"
+        type: string
+        required: false
+        description: |
+          Layer in `.layers` containing normalized (not raw) counts to use.
+          If not set, `.X` is used.
+      - name: "--groupby"
+        type: string
+        required: true
+        description: ".obs column containing the cell type / cluster labels."
+      - name: "--gene_symbol"
+        type: string
+        default: "gene_symbol"
+        required: false
+        description: |
+          Column name in the `.var` DataFrame containing the gene
+          identifiers to match against the CellphoneDB database. Must
+          correspond to the identifier type set in `--counts_data`.
+      - name: "--counts_data"
+        type: string
+        choices: ["hgnc_symbol", "ensembl", "gene_name"]
+        default: "hgnc_symbol"
+        required: false
+        description: Type of gene identifier used in `--gene_symbol`.
+
+  - name: Options
+    arguments:
+      - name: "--method"
+        type: string
+        choices: ["statistical_analysis", "analysis", "degs_analysis"]
+        default: "statistical_analysis"
+        required: false
+        description: |
+          Which CellphoneDB analysis method to run. `statistical_analysis`
+          (permutation-based) and `degs_analysis` (DEGs-based) support
+          `--active_tfs_file` (CellSign) and `--subsampling`-related
+          arguments; `analysis` does not.
+      - name: "--iterations"
+        type: integer
+        default: 1000
+        min: 51
+        required: false
+        description: |
+          Number of permutations for the statistical test. Only used when
+          `--method statistical_analysis`. Must be at least 51: CellphoneDB
+          has a progress-reporting bug that divides by zero for lower
+          values when running single-threaded.
+      - name: "--threshold"
+        type: double
+        default: 0.1
+        required: false
+        description: |
+          Minimum fraction of cells that must express a gene for it to be
+          considered. Used by all methods.
+      - name: "--pvalue"
+        type: double
+        default: 0.05
+        required: false
+        description: |
+          P-value threshold used to flag significant interactions. Only
+          used when `--method statistical_analysis`.
+      - name: "--degs_file"
+        type: file
+        direction: input
+        required: false
+        description: |
+          Differentially expressed genes (DEGs) TSV (2 columns: cluster,
+          gene), e.g. from `scanpy.tl.rank_genes_groups`. Required when
+          `--method degs_analysis`.
+      - name: "--microenvs_file"
+        type: file
+        direction: input
+        required: false
+        description: |
+          Microenvironments TSV (2 columns: cell type, microenvironment)
+          restricting which cell type pairs are tested. Used by all
+          methods.
+      - name: "--active_tfs_file"
+        type: file
+        direction: input
+        required: false
+        description: |
+          Active transcription factors TSV (2 columns: cell type,
+          transcription factor). Enables the CellSign module, which flags
+          significant/relevant interactions whose receptor is linked to a
+          transcription factor active in the receiving cell type. Only
+          supported by `--method statistical_analysis` or `degs_analysis`.
+      - name: "--score_interactions"
+        type: boolean_true
+        description: |
+          Compute a per-cell-type-pair expression-specificity score
+          (CellphoneDB v5 `interaction_scores`). Supported by all methods.
+      - name: "--subsampling"
+        type: boolean_true
+        description: |
+          Enable geosketch-based subsampling before permutation testing.
+          Only supported by `--method statistical_analysis`.
+      - name: "--subsampling_log"
+        type: boolean_true
+        description: |
+          Apply log1p during subsampling. Required if the input data is
+          not already log-transformed; leave unset for already
+          log-normalized data (the default expectation of `--layer`). Only
+          used together with `--subsampling`.
+      - name: "--subsampling_num_pc"
+        type: integer
+        default: 100
+        required: false
+        description: Number of principal components used for subsampling.
+      - name: "--subsampling_num_cells"
+        type: integer
+        required: false
+        description: |
+          Number of cells to subsample to. Defaults to CellphoneDB's own
+          default (roughly a third of the input cells) when not set.
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
+      - name: "--output_uns_means"
+        type: string
+        default: "cellphonedb_means"
+        required: false
+        description: ".uns key to store the means result table under."
+      - name: "--output_uns_deconvoluted"
+        type: string
+        default: "cellphonedb_deconvoluted"
+        required: false
+        description: ".uns key to store the per-subunit deconvoluted result table under."
+      - name: "--output_uns_deconvoluted_percents"
+        type: string
+        default: "cellphonedb_deconvoluted_percents"
+        required: false
+        description: ".uns key to store the per-subunit deconvoluted percentages table under."
+      - name: "--output_uns_pvalues"
+        type: string
+        default: "cellphonedb_pvalues"
+        required: false
+        description: |
+          .uns key to store the p-values table under. Only written when
+          `--method statistical_analysis`.
+      - name: "--output_uns_significant_means"
+        type: string
+        default: "cellphonedb_significant_means"
+        required: false
+        description: |
+          .uns key to store the significant means table under. Only
+          written when `--method statistical_analysis` or `degs_analysis`.
+      - name: "--output_uns_relevant_interactions"
+        type: string
+        default: "cellphonedb_relevant_interactions"
+        required: false
+        description: |
+          .uns key to store the DEGs-based relevant interactions table
+          under. Only written when `--method degs_analysis`.
+      - name: "--output_uns_interaction_scores"
+        type: string
+        default: "cellphonedb_interaction_scores"
+        required: false
+        description: |
+          .uns key to store the interaction scores table under. Only
+          written when `--score_interactions` is set.
+      - name: "--output_uns_cellsign_active_interactions"
+        type: string
+        default: "cellphonedb_cellsign_active_interactions"
+        required: false
+        description: |
+          .uns key to store the CellSign active interactions table under.
+          Only written when CellSign found active interactions (requires
+          `--active_tfs_file`).
+      - name: "--output_uns_cellsign_active_interactions_deconvoluted"
+        type: string
+        default: "cellphonedb_cellsign_active_interactions_deconvoluted"
+        required: false
+        description: |
+          .uns key to store the per-subunit CellSign active interactions
+          table under. Only written when CellSign found active
+          interactions (requires `--active_tfs_file`).
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/compress_h5mu.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+
+engines:
+  - type: docker
+    image: python:3.11-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+          - build-essential
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+        packages:
+          - cellphonedb==5.0.1
+      # Bake in the CellphoneDB interaction database at a pinned version, so
+      # runs are reproducible offline. cellphonedb-data has no LICENSE file
+      # (all-rights-reserved, citation-only) -- confirm redistribution of
+      # this baked-in copy in our published images is acceptable before
+      # this component ships publicly.
+      - type: docker
+        run: |
+          mkdir -p /opt/cellphonedb && \
+          python -c "from cellphonedb.utils import db_utils; db_utils.download_database('/opt/cellphonedb', 'v5.0.0')"
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [midmem, midcpu]
