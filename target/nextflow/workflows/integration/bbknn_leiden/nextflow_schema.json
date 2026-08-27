@@ -4,170 +4,207 @@
   "description": "Run bbknn followed by leiden clustering and run umap on the result.",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"foo\"`. "
+          "help_text": "type: `string`, multiple: False, required, example: `['foo']`"
         },
         "input": {
           "type": "string",
+          "description": "Path to the sample.",
           "format": "path",
           "exists": true,
-          "description": "Path to the sample.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"dataset.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['dataset.h5mu']`"
         },
         "layer": {
           "type": "string",
+          "default": [
+            "log_normalized"
+          ],
           "description": "use specified layer for expression values instead of the .X object from the modality.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"log_normalized\"`. ",
-          "default": "log_normalized"
+          "help_text": "type: `string`, multiple: False, default: `log_normalized`"
         },
         "modality": {
           "type": "string",
+          "default": [
+            "rna"
+          ],
           "description": "Which modality to process.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "help_text": "type: `string`, multiple: False, default: `rna`"
         }
-      }
+      },
+      "required": [
+        "id",
+        "input"
+      ]
     },
     "outputs": {
-      "title": "Outputs",
       "type": "object",
+      "title": "Outputs",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Destination path to the output.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
         }
-      }
+      },
+      "required": [
+        "output"
+      ]
     },
     "bbknn": {
-      "title": "Bbknn",
       "type": "object",
+      "title": "Bbknn",
       "description": "No description",
       "properties": {
         "obsm_input": {
           "type": "string",
-          "description": "The dimensionality reduction in `.obsm` to use for neighbour detection",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"X_pca\"`. ",
-          "default": "X_pca"
+          "default": [
+            "X_pca"
+          ],
+          "description": "The dimensionality reduction in `.obsm` to use for neighbour detection. Defaults to X_pca.",
+          "help_text": "type: `string`, multiple: False, default: `X_pca`"
         },
         "obs_batch": {
           "type": "string",
+          "default": [
+            "sample_id"
+          ],
           "description": ".obs column name discriminating between your batches.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"sample_id\"`. ",
-          "default": "sample_id"
+          "help_text": "type: `string`, multiple: False, default: `sample_id`"
         },
         "uns_output": {
           "type": "string",
+          "default": [
+            "bbknn_integration_neighbors"
+          ],
           "description": "Mandatory .uns slot to store various neighbor output objects.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"bbknn_integration_neighbors\"`. ",
-          "default": "bbknn_integration_neighbors"
+          "help_text": "type: `string`, multiple: False, default: `bbknn_integration_neighbors`"
         },
         "obsp_distances": {
           "type": "string",
+          "default": [
+            "bbknn_integration_distances"
+          ],
           "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"bbknn_integration_distances\"`. ",
-          "default": "bbknn_integration_distances"
+          "help_text": "type: `string`, multiple: False, default: `bbknn_integration_distances`"
         },
         "obsp_connectivities": {
           "type": "string",
+          "default": [
+            "bbknn_integration_connectivities"
+          ],
           "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"bbknn_integration_connectivities\"`. ",
-          "default": "bbknn_integration_connectivities"
+          "help_text": "type: `string`, multiple: False, default: `bbknn_integration_connectivities`"
         },
         "n_neighbors_within_batch": {
           "type": "integer",
+          "default": [
+            3
+          ],
           "description": "How many top neighbours to report for each batch; total number of neighbours in the initial k-nearest-neighbours computation will be this number times the number of batches.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `3`. ",
-          "default": 3
+          "help_text": "type: `integer`, multiple: False, default: `3`"
         },
         "n_pcs": {
           "type": "integer",
+          "default": [
+            50
+          ],
           "description": "How many dimensions (in case of PCA, principal components) to use in the analysis.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `50`. ",
-          "default": 50
+          "help_text": "type: `integer`, multiple: False, default: `50`"
         },
         "n_trim": {
           "type": "integer",
-          "description": "Trim the neighbours of each cell to these many top connectivities",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "description": "Trim the neighbours of each cell to these many top connectivities. May help with population independence and improve the tidiness of clustering. The lower the value the more independent the individual populations, at the cost of more conserved batch effect. If `None` (default), sets the parameter value automatically to 10 times `neighbors_within_batch` times the number of batches. Set to 0 to skip.",
+          "help_text": "type: `integer`, multiple: False"
         }
       }
     },
     "clustering options": {
-      "title": "Clustering options",
       "type": "object",
+      "title": "Clustering options",
       "description": "No description",
       "properties": {
         "obs_cluster": {
           "type": "string",
-          "description": "Prefix for the .obs keys under which to add the cluster labels",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"bbknn_integration_leiden\"`. ",
-          "default": "bbknn_integration_leiden"
+          "default": [
+            "bbknn_integration_leiden"
+          ],
+          "description": "Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions\nresolutions specified in '--leiden_resolution'.          \n",
+          "help_text": "type: `string`, multiple: False, default: `bbknn_integration_leiden`"
         },
         "leiden_resolution": {
           "type": "array",
+          "default": [
+            1.0
+          ],
+          "description": "Control the coarseness of the clustering. Higher values lead to more clusters.",
           "items": {
             "type": "number"
           },
-          "description": "Control the coarseness of the clustering",
-          "help_text": "Type: `double`, multiple: `True`, default: `[1.0]`. ",
-          "default": [
-            1.0
-          ]
+          "help_text": "type: `array`, multiple: True, default: `1.0`"
         }
       }
     },
     "umap options": {
-      "title": "UMAP options",
       "type": "object",
+      "title": "UMAP options",
       "description": "No description",
       "properties": {
         "obsm_umap": {
           "type": "string",
+          "default": [
+            "X_leiden_bbknn_umap"
+          ],
           "description": "In which .obsm slot to store the resulting UMAP embedding.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"X_leiden_bbknn_umap\"`. ",
-          "default": "X_leiden_bbknn_umap"
+          "help_text": "type: `string`, multiple: False, default: `X_leiden_bbknn_umap`"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/inputs"
     },

@@ -4,251 +4,281 @@
   "description": "Cell type annotation workflow by performing harmony integration of reference and query dataset followed by KNN label transfer.",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
-        }
-      }
-    },
-    "outputs": {
-      "title": "Outputs",
-      "type": "object",
-      "description": "No description",
-      "properties": {
-        "output": {
-          "type": "string",
-          "format": "path",
-          "description": "The annotated output .h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
-        },
-        "output_obs_predictions": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "In which `.obs` slots to store the predicted cell labels.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_pred\"` suffix.\n",
-          "help_text": "Type: `string`, multiple: `True`. "
-        },
-        "output_obs_probability": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "In which `.obs` slots to store the probability of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_probability\"` suffix.\n",
-          "help_text": "Type: `string`, multiple: `True`. "
-        },
-        "output_obsm_integrated": {
-          "type": "string",
-          "description": "In which .obsm slot to store the integrated embedding.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"X_integrated_harmony\"`. ",
-          "default": "X_integrated_harmony"
-        },
-        "output_compression": {
-          "type": "string",
-          "description": "The compression format to be used on the output h5mu object.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
-          "enum": [
-            "gzip",
-            "lzf"
-          ]
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "query input": {
-      "title": "Query Input",
       "type": "object",
+      "title": "Query Input",
       "description": "No description",
       "properties": {
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"foo\"`. "
+          "help_text": "type: `string`, multiple: False, required, example: `['foo']`"
         },
         "input": {
           "type": "string",
+          "description": "Input dataset consisting of the (unlabeled) query observations. The dataset is expected to be pre-processed in the same way as --reference.",
           "format": "path",
           "exists": true,
-          "description": "Input dataset consisting of the (unlabeled) query observations",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "modality": {
           "type": "string",
-          "description": "Which modality to process",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "default": [
+            "rna"
+          ],
+          "description": "Which modality to process. Should match the modality of the --reference dataset.",
+          "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "input_layer": {
           "type": "string",
-          "description": "The layer of the input dataset to process if .X is not to be used",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "The layer of the input dataset to process if .X is not to be used. Should contain log normalized counts.",
+          "help_text": "type: `string`, multiple: False"
         },
         "input_obs_batch_label": {
           "type": "string",
           "description": "The .obs field in the input (query) dataset containing the batch labels.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"sample\"`. "
+          "help_text": "type: `string`, multiple: False, required, example: `['sample']`"
         },
         "input_var_gene_names": {
           "type": "string",
           "description": "The .var field in the input (query) dataset containing gene names; if not provided, the .var index will be used.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         },
         "input_reference_gene_overlap": {
           "type": "integer",
+          "default": [
+            100
+          ],
           "description": "The minimum number of genes present in both the reference and query datasets.\n",
-          "help_text": "Type: `integer`, multiple: `False`, default: `100`. ",
-          "default": 100
+          "help_text": "type: `integer`, multiple: False, default: `100`"
         },
         "overwrite_existing_key": {
           "type": "boolean",
+          "default": false,
           "description": "If provided, will overwrite existing fields in the input dataset when data are copied during the reference alignment process.",
-          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
-          "default": false
+          "help_text": "type: `boolean`, default: `False`"
         }
-      }
+      },
+      "required": [
+        "id",
+        "input",
+        "input_obs_batch_label"
+      ]
     },
     "reference input": {
-      "title": "Reference input",
       "type": "object",
+      "title": "Reference input",
       "description": "No description",
       "properties": {
         "reference": {
           "type": "string",
+          "description": "Reference dataset consisting of the labeled observations to train the KNN classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset.",
           "format": "path",
           "exists": true,
-          "description": "Reference dataset consisting of the labeled observations to train the KNN classifier on",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"reference.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['reference.h5mu']`"
         },
         "reference_layer": {
           "type": "string",
-          "description": "The layer of the reference dataset to process if .X is not to be used",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "The layer of the reference dataset to process if .X is not to be used. Should contain log normalized counts.",
+          "help_text": "type: `string`, multiple: False"
         },
         "reference_obs_target": {
           "type": "string",
           "description": "The `.obs` key of the target cell type labels to transfer.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"cell_type\"`. "
+          "help_text": "type: `string`, multiple: False, required, example: `['cell_type']`"
         },
         "reference_var_gene_names": {
           "type": "string",
           "description": "The .var field in the reference dataset containing gene names; if not provided, the .var index will be used.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         },
         "reference_obs_batch_label": {
           "type": "string",
           "description": "The .obs field in the reference dataset containing the batch labels.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"sample\"`. "
+          "help_text": "type: `string`, multiple: False, required, example: `['sample']`"
         }
-      }
+      },
+      "required": [
+        "reference",
+        "reference_obs_target",
+        "reference_obs_batch_label"
+      ]
     },
     "hvg subset arguments": {
-      "title": "HVG subset arguments",
       "type": "object",
+      "title": "HVG subset arguments",
       "description": "No description",
       "properties": {
         "n_hvg": {
           "type": "integer",
+          "default": [
+            2000
+          ],
           "description": "Number of highly variable genes to subset for.\n",
-          "help_text": "Type: `integer`, multiple: `False`, default: `2000`. ",
-          "default": 2000
+          "help_text": "type: `integer`, multiple: False, default: `2000`"
         }
       }
     },
     "pca options": {
-      "title": "PCA options",
       "type": "object",
+      "title": "PCA options",
       "description": "No description",
       "properties": {
         "pca_num_components": {
           "type": "integer",
-          "description": "Number of principal components to compute",
-          "help_text": "Type: `integer`, multiple: `False`, example: `25`. "
+          "description": "Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.",
+          "help_text": "type: `integer`, multiple: False, example: `[25]`"
         }
       }
     },
     "harmony integration options": {
-      "title": "Harmony integration options",
       "type": "object",
+      "title": "Harmony integration options",
       "description": "No description",
       "properties": {
         "harmony_theta": {
           "type": "array",
+          "default": [
+            2.0
+          ],
+          "description": "Diversity clustering penalty parameter. Can be set as a single value for all batch observations or as multiple values, one for each observation in the batches defined by --input_obs_batch_label. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters.\"\n",
           "items": {
             "type": "number"
           },
-          "description": "Diversity clustering penalty parameter",
-          "help_text": "Type: `double`, multiple: `True`, default: `[2.0]`. ",
-          "default": [
-            2.0
-          ]
+          "help_text": "type: `array`, multiple: True, default: `2.0`"
         }
       }
     },
     "leiden clustering options": {
-      "title": "Leiden clustering options",
       "type": "object",
+      "title": "Leiden clustering options",
       "description": "No description",
       "properties": {
         "leiden_resolution": {
           "type": "array",
+          "default": [
+            1.0
+          ],
+          "description": "Control the coarseness of the clustering. Higher values lead to more clusters.",
           "items": {
             "type": "number"
           },
-          "description": "Control the coarseness of the clustering",
-          "help_text": "Type: `double`, multiple: `True`, default: `[1.0]`. ",
-          "default": [
-            1.0
-          ]
+          "help_text": "type: `array`, multiple: True, default: `1.0`"
         }
       }
     },
     "neighbor classifier arguments": {
-      "title": "Neighbor classifier arguments",
       "type": "object",
+      "title": "Neighbor classifier arguments",
       "description": "No description",
       "properties": {
         "knn_weights": {
           "type": "string",
-          "description": "Weight function used in prediction",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"uniform\"`, choices: ``uniform`, `distance``. ",
+          "default": [
+            "uniform"
+          ],
+          "description": "Weight function used in prediction. Possible values are:\n`uniform` (all points in each neighborhood are weighted equally) or \n`distance` (weight points by the inverse of their distance)\n",
           "enum": [
             "uniform",
             "distance"
           ],
-          "default": "uniform"
+          "help_text": "type: `string`, multiple: False, default: `uniform`, choices: `uniform`|`distance`"
         },
         "knn_n_neighbors": {
           "type": "integer",
-          "description": "The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent",
-          "help_text": "Type: `integer`, multiple: `False`, default: `15`. ",
-          "default": 15
+          "default": [
+            15
+          ],
+          "description": "The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n",
+          "help_text": "type: `integer`, multiple: False, default: `15`"
         }
       }
     },
-    "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
+    "outputs": {
       "type": "object",
+      "title": "Outputs",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "The annotated output .h5mu file.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+        },
+        "output_obs_predictions": {
+          "type": "array",
+          "description": "In which `.obs` slots to store the predicted cell labels.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_pred\"` suffix.\n",
+          "items": {
+            "type": "string"
+          },
+          "help_text": "type: `array`, multiple: True"
+        },
+        "output_obs_probability": {
+          "type": "array",
+          "description": "In which `.obs` slots to store the probability of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_probability\"` suffix.\n",
+          "items": {
+            "type": "string"
+          },
+          "help_text": "type: `array`, multiple: True"
+        },
+        "output_obsm_integrated": {
+          "type": "string",
+          "default": [
+            "X_integrated_harmony"
+          ],
+          "description": "In which .obsm slot to store the integrated embedding.",
+          "help_text": "type: `string`, multiple: False, default: `X_integrated_harmony`"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "The compression format to be used on the output h5mu object.\n",
+          "enum": [
+            "gzip",
+            "lzf"
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+        }
+      },
+      "required": [
+        "output"
+      ]
+    },
+    "nextflow input-output arguments": {
+      "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
     {
-      "$ref": "#/$defs/outputs"
+      "$ref": "#/$defs/dataset input"
     },
     {
       "$ref": "#/$defs/query input"
@@ -270,6 +300,9 @@
     },
     {
       "$ref": "#/$defs/neighbor classifier arguments"
+    },
+    {
+      "$ref": "#/$defs/outputs"
     },
     {
       "$ref": "#/$defs/nextflow input-output arguments"

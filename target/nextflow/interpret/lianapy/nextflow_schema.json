@@ -4,71 +4,78 @@
   "description": "Performs LIANA integration based as described in https://github.com/saezlab/liana-py",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Output h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
         },
         "modality": {
           "type": "string",
+          "default": [
+            "rna"
+          ],
           "description": "Which modality from the input MuData file to process.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "layer": {
           "type": "string",
-          "description": "Layer in anndata.AnnData.layers to use",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Layer in anndata.AnnData.layers to use. If None, use mudata.mod[modality].X.",
+          "help_text": "type: `string`, multiple: False"
         },
         "de_method": {
           "type": "string",
-          "description": "Differential expression method",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"t-test\"`, choices: ``logreg`, `t-test`, `wilcoxon`, `t-test_overestim_var``. ",
+          "default": [
+            "t-test"
+          ],
+          "description": "Differential expression method. `scanpy.tl.rank_genes_groups` is used to rank genes according to 1vsRest.",
           "enum": [
             "logreg",
             "t-test",
             "wilcoxon",
             "t-test_overestim_var"
           ],
-          "default": "t-test"
+          "help_text": "type: `string`, multiple: False, default: `t-test`, choices: `logreg`|`t-test`|`wilcoxon`|`t-test_overestim_var`"
         },
         "groupby": {
           "type": "string",
           "description": "The key of the observations grouping to consider.",
-          "help_text": "Type: `string`, multiple: `False`, required. "
+          "help_text": "type: `string`, multiple: False, required"
         },
         "resource_name": {
           "type": "string",
+          "default": [
+            "consensus"
+          ],
           "description": "Name of the resource to be loaded and use for ligand-receptor inference.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"consensus\"`, choices: ``baccin2019`, `cellcall`, `cellchatdb`, `cellinker`, `cellphonedb`, `celltalkdb`, `connectomedb2020`, `consensus`, `embrace`, `guide2pharma`, `hpmr`, `icellnet`, `italk`, `kirouac2010`, `lrdb`, `mouseconsensus`, `ramilowski2015``. ",
           "enum": [
             "baccin2019",
             "cellcall",
@@ -88,81 +95,105 @@
             "mouseconsensus",
             "ramilowski2015"
           ],
-          "default": "consensus"
+          "help_text": "type: `string`, multiple: False, default: `consensus`, choices: `baccin2019`|`cellcall`|`cellchatdb`|`cellinker`|`cellphonedb`|`celltalkdb`|`connectomedb2020`|`consensus`|`embrace`|`guide2pharma`|`hpmr`|`icellnet`|`italk`|`kirouac2010`|`lrdb`|`mouseconsensus`|`ramilowski2015`"
         },
         "gene_symbol": {
           "type": "string",
+          "default": [
+            "gene_symbol"
+          ],
           "description": "Column name in var DataFrame in which gene symbol are stored.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"gene_symbol\"`. ",
-          "default": "gene_symbol"
+          "help_text": "type: `string`, multiple: False, default: `gene_symbol`"
         },
         "expr_prop": {
           "type": "number",
-          "description": "Minimum expression proportion for the ligands/receptors (and their subunits) in the corresponding cell identities",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.1`. ",
-          "default": 0.1
+          "default": [
+            0.1
+          ],
+          "description": "Minimum expression proportion for the ligands/receptors (and their subunits) in the corresponding cell identities. Set to '0', to return unfiltered results.",
+          "help_text": "type: `number`, multiple: False, default: `0.1`"
         },
         "min_cells": {
           "type": "integer",
+          "default": [
+            5
+          ],
           "description": "Minimum cells per cell identity ('groupby') to be considered for downstream analysis.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `5`. ",
-          "default": 5
+          "help_text": "type: `integer`, multiple: False, default: `5`"
         },
         "aggregate_method": {
           "type": "string",
+          "default": [
+            "rra"
+          ],
           "description": "Method aggregation approach, one of ['mean', 'rra'], where 'mean' represents the mean rank, while 'rra' is the RobustRankAggregate (Kolde et al., 2014) of the interactions.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rra\"`, choices: ``mean`, `rra``. ",
           "enum": [
             "mean",
             "rra"
           ],
-          "default": "rra"
+          "help_text": "type: `string`, multiple: False, default: `rra`, choices: `mean`|`rra`"
         },
         "consensus_opts": {
           "type": "array",
+          "description": "Strategies to aggregate interactions across methods. Default is None - i.e. ['Specificity', 'Magnitude'] and both specificity and magnitude are aggregated.",
           "items": {
             "type": "string"
           },
-          "description": "Strategies to aggregate interactions across methods",
-          "help_text": "Type: `string`, multiple: `True`. "
+          "help_text": "type: `array`, multiple: True"
         },
         "return_all_lrs": {
           "type": "boolean",
-          "description": "Bool whether to return all LRs, or only those that surpass the 'expr_prop' threshold",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
-          "default": false
+          "default": [
+            false
+          ],
+          "description": "Bool whether to return all LRs, or only those that surpass the 'expr_prop' threshold. Those interactions that do not pass the 'expr_prop' threshold will be assigned to the *worst* score of the ones that do. 'False' by default.",
+          "help_text": "type: `boolean`, multiple: False, default: `False`"
         },
         "n_perms": {
           "type": "integer",
-          "description": "Number of permutations for the permutation test",
-          "help_text": "Type: `integer`, multiple: `False`, default: `100`. ",
-          "default": 100
+          "default": [
+            100
+          ],
+          "description": "Number of permutations for the permutation test. Note that this is relevant only for permutation-based methods - e.g. 'CellPhoneDB",
+          "help_text": "type: `integer`, multiple: False, default: `100`"
         },
         "output_compression": {
           "type": "string",
           "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
-          ]
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "output",
+        "groupby"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/arguments"
     },

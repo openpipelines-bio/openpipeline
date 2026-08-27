@@ -4,160 +4,199 @@
   "description": "Performs popular major vote cell typing on single cell sequence data using multiple algorithms. Note that this is a one-shot version of PopV.",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "Arguments related to the input (aka query) dataset.",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input h5mu file.",
           "format": "path",
           "exists": true,
-          "description": "Input h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "modality": {
           "type": "string",
+          "default": [
+            "rna"
+          ],
           "description": "Which modality to process.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "input_layer": {
           "type": "string",
-          "description": "Which layer to use",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[input_layer]`.",
+          "help_text": "type: `string`, multiple: False"
         },
         "input_obs_batch": {
           "type": "string",
-          "description": "Key in obs field of input adata for batch information",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Key in obs field of input adata for batch information. If no value is provided, batch label is assumed to be unknown.",
+          "help_text": "type: `string`, multiple: False"
         },
         "input_var_subset": {
           "type": "string",
           "description": "Subset the input object with this column.",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         },
         "input_obs_label": {
           "type": "string",
-          "description": "Key in obs field of input adata for label information",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Key in obs field of input adata for label information. This is only used for training scANVI. Unlabelled cells should be set to `\"unknown_celltype_label\"`.",
+          "help_text": "type: `string`, multiple: False"
         },
         "unknown_celltype_label": {
           "type": "string",
+          "default": [
+            "unknown"
+          ],
           "description": "If `input_obs_label` is specified, cells with this value will be treated as unknown and will be predicted by the model.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"unknown\"`. ",
-          "default": "unknown"
+          "help_text": "type: `string`, multiple: False, default: `unknown`"
         }
-      }
-    },
-    "outputs": {
-      "title": "Outputs",
-      "type": "object",
-      "description": "Output arguments.",
-      "properties": {
-        "output": {
-          "type": "string",
-          "format": "path",
-          "description": "Output h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
-        },
-        "output_compression": {
-          "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
-          "enum": [
-            "gzip",
-            "lzf"
-          ]
-        }
-      }
-    },
-    "arguments": {
-      "title": "Arguments",
-      "type": "object",
-      "description": "Other arguments.",
-      "properties": {
-        "methods": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Methods to call cell types",
-          "help_text": "Type: `string`, multiple: `True`, required, example: `[\"KNN_SCVI\";\"SCANVI_POPV\"]`, choices: ``CELLTYPIST`, `KNN_BBKNN`, `KNN_HARMONY`, `KNN_SCANORAMA`, `KNN_SCVI`, `ONCLASS`, `Random_Forest`, `SCANVI_POPV`, `Support_Vector``. "
-        }
-      }
+      },
+      "required": [
+        "input"
+      ]
     },
     "reference": {
-      "title": "Reference",
       "type": "object",
+      "title": "Reference",
       "description": "Arguments related to the reference dataset.",
       "properties": {
         "reference": {
           "type": "string",
+          "description": "User-provided reference tissue. The data that will be used as reference to call cell types.",
           "format": "path",
           "exists": true,
-          "description": "User-provided reference tissue",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"TS_Bladder_filtered.h5ad\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['TS_Bladder_filtered.h5ad']`"
         },
         "reference_layer": {
           "type": "string",
-          "description": "Which layer to use",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[reference_layer]`.",
+          "help_text": "type: `string`, multiple: False"
         },
         "reference_obs_label": {
           "type": "string",
+          "default": [
+            "cell_ontology_class"
+          ],
           "description": "Key in obs field of reference AnnData with cell-type information.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"cell_ontology_class\"`. ",
-          "default": "cell_ontology_class"
+          "help_text": "type: `string`, multiple: False, default: `cell_ontology_class`"
         },
         "reference_obs_batch": {
           "type": "string",
+          "default": [
+            "donor_assay"
+          ],
           "description": "Key in obs field of input adata for batch information.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"donor_assay\"`. ",
-          "default": "donor_assay"
+          "help_text": "type: `string`, multiple: False, default: `donor_assay`"
         }
-      }
+      },
+      "required": [
+        "reference"
+      ]
+    },
+    "outputs": {
+      "type": "object",
+      "title": "Outputs",
+      "description": "Output arguments.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output h5mu file.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
+          "enum": [
+            "gzip",
+            "lzf"
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+        }
+      },
+      "required": [
+        "output"
+      ]
+    },
+    "arguments": {
+      "type": "object",
+      "title": "Arguments",
+      "description": "Other arguments.",
+      "properties": {
+        "methods": {
+          "type": "array",
+          "description": "Methods to call cell types. By default, runs KNN_SCVI and SCANVI_POPV.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "CELLTYPIST",
+              "KNN_BBKNN",
+              "KNN_HARMONY",
+              "KNN_SCANORAMA",
+              "KNN_SCVI",
+              "ONCLASS",
+              "Random_Forest",
+              "SCANVI_POPV",
+              "Support_Vector"
+            ]
+          },
+          "help_text": "type: `array`, multiple: True, required, example: `['KNN_SCVI', 'SCANVI_POPV']`, choices: `CELLTYPIST`|`KNN_BBKNN`|`KNN_HARMONY`|`KNN_SCANORAMA`|`KNN_SCVI`|`ONCLASS`|`Random_Forest`|`SCANVI_POPV`|`Support_Vector`"
+        }
+      },
+      "required": [
+        "methods"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
     {
+      "$ref": "#/$defs/dataset input"
+    },
+    {
       "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/reference"
     },
     {
       "$ref": "#/$defs/outputs"
     },
     {
       "$ref": "#/$defs/arguments"
-    },
-    {
-      "$ref": "#/$defs/reference"
     },
     {
       "$ref": "#/$defs/nextflow input-output arguments"

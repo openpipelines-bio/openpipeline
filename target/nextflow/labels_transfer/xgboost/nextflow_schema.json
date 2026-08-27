@@ -1,0 +1,331 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "xgboost",
+  "description": "Performs label transfer from reference to query using XGBoost classifier",
+  "type": "object",
+  "$defs": {
+    "dataset input": {
+      "type": "object",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "type": "string",
+          "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
+        }
+      }
+    },
+    "input dataset (query) arguments": {
+      "type": "object",
+      "title": "Input dataset (query) arguments",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "description": "The query data to transfer the labels to. Should be a .h5mu file.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+        },
+        "modality": {
+          "type": "string",
+          "default": [
+            "rna"
+          ],
+          "description": "Which modality to use.",
+          "help_text": "type: `string`, multiple: False, default: `rna`"
+        },
+        "input_obsm_features": {
+          "type": "string",
+          "description": "The `.obsm` key of the embedding to use for the classifier's inference. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model or preprocessing).\n",
+          "help_text": "type: `string`, multiple: False, example: `['X_scvi']`"
+        }
+      },
+      "required": [
+        "input"
+      ]
+    },
+    "reference dataset arguments": {
+      "type": "object",
+      "title": "Reference dataset arguments",
+      "description": "No description",
+      "properties": {
+        "reference": {
+          "type": "string",
+          "description": "The reference data to train classifiers on.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['reference.h5mu']`"
+        },
+        "reference_obsm_features": {
+          "type": "string",
+          "description": "The `.obsm` key of the embedding to use for the classifier's training. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).\n",
+          "help_text": "type: `string`, multiple: False, example: `['X_scvi']`"
+        },
+        "reference_obs_targets": {
+          "type": "array",
+          "default": [
+            "ann_level_1",
+            "ann_level_2",
+            "ann_level_3",
+            "ann_level_4",
+            "ann_level_5",
+            "ann_finest_level"
+          ],
+          "description": "The `.obs` key(s) of the target labels to transfer.",
+          "items": {
+            "type": "string"
+          },
+          "help_text": "type: `array`, multiple: True, default: `ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level`"
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "title": "Outputs",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "The query data in .h5mu format with predicted labels transferred from the reference.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`"
+        },
+        "output_obs_predictions": {
+          "type": "array",
+          "description": "In which `.obs` slots to store the predicted information.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_pred\"` suffix.\n",
+          "items": {
+            "type": "string"
+          },
+          "help_text": "type: `array`, multiple: True"
+        },
+        "output_obs_probability": {
+          "type": "array",
+          "description": "In which `.obs` slots to store the probability of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_probability\"` suffix.\n",
+          "items": {
+            "type": "string"
+          },
+          "help_text": "type: `array`, multiple: True"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
+          "enum": [
+            "gzip",
+            "lzf"
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+        }
+      },
+      "required": [
+        "output"
+      ]
+    },
+    "execution arguments": {
+      "type": "object",
+      "title": "Execution arguments",
+      "description": "No description",
+      "properties": {
+        "force_retrain": {
+          "type": "boolean",
+          "default": false,
+          "description": "Retrain models on the reference even if model_output directory already has trained classifiers. WARNING! It will rewrite existing classifiers for targets in the model_output directory!",
+          "help_text": "type: `boolean`, default: `False`"
+        },
+        "use_gpu": {
+          "type": "boolean",
+          "default": [
+            false
+          ],
+          "description": "Use GPU during models training and inference (recommended).",
+          "help_text": "type: `boolean`, multiple: False, default: `False`"
+        },
+        "verbosity": {
+          "type": "integer",
+          "default": [
+            1
+          ],
+          "description": "The verbosity level for evaluation of the classifier from the range [0,2]",
+          "help_text": "type: `integer`, multiple: False, default: `1`"
+        },
+        "model_output": {
+          "type": "string",
+          "default": [
+            "model"
+          ],
+          "description": "Output directory for model",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, default: `model`, direction: `output`, example: `['path/to/model']`"
+        },
+        "output_uns_parameters": {
+          "type": "string",
+          "default": [
+            "xgboost_parameters"
+          ],
+          "description": "The key in `uns` slot of the output AnnData object to store the parameters of the XGBoost classifier.",
+          "help_text": "type: `string`, multiple: False, default: `xgboost_parameters`"
+        }
+      }
+    },
+    "learning parameters": {
+      "type": "object",
+      "title": "Learning parameters",
+      "description": "No description",
+      "properties": {
+        "learning_rate": {
+          "type": "number",
+          "default": [
+            0.3
+          ],
+          "description": "Step size shrinkage used in update to prevents overfitting. Range: [0,1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "help_text": "type: `number`, multiple: False, default: `0.3`"
+        },
+        "min_split_loss": {
+          "type": "number",
+          "default": [
+            0.0
+          ],
+          "description": "Minimum loss reduction required to make a further partition on a leaf node of the tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "help_text": "type: `number`, multiple: False, default: `0.0`"
+        },
+        "max_depth": {
+          "type": "integer",
+          "default": [
+            6
+          ],
+          "description": "Maximum depth of a tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "help_text": "type: `integer`, multiple: False, default: `6`"
+        },
+        "min_child_weight": {
+          "type": "integer",
+          "default": [
+            1
+          ],
+          "description": "Minimum sum of instance weight (hessian) needed in a child. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "help_text": "type: `integer`, multiple: False, default: `1`"
+        },
+        "max_delta_step": {
+          "type": "number",
+          "default": [
+            0.0
+          ],
+          "description": "Maximum delta step we allow each leaf output to be. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "help_text": "type: `number`, multiple: False, default: `0.0`"
+        },
+        "subsample": {
+          "type": "number",
+          "default": [
+            1.0
+          ],
+          "description": "Subsample ratio of the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "help_text": "type: `number`, multiple: False, default: `1.0`"
+        },
+        "sampling_method": {
+          "type": "string",
+          "default": [
+            "uniform"
+          ],
+          "description": "The method to use to sample the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "enum": [
+            "uniform",
+            "gradient_based"
+          ],
+          "help_text": "type: `string`, multiple: False, default: `uniform`, choices: `uniform`|`gradient_based`"
+        },
+        "colsample_bytree": {
+          "type": "number",
+          "default": [
+            1.0
+          ],
+          "description": "Fraction of columns to be subsampled. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "help_text": "type: `number`, multiple: False, default: `1.0`"
+        },
+        "colsample_bylevel": {
+          "type": "number",
+          "default": [
+            1.0
+          ],
+          "description": "Subsample ratio of columns for each level. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "help_text": "type: `number`, multiple: False, default: `1.0`"
+        },
+        "colsample_bynode": {
+          "type": "number",
+          "default": [
+            1.0
+          ],
+          "description": "Subsample ratio of columns for each node (split). Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "help_text": "type: `number`, multiple: False, default: `1.0`"
+        },
+        "reg_lambda": {
+          "type": "number",
+          "default": [
+            1.0
+          ],
+          "description": "L2 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "help_text": "type: `number`, multiple: False, default: `1.0`"
+        },
+        "reg_alpha": {
+          "type": "number",
+          "default": [
+            0.0
+          ],
+          "description": "L1 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "help_text": "type: `number`, multiple: False, default: `0.0`"
+        },
+        "scale_pos_weight": {
+          "type": "number",
+          "default": [
+            1.0
+          ],
+          "description": "Control the balance of positive and negative weights, useful for unbalanced classes. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "help_text": "type: `number`, multiple: False, default: `1.0`"
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "type": "object",
+      "title": "Nextflow input-output arguments",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
+        }
+      },
+      "required": [
+        "publish_dir"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
+    {
+      "$ref": "#/$defs/input dataset (query) arguments"
+    },
+    {
+      "$ref": "#/$defs/reference dataset arguments"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/execution arguments"
+    },
+    {
+      "$ref": "#/$defs/learning parameters"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

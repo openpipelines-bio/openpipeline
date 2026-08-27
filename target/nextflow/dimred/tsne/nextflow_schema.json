@@ -4,137 +4,171 @@
   "description": "t-SNE (t-Distributed Stochastic Neighbor Embedding) is a dimensionality reduction technique used to visualize high-dimensional data in a low-dimensional space, revealing patterns and clusters by preserving local data similarities.\n",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "modality": {
           "type": "string",
+          "default": [
+            "rna"
+          ],
           "description": "Which modality from the input MuData file to process.\n",
-          "help_text": "Type: `string`, multiple: `False`, required, default: `\"rna\"`. ",
-          "default": "rna"
+          "help_text": "type: `string`, multiple: False, required, default: `rna`"
         },
         "use_rep": {
           "type": "string",
           "description": "The `.obsm` slot to use as input for the tSNE computation.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"X_pca\"`. "
+          "help_text": "type: `string`, multiple: False, required, example: `['X_pca']`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "modality",
+        "use_rep"
+      ]
     },
     "outputs": {
-      "title": "Outputs",
       "type": "object",
+      "title": "Outputs",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Output h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
         },
         "obsm_output": {
           "type": "string",
+          "default": [
+            "X_tsne"
+          ],
           "description": "The .obsm key to use for storing the tSNE results.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"X_tsne\"`. ",
-          "default": "X_tsne"
+          "help_text": "type: `string`, multiple: False, default: `X_tsne`"
         },
         "output_compression": {
           "type": "string",
           "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
-          ]
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
         }
-      }
+      },
+      "required": [
+        "output"
+      ]
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "n_pcs": {
           "type": "integer",
+          "default": [
+            50
+          ],
           "description": "The number of principal components to use for the tSNE computation.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `50`. ",
-          "default": 50
+          "help_text": "type: `integer`, multiple: False, default: `50`"
         },
         "perplexity": {
           "type": "number",
-          "description": "The perplexity is related to the number of nearest neighbors that is used in other manifold learning algorithms",
-          "help_text": "Type: `double`, multiple: `False`, default: `30.0`. ",
-          "default": 30.0
+          "default": [
+            30.0
+          ],
+          "description": "The perplexity is related to the number of nearest neighbors that is used in other manifold learning algorithms. Larger datasets usually require a larger perplexity. Consider selecting a value between 5 and 50. Different values can result in significantly different results.",
+          "help_text": "type: `number`, multiple: False, default: `30.0`"
         },
         "min_dist": {
           "type": "number",
-          "description": "The effective minimum distance between embedded points",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.5`. ",
-          "default": 0.5
+          "default": [
+            0.5
+          ],
+          "description": "The effective minimum distance between embedded points. Smaller values will result in a more clustered/clumped embedding where nearby points on the manifold are drawn closer together, while larger values will result on a more even dispersal of points. The value should be set relative to the spread value, which determines the scale at which embedded points will be spread out.",
+          "help_text": "type: `number`, multiple: False, default: `0.5`"
         },
         "metric": {
           "type": "string",
+          "default": [
+            "euclidean"
+          ],
           "description": "Distance metric to calculate neighbors on.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"euclidean\"`. ",
-          "default": "euclidean"
+          "help_text": "type: `string`, multiple: False, default: `euclidean`"
         },
         "early_exaggeration": {
           "type": "number",
-          "description": "Controls how tight natural clusters in the original space are in the embedded space and how much space will be between them",
-          "help_text": "Type: `double`, multiple: `False`, default: `12.0`. ",
-          "default": 12.0
+          "default": [
+            12.0
+          ],
+          "description": "Controls how tight natural clusters in the original space are in the embedded space and how much space will be between them. For larger values, the space between natural clusters will be larger in the embedded space. Again, the choice of this parameter is not very critical. If the cost function increases during initial optimization, the early exaggeration factor or the learning rate might be too high.",
+          "help_text": "type: `number`, multiple: False, default: `12.0`"
         },
         "learning_rate": {
           "type": "number",
-          "description": "The learning rate for t-SNE optimization",
-          "help_text": "Type: `double`, multiple: `False`, default: `1000.0`. ",
-          "default": 1000.0
+          "default": [
+            1000.0
+          ],
+          "description": "The learning rate for t-SNE optimization. Typical values range between 10.0 and 1000.0.",
+          "help_text": "type: `number`, multiple: False, default: `1000.0`"
         },
         "random_state": {
           "type": "integer",
+          "default": [
+            0
+          ],
           "description": "The random seed to use for the tSNE computation.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
-          "default": 0
+          "help_text": "type: `integer`, multiple: False, default: `0`"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/inputs"
     },

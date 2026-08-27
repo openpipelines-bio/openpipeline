@@ -5,133 +5,143 @@
   "type": "object",
   "$defs": {
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `foo`. "
+          "help_text": "type: `string`, required, example: `foo`"
         },
         "input": {
           "type": "string",
+          "description": "Path to the sample.",
           "format": "path",
           "exists": true,
-          "description": "Path to the sample.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `dataset.h5mu`. "
+          "help_text": "type: `string`, required, direction: `input`, example: `dataset.h5mu`"
         },
         "layer": {
           "type": "string",
+          "default": "log_normalized",
           "description": "use specified layer for expression values instead of the .X object from the modality.",
-          "help_text": "Type: `string`, multiple: `False`, default: `log_normalized`. ",
-          "default": "log_normalized"
+          "help_text": "type: `string`, default: `log_normalized`"
         },
         "modality": {
           "type": "string",
+          "default": "rna",
           "description": "Which modality to process.",
-          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
-          "default": "rna"
+          "help_text": "type: `string`, default: `rna`"
         }
-      }
+      },
+      "required": [
+        "id",
+        "input"
+      ]
     },
     "outputs": {
-      "title": "Outputs",
       "type": "object",
+      "title": "Outputs",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Destination path to the output.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output.h5mu`"
         }
-      }
+      },
+      "required": [
+        "output"
+      ]
     },
     "pca options": {
-      "title": "PCA options",
       "type": "object",
+      "title": "PCA options",
       "description": "No description",
       "properties": {
         "obsm_pca": {
           "type": "string",
+          "default": "X_pca",
           "description": "In which .obsm slot to store the resulting PCA embedding.",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_pca`. ",
-          "default": "X_pca"
+          "help_text": "type: `string`, default: `X_pca`"
         },
         "var_pca_feature_selection": {
           "type": "string",
           "description": "Column name in .var matrix that will be used to select which genes to run the PCA on.",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`"
         },
         "pca_loadings_varm_output": {
           "type": "string",
           "description": "Name of the .varm key where the PCA loadings are stored.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`"
         },
         "pca_variance_uns_output": {
           "type": "string",
           "description": "Name of the .uns key where the variance and variance ratio will be stored as a map.\nThe map will contain two keys: variance and variance_ratio respectively.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`"
         },
         "pca_overwrite": {
           "type": "boolean",
+          "default": false,
           "description": "Allow overwriting slots for PCA output.",
-          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
-          "default": false
+          "help_text": "type: `boolean`, default: `False`"
         }
       }
     },
     "neighbour calculation": {
-      "title": "Neighbour calculation",
       "type": "object",
+      "title": "Neighbour calculation",
       "description": "No description",
       "properties": {
         "uns_neighbors": {
           "type": "string",
+          "default": "neighbors",
           "description": "In which .uns slot to store various neighbor output objects.",
-          "help_text": "Type: `string`, multiple: `False`, default: `neighbors`. ",
-          "default": "neighbors"
+          "help_text": "type: `string`, default: `neighbors`"
         },
         "obsp_neighbor_distances": {
           "type": "string",
+          "default": "distances",
           "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
-          "help_text": "Type: `string`, multiple: `False`, default: `distances`. ",
-          "default": "distances"
+          "help_text": "type: `string`, default: `distances`"
         },
         "obsp_neighbor_connectivities": {
           "type": "string",
+          "default": "connectivities",
           "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
-          "help_text": "Type: `string`, multiple: `False`, default: `connectivities`. ",
-          "default": "connectivities"
+          "help_text": "type: `string`, default: `connectivities`"
         }
       }
     },
     "umap options": {
-      "title": "Umap options",
       "type": "object",
+      "title": "Umap options",
       "description": "No description",
       "properties": {
         "obsm_umap": {
           "type": "string",
+          "default": "X_umap",
           "description": "In which .obsm slot to store the resulting UMAP embedding.",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_umap`. ",
-          "default": "X_umap"
+          "help_text": "type: `string`, default: `X_umap`"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [

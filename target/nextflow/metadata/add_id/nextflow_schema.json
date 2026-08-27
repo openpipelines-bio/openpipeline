@@ -4,81 +4,95 @@
   "description": "Add id of .obs. Also allows to make .obs_names (the .obs index) unique \nby prefixing the values with an unique id per .h5mu file.\n",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Path to the input .h5mu.",
           "format": "path",
           "exists": true,
-          "description": "Path to the input .h5mu.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "input_id": {
           "type": "string",
           "description": "The input id.",
-          "help_text": "Type: `string`, multiple: `False`, required. "
+          "help_text": "type: `string`, multiple: False, required"
         },
         "obs_output": {
           "type": "string",
+          "default": [
+            "sample_id"
+          ],
           "description": "Name of the .obs column where to store the id.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"sample_id\"`. ",
-          "default": "sample_id"
+          "help_text": "type: `string`, multiple: False, default: `sample_id`"
         },
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Name of output MuData file.\n",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output.h5mu']`"
         },
         "make_observation_keys_unique": {
           "type": "boolean",
+          "default": false,
           "description": "Join the id to the .obs index (.obs_names).",
-          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
-          "default": false
+          "help_text": "type: `boolean`, default: `False`"
         },
         "output_compression": {
           "type": "string",
           "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
-          ]
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "input_id"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/arguments"
     },

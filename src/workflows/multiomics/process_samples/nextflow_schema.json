@@ -5,402 +5,417 @@
   "type": "object",
   "$defs": {
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `foo`. "
+          "help_text": "type: `string`, required, example: `foo`"
         },
         "input": {
           "type": "string",
+          "description": "Path to the sample.",
           "format": "path",
           "exists": true,
-          "description": "Path to the sample.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+          "help_text": "type: `string`, required, direction: `input`, example: `input.h5mu`"
         },
         "rna_layer": {
           "type": "string",
-          "description": "Input layer for the gene expression modality",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Input layer for the gene expression modality. If not specified, .X is used.",
+          "help_text": "type: `string`"
         },
         "prot_layer": {
           "type": "string",
-          "description": "Input layer for the antibody capture modality",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Input layer for the antibody capture modality. If not specified, .X is used.",
+          "help_text": "type: `string`"
         },
         "gdo_layer": {
           "type": "string",
-          "description": "Input layer for the guide-derived oligonucleotide (GDO) data",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Input layer for the guide-derived oligonucleotide (GDO) data. If not specified, .X is used.",
+          "help_text": "type: `string`"
         }
-      }
+      },
+      "required": [
+        "id",
+        "input"
+      ]
     },
     "outputs": {
-      "title": "Outputs",
       "type": "object",
+      "title": "Outputs",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Destination path to the output.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output.h5mu`"
         }
-      }
+      },
+      "required": [
+        "output"
+      ]
     },
     "sample id options": {
-      "title": "Sample ID options",
       "type": "object",
+      "title": "Sample ID options",
       "description": "Options for adding the id to .obs on the MuData object. Having a sample \nid present in a requirement of several components for this pipeline.\n",
       "properties": {
         "add_id_to_obs": {
           "type": "boolean",
+          "default": true,
           "description": "Add the value passed with --id to .obs.",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "help_text": "type: `boolean`, default: `True`"
         },
         "add_id_obs_output": {
           "type": "string",
-          "description": ".Obs column to add the sample IDs to",
-          "help_text": "Type: `string`, multiple: `False`, default: `sample_id`. ",
-          "default": "sample_id"
+          "default": "sample_id",
+          "description": ".Obs column to add the sample IDs to. Required and only used when \n--add_id_to_obs is set to 'true'\n",
+          "help_text": "type: `string`, default: `sample_id`"
         },
         "add_id_make_observation_keys_unique": {
           "type": "boolean",
-          "description": "Join the id to the .obs index (.obs_names)",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "default": true,
+          "description": "Join the id to the .obs index (.obs_names). \nOnly used when --add_id_to_obs is set to 'true'.\n",
+          "help_text": "type: `boolean`, default: `True`"
         }
       }
     },
     "rna filtering options": {
-      "title": "RNA filtering options",
       "type": "object",
+      "title": "RNA filtering options",
       "description": "No description",
       "properties": {
         "rna_min_counts": {
           "type": "integer",
           "description": "Minimum number of counts captured per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+          "help_text": "type: `integer`, example: `200`"
         },
         "rna_max_counts": {
           "type": "integer",
           "description": "Maximum number of counts captured per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `5000000`. "
+          "help_text": "type: `integer`, example: `5000000`"
         },
         "rna_min_genes_per_cell": {
           "type": "integer",
           "description": "Minimum of non-zero values per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+          "help_text": "type: `integer`, example: `200`"
         },
         "rna_max_genes_per_cell": {
           "type": "integer",
           "description": "Maximum of non-zero values per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `1500000`. "
+          "help_text": "type: `integer`, example: `1500000`"
         },
         "rna_min_cells_per_gene": {
           "type": "integer",
           "description": "Minimum of non-zero values per gene.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+          "help_text": "type: `integer`, example: `3`"
         },
         "rna_min_fraction_mito": {
           "type": "number",
           "description": "Minimum fraction of UMIs that are mitochondrial.",
-          "help_text": "Type: `double`, multiple: `False`, example: `0`. "
+          "help_text": "type: `number`, example: `0.0`"
         },
         "rna_max_fraction_mito": {
           "type": "number",
           "description": "Maximum fraction of UMIs that are mitochondrial.",
-          "help_text": "Type: `double`, multiple: `False`, example: `0.2`. "
+          "help_text": "type: `number`, example: `0.2`"
         },
         "rna_min_fraction_ribo": {
           "type": "number",
           "description": "Minimum fraction of UMIs that are mitochondrial.",
-          "help_text": "Type: `double`, multiple: `False`, example: `0`. "
+          "help_text": "type: `number`, example: `0.0`"
         },
         "rna_max_fraction_ribo": {
           "type": "number",
           "description": "Maximum fraction of UMIs that are mitochondrial.",
-          "help_text": "Type: `double`, multiple: `False`, example: `0.2`. "
+          "help_text": "type: `number`, example: `0.2`"
         },
         "skip_scrublet_doublet_detection": {
           "type": "boolean",
+          "default": false,
           "description": "Skip the scrublet doublet detection step.",
-          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
-          "default": false
+          "help_text": "type: `boolean`, default: `False`"
         },
         "scrublet_score_threshold": {
           "type": "number",
-          "description": "Manual doublet score threshold passed to filter_with_scrublet",
-          "help_text": "Type: `double`, multiple: `False`. "
+          "description": "Manual doublet score threshold passed to filter_with_scrublet. Cells with a\ndoublet score above this value are classified as doublets. If not provided,\nthe threshold is determined automatically by Scrublet.\n",
+          "help_text": "type: `number`"
         }
       }
     },
     "cite-seq filtering options": {
-      "title": "CITE-seq filtering options",
       "type": "object",
+      "title": "CITE-seq filtering options",
       "description": "No description",
       "properties": {
         "prot_min_counts": {
           "type": "integer",
           "description": "Minimum number of counts per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+          "help_text": "type: `integer`, example: `3`"
         },
         "prot_max_counts": {
           "type": "integer",
           "description": "Minimum number of counts per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `5000000`. "
+          "help_text": "type: `integer`, example: `5000000`"
         },
         "prot_min_proteins_per_cell": {
           "type": "integer",
           "description": "Minimum of non-zero values per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+          "help_text": "type: `integer`, example: `200`"
         },
         "prot_max_proteins_per_cell": {
           "type": "integer",
           "description": "Maximum of non-zero values per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `100000000`. "
+          "help_text": "type: `integer`, example: `100000000`"
         },
         "prot_min_cells_per_protein": {
           "type": "integer",
           "description": "Minimum of non-zero values per protein.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+          "help_text": "type: `integer`, example: `3`"
         }
       }
     },
     "gdo filtering options": {
-      "title": "GDO filtering options",
       "type": "object",
+      "title": "GDO filtering options",
       "description": "No description",
       "properties": {
         "gdo_min_counts": {
           "type": "integer",
           "description": "Minimum number of counts per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+          "help_text": "type: `integer`, example: `3`"
         },
         "gdo_max_counts": {
           "type": "integer",
           "description": "Minimum number of counts per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `5000000`. "
+          "help_text": "type: `integer`, example: `5000000`"
         },
         "gdo_min_guides_per_cell": {
           "type": "integer",
           "description": "Minimum of non-zero values per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+          "help_text": "type: `integer`, example: `200`"
         },
         "gdo_max_guides_per_cell": {
           "type": "integer",
           "description": "Maximum of non-zero values per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `100000000`. "
+          "help_text": "type: `integer`, example: `100000000`"
         },
         "gdo_min_cells_per_guide": {
           "type": "integer",
           "description": "Minimum of non-zero values per guide.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+          "help_text": "type: `integer`, example: `3`"
         }
       }
     },
     "cross-modality filtering": {
-      "title": "Cross-modality filtering",
       "type": "object",
+      "title": "Cross-modality filtering",
       "description": "No description",
       "properties": {
         "intersect_obs": {
           "type": "boolean",
+          "default": false,
           "description": "After per-modality filtering and multisample processing, remove observations\nthat are not present in all processed modalities so that each modality shares\nthe same set of cells.\n",
-          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
-          "default": false
+          "help_text": "type: `boolean`, default: `False`"
         }
       }
     },
     "highly variable features detection": {
-      "title": "Highly variable features detection",
       "type": "object",
+      "title": "Highly variable features detection",
       "description": "No description",
       "properties": {
         "highly_variable_features_var_output": {
           "type": "string",
+          "default": "filter_with_hvg",
           "description": "In which .var slot to store a boolean array corresponding to the highly variable genes.",
-          "help_text": "Type: `string`, multiple: `False`, default: `filter_with_hvg`. ",
-          "default": "filter_with_hvg"
+          "help_text": "type: `string`, default: `filter_with_hvg`"
         },
         "highly_variable_features_obs_batch_key": {
           "type": "string",
-          "description": "If specified, highly-variable genes are selected within each batch separately and merged",
-          "help_text": "Type: `string`, multiple: `False`, default: `sample_id`. ",
-          "default": "sample_id"
+          "default": "sample_id",
+          "description": "If specified, highly-variable genes are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific genes and acts as a lightweight batch correction method.\n",
+          "help_text": "type: `string`, default: `sample_id`"
         }
       }
     },
     "mitochondrial & ribosomal gene detection": {
-      "title": "Mitochondrial & Ribosomal Gene Detection",
       "type": "object",
+      "title": "Mitochondrial & Ribosomal Gene Detection",
       "description": "No description",
       "properties": {
         "var_gene_names": {
           "type": "string",
-          "description": ".var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as mitochondrial or ribosomal genes, respectively",
-          "help_text": "Type: `string`, multiple: `False`, example: `gene_symbol`. "
+          "description": ".var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as mitochondrial or ribosomal genes, respectively. \n",
+          "help_text": "type: `string`, example: `gene_symbol`"
         },
         "var_name_mitochondrial_genes": {
           "type": "string",
           "description": "In which .var slot to store a boolean array corresponding the mitochondrial genes.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`"
         },
         "obs_name_mitochondrial_fraction": {
           "type": "string",
           "description": "When specified, write the fraction of counts originating from mitochondrial genes \n(based on --mitochondrial_gene_regex) to an .obs column with the specified name.\nRequires --var_name_mitochondrial_genes.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`"
         },
         "mitochondrial_gene_regex": {
           "type": "string",
+          "default": "^[mM][tT]-",
           "description": "Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `^[mM][tT]-`. ",
-          "default": "^[mM][tT]-"
+          "help_text": "type: `string`, default: `^[mM][tT]-`"
         },
         "var_name_ribosomal_genes": {
           "type": "string",
           "description": "In which .var slot to store a boolean array corresponding the ribosomal genes.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`"
         },
         "obs_name_ribosomal_fraction": {
           "type": "string",
           "description": "When specified, write the fraction of counts originating from ribosomal genes \n(based on --ribosomal_gene_regex) to an .obs column with the specified name.\nRequires --var_name_ribosomal_genes.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`"
         },
         "ribosomal_gene_regex": {
           "type": "string",
+          "default": "^[Mm]?[Rr][Pp][LlSs]",
           "description": "Regex string that identifies ribosomal genes from --var_gene_names.\nBy default will detect human and mouse ribosomal genes from a gene symbol.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `^[Mm]?[Rr][Pp][LlSs]`. ",
-          "default": "^[Mm]?[Rr][Pp][LlSs]"
+          "help_text": "type: `string`, default: `^[Mm]?[Rr][Pp][LlSs]`"
         }
       }
     },
     "qc metrics calculation options": {
-      "title": "QC metrics calculation options",
       "type": "object",
+      "title": "QC metrics calculation options",
       "description": "No description",
       "properties": {
         "var_qc_metrics": {
           "type": "array",
+          "description": "Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled 'True', \ncompared to the total sum of the values for all genes. Defaults to the combined values specified for\n--var_name_mitochondrial_genes and --highly_variable_features_var_output.\n",
           "items": {
             "type": "string"
           },
-          "description": "Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled 'True', \ncompared to the total sum of the values for all genes",
-          "help_text": "Type: `string`, multiple: `True`, example: `ercc,highly_variable`. "
+          "help_text": "type: `array`, multiple: True, example: `ercc,highly_variable`"
         },
         "top_n_vars": {
           "type": "array",
+          "default": [
+            50,
+            100,
+            200,
+            500
+          ],
+          "description": "Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n",
           "items": {
             "type": "integer"
           },
-          "description": "Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated",
-          "help_text": "Type: `integer`, multiple: `True`, default: `50,100,200,500`. ",
-          "default": "50,100,200,500"
+          "help_text": "type: `array`, multiple: True, default: `50,100,200,500`"
         },
         "log1p_transform": {
           "type": "boolean",
-          "description": "Compute log1p-transformed versions of the calculated QC metrics",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "default": true,
+          "description": "Compute log1p-transformed versions of the calculated QC metrics. For each emitted\nmetric column `<col>`, an additional column `log1p_<col>` is added containing\n`log1p(<col>)`. Mirrors scanpy's `log1p` flag.\n",
+          "help_text": "type: `boolean`, default: `True`"
         }
       }
     },
     "pca options": {
-      "title": "PCA options",
       "type": "object",
+      "title": "PCA options",
       "description": "No description",
       "properties": {
         "pca_overwrite": {
           "type": "boolean",
+          "default": false,
           "description": "Allow overwriting slots for PCA output.",
-          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
-          "default": false
+          "help_text": "type: `boolean`, default: `False`"
         }
       }
     },
     "clr options": {
-      "title": "CLR options",
       "type": "object",
+      "title": "CLR options",
       "description": "No description",
       "properties": {
         "clr_axis": {
           "type": "integer",
+          "default": 0,
           "description": "Axis to perform the CLR transformation on.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
-          "default": 0
+          "help_text": "type: `integer`, default: `0`"
         }
       }
     },
     "rna scaling options": {
-      "title": "RNA Scaling options",
       "type": "object",
+      "title": "RNA Scaling options",
       "description": "Options for enabling scaling of the log-normalized data to unit variance and zero mean.\nThe scaled data will be output a different layer and representation with reduced dimensions\nwill be created and stored in addition to the non-scaled data.\n",
       "properties": {
         "rna_enable_scaling": {
           "type": "boolean",
+          "default": false,
           "description": "Enable scaling for the RNA modality.",
-          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
-          "default": false
+          "help_text": "type: `boolean`, default: `False`"
         },
         "rna_scaling_output_layer": {
           "type": "string",
+          "default": "scaled",
           "description": "Output layer where the scaled log-normalized data will be stored.",
-          "help_text": "Type: `string`, multiple: `False`, default: `scaled`. ",
-          "default": "scaled"
+          "help_text": "type: `string`, default: `scaled`"
         },
         "rna_scaling_pca_obsm_output": {
           "type": "string",
+          "default": "scaled_pca",
           "description": "Name of the .obsm key where the PCA representation of the log-normalized\nand scaled data is stored.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `scaled_pca`. ",
-          "default": "scaled_pca"
+          "help_text": "type: `string`, default: `scaled_pca`"
         },
         "rna_scaling_pca_loadings_varm_output": {
           "type": "string",
+          "default": "scaled_pca_loadings",
           "description": "Name of the .varm key where the PCA loadings of the log-normalized and scaled\ndata is stored.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `scaled_pca_loadings`. ",
-          "default": "scaled_pca_loadings"
+          "help_text": "type: `string`, default: `scaled_pca_loadings`"
         },
         "rna_scaling_pca_variance_uns_output": {
           "type": "string",
+          "default": "scaled_pca_variance",
           "description": "Name of the .uns key where the variance and variance ratio will be stored as a map.\nThe map will contain two keys: variance and variance_ratio respectively.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `scaled_pca_variance`. ",
-          "default": "scaled_pca_variance"
+          "help_text": "type: `string`, default: `scaled_pca_variance`"
         },
         "rna_scaling_umap_obsm_output": {
           "type": "string",
+          "default": "scaled_umap",
           "description": "Name of the .obsm key where the UMAP representation of the log-normalized and scaled data is stored.",
-          "help_text": "Type: `string`, multiple: `False`, default: `scaled_umap`. ",
-          "default": "scaled_umap"
+          "help_text": "type: `string`, default: `scaled_umap`"
         },
         "rna_scaling_max_value": {
           "type": "number",
-          "description": "Clip (truncate) data to this value after scaling",
-          "help_text": "Type: `double`, multiple: `False`. "
+          "description": "Clip (truncate) data to this value after scaling. If not specified, do not clip.",
+          "help_text": "type: `number`"
         },
         "rna_scaling_zero_center": {
           "type": "boolean",
-          "description": "If true, center the data to zero mean before scaling",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "default": true,
+          "description": "If true, center the data to zero mean before scaling. Set to false to omit zero-centering, which allows sparse input to be handled efficiently.",
+          "help_text": "type: `boolean`, default: `True`"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [

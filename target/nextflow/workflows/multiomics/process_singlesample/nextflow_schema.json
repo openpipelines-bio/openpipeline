@@ -4,286 +4,310 @@
   "description": "A pipeline to analyse a single multiomics sample.",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Path to the sample.",
           "format": "path",
           "exists": true,
-          "description": "Path to the sample.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "rna_layer": {
           "type": "string",
-          "description": "Input layer for the gene expression modality",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Input layer for the gene expression modality. If not specified, .X is used.",
+          "help_text": "type: `string`, multiple: False"
         },
         "prot_layer": {
           "type": "string",
-          "description": "Input layer for the antibody capture modality",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Input layer for the antibody capture modality. If not specified, .X is used.",
+          "help_text": "type: `string`, multiple: False"
         },
         "gdo_layer": {
           "type": "string",
-          "description": "Input layer for the guide-derived oligonucleotide (GDO) data",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Input layer for the guide-derived oligonucleotide (GDO) data. If not specified, .X is used.",
+          "help_text": "type: `string`, multiple: False"
         }
-      }
+      },
+      "required": [
+        "input"
+      ]
     },
     "outputs": {
-      "title": "Outputs",
       "type": "object",
+      "title": "Outputs",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Destination path to the output.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
         }
-      }
+      },
+      "required": [
+        "output"
+      ]
     },
     "sample id options": {
-      "title": "Sample ID options",
       "type": "object",
+      "title": "Sample ID options",
       "description": "Options for adding the id to .obs on the MuData object. Having a sample \nid present in a requirement of several components for this pipeline.\n",
       "properties": {
         "add_id_to_obs": {
           "type": "boolean",
+          "default": [
+            true
+          ],
           "description": "Add the value passed with --id to .obs.",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "add_id_obs_output": {
           "type": "string",
-          "description": ".Obs column to add the sample IDs to",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"sample_id\"`. ",
-          "default": "sample_id"
+          "default": [
+            "sample_id"
+          ],
+          "description": ".Obs column to add the sample IDs to. Required and only used when \n--add_id_to_obs is set to 'true'\n",
+          "help_text": "type: `string`, multiple: False, default: `sample_id`"
         },
         "add_id_make_observation_keys_unique": {
           "type": "boolean",
-          "description": "Join the id to the .obs index (.obs_names)",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "default": [
+            true
+          ],
+          "description": "Join the id to the .obs index (.obs_names). \nOnly used when --add_id_to_obs is set to 'true'.\n",
+          "help_text": "type: `boolean`, multiple: False, default: `True`"
         }
       }
     },
     "rna filtering options": {
-      "title": "RNA filtering options",
       "type": "object",
+      "title": "RNA filtering options",
       "description": "No description",
       "properties": {
         "rna_min_counts": {
           "type": "integer",
           "description": "Minimum number of counts captured per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+          "help_text": "type: `integer`, multiple: False, example: `[200]`"
         },
         "rna_max_counts": {
           "type": "integer",
           "description": "Maximum number of counts captured per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `5000000`. "
+          "help_text": "type: `integer`, multiple: False, example: `[5000000]`"
         },
         "rna_min_genes_per_cell": {
           "type": "integer",
           "description": "Minimum of non-zero values per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+          "help_text": "type: `integer`, multiple: False, example: `[200]`"
         },
         "rna_max_genes_per_cell": {
           "type": "integer",
           "description": "Maximum of non-zero values per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `1500000`. "
+          "help_text": "type: `integer`, multiple: False, example: `[1500000]`"
         },
         "rna_min_cells_per_gene": {
           "type": "integer",
           "description": "Minimum of non-zero values per gene.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+          "help_text": "type: `integer`, multiple: False, example: `[3]`"
         },
         "rna_min_fraction_mito": {
           "type": "number",
           "description": "Minimum fraction of UMIs that are mitochondrial.",
-          "help_text": "Type: `double`, multiple: `False`, example: `0.0`. "
+          "help_text": "type: `number`, multiple: False, example: `[0.0]`"
         },
         "rna_max_fraction_mito": {
           "type": "number",
           "description": "Maximum fraction of UMIs that are mitochondrial.",
-          "help_text": "Type: `double`, multiple: `False`, example: `0.2`. "
+          "help_text": "type: `number`, multiple: False, example: `[0.2]`"
         },
         "rna_min_fraction_ribo": {
           "type": "number",
           "description": "Minimum fraction of UMIs that are mitochondrial.",
-          "help_text": "Type: `double`, multiple: `False`, example: `0.0`. "
+          "help_text": "type: `number`, multiple: False, example: `[0.0]`"
         },
         "rna_max_fraction_ribo": {
           "type": "number",
           "description": "Maximum fraction of UMIs that are mitochondrial.",
-          "help_text": "Type: `double`, multiple: `False`, example: `0.2`. "
+          "help_text": "type: `number`, multiple: False, example: `[0.2]`"
         },
         "skip_scrublet_doublet_detection": {
           "type": "boolean",
+          "default": false,
           "description": "Skip the scrublet doublet detection step.",
-          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
-          "default": false
+          "help_text": "type: `boolean`, default: `False`"
         },
         "scrublet_score_threshold": {
           "type": "number",
-          "description": "Manual doublet score threshold passed to filter_with_scrublet",
-          "help_text": "Type: `double`, multiple: `False`. "
+          "description": "Manual doublet score threshold passed to filter_with_scrublet. Cells with a\ndoublet score above this value are classified as doublets. If not provided,\nthe threshold is determined automatically by Scrublet.\n",
+          "help_text": "type: `number`, multiple: False"
         }
       }
     },
     "cite-seq filtering options": {
-      "title": "CITE-seq filtering options",
       "type": "object",
+      "title": "CITE-seq filtering options",
       "description": "No description",
       "properties": {
         "prot_min_counts": {
           "type": "integer",
           "description": "Minimum number of counts per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+          "help_text": "type: `integer`, multiple: False, example: `[3]`"
         },
         "prot_max_counts": {
           "type": "integer",
           "description": "Minimum number of counts per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `5000000`. "
+          "help_text": "type: `integer`, multiple: False, example: `[5000000]`"
         },
         "prot_min_proteins_per_cell": {
           "type": "integer",
           "description": "Minimum of non-zero values per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+          "help_text": "type: `integer`, multiple: False, example: `[200]`"
         },
         "prot_max_proteins_per_cell": {
           "type": "integer",
           "description": "Maximum of non-zero values per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `100000000`. "
+          "help_text": "type: `integer`, multiple: False, example: `[100000000]`"
         },
         "prot_min_cells_per_protein": {
           "type": "integer",
           "description": "Minimum of non-zero values per protein.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+          "help_text": "type: `integer`, multiple: False, example: `[3]`"
         }
       }
     },
     "gdo filtering options": {
-      "title": "GDO filtering options",
       "type": "object",
+      "title": "GDO filtering options",
       "description": "No description",
       "properties": {
         "gdo_min_counts": {
           "type": "integer",
           "description": "Minimum number of counts per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+          "help_text": "type: `integer`, multiple: False, example: `[3]`"
         },
         "gdo_max_counts": {
           "type": "integer",
           "description": "Minimum number of counts per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `5000000`. "
+          "help_text": "type: `integer`, multiple: False, example: `[5000000]`"
         },
         "gdo_min_guides_per_cell": {
           "type": "integer",
           "description": "Minimum of non-zero values per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+          "help_text": "type: `integer`, multiple: False, example: `[200]`"
         },
         "gdo_max_guides_per_cell": {
           "type": "integer",
           "description": "Maximum of non-zero values per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `100000000`. "
+          "help_text": "type: `integer`, multiple: False, example: `[100000000]`"
         },
         "gdo_min_cells_per_guide": {
           "type": "integer",
           "description": "Minimum of non-zero values per guide.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+          "help_text": "type: `integer`, multiple: False, example: `[3]`"
         }
       }
     },
     "cross-modality filtering": {
-      "title": "Cross-modality filtering",
       "type": "object",
+      "title": "Cross-modality filtering",
       "description": "No description",
       "properties": {
         "intersect_obs": {
           "type": "boolean",
+          "default": false,
           "description": "After per-modality filtering, remove observations that are not present\nin all processed modalities so that each modality shares the same set of cells.\n",
-          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
-          "default": false
+          "help_text": "type: `boolean`, default: `False`"
         }
       }
     },
     "mitochondrial & ribosomal gene detection": {
-      "title": "Mitochondrial & Ribosomal Gene Detection",
       "type": "object",
+      "title": "Mitochondrial & Ribosomal Gene Detection",
       "description": "No description",
       "properties": {
         "var_gene_names": {
           "type": "string",
-          "description": ".var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as mitochondrial or ribosomal genes, respectively",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gene_symbol\"`. "
+          "description": ".var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as mitochondrial or ribosomal genes, respectively. \n",
+          "help_text": "type: `string`, multiple: False, example: `['gene_symbol']`"
         },
         "var_name_mitochondrial_genes": {
           "type": "string",
           "description": "In which .var slot to store a boolean array corresponding the mitochondrial genes.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         },
         "obs_name_mitochondrial_fraction": {
           "type": "string",
           "description": "When specified, write the fraction of counts originating from mitochondrial genes \n(based on --mitochondrial_gene_regex) to an .obs column with the specified name.\nRequires --var_name_mitochondrial_genes.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         },
         "mitochondrial_gene_regex": {
           "type": "string",
+          "default": [
+            "^[mM][tT]-"
+          ],
           "description": "Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"^[mM][tT]-\"`. ",
-          "default": "^[mM][tT]-"
+          "help_text": "type: `string`, multiple: False, default: `^[mM][tT]-`"
         },
         "var_name_ribosomal_genes": {
           "type": "string",
           "description": "In which .var slot to store a boolean array corresponding the ribosomal genes.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         },
         "obs_name_ribosomal_fraction": {
           "type": "string",
           "description": "When specified, write the fraction of counts originating from ribosomal genes \n(based on --ribosomal_gene_regex) to an .obs column with the specified name.\nRequires --var_name_ribosomal_genes.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         },
         "ribosomal_gene_regex": {
           "type": "string",
+          "default": [
+            "^[Mm]?[Rr][Pp][LlSs]"
+          ],
           "description": "Regex string that identifies ribosomal genes from --var_gene_names.\nBy default will detect human and mouse ribosomal genes from a gene symbol.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"^[Mm]?[Rr][Pp][LlSs]\"`. ",
-          "default": "^[Mm]?[Rr][Pp][LlSs]"
+          "help_text": "type: `string`, multiple: False, default: `^[Mm]?[Rr][Pp][LlSs]`"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/inputs"
     },

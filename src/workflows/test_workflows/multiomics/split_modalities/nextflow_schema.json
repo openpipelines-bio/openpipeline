@@ -5,44 +5,53 @@
   "type": "object",
   "$defs": {
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Path to modality summary csv.",
           "format": "path",
           "exists": true,
-          "description": "Path to modality summary csv.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `output_types.csv`. "
+          "help_text": "type: `string`, required, direction: `input`, example: `output_types.csv`"
         },
         "mod_dir": {
           "type": "string",
+          "description": "Path to the directory containing the modality h5mu files.",
           "format": "path",
           "exists": true,
-          "description": "Path to the directory containing the modality h5mu files.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `/path/to/h5mu_files`. "
+          "help_text": "type: `string`, required, direction: `input`, example: `/path/to/h5mu_files`"
         },
         "orig_input": {
           "type": "string",
+          "description": "Path to the original input file.",
           "format": "path",
           "exists": true,
-          "description": "Path to the original input file.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `/path/to/original_input.h5mu`. "
+          "help_text": "type: `string`, required, direction: `input`, example: `/path/to/original_input.h5mu`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "mod_dir",
+        "orig_input"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [

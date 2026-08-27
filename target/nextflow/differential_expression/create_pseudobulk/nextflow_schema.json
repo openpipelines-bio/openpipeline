@@ -4,132 +4,155 @@
   "description": "Generation of pseudobulk samples from single-cell transcriptomics data,\nby aggregating raw gene expression counts from individual cells to create \nbulk-like expression profiles suitable for differential expression analysis\nwith methods designed for bulk differential expression analysis.\nNote that this componentonly considers factors as explanatory variables, \nand excludes covariates from the analysis.\n",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input h5mu file.",
           "format": "path",
           "exists": true,
-          "description": "Input h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "modality": {
           "type": "string",
+          "default": [
+            "rna"
+          ],
           "description": "Which modality from the input MuData file to process.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "input_layer": {
           "type": "string",
-          "description": "Input layer to use",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Input layer to use. If None, X is used. This layer must contain raw counts.",
+          "help_text": "type: `string`, multiple: False"
         },
         "obs_label": {
           "type": "string",
-          "description": ".obs field containing the variable to group on",
-          "help_text": "Type: `string`, multiple: `False`, required. "
+          "description": ".obs field containing the variable to group on. Typically this field contains cell groups such as annotated cell types or clusters.",
+          "help_text": "type: `string`, multiple: False, required"
         },
         "obs_groups": {
           "type": "array",
+          "description": ".obs fields containing the experimental condition(s) to create pseudobulk samples for.",
           "items": {
             "type": "string"
           },
-          "description": ".obs fields containing the experimental condition(s) to create pseudobulk samples for.",
-          "help_text": "Type: `string`, multiple: `True`. "
+          "help_text": "type: `array`, multiple: True"
         }
-      }
-    },
-    "outputs": {
-      "title": "Outputs",
-      "type": "object",
-      "description": "No description",
-      "properties": {
-        "output": {
-          "type": "string",
-          "format": "path",
-          "description": "Output h5mu file containing the aggregated pseudobulk samples.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
-        },
-        "output_compression": {
-          "type": "string",
-          "description": "The compression format to be used on the output h5mu object.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
-          "enum": [
-            "gzip",
-            "lzf"
-          ]
-        }
-      }
+      },
+      "required": [
+        "input",
+        "obs_label"
+      ]
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "aggregation_method": {
           "type": "string",
-          "description": "Method to aggregate the raw counts for pseudoreplicates",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"sum\"`, choices: ``sum`, `mean``. ",
+          "default": [
+            "sum"
+          ],
+          "description": "Method to aggregate the raw counts for pseudoreplicates. Either sum or mean.",
           "enum": [
             "sum",
             "mean"
           ],
-          "default": "sum"
+          "help_text": "type: `string`, multiple: False, default: `sum`, choices: `sum`|`mean`"
         },
         "random_state": {
           "type": "integer",
+          "default": [
+            0
+          ],
           "description": "The random seed for sampling.\n",
-          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
-          "default": 0
+          "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "obs_cell_count": {
           "type": "string",
+          "default": [
+            "n_cells"
+          ],
           "description": "The .obs field to store the number of observations per pseudobulk sample.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"n_cells\"`. ",
-          "default": "n_cells"
+          "help_text": "type: `string`, multiple: False, default: `n_cells`"
         }
       }
     },
-    "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
+    "outputs": {
       "type": "object",
+      "title": "Outputs",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output h5mu file containing the aggregated pseudobulk samples.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "The compression format to be used on the output h5mu object.\n",
+          "enum": [
+            "gzip",
+            "lzf"
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+        }
+      },
+      "required": [
+        "output"
+      ]
+    },
+    "nextflow input-output arguments": {
+      "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
     {
+      "$ref": "#/$defs/dataset input"
+    },
+    {
       "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/$defs/outputs"
+      "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/$defs/arguments"
+      "$ref": "#/$defs/outputs"
     },
     {
       "$ref": "#/$defs/nextflow input-output arguments"

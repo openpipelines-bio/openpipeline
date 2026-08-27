@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "make_reference",
+  "description": "Build a transcriptomics reference into one of many formats.\n",
+  "type": "object",
+  "$defs": {
+    "dataset input": {
+      "type": "object",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "type": "string",
+          "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
+        }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "title": "Inputs",
+      "description": "No description",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID of the reference.",
+          "help_text": "type: `string`, multiple: False, required, example: `['foo']`"
+        },
+        "genome_fasta": {
+          "type": "string",
+          "description": "Reference genome fasta.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz']`"
+        },
+        "transcriptome_gtf": {
+          "type": "string",
+          "description": "Reference transcriptome annotation.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz']`"
+        },
+        "ercc": {
+          "type": "string",
+          "description": "ERCC sequence and annotation file.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['https:/assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip']`"
+        }
+      },
+      "required": [
+        "id",
+        "genome_fasta",
+        "transcriptome_gtf"
+      ]
+    },
+    "star settings": {
+      "type": "object",
+      "title": "STAR Settings",
+      "description": "No description",
+      "properties": {
+        "star_genome_sa_index_nbases": {
+          "type": "integer",
+          "default": [
+            14
+          ],
+          "description": "Length (bases) of the SA pre-indexing string. Typically between 10 and 15.\nLonger strings will use much more memory, but allow faster searches. For small\ngenomes, the parameter {genomeSAindexNbases must be scaled down to\nmin(14, log2(GenomeLength)/2 - 1).\n",
+          "help_text": "type: `integer`, multiple: False, default: `14`"
+        }
+      }
+    },
+    "bd rhapsody settings": {
+      "type": "object",
+      "title": "BD Rhapsody Settings",
+      "description": "No description",
+      "properties": {
+        "bdrhap_mitochondrial_contigs": {
+          "type": "array",
+          "default": [
+            "chrM",
+            "chrMT",
+            "M",
+            "MT"
+          ],
+          "description": "Names of the Mitochondrial contigs in the provided Reference Genome. Fragments originating from contigs other than these are\nidentified as 'nuclear fragments' in the ATACseq analysis pipeline.\n",
+          "items": {
+            "type": "string"
+          },
+          "help_text": "type: `array`, multiple: True, default: `chrM;chrMT;M;MT`"
+        },
+        "bdrhap_filtering_off": {
+          "type": "boolean",
+          "default": false,
+          "description": "By default the input Transcript Annotation files are filtered based on the gene_type/gene_biotype attribute. Only features \nhaving the following attribute values are kept:\n\n  - protein_coding\n  - lncRNA \n  - IG_LV_gene\n  - IG_V_gene\n  - IG_V_pseudogene\n  - IG_D_gene\n  - IG_J_gene\n  - IG_J_pseudogene\n  - IG_C_gene\n  - IG_C_pseudogene\n  - TR_V_gene\n  - TR_V_pseudogene\n  - TR_D_gene\n  - TR_J_gene\n  - TR_J_pseudogene\n  - TR_C_gene\n\n  If you have already pre-filtered the input Annotation files and/or wish to turn-off the filtering, please set this option to True.\n",
+          "help_text": "type: `boolean`, default: `False`"
+        },
+        "bdrhap_wta_only_index": {
+          "type": "boolean",
+          "default": false,
+          "description": "Build a WTA only index, otherwise builds a WTA + ATAC index.",
+          "help_text": "type: `boolean`, default: `False`"
+        },
+        "bdrhap_extra_star_params": {
+          "type": "string",
+          "description": "Additional parameters to pass to STAR when building the genome index. Specify exactly like how you would on the command line.",
+          "help_text": "type: `string`, multiple: False, example: `['--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11']`"
+        }
+      }
+    },
+    "cellranger arc options": {
+      "type": "object",
+      "title": "Cellranger ARC options",
+      "description": "No description",
+      "properties": {
+        "motifs_file": {
+          "type": "string",
+          "description": "Path to file containing transcription factor motifs in JASPAR format.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['motifs.txt']`"
+        },
+        "non_nuclear_contigs": {
+          "type": "array",
+          "description": "Name(s) of contig(s) that do not have any chromatin structure, for example, \nmitochondria or plastids. These contigs are excluded from peak calling since\nthe entire contig will be \"open\" due to a lack of chromatin structure.\nLeave empty if there are no such contigs.\n",
+          "items": {
+            "type": "string"
+          },
+          "help_text": "type: `array`, multiple: True"
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "title": "Outputs",
+      "description": "No description",
+      "properties": {
+        "target": {
+          "type": "array",
+          "default": [
+            "star"
+          ],
+          "description": "Which reference indices to generate.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "cellranger",
+              "cellranger_arc",
+              "bd_rhapsody",
+              "star"
+            ]
+          },
+          "help_text": "type: `array`, multiple: True, default: `star`, choices: `cellranger`|`cellranger_arc`|`bd_rhapsody`|`star`"
+        },
+        "output_fasta": {
+          "type": "string",
+          "description": "Output genome sequence fasta.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['genome_sequence.fa.gz']`"
+        },
+        "output_gtf": {
+          "type": "string",
+          "description": "Output transcriptome annotation gtf.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['transcriptome_annotation.gtf.gz']`"
+        },
+        "output_cellranger": {
+          "type": "string",
+          "description": "Output index",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['cellranger_index.tar.gz']`"
+        },
+        "output_cellranger_arc": {
+          "type": "string",
+          "description": "Output index",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['cellranger_index_arc.tar.gz']`"
+        },
+        "output_bd_rhapsody": {
+          "type": "string",
+          "description": "Output index",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['bdrhap_index.tar.gz']`"
+        },
+        "output_star": {
+          "type": "string",
+          "description": "Output index",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['star_index.tar.gz']`"
+        }
+      }
+    },
+    "arguments": {
+      "type": "object",
+      "title": "Arguments",
+      "description": "No description",
+      "properties": {
+        "subset_regex": {
+          "type": "string",
+          "description": "Will subset the reference chromosomes using the given regex.",
+          "help_text": "type: `string`, multiple: False, example: `['(ERCC-00002|chr1)']`"
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "type": "object",
+      "title": "Nextflow input-output arguments",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
+        }
+      },
+      "required": [
+        "publish_dir"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/star settings"
+    },
+    {
+      "$ref": "#/$defs/bd rhapsody settings"
+    },
+    {
+      "$ref": "#/$defs/cellranger arc options"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

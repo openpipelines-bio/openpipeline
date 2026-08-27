@@ -4,106 +4,124 @@
   "description": "Split the samples of a single modality from a .h5mu (multimodal) sample into seperate .h5mu files based on the values of an .obs column of this modality. \n",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
-        }
-      }
-    },
-    "outputs": {
-      "title": "Outputs",
-      "type": "object",
-      "description": "No description",
-      "properties": {
-        "output": {
-          "type": "string",
-          "format": "path",
-          "description": "Output directory containing multiple h5mu files.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`, example: `\"/path/to/output\"`. ",
-          "default": "$id.$key.output"
-        },
-        "output_files": {
-          "type": "string",
-          "format": "path",
-          "description": "A csv containing the base filename and obs feature by which it was split.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output_files.csv\"`, direction: `output`, example: `\"sample_files.csv\"`. ",
-          "default": "$id.$key.output_files.csv"
-        },
-        "output_compression": {
-          "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
-          "enum": [
-            "gzip",
-            "lzf"
-          ]
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "input & specifications": {
-      "title": "Input & specifications",
       "type": "object",
+      "title": "Input & specifications",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Path to a single .h5mu file.",
           "format": "path",
           "exists": true,
-          "description": "Path to a single .h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "modality": {
           "type": "string",
+          "default": [
+            "rna"
+          ],
           "description": "Which modality from the input MuData file to process.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "obs_feature": {
           "type": "string",
           "description": "The .obs column to split the mudata on.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"celltype\"`. "
+          "help_text": "type: `string`, multiple: False, required, example: `['celltype']`"
         },
         "drop_obs_nan": {
           "type": "boolean",
+          "default": false,
           "description": "Whether to drop all .obs columns that contain only nan values after splitting.",
-          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
-          "default": false
+          "help_text": "type: `boolean`, default: `False`"
         },
         "ensure_unique_filenames": {
           "type": "boolean",
+          "default": false,
           "description": "Append number suffixes to ensure unique filenames after sanitizing obs feature values.",
-          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
-          "default": false
+          "help_text": "type: `boolean`, default: `False`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "obs_feature"
+      ]
+    },
+    "outputs": {
+      "type": "object",
+      "title": "Outputs",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output directory containing multiple h5mu files.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['/path/to/output']`"
+        },
+        "output_files": {
+          "type": "string",
+          "description": "A csv containing the base filename and obs feature by which it was split.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['sample_files.csv']`"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
+          "enum": [
+            "gzip",
+            "lzf"
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+        }
+      },
+      "required": [
+        "output",
+        "output_files"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
     {
-      "$ref": "#/$defs/outputs"
+      "$ref": "#/$defs/dataset input"
     },
     {
       "$ref": "#/$defs/input & specifications"
+    },
+    {
+      "$ref": "#/$defs/outputs"
     },
     {
       "$ref": "#/$defs/nextflow input-output arguments"

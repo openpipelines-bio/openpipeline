@@ -4,113 +4,134 @@
   "description": "Cluster cells using the [Leiden algorithm] [Traag18] implemented in the [Scanpy framework] [Wolf18]. \nLeiden is an improved version of the [Louvain algorithm] [Blondel08]. \nIt has been proposed for single-cell analysis by [Levine15] [Levine15]. \nThis requires having ran `neighbors/find_neighbors` or `neighbors/bbknn` first.\n\n[Blondel08]: Blondel et al. (2008), Fast unfolding of communities in large networks, J. Stat. Mech.  \n[Levine15]: Levine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals Progenitor-like Cells that Correlate with Prognosis, Cell.  \n[Traag18]: Traag et al. (2018), From Louvain to Leiden: guaranteeing well-connected communities arXiv.  \n[Wolf18]: Wolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology.  \n",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input file.",
           "format": "path",
           "exists": true,
-          "description": "Input file.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "modality": {
           "type": "string",
+          "default": [
+            "rna"
+          ],
           "description": "Which modality from the input MuData file to process.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "obsp_connectivities": {
           "type": "string",
+          "default": [
+            "connectivities"
+          ],
           "description": "In which .obsp slot the neighbor connectivities can be found.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"connectivities\"`. ",
-          "default": "connectivities"
+          "help_text": "type: `string`, multiple: False, default: `connectivities`"
         },
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Output file.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
         },
         "obsm_name": {
           "type": "string",
+          "default": [
+            "leiden"
+          ],
           "description": "Name of the .obsm key under which to add the cluster labels.\nThe name of the columns in the matrix will correspond to the resolutions.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"leiden\"`. ",
-          "default": "leiden"
+          "help_text": "type: `string`, multiple: False, default: `leiden`"
         },
         "flavor": {
           "type": "string",
+          "default": [
+            "leidenalg"
+          ],
           "description": "Which package's implementation to use.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"leidenalg\"`, choices: ``leidenalg`, `igraph``. ",
           "enum": [
             "leidenalg",
             "igraph"
           ],
-          "default": "leidenalg"
+          "help_text": "type: `string`, multiple: False, default: `leidenalg`, choices: `leidenalg`|`igraph`"
         },
         "n_iterations": {
           "type": "integer",
           "description": "How many iterations of the Leiden clustering algorithm to perform.\nWhen defined, positive values above 2 define the total number of iterations to perform.\nWhen not set, the algorithm will run until it reaches its optimal clustering.\n",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`, multiple: False"
         },
         "seed": {
           "type": "integer",
-          "description": "Fix the initialization of the optimization",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "description": "Fix the initialization of the optimization. Can be used to increase reproducibility.\n",
+          "help_text": "type: `integer`, multiple: False"
         },
         "resolution": {
           "type": "array",
+          "default": [
+            1.0
+          ],
+          "description": "A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.\nMultiple values will result in clustering being performed multiple times.\n",
           "items": {
             "type": "number"
           },
-          "description": "A parameter value controlling the coarseness of the clustering",
-          "help_text": "Type: `double`, multiple: `True`, required, default: `[1.0]`. ",
-          "default": [
-            1.0
-          ]
+          "help_text": "type: `array`, multiple: True, required, default: `1.0`"
         },
         "output_compression": {
           "type": "string",
           "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
-          ]
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "output",
+        "resolution"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/arguments"
     },

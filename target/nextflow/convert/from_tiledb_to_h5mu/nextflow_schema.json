@@ -4,103 +4,122 @@
   "description": "No description",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "input database": {
-      "title": "Input database",
       "type": "object",
+      "title": "Input database",
       "description": "Open a tileDB-SOMA database by URI.",
       "properties": {
         "input_uri": {
           "type": "string",
           "description": "A URI pointing to a TileDB-SOMA database.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"s3://bucket/path\"`. "
+          "help_text": "type: `string`, multiple: False, required, example: `['s3://bucket/path']`"
         },
         "s3_region": {
           "type": "string",
           "description": "Region where the TileDB-SOMA database is hosted.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         },
         "endpoint": {
           "type": "string",
           "description": "Custom endpoint to use to connect to S3\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         },
         "s3_no_sign_request": {
           "type": "boolean",
-          "description": "Do not sign S3 requests",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
-          "default": false
+          "default": [
+            false
+          ],
+          "description": "Do not sign S3 requests. Credentials will not be loaded if this argument is provided.\n",
+          "help_text": "type: `boolean`, multiple: False, default: `False`"
         },
         "input_modality": {
           "type": "string",
           "description": "TileDB-SOMA measurement to take the input from.\n",
-          "help_text": "Type: `string`, multiple: `False`, required. "
+          "help_text": "type: `string`, multiple: False, required"
         },
         "input_layers": {
           "type": "array",
+          "description": "Layers to import from TileDB-SOMA database.\n",
           "items": {
             "type": "string"
           },
-          "description": "Layers to import from TileDB-SOMA database.\n",
-          "help_text": "Type: `string`, multiple: `True`, required. "
+          "help_text": "type: `array`, multiple: True, required"
         }
-      }
+      },
+      "required": [
+        "input_uri",
+        "input_modality",
+        "input_layers"
+      ]
     },
     "mudata output": {
-      "title": "MuData output",
       "type": "object",
+      "title": "MuData output",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
-          "format": "path",
           "description": "The output MuData file.\n",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
         },
         "output_modality": {
           "type": "string",
           "description": "Name of the modality to write the results to.\n",
-          "help_text": "Type: `string`, multiple: `False`, required. "
+          "help_text": "type: `string`, multiple: False, required"
         },
         "output_compression": {
           "type": "string",
           "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
-          ]
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
         }
-      }
+      },
+      "required": [
+        "output",
+        "output_modality"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/input database"
     },

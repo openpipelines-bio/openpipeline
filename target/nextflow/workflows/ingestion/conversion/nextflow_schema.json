@@ -4,92 +4,105 @@
   "description": "A pipeline to convert .mtx, .h5 or .h5ad file formats to .h5mu.",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"foo\"`. "
+          "help_text": "type: `string`, multiple: False, required, example: `['foo']`"
         },
         "input": {
           "type": "string",
+          "description": "Path to the sample to be converted.\nPossible format options include:\n  - .h5ad\n  - .h5\n  - .mtx\n",
           "format": "path",
           "exists": true,
-          "description": "Path to the sample to be converted.\nPossible format options include:\n  - .h5ad\n  - .h5\n  - .mtx\n",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5ad\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5ad']`"
         },
         "input_type": {
           "type": "string",
           "description": "Type of the input file",
-          "help_text": "Type: `string`, multiple: `False`, required, choices: ``10xmtx`, `10xh5`, `h5ad``. ",
           "enum": [
             "10xmtx",
             "10xh5",
             "h5ad"
-          ]
+          ],
+          "help_text": "type: `string`, multiple: False, required, choices: `10xmtx`|`10xh5`|`h5ad`"
         }
-      }
+      },
+      "required": [
+        "id",
+        "input",
+        "input_type"
+      ]
     },
     "outputs": {
-      "title": "Outputs",
       "type": "object",
+      "title": "Outputs",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Name or template for the output files.",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output.h5mu']`"
         }
       }
     },
     "conversion from h5ad": {
-      "title": "Conversion from h5ad",
       "type": "object",
+      "title": "Conversion from h5ad",
       "description": "No description",
       "properties": {
         "modality": {
           "type": "array",
+          "description": "Name of the modality where the h5ad is stored in the h5mu object.",
           "items": {
             "type": "string"
           },
-          "description": "Name of the modality where the h5ad is stored in the h5mu object.",
-          "help_text": "Type: `string`, multiple: `True`. "
+          "help_text": "type: `array`, multiple: True"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/inputs"
     },

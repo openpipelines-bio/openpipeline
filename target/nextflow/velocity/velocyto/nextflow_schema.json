@@ -4,62 +4,66 @@
   "description": "Runs the velocity analysis on a BAM file, outputting a loom file.",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Path to BAM file",
           "format": "path",
           "exists": true,
-          "description": "Path to BAM file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.bam\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.bam']`"
         },
         "transcriptome": {
           "type": "string",
+          "description": "Path to GTF file",
           "format": "path",
           "exists": true,
-          "description": "Path to GTF file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"transcriptome.gtf\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['transcriptome.gtf']`"
         },
         "barcode": {
           "type": "string",
+          "description": "Valid barcodes file, to filter the bam. If --bcfile is not specified all the cell barcodes will be included.\nCell barcodes should be specified in the bcfile as the 'CB' tag for each read\n",
           "format": "path",
-          "description": "Valid barcodes file, to filter the bam",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"barcodes.txt\"`. "
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['barcodes.txt']`"
         },
         "without_umi": {
           "type": "boolean",
+          "default": false,
           "description": "foo",
-          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
-          "default": false
+          "help_text": "type: `boolean`, default: `False`"
         },
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Velocyto loom file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.loom\"`, direction: `output`, example: `\"output.loom\"`. ",
-          "default": "$id.$key.output.loom"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.loom']`"
         },
         "logic": {
           "type": "string",
+          "default": [
+            "Default"
+          ],
           "description": "The logic to use for the filtering.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"Default\"`, choices: ``Default`, `Permissive10X`, `Intermediate10X`, `ValidatedIntrons10X`, `Stricter10X`, `ObservedSpanning10X`, `Discordant10X`, `SmartSeq2``. ",
           "enum": [
             "Default",
             "Permissive10X",
@@ -70,24 +74,36 @@
             "Discordant10X",
             "SmartSeq2"
           ],
-          "default": "Default"
+          "help_text": "type: `string`, multiple: False, default: `Default`, choices: `Default`|`Permissive10X`|`Intermediate10X`|`ValidatedIntrons10X`|`Stricter10X`|`ObservedSpanning10X`|`Discordant10X`|`SmartSeq2`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "transcriptome",
+        "output"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/arguments"
     },

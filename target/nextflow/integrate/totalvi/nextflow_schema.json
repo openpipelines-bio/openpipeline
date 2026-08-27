@@ -4,275 +4,321 @@
   "description": "Performs TotalVI integration of CITE-seq and scRNA-seq data.",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input h5mu file to be integrated.",
           "format": "path",
           "exists": true,
-          "description": "Input h5mu file to be integrated.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "rna_modality": {
           "type": "string",
-          "description": "",
-          "help_text": "Type: `string`, multiple: `False`, required, default: `\"rna\"`. ",
-          "default": "rna"
+          "default": [
+            "rna"
+          ],
+          "description": "No description",
+          "help_text": "type: `string`, multiple: False, required, default: `rna`"
         },
         "prot_modality": {
           "type": "string",
+          "default": [
+            "prot"
+          ],
           "description": "Name of the modality in the input (query) h5mu file containing protein data",
-          "help_text": "Type: `string`, multiple: `False`, required, default: `\"prot\"`. ",
-          "default": "prot"
+          "help_text": "type: `string`, multiple: False, required, default: `prot`"
         },
         "input_layer_rna": {
           "type": "string",
-          "description": "Input layer to use from the rna modality for gene counts",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Input layer to use from the rna modality for gene counts. If None, X is used",
+          "help_text": "type: `string`, multiple: False"
         },
         "input_layer_protein": {
           "type": "string",
-          "description": "Input layer to use from the protein modality for protein counts",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Input layer to use from the protein modality for protein counts. If None, X is used",
+          "help_text": "type: `string`, multiple: False"
         },
         "obs_batch": {
           "type": "string",
+          "default": [
+            "sample_id"
+          ],
           "description": "Column name discriminating between your batches.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"sample_id\"`. ",
-          "default": "sample_id"
+          "help_text": "type: `string`, multiple: False, default: `sample_id`"
         },
         "obs_size_factor": {
           "type": "string",
-          "description": "Key in adata.obs for size factor information",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Key in adata.obs for size factor information. Instead of using library size as a size factor,\nthe provided size factor column will be used as offset in the mean of the likelihood.\nAssumed to be on linear scale.\n",
+          "help_text": "type: `string`, multiple: False"
         },
         "obs_categorical_covariate": {
           "type": "array",
+          "description": "Keys in adata.obs that correspond to categorical data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space).\nThus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.\n",
           "items": {
             "type": "string"
           },
-          "description": "Keys in adata.obs that correspond to categorical data",
-          "help_text": "Type: `string`, multiple: `True`. "
+          "help_text": "type: `array`, multiple: True"
         },
         "obs_continuous_covariate": {
           "type": "array",
+          "description": "Keys in adata.obs that correspond to continuous data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space). Thus, these should not be\nused for biologically-relevant factors that you do _not_ want to correct for.\n",
           "items": {
             "type": "string"
           },
-          "description": "Keys in adata.obs that correspond to continuous data",
-          "help_text": "Type: `string`, multiple: `True`. "
+          "help_text": "type: `array`, multiple: True"
         },
         "var_gene_names": {
           "type": "string",
-          "description": ".var column in the rna modality containing gene names",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": ".var column in the rna modality containing gene names. By default, use mod['rna'].var_names.",
+          "help_text": "type: `string`, multiple: False"
         },
         "var_protein_names": {
           "type": "string",
-          "description": ".var column in the protein modality containing protein names",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": ".var column in the protein modality containing protein names. By default, use mod['prot'].var_names.",
+          "help_text": "type: `string`, multiple: False"
         },
         "var_input": {
           "type": "string",
-          "description": ".var column containing highly variable genes",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": ".var column containing highly variable genes. By default, do not subset genes.",
+          "help_text": "type: `string`, multiple: False"
         }
-      }
-    },
-    "outputs": {
-      "title": "Outputs",
-      "type": "object",
-      "description": "No description",
-      "properties": {
-        "output": {
-          "type": "string",
-          "format": "path",
-          "description": "Output h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`. ",
-          "default": "$id.$key.output"
-        },
-        "output_model": {
-          "type": "string",
-          "format": "path",
-          "description": "Directory with the reference model",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"totalvi_model_reference\"`, direction: `output`, example: `\"path/to/reference_model\"`. ",
-          "default": "totalvi_model_reference"
-        },
-        "obsm_output": {
-          "type": "string",
-          "description": "In which .obsm slot to store the resulting integrated embedding.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"X_integrated_totalvi\"`. ",
-          "default": "X_integrated_totalvi"
-        },
-        "obsm_normalized_rna_output": {
-          "type": "string",
-          "description": "In which .obsm slot to store the normalized RNA data from TOTALVI.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"X_totalvi_normalized_rna\"`. ",
-          "default": "X_totalvi_normalized_rna"
-        },
-        "obsm_normalized_protein_output": {
-          "type": "string",
-          "description": "In which .obsm slot to store the normalized protein data from TOTALVI.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"X_totalvi_normalized_protein\"`. ",
-          "default": "X_totalvi_normalized_protein"
-        },
-        "output_compression": {
-          "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
-          "enum": [
-            "gzip",
-            "lzf"
-          ]
-        }
-      }
+      },
+      "required": [
+        "input",
+        "rna_modality",
+        "prot_modality"
+      ]
     },
     "data validity checks": {
-      "title": "Data validity checks",
       "type": "object",
+      "title": "Data validity checks",
       "description": "No description",
       "properties": {
         "n_obs_min_count": {
           "type": "integer",
+          "default": [
+            0
+          ],
           "description": "Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
-          "default": 0
+          "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "n_var_gene_min_count": {
           "type": "integer",
+          "default": [
+            0
+          ],
           "description": "Minimum number of genes threshold ensuring that sufficient observations (genes) are present for model training.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
-          "default": 0
+          "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "n_var_protein_min_count": {
           "type": "integer",
+          "default": [
+            0
+          ],
           "description": "Minimum number of proteins threshold ensuring that sufficient observations (genes) are present for model training.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
-          "default": 0
+          "help_text": "type: `integer`, multiple: False, default: `0`"
         }
       }
     },
     "model arguments": {
-      "title": "Model arguments",
       "type": "object",
+      "title": "Model arguments",
       "description": "No description",
       "properties": {
         "n_dimensions_latent_space": {
           "type": "integer",
+          "default": [
+            20
+          ],
           "description": "Dimensionality of the latent space.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `20`. ",
-          "default": 20
+          "help_text": "type: `integer`, multiple: False, default: `20`"
         },
         "gene_dispersion": {
           "type": "string",
+          "default": [
+            "gene"
+          ],
           "description": "Set the behavior for the dispersion for negative binomial distributions:\n  - gene: dispersion parameter of negative binomial is constant per gene across cells\n  - gene-batch: dispersion can differ between different batches\n  - gene-label: dispersion can differ between different labels\n  - gene-cell:  dispersion can differ for every gene in every cell\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"gene\"`, choices: ``gene`, `gene-batch`, `gene-label`, `gene-cell``. ",
           "enum": [
             "gene",
             "gene-batch",
             "gene-label",
             "gene-cell"
           ],
-          "default": "gene"
+          "help_text": "type: `string`, multiple: False, default: `gene`, choices: `gene`|`gene-batch`|`gene-label`|`gene-cell`"
         },
         "protein_dispersion": {
           "type": "string",
+          "default": [
+            "protein"
+          ],
           "description": "Set the behavior for the dispersion for negative binomial distributions:\n  - protein: dispersion parameter of negative binomial is constant per protein across cells\n  - protein-batch: dispersion can differ between different batches\n  - protein-label: dispersion can differ between different labels\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"protein\"`, choices: ``protein`, `protein-batch`, `protein-label``. ",
           "enum": [
             "protein",
             "protein-batch",
             "protein-label"
           ],
-          "default": "protein"
+          "help_text": "type: `string`, multiple: False, default: `protein`, choices: `protein`|`protein-batch`|`protein-label`"
         },
         "gene_likelihood": {
           "type": "string",
+          "default": [
+            "nb"
+          ],
           "description": "Model used to generate the expression data from a count-based likelihood distribution.\n- nb: Negative binomial distribution\n- zinb: Zero-inflated negative binomial distribution\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"nb\"`, choices: ``nb`, `zinb``. ",
           "enum": [
             "nb",
             "zinb"
           ],
-          "default": "nb"
+          "help_text": "type: `string`, multiple: False, default: `nb`, choices: `nb`|`zinb`"
         },
         "latent_distribution": {
           "type": "string",
+          "default": [
+            "normal"
+          ],
           "description": "Set the latent distribution to use:\n  - normal: Normal distribution\n  - ln: Log-normal distribution (Normal( 0, 1) transformed by softmax)\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"normal\"`, choices: ``normal`, `ln``. ",
           "enum": [
             "normal",
             "ln"
           ],
-          "default": "normal"
+          "help_text": "type: `string`, multiple: False, default: `normal`, choices: `normal`|`ln`"
         },
         "empirical_protein_background_prior": {
           "type": "boolean",
           "description": "Set the initialization of protein background prior empirically.\nThis option fits a GMM for each of 100 cells per batch and averages the distributions.\nNote that even with this option set to True, this only initializes a parameter that is learned during inference.\nIf False, randomly initializes.\nBy default, sets this to True if greater than 10 proteins are used.\n",
-          "help_text": "Type: `boolean`, multiple: `False`. "
+          "help_text": "type: `boolean`, multiple: False"
         },
         "override_missing_proteins": {
           "type": "boolean",
+          "default": false,
           "description": "If True, will not treat proteins with all 0 expression in a particular batch as missing.\n",
-          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
-          "default": false
+          "help_text": "type: `boolean`, default: `False`"
         }
       }
     },
     "training arguments": {
-      "title": "Training arguments",
       "type": "object",
+      "title": "Training arguments",
       "description": "No description",
       "properties": {
         "max_epochs": {
           "type": "integer",
           "description": "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest.",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`, multiple: False"
         },
         "early_stopping": {
           "type": "boolean",
+          "default": [
+            true
+          ],
           "description": "Whether to perform early stopping with respect to the validation set.",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "help_text": "type: `boolean`, multiple: False, default: `True`"
         }
       }
     },
-    "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
+    "outputs": {
       "type": "object",
+      "title": "Outputs",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output h5mu file.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`"
+        },
+        "output_model": {
+          "type": "string",
+          "default": [
+            "totalvi_model_reference"
+          ],
+          "description": "Directory with the reference model. If not exists, trained model will be saved there",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, default: `totalvi_model_reference`, direction: `output`, example: `['path/to/reference_model']`"
+        },
+        "obsm_output": {
+          "type": "string",
+          "default": [
+            "X_integrated_totalvi"
+          ],
+          "description": "In which .obsm slot to store the resulting integrated embedding.",
+          "help_text": "type: `string`, multiple: False, default: `X_integrated_totalvi`"
+        },
+        "obsm_normalized_rna_output": {
+          "type": "string",
+          "default": [
+            "X_totalvi_normalized_rna"
+          ],
+          "description": "In which .obsm slot to store the normalized RNA data from TOTALVI.",
+          "help_text": "type: `string`, multiple: False, default: `X_totalvi_normalized_rna`"
+        },
+        "obsm_normalized_protein_output": {
+          "type": "string",
+          "default": [
+            "X_totalvi_normalized_protein"
+          ],
+          "description": "In which .obsm slot to store the normalized protein data from TOTALVI.",
+          "help_text": "type: `string`, multiple: False, default: `X_totalvi_normalized_protein`"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
+          "enum": [
+            "gzip",
+            "lzf"
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+        }
+      },
+      "required": [
+        "output"
+      ]
+    },
+    "nextflow input-output arguments": {
+      "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
     {
-      "$ref": "#/$defs/inputs"
+      "$ref": "#/$defs/dataset input"
     },
     {
-      "$ref": "#/$defs/outputs"
+      "$ref": "#/$defs/inputs"
     },
     {
       "$ref": "#/$defs/data validity checks"
@@ -282,6 +328,9 @@
     },
     {
       "$ref": "#/$defs/training arguments"
+    },
+    {
+      "$ref": "#/$defs/outputs"
     },
     {
       "$ref": "#/$defs/nextflow input-output arguments"

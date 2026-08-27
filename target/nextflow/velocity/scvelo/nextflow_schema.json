@@ -4,172 +4,198 @@
   "description": "No description",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input MuData file",
           "format": "path",
           "exists": true,
-          "description": "Input MuData file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "counts_layer": {
           "type": "string",
           "description": "Name of the counts layer, if not specified, X is used.",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         },
         "modality": {
           "type": "string",
           "description": "Input modality",
-          "help_text": "Type: `string`, multiple: `False`, required. "
+          "help_text": "type: `string`, multiple: False, required"
         },
         "layer_spliced": {
           "type": "string",
-          "description": "Name of the layer to store the spliced abundances in",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"spliced\"`. ",
-          "default": "spliced"
+          "default": [
+            "spliced"
+          ],
+          "description": "Name of the layer to store the spliced abundances in. Will be used as key in the .layer attribute of the\noutput MuData object.\n",
+          "help_text": "type: `string`, multiple: False, default: `spliced`"
         },
         "layer_unspliced": {
           "type": "string",
+          "default": [
+            "unspliced"
+          ],
           "description": "Name of the layer to store the unspliced abundances in.\nWill be used as key in the .layer attribute of the output MuData object.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"unspliced\"`. ",
-          "default": "unspliced"
+          "help_text": "type: `string`, multiple: False, default: `unspliced`"
         },
         "layer_ambiguous": {
           "type": "string",
+          "default": [
+            "ambiguous"
+          ],
           "description": "Name of the layer to store the abundances in for which no fate was determined.\nWill be used as key in the .layer attribute of the output MuData object.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"ambiguous\"`. ",
-          "default": "ambiguous"
+          "help_text": "type: `string`, multiple: False, default: `ambiguous`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "modality"
+      ]
     },
     "outputs": {
-      "title": "Outputs",
       "type": "object",
+      "title": "Outputs",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
+          "description": "Output directory. If it does not exist, will be created.",
           "format": "path",
-          "description": "Output directory",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`, example: `\"path/to/output\"`. ",
-          "default": "$id.$key.output"
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['path/to/output']`"
         },
         "output_h5mu": {
           "type": "string",
-          "format": "path",
           "description": "Output mudata file.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output_h5mu.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output_h5mu.h5mu"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
         },
         "output_compression": {
           "type": "string",
           "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
-          ]
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
         }
-      }
+      },
+      "required": [
+        "output",
+        "output_h5mu"
+      ]
     },
     "filtering and normalization": {
-      "title": "Filtering and normalization",
       "type": "object",
+      "title": "Filtering and normalization",
       "description": "Arguments for filtering, normalization an log transform (see scvelo.pp.filter_and_normalize function)",
       "properties": {
         "min_counts": {
           "type": "integer",
           "description": "Minimum number of counts required for a gene to pass filtering (spliced).",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`, multiple: False"
         },
         "min_counts_u": {
           "type": "integer",
           "description": "Minimum number of counts required for a gene to pass filtering (unspliced).",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`, multiple: False"
         },
         "min_cells": {
           "type": "integer",
           "description": "Minimum number of cells expressed required to pass filtering (spliced).",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`, multiple: False"
         },
         "min_cells_u": {
           "type": "integer",
           "description": "Minimum number of cells expressed required to pass filtering (unspliced).",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`, multiple: False"
         },
         "min_shared_counts": {
           "type": "integer",
           "description": "Minimum number of counts (both unspliced and spliced) required for a gene.",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`, multiple: False"
         },
         "min_shared_cells": {
           "type": "integer",
           "description": "Minimum number of cells required to be expressed (both unspliced and spliced).",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`, multiple: False"
         },
         "n_top_genes": {
           "type": "integer",
           "description": "Number of genes to keep.",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`, multiple: False"
         },
         "log_transform": {
           "type": "boolean",
+          "default": [
+            true
+          ],
           "description": "Do not log transform counts.",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "help_text": "type: `boolean`, multiple: False, default: `True`"
         }
       }
     },
     "fitting parameters": {
-      "title": "Fitting parameters",
       "type": "object",
+      "title": "Fitting parameters",
       "description": "Arguments for fitting the data",
       "properties": {
         "n_principal_components": {
           "type": "integer",
           "description": "Number of principal components to use for calculating moments.",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`, multiple: False"
         },
         "n_neighbors": {
           "type": "integer",
-          "description": "Number of neighbors to use",
-          "help_text": "Type: `integer`, multiple: `False`, default: `30`. ",
-          "default": 30
+          "default": [
+            30
+          ],
+          "description": "Number of neighbors to use. First/second-order moments are computed for each\ncell across its nearest neighbors, where the neighbor graph is obtained from\neuclidean distances in PCA space.\n",
+          "help_text": "type: `integer`, multiple: False, default: `30`"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/inputs"
     },

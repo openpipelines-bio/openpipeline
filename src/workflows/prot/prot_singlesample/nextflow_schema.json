@@ -5,86 +5,96 @@
   "type": "object",
   "$defs": {
     "input": {
-      "title": "Input",
       "type": "object",
+      "title": "Input",
       "description": "No description",
       "properties": {
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `foo`. "
+          "help_text": "type: `string`, required, example: `foo`"
         },
         "input": {
           "type": "string",
+          "description": "Path to the sample.",
           "format": "path",
           "exists": true,
-          "description": "Path to the sample.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `dataset.h5mu`. "
+          "help_text": "type: `string`, required, direction: `input`, example: `dataset.h5mu`"
         },
         "layer": {
           "type": "string",
-          "description": "Input layer to start from",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Input layer to start from. By default, .X will be used.",
+          "help_text": "type: `string`"
         }
-      }
+      },
+      "required": [
+        "id",
+        "input"
+      ]
     },
     "output": {
-      "title": "Output",
       "type": "object",
+      "title": "Output",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Destination path to the output.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output.h5mu`"
         }
-      }
+      },
+      "required": [
+        "output"
+      ]
     },
     "filtering options": {
-      "title": "Filtering options",
       "type": "object",
+      "title": "Filtering options",
       "description": "No description",
       "properties": {
         "min_counts": {
           "type": "integer",
           "description": "Minimum number of counts captured per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+          "help_text": "type: `integer`, example: `200`"
         },
         "max_counts": {
           "type": "integer",
           "description": "Maximum number of counts captured per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `5000000`. "
+          "help_text": "type: `integer`, example: `5000000`"
         },
         "min_proteins_per_cell": {
           "type": "integer",
           "description": "Minimum of non-zero values per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `200`. "
+          "help_text": "type: `integer`, example: `200`"
         },
         "max_proteins_per_cell": {
           "type": "integer",
           "description": "Maximum of non-zero values per cell.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `1500000`. "
+          "help_text": "type: `integer`, example: `1500000`"
         },
         "min_cells_per_protein": {
           "type": "integer",
           "description": "Minimum of non-zero values per gene.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `3`. "
+          "help_text": "type: `integer`, example: `3`"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [

@@ -4,156 +4,185 @@
   "description": "Annotate highly variable features [Satija15] [Zheng17] [Stuart19].\n\nExpects logarithmized data, except when flavor='seurat_v3' in which count data is expected.\n\nDepending on flavor, this reproduces the R-implementations of Seurat [Satija15], Cell Ranger [Zheng17], and Seurat v3 [Stuart19].\n\nFor the dispersion-based methods ([Satija15] and [Zheng17]), the normalized dispersion is obtained by scaling with the mean and standard deviation of the dispersions for features falling into a given bin for mean expression of features. This means that for each bin of mean expression, highly variable features are selected.\n\nFor [Stuart19], a normalized variance for each feature is computed. First, the data are standardized (i.e., z-score normalization per feature) with a regularized standard deviation. Next, the normalized variance is computed as the variance of each feature after the transformation. Features are ranked by the normalized variance.\n",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "modality": {
           "type": "string",
+          "default": [
+            "rna"
+          ],
           "description": "Which modality from the input MuData file to process.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "layer": {
           "type": "string",
           "description": "use adata.layers[layer] for expression values instead of adata.X.",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         },
         "var_input": {
           "type": "string",
           "description": "If specified, use boolean array in adata.var[var_input] to calculate hvg on subset of vars.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         },
         "features_to_exclude": {
           "type": "array",
+          "description": "User-defined list of feature names to exclude before HVG calculation. \nThese features will be excluded from HVG selection but will remain in the output data.\n",
           "items": {
             "type": "string"
           },
-          "description": "User-defined list of feature names to exclude before HVG calculation",
-          "help_text": "Type: `string`, multiple: `True`, example: `[\"MT-CO1\";\"MT-CO2\";\"MT-ND1\"]`. "
+          "help_text": "type: `array`, multiple: True, example: `['MT-CO1', 'MT-CO2', 'MT-ND1']`"
         },
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Output h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output.h5mu']`"
         },
         "var_name_filter": {
           "type": "string",
+          "default": [
+            "filter_with_hvg"
+          ],
           "description": "In which .var slot to store a boolean array corresponding to which observations should be filtered out.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"filter_with_hvg\"`. ",
-          "default": "filter_with_hvg"
+          "help_text": "type: `string`, multiple: False, default: `filter_with_hvg`"
         },
         "varm_name": {
           "type": "string",
+          "default": [
+            "hvg"
+          ],
           "description": "In which .varm slot to store additional metadata.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"hvg\"`. ",
-          "default": "hvg"
+          "help_text": "type: `string`, multiple: False, default: `hvg`"
         },
         "flavor": {
           "type": "string",
-          "description": "Choose the flavor for identifying highly variable features",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"seurat\"`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. ",
+          "default": [
+            "seurat"
+          ],
+          "description": "Choose the flavor for identifying highly variable features. For the dispersion based methods\nin their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_features.\n",
           "enum": [
             "seurat",
             "cell_ranger",
             "seurat_v3"
           ],
-          "default": "seurat"
+          "help_text": "type: `string`, multiple: False, default: `seurat`, choices: `seurat`|`cell_ranger`|`seurat_v3`"
         },
         "n_top_features": {
           "type": "integer",
-          "description": "Number of highly-variable features to keep",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "description": "Number of highly-variable features to keep. Mandatory if flavor='seurat_v3'.",
+          "help_text": "type: `integer`, multiple: False"
         },
         "min_mean": {
           "type": "number",
-          "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.0125`. ",
-          "default": 0.0125
+          "default": [
+            0.0125
+          ],
+          "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'.",
+          "help_text": "type: `number`, multiple: False, default: `0.0125`"
         },
         "max_mean": {
           "type": "number",
-          "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
-          "help_text": "Type: `double`, multiple: `False`, default: `3.0`. ",
-          "default": 3.0
+          "default": [
+            3.0
+          ],
+          "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'.",
+          "help_text": "type: `number`, multiple: False, default: `3.0`"
         },
         "min_disp": {
           "type": "number",
-          "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.5`. ",
-          "default": 0.5
+          "default": [
+            0.5
+          ],
+          "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'.",
+          "help_text": "type: `number`, multiple: False, default: `0.5`"
         },
         "max_disp": {
           "type": "number",
-          "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
-          "help_text": "Type: `double`, multiple: `False`. "
+          "description": "If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'. Default is +inf.",
+          "help_text": "type: `number`, multiple: False"
         },
         "span": {
           "type": "number",
+          "default": [
+            0.3
+          ],
           "description": "The fraction of the data (cells) used when estimating the variance in the loess model fit if flavor='seurat_v3'.",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.3`. ",
-          "default": 0.3
+          "help_text": "type: `number`, multiple: False, default: `0.3`"
         },
         "n_bins": {
           "type": "integer",
-          "description": "Number of bins for binning the mean feature expression",
-          "help_text": "Type: `integer`, multiple: `False`, default: `20`. ",
-          "default": 20
+          "default": [
+            20
+          ],
+          "description": "Number of bins for binning the mean feature expression. Normalization is done with respect to each bin. If just a single feature falls into a bin, the normalized dispersion is artificially set to 1.",
+          "help_text": "type: `integer`, multiple: False, default: `20`"
         },
         "obs_batch_key": {
           "type": "string",
-          "description": "If specified, highly-variable features are selected within each batch separately and merged",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "If specified, highly-variable features are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific features and acts as a lightweight batch correction method. \nFor all flavors, features are first sorted by how many batches they are a HVG. For dispersion-based flavors \nties are broken by normalized dispersion. If flavor = 'seurat_v3', ties are broken by the median (across\nbatches) rank based on within-batch normalized variance.\n",
+          "help_text": "type: `string`, multiple: False"
         },
         "output_compression": {
           "type": "string",
           "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
-          ]
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
         }
-      }
+      },
+      "required": [
+        "input"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/arguments"
     },

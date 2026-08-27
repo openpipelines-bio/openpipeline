@@ -5,176 +5,188 @@
   "type": "object",
   "$defs": {
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `foo`. "
+          "help_text": "type: `string`, required, example: `foo`"
         },
         "input": {
           "type": "string",
+          "description": "Path to the sample.",
           "format": "path",
           "exists": true,
-          "description": "Path to the sample.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `dataset.h5mu`. "
+          "help_text": "type: `string`, required, direction: `input`, example: `dataset.h5mu`"
         },
         "layer": {
           "type": "string",
+          "default": "log_normalized",
           "description": "use specified layer for expression values instead of the .X object from the modality.",
-          "help_text": "Type: `string`, multiple: `False`, default: `log_normalized`. ",
-          "default": "log_normalized"
+          "help_text": "type: `string`, default: `log_normalized`"
         },
         "modality": {
           "type": "string",
+          "default": "rna",
           "description": "Which modality to process.",
-          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
-          "default": "rna"
+          "help_text": "type: `string`, default: `rna`"
         }
-      }
+      },
+      "required": [
+        "id",
+        "input"
+      ]
     },
     "outputs": {
-      "title": "Outputs",
       "type": "object",
+      "title": "Outputs",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Destination path to the output.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output.h5mu`"
         }
-      }
+      },
+      "required": [
+        "output"
+      ]
     },
     "neighbour calculation": {
-      "title": "Neighbour calculation",
       "type": "object",
+      "title": "Neighbour calculation",
       "description": "No description",
       "properties": {
         "uns_neighbors": {
           "type": "string",
+          "default": "scanorama_integration_neighbors",
           "description": "In which .uns slot to store various neighbor output objects.",
-          "help_text": "Type: `string`, multiple: `False`, default: `scanorama_integration_neighbors`. ",
-          "default": "scanorama_integration_neighbors"
+          "help_text": "type: `string`, default: `scanorama_integration_neighbors`"
         },
         "obsp_neighbor_distances": {
           "type": "string",
+          "default": "scanorama_integration_distances",
           "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
-          "help_text": "Type: `string`, multiple: `False`, default: `scanorama_integration_distances`. ",
-          "default": "scanorama_integration_distances"
+          "help_text": "type: `string`, default: `scanorama_integration_distances`"
         },
         "obsp_neighbor_connectivities": {
           "type": "string",
+          "default": "scanorama_integration_connectivities",
           "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
-          "help_text": "Type: `string`, multiple: `False`, default: `scanorama_integration_connectivities`. ",
-          "default": "scanorama_integration_connectivities"
+          "help_text": "type: `string`, default: `scanorama_integration_connectivities`"
         }
       }
     },
     "scanorama integration options": {
-      "title": "Scanorama integration options",
       "type": "object",
+      "title": "Scanorama integration options",
       "description": "No description",
       "properties": {
         "obs_batch": {
           "type": "string",
+          "default": "sample_id",
           "description": "Column name discriminating between your batches.",
-          "help_text": "Type: `string`, multiple: `False`, default: `sample_id`. ",
-          "default": "sample_id"
+          "help_text": "type: `string`, default: `sample_id`"
         },
         "obsm_input": {
           "type": "string",
+          "default": "X_pca",
           "description": ".obsm slot that points to embedding to run scanorama on.",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_pca`. ",
-          "default": "X_pca"
+          "help_text": "type: `string`, default: `X_pca`"
         },
         "obsm_output": {
           "type": "string",
-          "description": "The name of the field in adata.obsm where the integrated embeddings will be stored after running this function",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_scanorama`. ",
-          "default": "X_scanorama"
+          "default": "X_scanorama",
+          "description": "The name of the field in adata.obsm where the integrated embeddings will be stored after running this function. Defaults to X_scanorama.",
+          "help_text": "type: `string`, default: `X_scanorama`"
         },
         "knn": {
           "type": "integer",
+          "default": 20,
           "description": "Number of nearest neighbors to use for matching.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `20`. ",
-          "default": 20
+          "help_text": "type: `integer`, default: `20`"
         },
         "batch_size": {
           "type": "integer",
-          "description": "The batch size used in the alignment vector computation",
-          "help_text": "Type: `integer`, multiple: `False`, default: `5000`. ",
-          "default": 5000
+          "default": 5000,
+          "description": "The batch size used in the alignment vector computation. Useful when integrating very large (>100k samples) datasets. Set to large value that runs within available memory.",
+          "help_text": "type: `integer`, default: `5000`"
         },
         "sigma": {
           "type": "number",
+          "default": 15.0,
           "description": "Correction smoothing parameter on Gaussian kernel.",
-          "help_text": "Type: `double`, multiple: `False`, default: `15`. ",
-          "default": 15
+          "help_text": "type: `number`, default: `15.0`"
         },
         "approx": {
           "type": "boolean",
+          "default": true,
           "description": "Use approximate nearest neighbors with Python annoy; greatly speeds up matching runtime.",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "help_text": "type: `boolean`, default: `True`"
         },
         "alpha": {
           "type": "number",
+          "default": 0.1,
           "description": "Alignment score minimum cutoff",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.1`. ",
-          "default": 0.1
+          "help_text": "type: `number`, default: `0.1`"
         }
       }
     },
     "clustering options": {
-      "title": "Clustering options",
       "type": "object",
+      "title": "Clustering options",
       "description": "No description",
       "properties": {
         "obs_cluster": {
           "type": "string",
-          "description": "Prefix for the .obs keys under which to add the cluster labels",
-          "help_text": "Type: `string`, multiple: `False`, default: `scanorama_integration_leiden`. ",
-          "default": "scanorama_integration_leiden"
+          "default": "scanorama_integration_leiden",
+          "description": "Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for '--obs_cluster' suffixed with an underscore and one of the\nresolutions specified in '--leiden_resolution'.\n",
+          "help_text": "type: `string`, default: `scanorama_integration_leiden`"
         },
         "leiden_resolution": {
           "type": "array",
+          "default": [
+            1.0
+          ],
+          "description": "Control the coarseness of the clustering. Higher values lead to more clusters.",
           "items": {
             "type": "number"
           },
-          "description": "Control the coarseness of the clustering",
-          "help_text": "Type: `double`, multiple: `True`, default: `1`. ",
-          "default": "1"
+          "help_text": "type: `array`, multiple: True, default: `1.0`"
         }
       }
     },
     "umap options": {
-      "title": "Umap options",
       "type": "object",
+      "title": "Umap options",
       "description": "No description",
       "properties": {
         "obsm_umap": {
           "type": "string",
+          "default": "X_leiden_scanorama_umap",
           "description": "In which .obsm slot to store the resulting UMAP embedding.",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_leiden_scanorama_umap`. ",
-          "default": "X_leiden_scanorama_umap"
+          "help_text": "type: `string`, default: `X_leiden_scanorama_umap`"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [

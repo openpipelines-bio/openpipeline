@@ -4,83 +4,94 @@
   "description": "Align fastq files using Cell Ranger count.",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "input": {
           "type": "array",
+          "description": "The fastq.gz files to align. Can also be a single directory containing fastq.gz files.",
+          "format": "path",
+          "exists": true,
           "items": {
             "type": "string"
           },
-          "format": "path",
-          "exists": true,
-          "description": "The fastq.gz files to align",
-          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `[\"sample_S1_L001_R1_001.fastq.gz\";\"sample_S1_L001_R2_001.fastq.gz\"]`. "
+          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `['sample_S1_L001_R1_001.fastq.gz', 'sample_S1_L001_R2_001.fastq.gz']`"
         },
         "reference": {
           "type": "string",
+          "description": "The path to Cell Ranger reference tar.gz file. Can also be a directory.",
           "format": "path",
           "exists": true,
-          "description": "The path to Cell Ranger reference tar.gz file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"reference.tar.gz\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['reference.tar.gz']`"
         },
         "feature_reference": {
           "type": "string",
-          "format": "path",
           "description": "Feature reference CSV file, declaring Feature Barcode constructs and associated barcodes\n",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `input`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "reference"
+      ]
     },
     "outputs": {
-      "title": "Outputs",
       "type": "object",
+      "title": "Outputs",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
-          "format": "path",
           "description": "The folder to store the alignment results.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`, example: `\"/path/to/output\"`. ",
-          "default": "$id.$key.output"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['/path/to/output']`"
         }
-      }
+      },
+      "required": [
+        "output"
+      ]
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "expect_cells": {
           "type": "integer",
           "description": "Expected number of recovered cells, used as input to cell calling algorithm.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `3000`. "
+          "help_text": "type: `integer`, multiple: False, example: `[3000]`"
         },
         "force_cells": {
           "type": "integer",
           "description": "Force pipeline to use this number of cells, bypassing cell calling algorithm.",
-          "help_text": "Type: `integer`, multiple: `False`, example: `3000`. "
+          "help_text": "type: `integer`, multiple: False, example: `[3000]`"
         },
         "chemistry": {
           "type": "string",
-          "description": "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1 \n  NOTE: this mode cannot be auto-detected",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"auto\"`, choices: ``auto`, `threeprime`, `fiveprime`, `SC3Pv1`, `SC3Pv2`, `SC3Pv3`, `SC3Pv4`, `SC3Pv3LT`, `SC3Pv3HT`, `SC5P-PE-v3`, `SC5P-PE`, `SC5P-R2`, `SC5P-R2-v3`, `SC-FB`, `ARC-v1``. ",
+          "default": [
+            "auto"
+          ],
+          "description": "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1 \n  NOTE: this mode cannot be auto-detected. It must be set explicitly with this option.\n- SC3Pv2: Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv4: Single Cell 3' v4\n- SC3Pv3LT: Single Cell 3' v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-R2-v3: Single Cell 5', paired-end/R2-only\n- SC5P-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n- SC5P-PE: Single Cell 5' paired-end\n- SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2 or 5'\n- ARC-v1: for analyzing the Gene Expression portion of Multiome data. \n  NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
           "enum": [
             "auto",
             "threeprime",
@@ -98,87 +109,103 @@
             "SC-FB",
             "ARC-v1"
           ],
-          "default": "auto"
+          "help_text": "type: `string`, multiple: False, default: `auto`, choices: `auto`|`threeprime`|`fiveprime`|`SC3Pv1`|`SC3Pv2`|`SC3Pv3`|`SC3Pv4`|`SC3Pv3LT`|`SC3Pv3HT`|`SC5P-PE-v3`|`SC5P-PE`|`SC5P-R2`|`SC5P-R2-v3`|`SC-FB`|`ARC-v1`"
         },
         "tenx_cloud_token_path": {
           "type": "string",
-          "format": "path",
           "description": "The 10x Cloud Analysis user token used to enable cell annotation.",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`. "
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `input`"
         },
         "cell_annotation_model": {
           "type": "string",
-          "description": "\"Cell annotation model to use",
-          "help_text": "Type: `string`, multiple: `False`, choices: ``auto`, `human_pca_v1_beta`, `mouse_pca_v1_beta``. ",
+          "description": "\"Cell annotation model to use. If auto, uses the default model for the species.\nIf not given, does not run cell annotation.\"\n",
           "enum": [
             "auto",
             "human_pca_v1_beta",
             "mouse_pca_v1_beta"
-          ]
+          ],
+          "help_text": "type: `string`, multiple: False, choices: `auto`|`human_pca_v1_beta`|`mouse_pca_v1_beta`"
         },
         "secondary_analysis": {
           "type": "boolean",
-          "description": "Whether or not to run the secondary analysis e.g",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
-          "default": false
+          "default": [
+            false
+          ],
+          "description": "Whether or not to run the secondary analysis e.g. clustering.",
+          "help_text": "type: `boolean`, multiple: False, default: `False`"
         },
         "generate_bam": {
           "type": "boolean",
+          "default": [
+            true
+          ],
           "description": "Whether to generate a BAM file.",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "include_introns": {
           "type": "boolean",
+          "default": [
+            true
+          ],
           "description": "Include intronic reads in count.",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "r1_length": {
           "type": "integer",
           "description": "Hard trim the input Read 1 to this length before analysis",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`, multiple: False"
         },
         "r2_length": {
           "type": "integer",
           "description": "Hard trim the input Read 2 to this length before analysis",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`, multiple: False"
         },
         "lanes": {
           "type": "array",
+          "description": "Only use FASTQs from selected lanes.",
           "items": {
             "type": "integer"
           },
-          "description": "Only use FASTQs from selected lanes.",
-          "help_text": "Type: `integer`, multiple: `True`, example: `[1;2;3]`. "
+          "help_text": "type: `array`, multiple: True, example: `[1, 2, 3]`"
         },
         "library_compatibility_check": {
           "type": "boolean",
+          "default": [
+            true
+          ],
           "description": "Whether to check for barcode compatibility between libraries.\n",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "min_crispr_umi": {
           "type": "integer",
-          "description": "Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection.\nIf a lower or higher sensitivity is desired for detection, this value can be customized\naccording to specific experimental needs",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "description": "Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection.\nIf a lower or higher sensitivity is desired for detection, this value can be customized\naccording to specific experimental needs. Applicable only to datasets that include a\nCRISPR Guide Capture library.\n",
+          "help_text": "type: `integer`, multiple: False"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/inputs"
     },

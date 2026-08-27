@@ -5,223 +5,235 @@
   "type": "object",
   "$defs": {
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `foo`. "
+          "help_text": "type: `string`, required, example: `foo`"
         },
         "input": {
           "type": "string",
+          "description": "Input h5mu file to be integrated.",
           "format": "path",
           "exists": true,
-          "description": "Input h5mu file to be integrated.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+          "help_text": "type: `string`, required, direction: `input`, example: `input.h5mu`"
         },
         "rna_modality": {
           "type": "string",
-          "description": "",
-          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
-          "default": "rna"
+          "default": "rna",
+          "description": "No description",
+          "help_text": "type: `string`, default: `rna`"
         },
         "prot_modality": {
           "type": "string",
+          "default": "prot",
           "description": "Name of the modality in the input (query) h5mu file containing protein data",
-          "help_text": "Type: `string`, multiple: `False`, default: `prot`. ",
-          "default": "prot"
+          "help_text": "type: `string`, default: `prot`"
         },
         "input_layer_rna": {
           "type": "string",
-          "description": "Input layer to use from the rna modality for gene counts",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Input layer to use from the rna modality for gene counts. If None, X is used",
+          "help_text": "type: `string`"
         },
         "input_layer_protein": {
           "type": "string",
-          "description": "Input layer to use from the protein modality for protein counts",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Input layer to use from the protein modality for protein counts. If None, X is used",
+          "help_text": "type: `string`"
         },
         "obs_batch": {
           "type": "string",
+          "default": "sample_id",
           "description": "Column name discriminating between your batches.",
-          "help_text": "Type: `string`, multiple: `False`, default: `sample_id`. ",
-          "default": "sample_id"
+          "help_text": "type: `string`, default: `sample_id`"
         },
         "obs_size_factor": {
           "type": "string",
-          "description": "Key in adata.obs for size factor information",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Key in adata.obs for size factor information. Instead of using library size as a size factor,\nthe provided size factor column will be used as offset in the mean of the likelihood.\nAssumed to be on linear scale.\n",
+          "help_text": "type: `string`"
         },
         "obs_categorical_covariate": {
           "type": "array",
+          "description": "Keys in adata.obs that correspond to categorical data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space).\nThus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.\n",
           "items": {
             "type": "string"
           },
-          "description": "Keys in adata.obs that correspond to categorical data",
-          "help_text": "Type: `string`, multiple: `True`. "
+          "help_text": "type: `array`, multiple: True"
         },
         "obs_continuous_covariate": {
           "type": "array",
+          "description": "Keys in adata.obs that correspond to continuous data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space). Thus, these should not be\nused for biologically-relevant factors that you do _not_ want to correct for.\n",
           "items": {
             "type": "string"
           },
-          "description": "Keys in adata.obs that correspond to continuous data",
-          "help_text": "Type: `string`, multiple: `True`. "
+          "help_text": "type: `array`, multiple: True"
         },
         "var_gene_names": {
           "type": "string",
-          "description": ".var column in the rna modality containing gene names",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": ".var column in the rna modality containing gene names. By default, use mod['rna'].var_names.",
+          "help_text": "type: `string`"
         },
         "var_protein_names": {
           "type": "string",
-          "description": ".var column in the protein modality containing protein names",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": ".var column in the protein modality containing protein names. By default, use mod['prot'].var_names.",
+          "help_text": "type: `string`"
         },
         "var_input": {
           "type": "string",
-          "description": ".var column containing highly variable genes",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": ".var column containing highly variable genes. By default, do not subset genes.",
+          "help_text": "type: `string`"
         }
-      }
+      },
+      "required": [
+        "id",
+        "input"
+      ]
     },
     "outputs": {
-      "title": "Outputs",
       "type": "object",
+      "title": "Outputs",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Destination path to the output.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output.h5mu`"
         },
         "output_model": {
           "type": "string",
-          "format": "path",
+          "default": "totalvi_model_reference/",
           "description": "Directory where the trained reference model will be stored.",
-          "help_text": "Type: `file`, multiple: `False`, default: `totalvi_model_reference/`, direction: `output`. ",
-          "default": "totalvi_model_reference/"
+          "format": "path",
+          "help_text": "type: `string`, default: `totalvi_model_reference/`, direction: `output`"
         }
-      }
+      },
+      "required": [
+        "output"
+      ]
     },
     "totalvi training options": {
-      "title": "TotalVI Training Options",
       "type": "object",
+      "title": "TotalVI Training Options",
       "description": "No description",
       "properties": {
         "max_epochs": {
           "type": "integer",
           "description": "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest.",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`"
         },
         "early_stopping": {
           "type": "boolean",
+          "default": true,
           "description": "Whether to perform early stopping with respect to the validation set.",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "help_text": "type: `boolean`, default: `True`"
         }
       }
     },
     "totalvi integration options": {
-      "title": "TotalVI Integration Options",
       "type": "object",
+      "title": "TotalVI Integration Options",
       "description": "No description",
       "properties": {
         "obsm_integrated": {
           "type": "string",
+          "default": "X_integrated_totalvi",
           "description": "In which .obsm slot to store the resulting integrated embedding.",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_integrated_totalvi`. ",
-          "default": "X_integrated_totalvi"
+          "help_text": "type: `string`, default: `X_integrated_totalvi`"
         },
         "obsm_normalized_rna_output": {
           "type": "string",
+          "default": "X_totalvi_normalized_rna",
           "description": "In which .obsm slot to store the normalized RNA data from TOTALVI.",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_totalvi_normalized_rna`. ",
-          "default": "X_totalvi_normalized_rna"
+          "help_text": "type: `string`, default: `X_totalvi_normalized_rna`"
         },
         "obsm_normalized_protein_output": {
           "type": "string",
+          "default": "X_totalvi_normalized_protein",
           "description": "In which .obsm slot to store the normalized protein data from TOTALVI.",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_totalvi_normalized_protein`. ",
-          "default": "X_totalvi_normalized_protein"
+          "help_text": "type: `string`, default: `X_totalvi_normalized_protein`"
         }
       }
     },
     "neighbour calculation": {
-      "title": "Neighbour calculation",
       "type": "object",
+      "title": "Neighbour calculation",
       "description": "No description",
       "properties": {
         "uns_neighbors": {
           "type": "string",
+          "default": "totalvi_integration_neighbors",
           "description": "In which .uns slot to store various neighbor output objects.",
-          "help_text": "Type: `string`, multiple: `False`, default: `totalvi_integration_neighbors`. ",
-          "default": "totalvi_integration_neighbors"
+          "help_text": "type: `string`, default: `totalvi_integration_neighbors`"
         },
         "obsp_neighbor_distances": {
           "type": "string",
+          "default": "totalvi_integration_distances",
           "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
-          "help_text": "Type: `string`, multiple: `False`, default: `totalvi_integration_distances`. ",
-          "default": "totalvi_integration_distances"
+          "help_text": "type: `string`, default: `totalvi_integration_distances`"
         },
         "obsp_neighbor_connectivities": {
           "type": "string",
+          "default": "totalvi_integration_connectivities",
           "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
-          "help_text": "Type: `string`, multiple: `False`, default: `totalvi_integration_connectivities`. ",
-          "default": "totalvi_integration_connectivities"
+          "help_text": "type: `string`, default: `totalvi_integration_connectivities`"
         }
       }
     },
     "clustering options": {
-      "title": "Clustering options",
       "type": "object",
+      "title": "Clustering options",
       "description": "No description",
       "properties": {
         "obs_cluster": {
           "type": "string",
-          "description": "Prefix for the .obs keys under which to add the cluster labels",
-          "help_text": "Type: `string`, multiple: `False`, default: `totalvi_integration_leiden`. ",
-          "default": "totalvi_integration_leiden"
+          "default": "totalvi_integration_leiden",
+          "description": "Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions\nresolutions specified in '--leiden_resolution'.\n",
+          "help_text": "type: `string`, default: `totalvi_integration_leiden`"
         },
         "leiden_resolution": {
           "type": "array",
+          "default": [
+            1.0
+          ],
+          "description": "Control the coarseness of the clustering. Higher values lead to more clusters.",
           "items": {
             "type": "number"
           },
-          "description": "Control the coarseness of the clustering",
-          "help_text": "Type: `double`, multiple: `True`, default: `1`. ",
-          "default": "1"
+          "help_text": "type: `array`, multiple: True, default: `1.0`"
         }
       }
     },
     "umap options": {
-      "title": "Umap options",
       "type": "object",
+      "title": "Umap options",
       "description": "No description",
       "properties": {
         "obsm_umap": {
           "type": "string",
+          "default": "X_totalvi_umap",
           "description": "In which .obsm slot to store the resulting UMAP embedding.",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_totalvi_umap`. ",
-          "default": "X_totalvi_umap"
+          "help_text": "type: `string`, default: `X_totalvi_umap`"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [

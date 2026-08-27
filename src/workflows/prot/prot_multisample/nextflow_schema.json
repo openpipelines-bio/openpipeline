@@ -5,133 +5,148 @@
   "type": "object",
   "$defs": {
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "id": {
           "type": "string",
           "description": "ID of the concatenated file",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `concatenated`. "
+          "help_text": "type: `string`, required, example: `concatenated`"
         },
         "input": {
           "type": "string",
+          "description": "Path to the samples.",
           "format": "path",
           "exists": true,
-          "description": "Path to the samples.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `dataset.h5mu`. "
+          "help_text": "type: `string`, required, direction: `input`, example: `dataset.h5mu`"
         },
         "layer": {
           "type": "string",
-          "description": "Input layer to use",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Input layer to use. If not specified, .X is used.",
+          "help_text": "type: `string`"
         }
-      }
+      },
+      "required": [
+        "id",
+        "input"
+      ]
     },
     "outputs": {
-      "title": "Outputs",
       "type": "object",
+      "title": "Outputs",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Destination path to the output.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output.h5mu`"
         }
-      }
+      },
+      "required": [
+        "output"
+      ]
     },
     "qc metrics calculation options": {
-      "title": "QC metrics calculation options",
       "type": "object",
+      "title": "QC metrics calculation options",
       "description": "No description",
       "properties": {
         "var_qc_metrics": {
           "type": "array",
+          "description": "Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled 'True', \ncompared to the total sum of the values for all genes. Defaults to the value from\n--var_name_mitochondrial_genes.\n",
           "items": {
             "type": "string"
           },
-          "description": "Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled 'True', \ncompared to the total sum of the values for all genes",
-          "help_text": "Type: `string`, multiple: `True`, example: `ercc,highly_variable`. "
+          "help_text": "type: `array`, multiple: True, example: `ercc,highly_variable`"
         },
         "top_n_vars": {
           "type": "array",
+          "default": [
+            50,
+            100,
+            200,
+            500
+          ],
+          "description": "Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n",
           "items": {
             "type": "integer"
           },
-          "description": "Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated",
-          "help_text": "Type: `integer`, multiple: `True`, default: `50,100,200,500`. ",
-          "default": "50,100,200,500"
+          "help_text": "type: `array`, multiple: True, default: `50,100,200,500`"
         },
         "log1p_transform": {
           "type": "boolean",
-          "description": "Compute log1p-transformed versions of the calculated QC metrics",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "default": true,
+          "description": "Compute log1p-transformed versions of the calculated QC metrics. For each emitted\nmetric column `<col>`, an additional column `log1p_<col>` is added containing\n`log1p(<col>)`. Mirrors scanpy's `log1p` flag.\n",
+          "help_text": "type: `boolean`, default: `True`"
         },
         "output_obs_num_nonzero_vars": {
           "type": "string",
-          "description": "Name of column in .obs describing, for each observation, the number of stored values\n(including explicit zeroes)",
-          "help_text": "Type: `string`, multiple: `False`, default: `num_nonzero_vars`. ",
-          "default": "num_nonzero_vars"
+          "default": "num_nonzero_vars",
+          "description": "Name of column in .obs describing, for each observation, the number of stored values\n(including explicit zeroes). In other words, the name of the column that counts\nfor each row the number of columns that contain data.\n",
+          "help_text": "type: `string`, default: `num_nonzero_vars`"
         },
         "output_obs_total_counts_vars": {
           "type": "string",
+          "default": "total_counts",
           "description": "Name of the column for .obs describing, for each observation (row),\nthe sum of the stored values in the columns.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `total_counts`. ",
-          "default": "total_counts"
+          "help_text": "type: `string`, default: `total_counts`"
         },
         "output_var_num_nonzero_obs": {
           "type": "string",
-          "description": "Name of column describing, for each feature, the number of stored values\n(including explicit zeroes)",
-          "help_text": "Type: `string`, multiple: `False`, default: `num_nonzero_obs`. ",
-          "default": "num_nonzero_obs"
+          "default": "num_nonzero_obs",
+          "description": "Name of column describing, for each feature, the number of stored values\n(including explicit zeroes). In other words, the name of the column that counts\nfor each column the number of rows that contain data.\n",
+          "help_text": "type: `string`, default: `num_nonzero_obs`"
         },
         "output_var_total_counts_obs": {
           "type": "string",
+          "default": "total_counts",
           "description": "Name of the column in .var describing, for each feature (column),\nthe sum of the stored values in the rows.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `total_counts`. ",
-          "default": "total_counts"
+          "help_text": "type: `string`, default: `total_counts`"
         },
         "output_var_obs_mean": {
           "type": "string",
+          "default": "obs_mean",
           "description": "Name of the column in .obs providing the mean of the values in each row.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `obs_mean`. ",
-          "default": "obs_mean"
+          "help_text": "type: `string`, default: `obs_mean`"
         },
         "output_var_pct_dropout": {
           "type": "string",
-          "description": "Name of the column in .obs providing for each feature the percentage of\nobservations the feature does not appear on (i.e",
-          "help_text": "Type: `string`, multiple: `False`, default: `pct_dropout`. ",
-          "default": "pct_dropout"
+          "default": "pct_dropout",
+          "description": "Name of the column in .obs providing for each feature the percentage of\nobservations the feature does not appear on (i.e. is missing). Same as `--output_var_num_nonzero_obs`\nbut percentage based.\n",
+          "help_text": "type: `string`, default: `pct_dropout`"
         }
       }
     },
     "clr arguments": {
-      "title": "CLR arguments",
       "type": "object",
+      "title": "CLR arguments",
       "description": "No description",
       "properties": {
         "clr_axis": {
           "type": "integer",
+          "default": 0,
           "description": "Axis across which CLR is performed.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
-          "default": 0
+          "help_text": "type: `integer`, default: `0`"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [

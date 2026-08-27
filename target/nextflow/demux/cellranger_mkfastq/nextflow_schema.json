@@ -4,69 +4,85 @@
   "description": "Demultiplex raw sequencing data",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Path to the (untarred) BCL files. Expects 'RunParameters.xml' at './'.",
           "format": "path",
           "exists": true,
-          "description": "Path to the (untarred) BCL files",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"/path/to/bcl\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['/path/to/bcl']`"
         },
         "sample_sheet": {
           "type": "string",
+          "description": "The path to the sample sheet.",
           "format": "path",
           "exists": true,
-          "description": "The path to the sample sheet.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"SampleSheet.csv\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['SampleSheet.csv']`"
         },
         "output": {
           "type": "string",
-          "format": "path",
+          "default": [
+            "fastqs"
+          ],
           "description": "The folder to store the demux results",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"fastqs\"`, direction: `output`, example: `\"/path/to/output\"`. ",
-          "default": "fastqs"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, default: `fastqs`, direction: `output`, example: `['/path/to/output']`"
         },
         "reports": {
           "type": "string",
-          "format": "path",
           "description": "Reports directory",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.reports\"`, direction: `output`, example: `\"reports_dir\"`. ",
-          "default": "$id.$key.reports"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['reports_dir']`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "sample_sheet",
+        "output"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/arguments"
     },

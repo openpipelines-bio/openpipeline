@@ -5,42 +5,51 @@
   "type": "object",
   "$defs": {
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Path to the processed h5mu file.",
           "format": "path",
           "exists": true,
-          "description": "Path to the processed h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `test.h5mu`. "
+          "help_text": "type: `string`, required, direction: `input`, example: `test.h5mu`"
         },
         "orig_input": {
           "type": "string",
+          "description": "Path to the original input file.",
           "format": "path",
           "exists": true,
-          "description": "Path to the original input file.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `input.h5mu`. "
+          "help_text": "type: `string`, required, direction: `input`, example: `input.h5mu`"
         },
         "scrublet_score_threshold": {
           "type": "number",
           "description": "The manual scrublet score threshold that was applied.",
-          "help_text": "Type: `double`, multiple: `False`, required, example: `0.1`. "
+          "help_text": "type: `number`, required, example: `0.1`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "orig_input",
+        "scrublet_score_threshold"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [

@@ -5,186 +5,199 @@
   "type": "object",
   "$defs": {
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Path to the sample. Mutually exclusive with the 'input_uri' argument.",
           "format": "path",
-          "description": "Path to the sample",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `dataset.h5mu`. "
+          "exists": true,
+          "help_text": "type: `string`, direction: `input`, example: `dataset.h5mu`"
         },
         "tiledb_input_uri": {
           "type": "string",
-          "description": "A URI containing the TileDB-SOMA objects",
-          "help_text": "Type: `string`, multiple: `False`, example: `s3://bucket/path`. "
+          "description": "A URI containing the TileDB-SOMA objects. Mutually exclusive with the 'input' argument.",
+          "help_text": "type: `string`, example: `s3://bucket/path`"
         },
         "tiledb_s3_region": {
           "type": "string",
           "description": "Region where the TileDB-SOMA database is hosted.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `us-west-2`. "
+          "help_text": "type: `string`, example: `us-west-2`"
         },
         "tiledb_endpoint": {
           "type": "string",
           "description": "Custom endpoint to use to connect to S3\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`"
         },
         "tiledb_s3_no_sign_request": {
           "type": "boolean",
-          "description": "Do not sign S3 requests",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
-          "default": false
-        }
-      }
-    },
-    "outputs": {
-      "title": "Outputs",
-      "type": "object",
-      "description": "No description",
-      "properties": {
-        "output": {
-          "type": "string",
-          "format": "path",
-          "description": "Destination path to the output.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output.h5mu`, direction: `output`, example: `output.h5mu`. ",
-          "default": "$id.$key.output.h5mu"
-        },
-        "output_tiledb": {
-          "type": "string",
-          "format": "path",
-          "description": "Output the TileDB database to the specified directory instead of adding it to the existing database.\n",
-          "help_text": "Type: `file`, multiple: `False`, default: `$id.$key.output_tiledb`, direction: `output`. ",
-          "default": "$id.$key.output_tiledb"
+          "default": false,
+          "description": "Do not sign S3 requests. Credentials will not be loaded if this argument is provided.\n",
+          "help_text": "type: `boolean`, default: `False`"
         }
       }
     },
     "input slots": {
-      "title": "Input slots",
       "type": "object",
+      "title": "Input slots",
       "description": "No description",
       "properties": {
         "layer": {
           "type": "string",
+          "default": "log_normalized",
           "description": "use specified layer for expression values instead of the .X object from the modality.",
-          "help_text": "Type: `string`, multiple: `False`, default: `log_normalized`. ",
-          "default": "log_normalized"
+          "help_text": "type: `string`, default: `log_normalized`"
         },
         "modality": {
           "type": "string",
+          "default": "rna",
           "description": "Which modality to process.",
-          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
-          "default": "rna"
+          "help_text": "type: `string`, default: `rna`"
         }
       }
     },
-    "neighbour calculation": {
-      "title": "Neighbour calculation",
+    "outputs": {
       "type": "object",
+      "title": "Outputs",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Destination path to the output.",
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output.h5mu`"
+        },
+        "output_tiledb": {
+          "type": "string",
+          "description": "Output the TileDB database to the specified directory instead of adding it to the existing database.\n",
+          "format": "path",
+          "help_text": "type: `string`, direction: `output`"
+        }
+      },
+      "required": [
+        "output"
+      ]
+    },
+    "neighbour calculation": {
+      "type": "object",
+      "title": "Neighbour calculation",
       "description": "No description",
       "properties": {
         "uns_neighbors": {
           "type": "string",
+          "default": "harmonypy_integration_neighbors",
           "description": "In which .uns slot to store various neighbor output objects.",
-          "help_text": "Type: `string`, multiple: `False`, default: `harmonypy_integration_neighbors`. ",
-          "default": "harmonypy_integration_neighbors"
+          "help_text": "type: `string`, default: `harmonypy_integration_neighbors`"
         },
         "obsp_neighbor_distances": {
           "type": "string",
+          "default": "harmonypy_integration_distances",
           "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
-          "help_text": "Type: `string`, multiple: `False`, default: `harmonypy_integration_distances`. ",
-          "default": "harmonypy_integration_distances"
+          "help_text": "type: `string`, default: `harmonypy_integration_distances`"
         },
         "obsp_neighbor_connectivities": {
           "type": "string",
+          "default": "harmonypy_integration_connectivities",
           "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
-          "help_text": "Type: `string`, multiple: `False`, default: `harmonypy_integration_connectivities`. ",
-          "default": "harmonypy_integration_connectivities"
+          "help_text": "type: `string`, default: `harmonypy_integration_connectivities`"
         }
       }
     },
     "harmony integration options": {
-      "title": "Harmony integration options",
       "type": "object",
+      "title": "Harmony integration options",
       "description": "No description",
       "properties": {
         "embedding": {
           "type": "string",
+          "default": "X_pca",
           "description": "Embedding to use as input",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_pca`. ",
-          "default": "X_pca"
+          "help_text": "type: `string`, default: `X_pca`"
         },
         "obsm_integrated": {
           "type": "string",
+          "default": "X_pca_integrated",
           "description": "In which .obsm slot to store the resulting integrated embedding.",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_pca_integrated`. ",
-          "default": "X_pca_integrated"
+          "help_text": "type: `string`, default: `X_pca_integrated`"
         },
         "obs_covariates": {
           "type": "array",
+          "description": "The .obs field(s) that define the covariate(s) to regress out.",
           "items": {
             "type": "string"
           },
-          "description": "The .obs field(s) that define the covariate(s) to regress out.",
-          "help_text": "Type: `string`, multiple: `True`, required, example: `batch:sample`. "
+          "help_text": "type: `array`, multiple: True, required, example: `['batch', 'sample']`"
         },
         "theta": {
           "type": "array",
+          "default": [
+            2.0
+          ],
+          "description": "Diversity clustering penalty parameter. Can be set as a single value for all batch observations or as multiple values, one for each observation in the batches defined by --obs_covariates. theta=0 does not encourage any diversity. Larger values of theta\nresult in more diverse clusters.\"\n",
           "items": {
             "type": "number"
           },
-          "description": "Diversity clustering penalty parameter",
-          "help_text": "Type: `double`, multiple: `True`, default: `2`. ",
-          "default": 2
+          "help_text": "type: `array`, multiple: True, default: `2.0`"
         }
-      }
+      },
+      "required": [
+        "obs_covariates"
+      ]
     },
     "clustering options": {
-      "title": "Clustering options",
       "type": "object",
+      "title": "Clustering options",
       "description": "No description",
       "properties": {
         "obs_cluster": {
           "type": "string",
-          "description": "Prefix for the .obs keys under which to add the cluster labels",
-          "help_text": "Type: `string`, multiple: `False`, default: `harmony_integration_leiden`. ",
-          "default": "harmony_integration_leiden"
+          "default": "harmony_integration_leiden",
+          "description": "Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions\nresolutions specified in '--leiden_resolution'.\n",
+          "help_text": "type: `string`, default: `harmony_integration_leiden`"
         },
         "leiden_resolution": {
           "type": "array",
+          "default": [
+            1.0
+          ],
+          "description": "Control the coarseness of the clustering. Higher values lead to more clusters.",
           "items": {
             "type": "number"
           },
-          "description": "Control the coarseness of the clustering",
-          "help_text": "Type: `double`, multiple: `True`, default: `1`. ",
-          "default": "1"
+          "help_text": "type: `array`, multiple: True, default: `1.0`"
         }
       }
     },
     "umap options": {
-      "title": "Umap options",
       "type": "object",
+      "title": "Umap options",
       "description": "No description",
       "properties": {
         "obsm_umap": {
           "type": "string",
+          "default": "X_leiden_harmony_umap",
           "description": "In which .obsm slot to store the resulting UMAP embedding.",
-          "help_text": "Type: `string`, multiple: `False`, default: `X_leiden_harmony_umap`. ",
-          "default": "X_leiden_harmony_umap"
+          "help_text": "type: `string`, default: `X_leiden_harmony_umap`"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
@@ -192,10 +205,10 @@
       "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/$defs/outputs"
+      "$ref": "#/$defs/input slots"
     },
     {
-      "$ref": "#/$defs/input slots"
+      "$ref": "#/$defs/outputs"
     },
     {
       "$ref": "#/$defs/neighbour calculation"

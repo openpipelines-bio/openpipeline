@@ -4,314 +4,366 @@
   "description": "Cell type annotation workflow using ScanVI with scArches for reference mapping.",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
-        }
-      }
-    },
-    "outputs": {
-      "title": "Outputs",
-      "type": "object",
-      "description": "No description",
-      "properties": {
-        "output": {
-          "type": "string",
-          "format": "path",
-          "description": "The annotated output .h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
-        },
-        "output_obs_predictions": {
-          "type": "string",
-          "description": "In which .obs slot to store the predicted labels.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"scanvi_pred\"`. ",
-          "default": "scanvi_pred"
-        },
-        "output_obs_probability": {
-          "type": "string",
-          "description": "In which",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"scanvi_probabilities\"`. ",
-          "default": "scanvi_probabilities"
-        },
-        "output_obsm_integrated": {
-          "type": "string",
-          "description": "In which .obsm slot to store the integrated embedding.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"X_integrated_scanvi\"`. ",
-          "default": "X_integrated_scanvi"
-        },
-        "output_compression": {
-          "type": "string",
-          "description": "The compression format to be used on the output h5mu object.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
-          "enum": [
-            "gzip",
-            "lzf"
-          ]
-        },
-        "output_model": {
-          "type": "string",
-          "format": "path",
-          "description": "Path to the resulting scANVI model that was updated with query data.",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output_model\"`, direction: `output`. ",
-          "default": "$id.$key.output_model"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "query input": {
-      "title": "Query Input",
       "type": "object",
+      "title": "Query Input",
       "description": "No description",
       "properties": {
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"foo\"`. "
+          "help_text": "type: `string`, multiple: False, required, example: `['foo']`"
         },
         "input": {
           "type": "string",
+          "description": "Input dataset consisting of the (unlabeled) query observations. The dataset is expected to be pre-processed in the same way as --reference.",
           "format": "path",
           "exists": true,
-          "description": "Input dataset consisting of the (unlabeled) query observations",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "modality": {
           "type": "string",
-          "description": "Which modality to process",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "default": [
+            "rna"
+          ],
+          "description": "Which modality to process. Should match the modality of the --reference dataset.",
+          "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "layer": {
           "type": "string",
-          "description": "Which layer to use for integration if .X is not to be used",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Which layer to use for integration if .X is not to be used. Should match the layer of the --reference dataset.",
+          "help_text": "type: `string`, multiple: False"
         },
         "input_obs_batch_label": {
           "type": "string",
+          "default": [
+            "sample_id"
+          ],
           "description": "The .obs field in the input (query) dataset containing the batch labels.",
-          "help_text": "Type: `string`, multiple: `False`, required, default: `\"sample_id\"`, example: `\"sample\"`. ",
-          "default": "sample_id"
+          "help_text": "type: `string`, multiple: False, required, default: `sample_id`, example: `['sample']`"
         },
         "input_obs_size_factor": {
           "type": "string",
-          "description": "Key in adata.obs for size factor information",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Key in adata.obs for size factor information. Instead of using library size as a size factor,\nthe provided size factor column will be used as offset in the mean of the likelihood.\nAssumed to be on linear scale.\n",
+          "help_text": "type: `string`, multiple: False"
         },
         "input_obs_categorical_covariate": {
           "type": "array",
+          "description": "Keys in adata.obs that correspond to categorical data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space).\nThus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.\nImportant: the order of the categorical covariates matters and should match the order of the covariates in the reference data.\n",
           "items": {
             "type": "string"
           },
-          "description": "Keys in adata.obs that correspond to categorical data",
-          "help_text": "Type: `string`, multiple: `True`. "
+          "help_text": "type: `array`, multiple: True"
         },
         "input_obs_continuous_covariate": {
           "type": "array",
+          "description": "Keys in adata.obs that correspond to continuous data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space). Thus, these should not be\nused for biologically-relevant factors that you do _not_ want to correct for.\nImportant: the order of the continuous covariates matters and should match the order of the covariates in the reference data.\n",
           "items": {
             "type": "string"
           },
-          "description": "Keys in adata.obs that correspond to continuous data",
-          "help_text": "Type: `string`, multiple: `True`. "
+          "help_text": "type: `array`, multiple: True"
         },
         "input_var_gene_names": {
           "type": "string",
-          "description": ".var column containing gene names",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": ".var column containing gene names. By default, use the index.",
+          "help_text": "type: `string`, multiple: False"
         },
         "sanitize_ensembl_ids": {
           "type": "boolean",
+          "default": [
+            true
+          ],
           "description": "Whether to sanitize ensembl ids by removing version numbers.",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "help_text": "type: `boolean`, multiple: False, default: `True`"
         }
-      }
+      },
+      "required": [
+        "id",
+        "input",
+        "input_obs_batch_label"
+      ]
     },
     "reference input": {
-      "title": "Reference input",
       "type": "object",
+      "title": "Reference input",
       "description": "No description",
       "properties": {
         "reference": {
           "type": "string",
+          "description": "Reference dataset consisting of the labeled observations to train the KNN classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset.",
           "format": "path",
           "exists": true,
-          "description": "Reference dataset consisting of the labeled observations to train the KNN classifier on",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"reference.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['reference.h5mu']`"
         },
         "reference_obs_target": {
           "type": "string",
           "description": "The `.obs` key containing the target labels.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"cell_type\"`. "
+          "help_text": "type: `string`, multiple: False, required, example: `['cell_type']`"
         },
         "reference_obs_batch_label": {
           "type": "string",
+          "default": [
+            "sample_id"
+          ],
           "description": "The .obs field in the reference dataset containing the batch labels.",
-          "help_text": "Type: `string`, multiple: `False`, required, default: `\"sample_id\"`, example: `\"sample\"`. ",
-          "default": "sample_id"
+          "help_text": "type: `string`, multiple: False, required, default: `sample_id`, example: `['sample']`"
         },
         "reference_obs_size_factor": {
           "type": "string",
-          "description": "Key in adata.obs for size factor information",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Key in adata.obs for size factor information. Instead of using library size as a size factor,\nthe provided size factor column will be used as offset in the mean of the likelihood.\nAssumed to be on linear scale.\n",
+          "help_text": "type: `string`, multiple: False"
         },
         "reference_obs_categorical_covariate": {
           "type": "array",
+          "description": "Keys in adata.obs that correspond to categorical data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space).\nThus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.\nImportant: the order of the categorical covariates matters and should match the order of the covariates in the query data.\n",
           "items": {
             "type": "string"
           },
-          "description": "Keys in adata.obs that correspond to categorical data",
-          "help_text": "Type: `string`, multiple: `True`. "
+          "help_text": "type: `array`, multiple: True"
         },
         "reference_obs_continuous_covariate": {
           "type": "array",
+          "description": "Keys in adata.obs that correspond to continuous data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space). Thus, these should not be\nused for biologically-relevant factors that you do _not_ want to correct for.\nImportant: the order of the continuous covariates matters and should match the order of the covariates in the query data.\n",
           "items": {
             "type": "string"
           },
-          "description": "Keys in adata.obs that correspond to continuous data",
-          "help_text": "Type: `string`, multiple: `True`. "
+          "help_text": "type: `array`, multiple: True"
         },
         "unlabeled_category": {
           "type": "string",
+          "default": [
+            "Unknown"
+          ],
           "description": "Value in the --reference_obs_batch_label field that indicates unlabeled observations\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"Unknown\"`. ",
-          "default": "Unknown"
+          "help_text": "type: `string`, multiple: False, default: `Unknown`"
         },
         "reference_var_hvg": {
           "type": "string",
-          "description": ".var column containing highly variable genes",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"filter_with_hvg\"`. ",
-          "default": "filter_with_hvg"
+          "default": [
+            "filter_with_hvg"
+          ],
+          "description": ".var column containing highly variable genes. If not provided, genes will not be subset.",
+          "help_text": "type: `string`, multiple: False, default: `filter_with_hvg`"
         },
         "reference_var_gene_names": {
           "type": "string",
-          "description": ".var column containing gene names",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": ".var column containing gene names. By default, use the index.",
+          "help_text": "type: `string`, multiple: False"
         }
-      }
+      },
+      "required": [
+        "reference",
+        "reference_obs_target",
+        "reference_obs_batch_label"
+      ]
     },
     "scvi, scanvi and scarches training options": {
-      "title": "scVI, scANVI and scArches training options",
       "type": "object",
+      "title": "scVI, scANVI and scArches training options",
       "description": "No description",
       "properties": {
         "early_stopping": {
           "type": "boolean",
           "description": "Whether to perform early stopping with respect to the validation set.",
-          "help_text": "Type: `boolean`, multiple: `False`. "
+          "help_text": "type: `boolean`, multiple: False"
         },
         "early_stopping_monitor": {
           "type": "string",
+          "default": [
+            "elbo_validation"
+          ],
           "description": "Metric logged during validation set epoch.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"elbo_validation\"`, choices: ``elbo_validation`, `reconstruction_loss_validation`, `kl_local_validation``. ",
           "enum": [
             "elbo_validation",
             "reconstruction_loss_validation",
             "kl_local_validation"
           ],
-          "default": "elbo_validation"
+          "help_text": "type: `string`, multiple: False, default: `elbo_validation`, choices: `elbo_validation`|`reconstruction_loss_validation`|`kl_local_validation`"
         },
         "early_stopping_patience": {
           "type": "integer",
+          "default": [
+            45
+          ],
           "description": "Number of validation epochs with no improvement after which training will be stopped.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `45`. ",
-          "default": 45
+          "help_text": "type: `integer`, multiple: False, default: `45`"
         },
         "early_stopping_min_delta": {
           "type": "number",
-          "description": "Minimum change in the monitored quantity to qualify as an improvement, i.e",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.0`. ",
-          "default": 0.0
+          "default": [
+            0.0
+          ],
+          "description": "Minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than min_delta, will count as no improvement.",
+          "help_text": "type: `number`, multiple: False, default: `0.0`"
         },
         "max_epochs": {
           "type": "integer",
           "description": "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest.",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`, multiple: False"
         },
         "reduce_lr_on_plateau": {
           "type": "boolean",
+          "default": [
+            true
+          ],
           "description": "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus.",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "lr_factor": {
           "type": "number",
+          "default": [
+            0.6
+          ],
           "description": "Factor to reduce learning rate.",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.6`. ",
-          "default": 0.6
+          "help_text": "type: `number`, multiple: False, default: `0.6`"
         },
         "lr_patience": {
           "type": "number",
+          "default": [
+            30.0
+          ],
           "description": "Number of epochs with no improvement after which learning rate will be reduced.",
-          "help_text": "Type: `double`, multiple: `False`, default: `30.0`. ",
-          "default": 30.0
+          "help_text": "type: `number`, multiple: False, default: `30.0`"
         }
       }
     },
     "leiden clustering options": {
-      "title": "Leiden clustering options",
       "type": "object",
+      "title": "Leiden clustering options",
       "description": "No description",
       "properties": {
         "leiden_resolution": {
           "type": "array",
+          "default": [
+            1.0
+          ],
+          "description": "Control the coarseness of the clustering. Higher values lead to more clusters.",
           "items": {
             "type": "number"
           },
-          "description": "Control the coarseness of the clustering",
-          "help_text": "Type: `double`, multiple: `True`, default: `[1.0]`. ",
-          "default": [
-            1.0
-          ]
+          "help_text": "type: `array`, multiple: True, default: `1.0`"
         }
       }
     },
     "neighbor classifier arguments": {
-      "title": "Neighbor classifier arguments",
       "type": "object",
+      "title": "Neighbor classifier arguments",
       "description": "No description",
       "properties": {
         "knn_weights": {
           "type": "string",
-          "description": "Weight function used in prediction",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"uniform\"`, choices: ``uniform`, `distance``. ",
+          "default": [
+            "uniform"
+          ],
+          "description": "Weight function used in prediction. Possible values are:\n`uniform` (all points in each neighborhood are weighted equally) or \n`distance` (weight points by the inverse of their distance)\n",
           "enum": [
             "uniform",
             "distance"
           ],
-          "default": "uniform"
+          "help_text": "type: `string`, multiple: False, default: `uniform`, choices: `uniform`|`distance`"
         },
         "knn_n_neighbors": {
           "type": "integer",
-          "description": "The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent",
-          "help_text": "Type: `integer`, multiple: `False`, default: `15`. ",
-          "default": 15
+          "default": [
+            15
+          ],
+          "description": "The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n",
+          "help_text": "type: `integer`, multiple: False, default: `15`"
         }
       }
     },
-    "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
+    "outputs": {
       "type": "object",
+      "title": "Outputs",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "The annotated output .h5mu file.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+        },
+        "output_obs_predictions": {
+          "type": "string",
+          "default": [
+            "scanvi_pred"
+          ],
+          "description": "In which .obs slot to store the predicted labels.",
+          "help_text": "type: `string`, multiple: False, default: `scanvi_pred`"
+        },
+        "output_obs_probability": {
+          "type": "string",
+          "default": [
+            "scanvi_probabilities"
+          ],
+          "description": "In which. obs slot to store the probabilities of the predicted labels.",
+          "help_text": "type: `string`, multiple: False, default: `scanvi_probabilities`"
+        },
+        "output_obsm_integrated": {
+          "type": "string",
+          "default": [
+            "X_integrated_scanvi"
+          ],
+          "description": "In which .obsm slot to store the integrated embedding.",
+          "help_text": "type: `string`, multiple: False, default: `X_integrated_scanvi`"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "The compression format to be used on the output h5mu object.\n",
+          "enum": [
+            "gzip",
+            "lzf"
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+        },
+        "output_model": {
+          "type": "string",
+          "description": "Path to the resulting scANVI model that was updated with query data.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `output`"
+        }
+      },
+      "required": [
+        "output"
+      ]
+    },
+    "nextflow input-output arguments": {
+      "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
     {
-      "$ref": "#/$defs/outputs"
+      "$ref": "#/$defs/dataset input"
     },
     {
       "$ref": "#/$defs/query input"
@@ -327,6 +379,9 @@
     },
     {
       "$ref": "#/$defs/neighbor classifier arguments"
+    },
+    {
+      "$ref": "#/$defs/outputs"
     },
     {
       "$ref": "#/$defs/nextflow input-output arguments"

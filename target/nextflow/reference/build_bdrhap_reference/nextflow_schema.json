@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "build_bdrhap_reference",
+  "description": "The Reference Files Generator creates an archive containing Genome Index\nand Transcriptome annotation files needed for the BD Rhapsody Sequencing\nAnalysis Pipeline. The app takes as input one or more FASTA and GTF files\nand produces a compressed archive in the form of a tar.gz file. The \narchive contains:\n  \n- STAR index\n- Filtered GTF file\n",
+  "type": "object",
+  "$defs": {
+    "dataset input": {
+      "type": "object",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "type": "string",
+          "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
+        }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "title": "Inputs",
+      "description": "No description",
+      "properties": {
+        "genome_fasta": {
+          "type": "array",
+          "description": "Reference genome file in FASTA or FASTA.GZ format. The BD Rhapsody Sequencing Analysis Pipeline uses GRCh38 for Human and GRCm39 for Mouse.",
+          "format": "path",
+          "exists": true,
+          "items": {
+            "type": "string"
+          },
+          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `['genome_sequence.fa.gz']`"
+        },
+        "gtf": {
+          "type": "array",
+          "description": "File path to the transcript annotation files in GTF or GTF.GZ format. The Sequence Analysis Pipeline requires the 'gene_name' or \n'gene_id' attribute to be set on each gene and exon feature. Gene and exon feature lines must have the same attribute, and exons\nmust have a corresponding gene with the same value. For TCR/BCR assays, the TCR or BCR gene segments must have the 'gene_type' or\n'gene_biotype' attribute set, and the value should begin with 'TR' or 'IG', respectively.\n",
+          "format": "path",
+          "exists": true,
+          "items": {
+            "type": "string"
+          },
+          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `['transcriptome_annotation.gtf.gz']`"
+        },
+        "extra_sequences": {
+          "type": "array",
+          "description": "File path to additional sequences in FASTA format to use when building the STAR index. (e.g. transgenes or CRISPR guide barcodes).\nGTF lines for these sequences will be automatically generated and combined with the main GTF.\n",
+          "format": "path",
+          "exists": true,
+          "items": {
+            "type": "string"
+          },
+          "help_text": "type: `array`, multiple: True, direction: `input`, example: `['extra_sequence_1.fa.gz', 'extra_sequence_2.fa.gz']`"
+        }
+      },
+      "required": [
+        "genome_fasta",
+        "gtf"
+      ]
+    },
+    "outputs": {
+      "type": "object",
+      "title": "Outputs",
+      "description": "No description",
+      "properties": {
+        "reference_archive": {
+          "type": "string",
+          "description": "A Compressed archive containing the Reference Genome Index and annotation GTF files. This archive is meant to be used as an\ninput in the BD Rhapsody Sequencing Analysis Pipeline.\n",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['reference.tar.gz']`"
+        }
+      },
+      "required": [
+        "reference_archive"
+      ]
+    },
+    "arguments": {
+      "type": "object",
+      "title": "Arguments",
+      "description": "No description",
+      "properties": {
+        "mitochondrial_contigs": {
+          "type": "array",
+          "default": [
+            "chrM",
+            "chrMT",
+            "M",
+            "MT"
+          ],
+          "description": "Names of the Mitochondrial contigs in the provided Reference Genome. Fragments originating from contigs other than these are\nidentified as 'nuclear fragments' in the ATACseq analysis pipeline.\n",
+          "items": {
+            "type": "string"
+          },
+          "help_text": "type: `array`, multiple: True, default: `chrM;chrMT;M;MT`"
+        },
+        "filtering_off": {
+          "type": "boolean",
+          "default": false,
+          "description": "By default the input Transcript Annotation files are filtered based on the gene_type/gene_biotype attribute. Only features \nhaving the following attribute values are kept:\n\n  - protein_coding\n  - lncRNA \n  - IG_LV_gene\n  - IG_V_gene\n  - IG_V_pseudogene\n  - IG_D_gene\n  - IG_J_gene\n  - IG_J_pseudogene\n  - IG_C_gene\n  - IG_C_pseudogene\n  - TR_V_gene\n  - TR_V_pseudogene\n  - TR_D_gene\n  - TR_J_gene\n  - TR_J_pseudogene\n  - TR_C_gene\n\n  If you have already pre-filtered the input Annotation files and/or wish to turn-off the filtering, please set this option to True.\n",
+          "help_text": "type: `boolean`, default: `False`"
+        },
+        "wta_only_index": {
+          "type": "boolean",
+          "default": false,
+          "description": "Build a WTA only index, otherwise builds a WTA + ATAC index.",
+          "help_text": "type: `boolean`, default: `False`"
+        },
+        "extra_star_params": {
+          "type": "string",
+          "description": "Additional parameters to pass to STAR when building the genome index. Specify exactly like how you would on the command line.",
+          "help_text": "type: `string`, multiple: False, example: `['--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11']`"
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "type": "object",
+      "title": "Nextflow input-output arguments",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
+        }
+      },
+      "required": [
+        "publish_dir"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

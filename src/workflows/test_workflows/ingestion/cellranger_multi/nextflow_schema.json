@@ -5,42 +5,50 @@
   "type": "object",
   "$defs": {
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "input": {
           "type": "array",
+          "description": "Path to h5mu output.",
+          "format": "path",
+          "exists": true,
           "items": {
             "type": "string"
           },
-          "format": "path",
-          "exists": true,
-          "description": "Path to h5mu output.",
-          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `foo.final.h5mu`. "
+          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `foo.final.h5mu`"
         },
         "input_filtered": {
           "type": "array",
+          "description": "Path to h5mu output generated with --output_filtered_data enabled.\nWhen provided, the per-sample filtered count matrices are checked to\ncontain fewer cells than the corresponding raw count matrices.\n",
+          "format": "path",
+          "exists": true,
           "items": {
             "type": "string"
           },
-          "format": "path",
-          "description": "Path to h5mu output generated with --output_filtered_data enabled.\nWhen provided, the per-sample filtered count matrices are checked to\ncontain fewer cells than the corresponding raw count matrices.\n",
-          "help_text": "Type: `file`, multiple: `True`, direction: `input`, example: `foo.filtered.h5mu`. "
+          "help_text": "type: `array`, multiple: True, direction: `input`, example: `foo.filtered.h5mu`"
         }
-      }
+      },
+      "required": [
+        "input"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [

@@ -4,65 +4,77 @@
   "description": "Extract files from a tar archive",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input file",
           "format": "path",
           "exists": true,
-          "description": "Input file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.tar.gz\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.tar.gz']`"
         },
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Folder to restore file(s) to.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`, example: `\"output_folder\"`. ",
-          "default": "$id.$key.output"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output_folder']`"
         },
         "strip_components": {
           "type": "integer",
-          "description": "Strip this amount of leading components from file names on extraction",
-          "help_text": "Type: `integer`, multiple: `False`, example: `1`. "
+          "description": "Strip this amount of leading components from file names on extraction. For example, to extract only 'myfile.txt' from an archive containing the structure `this/goes/deep/myfile.txt', use 3 to strip 'this/goes/deep/'.",
+          "help_text": "type: `integer`, multiple: False, example: `[1]`"
         },
         "exclude": {
           "type": "string",
           "description": "Prevents any file or member whose name matches the shell wildcard (pattern) from being extracted.",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"docs/figures\"`. "
+          "help_text": "type: `string`, multiple: False, example: `['docs/figures']`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "output"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/arguments"
     },

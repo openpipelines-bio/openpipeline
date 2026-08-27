@@ -4,95 +4,112 @@
   "description": "Build a Cell Ranger-arc and -atac compatible reference folder from user-supplied genome FASTA and gene GTF files. Creates a new folder named after the genome.",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "genome_fasta": {
           "type": "string",
+          "description": "Reference genome fasta.",
           "format": "path",
           "exists": true,
-          "description": "Reference genome fasta.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"genome_sequence.fa.gz\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['genome_sequence.fa.gz']`"
         },
         "annotation_gtf": {
           "type": "string",
+          "description": "Reference annotation.",
           "format": "path",
           "exists": true,
-          "description": "Reference annotation.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"annotation.gtf.gz\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['annotation.gtf.gz']`"
         },
         "motifs_file": {
           "type": "string",
+          "description": "Transcription factor motifs in JASPAR format. See https://support.10xgenomics.com/single-cell-multiome-atac-gex/software/pipelines/latest/advanced/references",
           "format": "path",
-          "description": "Transcription factor motifs in JASPAR format",
-          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"motifs.txt\"`. "
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['motifs.txt']`"
         },
         "non_nuclear_contigs": {
           "type": "array",
+          "default": [
+            "chrM"
+          ],
+          "description": "Name(s) of contig(s) that do not have any chromatin structure, for example, mitochondria or plastids. These contigs are excluded from peak calling since the entire contig will be \"open\" due to a lack of chromatin structure. Leave empty if there are no such contigs.",
           "items": {
             "type": "string"
           },
-          "description": "Name(s) of contig(s) that do not have any chromatin structure, for example, mitochondria or plastids",
-          "help_text": "Type: `string`, multiple: `True`, default: `[\"chrM\"]`, example: `[\"chrM\"]`. ",
-          "default": [
-            "chrM"
-          ]
+          "help_text": "type: `array`, multiple: True, default: `chrM`, example: `['chrM']`"
         },
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Output folder",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`, example: `\"cellranger_reference\"`. ",
-          "default": "$id.$key.output"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['cellranger_reference']`"
         },
         "genome": {
           "type": "string",
-          "description": "Name of the genome",
-          "help_text": "Type: `string`, multiple: `False`, required, default: `\"output\"`, example: `\"GRCh38\"`. ",
-          "default": "output"
+          "default": [
+            "output"
+          ],
+          "description": "Name of the genome. This will be the name of the intermediate output folder",
+          "help_text": "type: `string`, multiple: False, required, default: `output`, example: `['GRCh38']`"
         },
         "organism": {
           "type": "string",
-          "description": "Name of the organism",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Name of the organism. This is displayed in the web summary but is otherwise not used in the analysis.",
+          "help_text": "type: `string`, multiple: False"
         },
         "subset_regex": {
           "type": "string",
           "description": "Will subset the reference chromosomes using the given regex.",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"(ERCC-00002|chr1)\"`. "
+          "help_text": "type: `string`, multiple: False, example: `['(ERCC-00002|chr1)']`"
         }
-      }
+      },
+      "required": [
+        "genome_fasta",
+        "annotation_gtf",
+        "output",
+        "genome"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/arguments"
     },

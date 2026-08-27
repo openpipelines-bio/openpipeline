@@ -4,81 +4,95 @@
   "description": "Converts a single layer h5ad file into a single MuData object\n",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "input": {
           "type": "array",
+          "default": [
+            "input.h5ad"
+          ],
+          "description": "Input h5ad files",
+          "format": "path",
+          "exists": true,
           "items": {
             "type": "string"
           },
-          "format": "path",
-          "exists": true,
-          "description": "Input h5ad files",
-          "help_text": "Type: `file`, multiple: `True`, required, default: `[\"input.h5ad\"]`, direction: `input`. ",
-          "default": [
-            "input.h5ad"
-          ]
+          "help_text": "type: `array`, multiple: True, required, default: `input.h5ad`, direction: `input`"
         },
         "modality": {
           "type": "array",
+          "default": [
+            "rna"
+          ],
+          "description": "List of names to use for the modalities. Will be used as the keys in the .mod attribute in the output MuData object\nThe number of items provided for this argument equal the number of input files (--input) and their order should match.\n",
           "items": {
             "type": "string"
           },
-          "description": "List of names to use for the modalities",
-          "help_text": "Type: `string`, multiple: `True`, default: `[\"rna\"]`. ",
-          "default": [
-            "rna"
-          ]
+          "help_text": "type: `array`, multiple: True, default: `rna`"
         },
         "output": {
           "type": "string",
-          "format": "path",
+          "default": [
+            "output.h5mu"
+          ],
           "description": "Output MuData file.",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"output.h5mu\"`, direction: `output`. ",
-          "default": "output.h5mu"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, default: `output.h5mu`, direction: `output`"
         },
         "output_compression": {
           "type": "string",
           "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
-          ]
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
         }
-      }
+      },
+      "required": [
+        "input"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/arguments"
     },

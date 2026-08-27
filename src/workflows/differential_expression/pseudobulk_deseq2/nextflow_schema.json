@@ -5,173 +5,185 @@
   "type": "object",
   "$defs": {
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input h5mu file.",
           "format": "path",
           "exists": true,
-          "description": "Input h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `/path/to/input_file.h5mu`. "
+          "help_text": "type: `string`, required, direction: `input`, example: `/path/to/input_file.h5mu`"
         },
         "modality": {
           "type": "string",
+          "default": "rna",
           "description": "Which modality from the input MuData file to process.",
-          "help_text": "Type: `string`, multiple: `False`, default: `rna`. ",
-          "default": "rna"
+          "help_text": "type: `string`, default: `rna`"
         },
         "input_layer": {
           "type": "string",
-          "description": "Input layer to use",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "Input layer to use. If None, X is used. This layer must contain raw counts.",
+          "help_text": "type: `string`"
         },
         "obs_cell_group": {
           "type": "string",
-          "description": ".obs field containing the variable to group on",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `cell_type`. "
+          "description": ".obs field containing the variable to group on. Typically this field contains cell groups such as annotated cell types or clusters.\nIf provided, will generate DESeq2 analysis per cell group.\n",
+          "help_text": "type: `string`, required, example: `cell_type`"
         },
         "obs_groups": {
           "type": "array",
+          "description": ".obs fields containing the experimental condition(s) to create pseudobulk samples for.",
           "items": {
             "type": "string"
           },
-          "description": ".obs fields containing the experimental condition(s) to create pseudobulk samples for.",
-          "help_text": "Type: `string`, multiple: `True`, example: `treatment:disease`. "
+          "help_text": "type: `array`, multiple: True, example: `['treatment', 'disease']`"
         },
         "var_gene_names": {
           "type": "string",
-          "description": "Name of the .var field that contains gene symbols",
-          "help_text": "Type: `string`, multiple: `False`, example: `gene_symbol`. "
+          "description": "Name of the .var field that contains gene symbols. If not provided, .var.index will be used.\n",
+          "help_text": "type: `string`, example: `gene_symbol`"
         }
-      }
-    },
-    "outputs": {
-      "title": "Outputs",
-      "type": "object",
-      "description": "No description",
-      "properties": {
-        "output": {
-          "type": "string",
-          "format": "path",
-          "description": "Output directory for DESeq2 results, containing one CSV file per cell group (as defined by `--obs_cell_group`) \n",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `$id.$key.output`, direction: `output`. ",
-          "default": "$id.$key.output"
-        },
-        "output_prefix": {
-          "type": "string",
-          "description": "Prefix for output CSV files: files will be named \"{prefix}_{cell_group}.csv\"\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `deseq2_analysis`. ",
-          "default": "deseq2_analysis"
-        }
-      }
+      },
+      "required": [
+        "input",
+        "obs_cell_group"
+      ]
     },
     "pseudobulk options": {
-      "title": "Pseudobulk Options",
       "type": "object",
+      "title": "Pseudobulk Options",
       "description": "No description",
       "properties": {
         "aggregation_method": {
           "type": "string",
-          "description": "Method to aggregate the raw counts for pseudoreplicates",
-          "help_text": "Type: `string`, multiple: `False`, default: `sum`, choices: ``sum`, `mean``. ",
+          "default": "sum",
+          "description": "Method to aggregate the raw counts for pseudoreplicates. Either sum or mean.",
           "enum": [
             "sum",
             "mean"
           ],
-          "default": "sum"
+          "help_text": "type: `string`, default: `sum`, choices: `sum`|`mean`"
         },
         "random_state": {
           "type": "integer",
+          "default": 0,
           "description": "The random seed for sampling.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
-          "default": 0
+          "help_text": "type: `integer`, default: `0`"
         }
       }
     },
     "filtering options": {
-      "title": "Filtering options",
       "type": "object",
+      "title": "Filtering options",
       "description": "No description",
       "properties": {
         "min_obs_per_sample": {
           "type": "integer",
+          "default": 30,
           "description": "Minimum number of observations per pseudobulk sample.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `30`. ",
-          "default": 30
+          "help_text": "type: `integer`, default: `30`"
         },
         "filter_genes_min_samples": {
           "type": "integer",
           "description": "Minimum number of samples a gene must be expressed in to be included in the analysis.\nIf None, no filtering is applied.\n",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`"
         },
         "filter_gene_patterns": {
           "type": "array",
+          "description": "List of regex patterns to filter out genes.\nGenes matching any of these patterns will be excluded from the analysis.\n",
           "items": {
             "type": "string"
           },
-          "description": "List of regex patterns to filter out genes.\nGenes matching any of these patterns will be excluded from the analysis.\n",
-          "help_text": "Type: `string`, multiple: `True`, example: `MIR\\d+:AL\\d+:LINC\\d+:AC\\d+:AP\\d+`. "
+          "help_text": "type: `array`, multiple: True, example: `['MIR\\\\d+', 'AL\\\\d+', 'LINC\\\\d+', 'AC\\\\d+', 'AP\\\\d+']`"
         }
       }
     },
     "dgea options": {
-      "title": "DGEA options",
       "type": "object",
+      "title": "DGEA options",
       "description": "No description",
       "properties": {
         "design_formula": {
           "type": "string",
           "description": "Design formula for DESeq2 analysis in R-style format.\nSpecifies the statistical model to account for various factors.\n",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `~ cell_type + disease + treatment`. "
+          "help_text": "type: `string`, required, example: `~ cell_type + disease + treatment`"
         },
         "contrast_column": {
           "type": "string",
           "description": "Column in the metadata to use for the contrast.\nThis column should contain the conditions to compare.\n",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `treatment`. "
+          "help_text": "type: `string`, required, example: `treatment`"
         },
         "contrast_values": {
           "type": "array",
+          "description": "Values to compare in the contrast column.\nFirst value is baseline, following values are different treatments.\n",
           "items": {
             "type": "string"
           },
-          "description": "Values to compare in the contrast column.\nFirst value is baseline, following values are different treatments.\n",
-          "help_text": "Type: `string`, multiple: `True`, required, example: `ctrl:stim`. "
+          "help_text": "type: `array`, multiple: True, required, example: `['ctrl', 'stim']`"
         },
         "p_adj_threshold": {
           "type": "number",
+          "default": 0.05,
           "description": "Adjusted p-value threshold for significance.\nGenes with adjusted p-values below this threshold will be considered significant.\n",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.05`. ",
-          "default": 0.05
+          "help_text": "type: `number`, default: `0.05`"
         },
         "log2fc_threshold": {
           "type": "number",
+          "default": 0.0,
           "description": "Log2 fold change threshold for significance.\nGenes with absolute log2 fold change above this threshold will be considered significant.\n",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.0`. ",
-          "default": 0.0
+          "help_text": "type: `number`, default: `0.0`"
         }
-      }
+      },
+      "required": [
+        "design_formula",
+        "contrast_column",
+        "contrast_values"
+      ]
+    },
+    "outputs": {
+      "type": "object",
+      "title": "Outputs",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output directory for DESeq2 results, containing one CSV file per cell group (as defined by `--obs_cell_group`) \n",
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`"
+        },
+        "output_prefix": {
+          "type": "string",
+          "default": "deseq2_analysis",
+          "description": "Prefix for output CSV files: files will be named \"{prefix}_{cell_group}.csv\"\n",
+          "help_text": "type: `string`, default: `deseq2_analysis`"
+        }
+      },
+      "required": [
+        "output"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
     {
       "$ref": "#/$defs/inputs"
-    },
-    {
-      "$ref": "#/$defs/outputs"
     },
     {
       "$ref": "#/$defs/pseudobulk options"
@@ -181,6 +193,9 @@
     },
     {
       "$ref": "#/$defs/dgea options"
+    },
+    {
+      "$ref": "#/$defs/outputs"
     },
     {
       "$ref": "#/$defs/nextflow input-output arguments"

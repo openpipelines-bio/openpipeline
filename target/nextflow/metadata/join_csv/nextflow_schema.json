@@ -4,107 +4,128 @@
   "description": "Join a csv containing metadata to the .obs or .var field of a mudata file.",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "mudata input": {
-      "title": "MuData Input",
       "type": "object",
+      "title": "MuData Input",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "modality": {
           "type": "string",
+          "default": [
+            "rna"
+          ],
           "description": "Which modality from the input MuData file to process.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "obs_key": {
           "type": "string",
           "description": "Obs column name where the sample id can be found for each observation to join on.\nUseful when adding metadata to concatenated samples.\nMutually exclusive with `--var_key`.\"\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         },
         "var_key": {
           "type": "string",
           "description": "Var column name where the sample id can be found for each variable to join on.\nMutually exclusive with `--obs_key`.\"\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         }
-      }
+      },
+      "required": [
+        "input"
+      ]
     },
     "mudata output": {
-      "title": "MuData Output",
       "type": "object",
+      "title": "MuData Output",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Output h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
         },
         "output_compression": {
           "type": "string",
           "description": "The compression format to be used on the output h5mu object.",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
-          ]
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
         }
-      }
+      },
+      "required": [
+        "output"
+      ]
     },
     "metadata input": {
-      "title": "Metadata Input",
       "type": "object",
+      "title": "Metadata Input",
       "description": "No description",
       "properties": {
         "input_csv": {
           "type": "string",
+          "description": ".csv file containing metadata",
           "format": "path",
           "exists": true,
-          "description": ".csv file containing metadata",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"metadata.csv\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['metadata.csv']`"
         },
         "csv_key": {
           "type": "string",
+          "default": [
+            "id"
+          ],
           "description": "column of the the csv that corresponds to the sample id.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"id\"`. ",
-          "default": "id"
+          "help_text": "type: `string`, multiple: False, default: `id`"
         }
-      }
+      },
+      "required": [
+        "input_csv"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/mudata input"
     },

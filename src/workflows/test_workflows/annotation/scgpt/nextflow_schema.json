@@ -5,35 +5,43 @@
   "type": "object",
   "$defs": {
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Path to h5mu output.",
           "format": "path",
           "exists": true,
-          "description": "Path to h5mu output.",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `foo.final.h5mu`. "
+          "help_text": "type: `string`, required, direction: `input`, example: `foo.final.h5mu`"
         },
         "n_hvg": {
           "type": "integer",
           "description": "Number of highly variable genes the input file was subset for.",
-          "help_text": "Type: `integer`, multiple: `False`, required, example: `400`. "
+          "help_text": "type: `integer`, required, example: `400`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "n_hvg"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `output/`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [

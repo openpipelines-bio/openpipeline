@@ -4,118 +4,148 @@
   "description": "Use Scanorama to integrate different experiments.\n",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "modality": {
           "type": "string",
+          "default": [
+            "rna"
+          ],
           "description": "Which modality from the input MuData file to process.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Output .h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
         },
         "obs_batch": {
           "type": "string",
+          "default": [
+            "batch"
+          ],
           "description": "Column name discriminating between your batches.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"batch\"`. ",
-          "default": "batch"
+          "help_text": "type: `string`, multiple: False, default: `batch`"
         },
         "obsm_input": {
           "type": "string",
+          "default": [
+            "X_pca"
+          ],
           "description": "Basis obsm slot to run scanorama on.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"X_pca\"`. ",
-          "default": "X_pca"
+          "help_text": "type: `string`, multiple: False, default: `X_pca`"
         },
         "obsm_output": {
           "type": "string",
-          "description": "The name of the field in adata.obsm where the integrated embeddings will be stored after running this function",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"X_scanorama\"`. ",
-          "default": "X_scanorama"
+          "default": [
+            "X_scanorama"
+          ],
+          "description": "The name of the field in adata.obsm where the integrated embeddings will be stored after running this function. Defaults to X_scanorama.",
+          "help_text": "type: `string`, multiple: False, default: `X_scanorama`"
         },
         "knn": {
           "type": "integer",
+          "default": [
+            20
+          ],
           "description": "Number of nearest neighbors to use for matching.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `20`. ",
-          "default": 20
+          "help_text": "type: `integer`, multiple: False, default: `20`"
         },
         "batch_size": {
           "type": "integer",
-          "description": "The batch size used in the alignment vector computation",
-          "help_text": "Type: `integer`, multiple: `False`, default: `5000`. ",
-          "default": 5000
+          "default": [
+            5000
+          ],
+          "description": "The batch size used in the alignment vector computation. Useful when integrating very large (>100k samples) datasets. Set to large value that runs within available memory.",
+          "help_text": "type: `integer`, multiple: False, default: `5000`"
         },
         "sigma": {
           "type": "number",
+          "default": [
+            15.0
+          ],
           "description": "Correction smoothing parameter on Gaussian kernel.",
-          "help_text": "Type: `double`, multiple: `False`, default: `15.0`. ",
-          "default": 15.0
+          "help_text": "type: `number`, multiple: False, default: `15.0`"
         },
         "approx": {
           "type": "boolean",
+          "default": [
+            true
+          ],
           "description": "Use approximate nearest neighbors with Python annoy; greatly speeds up matching runtime.",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "alpha": {
           "type": "number",
+          "default": [
+            0.1
+          ],
           "description": "Alignment score minimum cutoff",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.1`. ",
-          "default": 0.1
+          "help_text": "type: `number`, multiple: False, default: `0.1`"
         },
         "output_compression": {
           "type": "string",
           "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
-          ]
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "output"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/arguments"
     },

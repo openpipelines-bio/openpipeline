@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cellmapper",
+  "description": "Transfer labels from a reference to a query using CellMapper in a shared\nembedding space.\n",
+  "type": "object",
+  "$defs": {
+    "dataset input": {
+      "type": "object",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "type": "string",
+          "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
+        }
+      }
+    },
+    "input dataset (query) arguments": {
+      "type": "object",
+      "title": "Input dataset (query) arguments",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "description": "The query data to transfer the labels to. Should be a .h5mu file.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+        },
+        "modality": {
+          "type": "string",
+          "default": [
+            "rna"
+          ],
+          "description": "Which modality to use.",
+          "help_text": "type: `string`, multiple: False, default: `rna`"
+        },
+        "input_obsm_features": {
+          "type": "string",
+          "description": "The `.obsm` key of the embedding to use for the classifier's inference. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model or preprocessing).\n",
+          "help_text": "type: `string`, multiple: False, example: `['X_scvi']`"
+        }
+      },
+      "required": [
+        "input"
+      ]
+    },
+    "reference dataset arguments": {
+      "type": "object",
+      "title": "Reference dataset arguments",
+      "description": "No description",
+      "properties": {
+        "reference": {
+          "type": "string",
+          "description": "The reference data to train classifiers on.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['reference.h5mu']`"
+        },
+        "reference_obsm_features": {
+          "type": "string",
+          "description": "The `.obsm` key of the embedding to use for the classifier's training. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).\n",
+          "help_text": "type: `string`, multiple: False, example: `['X_scvi']`"
+        },
+        "reference_obs_targets": {
+          "type": "array",
+          "default": [
+            "ann_level_1",
+            "ann_level_2",
+            "ann_level_3",
+            "ann_level_4",
+            "ann_level_5",
+            "ann_finest_level"
+          ],
+          "description": "The `.obs` key(s) of the target labels to transfer.",
+          "items": {
+            "type": "string"
+          },
+          "help_text": "type: `array`, multiple: True, default: `ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level`"
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "title": "Outputs",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "The query data in .h5mu format with predicted labels transferred from the reference.",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`"
+        },
+        "output_obs_predictions": {
+          "type": "array",
+          "description": "In which `.obs` slots to store the predicted information.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_pred\"` suffix.\n",
+          "items": {
+            "type": "string"
+          },
+          "help_text": "type: `array`, multiple: True"
+        },
+        "output_obs_probability": {
+          "type": "array",
+          "description": "In which `.obs` slots to store the probability of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_probability\"` suffix.\n",
+          "items": {
+            "type": "string"
+          },
+          "help_text": "type: `array`, multiple: True"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
+          "enum": [
+            "gzip",
+            "lzf"
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+        }
+      },
+      "required": [
+        "output"
+      ]
+    },
+    "cellmapper arguments": {
+      "type": "object",
+      "title": "CellMapper arguments",
+      "description": "No description",
+      "properties": {
+        "n_neighbors": {
+          "type": "integer",
+          "default": [
+            15
+          ],
+          "description": "Number of neighbors used by CellMapper.\n",
+          "help_text": "type: `integer`, multiple: False, default: `15`"
+        },
+        "kernel_method": {
+          "type": "string",
+          "description": "Method to use for computing the CellMapper mapping matrix.\n",
+          "enum": [
+            "jaccard",
+            "gauss",
+            "scarches",
+            "inverse_distance",
+            "random",
+            "hnoca",
+            "equal",
+            "umap"
+          ],
+          "help_text": "type: `string`, multiple: False, choices: `jaccard`|`gauss`|`scarches`|`inverse_distance`|`random`|`hnoca`|`equal`|`umap`"
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "type": "object",
+      "title": "Nextflow input-output arguments",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
+        }
+      },
+      "required": [
+        "publish_dir"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
+    {
+      "$ref": "#/$defs/input dataset (query) arguments"
+    },
+    {
+      "$ref": "#/$defs/reference dataset arguments"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/cellmapper arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

@@ -4,143 +4,177 @@
   "description": "UMAP (Uniform Manifold Approximation and Projection) is a manifold learning technique suitable for visualizing high-dimensional data. Besides tending to be faster than tSNE, it optimizes the embedding such that it best reflects the topology of the data, which we represent throughout Scanpy using a neighborhood graph. tSNE, by contrast, optimizes the distribution of nearest-neighbor distances in the embedding such that these best match the distribution of distances in the high-dimensional space. We use the implementation of umap-learn [McInnes18]. For a few comparisons of UMAP with tSNE, see this preprint.\n",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "description": "Input h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "modality": {
           "type": "string",
+          "default": [
+            "rna"
+          ],
           "description": "Which modality from the input MuData file to process.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "uns_neighbors": {
           "type": "string",
+          "default": [
+            "neighbors"
+          ],
           "description": "The `.uns` neighbors slot as output by the `find_neighbors` component.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"neighbors\"`. ",
-          "default": "neighbors"
+          "help_text": "type: `string`, multiple: False, default: `neighbors`"
         }
-      }
+      },
+      "required": [
+        "input"
+      ]
     },
     "outputs": {
-      "title": "Outputs",
       "type": "object",
+      "title": "Outputs",
       "description": "No description",
       "properties": {
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Output h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
         },
         "obsm_output": {
           "type": "string",
+          "default": [
+            "umap"
+          ],
           "description": "The pre/postfix under which to store the UMAP results.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"umap\"`. ",
-          "default": "umap"
+          "help_text": "type: `string`, multiple: False, default: `umap`"
         },
         "output_compression": {
           "type": "string",
           "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
           "enum": [
             "gzip",
             "lzf"
-          ]
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
         }
-      }
+      },
+      "required": [
+        "output"
+      ]
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "min_dist": {
           "type": "number",
-          "description": "The effective minimum distance between embedded points",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.5`. ",
-          "default": 0.5
+          "default": [
+            0.5
+          ],
+          "description": "The effective minimum distance between embedded points. Smaller values will result in a more clustered/clumped embedding where nearby points on the manifold are drawn closer together, while larger values will result on a more even dispersal of points. The value should be set relative to the spread value, which determines the scale at which embedded points will be spread out.",
+          "help_text": "type: `number`, multiple: False, default: `0.5`"
         },
         "spread": {
           "type": "number",
-          "description": "The effective scale of embedded points",
-          "help_text": "Type: `double`, multiple: `False`, default: `1.0`. ",
-          "default": 1.0
+          "default": [
+            1.0
+          ],
+          "description": "The effective scale of embedded points. In combination with `min_dist` this determines how clustered/clumped the embedded points are.",
+          "help_text": "type: `number`, multiple: False, default: `1.0`"
         },
         "num_components": {
           "type": "integer",
+          "default": [
+            2
+          ],
           "description": "The number of dimensions of the embedding.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `2`. ",
-          "default": 2
+          "help_text": "type: `integer`, multiple: False, default: `2`"
         },
         "max_iter": {
           "type": "integer",
-          "description": "The number of iterations (epochs) of the optimization",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "description": "The number of iterations (epochs) of the optimization. Called `n_epochs` in the original UMAP. Default is set to 500 if neighbors['connectivities'].shape[0] <= 10000, else 200.",
+          "help_text": "type: `integer`, multiple: False"
         },
         "alpha": {
           "type": "number",
+          "default": [
+            1.0
+          ],
           "description": "The initial learning rate for the embedding optimization.",
-          "help_text": "Type: `double`, multiple: `False`, default: `1.0`. ",
-          "default": 1.0
+          "help_text": "type: `number`, multiple: False, default: `1.0`"
         },
         "gamma": {
           "type": "number",
-          "description": "Weighting applied to negative samples in low dimensional embedding optimization",
-          "help_text": "Type: `double`, multiple: `False`, default: `1.0`. ",
-          "default": 1.0
+          "default": [
+            1.0
+          ],
+          "description": "Weighting applied to negative samples in low dimensional embedding optimization. Values higher than one will result in greater weight being given to negative samples.",
+          "help_text": "type: `number`, multiple: False, default: `1.0`"
         },
         "negative_sample_rate": {
           "type": "integer",
+          "default": [
+            5
+          ],
           "description": "The number of negative edge/1-simplex samples to use per positive edge/1-simplex sample in optimizing the low dimensional embedding.",
-          "help_text": "Type: `integer`, multiple: `False`, default: `5`. ",
-          "default": 5
+          "help_text": "type: `integer`, multiple: False, default: `5`"
         },
         "init_pos": {
           "type": "string",
-          "description": "How to initialize the low dimensional embedding",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"spectral\"`. ",
-          "default": "spectral"
+          "default": [
+            "spectral"
+          ],
+          "description": "How to initialize the low dimensional embedding. Called `init` in the original UMAP. Options are:\n  \n* Any key from `.obsm`\n* `'paga'`: positions from `paga()`\n* `'spectral'`: use a spectral embedding of the graph\n* `'random'`: assign initial embedding positions at random.\n",
+          "help_text": "type: `string`, multiple: False, default: `spectral`"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/inputs"
     },

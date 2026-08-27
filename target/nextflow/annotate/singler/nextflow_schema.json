@@ -4,228 +4,273 @@
   "description": "SingleR performs reference-based cell type annotation for single-cell RNA-seq data \nby computing Spearman correlations between test cells and reference samples with known labels, \nusing marker genes to assign the most similar cell type label to each new cell.\n",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "Input dataset (query) arguments",
       "properties": {
         "input": {
           "type": "string",
+          "description": "The input (query) data to be labeled. Should be a .h5mu file.",
           "format": "path",
           "exists": true,
-          "description": "The input (query) data to be labeled",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
         },
         "modality": {
           "type": "string",
+          "default": [
+            "rna"
+          ],
           "description": "Which modality to process.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "input_layer": {
           "type": "string",
+          "default": [
+            "log_normalized"
+          ],
           "description": "The layer in the input data containing log normalized counts to be used for cell type annotation if .X is not to be used.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"log_normalized\"`. ",
-          "default": "log_normalized"
+          "help_text": "type: `string`, multiple: False, default: `log_normalized`"
         },
         "input_var_gene_names": {
           "type": "string",
           "description": "The name of the adata .var column in the input data containing gene names; when no gene_name_layer is provided, the var index will be used.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         },
         "input_obs_clusters": {
           "type": "string",
-          "description": "The name of the adata .obs column containing cluster identities of the observations",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "description": "The name of the adata .obs column containing cluster identities of the observations. \nIf provided, annoation is performed on the aggregated cluster profiles, \notherwise it defaults to annotation per observation.\n",
+          "help_text": "type: `string`, multiple: False"
         },
         "input_reference_gene_overlap": {
           "type": "integer",
+          "default": [
+            100
+          ],
           "description": "The minimum number of genes present in both the reference and query datasets.\n",
-          "help_text": "Type: `integer`, multiple: `False`, default: `100`. ",
-          "default": 100
+          "help_text": "type: `integer`, multiple: False, default: `100`"
         }
-      }
+      },
+      "required": [
+        "input"
+      ]
     },
-    "outputs": {
-      "title": "Outputs",
+    "reference": {
       "type": "object",
-      "description": "Output arguments.",
+      "title": "Reference",
+      "description": "Arguments related to the reference dataset.",
       "properties": {
-        "output": {
+        "reference": {
           "type": "string",
+          "description": "The reference data to train the CellTypist classifiers on. Only required if a pre-trained --model is not provided.",
           "format": "path",
-          "description": "Output h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['reference.h5mu']`"
         },
-        "output_obs_predictions": {
+        "reference_layer": {
           "type": "string",
-          "description": "In which `.obs` slot to store the predicted labels",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"singler_pred\"`. ",
-          "default": "singler_pred"
+          "description": "The layer in the reference data containing lognormalized couns to be used for cell type annotation if .X is not to be used. Data are expected to be processed in the same way as the --input query dataset.",
+          "help_text": "type: `string`, multiple: False"
         },
-        "output_obs_probability": {
+        "reference_obs_target": {
           "type": "string",
-          "description": "In which `.obs` slots to store the probability of the predicted labels.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"singler_probability\"`. ",
-          "default": "singler_probability"
+          "description": "The name of the adata obs column in the reference data containing cell type annotations.",
+          "help_text": "type: `string`, multiple: False, required"
         },
-        "output_obs_delta_next": {
+        "reference_var_gene_names": {
           "type": "string",
-          "description": "In which `.obs` slot to store the delta between the best and next-best score",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"singler_delta_next\"`. ",
-          "default": "singler_delta_next"
+          "description": "The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.\n",
+          "help_text": "type: `string`, multiple: False"
         },
-        "output_obs_pruned_predictions": {
+        "reference_var_input": {
           "type": "string",
-          "description": "In which `.obs` slot to store the pruned labels, where low-quality labels are replaced with NA's",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"singler_pruned_labels\"`. ",
-          "default": "singler_pruned_labels"
-        },
-        "output_obsm_scores": {
-          "type": "string",
-          "description": "In which `.obsm` slot to store the matrix of prediction correlations at the specified quantile for each label (column) in each cell (row).\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"singler_scores\"`. ",
-          "default": "singler_scores"
-        },
-        "output_compression": {
-          "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
-          "enum": [
-            "gzip",
-            "lzf"
-          ]
+          "default": [
+            "filter_with_hvg"
+          ],
+          "description": ".var column containing a boolean mask corresponding to genes to be used for marker selection. If not provided, genes will not be subset.\n",
+          "help_text": "type: `string`, multiple: False, default: `filter_with_hvg`"
         }
-      }
+      },
+      "required": [
+        "reference",
+        "reference_obs_target"
+      ]
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "Arguments related to the training of and classification with the SingleR model",
       "properties": {
         "de_n_genes": {
           "type": "integer",
           "description": "The number of differentially expressed genes across labels to be calculated from the reference.\nDefaults to 500 * (2/3) ^ log2(N) where N is the number of unique labels when if `--de_method` is set to `classic`,\notherwise, defaults to 10.\n",
-          "help_text": "Type: `integer`, multiple: `False`. "
+          "help_text": "type: `integer`, multiple: False"
         },
         "de_method": {
           "type": "string",
+          "default": [
+            "classic"
+          ],
           "description": "Method to detect differentially expressed genes between pairs of labels.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"classic\"`, choices: ``classic`, `t`, `wilcox``. ",
           "enum": [
             "classic",
             "t",
             "wilcox"
           ],
-          "default": "classic"
+          "help_text": "type: `string`, multiple: False, default: `classic`, choices: `classic`|`t`|`wilcox`"
         },
         "quantile": {
           "type": "number",
+          "default": [
+            0.8
+          ],
           "description": "The quantile of the correlation distribution to use to compute the score per label.",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.8`. ",
-          "default": 0.8
+          "help_text": "type: `number`, multiple: False, default: `0.8`"
         },
         "fine_tune": {
           "type": "boolean",
-          "description": "Whether finetuning should be performed to improve the resolution",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "default": [
+            true
+          ],
+          "description": "Whether finetuning should be performed to improve the resolution. \nIf set to True, an additional finetuning step is performed after initial classification, \nnew marker genes are calculated based on all cells with a score higher then the maximum score minus `--fine_tuning_thershold`,\nand the calculation of the scores is repeated.\n",
+          "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "fine_tuning_threshold": {
           "type": "number",
+          "default": [
+            0.05
+          ],
           "description": "The maximum difference from the maximum correlation to use in fine-tuning\n",
-          "help_text": "Type: `double`, multiple: `False`, default: `0.05`. ",
-          "default": 0.05
+          "help_text": "type: `number`, multiple: False, default: `0.05`"
         },
         "prune": {
           "type": "boolean",
-          "description": "Whether label pruning should be performed",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "default": [
+            true
+          ],
+          "description": "Whether label pruning should be performed. If set to True, an additional output .obs field `--output_obs_pruned_predictions` will be added to the `--output`, containing labels where 'low-quality' labels are replaced with NA's. Labels are considered 'low-quality' when their delta score (stored in `--output_obs_delta_next`) fall more than 3 median absolute deviations below the median for that label type.",
+          "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "sanitize_ensembl_ids": {
           "type": "boolean",
+          "default": [
+            true
+          ],
           "description": "Whether to sanitize ensembl ids by removing version numbers.",
-          "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
-          "default": true
+          "help_text": "type: `boolean`, multiple: False, default: `True`"
         }
       }
     },
-    "reference": {
-      "title": "Reference",
+    "outputs": {
       "type": "object",
-      "description": "Arguments related to the reference dataset.",
+      "title": "Outputs",
+      "description": "Output arguments.",
       "properties": {
-        "reference": {
+        "output": {
           "type": "string",
+          "description": "Output h5mu file.",
           "format": "path",
           "exists": true,
-          "description": "The reference data to train the CellTypist classifiers on",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"reference.h5mu\"`. "
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output.h5mu']`"
         },
-        "reference_layer": {
+        "output_obs_predictions": {
           "type": "string",
-          "description": "The layer in the reference data containing lognormalized couns to be used for cell type annotation if .X is not to be used",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "default": [
+            "singler_pred"
+          ],
+          "description": "In which `.obs` slot to store the predicted labels. If `--fine_tune False`, this is based only on the maximum entry in `--output_obsm_scores`.\n",
+          "help_text": "type: `string`, multiple: False, default: `singler_pred`"
         },
-        "reference_obs_target": {
+        "output_obs_probability": {
           "type": "string",
-          "description": "The name of the adata obs column in the reference data containing cell type annotations.",
-          "help_text": "Type: `string`, multiple: `False`, required. "
+          "default": [
+            "singler_probability"
+          ],
+          "description": "In which `.obs` slots to store the probability of the predicted labels.\n",
+          "help_text": "type: `string`, multiple: False, default: `singler_probability`"
         },
-        "reference_var_gene_names": {
+        "output_obs_delta_next": {
           "type": "string",
-          "description": "The name of the adata var column in the reference data containing gene names; when no gene_name_layer is provided, the var index will be used.\n",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "default": [
+            "singler_delta_next"
+          ],
+          "description": "In which `.obs` slot to store the delta between the best and next-best score. If `--fine_tune True`, this is reported for scores after fine-tuning.\n",
+          "help_text": "type: `string`, multiple: False, default: `singler_delta_next`"
         },
-        "reference_var_input": {
+        "output_obs_pruned_predictions": {
           "type": "string",
-          "description": ".var column containing a boolean mask corresponding to genes to be used for marker selection",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"filter_with_hvg\"`. ",
-          "default": "filter_with_hvg"
+          "default": [
+            "singler_pruned_labels"
+          ],
+          "description": "In which `.obs` slot to store the pruned labels, where low-quality labels are replaced with NA's. Only added if `--prune True`.\n",
+          "help_text": "type: `string`, multiple: False, default: `singler_pruned_labels`"
+        },
+        "output_obsm_scores": {
+          "type": "string",
+          "default": [
+            "singler_scores"
+          ],
+          "description": "In which `.obsm` slot to store the matrix of prediction correlations at the specified quantile for each label (column) in each cell (row).\n",
+          "help_text": "type: `string`, multiple: False, default: `singler_scores`"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
+          "enum": [
+            "gzip",
+            "lzf"
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
         }
       }
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
     {
+      "$ref": "#/$defs/dataset input"
+    },
+    {
       "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/$defs/outputs"
+      "$ref": "#/$defs/reference"
     },
     {
       "$ref": "#/$defs/arguments"
     },
     {
-      "$ref": "#/$defs/reference"
+      "$ref": "#/$defs/outputs"
     },
     {
       "$ref": "#/$defs/nextflow input-output arguments"

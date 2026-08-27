@@ -4,151 +4,185 @@
   "description": "Converts a Seurat file into an H5MU file.\n",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "inputs": {
-      "title": "Inputs",
       "type": "object",
+      "title": "Inputs",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input Seurat file",
           "format": "path",
           "exists": true,
-          "description": "Input Seurat file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.rds\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.rds']`"
         },
         "assay": {
           "type": "string",
+          "default": [
+            "RNA"
+          ],
           "description": "Name of the assay to be mapped.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"RNA\"`. ",
-          "default": "RNA"
+          "help_text": "type: `string`, multiple: False, default: `RNA`"
         }
-      }
-    },
-    "outputs": {
-      "title": "Outputs",
-      "type": "object",
-      "description": "No description",
-      "properties": {
-        "modality": {
-          "type": "string",
-          "description": "Name of the modality to be created.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
-        },
-        "output": {
-          "type": "string",
-          "format": "path",
-          "description": "Output H5MU file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
-        },
-        "output_compression": {
-          "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
-          "enum": [
-            "gzip",
-            "lzf"
-          ]
-        }
-      }
+      },
+      "required": [
+        "input"
+      ]
     },
     "conversion parameters": {
-      "title": "Conversion parameters",
       "type": "object",
+      "title": "Conversion parameters",
       "description": "No description",
       "properties": {
         "layers_mapping": {
           "type": "string",
-          "description": "Mapping of Seurat's Layers to AnnData layers",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"layer\": \"seurat_layer\"}\"`. ",
-          "default": "True"
+          "default": [
+            "True"
+          ],
+          "description": "Mapping of Seurat's Layers to AnnData layers. \nIf True, all layers will be mapped by name. \nIf False, no layers will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "help_text": "type: `string`, multiple: False, default: `True`, example: `['{\"layer\": \"seurat_layer\"}']`"
         },
         "obs_mapping": {
           "type": "string",
-          "description": "Mapping of Seurat's observation columns to AnnData obs columns",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"obs_field\": \"seurat_observation\"}\"`. ",
-          "default": "True"
+          "default": [
+            "True"
+          ],
+          "description": "Mapping of Seurat's observation columns to AnnData obs columns. \nIf True, all observation columns will be mapped by name. If False, no columns will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "help_text": "type: `string`, multiple: False, default: `True`, example: `['{\"obs_field\": \"seurat_observation\"}']`"
         },
         "var_mapping": {
           "type": "string",
-          "description": "Mapping of Seurat's feature rows to AnnData var columns.\nIf True, all features will be mapped by name",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"var_field\": \"seurat_feature\"}\"`. ",
-          "default": "True"
+          "default": [
+            "True"
+          ],
+          "description": "Mapping of Seurat's feature rows to AnnData var columns.\nIf True, all features will be mapped by name. If False, no features will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "help_text": "type: `string`, multiple: False, default: `True`, example: `['{\"var_field\": \"seurat_feature\"}']`"
         },
         "uns_mapping": {
           "type": "string",
-          "description": "Mapping of Seurat's Misc to AnnData uns",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"uns_field\": \"seurat_Misc\"}\"`. ",
-          "default": "True"
+          "default": [
+            "True"
+          ],
+          "description": "Mapping of Seurat's Misc to AnnData uns. \nIf True, all fields will be mapped by name. If False, no fields will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "help_text": "type: `string`, multiple: False, default: `True`, example: `['{\"uns_field\": \"seurat_Misc\"}']`"
         },
         "obsm_mapping": {
           "type": "string",
-          "description": "Mapping of Seurat's Embeddings to AnnData obsm fields",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"obsm_field\": \"seurat_Embedding\"}\"`. ",
-          "default": "True"
+          "default": [
+            "True"
+          ],
+          "description": "Mapping of Seurat's Embeddings to AnnData obsm fields. \nIf True, all fields will be mapped by name. If False, no fields will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "help_text": "type: `string`, multiple: False, default: `True`, example: `['{\"obsm_field\": \"seurat_Embedding\"}']`"
         },
         "varm_mapping": {
           "type": "string",
-          "description": "Mapping of Seurat's Loadings to AnnData varm fields",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"varm_field\": \"seurat_Loadings\"}\"`. ",
-          "default": "True"
+          "default": [
+            "True"
+          ],
+          "description": "Mapping of Seurat's Loadings to AnnData varm fields. \nIf True, all fields will be mapped by name. If False, no fields will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "help_text": "type: `string`, multiple: False, default: `True`, example: `['{\"varm_field\": \"seurat_Loadings\"}']`"
         },
         "obsp_mapping": {
           "type": "string",
-          "description": "Mapping of Seurat's Graphs to AnnData obsp fields.\nIf True, all fields will be mapped by name",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"obsp_field\": \"seurat_Graph\"}\"`. ",
-          "default": "True"
+          "default": [
+            "True"
+          ],
+          "description": "Mapping of Seurat's Graphs to AnnData obsp fields.\nIf True, all fields will be mapped by name. If False, no fields will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "help_text": "type: `string`, multiple: False, default: `True`, example: `['{\"obsp_field\": \"seurat_Graph\"}']`"
         },
         "varp_mapping": {
           "type": "string",
-          "description": "Mapping of Seurat's Misc to AnnData varp fields",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"True\"`, example: `\"{\"varp_field\": \"seurat_Misc\"}\"`. ",
-          "default": "True"
+          "default": [
+            "True"
+          ],
+          "description": "Mapping of Seurat's Misc to AnnData varp fields. \nIf True, all fields will be mapped by name. If False, no fields will be mapped.\nFor custom mapping, provide a json key/value array with Seurat fields as values and AnnData fields as keys.\n",
+          "help_text": "type: `string`, multiple: False, default: `True`, example: `['{\"varp_field\": \"seurat_Misc\"}']`"
         },
         "x_mapping": {
           "type": "string",
           "description": "A string specifying Seurat's Layer to mapped to the .X slot, If not provided, no data will be copied to the .X slot.",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "help_text": "type: `string`, multiple: False"
         }
       }
     },
-    "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
+    "outputs": {
       "type": "object",
+      "title": "Outputs",
+      "description": "No description",
+      "properties": {
+        "modality": {
+          "type": "string",
+          "default": [
+            "rna"
+          ],
+          "description": "Name of the modality to be created.",
+          "help_text": "type: `string`, multiple: False, default: `rna`"
+        },
+        "output": {
+          "type": "string",
+          "description": "Output H5MU file",
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
+          "enum": [
+            "gzip",
+            "lzf"
+          ],
+          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+        }
+      },
+      "required": [
+        "output"
+      ]
+    },
+    "nextflow input-output arguments": {
+      "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
     {
+      "$ref": "#/$defs/dataset input"
+    },
+    {
       "$ref": "#/$defs/inputs"
     },
     {
-      "$ref": "#/$defs/outputs"
+      "$ref": "#/$defs/conversion parameters"
     },
     {
-      "$ref": "#/$defs/conversion parameters"
+      "$ref": "#/$defs/outputs"
     },
     {
       "$ref": "#/$defs/nextflow input-output arguments"

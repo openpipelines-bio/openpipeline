@@ -4,73 +4,91 @@
   "description": "Converts an h5ad file or a single modality of an h5mu file into a Seurat file.\n",
   "type": "object",
   "$defs": {
-    "Dataset input": {
-      "title": "Dataset input",
+    "dataset input": {
       "type": "object",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "title": "Dataset input",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
       "properties": {
         "param_list": {
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "type": "string",
           "default": "",
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
           "format": "file-path",
-          "mimetype": "text/csv"
+          "mimetype": "text/csv",
+          "help_text": "type: `string`, default: ``"
         }
       }
     },
     "arguments": {
-      "title": "Arguments",
       "type": "object",
+      "title": "Arguments",
       "description": "No description",
       "properties": {
         "input": {
           "type": "string",
+          "description": "Input h5ad or h5mu file",
           "format": "path",
           "exists": true,
-          "description": "Input h5ad or h5mu file",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5ad\"`. "
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5ad']`"
         },
         "modality": {
           "type": "string",
+          "default": [
+            "rna"
+          ],
           "description": "Modality to be converted if the input file is an h5mu file.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
-          "default": "rna"
+          "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "assay": {
           "type": "string",
+          "default": [
+            "RNA"
+          ],
           "description": "Name of the assay to be created.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"RNA\"`. ",
-          "default": "RNA"
+          "help_text": "type: `string`, multiple: False, default: `RNA`"
         },
         "x_mapping": {
           "type": "string",
+          "default": [
+            "counts"
+          ],
           "description": "Name of the Seurat layer in which the AnnData .X matrix is stored.\n",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"counts\"`. ",
-          "default": "counts"
+          "help_text": "type: `string`, multiple: False, default: `counts`"
         },
         "output": {
           "type": "string",
-          "format": "path",
           "description": "Output Seurat file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.rds\"`, direction: `output`, example: `\"output.rds\"`. ",
-          "default": "$id.$key.output.rds"
+          "format": "path",
+          "exists": true,
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.rds']`"
         }
-      }
+      },
+      "required": [
+        "input",
+        "output"
+      ]
     },
     "nextflow input-output arguments": {
-      "title": "Nextflow input-output arguments",
       "type": "object",
+      "title": "Nextflow input-output arguments",
       "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
       "properties": {
         "publish_dir": {
           "type": "string",
           "description": "Path to an output directory.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+          "format": "path",
+          "help_text": "type: `string`, required, direction: `output`, example: `output/`"
         }
-      }
+      },
+      "required": [
+        "publish_dir"
+      ]
     }
   },
   "allOf": [
+    {
+      "$ref": "#/$defs/dataset input"
+    },
     {
       "$ref": "#/$defs/arguments"
     },
