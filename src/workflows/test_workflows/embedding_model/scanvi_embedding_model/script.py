@@ -5,7 +5,6 @@ import pandas
 import scvi
 
 
-
 def test_run():
     # Test output data
     input_mudata = read_h5mu(par["input"])
