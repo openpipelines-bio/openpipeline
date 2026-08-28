@@ -3302,7 +3302,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge",
     "viash_version" : "0.9.7",
-    "git_commit" : "924837982ea98a915997cdc918945bb13003cc90",
+    "git_commit" : "b1c52734ccca3b095aeae4cd6b7088cd090de3d5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

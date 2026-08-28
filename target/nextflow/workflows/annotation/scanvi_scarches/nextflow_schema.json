@@ -30,23 +30,23 @@
           "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
           "default": "$id.$key.output.h5mu"
         },
+        "output_obsm_integrated": {
+          "type": "string",
+          "description": "The .obsm field in the output h5mu object where the scANVI latent representation will be stored.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_integrated_scanvi\"`. ",
+          "default": "X_integrated_scanvi"
+        },
         "output_obs_predictions": {
           "type": "string",
-          "description": "In which .obs slot to store the predicted labels.",
+          "description": "The .obs field in the output h5mu object where the predicted labels from the scANVI classifier will be stored.",
           "help_text": "Type: `string`, multiple: `False`, default: `\"scanvi_pred\"`. ",
           "default": "scanvi_pred"
         },
-        "output_obs_probability": {
+        "output_obs_probabilities": {
           "type": "string",
-          "description": "In which",
+          "description": "The .obs field in the output h5mu object where the predicted probabilities from the scANVI classifier will be stored.",
           "help_text": "Type: `string`, multiple: `False`, default: `\"scanvi_probabilities\"`. ",
           "default": "scanvi_probabilities"
-        },
-        "output_obsm_integrated": {
-          "type": "string",
-          "description": "In which .obsm slot to store the integrated embedding.",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"X_integrated_scanvi\"`. ",
-          "default": "X_integrated_scanvi"
         },
         "output_compression": {
           "type": "string",
@@ -134,27 +134,39 @@
         }
       }
     },
+    "reference model": {
+      "title": "Reference model",
+      "type": "object",
+      "description": "Pre-trained scANVI model to map the query data onto.",
+      "properties": {
+        "reference_model": {
+          "type": "string",
+          "format": "path",
+          "description": "Path to pre-trained scANVI model.\nIf both `--reference` and `--reference_model` are provided, the reference model will be used and the reference dataset will be ignored.\n",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"scanvi_model\"`. "
+        }
+      }
+    },
     "reference input": {
       "title": "Reference input",
       "type": "object",
-      "description": "No description",
+      "description": "Reference dataset input arguments to train scANVI model on. Only used if no reference model is provided.",
       "properties": {
         "reference": {
           "type": "string",
           "format": "path",
-          "exists": true,
-          "description": "Reference dataset consisting of the labeled observations to train the KNN classifier on",
-          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"reference.h5mu\"`. "
+          "description": "Reference dataset consisting of the labeled observations to train the KNN classifier on.\nThe dataset is expected to be pre-processed in the same way as the --input query dataset.\nIf both `--reference` and `--reference_model` are provided, the reference model will be used and the reference dataset will be ignored.\n",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"reference.h5mu\"`. "
         },
         "reference_obs_target": {
           "type": "string",
           "description": "The `.obs` key containing the target labels.",
-          "help_text": "Type: `string`, multiple: `False`, required, example: `\"cell_type\"`. "
+          "help_text": "Type: `string`, multiple: `False`, example: `\"cell_type\"`. "
         },
         "reference_obs_batch_label": {
           "type": "string",
           "description": "The .obs field in the reference dataset containing the batch labels.",
-          "help_text": "Type: `string`, multiple: `False`, required, default: `\"sample_id\"`, example: `\"sample\"`. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"sample_id\"`, example: `\"sample\"`. ",
           "default": "sample_id"
         },
         "reference_obs_size_factor": {
@@ -315,6 +327,9 @@
     },
     {
       "$ref": "#/$defs/query input"
+    },
+    {
+      "$ref": "#/$defs/reference model"
     },
     {
       "$ref": "#/$defs/reference input"

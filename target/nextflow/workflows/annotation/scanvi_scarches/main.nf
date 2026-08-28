@@ -3178,18 +3178,39 @@ meta = [
       ]
     },
     {
+      "name" : "Reference model",
+      "description" : "Pre-trained scANVI model to map the query data onto.",
+      "arguments" : [
+        {
+          "type" : "file",
+          "name" : "--reference_model",
+          "description" : "Path to pre-trained scANVI model.\nIf both `--reference` and `--reference_model` are provided, the reference model will be used and the reference dataset will be ignored.\n",
+          "example" : [
+            "scanvi_model"
+          ],
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
       "name" : "Reference input",
+      "description" : "Reference dataset input arguments to train scANVI model on. Only used if no reference model is provided.",
       "arguments" : [
         {
           "type" : "file",
           "name" : "--reference",
-          "description" : "Reference dataset consisting of the labeled observations to train the KNN classifier on. The dataset is expected to be pre-processed in the same way as the --input query dataset.",
+          "description" : "Reference dataset consisting of the labeled observations to train the KNN classifier on.\nThe dataset is expected to be pre-processed in the same way as the --input query dataset.\nIf both `--reference` and `--reference_model` are provided, the reference model will be used and the reference dataset will be ignored.\n",
           "example" : [
             "reference.h5mu"
           ],
           "must_exist" : true,
           "create_parent" : true,
-          "required" : true,
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3201,7 +3222,7 @@ meta = [
           "example" : [
             "cell_type"
           ],
-          "required" : true,
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3216,7 +3237,7 @@ meta = [
           "default" : [
             "sample_id"
           ],
-          "required" : true,
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3458,8 +3479,20 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--output_obsm_integrated",
+          "description" : "The .obsm field in the output h5mu object where the scANVI latent representation will be stored.",
+          "default" : [
+            "X_integrated_scanvi"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--output_obs_predictions",
-          "description" : "In which .obs slot to store the predicted labels.",
+          "description" : "The .obs field in the output h5mu object where the predicted labels from the scANVI classifier will be stored.",
           "default" : [
             "scanvi_pred"
           ],
@@ -3470,22 +3503,10 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--output_obs_probability",
-          "description" : "In which. obs slot to store the probabilities of the predicted labels.",
+          "name" : "--output_obs_probabilities",
+          "description" : "The .obs field in the output h5mu object where the predicted probabilities from the scANVI classifier will be stored.",
           "default" : [
             "scanvi_probabilities"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--output_obsm_integrated",
-          "description" : "In which .obsm slot to store the integrated embedding.",
-          "default" : [
-            "X_integrated_scanvi"
           ],
           "required" : false,
           "direction" : "input",
@@ -3549,6 +3570,14 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/resources_test/annotation_test_data/scanvi_model/"
+    },
+    {
+      "type" : "file",
+      "path" : "/resources_test/annotation_test_data/scanvi_covariate_model/"
+    },
+    {
+      "type" : "file",
       "path" : "/resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
     }
   ],
@@ -3568,13 +3597,7 @@ meta = [
   },
   "dependencies" : [
     {
-      "name" : "integrate/scvi",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
-      "name" : "annotate/scanvi",
+      "name" : "workflows/embedding_model/scanvi_model",
       "repository" : {
         "type" : "local"
       }
@@ -3681,7 +3704,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scanvi_scarches",
     "viash_version" : "0.9.7",
-    "git_commit" : "924837982ea98a915997cdc918945bb13003cc90",
+    "git_commit" : "b1c52734ccca3b095aeae4cd6b7088cd090de3d5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3729,8 +3752,7 @@ meta = [
 
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
-include { scvi } from "${meta.resources_dir}/../../../../nextflow/integrate/scvi/main.nf"
-include { scanvi } from "${meta.resources_dir}/../../../../nextflow/annotate/scanvi/main.nf"
+include { scanvi_model } from "${meta.resources_dir}/../../../../nextflow/workflows/embedding_model/scanvi_model/main.nf"
 include { scarches } from "${meta.resources_dir}/../../../../nextflow/integrate/scarches/main.nf"
 include { neighbors_leiden_umap } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/neighbors_leiden_umap/main.nf"
 
@@ -3748,19 +3770,45 @@ workflow run_wf {
         def new_state = state + ["workflow_output": state.output, "workflow_output_model": state.output_model]
         [id, new_state]
         }
+        // Make sure parameters are filled out correctly
+        | map { id, state->
+          // Check that either a reference dataset or model is provided
+          if (!state.reference && !state.reference_model) {
+            error("At least one of --reference or --reference_model must be provided.")
+          }
+          if (state.reference && state.reference_model) {
+            log.warn(
+              "Both --reference_model and --reference were provided. " +
+              "The pre-trained scANVI --reference_model will be used for annotation, the --reference dataset will be ignored."
+            )
+          }
+          // Make sure all required parameters are provided if a reference dataset is to be used
+          if (state.reference && !state.reference_model && !state.reference_obs_target) {
+            error("--reference_obs_target must be provided if --reference is used for scANVI model training.")
+          }
+          if (state.reference && !state.reference_model && !state.reference_obs_batch_label) {
+            error("--reference_obs_batch_label must be provided if --reference is used for scANVI model training.")
+          }
+          [id, state]
+        }
 
-        // Integrate & generate scvi model from the reference data
-        | scvi.run(
+        // Generate scanvi model from the reference data
+        | scanvi_model.run(
+          runIf: { id, state -> 
+            !state.reference_model 
+          },
           fromState: [
               "input": "reference",
               "modality": "modality",
-              "input_layer": "layer",
-              "obs_batch": "reference_obs_batch_label",
-              "var_input": "reference_var_hvg",
-              "var_gene_names": "reference_var_gene_names",
+              "layer": "layer",
+              "obs_target": "reference_obs_target",
+              "obs_batch_label": "reference_obs_batch_label",
               "obs_size_factor": "reference_obs_size_factor",
               "obs_categorical_covariate": "reference_obs_categorical_covariate",
               "obs_continuous_covariate": "reference_obs_continuous_covariate",
+              "unlabeled_category": "unlabeled_category",
+              "var_hvg": "reference_var_hvg",
+              "var_gene_names": "reference_var_gene_names",
               "early_stopping": "early_stopping",
               "early_stopping_monitor": "early_stopping_monitor",
               "early_stopping_patience": "early_stopping_patience",
@@ -3769,44 +3817,15 @@ workflow run_wf {
               "reduce_lr_on_plateau": "reduce_lr_on_plateau",
               "lr_factor": "lr_factor",
               "lr_patience": "lr_patience",
-              "sanitize_ensembl_ids": "sanitize_ensembl_ids"
+              "sanitize_ensembl_ids": "sanitize_ensembl_ids",
+              // "output_obsm_integrated_scanvi": "output_obsm_integrated"
           ],
           args: [
-              "obsm_output": "X_integrated_scvi"
+              "output_obsm_integrated_scanvi": "X_integrated_scanvi"
           ],
           toState: [
               "reference": "output",
-              "output_scvi_model": "output_model"
-          ]
-        )
-        
-        // Create scanvi model from the scvi reference model and integrate reference data
-        | scanvi.run(
-          fromState: [
-              "input": "reference",
-              "modality": "modality",
-              "input_layer": "layer",
-              "var_input": "reference_var_hvg",
-              "var_gene_names": "reference_var_gene_names",
-              "obs_labels": "reference_obs_target",
-              "unlabeled_category": "unlabeled_category",
-              "scvi_model": "output_scvi_model",
-              "obsm_output": "output_obsm_integrated",
-              "obs_output_predictions": "output_obs_predictions",
-              "obs_output_probabilities": "output_obs_probability",
-              "early_stopping": "early_stopping",
-              "early_stopping_monitor": "early_stopping_monitor",
-              "early_stopping_patience": "early_stopping_patience",
-              "early_stopping_min_delta": "early_stopping_min_delta",
-              "max_epochs": "max_epochs",
-              "reduce_lr_on_plateau": "reduce_lr_on_plateau",
-              "lr_factor": "lr_factor",
-              "lr_patience": "lr_patience",
-              "sanitize_ensembl_ids": "sanitize_ensembl_ids"
-          ],
-          toState: [
-              "reference": "output",
-              "scanvi_model": "output_model"
+              "reference_model": "output_scanvi_model"
           ]
         )
 
@@ -3821,10 +3840,10 @@ workflow run_wf {
               "input_obs_size_factor": "input_obs_size_factor",
               "input_obs_categorical_covariate": "input_obs_categorical_covariate",
               "input_obs_continuous_covariate": "input_obs_continuous_covariate",
-              "reference": "scanvi_model",
+              "reference": "reference_model",
               "obsm_output": "output_obsm_integrated",
               "obs_output_predictions": "output_obs_predictions",
-              "obs_output_probabilities": "output_obs_probability",
+              "obs_output_probabilities": "output_obs_probabilities",
               "early_stopping": "early_stopping",
               "early_stopping_monitor": "early_stopping_monitor",
               "early_stopping_patience": "early_stopping_patience",
