@@ -80,13 +80,9 @@
 
 * `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169, PR #1177)
 
-* `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169)
-
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140 and PR #1191).
-
-* `annotate/popv`: bump version to 0.6.1 (PR #1167).
 
 * `annotate/popv`: bump version to 0.6.1 (PR #1167).
 
@@ -117,10 +113,6 @@
 * Bump mudata to `0.3.8` (PR #1188).
 
 * Bump lianapy to `1.7.1` (PR #1188).
-
-* Add missing `example` fields to several component and workflow configurations (PR #1067).
-
-* Testing: bump `viashpy` to 0.10.0 (PR #1178).
 
 * Add missing `example` fields to several component and workflow configurations (PR #1067).
 
@@ -189,10 +181,6 @@
 * `dataflow/concatenate_h5mu`: optionally perform block-diagonal concatenation of specified `.obsp` keys using `--obsp_keys` across input MuData objects (PR #1115).
 
 * `workflows/annotation/totalvi_leiden` and `annotate/totalvi`: Added new workflows and components for cell type annotation using TotalVI integration followed by Leiden clustering, without scArches reference mapping (PR #1092).
-
-* `workflows/embedding/scanvi_model`: Generate a scANVI emedding model (PR #1104).
-
-* `workflows/annotation/scanvi_scarches`: Accept either a reference model or dataset to perform scANVI annotation (PR#1104).
 
 ## EXPERIMENTAL
 
