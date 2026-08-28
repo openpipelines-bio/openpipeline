@@ -123,19 +123,40 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
+- name: "Reference model"
+  description: "Pre-trained scANVI model to map the query data onto."
+  arguments:
+  - type: "file"
+    name: "--reference_model"
+    description: "Path to pre-trained scANVI model.\nIf both `--reference` and `--reference_model`\
+      \ are provided, the reference model will be used and the reference dataset will\
+      \ be ignored.\n"
+    info: null
+    example:
+    - "scanvi_model"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
 - name: "Reference input"
+  description: "Reference dataset input arguments to train scANVI model on. Only used\
+    \ if no reference model is provided."
   arguments:
   - type: "file"
     name: "--reference"
     description: "Reference dataset consisting of the labeled observations to train\
-      \ the KNN classifier on. The dataset is expected to be pre-processed in the\
-      \ same way as the --input query dataset."
+      \ the KNN classifier on.\nThe dataset is expected to be pre-processed in the\
+      \ same way as the --input query dataset.\nIf both `--reference` and `--reference_model`\
+      \ are provided, the reference model will be used and the reference dataset will\
+      \ be ignored.\n"
     info: null
     example:
     - "reference.h5mu"
     must_exist: true
     create_parent: true
-    required: true
+    required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -145,7 +166,7 @@ argument_groups:
     info: null
     example:
     - "cell_type"
-    required: true
+    required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -157,7 +178,7 @@ argument_groups:
     - "sample"
     default:
     - "sample_id"
-    required: true
+    required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -378,8 +399,20 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
+    name: "--output_obsm_integrated"
+    description: "The .obsm field in the output h5mu object where the scANVI latent\
+      \ representation will be stored."
+    info: null
+    default:
+    - "X_integrated_scanvi"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
     name: "--output_obs_predictions"
-    description: "In which .obs slot to store the predicted labels."
+    description: "The .obs field in the output h5mu object where the predicted labels\
+      \ from the scANVI classifier will be stored."
     info: null
     default:
     - "scanvi_pred"
@@ -388,21 +421,12 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "string"
-    name: "--output_obs_probability"
-    description: "In which. obs slot to store the probabilities of the predicted labels."
+    name: "--output_obs_probabilities"
+    description: "The .obs field in the output h5mu object where the predicted probabilities\
+      \ from the scANVI classifier will be stored."
     info: null
     default:
     - "scanvi_probabilities"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--output_obsm_integrated"
-    description: "In which .obsm slot to store the integrated embedding."
-    info: null
-    default:
-    - "X_integrated_scanvi"
     required: false
     direction: "input"
     multiple: false
@@ -448,6 +472,10 @@ test_resources:
 - type: "file"
   path: "TS_Blood_filtered.h5mu"
 - type: "file"
+  path: "scanvi_model"
+- type: "file"
+  path: "scanvi_covariate_model"
+- type: "file"
   path: "pbmc_1k_protein_v3_mms.h5mu"
 info:
   name: "scANVI - scArches workflow"
@@ -459,10 +487,7 @@ scope:
   image: "public"
   target: "public"
 dependencies:
-- name: "integrate/scvi"
-  repository:
-    type: "local"
-- name: "annotate/scanvi"
+- name: "workflows/embedding_model/scanvi_model"
   repository:
     type: "local"
 - name: "integrate/scarches"
@@ -546,11 +571,10 @@ build_info:
   output: "target/nextflow/workflows/annotation/scanvi_scarches"
   executable: "target/nextflow/workflows/annotation/scanvi_scarches/main.nf"
   viash_version: "0.9.7"
-  git_commit: "bd73ec13157625b61294d78afd4e00dd74919cf7"
+  git_commit: "bc9bd189d5ddd00252d6dfb215d8e1c28a47b3b3"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
-  - "target/nextflow/integrate/scvi"
-  - "target/nextflow/annotate/scanvi"
+  - "target/nextflow/workflows/embedding_model/scanvi_model"
   - "target/nextflow/integrate/scarches"
   - "target/nextflow/workflows/multiomics/neighbors_leiden_umap"
 package_config:

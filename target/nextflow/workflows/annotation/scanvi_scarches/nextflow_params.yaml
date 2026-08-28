@@ -10,10 +10,13 @@ input_obs_batch_label: # please fill in - example: "sample_id"
 # input_var_gene_names: "foo"
 sanitize_ensembl_ids: true
 
+# Reference model
+# reference_model: "scanvi_model"
+
 # Reference input
-reference: # please fill in - example: "reference.h5mu"
-reference_obs_target: # please fill in - example: "cell_type"
-reference_obs_batch_label: # please fill in - example: "sample_id"
+# reference: "reference.h5mu"
+# reference_obs_target: "cell_type"
+reference_obs_batch_label: "sample_id"
 # reference_obs_size_factor: "foo"
 # reference_obs_categorical_covariate: ["foo"]
 # reference_obs_continuous_covariate: ["foo"]
@@ -40,9 +43,9 @@ knn_n_neighbors: 15
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-output_obs_predictions: "scanvi_pred"
-output_obs_probability: "scanvi_probabilities"
 output_obsm_integrated: "X_integrated_scanvi"
+output_obs_predictions: "scanvi_pred"
+output_obs_probabilities: "scanvi_probabilities"
 # output_compression: "gzip"
 # output_model: "$id.$key.output_model"
 

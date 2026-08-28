@@ -12,6 +12,10 @@
 
 * `workflows/ingestion/cellranger_multi`: surface the `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
 
+* `workflows/embedding/scanvi_model`: Generate a scANVI emedding model (PR #1104).
+
+* `workflows/annotation/scanvi_scarches`: Accept either a reference model or dataset to perform scANVI annotation (PR#1104).
+
 # openpipelines 4.2.0
 
 ## NEW FEATURES
